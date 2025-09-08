@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <title>Micah Etter — Projects</title>
+  <meta name="description" content="Hub for Micah Etter projects: StrokeBot, NeuroConnections, Neurology Crossword, plus upcoming Fangman and Wheel of Neurology." />
+  <style>
+    :root{
+      --bg:#0b1021;           /* deep night */
+      --bg-soft:#0f1530;      /* console panel */
+      --text:#e6f3ff;         /* icy text */
+      --muted:#8ea0b5;        /* muted blue */
+      --card:#0f1636;         /* module tile */
+      --border:#2a3360;       /* pixel border */
+      --accent:#8bd5a1;       /* softened mint green (was neon) */
+      --accent-2:#ff3d81;     /* neon magenta */
+      --shadow: 0 0 0 3px var(--border), 0 6px 0 0 rgba(0,0,0,.4);
+      --px: 4px;              /* base pixel */
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'Press Start 2P', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;}
+    a{color:inherit}
+
+    /* CRT scanlines */
+    body::before{
+      content:"";position:fixed;inset:0;pointer-events:none;opacity:.08;mix-blend-mode:overlay;
+      background:repeating-linear-gradient(0deg,rgba(255,255,255,.06) 0 1px,transparent 1px 3px);
+    }
+
+    .wrap{max-width:1100px;margin:0 auto;padding:32px 18px 48px;position:relative}
+
+    header{display:flex;align-items:center;gap:16px;margin-bottom:28px}
+    .me-badge{width:56px;height:56px;display:grid;place-items:center;background:linear-gradient(180deg,#1a223d,#0e1430);color:var(--accent);font-weight:800;letter-spacing:.5px;box-shadow:var(--shadow);border:3px solid var(--border)}
+    .title{line-height:1.2}
+    .title h1{margin:0;font-size:clamp(18px,3.2vw,26px);font-weight:800;text-shadow:0 2px 0 #000}
+    .title p{margin:10px 0 0;color:var(--muted);font-size:clamp(10px,1.8vw,12px)}
+
+    main{margin-top:22px}
+
+    /* Rows list layout */
+    .list{display:flex;flex-direction:column;gap:14px}
+    .row{position:relative;background:var(--card);border:3px solid var(--border);border-radius:0;padding:18px 16px;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:space-between;gap:16px;transition:transform .12s ease}
+    .row:hover{transform:translateY(-2px)}
+    .row h3{margin:0 0 8px;font-size:14px}
+    .row p{margin:0;color:var(--muted);font-size:10.5px;line-height:1.6}
+
+    /* 8‑bit link button */
+    .link{display:inline-flex;align-items:center;gap:10px;text-decoration:none;color:#0b0e14;background:var(--accent);border:3px solid #2b4a3e;padding:10px 14px;box-shadow:0 4px 0 #1e342a, inset 0 -3px 0 rgba(0,0,0,.15);font-weight:700}
+    .link:hover{transform:translateY(1px);box-shadow:0 3px 0 #1e342a, inset 0 -3px 0 rgba(0,0,0,.15)}
+    .link:active{transform:translateY(3px);box-shadow:0 1px 0 #1e342a, inset 0 -1px 0 rgba(0,0,0,.2)}
+    .link svg{width:14px;height:14px}
+
+    .coming{opacity:.9}
+    .coming .link{opacity:.45;pointer-events:none}
+
+    footer{margin-top:36px;border-top:3px solid var(--border);padding-top:18px;text-align:center;color:var(--muted);font-size:10px}
+    footer a{color:var(--accent);text-decoration:none;border-bottom:2px dashed var(--accent-2)}
+
+    /* Remove rounded, keep pixel feel */
+    .card{border-radius:0}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="me-badge" aria-hidden="true">ME</div>
+      <div class="title">
+        <h1>Micah Etter — Projects</h1>
+        <p>Hub for neurology education tools & games. The <strong>.me</strong> is for <strong>Micah&nbsp;Etter</strong> initials.</p>
+      </div>
+    </header>
+
+    <main aria-label="Project links">
+      <div class="list">
+        <!-- StrokeBot -->
+        <article class="row">
+          <div class="left">
+            <h3>StrokeBot</h3>
+            <p>Free acute‑stroke code simulator for trainees. Practice time‑critical workflows and decision paths.</p>
+          </div>
+          <a class="link" href="https://strokebot.me" target="_blank" rel="noopener noreferrer" aria-label="Open StrokeBot in a new tab">
+            strokebot.me
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>
+          </a>
+        </article>
+
+        <!-- NeuroConnections -->
+        <article class="row">
+          <div class="left">
+            <h3>NeuroConnections</h3>
+            <p>Daily micro‑learning puzzle game for neurology topics. Learn in playful, bite‑size bursts.</p>
+          </div>
+          <a class="link" href="https://neuroconnections.me" target="_blank" rel="noopener noreferrer" aria-label="Open NeuroConnections in a new tab">
+            neuroconnections.me
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>
+          </a>
+        </article>
+
+        <!-- Neurology Crossword -->
+        <article class="row">
+          <div class="left">
+            <h3>Neurology Crossword</h3>
+            <p>Daily neurology crossword with multiple difficulty scales — and infinite practice on demand.</p>
+          </div>
+          <a class="link" href="https://neurologycrossword.me" target="_blank" rel="noopener noreferrer" aria-label="Open Neurology Crossword in a new tab">
+            neurologycrossword.me
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>
+          </a>
+        </article>
+
+        <!-- Fangman (Coming Soon) -->
+        <article class="row coming" aria-disabled="true">
+          <div class="left">
+            <h3>Fangman: Bite‑to‑Brain</h3>
+            <p>Word‑reveal game re‑themed for ascending rabies encephalitis lore. Launching here when ready.</p>
+          </div>
+          <span class="link" aria-hidden="true">coming soon</span>
+        </article>
+
+        <!-- Wheel of Neurology (Coming Soon) -->
+        <article class="row coming" aria-disabled="true">
+          <div class="left">
+            <h3>Wheel of Neurology</h3>
+            <p>Spin‑to‑solve neurology phrases with clue wedges and multiplayer support. In active development.</p>
+          </div>
+          <span class="link" aria-hidden="true">coming soon</span>
+        </article>
+      </div>
+    </main>
+
+    <footer>
+      <div>© <span id="year"></span> Micah Etter · <a href="https://x.com/MEtterMD" target="_blank" rel="noopener noreferrer">@MEtterMD</a></div>
+    </footer>
+  </div>
+
+  <script>
+    // set current year in footer
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
