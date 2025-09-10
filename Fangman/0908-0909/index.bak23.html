@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Fangman: Bite-to-Brain</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rubik:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0a0f; --panel:#13111b; --panel2:#181425;
+  --text:#eef2f7; --muted:#a4adbd;
+  --btn:#1d1420; --btn-border:#4a1b28; --btn1:#3a1320; --btn2:#26101a;
+  --ok:#9be07a; --danger:#ff4d5e;
+}
+*{box-sizing:border-box}
+body{margin:0;background:
+      radial-gradient(1200px 600px at 15% -10%, rgba(42,15,26,.66) 0%, rgba(42,15,26,0) 60%),
+      var(--bg);
+     color:var(--text);
+     font-family:'Rubik', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;overflow-x:hidden}
+.wrap{width:min(1180px,96vw);margin:0 auto;padding:18px}
+header{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.logo{height:92px;width:auto;display:block}
+.logo.right{height:30px;opacity:.95;margin-left:6px}
+h1{margin:0 0 10px;font-family:'Bebas Neue', ui-sans-serif;letter-spacing:1px;font-size:42px;color:#6fd1ff;font-weight:800}
+.board{display:grid;grid-template-columns:.55fr 1.45fr;gap:16px}
+.panel{background:linear-gradient(180deg,#171222,#13111b);border:1px solid #2b2035;border-radius:12px;padding:14px;
+       box-shadow:0 10px 30px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.03);overflow:hidden}
+.leftPanel{display:flex}
+.stageBox{width:300px;height:440px;background:#0c0a12;border:1px solid #2e1a25;border-radius:10px;position:relative;overflow:hidden}
+.stageStack{position:relative;width:100%;height:100%;z-index:1}
+.stageStack img{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:contain;object-position:left center;}
+#stageImg{z-index:1}
+#stageImg2{z-index:2;opacity:0;transition:opacity 1s ease;pointer-events:none}
+.swarm.behind{z-index:0}
+.swarm.front{z-index:3}
+.virus{transition: opacity .6s ease}
+.swarm{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.swarmGlobal{position:fixed;inset:0;pointer-events:none;z-index:400}
+.assetWarn{display:none;position:absolute;bottom:8px;left:12px;background:#2a1420;border:1px solid #65293a;border-radius:8px;
+           padding:8px 10px;color:#ffd1d7;font-size:12px}
+.rightPanel{display:flex;flex-direction:column;gap:16px;min-height:460px;height:auto}
+.subpanel{background:linear-gradient(180deg,#161428,#141223);border:1px solid #2a1f39;border-radius:12px;padding:14px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.02)}
+.rpBottom{flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:14px}
+.hintSticky{margin-top:8px;text-align:center;color:var(--muted);font-size:14px;min-height:20px}
+.word{display:flex;gap:12px;justify-content:center;align-items:center;flex-wrap:wrap;min-height:64px;padding:14px 8px 6px;margin:6px 0 10px}
+.slot{width:38px;height:52px;border-bottom:3px solid #5a5c7a;display:grid;place-items:center;font-weight:800;font-size:26px;color:var(--text)}
+.slot.revealed{color:var(--ok);border-color:#4b7a38}
+.kb{display:grid;grid-template-columns:repeat(13, minmax(42px,1fr));gap:12px;margin-top:6px;margin-bottom:22px}
+.key{background:linear-gradient(180deg,var(--btn1),var(--btn2));border:1px solid var(--btn-border);border-radius:12px;padding:14px 0;
+     text-align:center;font-weight:800;cursor:pointer;user-select:none}
+.key.used-wrong{background:#3a1320;color:#ff9aa6;border-color:#7a2b42;text-decoration: line-through; text-decoration-thickness: 2px; text-decoration-color: rgba(255,150,160,.95);}
+.key.used-right{background:#163020;color:#b7f2a2;border-color:#2f6a41}
+.controls{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:12px;padding-bottom:10px}
+button{background:linear-gradient(180deg,var(--btn1),var(--btn2));border:1px solid var(--btn-border);
+       color:var(--text);font-weight:800;letter-spacing:.3px;padding:10px 16px;border-radius:12px;cursor:pointer}
+button:disabled{opacity:.45;filter:grayscale(.6);cursor:not-allowed}
+.modal{position:fixed;inset:0;display:none;place-items:center;backdrop-filter:blur(4px)}
+.modal.show{display:grid}
+.modal .card{width:min(560px,92vw);background:#171327;border:1px solid #2a1f39;border-radius:14px;padding:18px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.card h2{margin:0 0 6px;font-family:'Bebas Neue';letter-spacing:.6px}
+.card p{margin:6px 0 12px;color:var(--muted)}
+.credits{margin-top:10px;text-align:right;font-size:12px;color:var(--muted);opacity:.85}
+.bat{position:fixed;left:50%;top:50%;width:58px;height:34px;transform:translate(-50%,-50%) rotate(0deg);pointer-events:none;z-index:1000;
+     filter:drop-shadow(0 0 10px rgba(140,255,120,.95)) drop-shadow(0 0 26px rgba(255,77,94,.35))}
+.bat svg{width:100%;height:100%;display:block}
+.bat .aura{position:absolute;inset:-18px;background:radial-gradient(50% 45% at 50% 50%, rgba(140,255,120,.9), rgba(120,220,90,.35) 50%, rgba(255,0,0,.18) 72%, transparent 76%);
+           border-radius:50%;animation:batPulse 1.6s ease-in-out infinite;filter:blur(.6px)}
+@keyframes batPulse{0%,100%{transform:scale(.92);opacity:.95}50%{transform:scale(1.07);opacity:1}}
+.virus{position:absolute;width:10px;height:10px;border-radius:50%;
+       background:radial-gradient(circle at 35% 35%, #ffd6d6, #ff5555 55%, #c81424 75%);
+       box-shadow:0 0 6px rgba(255,80,80,.85),0 0 13px rgba(255,60,80,.45);filter:saturate(1.25);pointer-events:none}
+.virus::before,.virus::after{content:'';position:absolute;inset:-3px;border-radius:50%;
+       background:radial-gradient(circle, rgba(255,160,160,.28), transparent 70%);filter:blur(2.5px)}
+.virus::after{inset:-5px;filter:blur(2.5px);opacity:.65}
+@media (max-width:1100px){
+  .wrap{width:min(1000px,96vw)} .board{grid-template-columns:1fr}
+  .rightPanel{min-height:auto} .stageBox{width:260px;height:400px}
+}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <img src="logo.png" class="logo" alt="Fangman"/>
+      <img src="logo-right.png" class="logo right" alt="Bite-to-Brain"/>
+      
+    </header>
+
+    <div class="board">
+      <div class="panel leftPanel">
+        <div class="stageBox" id="stageBox">
+          <div id="swarmBehind" class="swarm behind"></div>
+          <div class="stageStack">
+            <img id="stageImg" src="strike0.png" alt="progression"/>
+            <img id="stageImg2" alt="" aria-hidden="true"/>
+          </div>
+          <div id="swarmFront" class="swarm front"></div>
+        </div>
+        <div id="assetWarn" class="assetWarn"></div>
+      </div>
+
+      <div class="panel rightPanel">
+        <div class="subpanel rpTop">
+          <div id="word" class="word" aria-live="polite"></div>
+        </div>
+        <div class="subpanel rpBottom">
+          <div id="keyboard" class="kb" role="group" aria-label="letter keyboard"></div>
+          <div class="controls">
+            <button id="newWord">New word</button>
+            <button id="hintBtn">Hint (−1)</button>
+            <button id="optionsBtn">Options</button>
+          </div>
+          <div id="hintSticky" class="hintSticky" aria-live="polite"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="credits">created by micah etter, md</div>
+  </div>
+
+  <div id="swarmGlobal" class="swarmGlobal"></div>
+
+  <div id="bat" class="bat" aria-hidden="true">
+    <div class="aura"></div>
+    <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <style>
+          .wingL,.wingR{transform-origin:100px 60px;}
+          .wingL{animation:flapL .35s ease-in-out infinite alternate}
+          .wingR{animation:flapR .35s ease-in-out infinite alternate}
+          @keyframes flapL{from{transform:rotate(14deg)}to{transform:rotate(-18deg)}}
+          @keyframes flapR{from{transform:rotate(-14deg)}to{transform:rotate(18deg)}}
+        </style>
+      </defs>
+      <ellipse cx="100" cy="60" rx="22" ry="16" fill="#0f0f12"/>
+      <circle cx="106" cy="60" r="7" fill="#0b0b0d"/>
+      <circle cx="103" cy="58" r="2.8" fill="#aaff88"/>
+      <circle cx="113" cy="58" r="2.8" fill="#aaff88"/>
+      <g class="wingL"><path d="M100,60 C70,35 35,35 10,55 C35,55 60,65 85,80" fill="#13131a" stroke="#0e0e13" stroke-width="3"/></g>
+      <g class="wingR"><path d="M100,60 C130,35 165,35 190,55 C165,55 140,65 115,80" fill="#13131a" stroke="#0e0e13" stroke-width="3"/></g>
+    </svg>
+  </div>
+
+  <!-- Modals -->
+  <div class="modal" id="modal">
+    <div class="card">
+      <h2 id="modalTitle">Containment Success</h2>
+      <div class="big" id="modalWord"></div>
+      <p id="modalMsg">Encephalitis averted — the viral ascent was blocked in time.</p>
+      <div class="controls">
+        <button id="playAgain">Play again</button>
+        <button id="closeModal">Close</button>
+      </div>
+    </div>
+  </div>
+  <div class="modal" id="hintModal">
+    <div class="card">
+      <h2>Hint</h2>
+      <p id="hintText">A clue appears here.</p>
+      <div class="controls"><button id="confirmHint">OK</button></div>
+    </div>
+  </div>
+  <div class="modal" id="optionsModal">
+    <div class="card">
+      <h2>Options</h2>
+      <div style="margin:6px 0 12px;color:var(--muted)">Word pack</div>
+      <label style="display:inline-flex;gap:8px;align-items:center;margin-right:12px"><input type="radio" name="packSel" value="neuroinfectious"> Neuroinfectious only</label>
+      <label style="display:inline-flex;gap:8px;align-items:center"><input type="radio" name="packSel" value="general"> All neurology</label>
+      <div class="controls" style="margin-top:12px">
+        <button id="saveOptions">Apply</button>
+        <button id="closeOptions">Close</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const IMAGE_CONFIG = { base:'./', prefix:'strike', ext:'png', count:10 };
+  const STRIKE_IMAGES = Array.from({length: IMAGE_CONFIG.count}, (_,i) => `${IMAGE_CONFIG.base}${IMAGE_CONFIG.prefix}${i}.${IMAGE_CONFIG.ext}`);
+  const MAX_STRIKES = STRIKE_IMAGES.length - 1;
+
+  const UI = {
+    stageImg: document.getElementById('stageImg'),
+    stageImg2: document.getElementById('stageImg2'),
+    stageBox: document.getElementById('stageBox'),
+    swarmFront: document.getElementById('swarmFront'),
+    swarmBehind: document.getElementById('swarmBehind'),
+    swarmGlobal: document.getElementById('swarmGlobal'),
+    assetWarn: document.getElementById('assetWarn'),
+    wordEl: document.getElementById('word'),
+    kb: document.getElementById('keyboard'),
+    newWord: document.getElementById('newWord'),
+    modal: document.getElementById('modal'),
+    modalTitle: document.getElementById('modalTitle'),
+    modalMsg: document.getElementById('modalMsg'),
+    modalWord: document.getElementById('modalWord'),
+    playAgain: document.getElementById('playAgain'),
+    closeModal: document.getElementById('closeModal'),
+    hintBtn: document.getElementById('hintBtn'),
+    hintModal: document.getElementById('hintModal'),
+    hintText: document.getElementById('hintText'),
+    confirmHint: document.getElementById('confirmHint'),
+    optionsBtn: document.getElementById('optionsBtn'),
+    optionsModal: document.getElementById('optionsModal'),
+    hintSticky: document.getElementById('hintSticky'),
+    closeOptions: document.getElementById('closeOptions'),
+    saveOptions: document.getElementById('saveOptions'),
+    bat: document.getElementById('bat')
+  };
+
+  const PACKS = {
+    neuroinfectious: { name: 'Neuroinfectious', words: ['RABIES','MENINGITIS','ENCEPHALITIS','NEUROCYSTICERCOSIS','BRAINABSCESS'] },
+    general: { name: 'All Neurology', words: ['CEREBELLUM','THALAMUS','PARKINSONISM','EPILEPSY','MYASTHENIA'] }
+  };
+  const HINTS = {
+    'RABIES':'Lyssavirus infection ascending from peripheral bite to CNS.',
+    'MENINGITIS':'Inflammation of meninges; fever, neck stiffness, AMS.',
+    'ENCEPHALITIS':'Inflammation of brain parenchyma—often viral (HSV).',
+    'NEUROCYSTICERCOSIS':'Taenia solium larvae in CNS; seizures, ring lesions.',
+    'BRAINABSCESS':'Focal intracranial infection with ring-enhancing mass.',
+    'CEREBELLUM':'Coordinates movement and balance.',
+    'THALAMUS':'Relay for sensory and motor signals to cortex.',
+    'PARKINSONISM':'Bradykinesia ± tremor/rigidity due to dopamine loss.',
+    'EPILEPSY':'Tendency to have unprovoked seizures.',
+    'MYASTHENIA':'Autoimmune NMJ disorder with fatigable weakness.'
+  };
+  function genericClue(word){
+    const w = word.toUpperCase();
+    if(/RABIES|MENING|ENCEPHAL|ABSCESS|CYSTICER/.test(w)) return 'Neuroinfectious disease.';
+    if(/CEREBELL|THALAM|CORTEX|LOBE/.test(w)) return 'Anatomy — cortical or relay structure.';
+    if(/EPILEP|MYASTHEN|PARKINSON/.test(w)) return 'Neurology condition or disorder.';
+    return 'Neurology term — think anatomy, physiology, or pathology.';
+  }
+
+  // Persisted pack
+  let currentPackKey = 'neuroinfectious'; // default every load
+  if(!PACKS[currentPackKey]) currentPackKey = 'neuroinfectious';
+
+  // Game state
+  const STATE = { pack: PACKS[currentPackKey], word:'', letters:new Set(), wrong:new Set(), won:false, lost:false, hintUsed:false };
+
+  // Swarm management
+  let swarmMode = 'cursor_orbit'; // or 'image'
+  let viruses = [];
+  let redTargets = [];
+  let animHandle = null;
+
+  // Cursor tracking & bat follow
+  const cursorGlobal = { x: window.innerWidth*0.6, y: window.innerHeight*0.4 };
+  (function initBat(){
+    const bat = UI.bat; if(!bat) return;
+    let x = cursorGlobal.x, y = cursorGlobal.y, targetX = x, targetY = y, lastX = x, lastY = y;
+    function onMove(clientX, clientY){ targetX = clientX; targetY = clientY; cursorGlobal.x=clientX; cursorGlobal.y=clientY; }
+    window.addEventListener('mousemove', e=>onMove(e.clientX, e.clientY), {passive:true});
+    window.addEventListener('touchmove', e=>{ if(e.touches && e.touches[0]){ const t=e.touches[0]; onMove(t.clientX,t.clientY); }}, {passive:true});
+    function tick(){
+      const dx = targetX - x, dy = targetY - y;
+      const ease = 0.45 + Math.min(0.25, Math.hypot(dx,dy)/500);
+      x += dx*ease; y += dy*ease;
+      const angle = Math.atan2(y-lastY, x-lastX)*180/Math.PI;
+      bat.style.left = x+'px'; bat.style.top = y+'px';
+      bat.style.transform = `translate(-50%,-50%) rotate(${angle}deg)`;
+      lastX=x; lastY=y;
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  })();
+
+  function switchSwarmMode(mode){
+    const was = swarmMode;
+    swarmMode = mode;
+    if(mode==='cursor_orbit'){
+      viruses.forEach(v => {
+        if(v.el.parentNode !== UI.swarmGlobal){
+          UI.swarmGlobal.appendChild(v.el);
+        }
+      });
+    } else {
+      const w = UI.stageImg.clientWidth, h = UI.stageImg.clientHeight;
+      viruses.forEach(v => {
+        if(was==='cursor_orbit'){
+          // initialize positions/layers when entering image mode
+          v.x = Math.random()*Math.max(20, w-20);
+          v.y = Math.random()*Math.max(20, h-20);
+          v.vx = 0; v.vy = 0; v.target = null; v.zPhase = Math.random()*Math.PI*2;
+          v.layer = (Math.random()<0.5)? 'behind' : 'front';
+        }
+        const parent = (v.layer==='behind') ? UI.swarmBehind : UI.swarmFront;
+        if(v.el.parentNode !== parent){
+          parent.appendChild(v.el);
+        }
+      });
+    }
+  }
+
+  function updateStageImage(){
+    const idx = Math.min(STATE.wrong.size, MAX_STRIKES);
+    const want = STRIKE_IMAGES[idx];
+    const base = UI.stageImg, overlay = UI.stageImg2;
+
+    // Prepare overlay with NEW image and fade it IN over the old base
+    overlay.src = want;
+    overlay.style.opacity = '0';
+    // Force reflow so transition always triggers
+    void overlay.offsetWidth;
+    requestAnimationFrame(()=>{ overlay.style.opacity = '1'; });
+
+    const finish = ()=>{
+      overlay.style.opacity = '0';
+      base.src = want;
+      analyzeRedTargets();
+      syncRightPanelHeight();
+    };
+
+    // Ensure finish runs even if image load is cached and no 'load' event fires
+    if (base.src.endsWith(want) && base.complete) {
+      // Already showing/cached – still run finish to sync targets
+      setTimeout(finish, 50);
+    } else {
+      base.onload = ()=>{ base.onload=null; finish(); };
+      base.src = want;
+      // Absolute fallback
+      setTimeout(finish, 1200);
+    }
+    updateHintBtnState();
+  }
+  function syncRightPanelHeight(){
+    const right = document.querySelector('.rightPanel');
+    if(right){ right.style.minHeight = UI.stageBox.clientHeight+'px'; right.style.height = 'auto'; }
+  }
+
+  // Rendering
+  function renderWord(){
+    UI.wordEl.innerHTML='';
+    for(const ch of STATE.word){
+      const d=document.createElement('div');
+      d.className='slot'+(STATE.letters.has(ch)?' revealed':'');
+      d.textContent = STATE.letters.has(ch)? ch : '';
+      UI.wordEl.appendChild(d);
+    }
+  }
+  function renderKeyboard(){
+    UI.kb.innerHTML='';
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(l=>{
+      const k=document.createElement('div'); k.className='key'; k.textContent=l;
+      if(STATE.letters.has(l)){ k.classList.add('used-right'); k.style.pointerEvents='none'; }
+      if(STATE.wrong.has(l)){ k.classList.add('used-wrong'); k.style.pointerEvents='none'; }
+      k.onclick=()=>guess(l);
+      UI.kb.appendChild(k);
+    });
+  }
+  function randWord(){ const arr=STATE.pack.words; return arr[Math.floor(Math.random()*arr.length)].toUpperCase(); }
+
+  function reset(word=null){
+    STATE.word = (word||randWord());
+    STATE.letters = new Set(); STATE.wrong = new Set(); STATE.won=false; STATE.lost=false; STATE.hintUsed=false;
+    UI.hintSticky.textContent='';
+    switchSwarmMode('cursor_orbit');
+    updateHintBtnState();
+    renderWord(); renderKeyboard(); updateStageImage(); rebuildSwarm(); syncRightPanelHeight();
+  }
+
+  function guess(ch){
+    if(STATE.won||STATE.lost) return;
+    ch = ch.toUpperCase();
+    if(STATE.word.includes(ch)){
+      STATE.letters.add(ch);
+    } else if(!STATE.wrong.has(ch)){
+      const prev = STATE.wrong.size;
+      STATE.wrong.add(ch);
+      // Immediately reflect wrong key in UI
+      renderKeyboard();
+      if(prev===0){ switchSwarmMode('image'); }
+      updateStageImage();
+    }
+    renderWord(); renderKeyboard(); updateHintBtnState(); checkState();
+  }
+
+  function checkState(){
+    const uniq = new Set(STATE.word.split(''));
+    const all = Array.from(uniq).every(l => STATE.letters.has(l));
+    if(all){ STATE.won=true; showModal(true); return; }
+    if(STATE.wrong.size >= MAX_STRIKES){ STATE.lost=true; showModal(false); }
+  }
+
+  function useHint(){
+    if(STATE.won||STATE.lost) return;
+    const word = STATE.word;
+    const clue = HINTS[word] || genericClue(word);
+    if(!STATE.hintUsed){ STATE.hintUsed=true; STATE.wrong.add('HINT'); if(swarmMode!=='image'){ switchSwarmMode('image'); } updateStageImage(); updateHintBtnState(); }
+    UI.hintText.textContent = clue; UI.hintSticky.textContent = clue; UI.hintBtn.disabled=true; updateHintBtnState();
+  }
+
+  // Modals
+  function showModal(win){
+    UI.modalTitle.textContent = win? 'Containment Success' : 'Containment Failed';
+    UI.modalMsg.textContent = win? 'Encephalitis averted — the viral ascent was blocked in time.' : 'Rabies has consumed the central nervous system.';
+    UI.modalWord.textContent = STATE.word; UI.modal.classList.add('show');
+  }
+  function hideModal(){ UI.modal.classList.remove('show'); }
+
+  // Events
+  function updateHintBtnState(){
+    // Available on strikes 0..7. Disable only on strikes 8 or 9, or if already used / game over.
+    const strike = STATE.wrong.size;
+    const disable = STATE.hintUsed || strike >= (MAX_STRIKES - 1) || STATE.won || STATE.lost; // 8 or 9
+    UI.hintBtn.disabled = !!disable;
+  }
+
+  function applyPack(value){
+    if(PACKS[value]){
+      currentPackKey = value;
+      localStorage.setItem('fangman_pack', currentPackKey);
+      STATE.pack = PACKS[currentPackKey];
+      reset();
+    }
+  }
+
+  window.addEventListener('keydown', e=>{
+    if(e.key && e.key.length===1) guess(e.key.toUpperCase());
+    else if(e.key==='Enter' && (STATE.won||STATE.lost)){ hideModal(); reset(); }
+  });
+  UI.newWord.onclick = ()=>reset();
+  UI.playAgain.onclick = ()=>{ hideModal(); reset(); };
+  UI.closeModal.onclick = ()=>hideModal();
+  UI.hintBtn.onclick = ()=>useHint();
+
+  UI.optionsBtn.onclick = ()=>{
+    const radios = document.querySelectorAll('input[name=\"packSel\"]');
+    radios.forEach(r => {
+      r.checked = (r.value===currentPackKey);
+      r.onchange = (e)=> applyPack(e.target.value);
+    });
+    UI.optionsModal.classList.add('show');
+    updateHintBtnState();
+  };
+  UI.closeOptions.onclick = ()=> UI.optionsModal.classList.remove('show');
+  UI.saveOptions.onclick = ()=>{
+    const sel = document.querySelector('input[name="packSel"]:checked');
+    if(sel){ applyPack(sel.value); }
+    UI.optionsModal.classList.remove('show');
+  };
+  UI.confirmHint && (UI.confirmHint.onclick = ()=>{});
+
+  // ----- Swarm logic -----
+  function setVirusLayer(v, layer){
+    if(v.layer === layer) return;
+    v.layer = layer;
+    const parent = (layer==='behind') ? UI.swarmBehind : UI.swarmFront;
+    // Fade a touch on swap for subtle feel
+    v.el.style.opacity = '0.6';
+    parent.appendChild(v.el);
+    requestAnimationFrame(()=>{ v.el.style.opacity = '1'; });
+  }
+
+  function analyzeRedTargets(){
+    try{
+      const img = UI.stageImg;
+      const w = img.naturalWidth, h = img.naturalHeight;
+      if(!w || !h) return;
+      const c = document.createElement('canvas'); c.width=w; c.height=h;
+      const ctx = c.getContext('2d'); ctx.drawImage(img,0,0);
+      const data = ctx.getImageData(0,0,w,h).data;
+      const pts = []; const step = 8;
+      for(let y=0;y<h;y+=step){
+        for(let x=0;x<w;x+=step){
+          const i=(y*w+x)*4; const r=data[i], g=data[i+1], b=data[i+2], a=data[i+3];
+          if(a>80 && r>160 && r>g*1.5 && r>b*1.5){ pts.push({x,y}); }
+        }
+      }
+      const scaleX = UI.stageImg.clientWidth / w;
+      const scaleY = UI.stageImg.clientHeight/ h;
+      redTargets = pts.map(p => ({ x: p.x*scaleX, y: p.y*scaleY }));
+    }catch(e){ redTargets=[]; }
+  }
+
+  function rebuildSwarm(){
+    const base = (swarmMode==='cursor_orbit'? 16 : 8);
+    const extra = Math.min(30, STATE.wrong.size * 5);
+    const need = base + extra;
+    const have = viruses.length;
+    for(let i=need;i<have;i++){ const v=viruses.pop(); v.el.remove(); }
+    for(let i=have;i<need;i++){
+      const el = document.createElement('div'); el.className='virus';
+      let layer='front';
+      if(swarmMode==='cursor_orbit'){
+        UI.swarmGlobal.appendChild(el);
+      } else {
+        layer = Math.random()<0.5 ? 'front' : 'behind';
+        (layer==='behind'? UI.swarmBehind : UI.swarmFront).appendChild(el);
+      }
+      const R = 56 + Math.random()*10; const a = Math.random()*Math.PI*2;
+      viruses.push({ el, x:0, y:0, angle:a, radius:R, omega:(Math.random()*0.06+0.04)*(Math.random()<0.5?-1:1), target:null, vx:0, vy:0, layer, zPhase: Math.random()*Math.PI*2 });
+    }
+    if(!animHandle) animateSwarm();
+  }
+
+  function pickTarget(){
+    if(redTargets.length) return redTargets[Math.floor(Math.random()*redTargets.length)];
+    return { x: Math.random()*UI.stageImg.clientWidth*0.6 + 10, y: UI.stageImg.clientHeight*0.85 + Math.random()*20 - 10 };
+  }
+
+  function animateSwarm(){
+    if(swarmMode==='cursor_orbit'){
+      viruses.forEach(v => {
+        if(v.el.parentNode!==UI.swarmGlobal){ UI.swarmGlobal.appendChild(v.el); }
+        v.angle += v.omega;
+        v.x = cursorGlobal.x + Math.cos(v.angle)*v.radius;
+        v.y = cursorGlobal.y + Math.sin(v.angle)*v.radius;
+        v.el.style.transform = `translate(${v.x-5}px, ${v.y-5}px)`;
+      });
+    } else {
+      const w = UI.stageImg.clientWidth, h = UI.stageImg.clientHeight;
+      viruses.forEach(v => {
+        // drift toward targets
+        if(!v.target || Math.random()<0.01) v.target = pickTarget();
+        const ax = (v.target.x - v.x) * 0.02;
+        const ay = (v.target.y - v.y) * 0.02;
+        v.vx += ax + (Math.random()-.5)*0.15;
+        v.vy += ay + (Math.random()-.5)*0.15;
+        v.vx *= 0.92; v.vy *= 0.92;
+        v.x += v.vx; v.y += v.vy;
+        v.x = Math.max(6, Math.min(w-6, v.x));
+        v.y = Math.max(6, Math.min(h-6, v.y));
+        v.el.style.transform = `translate(${v.x-5}px, ${v.y-5}px)`;
+        // Layer fluctuation using a slow phase
+        v.zPhase += 0.02; // slow
+        const s = Math.sin(v.zPhase);
+        if(s > 0.92) setVirusLayer(v, 'front');
+        else if(s < -0.92) setVirusLayer(v, 'behind');
+      });
+    }
+    animHandle = requestAnimationFrame(animateSwarm);
+  }
+
+  // Preload and start
+  function preloadImages(){ return Promise.all(STRIKE_IMAGES.map(url => new Promise(res => { const img=new Image(); img.onload=()=>res(true); img.onerror=()=>res(false); img.src=url; }))); }
+  let started=false;
+  function start(){ if(!started){ started=true; reset(); } }
+  document.addEventListener('DOMContentLoaded', start);
+  setTimeout(start, 50);
+  preloadImages().then(start).catch(start);
+
+})();</script>
+</body>
+</html>

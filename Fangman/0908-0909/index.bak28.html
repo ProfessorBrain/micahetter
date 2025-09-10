@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Fangman: Bite-to-Brain v0.2.9 (effects restored, ES5)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rubik:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0a0f; --panel:#13111b; --panel2:#181425;
+  --text:#eef2f7; --muted:#a4adbd;
+  --btn:#1d1420; --btn-border:#4a1b28; --btn1:#3a1320; --btn2:#26101a;
+  --ok:#9be07a; --danger:#ff4d5e;
+}
+*{box-sizing:border-box}
+body{margin:0;background:
+      radial-gradient(1200px 600px at 15% -10%, rgba(42,15,26,.66) 0%, rgba(42,15,26,0) 60%),
+      var(--bg);
+     color:var(--text);
+     font-family:'Rubik', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;overflow-x:hidden}
+.wrap{width:min(1180px,96vw);margin:0 auto;padding:18px}
+header{display:flex;align-items:center;gap:12px;margin-bottom:6px;justify-content:space-between}
+.logo{height:92px;width:auto;display:block}
+.logo.right{height:30px;opacity:.95;margin-left:6px}
+.board{display:grid;grid-template-columns:.55fr 1.45fr;gap:16px}
+.panel{background:linear-gradient(180deg,#171222,#13111b);border:1px solid #2b2035;border-radius:12px;padding:14px;
+       box-shadow:0 10px 30px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.03);overflow:hidden}
+.leftPanel{display:flex}
+.stageBox{width:300px;height:440px;background:#0c0a12;border:1px solid #2e1a25;border-radius:10px;position:relative;overflow:hidden;isolation:isolate}
+.stageStack{position:relative;width:100%;height:100%;z-index:10}
+.stageStack img{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:contain;object-position:left center;}
+#stageImg{z-index:10;opacity:1;transition:none}
+#stageImg2{z-index:11;opacity:0;transition:opacity 1.5s ease-in-out;pointer-events:none;will-change:opacity}
+.swarm.behind{z-index:1}
+.swarm.front{z-index:20}
+.virus{transition: opacity .6s ease}
+.swarm{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.swarmGlobal{position:fixed;inset:0;pointer-events:none;z-index:400}
+.assetWarn{display:none;position:absolute;bottom:8px;left:12px;background:#2a1420;border:1px solid #65293a;border-radius:8px;
+           padding:8px 10px;color:#ffd1d7;font-size:12px}
+.rightPanel{display:flex;flex-direction:column;gap:16px;min-height:460px;height:auto}
+.subpanel{background:linear-gradient(180deg,#161428,#141223);border:1px solid #2a1f39;border-radius:12px;padding:14px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.02)}
+.rpBottom{flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:14px}
+.hintSticky{margin-top:8px;text-align:center;color:var(--muted);font-size:14px;min-height:20px}
+.word{display:flex;gap:12px;justify-content:center;align-items:center;flex-wrap:wrap;min-height:64px;padding:14px 8px 6px;margin:6px 0 10px}
+.slot{width:38px;height:52px;border-bottom:3px solid #5a5c7a;display:grid;place-items:center;font-weight:800;font-size:26px;color:var(--text)}
+.slot.revealed{color:var(--ok);border-color:#4b7a38}
+.slot.space{border-color:transparent;width:24px}
+.kb{display:grid;grid-template-columns:repeat(13, minmax(42px,1fr));gap:12px;margin-top:6px;margin-bottom:10px}
+.key{background:linear-gradient(180deg,var(--btn1),var(--btn2));border:1px solid var(--btn-border);border-radius:12px;padding:14px 0;
+     text-align:center;font-weight:800;cursor:pointer;user-select:none}
+.key.used-wrong{background:#3a1320;color:#ff9aa6;border-color:#7a2b42;text-decoration: line-through; text-decoration-thickness: 2px; text-decoration-color: rgba(255,150,160,.95);}
+.key.used-right{background:#163020;color:#b7f2a2;border-color:#2f6a41}
+.controls{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:12px;padding-bottom:10px}
+button{background:linear-gradient(180deg,var(--btn1),var(--btn2));border:1px solid var(--btn-border);
+       color:var(--text);font-weight:800;letter-spacing:.3px;padding:10px 16px;border-radius:12px;cursor:pointer}
+button:disabled{opacity:.45;filter:grayscale(.6);cursor:not-allowed}
+.modal{position:fixed;inset:0;display:none;place-items:center;backdrop-filter:blur(4px)}
+.modal.show{display:grid}
+.modal .card{width:min(560px,92vw);background:#171327;border:1px solid #2a1f39;border-radius:14px;padding:18px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.card h2{margin:0 0 6px;font-family:'Bebas Neue';letter-spacing:.6px}
+.card p{margin:6px 0 12px;color:var(--muted)}
+.credits{margin-top:10px;text-align:right;font-size:12px;color:#a4adbd;opacity:.85}
+.bat{position:fixed;left:50%;top:50%;width:58px;height:34px;transform:translate(-50%,-50%) rotate(0deg);pointer-events:none;z-index:1000;
+     filter:drop-shadow(0 0 10px rgba(140,255,120,.95)) drop-shadow(0 0 26px rgba(255,77,94,.35))}
+.bat svg{width:100%;height:100%;display:block}
+.bat .aura{position:absolute;inset:-18px;background:radial-gradient(50% 45% at 50% 50%, rgba(140,255,120,.9), rgba(120,220,90,.35) 50%, rgba(255,0,0,.18) 72%, transparent 76%);
+           border-radius:50%;animation:batPulse 1.6s ease-in-out infinite;filter:blur(.6px)}
+@keyframes batPulse{0%,100%{transform:scale(.92);opacity:.95}50%{transform:scale(1.07);opacity:1}}
+.virus{position:absolute;width:10px;height:10px;border-radius:50%;
+       background:radial-gradient(circle at 35% 35%, #ffd6d6, #ff5555 55%, #c81424 75%);
+       box-shadow:0 0 6px rgba(255,80,80,.85),0 0 13px rgba(255,60,80,.45);filter:saturate(1.25);pointer-events:none}
+.virus::before,.virus::after{content:'';position:absolute;inset:-3px;border-radius:50%;
+       background:radial-gradient(circle, rgba(255,160,160,.28), transparent 70%);filter:blur(2.5px)}
+.virus::after{inset:-5px;filter:blur(2.5px);opacity:.65}
+.statsRow{display:flex; gap:12px; flex-wrap:wrap; margin-top:10px}
+.stat{background:#141024;border:1px solid #2a1f39;border-radius:10px;padding:10px 12px;min-width:110px;text-align:center}
+.stat .v{display:block;font-weight:800;font-size:20px;margin-top:4px}
+@media (max-width:1100px){
+  .wrap{width:min(1000px,96vw)} .board{grid-template-columns:1fr}
+  .rightPanel{min-height:auto} .stageBox{width:260px;height:400px}
+}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div style="display:flex;align-items:center;gap:12px">
+        <img src="logo.png" class="logo" alt="Fangman"/>
+        <img src="logo-right.png" class="logo right" alt="Bite-to-Brain"/>
+      </div>
+    </header>
+
+    <div class="board">
+      <div class="panel leftPanel">
+        <div class="stageBox" id="stageBox">
+          <div id="swarmBehind" class="swarm behind"></div>
+          <div class="stageStack">
+            <img id="stageImg" src="strike0.png" alt="progression"/>
+            <img id="stageImg2" alt="" aria-hidden="true"/>
+          </div>
+          <div id="swarmFront" class="swarm front"></div>
+        </div>
+        <div id="assetWarn" class="assetWarn"></div>
+      </div>
+
+      <div class="panel rightPanel">
+        <div class="subpanel rpTop">
+          <div id="word" class="word" aria-live="polite"></div>
+        </div>
+        <div class="subpanel rpBottom">
+          <div id="keyboard" class="kb" role="group" aria-label="letter keyboard"></div>
+          <div class="controls">
+            <button id="newWord">New word</button>
+            <button id="hintBtn">Hint (-1)</button>
+            <button id="optionsBtn">Options</button>
+          </div>
+          <div id="hintSticky" class="hintSticky" aria-live="polite"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="credits">created by micah etter, md</div>
+  </div>
+
+  <div id="swarmGlobal" class="swarmGlobal"></div>
+
+  <div id="bat" class="bat" aria-hidden="true">
+    <div class="aura"></div>
+    <svg viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <style>
+          .wingL,.wingR{transform-origin:100px 60px;}
+          .wingL{animation:flapL .35s ease-in-out infinite alternate}
+          .wingR{animation:flapR .35s ease-in-out infinite alternate}
+          @keyframes flapL{from{transform:rotate(14deg)}to{transform:rotate(-18deg)}}
+          @keyframes flapR{from{transform:rotate(-14deg)}to{transform:rotate(18deg)}}
+        </style>
+      </defs>
+      <ellipse cx="100" cy="60" rx="22" ry="16" fill="#0f0f12"/>
+      <circle cx="106" cy="60" r="7" fill="#0b0b0d"/>
+      <circle cx="103" cy="58" r="2.8" fill="#aaff88"/>
+      <circle cx="113" cy="58" r="2.8" fill="#aaff88"/>
+      <g class="wingL"><path d="M100,60 C70,35 35,35 10,55 C35,55 60,65 85,80" fill="#13131a" stroke="#0e0e13" stroke-width="3"/></g>
+      <g class="wingR"><path d="M100,60 C130,35 165,35 190,55 C165,55 140,65 115,80" fill="#13131a" stroke="#0e0e13" stroke-width="3"/></g>
+    </svg>
+  </div>
+
+  <!-- Modals -->
+  <div class="modal" id="modal">
+    <div class="card">
+      <h2 id="modalTitle">Containment Success</h2>
+      <div class="big" id="modalWord"></div>
+      <p id="modalMsg">Encephalitis averted — the viral ascent was blocked in time.</p>
+      <div class="controls">
+        <button id="playAgain">Play again</button>
+        <button id="closeModal">Close</button>
+      </div>
+    </div>
+  </div>
+  <div class="modal" id="hintModal">
+    <div class="card">
+      <h2>Hint</h2>
+      <p id="hintText">A clue appears here.</p>
+      <div class="controls"><button id="confirmHint">OK</button></div>
+    </div>
+  </div>
+  <div class="modal" id="optionsModal">
+    <div class="card">
+      <h2>Options</h2>
+      <div style="margin:6px 0 12px;color:var(--muted)">Word pack</div>
+      <div id="packsArea">
+        <label style="display:inline-flex;gap:8px;align-items:center;margin-right:12px"><input type="radio" name="packSel" value="neuroinfectious"> Neuroinfectious only</label>
+        <label style="display:inline-flex;gap:8px;align-items:center"><input type="radio" name="packSel" value="general"> All neurology</label>
+      </div>
+      <div style="margin:14px 0 8px;border-top:1px solid #2a1f39;padding-top:10px">
+        <h2 style="margin:0 0 6px;font-family:'Bebas Neue'">Stats</h2>
+        <div class="statsRow">
+          <div class="stat"><div>Played</div><span id="stPlayed" class="v">0</span></div>
+          <div class="stat"><div>Wins</div><span id="stWins" class="v">0</span></div>
+          <div class="stat"><div>Win %</div><span id="stWinPct" class="v">0%</span></div>
+          <div class="stat"><div>Streak</div><span id="stStreak" class="v">0</span></div>
+          <div class="stat"><div>Best</div><span id="stBest" class="v">0</span></div>
+          <div class="stat"><div>Avg Strikes (wins)</div><span id="stAvg" class="v">0.0</span></div>
+          <div class="stat"><div>Hints Used</div><span id="stHints" class="v">0</span></div>
+        </div>
+        <div class="controls" style="margin-top:10px">
+          <button id="resetStatsBtn" title="Reset all stats (keeps options)">Reset stats</button>
+        </div>
+      </div>
+      <div class="controls" style="margin-top:12px">
+        <button id="saveOptions">Apply</button>
+        <button id="closeOptions">Close</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  'use strict';
+  // Config
+  var IMAGE_CONFIG = { base:'./', prefix:'strike', ext:'png', count:10 };
+  var STRIKE_IMAGES = []; for(var i=0;i<IMAGE_CONFIG.count;i++){ STRIKE_IMAGES.push(IMAGE_CONFIG.base+IMAGE_CONFIG.prefix+i+'.'+IMAGE_CONFIG.ext); }
+  var MAX_STRIKES = STRIKE_IMAGES.length - 1;
+  var CSV_URL = 'fangmanclues.csv'; // answer,hint[,category]
+
+  // UI refs
+  var UI = {
+    stageImg: document.getElementById('stageImg'),
+    stageImg2: document.getElementById('stageImg2'),
+    stageBox: document.getElementById('stageBox'),
+    swarmFront: document.getElementById('swarmFront'),
+    swarmBehind: document.getElementById('swarmBehind'),
+    swarmGlobal: document.getElementById('swarmGlobal'),
+    assetWarn: document.getElementById('assetWarn'),
+    wordEl: document.getElementById('word'),
+    kb: document.getElementById('keyboard'),
+    newWord: document.getElementById('newWord'),
+    modal: document.getElementById('modal'),
+    modalTitle: document.getElementById('modalTitle'),
+    modalMsg: document.getElementById('modalMsg'),
+    modalWord: document.getElementById('modalWord'),
+    playAgain: document.getElementById('playAgain'),
+    closeModal: document.getElementById('closeModal'),
+    hintBtn: document.getElementById('hintBtn'),
+    hintModal: document.getElementById('hintModal'),
+    hintText: document.getElementById('hintText'),
+    confirmHint: document.getElementById('confirmHint'),
+    optionsBtn: document.getElementById('optionsBtn'),
+    optionsModal: document.getElementById('optionsModal'),
+    hintSticky: document.getElementById('hintSticky'),
+    closeOptions: document.getElementById('closeOptions'),
+    saveOptions: document.getElementById('saveOptions'),
+    resetStatsBtn: document.getElementById('resetStatsBtn'),
+    packsArea: document.getElementById('packsArea'),
+    bat: document.getElementById('bat'),
+    stPlayed: document.getElementById('stPlayed'),
+    stWins: document.getElementById('stWins'),
+    stWinPct: document.getElementById('stWinPct'),
+    stStreak: document.getElementById('stStreak'),
+    stBest: document.getElementById('stBest'),
+    stAvg: document.getElementById('stAvg'),
+    stHints: document.getElementById('stHints')
+  };
+
+  // Built-in packs + hints
+  var PACKS = {
+    neuroinfectious: { name: 'Neuroinfectious', words: ['RABIES','MENINGITIS','ENCEPHALITIS','NEUROCYSTICERCOSIS','BRAIN ABSCESS'] },
+    general: { name: 'All Neurology', words: ['CEREBELLUM','THALAMUS','PARKINSONISM','EPILEPSY','MYASTHENIA'] }
+  };
+  var HINTS = {
+    'RABIES':'Lyssavirus infection ascending from peripheral bite to CNS.',
+    'MENINGITIS':'Inflammation of meninges; fever, neck stiffness, AMS.',
+    'ENCEPHALITIS':'Inflammation of brain parenchyma—often viral (HSV).',
+    'NEUROCYSTICERCOSIS':'Taenia solium larvae in CNS; seizures, ring lesions.',
+    'BRAIN ABSCESS':'Focal intracranial infection with ring-enhancing mass.',
+    'CEREBELLUM':'Coordinates movement and balance.',
+    'THALAMUS':'Relay for sensory and motor signals to cortex.',
+    'PARKINSONISM':'Bradykinesia +/- tremor/rigidity due to dopamine loss.',
+    'EPILEPSY':'Tendency to have unprovoked seizures.',
+    'MYASTHENIA':'Autoimmune NMJ disorder with fatigable weakness.'
+  };
+
+  // Utils
+  function titleCase(s){ return (s||'').replace(/\\b(\\w)(\\w*)/g,function(m,a,b){return a.toUpperCase()+b.toLowerCase();}); }
+  function normalizeWord(s){ return (s||'').replace(/\\s+/g,' ').trim().toUpperCase(); }
+  function canonicalPackKey(category){
+    var s = (category||'').toLowerCase().trim();
+    if(s.indexOf('neuroinfect')!==-1) return 'neuroinfectious';
+    if(s==='general' || s.indexOf('neurology')!==-1) return 'general';
+    var slug = s.replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'');
+    return slug || 'general';
+  }
+  function packDisplayName(key, raw){
+    if(key==='neuroinfectious') return 'Neuroinfectious';
+    if(key==='general') return 'All Neurology';
+    return (raw||'').trim() || titleCase((key||'').replace(/_/g,' '));
+  }
+  function bomStrip(t){ return t && t.charCodeAt(0)===0xFEFF ? t.slice(1) : t; }
+
+  // CSV parse (answer,hint[,category])
+  function parseCSV(text){
+    text = bomStrip(text||'');
+    var rows=[], i=0, cur='', inQ=false, row=[];
+    function pushCell(){ row.push(cur); cur=''; }
+    function pushRow(){ if(row.length){ rows.push({ word:(row[0]||'').trim(), hint:(row[1]||'').trim(), category:(row[2]||'').trim() }); } row=[]; }
+    while(i<text.length){
+      var ch=text[i];
+      if(inQ){
+        if(ch==='\"'){ if(text[i+1]==='\"'){ cur+='\"'; i+=2; continue; } inQ=false; i++; continue; }
+        cur+=ch; i++; continue;
+      } else {
+        if(ch==='\"'){ inQ=true; i++; continue; }
+        if(ch===','){ pushCell(); i++; continue; }
+        if(ch==='\\n'){ pushCell(); pushRow(); i++; continue; }
+        if(ch==='\\r'){ i++; continue; }
+        cur+=ch; i++;
+      }
+    }
+    pushCell(); pushRow();
+    if(rows.length){
+      var r0=rows[0]; var a=(r0.word||'').toLowerCase(), b=(r0.hint||'').toLowerCase(), c=(r0.category||'').toLowerCase();
+      if((/^(answer|word)$/).test(a) && /^hint$/.test(b) && (!c || (/^(category|pack)$/).test(c))) rows.shift();
+    }
+    return rows.filter(function(r){ return (r.word||'').trim() && r.word.trim().charAt(0) !== '#'; });
+  }
+  function addCSVRows(rows){
+    var count=0;
+    for(var i=0;i<rows.length;i++){
+      var r=rows[i]; var w=normalizeWord(r.word); if(!w) continue;
+      var hint=(r.hint||'').trim();
+      var key=canonicalPackKey(r.category||'');
+      if(!PACKS[key]) PACKS[key]={ name: packDisplayName(key, r.category||''), words: [] };
+      if(PACKS[key].words.indexOf(w)===-1) PACKS[key].words.push(w);
+      if(hint) HINTS[w]=hint;
+      count++;
+    }
+    return count;
+  }
+  function robustFetchCSV(){
+    return new Promise(function(resolve, reject){
+      if(window.fetch){
+        fetch(CSV_URL, {cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.text(); })
+        .then(function(txt){ resolve(txt); }).catch(function(err){ reject(err); });
+      } else {
+        try{
+          var xhr=new XMLHttpRequest(); xhr.open('GET', CSV_URL, true);
+          xhr.onreadystatechange=function(){ if(xhr.readyState===4){ if(xhr.status>=200 && xhr.status<300){ resolve(xhr.responseText); } else { reject(new Error('XHR '+xhr.status)); } } };
+          xhr.send();
+        }catch(e){ reject(e); }
+      }
+    });
+  }
+
+  // Persisted pack
+  var currentPackKey = localStorage.getItem('fangman_pack') || 'neuroinfectious';
+  // Game state
+  var STATE = { pack:null, word:'', letters:new Set(), wrong:new Set(), won:false, lost:false, hintUsed:false };
+
+  // Stats
+  var STATS_KEY = 'fangman_stats_v1';
+  var STATS = (function(){ try{ return JSON.parse(localStorage.getItem(STATS_KEY)) || {played:0, wins:0, streak:0, best:0, winsStrikesSum:0, hints:0}; }catch(e){ return {played:0, wins:0, streak:0, best:0, winsStrikesSum:0, hints:0}; } })();
+  function saveStats(){ localStorage.setItem(STATS_KEY, JSON.stringify(STATS)); }
+  function renderStats(){
+    UI.stPlayed.textContent = STATS.played;
+    UI.stWins.textContent = STATS.wins;
+    UI.stWinPct.textContent = STATS.played ? Math.round(STATS.wins*100/STATS.played)+'%' : '0%';
+    UI.stStreak.textContent = STATS.streak;
+    UI.stBest.textContent = STATS.best;
+    UI.stAvg.textContent = STATS.wins ? (STATS.winsStrikesSum/STATS.wins).toFixed(1) : '0.0';
+    UI.stHints.textContent = STATS.hints;
+  }
+  function resetStats(){ STATS = {played:0, wins:0, streak:0, best:0, winsStrikesSum:0, hints:0}; saveStats(); renderStats(); }
+
+  // Swarm state
+  var swarmMode = 'cursor_orbit', viruses = [], redTargets = [], animHandle = null;
+
+  // Cursor + bat follow
+  var cursorGlobal = { x: window.innerWidth*0.6, y: window.innerHeight*0.4 };
+  (function initBat(){
+    var bat = UI.bat; if(!bat) return;
+    var x = cursorGlobal.x, y = cursorGlobal.y, targetX = x, targetY = y, lastX = x, lastY = y;
+    function onMove(cx, cy){ targetX=cx; targetY=cy; cursorGlobal.x=cx; cursorGlobal.y=cy; }
+    window.addEventListener('mousemove', function(e){ onMove(e.clientX, e.clientY); }, {passive:true});
+    window.addEventListener('touchmove', function(e){ if(e.touches && e.touches[0]){ var t=e.touches[0]; onMove(t.clientX, t.clientY); } }, {passive:true});
+    function tick(){
+      var dx = targetX-x, dy = targetY-y;
+      var ease = 0.45 + Math.min(0.25, Math.sqrt(dx*dx+dy*dy)/500);
+      x += dx*ease; y += dy*ease;
+      var angle = Math.atan2(y-lastY, x-lastX)*180/Math.PI;
+      bat.style.left = x+'px'; bat.style.top = y+'px';
+      bat.style.transform = 'translate(-50%,-50%) rotate('+angle+'deg)';
+      lastX=x; lastY=y;
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  })();
+
+  function setVirusLayer(v, layer){
+    if(v.layer === layer) return;
+    v.layer = layer;
+    var parent = (layer==='behind') ? UI.swarmBehind : UI.swarmFront;
+    v.el.style.opacity = '0.6';
+    parent.appendChild(v.el);
+    requestAnimationFrame(function(){ v.el.style.opacity = '1'; });
+  }
+
+  function switchSwarmMode(mode){
+    var was = swarmMode; swarmMode = mode;
+    if(mode==='cursor_orbit'){
+      for(var i=0;i<viruses.length;i++){ if(viruses[i].el.parentNode!==UI.swarmGlobal){ UI.swarmGlobal.appendChild(viruses[i].el); } }
+    } else {
+      var w = UI.stageImg.clientWidth, h = UI.stageImg.clientHeight;
+      for(var j=0;j<viruses.length;j++){
+        var v = viruses[j];
+        if(was==='cursor_orbit'){
+          v.x = Math.random()*Math.max(20, w-20);
+          v.y = Math.random()*Math.max(20, h-20);
+          v.vx=0; v.vy=0; v.target=null; v.zPhase=Math.random()*Math.PI*2;
+          v.layer = Math.random()<0.5 ? 'behind' : 'front';
+        }
+        var parent = (v.layer==='behind') ? UI.swarmBehind : UI.swarmFront;
+        if(v.el.parentNode!==parent){ parent.appendChild(v.el); }
+      }
+    }
+  }
+
+  function analyzeRedTargets(){
+    try{
+      var img = UI.stageImg;
+      var w = img.naturalWidth, h = img.naturalHeight;
+      if(!w || !h) return;
+      var c = document.createElement('canvas'); c.width=w; c.height=h;
+      var ctx = c.getContext('2d'); ctx.drawImage(img,0,0);
+      var data = ctx.getImageData(0,0,w,h).data;
+      var pts = []; var step = 8;
+      for(var y=0;y<h;y+=step){
+        for(var x=0;x<w;x+=step){
+          var i=(y*w+x)*4; var r=data[i], g=data[i+1], b=data[i+2], a=data[i+3];
+          if(a>80 && r>160 && r>g*1.5 && r>b*1.5){ pts.push({x:x,y:y}); }
+        }
+      }
+      var scaleX = UI.stageImg.clientWidth / w;
+      var scaleY = UI.stageImg.clientHeight/ h;
+      redTargets = pts.map(function(p){ return { x: p.x*scaleX, y: p.y*scaleY }; });
+    }catch(e){ redTargets=[]; }
+  }
+
+  function rebuildSwarm(){
+    var base = (swarmMode==='cursor_orbit'? 16 : 8);
+    var extra = Math.min(30, STATE.wrong.size * 5);
+    var need = base + extra;
+    var have = viruses.length;
+    for(var i=need;i<have;i++){ var v=viruses.pop(); v.el.remove(); }
+    for(var k=have;k<need;k++){
+      var el = document.createElement('div'); el.className='virus';
+      var layer='front';
+      if(swarmMode==='cursor_orbit'){
+        UI.swarmGlobal.appendChild(el);
+      } else {
+        layer = Math.random()<0.5 ? 'front' : 'behind';
+        (layer==='behind'? UI.swarmBehind : UI.swarmFront).appendChild(el);
+      }
+      var R = 56 + Math.random()*10; var a = Math.random()*Math.PI*2;
+      viruses.push({ el:el, x:0, y:0, angle:a, radius:R, omega:(Math.random()*0.06+0.04)*(Math.random()<0.5?-1:1), target:null, vx:0, vy:0, layer:layer, zPhase: Math.random()*Math.PI*2 });
+    }
+    if(!animHandle) animateSwarm();
+  }
+
+  function pickTarget(){
+    if(redTargets.length) return redTargets[Math.floor(Math.random()*redTargets.length)];
+    return { x: Math.random()*UI.stageImg.clientWidth*0.6 + 10, y: UI.stageImg.clientHeight*0.85 + Math.random()*20 - 10 };
+  }
+
+  function animateSwarm(){
+    if(swarmMode==='cursor_orbit'){
+      for(var i=0;i<viruses.length;i++){
+        var v = viruses[i];
+        if(v.el.parentNode!==UI.swarmGlobal){ UI.swarmGlobal.appendChild(v.el); }
+        v.angle += v.omega;
+        v.x = cursorGlobal.x + Math.cos(v.angle)*v.radius;
+        v.y = cursorGlobal.y + Math.sin(v.angle)*v.radius;
+        v.el.style.transform = 'translate('+(v.x-5)+'px,'+(v.y-5)+'px)';
+      }
+    } else {
+      var w = UI.stageImg.clientWidth, h = UI.stageImg.clientHeight;
+      for(var j=0;j<viruses.length;j++){
+        var v2 = viruses[j];
+        if(!v2.target || Math.random()<0.01) v2.target = pickTarget();
+        var ax = (v2.target.x - v2.x) * 0.02;
+        var ay = (v2.target.y - v2.y) * 0.02;
+        v2.vx += ax + (Math.random()-.5)*0.15;
+        v2.vy += ay + (Math.random()-.5)*0.15;
+        v2.vx *= 0.92; v2.vy *= 0.92;
+        v2.x += v2.vx; v2.y += v2.vy;
+        v2.x = Math.max(6, Math.min(w-6, v2.x));
+        v2.y = Math.max(6, Math.min(h-6, v2.y));
+        v2.el.style.transform = 'translate('+(v2.x-5)+'px,'+(v2.y-5)+'px)';
+        v2.zPhase += 0.02;
+        var s = Math.sin(v2.zPhase);
+        if(s > 0.92) setVirusLayer(v2, 'front');
+        else if(s < -0.92) setVirusLayer(v2, 'behind');
+      }
+    }
+    animHandle = requestAnimationFrame(animateSwarm);
+  }
+
+  function updateStageImage(){
+    var idx = Math.min(STATE.wrong.size, MAX_STRIKES);
+    var want = STRIKE_IMAGES[idx];
+    var base = UI.stageImg, overlay = UI.stageImg2;
+    base.style.transition = 'none'; base.style.opacity = '1';
+    overlay.style.transition = 'opacity 1.5s ease-in-out';
+    overlay.src = want; overlay.style.opacity = '0';
+    void overlay.offsetWidth;
+    requestAnimationFrame(function(){ overlay.style.opacity = '1'; });
+    var done = false;
+    function finish(){
+      if(done) return; done = true;
+      base.src = want;
+      var prevT = overlay.style.transition;
+      overlay.style.transition = 'none'; overlay.style.opacity = '0'; void overlay.offsetWidth; overlay.style.transition = prevT || 'opacity 1.5s ease-in-out';
+      analyzeRedTargets();
+    }
+    overlay.addEventListener('transitionend', finish, {once:true});
+    setTimeout(finish, 1700);
+    updateHintBtnState();
+  }
+
+  // Rendering & game logic
+  function renderWord(){
+    UI.wordEl.innerHTML='';
+    var w = STATE.word;
+    for(var i=0;i<w.length;i++){
+      var ch=w.charAt(i); var d=document.createElement('div');
+      if(ch===' '){ d.className='slot space'; d.textContent=''; }
+      else { d.className='slot'+(STATE.letters.has(ch)?' revealed':''); d.textContent=STATE.letters.has(ch)? ch : ''; }
+      UI.wordEl.appendChild(d);
+    }
+  }
+  function renderKeyboard(){
+    UI.kb.innerHTML='';
+    var alph='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    for(var i=0;i<alph.length;i++){
+      (function(l){
+        var k=document.createElement('div'); k.className='key'; k.textContent=l;
+        if(STATE.letters.has(l)){ k.classList.add('used-right'); k.style.pointerEvents='none'; }
+        if(STATE.wrong.has(l)){ k.classList.add('used-wrong'); k.style.pointerEvents='none'; }
+        k.onclick=function(){ guess(l); };
+        UI.kb.appendChild(k);
+      })(alph.charAt(i));
+    }
+  }
+  function randWord(){ var arr=STATE.pack.words; return arr[Math.floor(Math.random()*arr.length)]; }
+
+  function updateHintBtnState(){
+    var strike = STATE.wrong.size;
+    var disable = STATE.hintUsed || strike >= (MAX_STRIKES - 1) || STATE.won || STATE.lost;
+    UI.hintBtn.disabled = !!disable;
+  }
+
+  function reset(word){
+    STATE.word = normalizeWord(word || randWord());
+    STATE.letters = new Set(); STATE.wrong = new Set(); STATE.won=false; STATE.lost=false; STATE.hintUsed=false;
+    UI.hintSticky.textContent='';
+    switchSwarmMode('cursor_orbit'); rebuildSwarm();
+    updateHintBtnState(); renderWord(); renderKeyboard(); updateStageImage();
+  }
+
+  function guess(ch){
+    if(STATE.won||STATE.lost) return;
+    ch=ch.toUpperCase();
+    if(STATE.word.indexOf(ch)!==-1){
+      STATE.letters.add(ch);
+    } else if(!STATE.wrong.has(ch)){
+      var prev = STATE.wrong.size;
+      STATE.wrong.add(ch);
+      renderKeyboard();
+      if(prev===0){ switchSwarmMode('image'); rebuildSwarm(); }
+      updateStageImage();
+    }
+    renderWord(); renderKeyboard(); updateHintBtnState(); checkState();
+  }
+
+  function checkState(){
+    var uniq = {}; var i, ch;
+    for(i=0;i<STATE.word.length;i++){ ch=STATE.word.charAt(i); if(ch!==' ') uniq[ch]=true; }
+    var all=true; for(ch in uniq){ if(!STATE.letters.has(ch)){ all=false; break; } }
+    if(all){ STATE.won=true; onGameEnd(true); showModal(true); return; }
+    if(STATE.wrong.size>=MAX_STRIKES){ STATE.lost=true; onGameEnd(false); showModal(false); }
+  }
+
+  function onGameEnd(win){
+    STATS.played+=1;
+    if(win){ STATS.wins+=1; STATS.streak+=1; STATS.best=Math.max(STATS.best, STATS.streak); STATS.winsStrikesSum+=STATE.wrong.size; }
+    else { STATS.streak=0; }
+    if(STATE.hintUsed) STATS.hints+=1;
+    saveStats(); renderStats();
+  }
+
+  function useHint(){
+    if(STATE.won||STATE.lost) return;
+    var word = STATE.word;
+    var clue = HINTS[word] || 'Neurology term — anatomy, physiology, or pathology.';
+    if(!STATE.hintUsed){ STATE.hintUsed=true; STATE.wrong.add('HINT'); if(swarmMode!=='image'){ switchSwarmMode('image'); rebuildSwarm(); } updateStageImage(); updateHintBtnState(); }
+    UI.hintText.textContent = clue; UI.hintSticky.textContent = clue; UI.hintBtn.disabled=true;
+  }
+
+  // Modals & options
+  function showModal(win){
+    UI.modalTitle.textContent = win? 'Containment Success' : 'Containment Failed';
+    UI.modalMsg.textContent = win? 'Encephalitis averted — the viral ascent was blocked in time.' : 'Rabies has consumed the central nervous system.';
+    UI.modalWord.textContent = STATE.word;
+    UI.modal.classList.add('show');
+  }
+  function hideModal(){ UI.modal.classList.remove('show'); }
+
+  function applyPack(value){
+    if(PACKS[value]){
+      currentPackKey=value;
+      localStorage.setItem('fangman_pack', currentPackKey);
+      STATE.pack = PACKS[currentPackKey];
+      reset();
+    }
+  }
+
+  // Events
+  window.addEventListener('keydown', function(e){
+    if(e.key && e.key.length===1) guess(e.key.toUpperCase());
+    else if(e.key==='Enter' && (STATE.won||STATE.lost)){ hideModal(); reset(); }
+  });
+  UI.newWord.onclick=function(){ reset(); };
+  UI.playAgain && (UI.playAgain.onclick=function(){ hideModal(); reset(); });
+  UI.closeModal && (UI.closeModal.onclick=function(){ hideModal(); });
+  UI.hintBtn.onclick=function(){ useHint(); };
+
+  UI.optionsBtn.onclick=function(){
+    // Build dynamic pack radios to include CSV-created packs
+    var area = UI.packsArea;
+    var existing = {neuroinfectious:1,general:1};
+    for(var key in PACKS){
+      if(existing[key]) continue;
+      if(area.querySelector('input[name="packSel"][value="'+key+'"]')) continue;
+      var lbl=document.createElement('label'); lbl.style.cssText='display:inline-flex;gap:8px;align-items:center;margin:6px 12px 0 0';
+      var inp=document.createElement('input'); inp.type='radio'; inp.name='packSel'; inp.value=key;
+      lbl.appendChild(inp); lbl.appendChild(document.createTextNode(' '+(PACKS[key].name||key)));
+      area.appendChild(lbl);
+    }
+    var radios = area.querySelectorAll('input[name="packSel"]');
+    for(var i=0;i<radios.length;i++){
+      radios[i].checked = (radios[i].value===currentPackKey);
+      radios[i].onchange=function(e){ applyPack(e.target.value); };
+    }
+    UI.optionsModal.classList.add('show'); renderStats();
+  };
+  UI.closeOptions.onclick=function(){ UI.optionsModal.classList.remove('show'); };
+  UI.saveOptions.onclick=function(){ var sel=document.querySelector('input[name="packSel"]:checked'); if(sel){ applyPack(sel.value); } UI.optionsModal.classList.remove('show'); };
+  UI.resetStatsBtn.onclick=function(){ if(confirm('Reset all Fangman stats?')) resetStats(); };
+
+  // Preload & start
+  function preloadImages(){
+    var ps=[];
+    for(var i=0;i<STRIKE_IMAGES.length;i++){
+      (function(url){
+        ps.push(new Promise(function(res){ var img=new Image(); img.onload=function(){res(true);}; img.onerror=function(){res(false);}; img.src=url; }));
+      })(STRIKE_IMAGES[i]);
+    }
+    return Promise.all(ps).then(function(list){
+      var missing=0; for(var i=0;i<list.length;i++){ if(!list[i]) missing++; }
+      if(missing>0){ UI.assetWarn.style.display='block'; UI.assetWarn.textContent=missing+' stage image'+(missing>1?'s are':' is')+' missing (strike0–strike9).'; }
+    });
+  }
+
+  function start(){
+    if(!PACKS[currentPackKey]) currentPackKey='neuroinfectious';
+    STATE.pack = PACKS[currentPackKey];
+    reset();
+    renderStats();
+  }
+
+  function bootstrap(){
+    robustFetchCSV().then(function(txt){ addCSVRows(parseCSV(txt)); })
+      .catch(function(){ /* silent if CSV missing/blocked */ })
+      .then(function(){ return preloadImages(); })
+      .then(function(){ start(); }, function(){ start(); });
+  }
+
+  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', bootstrap); }
+  else { bootstrap(); }
+
+})();</script>
+</body>
+</html>

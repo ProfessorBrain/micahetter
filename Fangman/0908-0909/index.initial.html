@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Fangman: Bite-to-Brain — Image Renderer</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rubik:wght@400;600;700;800&display=swap');
+  :root{
+    --bg:#0b0a0f; --panel:#13111b; --accent:#ff4d5e; --text:#eef2f7; --muted:#98a1b5;
+    --btn:#1d1420; --btn-border:#4a1b28; --btn-grad1:#3a1320; --btn-grad2:#26101a; --right:#9be07a;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; font-family:'Rubik', ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; color:var(--text);
+       background: radial-gradient(1200px 600px at 15% -10%, #2a0f1a, var(--bg) 50%); min-height:100vh; display:flex; align-items:center; justify-content:center}
+  .wrap{width:min(1100px,96vw); padding:18px}
+  header{display:flex; align-items:center; justify-content:space-between; gap:14px; margin-bottom:12px}
+  h1{margin:0; font-family:'Bebas Neue', ui-sans-serif, system-ui; letter-spacing:.8px; font-size:clamp(28px,3vw,40px)}
+  .subtitle{font-size:13px; color:var(--muted); letter-spacing:.2px}
+  .board{display:grid; grid-template-columns:1.2fr .8fr; gap:16px}
+  .panel{background:linear-gradient(180deg, #171222 0, var(--panel) 100%); border:1px solid #2b2035; border-radius:12px; padding:14px;
+         box-shadow:0 10px 30px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.03)}
+  .stageWrap{position:relative; display:grid; place-items:center}
+  #stageImg{height:520px; width:auto; max-width:100%; object-fit:contain; display:block; background:#0c0a12; border-radius:10px; border:1px solid #2e1a25}
+  .assetWarn{position:absolute; bottom:10px; left:50%; transform:translateX(-50%); background:#2a1420; color:#ffd1d7; border:1px solid #65293a; border-radius:8px; padding:8px 10px; font-size:12px; box-shadow:0 6px 16px rgba(0,0,0,.35); display:none}
+  .word{display:flex; gap:8px; justify-content:center; align-items:center; padding:10px 6px; margin:8px 0 12px; flex-wrap:wrap}
+  .slot{width:30px; height:42px; border-bottom:3px solid #40305a; display:grid; place-items:center; font-weight:800; font-size:20px; letter-spacing:1px; color:var(--text)}
+  .slot.revealed{color:var(--right); border-color:#456a3a}
+  .kb{display:grid; grid-template-columns:repeat(13,1fr); gap:8px; margin-top:8px}
+  .key{font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; background:var(--btn); border:1px solid var(--btn-border); border-radius:8px; padding:10px 0; text-align:center; cursor:pointer; user-select:none; font-weight:700; transition:.1s transform ease,.2s box-shadow ease}
+  .key:hover{transform:translateY(-1px); box-shadow:0 0 0 1px rgba(255,77,94,.25), 0 6px 16px rgba(255,77,94,.08)}
+  .key.used-wrong{background:#3a1320; color:#ff9aa6; border-color:#7a2b42; box-shadow:inset 0 0 0 1px rgba(255,77,94,.25)}
+  .key.used-right{background:#163020; color:#b7f2a2; border-color:#2f6a41}
+  .controls{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; justify-content:center}
+  button{background:linear-gradient(180deg, var(--btn-grad1), var(--btn-grad2)); border:1px solid var(--btn-border); color:var(--text); font-weight:800; letter-spacing:.3px; padding:10px 16px; border-radius:12px; cursor:pointer; box-shadow:0 6px 16px rgba(0,0,0,.25), inset 0 0 0 1px rgba(255,255,255,.03)}
+  .modal{position:fixed; inset:0; display:none; place-items:center; backdrop-filter:blur(4px)}
+  .modal.show{display:grid}
+  .modal .card{width:min(560px,92vw); background:#171327; border:1px solid #2a1f39; border-radius:14px; padding:18px; box-shadow:0 20px 60px rgba(0,0,0,.5)}
+  .card h2{margin:0 0 6px; font-family:'Bebas Neue', ui-sans-serif, system-ui; letter-spacing:.6px}
+  .card p{margin:6px 0 12px; color:var(--muted)}
+  .card .big{font-size:20px; font-weight:800; margin-top:6px}
+  .credits{margin-top:10px; text-align:right; font-size:12px; color:var(--muted); opacity:.85}
+  @media (max-width:980px){.board{grid-template-columns:1fr} #stageImg{height:420px}}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1 id="gameTitle">Fangman: Bite-to-Brain</h1>
+        <div class="subtitle">— stop the ascending rabies encephalitis</div>
+      </div>
+      <div class="subtitle">created by micah etter, md</div>
+    </header>
+    <div class="board">
+      <div class="panel stageWrap">
+        <!-- Image-based progression (no canvas) -->
+        <img id="stageImg" src="strike0.png" alt="infection progression"/>
+        <div id="assetWarn" class="assetWarn"></div>
+      </div>
+      <div class="panel">
+        <div id="word" class="word" aria-live="polite"></div>
+        <div id="keyboard" class="kb" role="group" aria-label="letter keyboard"></div>
+        <div class="controls">
+          <button id="newWord">New word</button>
+          <button id="hintBtn" title="Show a clue (costs 1 turn)">Hint (−1 turn)</button>
+          <button id="optionsBtn" title="Game options">Options</button>
+        </div>
+      </div>
+    </div>
+    <div class="credits">created by micah etter, md</div>
+  </div>
+
+  <div class="modal" id="modal">
+    <div class="card">
+      <h2 id="modalTitle">Containment Success</h2>
+      <div class="big" id="modalWord"></div>
+      <p id="modalMsg">Encephalitis averted — the viral ascent was blocked in time.</p>
+      <div class="controls">
+        <button id="playAgain">Play again</button>
+        <button id="closeModal">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hint popup -->
+  <div class="modal" id="hintModal">
+    <div class="card">
+      <h2>Hint</h2>
+      <p id="hintText">A clue appears here.</p>
+      <div class="controls">
+        <button id="confirmHint">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Options popup (placeholder) -->
+  <div class="modal" id="optionsModal">
+    <div class="card">
+      <h2>Options</h2>
+      <p>More options coming soon (difficulty, word packs, sounds).</p>
+      <div class="controls">
+        <button id="closeOptions">Close</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+(()=>{
+  // ====== Image CONFIG (edit these if your files live elsewhere) ======
+  const IMAGE_CONFIG = {
+    base: './',       // e.g., './images/' if your PNGs live in an images folder
+    prefix: 'strike', // file name prefix
+    ext: 'png',       // extension
+    count: 10         // strike0 .. strike9
+  };
+  const STRIKE_IMAGES = Array.from({length: IMAGE_CONFIG.count}, (_,i) => `${IMAGE_CONFIG.base}${IMAGE_CONFIG.prefix}${i}.${IMAGE_CONFIG.ext}`);
+  const MAX_STRIKES = STRIKE_IMAGES.length - 1; // 9
+
+  // ====== UI refs ======
+  const UI = {
+    stageImg: document.getElementById('stageImg'),
+    assetWarn: document.getElementById('assetWarn'),
+    wordEl: document.getElementById('word'),
+    kb: document.getElementById('keyboard'),
+    newWord: document.getElementById('newWord'),
+    modal: document.getElementById('modal'),
+    modalTitle: document.getElementById('modalTitle'),
+    modalMsg: document.getElementById('modalMsg'),
+    modalWord: document.getElementById('modalWord'),
+    playAgain: document.getElementById('playAgain'),
+    closeModal: document.getElementById('closeModal'),
+    hintBtn: document.getElementById('hintBtn'),
+    hintModal: document.getElementById('hintModal'),
+    hintText: document.getElementById('hintText'),
+    confirmHint: document.getElementById('confirmHint'),
+    optionsBtn: document.getElementById('optionsBtn'),
+    optionsModal: document.getElementById('optionsModal'),
+    closeOptions: document.getElementById('closeOptions'),
+    gameTitle: document.getElementById('gameTitle'),
+  };
+
+  // ====== Word pack & hints (unchanged from previous build for brevity) ======
+  const DEFAULT_PACK = { words: [
+    'APHASIA','DYSARTHRIA','MYELIN','DEMYELINATION','AXON','DENDRITE','SYNAPSE','CEREBELLUM','BASALGANGLIA',
+    'THALAMUS','HYPOTHALAMUS','HIPPOCAMPUS','AMYGDALA','HOMUNCULUS','BROCA','WERNICKE','HEMIANOPIA','NEGLECT',
+    'MIGRAINE','AURA','TREMOR','ATAXIA','PARKINSONISM','EPILEPSY','STATUS','SEIZURE','NEUROPATHY','RADICULOPATHY',
+    'PLEXOPATHY','MYASTHENIA','NEUROMUSCULAR','LAMBERTEATON','MEDULLA','PONS','MIDBRAIN','CORTEX','SULCUS','GYRUS',
+    'SUBARACHNOID','MENINGES','VENTRICLE','GLIOBLASTOMA','MENINGIOMA','SCHWANNOMA','MULTIPLESCELEROSIS','ENCEPHALITIS',
+    'VASCULITIS','TENECTEPLASE','THROMBECTOMY','ISCHEMIA','HEMORRHAGE','CAVERNOUS','PITUITARY','CHIASM','OPTICNERVE',
+    'TRIGEMINAL','FACIALNERVE','VESTIBULAR','OCULOMOTOR','GUILLAINBARRE','CIDP','POLYMYOSITIS','DERMATOMYOSITIS',
+    'MYOPATHY','DYSTROPHIN','DUCHENNE','BECKER','SPINALMUSCULARATROPHY','ALS','MYOCLONUS','NEUROTRANSMITTER','DOPAMINE',
+    'SEROTONIN','GLUTAMATE','GABA','PRION','CREUTZFELDTJAKOB','TAUOPATHY','LEWYBODY','HUNTINGTON','FRONTOTEMPORAL',
+    'ALZHEIMER','CAA','CEREBRALAMYLOID','WHITEMATTER','NEUROINTENSIVE','NEUROCRITICAL','INTRACRANIALPRESSURE','CEREBRALPERFUSION'
+  ]};
+
+  const HINTS = {
+    'APHASIA':'Language impairment from dominant hemisphere lesions.',
+    'DYSARTHRIA':'Motor speech disorder due to impaired articulation.',
+    'MYELIN':'Insulating sheath that speeds axonal conduction.',
+    'DEMYELINATION':'Loss of myelin causing slowed or blocked conduction.',
+    'AXON':'Neuron output fiber that conducts action potentials.',
+    'DENDRITE':'Neuron input branches receiving synaptic signals.',
+    'SYNAPSE':'Junction where neurons communicate via neurotransmitters.',
+    'CEREBELLUM':'Controls coordination of movement and balance.',
+    'BASALGANGLIA':'Initiates and modulates movement; habit learning.',
+    'THALAMUS':'Relay station for sensory signals to the cortex.',
+    'HYPOTHALAMUS':'Homeostasis, endocrine and autonomic control.',
+    'HIPPOCAMPUS':'Formation of new memories; spatial navigation.',
+    'AMYGDALA':'Emotion and fear processing.',
+    'HOMUNCULUS':'Somatotopic body map over the cortex.',
+    'BROCA':'Language production area in inferior frontal gyrus.',
+    'WERNICKE':'Language comprehension area in superior temporal gyrus.',
+    'HEMIANOPIA':'Loss of half of the visual field.',
+    'NEGLECT':'Inattention to contralateral space, often right parietal lesion.',
+    'MIGRAINE':'Recurrent headache disorder often with aura.',
+    'AURA':'Transient neurologic symptoms preceding a migraine.',
+    'TREMOR':'Rhythmic oscillatory movement of a body part.',
+    'ATAXIA':'Incoordination from cerebellar or sensory dysfunction.',
+    'PARKINSONISM':'Bradykinesia with tremor/rigidity from dopamine loss.',
+    'EPILEPSY':'Tendency to have unprovoked seizures.',
+    'STATUS':'Status epilepticus: continuous seizure activity.',
+    'SEIZURE':'Abnormal synchronous neuronal activity causing clinical events.',
+    'NEUROPATHY':'Peripheral nerve dysfunction causing sensory/motor changes.',
+    'RADICULOPATHY':'Nerve root disorder with dermatomal pain/weakness.',
+    'PLEXOPATHY':'Brachial or lumbosacral plexus lesion with multi-nerve pattern.',
+    'MYASTHENIA':'Autoimmune NMJ disorder with fatigable weakness.',
+    'LAMBERTEATON':'Lambert–Eaton: presynaptic Ca²⁺ channel antibodies.',
+    'MEDULLA':'Autonomic centers; cardiorespiratory control.',
+    'PONS':'Bridge with cranial nerve nuclei V–VIII.',
+    'MIDBRAIN':'Colliculi and dopaminergic substantia nigra.',
+    'CORTEX':'Outer layer of cerebrum for higher cognition.',
+    'SULCUS':'A groove on the brain surface.',
+    'GYRUS':'A ridge between sulci on the cerebral cortex.',
+    'SUBARACHNOID':'CSF-filled space where aneurysmal hemorrhage occurs.',
+    'MENINGES':'Dura, arachnoid, pia — protective coverings of the CNS.',
+    'VENTRICLE':'CSF cavities with choroid plexus.',
+    'GLIOBLASTOMA':'Aggressive grade 4 astrocytoma; ring-enhancing mass.',
+    'MENINGIOMA':'Typically benign, dural-based extra-axial tumor.',
+    'SCHWANNOMA':'Peripheral nerve sheath tumor; vestibular affects CN VIII.',
+    'MULTIPLESCELEROSIS':'Immune-mediated CNS demyelination with relapses.',
+    'ENCEPHALITIS':'Inflammation of brain parenchyma, often viral.',
+    'VASCULITIS':'Inflammation of blood vessels that can cause strokes.',
+    'TENECTEPLASE':'Thrombolytic used in acute ischemic stroke.',
+    'THROMBECTOMY':'Mechanical removal of an intracranial arterial clot.',
+    'ISCHEMIA':'Insufficient blood flow causing tissue injury.',
+    'HEMORRHAGE':'Bleeding into brain tissue or surrounding spaces.',
+    'CAVERNOUS':'Cavernous sinus region impacting ocular motor nerves.',
+    'PITUITARY':'Endocrine gland in sella; tumors may compress the chiasm.',
+    'CHIASM':'Optic chiasm; lesions cause bitemporal field loss.',
+    'OPTICNERVE':'Cranial nerve II — vision.',
+    'TRIGEMINAL':'Cranial nerve V — facial sensation and mastication.',
+    'FACIALNERVE':'Cranial nerve VII — facial expression; taste A2/3 tongue.',
+    'VESTIBULAR':'Cranial nerve VIII — balance and hearing.',
+    'OCULOMOTOR':'Cranial nerve III — most extraocular movements, ptosis.',
+    'GUILLAINBARRE':'Acute demyelinating polyneuropathy with ascending weakness.',
+    'CIDP':'Chronic inflammatory demyelinating polyneuropathy (>8 weeks).',
+    'POLYMYOSITIS':'Inflammatory myopathy with proximal weakness.',
+    'DERMATOMYOSITIS':'Inflammatory myopathy with rash and proximal weakness.',
+    'MYOPATHY':'Primary muscle disease causing weakness.',
+    'DYSTROPHIN':'Structural muscle protein lacking in Duchenne.',
+    'DUCHENNE':'Severe X-linked dystrophinopathy (childhood onset).',
+    'BECKER':'Milder dystrophinopathy (later onset).',
+    'SPINALMUSCULARATROPHY':'Genetic degeneration of lower motor neurons.',
+    'ALS':'Combined upper and lower motor neuron degeneration.',
+    'MYOCLONUS':'Sudden brief involuntary muscle jerks.',
+    'NEUROTRANSMITTER':'Chemical messenger between neurons at synapses.',
+    'DOPAMINE':'Catecholamine important for movement and reward.',
+    'SEROTONIN':'5-HT involved in mood, sleep, and migraine.',
+    'GLUTAMATE':'Principal excitatory neurotransmitter in the CNS.',
+    'GABA':'Principal inhibitory neurotransmitter in the CNS.',
+    'PRION':'Misfolded protein causing transmissible neurodegeneration.',
+    'CREUTZFELDTJAKOB':'Rapidly progressive dementia due to prion disease.',
+    'TAUOPATHY':'Neurodegeneration with tau protein aggregates.',
+    'LEWYBODY':'α-Synuclein inclusions in Parkinson/Lewy body dementia.',
+    'HUNTINGTON':'CAG repeat disorder causing chorea and cognitive decline.',
+    'FRONTOTEMPORAL':'Degeneration of frontal/temporal lobes; behavior/language.',
+    'ALZHEIMER':'Most common dementia with amyloid and tau pathology.',
+    'CAA':'Cerebral amyloid angiopathy causing lobar hemorrhages.',
+    'CEREBRALAMYLOID':'Amyloid in cerebral vessels; lobar hemorrhage.',
+    'WHITEMATTER':'Myelinated fiber tracts connecting brain regions.',
+    'NEUROINTENSIVE':'Care for critically ill neurologic patients.',
+    'NEUROCRITICAL':'Neurocritical care practice/environment.',
+    'INTRACRANIALPRESSURE':'Elevated ICP reduces perfusion and risks herniation.',
+    'CEREBRALPERFUSION':'Blood flow to the brain sustaining neuronal function.'
+  };
+
+  function genericClue(word){
+    const w = word.toUpperCase();
+    if(/FRONTAL|PARIETAL|TEMPORAL|OCCIPITAL|CORTEX|LOBE/.test(w)) return 'A cerebral lobe or cortical region.';
+    if(/NERVE|TRIGEMINAL|FACIAL|OPTIC|OCULOMOTOR|VESTIBULAR/.test(w)) return 'A cranial nerve or related structure.';
+    if(/MEDULLA|PONS|MIDBRAIN|DIENCEPHAL/.test(w)) return 'A brainstem or diencephalic structure.';
+    if(/SPINAL|RADICULO|PLEXO|NEUROPATHY/.test(w)) return 'A peripheral nerve or spinal disorder.';
+    if(/MYO|DYSTROPHIN|DUCHENNE|BECKER/.test(w)) return 'A primary muscle or neuromuscular disorder.';
+    if(/EPILEP|SEIZURE|STATUS/.test(w)) return 'A seizure-related term.';
+    if(/GLIO|MENINGIOMA|SCHWANNOMA/.test(w)) return 'A central nervous system tumor.';
+    if(/ALZHEIMER|LEWY|FRONTOTEMPORAL|HUNTINGTON|TAUOPATHY/.test(w)) return 'A neurodegenerative disease.';
+    if(/DOPAMINE|SEROTONIN|GABA|GLUTAMATE/.test(w)) return 'A neurotransmitter.';
+    return 'Neurology term — think anatomy, physiology, or pathology.';
+  }
+
+  // ====== Game state ======
+  const STATE = { pack: DEFAULT_PACK, word: '', letters: new Set(), wrong: new Set(), won:false, lost:false, hintUsed:false };
+
+  // ====== Preload & verify strike images ======
+  const imageOk = new Array(STRIKE_IMAGES.length).fill(false);
+  function preloadImages(){
+    return Promise.all(STRIKE_IMAGES.map((url, i) => new Promise(resolve => {
+      const img = new Image();
+      img.onload = () => { imageOk[i] = true; resolve(true); };
+      img.onerror = () => { imageOk[i] = false; resolve(false); };
+      img.src = url;
+    })));
+  }
+  function warnMissing(){
+    const missing = imageOk.map((ok, i) => (!ok ? i : null)).filter(v => v!==null);
+    if(missing.length){
+      UI.assetWarn.textContent = `Missing image file(s): ${missing.map(i=>STRIKE_IMAGES[i]).join(', ')}`;
+      UI.assetWarn.style.display = 'block';
+      console.warn(UI.assetWarn.textContent);
+    }else{
+      UI.assetWarn.style.display = 'none';
+    }
+  }
+
+  // ====== Rendering helpers ======
+  function updateStageImage(){
+    const idx = Math.min(STATE.wrong.size, MAX_STRIKES);
+    const want = STRIKE_IMAGES[idx];
+    UI.stageImg.onerror = () => {
+      warnMissing();
+    };
+    UI.stageImg.src = want;
+    UI.stageImg.alt = `Strike ${idx}`;
+  }
+  function renderWord(){
+    UI.wordEl.innerHTML='';
+    for(const ch of STATE.word){
+      const div=document.createElement('div');
+      div.className='slot'+(STATE.letters.has(ch)?' revealed':'');
+      div.textContent=STATE.letters.has(ch)?ch:'';
+      div.setAttribute('aria-label',STATE.letters.has(ch)?ch:'blank');
+      UI.wordEl.appendChild(div);
+    }
+  }
+  function renderKeyboard(){
+    const alpha='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+    UI.kb.innerHTML='';
+    alpha.forEach(l=>{
+      const k=document.createElement('div');
+      k.className='key';
+      k.textContent=l;
+      k.onclick=()=>guess(l);
+      if(STATE.letters.has(l)){ k.classList.add('used-right'); k.style.pointerEvents='none'; }
+      if(STATE.wrong.has(l)){ k.classList.add('used-wrong'); k.style.pointerEvents='none'; }
+      UI.kb.appendChild(k);
+    });
+  }
+
+  // ====== Core mechanics ======
+  function randWord(){ const arr=STATE.pack.words; return arr[Math.floor(Math.random()*arr.length)].toUpperCase().replace(/[^A-Z]/g,''); }
+  function reset(word=null){ STATE.word=(word||randWord()); STATE.letters=new Set(); STATE.wrong=new Set(); STATE.won=false; STATE.lost=false; STATE.hintUsed=false; renderWord(); renderKeyboard(); updateStageImage(); }
+
+  function guess(ch){
+    if(STATE.won||STATE.lost) return; ch=ch.toUpperCase(); if(!/^[A-Z]$/.test(ch)) return;
+    if(STATE.word.includes(ch)){ STATE.letters.add(ch); }
+    else if(!STATE.wrong.has(ch)) { STATE.wrong.add(ch); updateStageImage(); }
+    renderWord(); renderKeyboard(); checkState();
+  }
+
+  function checkState(){
+    const uniq=new Set(STATE.word.split('')); let all=true; for(const l of uniq){ if(!STATE.letters.has(l)){ all=false; break; } }
+    if(all){ STATE.won=true; showModal(true); return; }
+    if(STATE.wrong.size>=MAX_STRIKES){ STATE.lost=true; showModal(false); }
+  }
+
+  // Hints: one-strike cost, sentence clue only
+  function useHint(){
+    if(STATE.won||STATE.lost) return;
+    const word = STATE.word;
+    const clue = HINTS[word] || genericClue(word);
+    if(!STATE.hintUsed){ STATE.hintUsed = true; STATE.wrong.add('HINT'); updateStageImage(); }
+    UI.hintText.textContent = clue; UI.hintModal.classList.add('show');
+  }
+
+  function showModal(win){
+    UI.modalTitle.textContent = win? 'Containment Success' : 'Containment Failed';
+    UI.modalMsg.textContent = win? 'Encephalitis averted — the viral ascent was blocked in time.' : 'Rabies reached the cortex. Initiate PEP and try again.';
+    UI.modalWord.textContent = STATE.word; UI.modal.classList.add('show');
+  }
+  function hideModal(){ UI.modal.classList.remove('show'); }
+
+  // ====== Events ======
+  window.addEventListener('keydown', (e)=>{ if(e.key && e.key.length===1){ guess(e.key.toUpperCase()); } else if(e.key==='Enter' && (STATE.won||STATE.lost)){ hideModal(); reset(); } });
+  UI.newWord.onclick = ()=> reset();
+  UI.playAgain.onclick = ()=>{ hideModal(); reset(); };
+  UI.closeModal.onclick = ()=> hideModal();
+  UI.hintBtn.onclick = ()=> useHint();
+  UI.confirmHint.onclick = ()=> UI.hintModal.classList.remove('show');
+  UI.optionsBtn.onclick = ()=> UI.optionsModal.classList.add('show');
+  UI.closeOptions.onclick = ()=> UI.optionsModal.classList.remove('show');
+
+  // ====== Init ======
+  preloadImages().then(()=>{
+    warnMissing();
+    reset(); // ensures strike0.png is shown on load
+  });
+})();
+</script>
+</body>
+</html>
