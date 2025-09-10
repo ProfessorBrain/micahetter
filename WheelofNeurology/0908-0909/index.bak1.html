@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Wheel of Neurology — v1.2 stable</title>
+<style>
+:root{
+  --bg:#052b1a; --panel:#0b3526; --ink:#ffffff; --muted:#cfe6db;
+  --accent:#d3af5e; --good:#146c43; --warn:#d3af5e; --bad:#111111;
+}
+html,body{height:100%}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";}
+.wrap{max-width:1100px;margin:0 auto;padding:16px;display:grid;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:baseline;gap:12px}
+header h1{margin:0;font-size:24px;letter-spacing:.5px}
+header small{color:var(--muted)}
+.grid{display:grid;gap:16px;grid-template-columns:minmax(420px,720px) 1fr}
+@media (max-width: 960px){ .grid{grid-template-columns:1fr} }
+
+.panel{background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0));
+  border:1px solid rgba(255,255,255,.06); border-radius:12px; padding:14px;
+  box-shadow:0 10px 24px rgba(0,0,0,.25), inset 0 1px rgba(255,255,255,.05);
+}
+
+/* Left column layout */
+.wheelPanel{display:grid;grid-template-rows:auto auto auto auto;gap:8px;align-content:start}
+.peek{position:relative;height:62px;display:grid;place-items:center}
+.peek canvas{height:48px;width:220px;border-radius:8px;border:1px solid rgba(211,175,94,.35);background:#062516}
+.pointer{position:absolute;top:2px;left:calc(50% - 12px);width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-bottom:20px solid var(--accent);}
+
+/* Hide the actual wheel at rest so only the peek is visible */
+.wheelWrap{position:relative;width:100%;max-width:560px;transform-origin:top center;will-change:transform;z-index:6}
+.wheelWrap.rest{display:none !important;visibility:hidden;height:0;overflow:hidden}
+.wheelWrap.spin{transform:scale(1.10)}
+.wheelWrap.fullscreen{position:fixed;inset:0;margin:auto;display:grid;place-items:center;background:rgba(0,0,0,.55);max-height:calc(100vh - 60px);z-index:60}
+#wheelCanvas{width:100%;height:auto;max-width:640px;background:radial-gradient(ellipse at center, #0e3b2a 0%, #082718 70%);border-radius:12px}
+
+/* Controls + info */
+.controls{display:grid;gap:8px;place-items:center;width:100%}
+.controls .row{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap}
+.controls button{padding:10px 14px;border-radius:10px;border:1px solid rgba(211,175,94,.35);background:#0d2f23;color:#fff;font-weight:800;cursor:pointer}
+.controls button.good{background:#124b36}
+.controls button:disabled{opacity:.55;cursor:not-allowed}
+.score{display:grid;place-items:center}
+.box{display:inline-grid;gap:3px;border:1px dashed rgba(211,175,94,.35);border-radius:10px;padding:12px 16px}
+.box .muted{color:var(--muted);font-size:12px}
+.players{display:flex;gap:8px;margin-top:4px;align-items:stretch;width:100%}
+.player{background:#082a1d;border:1px solid rgba(211,175,94,.35);border-radius:10px;padding:8px;text-align:center;flex:1 1 0}
+.player.active{outline:2px solid var(--accent)}
+.player b{display:block;font-size:12px;color:var(--muted);letter-spacing:.3px}
+.player span{display:block;font-weight:800;margin-top:4px}
+.status{margin-top:6px;text-align:center;color:var(--accent)}
+.secondary{display:flex;gap:12px;justify-content:center;margin-top:8px}
+
+/* Right column */
+.puzzleBoard{display:grid;gap:10px;grid-template-rows:auto auto auto;align-content:start;align-items:start}
+.board{--cols:14;display:grid;grid-template-columns:repeat(var(--cols),1fr);gap:6px;border:1px solid rgba(211,175,94,.25);border-radius:12px;padding:8px;min-height:64px;background:#052517}
+.cell{height:42px;display:grid;place-items:center;border:1px solid rgba(211,175,94,.25);border-radius:8px;background:#082a1d;font-weight:800;font-size:18px;letter-spacing:.5px}
+.cell.filler{background:#061710;border-color:rgba(211,175,94,.18)}
+.cell.space{background:transparent;border-color:transparent}
+.cell.revealed{background:#1a3f31;color:#fff}
+.category{color:var(--accent);font-weight:800;letter-spacing:.4px}
+.keyboard{display:grid;grid-template-columns:repeat(13,1fr);gap:6px;margin-top:8px}
+.keyboard button{padding:8px 6px;border-radius:8px;font-weight:800}
+
+.modal{position:fixed;inset:0;display:none;place-items:center;background:rgba(0,0,0,.6);z-index:100}
+.modal.show{display:grid}
+.dialog{width:min(680px,90vw);background:#0d2f23;border:1px solid rgba(211,175,94,.35);border-radius:12px;padding:16px;box-shadow:0 10px 28px rgba(0,0,0,.5)}
+.dialog h3{margin:.25rem 0 1rem 0}
+.dialog footer{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+.dialog button{padding:8px 12px;border-radius:8px;border:1px solid rgba(211,175,94,.35);background:#12372a;color:#fff;font-weight:800}
+
+.spinOverlay{position:fixed;inset:0;display:none;background:rgba(0,0,0,.55);z-index:55}
+.spinOverlay.show{display:block}
+
+footer{color:var(--muted);text-align:center;padding:6px 0 12px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Wheel of Neurology</h1>
+    <small>canvas preview • multiplayer prototype</small>
+  </header>
+
+  <div class="grid">
+    <!-- LEFT -->
+    <div class="panel wheelPanel">
+      <div class="peek">
+        <div class="pointer"></div>
+        <canvas id="peekCanvas" width="320" height="48" aria-hidden="true"></canvas>
+      </div>
+
+      <!-- Hidden at rest; only shown during spin in a fullscreen overlay clone -->
+      <div class="wheelWrap rest" aria-hidden="true">
+        <canvas id="wheelCanvas" width="720" height="720"></canvas>
+      </div>
+
+      <div class="controls">
+        <div class="row">
+          <button id="spinBtn" class="good">🧠 Spin</button>
+          <button id="buyVowelBtn">Vowel ($250)</button>
+          <button id="solveBtn">Solve</button>
+        </div>
+        <div class="score">
+          <div class="box"><b>$<span id="bank">0</span></b><span class="muted">Score (Current Player)</span></div>
+        </div>
+        <div id="playersBoard" class="players"></div>
+        <div id="status" class="status"></div>
+        <div class="secondary"><button id="newBtn">New Puzzle</button><button id="optionsBtn">Options</button></div>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="panel puzzleBoard">
+      <div>
+        <div class="category" id="categoryTop">Category</div>
+      </div>
+      <div id="board" class="board" aria-live="polite"></div>
+      <div>
+        <div class="category" style="opacity:.7">On-screen keyboard</div>
+        <div id="keyboard" class="keyboard"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>created by micah etter, md • v1.2 stable</footer>
+</div>
+
+<!-- CLUE MODAL -->
+<div id="clueModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="clueTitle">
+  <div class="dialog">
+    <h3 id="clueTitle">Long-form Clue</h3>
+    <div id="clueContent" class="clueBox"></div>
+    <footer>
+      <button id="buyClueBtn">Buy clue ($400)</button>
+      <button id="closeClueBtn">Close</button>
+    </footer>
+  </div>
+</div>
+
+<!-- SOLVE MODAL -->
+<div id="solveModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="solveTitle">
+  <div class="dialog">
+    <h3 id="solveTitle">Solve the Puzzle</h3>
+    <input id="solveInput" placeholder="Type the full answer…" style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(211,175,94,.35);background:#0b1f17;color:#fff">
+    <footer>
+      <button id="submitSolveBtn" class="good">Submit</button>
+      <button id="closeSolveBtn">Cancel</button>
+    </footer>
+  </div>
+</div>
+
+<div id="spinOverlay" class="spinOverlay"></div>
+
+<script>
+(function(){
+  // -------- Data --------
+  const puzzles = [
+    { answer: "CEREBELLAR ATAXIA", category: "Sign & Symptom", clue: "Uncoordinated, clumsy movement with dysmetria and wide-based gait." },
+    { answer: "BROCA APHASIA", category: "Language Disorder", clue: "Nonfluent, effortful speech with intact comprehension." },
+    { answer: "MYASTHENIA GRAVIS", category: "Neuromuscular Junction", clue: "Autoimmune postsynaptic ACh receptor dysfunction causing fatigable weakness." },
+    { answer: "GUILLAIN BARRE SYNDROME", category: "Peripheral Nerve", clue: "AIDP with ascending weakness and areflexia, often post-infectious." },
+    { answer: "MULTIPLE SCLEROSIS", category: "Inflammatory Demyelination", clue: "CNS demyelination with dissemination in time and space." },
+    { answer: "LEFT HEMISPHERE STROKE", category: "Vascular", clue: "Aphasia +/- right face-arm weakness; consider MCA territory." },
+    { answer: "TEMPORAL LOBE SEIZURE", category: "Epilepsy", clue: "Déjà vu aura, automatisms, and post-ictal confusion." }
+  ];
+
+  const wheelWedges = [
+    {type:"cash", label:"$500", value:500},{type:"cash", label:"$600", value:600},{type:"cash", label:"$700", value:700},
+    {type:"cash", label:"$800", value:800},{type:"cash", label:"$900", value:900},{type:"cash", label:"$650", value:650},
+    {type:"cash", label:"$750", value:750},{type:"cash", label:"$1000", value:1000},{type:"bankrupt", label:"BANKRUPT"},
+    {type:"lose", label:"LOSE TURN"},{type:"clue", label:"CLUE"},{type:"cash", label:"$550", value:550},
+    {type:"clue", label:"CLUE"},{type:"cash", label:"$700", value:700},{type:"cash", label:"$850", value:850},{type:"cash", label:"$500", value:500}
+  ];
+
+  const BOARD = { rows:3, cols:14, minCols:14, maxCols:20, maxRows:4 };
+
+  // -------- State --------
+  const state = {
+    puzzleIndex: 0, answer: "", grid: [], cols: 14,
+    guessed: new Set(), canGuessConsonant:false, canBuyVowel:false,
+    currentCash: 0, spinning:false, cluePurchased:false,
+    players:1, banks:[0,0,0], currentPlayer:0,
+    vowelPrice:250, cluePrice:400, rotation:0
+  };
+
+  // -------- DOM --------
+  const canvas = document.getElementById("wheelCanvas");
+  const wheelWrap = document.querySelector('.wheelWrap');
+  const spinOverlay = document.getElementById('spinOverlay');
+  let ctx = canvas.getContext("2d");
+  const peekCanvas = document.getElementById("peekCanvas");
+  const peekCtx = peekCanvas.getContext("2d");
+  const spinBtn = document.getElementById("spinBtn");
+  const buyVowelBtn = document.getElementById("buyVowelBtn");
+  const solveBtn = document.getElementById("solveBtn");
+  const newBtn = document.getElementById("newBtn");
+  const bankEl = document.getElementById("bank");
+  const categoryTopEl = document.getElementById("categoryTop");
+  const boardEl = document.getElementById("board");
+  const keyboardEl = document.getElementById("keyboard");
+  const statusEl = document.getElementById("status");
+  const playersBoard = document.getElementById("playersBoard");
+  const clueModal = document.getElementById("clueModal");
+  const clueContent = document.getElementById("clueContent");
+  const buyClueBtn = document.getElementById("buyClueBtn");
+  const closeClueBtn = document.getElementById("closeClueBtn");
+  const solveModal = document.getElementById("solveModal");
+  const solveInput = document.getElementById("solveInput");
+  const submitSolveBtn = document.getElementById("submitSolveBtn");
+  const closeSolveBtn = document.getElementById("closeSolveBtn");
+  const optionsBtn = document.getElementById("optionsBtn");
+
+  // -------- Helpers --------
+  const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+  const VOWELS = new Set("AEIOU".split(""));
+  const sliceCount = wheelWedges.length;
+  const sliceAngle = (Math.PI*2)/sliceCount;
+
+  function CPL(){ return `Player ${state.currentPlayer+1}`; }
+  function setStatus(m){ statusEl.textContent = m || ""; }
+  function isLetter(ch){ return /^[A-Z]$/.test(ch); }
+  function dollars(n){ return n.toLocaleString(undefined,{maximumFractionDigits:0}); }
+
+  // -------- Board layout --------
+  function layoutBoard(answer){
+    function tokenLen(w){ let n=0; for(const ch of w){ if(isLetter(ch) || "'&-".includes(ch)) n++; } return n; }
+    function attempt(rows, cols){
+      const grid=Array.from({length:rows},()=>Array.from({length:cols},()=>({ch:"",type:"filler",revealed:true})));
+      const words=answer.toUpperCase().trim().split(" ").filter(Boolean);
+      let r=0,c=0;
+      for(const w of words){
+        const wlen=tokenLen(w); const sep = c>0?1:0;
+        if(c+sep+wlen>cols){ r++; c=0; } if(r>=rows) return null;
+        if(sep){ grid[r][c]={ch:"",type:"space",revealed:true}; c++; }
+        for(const ch of w){
+          if(isLetter(ch)) grid[r][c++]={ch,type:"letter",revealed:false};
+          else if("'&-".includes(ch)) grid[r][c++]={ch,type:"punct",revealed:true};
+          if(c>cols) return null;
+        }
+      }
+      return grid;
+    }
+    let grid=null, chosenCols=BOARD.minCols;
+    for(let cols=BOARD.minCols; cols<=BOARD.maxCols; cols++){ const g=attempt(BOARD.rows,cols); if(g){ grid=g; chosenCols=cols; break; } }
+    if(!grid){
+      for(let rows=BOARD.rows+1; rows<=BOARD.maxRows; rows++){
+        for(let cols=BOARD.minCols; cols<=BOARD.maxCols; cols++){
+          const g=attempt(rows,cols); if(g){ grid=g; chosenCols=cols; BOARD.rows=rows; break; }
+        }
+        if(grid) break;
+      }
+    }
+    if(!grid){ grid=attempt(BOARD.maxRows,BOARD.maxCols)||[]; chosenCols=BOARD.maxCols; }
+    state.grid=grid; state.cols=chosenCols;
+  }
+
+  function centerGridRows(){
+    const cols = state.cols;
+    for(let r=0;r<state.grid.length;r++){
+      let content = state.grid[r].filter(c=>c.type!=="filler");
+      const pad = Math.max(0, Math.floor((cols - content.length)/2));
+      const newRow = Array.from({length:cols},()=>({ch:"",type:"filler",revealed:true}));
+      for(let i=0;i<content.length && (pad+i)<cols;i++) newRow[pad+i]=content[i];
+      state.grid[r] = newRow;
+    }
+  }
+
+  function renderBoard(){
+    boardEl.innerHTML=""; const cols=state.cols||BOARD.cols; boardEl.style.setProperty("--cols",cols);
+    for(let r=0;r<state.grid.length;r++){
+      for(let c=0;c<cols;c++){
+        const cell = state.grid[r][c];
+        const el = document.createElement("div");
+        const classes=["cell"];
+        if(cell.type==="filler") classes.push("filler");
+        if(cell.type==="space") classes.push("space");
+        if((cell.type==="letter"||cell.type==="punct") && cell.revealed) classes.push("revealed");
+        el.className=classes.join(" ");
+        el.textContent=(cell.type==="letter"&&cell.revealed)?cell.ch:(cell.type==="punct"?cell.ch:"");
+        boardEl.appendChild(el);
+      }
+    }
+  }
+
+  function renderPlayers(){
+    playersBoard.innerHTML="";
+    for(let i=0;i<state.players;i++){
+      const d=document.createElement("div"); d.className="player"+(i===state.currentPlayer?" active":"");
+      d.innerHTML = `<b>Player ${i+1}</b><span>$${dollars(state.banks[i])}</span>`;
+      playersBoard.appendChild(d);
+    }
+    bankEl.textContent = dollars(state.banks[state.currentPlayer]);
+  }
+
+  // -------- Wheel drawing --------
+  function wrapText(ctx,text,x,y,maxW,lineH){
+    const words = text.split(" ");
+    let line = "", lines = [];
+    for(const w of words){
+      const test = line ? (line+" "+w) : w;
+      if(ctx.measureText(test).width > maxW){
+        lines.push(line); line = w;
+      } else { line = test; }
+    }
+    if(line) lines.push(line);
+    lines.forEach((ln,i)=>ctx.fillText(ln,x,y+i*lineH));
+  }
+
+  function drawWheel(){
+    const W=canvas.width, H=canvas.height, cx=W/2, cy=H/2;
+    const outerR = Math.min(W,H)/2 - 16, innerR = outerR*0.32;
+    ctx.clearRect(0,0,W,H);
+    ctx.save(); ctx.translate(cx,cy); ctx.rotate(state.rotation);
+    for(let i=0;i<wheelWedges.length;i++){
+      const w = wheelWedges[i];
+      const a0=i*sliceAngle, a1=a0+sliceAngle;
+      let fill = (w.type==='bankrupt')? '#111111' : (w.type==='lose')? '#5a1a1a' : (w.type==='clue')? '#ffffff' : '#146c43';
+      ctx.beginPath(); ctx.moveTo(0,0); ctx.arc(0,0,outerR,a0,a1); ctx.closePath();
+      ctx.fillStyle=fill; ctx.fill();
+      ctx.strokeStyle='rgba(211,175,94,.45)'; ctx.lineWidth=1.25; ctx.stroke();
+      const mid=a0+sliceAngle/2;
+      ctx.save(); ctx.rotate(mid);
+      ctx.translate((outerR+innerR)/2,0); ctx.rotate(Math.PI/2);
+      ctx.fillStyle=(w.type==='clue')?'#082718':'#fff';
+      ctx.font="bold 24px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto";
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      wrapText(ctx,w.label,0,0,140,18);
+      ctx.restore();
+    }
+    ctx.beginPath(); ctx.arc(0,0,innerR,0,Math.PI*2); ctx.fillStyle='#0a2a1e'; ctx.fill();
+    ctx.strokeStyle='#d3af5e'; ctx.lineWidth=2; ctx.stroke();
+    ctx.fillStyle='#d3af5e'; ctx.font="800 18px ui-sans-serif"; ctx.textAlign='center';
+    ctx.fillText('NEUROLOGY',0,14);
+    ctx.restore();
+  }
+
+  function drawPreview(){
+    // render a cropped slice from the main wheel into peek canvas
+    const tmp=document.createElement('canvas');
+    const W=canvas.width, H=canvas.height;
+    tmp.width=W; tmp.height=H;
+    const tctx=tmp.getContext('2d');
+    tctx.drawImage(canvas,0,0);
+    const crop = 80; // px height from top
+    const scale = peekCanvas.width / W;
+    const destH = Math.round(crop * scale);
+    peekCanvas.height = destH; // keep crisp
+    const pcx = peekCanvas.getContext('2d');
+    pcx.clearRect(0,0,peekCanvas.width,peekCanvas.height);
+    pcx.drawImage(tmp, 0,0, W, crop, 0,0, peekCanvas.width, destH);
+  }
+
+  function wedgeAtPointer(){
+    const pointer = -Math.PI/2; // top
+    let a = pointer - state.rotation;
+    a = (a % (2*Math.PI) + 2*Math.PI) % (2*Math.PI);
+    const idx = Math.floor(a / sliceAngle);
+    return (idx + wheelWedges.length) % wheelWedges.length;
+  }
+
+  // -------- Gameplay --------
+  function resetKeyboard(enabled=true){
+    keyboardEl.innerHTML="";
+    LETTERS.forEach(L=>{
+      const b=document.createElement('button');
+      b.textContent=L;
+      b.disabled = !enabled || state.guessed.has(L);
+      b.addEventListener('click', ()=>{
+        if(b.disabled) return;
+        if(state.canGuessConsonant && !VOWELS.has(L)){
+          handleLetterGuess(L);
+        } else if(state.canBuyVowel && VOWELS.has(L)){
+          purchaseVowel(L);
+        }
+      });
+      keyboardEl.appendChild(b);
+    });
+  }
+
+  function revealMatching(L){
+    let hits=0;
+    for(const row of state.grid){
+      for(const cell of row){
+        if(cell.type==='letter' && cell.ch===L && !cell.revealed){
+          cell.revealed=true; hits++;
+        }
+      }
+    }
+    renderBoard();
+    return hits;
+  }
+
+  function allRevealed(){
+    for(const row of state.grid){
+      for(const cell of row){
+        if(cell.type==='letter' && !cell.revealed) return false;
+      }
+    }
+    return true;
+  }
+
+  function handleLetterGuess(L){
+    if(state.guessed.has(L)) return;
+    state.guessed.add(L);
+    const hits = revealMatching(L);
+    if(hits>0){
+      const earned = hits*(state.currentCash||0);
+      state.banks[state.currentPlayer]+=earned;
+      renderPlayers();
+      setStatus(`${CPL()} found ${hits} × ${L} for $${dollars(earned)}.`);
+      if(allRevealed()){ celebrateWin(); return; }
+      state.canGuessConsonant=false;
+      state.canBuyVowel = (state.players===1) && (state.banks[state.currentPlayer] >= state.vowelPrice);
+      resetKeyboard(true);
+      buyVowelBtn.disabled = !state.canBuyVowel;
+    } else {
+      setStatus(`${CPL()} guessed ${L}: none found. Turn passes.`);
+      endTurn();
+    }
+  }
+
+  function purchaseVowel(L){
+    if(!VOWELS.has(L)) return;
+    if(state.banks[state.currentPlayer] < state.vowelPrice) return;
+    state.banks[state.currentPlayer] -= state.vowelPrice;
+    renderPlayers();
+    const hits = revealMatching(L);
+    setStatus(`Purchased ${L} for $${state.vowelPrice}. ${hits>0?hits+' revealed.':'None found.'}`);
+    state.canBuyVowel=false;
+    buyVowelBtn.disabled=true;
+    resetKeyboard(false);
+    if(hits===0){ endTurn(); } else { if(allRevealed()) celebrateWin(); }
+  }
+
+  function celebrateWin(){
+    setStatus(`${CPL()} solved it! 🎉`);
+    state.canGuessConsonant=false; state.canBuyVowel=false;
+    buyVowelBtn.disabled=true; spinBtn.disabled=true;
+  }
+
+  function endTurn(){
+    state.canGuessConsonant=false; state.canBuyVowel=false; resetKeyboard(false);
+    buyVowelBtn.disabled=true; spinBtn.disabled=false;
+    if(state.players>1){
+      state.currentPlayer = (state.currentPlayer+1)%state.players;
+      renderPlayers(); drawPreview();
+      setStatus(`${CPL()} - your turn. Spin the wheel.`);
+    }
+  }
+
+  // Spin animation (uses fullscreen clone so original stays hidden)
+  function animateSpin(){
+    if(state.spinning) return;
+    state.spinning=true; spinBtn.disabled=true; buyVowelBtn.disabled=true;
+    setStatus(`${CPL()} is spinning...`);
+
+    const ghost = wheelWrap.cloneNode(true);
+    ghost.classList.remove('rest'); ghost.classList.add('spin','fullscreen');
+    document.body.appendChild(ghost);
+    const ghostCanvas = ghost.querySelector('#wheelCanvas');
+    const gctx = ghostCanvas.getContext('2d');
+    gctx.drawImage(canvas,0,0);
+
+    const total = (Math.PI*6) + Math.random()*Math.PI*2;
+    const start = performance.now();
+    const duration = 4000 + Math.random()*800;
+    const startRot = state.rotation;
+
+    function frame(t){
+      const p = Math.min(1, (t-start)/duration);
+      const eased = 1 - Math.pow(1-p, 3);
+      const rot = startRot + total*eased;
+      const W=ghostCanvas.width, H=ghostCanvas.height, cx=W/2, cy=H/2;
+      gctx.clearRect(0,0,W,H);
+      gctx.save(); gctx.translate(cx,cy); gctx.rotate(rot);
+      gctx.drawImage(canvas, -W/2, -H/2, W, H);
+      gctx.restore();
+      if(p<1){ requestAnimationFrame(frame); }
+      else {
+        state.rotation = rot;
+        document.body.removeChild(ghost);
+        onSpinComplete();
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  function onSpinComplete(){
+    drawWheel(); drawPreview();
+    const idx = wedgeAtPointer();
+    const wedge = wheelWedges[idx];
+    if(wedge.type==='cash'){
+      state.currentCash = wedge.value;
+      setStatus(`${CPL()} landed on ${wedge.label}. Pick a consonant.`);
+      state.canGuessConsonant=true;
+      Array.from(keyboardEl.children).forEach(btn=>{
+        const L=btn.textContent;
+        btn.disabled = VOWELS.has(L) || state.guessed.has(L);
+      });
+    } else if(wedge.type==='bankrupt'){
+      setStatus(`${CPL()} hit BANKRUPT. Score reset. Next player!`);
+      state.banks[state.currentPlayer]=0; renderPlayers();
+      endTurn();
+    } else if(wedge.type==='lose'){
+      setStatus(`${CPL()} loses a turn. Next player!`);
+      endTurn();
+    } else if(wedge.type==='clue'){
+      setStatus(`${CPL()} may buy a long-form clue.`);
+      openClue();
+      state.canGuessConsonant=false; resetKeyboard(false);
+    }
+    state.spinning=false;
+  }
+
+  function wedgeAtPointer(){
+    const pointer = -Math.PI/2; // top
+    let a = pointer - state.rotation;
+    a = (a % (2*Math.PI) + 2*Math.PI) % (2*Math.PI);
+    const idx = Math.floor(a / sliceAngle);
+    return (idx + wheelWedges.length) % wheelWedges.length;
+  }
+
+  // -------- Clue & Solve --------
+  function openClue(){
+    const p = puzzles[state.puzzleIndex];
+    if(state.cluePurchased){
+      clueContent.textContent = p.clue;
+      buyClueBtn.style.display='none';
+    } else {
+      clueContent.textContent = p.clue + "  (" + (state.players>1 ? "Disabled in multiplayer" : "Costs $" + state.cluePrice) + ")";
+      buyClueBtn.style.display = (state.players>1) ? 'none' : 'inline-block';
+    }
+    clueModal.classList.add('show');
+  }
+  function closeClue(){ clueModal.classList.remove('show'); }
+  buyClueBtn.addEventListener('click', ()=>{
+    if(state.players>1 || state.cluePurchased) return;
+    if(state.banks[state.currentPlayer] < state.cluePrice) return;
+    state.banks[state.currentPlayer]-=state.cluePrice; renderPlayers();
+    state.cluePurchased=true; openClue();
+  });
+  closeClueBtn.addEventListener('click', closeClue);
+
+  function openSolve(){ solveInput.value=''; solveModal.classList.add('show'); setTimeout(()=>solveInput.focus(),50); }
+  function closeSolve(pass){ solveModal.classList.remove('show'); if(pass && state.players>1) endTurn(); }
+  function submitSolve(){
+    const guess=(solveInput.value||'').trim().toUpperCase().replace(/\s+/g,' ');
+    const ans = state.answer.toUpperCase();
+    if(guess===ans){
+      for(const row of state.grid){ for(const cell of row){ if(cell.type==='letter') cell.revealed=true; } }
+      renderBoard(); closeSolve(false); celebrateWin();
+    } else {
+      closeSolve(true);
+      setStatus(`Incorrect solution by ${CPL()}. Turn passes.`);
+    }
+  }
+  solveBtn.addEventListener('click', openSolve);
+  submitSolveBtn.addEventListener('click', submitSolve);
+  closeSolveBtn.addEventListener('click', ()=>closeSolve(true));
+
+  // -------- Options (players only for now) --------
+  optionsBtn.addEventListener('click', ()=>{
+    alert("Players count is fixed to 1–3 for this preview. Use browser prompt to select players.");
+    const n = Math.min(3, Math.max(1, parseInt(prompt("Number of players (1–3):", String(state.players))||"1",10)));
+    state.players = n;
+    state.banks = [0,0,0];
+    state.currentPlayer = 0;
+    renderPlayers();
+    setStatus(`Players set to ${n}.`);
+  });
+
+  // -------- New Puzzle / Init --------
+  function newPuzzle(index){
+    state.cols = BOARD.minCols; state.guessed.clear(); state.cluePurchased=false;
+    const idx = (typeof index === "number") ? index : Math.floor(Math.random()*puzzles.length);
+    state.puzzleIndex = idx;
+    const p = puzzles[idx];
+    state.answer = p.answer.toUpperCase();
+    categoryTopEl.textContent = p.category;
+    layoutBoard(state.answer);
+    centerGridRows();
+    renderBoard();
+    renderPlayers();
+    resetKeyboard(false);
+    buyVowelBtn.disabled = (state.players>1) || state.banks[state.currentPlayer] < state.vowelPrice;
+    drawWheel(); drawPreview(); // ensure peek shows correct slice
+    setStatus(`${CPL()} - spin the wheel to begin!`);
+    spinBtn.disabled=false;
+  }
+  newBtn.addEventListener('click', ()=> newPuzzle());
+
+  spinBtn.addEventListener('click', animateSpin);
+
+  function init(){
+    drawWheel(); drawPreview(); renderPlayers(); newPuzzle(0);
+  }
+  // Run init and a tiny retry to be extra-safe on slow paints
+  init(); setTimeout(()=>{ if(!keyboardEl.children.length) { newPuzzle(0); } }, 80);
+})();
+</script>
+</body>
+</html>
