@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Wheel of Neurology — v1.2 stable</title>
+<style>
+:root{
+  --bg:#052b1a; --panel:#0b3526; --ink:#ffffff; --muted:#cfe6db;
+  --accent:#d3af5e; --good:#146c43; --bad:#111111;
+  --wof-frame1:#33d1c7; --wof-frame2:#0aa2a0;
+}
+html,body{height:100%}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";}
+.wrap{max-width:1280px;margin:0 auto;padding:16px;display:grid;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:baseline;gap:12px}
+header h1{margin:0;font-size:24px;letter-spacing:.5px}
+header small{color:var(--muted)}
+.grid{display:grid;gap:16px;grid-template-columns:0.65fr 1.35fr}
+@media (max-width: 960px){ .grid{grid-template-columns:1fr} }
+
+.panel{background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0));
+  border:1px solid rgba(255,255,255,.06); border-radius:12px; padding:14px;
+  box-shadow:0 10px 24px rgba(0,0,0,.25), inset 0 1px rgba(255,255,255,.05);
+}
+
+/* Left column layout */
+.wheelPanel{display:grid;grid-template-rows:auto auto auto auto;gap:8px;align-content:start}
+.peek{position:relative;height:70px;display:grid;place-items:center}
+.peek canvas{height:52px;width:270px;border-radius:10px;border:1px solid rgba(211,175,94,.35);background:#062516}
+.pointer{position:absolute;top:2px;left:50%;transform:translateX(-50%) rotate(180deg);width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-bottom:20px solid var(--accent);z-index:2;}
+.peekLabel{
+  position:absolute; bottom:0; left:50%; transform:translateX(-50%);
+  font-weight:900; font-size:14px; letter-spacing:.3px;
+  background:#0d2f23; color:#fff; padding:4px 10px;
+  border:1px solid rgba(211,175,94,.45); border-radius:999px;
+  box-shadow:0 2px 0 rgba(0,0,0,.35), inset 0 1px rgba(255,255,255,.06);
+}
+
+/* Hide the actual wheel at rest so only the peek is visible */
+.wheelWrap{position:relative;width:100%;max-width:560px;transform-origin:top center;will-change:transform;z-index:6}
+.wheelWrap.rest{position:absolute;left:-10000px;top:-10000px;width:1px;height:1px;visibility:hidden;overflow:hidden}
+.wheelWrap.spin{transform:scale(1.10)}
+.wheelWrap.fullscreen{position:fixed;inset:0;margin:auto;display:grid;place-items:center;background:rgba(0,0,0,.55);max-height:calc(100vh - 60px);z-index:60}
+#wheelCanvas{width:100%;height:auto;max-width:640px;background:radial-gradient(ellipse at center, #0e3b2a 0%, #082718 70%);border-radius:12px}
+
+/* Controls + info */
+.controls{display:grid;gap:8px;place-items:center;width:100%}
+.controls .row{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap}
+.controls button{padding:10px 14px;border-radius:10px;border:1px solid rgba(211,175,94,.35);background:#0d2f23;color:#fff;font-weight:800;cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,.35)}
+.controls button.good{background:#124b36}
+.controls button:disabled{opacity:.55;cursor:not-allowed;box-shadow:none}
+.score{display:grid;place-items:center}
+.box{display:inline-grid;gap:3px;border:1px dashed rgba(211,175,94,.35);border-radius:10px;padding:12px 16px}
+.box .muted{color:var(--muted);font-size:12px}
+.players{display:flex;gap:8px;margin-top:4px;align-items:stretch;width:100%}
+.player{background:#082a1d;border:1px solid rgba(211,175,94,.35);border-radius:10px;padding:8px;text-align:center;flex:1 1 0}
+.player.active{outline:2px solid var(--accent)}
+.player b{display:block;font-size:12px;color:var(--muted);letter-spacing:.3px}
+.player span{display:block;font-weight:800;margin-top:4px}
+.status{margin-top:6px;text-align:center;color:var(--accent)}
+.secondary{display:flex;gap:12px;justify-content:center;margin-top:8px}
+
+/* RIGHT: board styling */
+.puzzleBoard{display:grid;gap:14px;grid-template-rows:auto auto auto;align-content:start;align-items:start}
+.category{color:var(--accent);font-weight:800;letter-spacing:.4px}
+
+/* Outer neon-like frame */
+.board{
+  --cols:14;
+  display:grid;
+  grid-template-columns:repeat(var(--cols),1fr);
+  gap:5px;
+  padding:14px;
+  border-radius:18px;
+  background:
+    linear-gradient(var(--wof-frame1),var(--wof-frame2)) padding-box,
+    linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,0)) border-box;
+  border:4px solid transparent;
+  box-shadow: 0 12px 28px rgba(0,0,0,.35), inset 0 1px rgba(255,255,255,.06);
+}
+
+/* Tiles */
+.cell{
+  height:50px;
+  display:grid; place-items:center;
+  color:#fff;
+  font-weight:900; font-size:22px; letter-spacing:.6px;
+  border-radius:6px;
+  background: linear-gradient(180deg,#0b5f4e,#063a2f);
+  border:2px solid #022b24;
+  box-shadow: inset 0 2px 0 rgba(255,255,255,.15), inset 0 -6px 0 rgba(0,0,0,.35);
+  position:relative;
+}
+.cell.revealed{
+  background: linear-gradient(180deg,#138a73,#0c6a58);
+  border-color:#045446;
+  text-shadow: 0 2px 0 rgba(0,0,0,.35);
+}
+.cell.space{background: transparent;border-color: transparent;box-shadow:none}
+.cell:not(.revealed):not(.space)::before{
+  content:"✻";
+  color:#bff3ec;
+  font-size:20px;
+  line-height:1;
+  opacity:.85;
+}
+.cell.filler{filter: saturate(.8) brightness(.9)}
+
+
+.cell.letter{background:#ffffff !important; border-color:#cccccc !important; color:#000000 !important; text-shadow:none !important}
+.cell.letter:not(.revealed)::before{content:none !important}
+
+
+
+#startModal .dialog{max-width:520px;width:90%;margin:0 auto}
+
+
+#startModal .dialog footer{display:flex;justify-content:center}
+
+
+#startModal .options{flex-wrap:wrap;justify-content:center}
+
+
+/* Brand logo */
+.brand img{height:36px;display:block}
+/* Keyboard */
+.keyboard{display:grid;grid-template-columns:repeat(13,1fr);gap:8px}
+.keyboard button{
+  padding:10px 0;border-radius:10px;font-weight:900;
+  border:1px solid rgba(211,175,94,.20);
+  background:linear-gradient(180deg,#103728,#0c2c20);
+  color:#fff; box-shadow:0 2px 0 rgba(0,0,0,.35), inset 0 1px rgba(255,255,255,.06);
+}
+.keyboard button:hover:not(:disabled){transform:translateY(-1px)}
+.keyboard button:disabled{opacity:.55;background:#0b241a;color:#a8c3b7;border-color:rgba(211,175,94,.12);box-shadow:none}
+
+.modal{position:fixed;inset:0;display:none;place-items:center;background:rgba(0,0,0,.6);z-index:100}
+.modal.show{display:grid}
+.dialog{width:min(680px,90vw);background:#0d2f23;border:1px solid rgba(211,175,94,.35);border-radius:12px;padding:16px;box-shadow:0 10px 28px rgba(0,0,0,.5)}
+.dialog h3{margin:.25rem 0 1rem 0}
+.dialog footer{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+.dialog button{padding:8px 12px;border-radius:8px;border:1px solid rgba(211,175,94,.35);background:#12372a;color:#fff;font-weight:800}
+.dialog .field{margin:.5rem 0;display:grid;gap:6px}
+.dialog .field label{font-size:12px;color:var(--muted)}
+.dialog .field select{background:#0b1f17;color:#fff;border:1px solid rgba(211,175,94,.35);border-radius:8px;padding:8px}
+
+#startModal .options{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 12px 0}
+#startModal .options input[type=radio]{accent-color:#146c43;}
+#startModal .options label{padding:8px 10px;border-radius:10px;border:1px solid rgba(211,175,94,.35);background:#0d2f23;color:#fff;font-weight:900;gap:8px;}
+#optionsModal .options{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 12px 0}
+#optionsModal .options input[type=radio]{accent-color:#146c43;}
+#optionsModal .options label{padding:8px 10px;border-radius:10px;border:1px solid rgba(211,175,94,.35);background:#0d2f23;color:#fff;font-weight:900;gap:8px;}
+
+.overlayPointer{position:fixed;z-index:65;width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-bottom:26px solid var(--accent);transform:rotate(180deg);pointer-events:none;}
+
+footer{color:var(--muted);text-align:center;padding:6px 0 12px 0}
+
+
+/* Remove dim background/shadow around fullscreen wheel overlay */
+.wheelWrap.fullscreen{background:transparent !important; box-shadow:none !important;}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1 class="brand"><img src="wheelofneurology-logo.png" alt="Wheel of Neurology"></h1>
+    <small></small>
+  </header>
+
+  <div class="grid">
+    <!-- LEFT -->
+    <div class="panel wheelPanel">
+      <div class="peek">
+        <div class="pointer"></div>
+        <canvas id="peekCanvas" width="320" height="52" aria-hidden="true"></canvas>
+        <div id="peekLabel" class="peekLabel">$0</div>
+      </div>
+
+      <!-- Hidden at rest; only shown during spin in a fullscreen overlay clone -->
+      <div class="wheelWrap rest" aria-hidden="true">
+        <canvas id="wheelCanvas" width="720" height="720"></canvas>
+      </div>
+
+      <div class="controls">
+        <div class="row">
+          <button id="spinBtn" class="good">🧠 Spin</button>
+          <button id="buyVowelBtn">Vowel ($250)</button>
+          <button id="solveBtn">Solve</button>
+        </div>
+                <div id="playersBoard" class="players"></div>
+        <div id="status" class="status"></div>
+        <div class="secondary"><button id="newBtn">New Puzzle</button><button id="optionsBtn">Options</button></div>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="panel puzzleBoard">
+      <div><div class="category" id="categoryTop">Category</div></div>
+      <div id="board" class="board" aria-live="polite"></div>
+      <div><div id="keyboard" class="keyboard"></div></div>
+    </div>
+  </div>
+
+  <footer>created by micah etter, md</footer>
+</div>
+
+<!-- CLUE MODAL -->
+<div id="clueModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="clueTitle">
+  <div class="dialog">
+    <h3 id="clueTitle">Long-form Clue</h3>
+    <div id="clueContent" class="clueBox"></div>
+    <footer>
+      <button id="buyClueBtn">Buy clue ($400)</button>
+      <button id="closeClueBtn">Close</button>
+    </footer>
+  </div>
+</div>
+
+<!-- SOLVE MODAL -->
+<div id="solveModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="solveTitle">
+  <div class="dialog">
+    <h3 id="solveTitle">Solve the Puzzle</h3>
+    <input id="solveInput" placeholder="Type the full answer..." style="width:100%;padding:10px;border-radius:8px;border:1px solid rgba(211,175,94,.35);background:#0b1f17;color:#fff">
+    <footer>
+      <button id="submitSolveBtn" class="good">Submit</button>
+      <button id="closeSolveBtn">Cancel</button>
+    </footer>
+  </div>
+</div>
+
+<!-- START MODAL -->
+<div id="startModal" class="modal show" role="dialog" aria-modal="true" aria-labelledby="startTitle">
+  <div class="dialog">
+    <h3 id="startTitle">How many players?</h3>
+    <div class="options" role="radiogroup" aria-label="Players">
+  <label style="display:inline-flex;align-items:center;gap:6px;"><input type="radio" name="players" value="1" checked> 1</label>
+  <label style="display:inline-flex;align-items:center;gap:6px;"><input type="radio" name="players" value="2"> 2</label>
+  <label style="display:inline-flex;align-items:center;gap:6px;"><input type="radio" name="players" value="3"> 3</label>
+</div>
+    <footer>
+      <button id="startSpinBtn" class="good">Spin to begin!</button>
+    </footer>
+  </div>
+</div>
+
+<div id="optionsModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="optTitle">
+  <div class="dialog">
+    <h3 id="optTitle">Options</h3>
+    <div class="options" role="radiogroup" aria-label="Players (Options)">
+      <label style="display:inline-flex;align-items:center;gap:6px;"><input type="radio" name="playersOptions" value="1"> 1</label>
+      <label style="display:inline-flex;align-items:center;gap:6px;"><input type="radio" name="playersOptions" value="2"> 2</label>
+      <label style="display:inline-flex;align-items:center;gap:6px;"><input type="radio" name="playersOptions" value="3"> 3</label>
+    </div>
+    <div class="field">
+      <label for="categorySelect">Category for new puzzles</label>
+      <select id="categorySelect"></select>
+    </div>
+    <footer>
+      <button id="saveOptionsBtn" class="good">Save</button>
+      <button id="cancelOptionsBtn">Cancel</button>
+    </footer>
+  </div>
+</div>
+
+<div id="spinOverlay" class="spinOverlay"></div>
+
+<script>
+  // -------- CSV loader (no deps) --------
+  async function loadCsvPuzzles(path="fangmanclues.csv"){
+    try{
+      const res = await fetch(path);
+      if(!res.ok) throw new Error("HTTP "+res.status);
+      const text = await res.text();
+      const rows = parseCSV(text);
+      const items = [];
+      for(const r of rows){
+        if(!r || r.length < 3) continue;
+        const [answerRaw, clueRaw, categoryRaw] = r;
+        const category = (categoryRaw||"").trim();
+        if(!category) continue; // skip rows with empty category col3
+        const answer = (answerRaw||"").trim();
+        const clue = (clueRaw||"").trim();
+        if(!answer) continue;
+        items.push({answer, category, clue});
+      }
+      return items;
+    }catch(err){
+      console.warn("CSV load failed:", err);
+      return [];
+    }
+  }
+  function parseCSV(text){
+    const rows = []; let row=[], field="", inQuotes=false;
+    for(let i=0;i<text.length;i++){
+      const ch=text[i];
+      if(inQuotes){
+        if(ch==='\"'){
+          if(text[i+1]==='\"'){ field+='\"'; i++; }
+          else{ inQuotes=false; }
+        } else { field+=ch; }
+      } else {
+        if(ch==='\"'){ inQuotes=true; }
+        else if(ch===','){ row.push(field); field=''; }
+        else if(ch==='\n'){ row.push(field); rows.push(row); row=[]; field=''; }
+        else if(ch==='\r'){ /*ignore*/ }
+        else { field+=ch; }
+      }
+    }
+    if(field.length || row.length){ row.push(field); rows.push(row); }
+    if(rows.length && /category/i.test((rows[0][2]||'').trim())) rows.shift();
+    return rows.map(r=>r.map(c=>(c||'').trim()));
+  }
+
+  // -------- Data --------
+  let puzzles = []; // will load from CSV
+  const seedPuzzles = [
+    { answer: "CEREBELLAR ATAXIA", category: "Sign & Symptom", clue: "Uncoordinated, clumsy movement with dysmetria and wide-based gait." },
+    { answer: "BROCA APHASIA", category: "Language Disorder", clue: "Nonfluent, effortful speech with intact comprehension." },
+    { answer: "MYASTHENIA GRAVIS", category: "Neuromuscular Junction", clue: "Autoimmune postsynaptic ACh receptor dysfunction causing fatigable weakness." },
+    { answer: "MULTIPLE SCLEROSIS", category: "Inflammatory Demyelination", clue: "CNS demyelination with dissemination in time and space." }
+  ];
+
+  const wheelWedges = [
+    {type:"cash", label:"$500", value:500},{type:"cash", label:"$600", value:600},{type:"cash", label:"$700", value:700},
+    {type:"cash", label:"$800", value:800},{type:"cash", label:"$900", value:900},{type:"cash", label:"$650", value:650},
+    {type:"cash", label:"$750", value:750},{type:"cash", label:"$1000", value:1000},{type:"bankrupt", label:"BANKRUPT"},
+    {type:"lose", label:"LOSE TURN"},{type:"clue", label:"CLUE"},{type:"cash", label:"$550", value:550},
+    {type:"clue", label:"CLUE"},{type:"cash", label:"$700", value:700},{type:"cash", label:"$850", value:850},{type:"cash", label:"$500", value:500}
+  ];
+
+  const BOARD = { rows:3, minCols:14, maxCols:20, maxRows:4 };
+
+  // -------- State --------
+  const state = {
+    puzzleIndex: 0, answer: "", grid: [], cols: 14,
+    guessed: new Set(), canGuessConsonant:false, canBuyVowel:false,
+    currentCash: 0, spinning:false, cluePurchased:false,
+    players:1, banks:[0,0,0], currentPlayer:0,
+    vowelPrice:250, cluePrice:400, rotation:0,
+    categories: [],
+    selectedCategory: 'RANDOM'
+  };
+
+  // -------- DOM --------
+  const canvas = document.getElementById("wheelCanvas");
+  const wheelWrap = document.querySelector('.wheelWrap');
+  const peekCanvas = document.getElementById("peekCanvas");
+  const peekLabel = document.getElementById("peekLabel");
+  const spinBtn = document.getElementById("spinBtn");
+  const buyVowelBtn = document.getElementById("buyVowelBtn");
+  const solveBtn = document.getElementById("solveBtn");
+  const newBtn = document.getElementById("newBtn");
+    const categoryTopEl = document.getElementById("categoryTop");
+  const boardEl = document.getElementById("board");
+  const keyboardEl = document.getElementById("keyboard");
+  const statusEl = document.getElementById("status");
+  const playersBoard = document.getElementById("playersBoard");
+  const clueModal = document.getElementById("clueModal");
+  const clueContent = document.getElementById("clueContent");
+  const buyClueBtn = document.getElementById("buyClueBtn");
+  const closeClueBtn = document.getElementById("closeClueBtn");
+  const solveModal = document.getElementById("solveModal");
+  const solveInput = document.getElementById("solveInput");
+  const submitSolveBtn = document.getElementById("submitSolveBtn");
+  const closeSolveBtn = document.getElementById("closeSolveBtn");
+  const optionsBtn = document.getElementById("optionsBtn");
+  const optionsModal = document.getElementById("optionsModal");
+  const playersInput = document.getElementById("playersInput");
+  const saveOptionsBtn = document.getElementById("saveOptionsBtn");
+  const cancelOptionsBtn = document.getElementById("cancelOptionsBtn");
+  const categorySelect = document.getElementById("categorySelect");
+  const startModal = document.getElementById("startModal");
+  const startSpinBtn = document.getElementById("startSpinBtn");
+  const startPlayerRadios = Array.from(startModal.querySelectorAll('.options input[type=radio]'));
+  const optionsPlayerRadios = Array.from(optionsModal.querySelectorAll('.options input[type=radio]'));
+
+  // -------- Helpers --------
+  const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+  
+  // Count alphabetic letters only (ignore spaces/punct)
+  function letterCount(s){
+    return (String(s||'').match(/[A-Za-z]/g)||[]).length;
+  }
+const VOWELS = new Set("AEIOU".split(""));
+  const sliceCount = wheelWedges.length;
+  const sliceAngle = (Math.PI*2)/sliceCount;
+
+  function CPL(){ return `Player ${state.currentPlayer+1}`; }
+  function setStatus(m){ statusEl.textContent = m || ""; }
+  function isLetter(ch){ return /^[A-Z]$/.test(ch); }
+  function dollars(n){ return n.toLocaleString(undefined,{maximumFractionDigits:0}); }
+
+  // -------- Board layout --------
+  function layoutBoard(answer){
+    function tokenLen(w){ let n=0; for(const ch of w){ if(isLetter(ch) || "'&-".includes(ch)) n++; } return n; }
+    function attempt(rows, cols){
+      const grid=Array.from({length:rows},()=>Array.from({length:cols},()=>({ch:"",type:"filler",revealed:true})));
+      const words=answer.toUpperCase().trim().split(" ").filter(Boolean);
+      let r=0,c=0;
+      for(const w of words){
+        const wlen=tokenLen(w); const sep = c>0?1:0;
+        if(c+sep+wlen>cols){ r++; c=0; } if(r>=rows) return null;
+        if(sep){ grid[r][c]={ch:"",type:"space",revealed:true}; c++; }
+        for(const ch of w){
+          if(isLetter(ch)) grid[r][c++]={ch,type:"letter",revealed:false};
+          else if("'&-".includes(ch)) grid[r][c++]={ch,type:"punct",revealed:true};
+          if(c>cols) return null;
+        }
+      }
+      return grid;
+    }
+    let grid=null, chosenCols=BOARD.minCols;
+    for(let cols=BOARD.minCols; cols<=BOARD.maxCols; cols++){ const g=attempt(BOARD.rows,cols); if(g){ grid=g; chosenCols=cols; break; } }
+    if(!grid){
+      for(let rows=BOARD.rows+1; rows<=BOARD.maxRows; rows++){
+        for(let cols=BOARD.minCols; cols<=BOARD.maxCols; cols++){
+          const g=attempt(rows,cols); if(g){ grid=g; chosenCols=cols; BOARD.rows=rows; break; }
+        }
+        if(grid) break;
+      }
+    }
+    if(!grid){ grid=attempt(BOARD.maxRows,BOARD.maxCols)||[]; chosenCols=BOARD.maxCols; }
+    state.grid=grid; state.cols=chosenCols;
+  }
+
+  function centerGridRows(){
+    const cols = state.cols;
+    for(let r=0;r<state.grid.length;r++){
+      let content = state.grid[r].filter(c=>c.type!=="filler");
+      const pad = Math.max(0, Math.floor((cols - content.length)/2));
+      const newRow = Array.from({length:cols},()=>({ch:"",type:"filler",revealed:true}));
+      for(let i=0;i<content.length && (pad+i)<cols;i++) newRow[pad+i]=content[i];
+      state.grid[r] = newRow;
+    }
+  }
+
+  function centerGridVertically(){
+    const rows = state.grid.length;
+    if(rows < 3) return;
+    const contentRows = [];
+    for(let r=0;r<rows;r++){
+      const hasContent = state.grid[r].some(c=>c.type!=='filler');
+      if(hasContent) contentRows.push(r);
+    }
+    if(contentRows.length === 1){
+      const src = contentRows[0];
+      const mid = Math.floor(rows/2);
+      if(src !== mid){
+        const tmp = state.grid[mid];
+        state.grid[mid] = state.grid[src];
+        state.grid[src] = tmp;
+      }
+    }
+  }
+
+  function renderBoard(){
+    boardEl.innerHTML=""; const cols=state.cols||BOARD.cols; boardEl.style.setProperty("--cols",cols);
+    for(let r=0;r<state.grid.length;r++){
+      for(let c=0;c<cols;c++){
+        const cell = state.grid[r][c];
+        const el = document.createElement("div");
+        const classes=["cell"];
+        if(cell.type==="filler") classes.push("filler");
+        if(cell.type==="space") classes.push("space");
+        if(cell.type==="letter") classes.push("letter");
+        if(cell.type==="punct") classes.push("punct");
+        if((cell.type==="letter"||cell.type==="punct") && cell.revealed) classes.push("revealed");
+        el.className=classes.join(" ");
+        el.textContent=(cell.type==="letter"&&cell.revealed)?cell.ch:(cell.type==="punct"?cell.ch:"");
+        boardEl.appendChild(el);
+      }
+    }
+  }
+
+  function renderPlayers(){
+    playersBoard.innerHTML="";
+    for(let i=0;i<state.players;i++){
+      const d=document.createElement("div"); d.className="player"+(i===state.currentPlayer?" active":"");
+      d.innerHTML = `<b>Player ${i+1}</b><span>$${dollars(state.banks[i])}</span>`;
+      playersBoard.appendChild(d);
+    }
+  }
+
+  // -------- Wheel drawing --------
+  function wrapText(ctx,text,x,y,maxW,lineH){
+    const words = text.split(" ");
+    let line = "", lines = [];
+    for(const w of words){
+      const test = line ? (line+" "+w) : w;
+      if(ctx.measureText(test).width > maxW){
+        lines.push(line); line = w;
+      } else { line = test; }
+    }
+    if(line) lines.push(line);
+    lines.forEach((ln,i)=>ctx.fillText(ln,x,y+i*lineH));
+  }
+
+  
+  function drawWheel(){
+    const W=canvas.width, H=canvas.height, cx=W/2, cy=H/2;
+    const outerR = Math.min(W,H)/2 - 16, innerR = outerR*0.32;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0,0,W,H);
+    ctx.save(); ctx.translate(cx,cy); ctx.rotate(state.rotation);
+
+    // Vivid palette similar to WoF
+    const cashPalette = [
+      '#e74c3c','#f1c40f','#2ecc71','#3498db','#9b59b6','#e67e22',
+      '#1abc9c','#ff6f61','#ffd166','#06d6a0','#118ab2','#d881f8',
+      '#f72585','#4cc9f0','#90be6d','#f8961e'
+    ];
+    const special = {
+      bankrupt: {fill:'#000', text:'#fff'},
+      lose: {fill:'#f4f1ea', text:'#111'},
+      clue: {fill:'#c2185b', text:'#fff'}
+    };
+    function textColorFor(hex){
+      const c = hex.replace('#','');
+      const r = parseInt(c.substring(0,2),16);
+      const g = parseInt(c.substring(2,4),16);
+      const b = parseInt(c.substring(4,6),16);
+      const L = (0.299*r + 0.587*g + 0.114*b)/255;
+      return L > 0.6 ? '#000' : '#fff';
+    }
+    function fitText(ctx, text, maxWidth, maxLines){
+      let fontPx = 26;
+      const words = (text||'').split(/\s+/);
+      const canWrap = words.length > 1;
+      const measure = (t)=>ctx.measureText(t).width;
+      function wrap(px){
+        ctx.font = `bold ${px}px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto`;
+        if(!canWrap){ return {lines:[text], tooWide: measure(text) > maxWidth}; }
+        const lines=[]; let line="";
+        for(const w of words){
+          const test = line ? (line+" "+w) : w;
+          if(measure(test) > maxWidth){
+            if(line){ lines.push(line); line = w; } else { lines.push(w); line=""; }
+          } else { line = test; }
+        }
+        if(line) lines.push(line);
+        return {lines, tooWide: lines.some(l=>measure(l)>maxWidth) || lines.length>maxLines};
+      }
+      let wrapped = wrap(fontPx);
+      while(wrapped.tooWide && fontPx>10){ fontPx -= 1; wrapped = wrap(fontPx); }
+      return {lines:wrapped.lines.slice(0,maxLines), fontPx};
+    }
+
+    // Draw wedges
+    for(let i=0;i<wheelWedges.length;i++){
+      const w = wheelWedges[i];
+      const a0 = i*sliceAngle, a1 = a0 + sliceAngle;
+      let fill, labelColor;
+      if(w.type==='cash'){ fill = cashPalette[i % cashPalette.length]; labelColor = textColorFor(fill); }
+      else if(w.type==='bankrupt'){ fill = special.bankrupt.fill; labelColor = special.bankrupt.text; }
+      else if(w.type==='lose'){ fill = special.lose.fill; labelColor = special.lose.text; }
+      else if(w.type==='clue'){ fill = special.clue.fill; labelColor = special.clue.text; }
+      else { fill = '#146c43'; labelColor = '#fff'; }
+
+      ctx.beginPath(); ctx.moveTo(0,0); ctx.arc(0,0,outerR,a0,a1); ctx.closePath();
+      ctx.fillStyle=fill; ctx.fill();
+      ctx.strokeStyle='rgba(0,0,0,.35)'; ctx.lineWidth=1.25; ctx.stroke();
+
+      // Clip wedge for label
+      ctx.save();
+      ctx.beginPath(); ctx.moveTo(0,0); ctx.arc(0,0,outerR,a0,a1); ctx.closePath();
+      ctx.clip();
+
+      // Label
+      const mid=a0+sliceAngle/2;
+      ctx.rotate(mid);
+      const rLabel = (outerR+innerR)/2;
+      const availableArc = rLabel * (sliceAngle - 0.1);
+      const fit = fitText(ctx, w.label, availableArc, 2);
+      ctx.translate(rLabel, 0); ctx.rotate(Math.PI/2);
+      ctx.fillStyle=labelColor;
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.font = `bold ${fit.fontPx}px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto`;
+      const lineH = fit.fontPx * 0.9;
+      if(fit.lines.length===1){
+        ctx.fillText(fit.lines[0], 0, 0);
+      } else {
+        ctx.fillText(fit.lines[0], 0, -lineH/2);
+        ctx.fillText(fit.lines[1], 0, lineH/2);
+      }
+      ctx.restore();
+    }
+
+    // Hub
+    ctx.beginPath(); ctx.arc(0,0,innerR,0,Math.PI*2); ctx.fillStyle='#0a2a1e'; ctx.fill();
+    ctx.strokeStyle='#d3af5e'; ctx.lineWidth=2; ctx.stroke();
+    ctx.fillStyle='#d3af5e'; ctx.font="800 18px ui-sans-serif"; ctx.textAlign='center';
+    ctx.fillText('NEUROLOGY',0,14);
+    ctx.restore();
+  }
+
+  
+  function wedgeAtPointer(){
+    const twoPI = Math.PI*2;
+    const pointer = -Math.PI/2;               // fixed top pointer
+    let a = pointer - state.rotation;         // wheel angle under pointer in wheel's local coords
+    a = ((a % twoPI) + twoPI) % twoPI;       // normalize [0, 2π)
+    // Choose the wedge whose CENTER is nearest the pointer
+    let idx = Math.floor((a + sliceAngle/2) / sliceAngle);
+    idx = ((idx % wheelWedges.length) + wheelWedges.length) % wheelWedges.length;
+    return idx;
+  }
+
+function drawPreview(){
+    const tmp=document.createElement('canvas');
+    const W=canvas.width, H=canvas.height;
+    tmp.width=W; tmp.height=H;
+    const tctx=tmp.getContext('2d');
+    tctx.drawImage(canvas,0,0);
+    const crop = 90;
+    const scale = peekCanvas.width / W;
+    const destH = Math.round(crop * scale);
+    peekCanvas.height = destH;
+    const pcx = peekCanvas.getContext('2d');
+    pcx.clearRect(0,0,peekCanvas.width,peekCanvas.height);
+    pcx.drawImage(tmp, 0,0, W, crop, 0,0, peekCanvas.width, destH);
+    const idx = wedgeAtPointer();
+    peekLabel.textContent = wheelWedges[idx].label || "";
+  }
+
+  // -------- Gameplay --------
+  function resetKeyboard(enabled=true){
+    keyboardEl.innerHTML="";
+    LETTERS.forEach(L=>{
+      const b=document.createElement('button');
+      b.textContent=L;
+      let enable = enabled && !state.guessed.has(L);
+      if(enabled){
+        if(state.canGuessConsonant){
+          enable = enable && !VOWELS.has(L); // consonants only
+        } else if(state.canBuyVowel){
+          enable = enable && VOWELS.has(L);  // vowels only
+        } else {
+          enable = false; // nothing selectable
+        }
+      }
+      b.disabled = !enable;
+      b.addEventListener('click', ()=>{
+        if(b.disabled) return;
+        if(state.canGuessConsonant && !VOWELS.has(L)){
+          handleLetterGuess(L);
+        } else if(state.canBuyVowel && VOWELS.has(L)){
+          purchaseVowel(L);
+        }
+      });
+      keyboardEl.appendChild(b);
+    });
+}
+
+  function revealMatching(L){
+    let hits=0;
+    for(const row of state.grid){
+      for(const cell of row){
+        if(cell.type==='letter' && cell.ch===L && !cell.revealed){
+          cell.revealed=true; hits++;
+        }
+      }
+    }
+    renderBoard();
+    return hits;
+  }
+
+  function allRevealed(){
+    for(const row of state.grid){
+      for(const cell of row){
+        if(cell.type==='letter' && !cell.revealed) return false;
+      }
+    }
+    return true;
+  }
+
+  function handleLetterGuess(L){
+    if(state.guessed.has(L)) return;
+    state.guessed.add(L);
+    const hits = revealMatching(L);
+    if(hits>0){
+      const earned = hits*(state.currentCash||0);
+      state.banks[state.currentPlayer]+=earned;
+      renderPlayers();
+      setStatus(`${CPL()} found ${hits} × ${L} for $${dollars(earned)}.`);
+      if(allRevealed()){ celebrateWin(); return; }
+      state.canGuessConsonant=false;
+      resetKeyboard(false);
+      buyVowelBtn.disabled = (state.players>1) || (state.banks[state.currentPlayer] < state.vowelPrice);
+      spinBtn.disabled = false;
+    } else {
+      if(state.players===1){
+      setStatus(`No ${L}'s. Spin again.`);
+      state.canGuessConsonant=false; resetKeyboard(false);
+      buyVowelBtn.disabled=true; spinBtn.disabled=false;
+    } else {
+      setStatus(`${CPL()} guessed ${L}: none found. Turn passes.`);
+      endTurn();
+    }
+    }
+  }
+
+  function purchaseVowel(L){
+    if(!VOWELS.has(L)) return;
+    if(state.banks[state.currentPlayer] < state.vowelPrice) return;
+    state.banks[state.currentPlayer] -= state.vowelPrice;
+    renderPlayers();
+    const hits = revealMatching(L);
+    setStatus(`Purchased ${L} for $${state.vowelPrice}. ${hits>0?hits+' revealed.':'None found.'}`);
+    state.canBuyVowel=false;
+    resetKeyboard(false);
+    buyVowelBtn.disabled = (state.players>1) || (state.banks[state.currentPlayer] < state.vowelPrice);
+    spinBtn.disabled = false;
+    if(hits===0){ endTurn(); } else { if(allRevealed()) celebrateWin(); }
+  }
+
+  function celebrateWin(){
+    setStatus(`${CPL()} solved it! 🎉`);
+    state.canGuessConsonant=false; state.canBuyVowel=false;
+    buyVowelBtn.disabled=true; spinBtn.disabled=true;
+  }
+
+  function endTurn(){
+    state.canGuessConsonant=false; state.canBuyVowel=false; resetKeyboard(false);
+    buyVowelBtn.disabled=true; spinBtn.disabled=false;
+    if(state.players>1){
+      state.currentPlayer = (state.currentPlayer+1)%state.players;
+      renderPlayers(); drawPreview();
+      setStatus(`${CPL()} - your turn. Spin the wheel.`);
+    }
+  }
+
+  
+  function animateSpin(){
+    if(state.spinning) return;
+    state.spinning = true;
+    spinBtn.disabled = true;
+    buyVowelBtn.disabled = true;
+    setStatus(`${CPL()} is spinning...`);
+
+    // Fullscreen overlay clone
+    const ghost = wheelWrap.cloneNode(true);
+    ghost.classList.remove('rest');
+    ghost.classList.add('spin','fullscreen');
+    document.body.appendChild(ghost);
+
+    const ghostCanvas = ghost.querySelector('#wheelCanvas');
+    const gctx = ghostCanvas.getContext('2d');
+
+    // Snapshot current wheel
+    const snap = document.createElement('canvas');
+    snap.width = canvas.width; snap.height = canvas.height;
+    snap.getContext('2d').drawImage(canvas,0,0);
+    ghostCanvas.width = canvas.width; ghostCanvas.height = canvas.height;
+
+    // Overlay pointer
+    const overlayPtr = document.createElement('div');
+    overlayPtr.className = 'overlayPointer';
+    document.body.appendChild(overlayPtr);
+    function positionOverlayPtr(){
+      const r = ghostCanvas.getBoundingClientRect();
+      overlayPtr.style.position='fixed';
+      overlayPtr.style.left = `${Math.round(r.left + r.width/2 - 10)}px`;
+      overlayPtr.style.top = `${Math.round(r.top + 6)}px`;
+    }
+    positionOverlayPtr();
+    window.addEventListener('resize', positionOverlayPtr);
+
+    // Animation params
+    const startRot = state.rotation;
+    const extraTurns = 12 + Math.random()*6;
+    const endRot = startRot + extraTurns * Math.PI*2 + Math.random()*Math.PI*2;
+    const duration = 3500;
+    const t0 = performance.now();
+    const twoPI = Math.PI*2;
+    const easeOutCubic = (x)=>1 - Math.pow(1-x, 3);
+
+    function frame(now){
+      const t = Math.min(1, (now - t0)/duration);
+      const eased = easeOutCubic(t);
+      const rot = startRot + (endRot - startRot) * eased;
+
+      // Draw rotated snapshot
+      const W=ghostCanvas.width, H=ghostCanvas.height, cx=W/2, cy=H/2;
+      gctx.clearRect(0,0,W,H);
+      gctx.save(); gctx.translate(cx,cy); gctx.rotate(rot - startRot);
+      gctx.drawImage(snap, -W/2, -H/2);
+      gctx.restore();
+
+      if(t < 1){
+        requestAnimationFrame(frame);
+      } else {
+        state.rotation = ((rot % twoPI) + twoPI) % twoPI;
+        drawWheel();
+        drawPreview();
+        setTimeout(()=>{
+          document.body.removeChild(ghost);
+          if(overlayPtr && overlayPtr.parentNode) overlayPtr.parentNode.removeChild(overlayPtr);
+          window.removeEventListener('resize', positionOverlayPtr);
+          onSpinComplete();
+        }, 2000);
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+
+  function onSpinComplete(){
+    state.spinning = false;
+    const idx = wedgeAtPointer();
+    const w = wheelWedges[idx];
+    drawPreview(); // ensure peek shows landed wedge
+
+    if(!w){ 
+      // Fallback: allow another spin
+      spinBtn.disabled = false;
+      setStatus(`${CPL()} - spin again.`);
+      return;
+    }
+
+    if(w.type === 'cash'){
+      state.currentCash = w.value || 0;
+      state.canGuessConsonant = true;
+      state.canBuyVowel = false;
+      resetKeyboard(true);
+      buyVowelBtn.disabled = (state.players>1) || (state.banks[state.currentPlayer] < state.vowelPrice);
+      setStatus(`${CPL()} landed on $${dollars(state.currentCash)}. Choose a consonant.`);
+      // keep spin disabled until guess resolves
+    } else if(w.type === 'bankrupt'){
+      state.currentCash = 0;
+      state.banks[state.currentPlayer] = 0;
+      renderPlayers();
+      setStatus(`BANKRUPT! ${state.players>1 ? "Turn passes." : ""}`);
+      endTurn();
+    } else if(w.type === 'lose'){
+      setStatus(`Lose a turn.${state.players>1 ? " Turn passes." : ""}`);
+      endTurn();
+    } else if(w.type === 'clue'){
+      state.currentCash = 0;
+      state.canGuessConsonant = false;
+      state.canBuyVowel = false;
+      resetKeyboard(false);
+      buyVowelBtn.disabled = true;
+      // Open the clue/hint modal (disabled in MP)
+      openClue();
+      // After viewing, allow a new spin (no pass in SP; MP rule doesn't grant extra action)
+      spinBtn.disabled = false;
+      if(state.players>1){
+        // In multiplayer, opening clue is disabled; we still advance turn to keep pace
+        setStatus(`Clue wedge (disabled in multiplayer). Turn passes.`);
+        endTurn();
+      } else {
+        setStatus(`Clue wedge. You may buy the hint ($${state.cluePrice}) or spin again.`);
+      }
+    } else {
+      // Unknown wedge type: just allow spinning again
+      setStatus(`${CPL()} - spin again.`);
+      spinBtn.disabled = false;
+    }
+  }
+
+// -------- Clue & Solve --------
+  function openClue(){
+    const p = puzzles[state.puzzleIndex];
+    if(state.cluePurchased){
+      clueContent.textContent = p.clue || "No clue text provided.";
+      buyClueBtn.style.display = 'none';
+    } else {
+      clueContent.textContent = (p.clue || "No clue text provided.") + "  (" + (state.players>1 ? "Disabled in multiplayer" : "Costs $" + state.cluePrice) + ")";
+      buyClueBtn.style.display = (state.players>1) ? 'none' : 'inline-block';
+    }
+    document.getElementById('clueModal').classList.add('show');
+  }
+  function closeClue(){ document.getElementById('clueModal').classList.remove('show'); }
+  buyClueBtn.addEventListener('click', ()=>{
+    if(state.players>1 || state.cluePurchased) return;
+    if(state.banks[state.currentPlayer] < state.cluePrice) return;
+    state.banks[state.currentPlayer] -= state.cluePrice;
+    renderPlayers();
+    state.cluePurchased = true;
+    openClue();
+  });
+  closeClueBtn.addEventListener('click', closeClue);
+
+  function openSolve(){
+    solveInput.value='';
+    document.getElementById('solveModal').classList.add('show');
+    setTimeout(()=>solveInput.focus(), 50);
+  }
+  function closeSolve(pass){
+    document.getElementById('solveModal').classList.remove('show');
+    if(pass && state.players>1) endTurn();
+  }
+  function submitSolve(){
+    const guess=(solveInput.value||'').trim().toUpperCase().replace(/\s+/g,' ');
+    const ans = state.answer.toUpperCase();
+    if(guess===ans){
+      for(const row of state.grid){
+        for(const cell of row){
+          if(cell.type==='letter') cell.revealed=true;
+        }
+      }
+      renderBoard();
+      closeSolve(false);
+      celebrateWin();
+    } else {
+      closeSolve(true);
+      setStatus(`Incorrect solution by ${CPL()}. Turn passes.`);
+    }
+  }
+  
+  buyVowelBtn.addEventListener('click', ()=>{
+    if(state.players>1) return;
+    if(state.banks[state.currentPlayer] < state.vowelPrice) return;
+    state.canGuessConsonant = false;
+    state.canBuyVowel = true;
+    resetKeyboard(true);
+    setStatus(`Choose a vowel to buy for $${state.vowelPrice}.`);
+  });
+solveBtn.addEventListener('click', openSolve);
+  submitSolveBtn.addEventListener('click', submitSolve);
+  closeSolveBtn.addEventListener('click', ()=>closeSolve(true));
+
+// -------- Options --------
+  function populateCategorySelect(){
+    if(!categorySelect) return;
+    categorySelect.innerHTML = '';
+    const optRand = document.createElement('option');
+    optRand.value = 'RANDOM'; optRand.textContent = 'RANDOM';
+    categorySelect.appendChild(optRand);
+    (state.categories||[]).forEach(cat=>{
+      const o = document.createElement('option'); o.value = cat; o.textContent = cat; categorySelect.appendChild(o);
+    });
+    categorySelect.value = state.selectedCategory || 'RANDOM';
+  }
+  optionsBtn.addEventListener('click', ()=>{
+    const rads = Array.from(optionsModal.querySelectorAll('.options input[type=radio]'));
+    rads.forEach(r => r.checked = (parseInt(r.value,10) === state.players));
+    populateCategorySelect();
+    optionsModal.classList.add('show');
+  });
+  saveOptionsBtn.addEventListener('click', ()=>{
+    const sel = Array.from(optionsModal.querySelectorAll('.options input[type=radio]')).find(r=>r.checked);
+    let n = Math.min(3, Math.max(1, parseInt(sel ? sel.value : '1', 10)));
+    state.players = n; state.banks=[0,0,0]; state.currentPlayer=0;
+    if(categorySelect){ state.selectedCategory = categorySelect.value || 'RANDOM'; }
+    renderPlayers();
+    setStatus(`Players set to ${n}.`);
+    optionsModal.classList.remove('show');
+  });
+  cancelOptionsBtn.addEventListener('click', ()=> optionsModal.classList.remove('show'));
+
+  // -------- New Puzzle / Init --------
+  function newPuzzle(index){
+    if(!puzzles.length){ puzzles = seedPuzzles.slice(); }
+    state.cols = BOARD.minCols; state.guessed.clear(); state.cluePurchased=false;
+    let source = puzzles;
+    let cat = state.selectedCategory || 'RANDOM';
+    if(cat === 'RANDOM' && state.categories && state.categories.length){ cat = state.categories[Math.floor(Math.random()*state.categories.length)]; }
+    if(cat && cat !== 'RANDOM'){
+      const filtered = puzzles.filter(p=>p.category===cat);
+      if(filtered.length) source = filtered;
+    }
+    // Enforce minimum 5 letters in the answer (ignore spaces/punct)
+    let eligible = source.filter(p=>letterCount(p.answer) >= 5);
+    if(!eligible.length){ eligible = puzzles.filter(p=>letterCount(p.answer) >= 5); }
+    if(!eligible.length){ eligible = source; }
+    const idx = (typeof index === "number") ? index : Math.floor(Math.random()*eligible.length);
+    state.puzzleIndex = idx;
+    const p = eligible[idx];
+    state.answer = (p.answer||"").toUpperCase();
+    categoryTopEl.textContent = (p.category ? `Category: ${p.category}` : "Category: —");
+    layoutBoard(state.answer);
+    centerGridRows();
+    centerGridVertically();
+    renderBoard();
+    renderPlayers();
+    resetKeyboard(false);
+    buyVowelBtn.disabled = (state.players>1) || state.banks[state.currentPlayer] < state.vowelPrice;
+    drawWheel(); drawPreview();
+    setStatus(`Choose players, then spin to begin!`);
+    spinBtn.disabled=false;
+  }
+  newBtn.addEventListener('click', ()=> newPuzzle());
+
+  // Start modal logic
+  startSpinBtn.addEventListener('click', () => {
+    const sel = startPlayerRadios.find(r=>r.checked);
+    const n = sel ? parseInt(sel.value,10) : 1;
+    state.players = Math.min(3, Math.max(1, n||1));
+    state.banks = [0,0,0];
+    state.currentPlayer = 0;
+    renderPlayers();
+    startModal.classList.remove('show');
+    animateSpin();
+  });
+  spinBtn.addEventListener('click', animateSpin);
+
+  async function init(){
+    puzzles = await loadCsvPuzzles("wheelclues.csv");
+    if(!puzzles.length) puzzles = seedPuzzles.slice();
+    state.categories = Array.from(new Set(puzzles.map(p=>p.category).filter(Boolean))).sort();
+    renderPlayers();
+    newPuzzle(0);
+    // start modal already shown
+  }
+  init();
+</script>
+</body>
+</html>
