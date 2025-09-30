@@ -577,9 +577,6 @@ selfTests();
 const tbEl=document.getElementById('timebase'); if(tbEl) state.seconds=secondsFromTimebase(tbEl.value);
 const seEl=document.getElementById('sensitivity'); if(seEl) state.uvPerDiv=uvPerDivFromSensitivity(seEl.value);
 resize();
-// Ensure default eyes-open on first load
-const eoEl = document.getElementById('eyesOpen');
-if (eoEl) { eoEl.checked = true; state.eyesOpen = true; }
 regen();
 updateEyesOpenEnabled();
 requestAnimationFrame(step);

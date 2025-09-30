@@ -395,9 +395,9 @@ function computeRowMids(count){
   const isTrans = (state.montage==='bipolar_transverse');
 // Apply row gaps for longitudinal, transverse, and average
 const useGaps = (state.montage==='bipolar_longitudinal' || isTrans || state.montage==='average');
-const defaultGap = 10; // uniform gap size like longitudinal
+const defaultGap = isTrans ? Math.max(28, Math.floor(h*0.025)) : 10;
 const extraBreaks = isTrans ? transverseBreaks() : (state.montage==='average' ? new Set([4,8,12,16]) : new Set([4,8,12]));
-const extraFactor = 2.2; // same prominence as longitudinal
+const extraFactor = isTrans ? 2.8 : 2.2;
   let totalExtra = 0;
   for (let i=0;i<count;i++){
     if (!useGaps) continue;
@@ -577,9 +577,6 @@ selfTests();
 const tbEl=document.getElementById('timebase'); if(tbEl) state.seconds=secondsFromTimebase(tbEl.value);
 const seEl=document.getElementById('sensitivity'); if(seEl) state.uvPerDiv=uvPerDivFromSensitivity(seEl.value);
 resize();
-// Ensure default eyes-open on first load
-const eoEl = document.getElementById('eyesOpen');
-if (eoEl) { eoEl.checked = true; state.eyesOpen = true; }
 regen();
 updateEyesOpenEnabled();
 requestAnimationFrame(step);
