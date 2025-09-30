@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Wheel of Neurology</title>
+<title>Wheel of Neurology — v1.2 stable</title>
 <style>
 :root{
   --bg:#052b1a; --panel:#0b3526; --ink:#ffffff; --muted:#cfe6db;
@@ -241,19 +241,6 @@ footer{color:var(--muted);text-align:center;padding:6px 0 12px 0}
   </div>
 </div>
 
-
-
-<!-- POST-WIN MODAL -->
-<div id="postWinModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="postWinTitle">
-  <div class="dialog">
-    <h3 id="postWinTitle">Play another round?</h3>
-    <p style="margin:8px 0 16px;">Keep your bank and load a new clue, or start over from the beginning.</p>
-    <footer style="display:flex;gap:10px;justify-content:flex-end;">
-      <button id="startOverBtn" class="warn">Start over</button>
-      <button id="playAgainBtn" class="good">Play again</button>
-    </footer>
-  </div>
-</div>
 
 <!-- SOLVE MODAL -->
 <div id="solveModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="solveTitle">
@@ -947,17 +934,15 @@ function purchaseVowel(L){
     return hits;
 }
 
-
 function celebrateWin(){
   try{ playSfx('win'); }catch(e){}
   try{ fireConfetti(); }catch(e){}
   setStatus(`${CPL()} solved it! 🎉`);
-  if(spinBtn) spinBtn.disabled = true;
-  if(buyVowelBtn) buyVowelBtn.disabled = true;
-  if(typeof showPostWin==='function') showPostWin();
+  state.canGuessConsonant=false; state.canBuyVowel=false;
+  buyVowelBtn.disabled=true; spinBtn.disabled=true;
 }
 
-function endTurn(){
+  function endTurn(){
     state.canGuessConsonant=false; state.canBuyVowel=false; resetKeyboard(false);
     buyVowelBtn.disabled=true; spinBtn.disabled=false;
     if(state.players>1){
@@ -1206,59 +1191,57 @@ closePrizeBtn.addEventListener('click', closePrize);
   }
 
   // -------- Confetti --------
-  
-  // -------- Confetti (rainbow) --------
-  function fireConfetti(durationMs=1400, count=200){
-  const c = document.createElement('canvas');
-  c.width = window.innerWidth;
-  c.height = window.innerHeight;
-  c.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9999';
-  document.body.appendChild(c);
-  const ctx = c.getContext('2d');
-  const TAU = Math.PI*2;
-  const P = [];
-  for(let i=0;i<count;i++){
-    const hue = Math.floor(Math.random()*360);
-    P.push({
-      x: Math.random()*c.width,
-      y: -10 - Math.random()*c.height*0.2,
-      r: 2 + Math.random()*4,
-      vx: (Math.random()-0.5)*6,
-      vy: 2 + Math.random()*4,
-      rot: Math.random()*TAU,
-      vr: (Math.random()-0.5)*0.3,
-      life: durationMs + Math.random()*400,
-      color: `hsl(${hue} 90% 55%)`
-    });
-  }
-  let start = null;
-  function step(ts){
-    if(!start) start = ts;
-    const t = ts - start;
-    ctx.clearRect(0,0,c.width,c.height);
-    for(const p of P){
-      p.x += p.vx;
-      p.y += p.vy;
-      p.vy += 0.05;
-      p.rot += p.vr;
-      ctx.save();
-      ctx.translate(p.x, p.y);
-      ctx.rotate(p.rot);
-      ctx.fillStyle = p.color;
-      ctx.fillRect(-p.r, -p.r*0.6, p.r*2, p.r*1.2);
-      ctx.restore();
+  function fireConfetti(durationMs=1200, count=160){
+    const c = document.createElement('canvas');
+    c.width = window.innerWidth;
+    c.height = window.innerHeight;
+    c.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9999';
+    document.body.appendChild(c);
+    const ctx = c.getContext('2d');
+    const TAU = Math.PI*2;
+    const P = [];
+    for(let i=0;i<count;i++){
+      P.push({
+        x: Math.random()*c.width,
+        y: -10 - Math.random()*c.height*0.2,
+        r: 2 + Math.random()*4,
+        vx: (Math.random()-0.5)*6,
+        vy: 2 + Math.random()*4,
+        rot: Math.random()*TAU,
+        vr: (Math.random()-0.5)*0.3,
+        life: durationMs + Math.random()*400
+      });
     }
-    if(t < durationMs){
-      requestAnimationFrame(step);
-    } else {
-      c.remove();
+    let start = null;
+    function step(ts){
+      if(!start) start = ts;
+      const t = ts - start;
+      ctx.clearRect(0,0,c.width,c.height);
+      for(const p of P){
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.05; // gravity
+        p.rot += p.vr;
+        // draw rectangle "confetti"
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        ctx.fillRect(-p.r, -p.r*0.5, p.r*2, p.r);
+        ctx.restore();
+      }
+      if(t < durationMs){
+        requestAnimationFrame(step);
+      } else {
+        c.remove();
+      }
     }
+    requestAnimationFrame(step);
+    // Resize handler
+    const onResize = ()=>{ c.width = window.innerWidth; c.height = window.innerHeight; };
+    window.addEventListener('resize', onResize, {once:true});
   }
-  requestAnimationFrame(step);
-  const onResize = ()=>{ c.width = window.innerWidth; c.height = window.innerHeight; };
-  window.addEventListener('resize', onResize, {once:true});
-}
-function beginTurnSetup(){
+
+  function beginTurnSetup(){
     // Called at the start of *current* player's turn
     state.currentCash = 0;                 // not yet spun this turn
     state.canGuessConsonant = false;       // can't guess consonants until a spin
@@ -1268,49 +1251,6 @@ function beginTurnSetup(){
     spinBtn.disabled = false;              // spinning is always allowed at turn start
     setStatus(`${CPL()}: spin or buy a vowel.`);
   }
-
-  // -------- Post-win flow --------
-  const postWinModal = document.getElementById('postWinModal');
-  const playAgainBtn = document.getElementById('playAgainBtn');
-  const startOverBtn = document.getElementById('startOverBtn');
-
-  function showPostWin(){
-    if(postWinModal) postWinModal.classList.add('show');
-  }
-  function hidePostWin(){
-    if(postWinModal) postWinModal.classList.remove('show');
-  }
-  function playAgainNextRound(){
-    hidePostWin();
-    // Keep banks; reset round-specific state and load a new puzzle
-    state.currentCash = 0;
-    state.guessed = new Set();
-    state.correct = new Set();
-    state.wrong = new Set();
-    if(clueTopEl) clueTopEl.textContent = "";
-    newPuzzle();          // uses current category selection, randomized
-    beginTurnSetup();     // allow spin or buy vowel
-  }
-  function startOver(){
-    hidePostWin();
-    // Reset banks & most state, return to initial player count flow if available
-    state.banks = Array.from({length:4}, ()=>0);
-    state.currentPlayer = 0;
-    state.players = 1;
-    if(typeof applySinglePlayerWheelRules === 'function') applySinglePlayerWheelRules();
-    // If there's a start modal, open it; otherwise load a fresh puzzle.
-    const startModal = document.getElementById('startModal') || document.getElementById('start'); 
-    if(startModal && startModal.classList){
-      try{ startModal.classList.add('show'); }catch(e){}
-    }
-    newPuzzle();
-    beginTurnSetup();
-    renderPlayers();
-  }
-  if(playAgainBtn) playAgainBtn.addEventListener('click', playAgainNextRound);
-  if(startOverBtn) startOverBtn.addEventListener('click', startOver);
-
-
 // -------- Clue & Solve --------
   
 function openClue(){

@@ -48,10 +48,9 @@
   <div id="topbar">
     <div class="ctrl"><label>Montage</label>
       <select id="montageSel">
-        <option value="bipolar_longitudinal" selected>Longitudinal (Double Banana)</option>
+        <option value="bipolar_longitudinal" selected>Double Banana (Longitudinal)</option>
         <option value="bipolar_transverse">Transverse</option>
-        <option value="referential">Reference (ipsilateral ear A1/A2)</option>
-        <option value="average">Average reference (AVG)</option>
+        <option value="referential">Reference (A1/A2)</option>
       </select>
     </div>
     <div class="ctrl"><label>Timebase (mm/sec)</label>
@@ -72,7 +71,7 @@
     </div>
     <fieldset style="margin:0;display:flex;align-items:center;gap:.4rem;flex:1 1 auto;min-width:240px"><legend>Rhythm / State</legend>
       <div class="radio" id="modeRadios">
-        <!-- Order: delta, theta, alpha, beta (leftmost), then awake/drowsy, sleep 1/2, REM, SWS -->
+        <!-- Order: delta, theta, alpha, beta (leftmost), then awake/drowsy, Sleep 1/2, SWS, REM -->
         <label><input type="radio" name="mode" value="delta"> Delta</label>
         <label><input type="radio" name="mode" value="theta"> Theta</label>
         <label><input type="radio" name="mode" value="alpha"> Alpha</label>
@@ -83,7 +82,7 @@
         <label><input type="radio" name="mode" value="n2"> Sleep 2</label>
         <label><input type="radio" name="mode" value="sws"> SWS</label>
         <label><input type="radio" name="mode" value="rem"> REM</label>
-        <label class="pill"><input type="checkbox" id="eyesOpen"> Eyes open</label>
+        <label class="pill"><input type="checkbox" id="eyesOpen" checked> Eyes open</label>
       </div>
     </fieldset>
     <div style="margin-left:auto;display:flex;gap:.4rem;align-items:center">
@@ -127,7 +126,6 @@ const ELECTRODES = [
   "Fp1","F3","C3","P3","O1","F7","T3","T5",
   "Fz","Cz","Pz",
   "Fp2","F4","C4","P4","O2","F8","T4","T6",
-  "Oz",
   "A1","A2"
 ];
 const DISPLAY_ORDER = [
@@ -181,6 +179,7 @@ class Channel {
     this.envA=0; this.envB=0; this.envT=0; this.envD=0;
     this.brown=0;
     this.alphaJitter=(this.rng()-0.5)*0.2;
+    this.deltaJitter=(this.rng()-0.5)*0.15;
   }
   sample(t, opts){
     const r = region(this.name);
@@ -203,20 +202,27 @@ class Channel {
       case 'rem':
         T = 12; B = 8; A = 5; D = 4; break;
       case 'sws':
-        D = 35; T=6; A=4; B=3; break;
+        D = 45; T=6; A=4; B=3; break;
     }
+    // drifting envelopes
     this.envA = lowpass(this.envA, (this.rng()-0.5)*2, 0.002);
     this.envB = lowpass(this.envB, (this.rng()-0.5)*2, 0.004);
     this.envT = lowpass(this.envT, (this.rng()-0.5)*2, 0.003);
     this.envD = lowpass(this.envD, (this.rng()-0.5)*2, 0.0015);
+
+    // Frequencies
     const fAlpha = ((opts.mode==='alpha' || opts.mode==='awake') && r==='occipital') ? opts.pdrHz : 8 + this.rng()*4;
     const fBeta  = 18 + this.rng()*10;
     const fTheta = 4.5 + this.rng()*2.5;
-    const fDelta = 1.0 + this.rng()*1.5;
+    // Delta frequency: SWS uses 0.5–2 Hz with a shared phase for synchrony; otherwise 1.0–2.5 Hz per channel
+    const fDelta = (opts.mode==='sws') ? (0.5 + this.rng()*1.5) : (1.0 + this.rng()*1.5);
+
+    // advance phases
     this.phAlpha += 2*Math.PI*fAlpha/Fs;
     this.phBeta  += 2*Math.PI*fBeta /Fs;
     this.phTheta += 2*Math.PI*fTheta/Fs;
     this.phDelta += 2*Math.PI*fDelta/Fs;
+
     let y = 0;
     const alphaTerm = ((opts.mode==='alpha' || opts.mode==='awake') && r==='occipital')
       ? Math.sin(opts.pdrPhase + this.alphaJitter)
@@ -224,24 +230,39 @@ class Channel {
     y += (A*(1+0.6*this.envA)) * alphaTerm;
     y += (B*(1+0.6*this.envB)) * Math.sin(this.phBeta);
     y += (T*(1+0.6*this.envT)) * Math.sin(this.phTheta);
-    y += (D*(1+0.6*this.envD)) * Math.sin(this.phDelta);
+
+    // Delta term — if SWS, use global swsPhase for more synchrony with tiny per‑channel jitter; else channel phase
+    const deltaCarrier = (opts.mode==='sws')
+      ? Math.sin(opts.swsPhase + this.deltaJitter)
+      : Math.sin(this.phDelta);
+    y += (D*(1+0.6*this.envD)) * deltaCarrier;
+
+    // Drowsy slow eye roll
     if (opts.mode==='drowsy' && /^Fp|^F/.test(this.name)) y += 40*Math.sin(2*Math.PI*0.25*opts.clock);
+
+    // REM rapid eye movement bursts (frontal)
     if (opts.mode==='rem' && /^Fp|^F/.test(this.name)) {
       const fREM = 0.8 + 0.4*Math.sin(0.2*opts.clock);
       const burst = (Math.sin(2*Math.PI*0.12*opts.clock)>0.7) ? 1 : 0;
       const saw = 2*(opts.clock*fREM - Math.floor(0.5 + opts.clock*fREM));
       y += burst * 35 * (saw);
     }
+
+    // Sleep features
     if (opts.vertex && (this.name==='Cz' || this.name==='Fz')) y += opts.vertexShape * (this.name==='Cz' ? 120 : 60);
     if (opts.spindleEnv && /^(C3|C4|Cz)$/.test(this.name)) {
       const fSigma = 12 + 2*Math.sin(0.1*opts.clock);
       y += 25*opts.spindleEnv*Math.sin(2*Math.PI*fSigma*opts.clock);
     }
     if (opts.kcShape && /^(F3|F4|C3|C4|Cz|Fz)$/.test(this.name)) y += 120*opts.kcShape * (/(F|Fz)/.test(this.name)?1.0:0.8);
+
+    // noise
     const w = (this.rng()-0.5)*4.0;
     this.brown = 0.98*this.brown + w;
     const pinkish = 0.9*this.brown + 0.1*w;
     y += pinkish;
+
+    // artifacts
     if (opts.blinkShape && /^Fp|^F[34]$/.test(this.name)) y += 120*opts.blinkShape;
     if (opts.chewWave && /^(T3|T4|T5|T6)$/.test(this.name)) y += 30*opts.chewWave;
     if (opts.sweatOffset && /^(Fp|F|C)/.test(this.name)) y += 20*opts.sweatOffset;
@@ -269,13 +290,15 @@ const state = {
   opts: {blink:false, chew:false, sweat:false, pop:false, emg:false},
   montage: 'bipolar_longitudinal',
   mode: 'awake',
-  eyesOpen: false,
+  eyesOpen: true,                 // default Eyes open ON
   pdrHz: 10.5,
   pdrPhase: 0,
   artClock: 0,
   spindle: {active:false, t0:0, dur:0.0},
   kcomplex: {active:false, t0:0},
-  vertex: {active:false, t0:0}
+  vertex: {active:false, t0:0},
+  swsPhase: 0,                    // global SWS delta phase for synchrony
+  swsHz: 1.0
 };
 
 function initChannels(){
@@ -284,8 +307,6 @@ function initChannels(){
     state.channels.set(e, new Channel(e, state.rng));
     state.buffer.set(e, new Float32Array(Fs*state.seconds));
   });
-  // Synthetic buffer for average reference
-  state.buffer.set("AVG", new Float32Array(Fs*state.seconds));
   state.idx = 0;
 }
 
@@ -293,19 +314,12 @@ function initChannels(){
  * Montage helpers
  ***********************/
 function leftHem(e){ return /^(Fp1|F3|C3|P3|O1|F7|T3|T5|A1|Fz|Cz|Pz)$/.test(e); }
-function avgElectrodes(){
-  // Use DISPLAY_ORDER as scalp set; excludes A1/A2 and Oz.
-  return DISPLAY_ORDER.slice();
-}
-
 function montagePairs(){
   const arr=[];
   if (state.montage==='referential'){
     for (const e of DISPLAY_ORDER){ const ref=leftHem(e)?'A1':'A2'; arr.push({a:e,b:ref,label:`${e}-${ref}`}); }
   } else if (state.montage==='bipolar_transverse'){
     for (const [a,b] of TRANSVERSE_CHAINS){ arr.push({a,b,label:`${a}-${b}`}); }
-  } else if (state.montage==='average'){
-    for (const e of avgElectrodes()){ arr.push({a:e,b:'AVG',label:`${e} - AVG`}); }
   } else {
     for (const [a,b] of LONGITUDINAL_CHAINS){ arr.push({a,b,label:`${a}-${b}`}); }
   }
@@ -358,11 +372,7 @@ function groupColor(index){
 }
 
 function computeRowMids(count){
-  // Reserve vertical padding so top channels (e.g., Fp1–F7) never get cut off near the toolbar.
-  // Use responsive padding with sensible minimums.
   const h = canvas.clientHeight;
-  const topPad = Math.max(56, Math.floor(h*0.07));   // ~7% of height, at least 56px
-  const bottomPad = Math.max(32, Math.floor(h*0.05)); // ~5% of height, at least 32px
   const useGaps = (state.montage==='bipolar_longitudinal');
   const defaultGap = useGaps ? 10 : 0;
   const extraBreaks = useGaps ? new Set([4,8,12]) : new Set();
@@ -375,13 +385,13 @@ function computeRowMids(count){
     if (extraBreaks.has(i)) extra += defaultGap*(extraFactor-1);
     totalExtra += extra;
   }
-  const base = (h - topPad - bottomPad - totalExtra) / count;
+  const base = (h - totalExtra) / count;
   const y = []; let acc = 0;
   for (let i=0;i<count;i++){
     let extra = 0;
     if (useGaps){ if (i>0 && i%4===0) extra += defaultGap; if (extraBreaks.has(i)) extra += defaultGap*(extraFactor-1); }
     acc += extra;
-    const rowTop = topPad + i*base + acc;
+    const rowTop = i*base + acc;
     y.push(rowTop + base/2);
   }
   return y;
@@ -426,16 +436,32 @@ function step(){
       const samples=Math.max(1, Math.floor(dt*Fs*state.speed));
       for(let n=0;n<samples;n++){
         state.pdrPhase += 2*Math.PI*state.pdrHz/Fs;
+
+        // Randomly trigger sleep transients
         if(state.mode==='n2' && !state.spindle.active && Math.random()<0.02){ state.spindle.active=true; state.spindle.t0=state.artClock+Math.random()*0.5; state.spindle.dur=0.5+Math.random()*1.2; }
         if(state.mode==='n2' && !state.kcomplex.active && Math.random()<0.005){ state.kcomplex.active=true; state.kcomplex.t0=state.artClock+Math.random()*0.3; }
         if(state.mode==='n1' && !state.vertex.active && Math.random()<0.01){ state.vertex.active=true; state.vertex.t0=state.artClock+Math.random()*0.2; }
+
         if(state.spindle.active && state.artClock>state.spindle.t0+state.spindle.dur) state.spindle.active=false;
         if(state.kcomplex.active && state.artClock>state.kcomplex.t0+1.0) state.kcomplex.active=false;
         if(state.vertex.active && state.artClock>state.vertex.t0+0.15) state.vertex.active=false;
+
+        // SWS: evolve a global delta phase for synchrony (0.5–2 Hz), with slow drift
+        if(state.mode==='sws'){
+          // drift swsHz a little over time for natural variance
+          state.swsHz = Math.max(0.5, Math.min(2.0, state.swsHz + (Math.random()-0.5)*0.01));
+          state.swsPhase += 2*Math.PI*state.swsHz/Fs;
+        } else {
+          // reset occasionally so returning to SWS isn't phase-locked to prior
+          if(Math.random()<0.002){ state.swsPhase = 0; state.swsHz = 1.0 + (Math.random()-0.5)*0.2; }
+        }
+
+        // Artifacts
         const blinkT=state.artClock%1; let blinkShape=0;
         if(state.opts.blink && blinkT<BLINK_DUR){ const u=blinkT/BLINK_DUR; blinkShape=Math.sin(Math.PI*u); }
         const chewWave=state.opts.chew?Math.sin(2*Math.PI*3*state.artClock):0;
         const sweatOffset=state.opts.sweat?Math.sin(2*Math.PI*0.2*state.artClock):0;
+
         const opts={
           mode:state.mode, eyesOpen:state.eyesOpen,
           blinkShape,chewWave,sweatOffset,
@@ -444,21 +470,12 @@ function step(){
           clock:state.artClock,
           spindleEnv:state.spindle.active?spindleEnvelope(state.artClock,state.spindle.t0,state.spindle.dur):0,
           kcShape:state.kcomplex.active?kComplexShape(state.artClock,state.kcomplex.t0):0,
-          vertex:state.vertex.active, vertexShape:state.vertex.active?vertexShape(state.artClock,state.vertex.t0):0
+          vertex:state.vertex.active, vertexShape:state.vertex.active?vertexShape(state.artClock,state.vertex.t0):0,
+          swsPhase:state.swsPhase
         };
+
         const t=(state.idx%Fs)/Fs;
-        let sum=0, cnt=0;
-        for(const e of ELECTRODES){
-          const ch=state.channels.get(e);
-          const y=ch.sample(t+n/Fs, opts);
-          const buf=state.buffer.get(e);
-          buf[state.idx%buf.length]=y;
-          // contribute to AVG if scalp electrode (exclude ears and Oz)
-          if (avgElectrodes().includes(e)) { sum+=y; cnt++; }
-        }
-        const avg = cnt? (sum/cnt) : 0;
-        const avgBuf = state.buffer.get("AVG");
-        avgBuf[state.idx%avgBuf.length] = avg;
+        for(const e of ELECTRODES){ const ch=state.channels.get(e); const y=ch.sample(t+n/Fs, opts); const buf=state.buffer.get(e); buf[state.idx%buf.length]=y; }
         state.idx++; state.artClock+=1/Fs;
       }
     }
@@ -482,7 +499,8 @@ const $=id=>document.getElementById(id);
 function uvPerDivFromSensitivity(uVperMM){ return (parseFloat(uVperMM)||7)*10; }
 function secondsFromUI(){ const tb=$('timebase'); return tb?secondsFromTimebase(tb.value):10; }
 function regen(){
-  state.seconds=secondsFromUI(); const sensEl=$('sensitivity'); if(sensEl) state.uvPerDiv=uvPerDivFromSensitivity(sensEl.value);
+  state.seconds=secondsFromUI();
+  const sensEl=$('sensitivity'); if(sensEl) state.uvPerDiv=uvPerDivFromSensitivity(sensEl.value);
   state.opts={ blink:$('blink')?.checked||false, chew:$('chew')?.checked||false, sweat:$('sweat')?.checked||false, pop:$('pop')?.checked||false, emg:$('emg')?.checked||false };
   state.montage=$('montageSel')?$('montageSel').value:state.montage;
   state.pdrHz=10+(Math.random()*1); state.pdrPhase=0; state.artClock=0; initChannels();

@@ -1,0 +1,74 @@
+Spinner Arrow → Correct Wedge: What We Fixed
+
+Problem
+-------
+The game sometimes interpreted the wedge to the right/bottom of the spinner arrow as the value in play. This happened because the code derived the landed wedge from the wheel’s rotation alone (or from a bottom/right reference), rather than from the fixed arrow pointer at the top of the overlay.
+
+Approach
+--------
+Make the game *always* read the wedge that sits directly under the fixed pointer (12 o’clock). That logic is then used both during the spin animation (for the “sneak peek” preview) and at the end of the spin (for the authoritative result).
+
+Key Ideas
+---------
+1) Define a per-slice angle and keep it in sync
+   - sliceAngle = 2π / wheelWedges.length
+   - Recalculate anytime you rebuild the wheel wedges.
+
+2) Normalize angles
+   - A helper norm(a): wrap angles into [0, 2π).
+
+3) Compute the wedge under the pointer
+   - The pointer is fixed at the top; its world angle is -π/2 (configurable).
+   - Convert the world rotation to the wheel’s local frame and divide by sliceAngle.
+
+4) Use the same function in two places
+   - During animation frames (preview): idx = wedgeAtPointer(rot)
+   - On spin complete:            idx = wedgeAtPointer(finalRotation)
+
+Implementation (pseudo-code-ish)
+--------------------------------
+const TWO_PI = Math.PI * 2;
+let sliceAngle = 0;
+
+function _updateSliceAngle() {
+  if (Array.isArray(wheelWedges) && wheelWedges.length > 0) {
+    sliceAngle = TWO_PI / wheelWedges.length;
+  }
+}
+
+// Call _updateSliceAngle() at startup and after any wedge rebuild.
+
+function norm(a) {
+  a = a % TWO_PI;
+  if (a < 0) a += TWO_PI;
+  return a;
+}
+
+function wedgeAtPointer(rot = 0) {
+  const POINTER_OFFSET = -Math.PI / 2; // top; change if your pointer sits elsewhere
+  const local = norm(POINTER_OFFSET - rot);    // pointer in the wheel’s local frame
+  if (!sliceAngle) _updateSliceAngle();
+  const idx = Math.floor(local / sliceAngle);
+  // make sure idx stays within [0, wheelWedges.length)
+  return ((idx % wheelWedges.length) + wheelWedges.length) % wheelWedges.length;
+}
+
+// During spin animation (preview)
+const idxPreview = wedgeAtPointer(rot);
+drawPreview(idxPreview);
+
+// On spin complete
+const idx = wedgeAtPointer(state.rotation || 0);
+const landedWedge = wheelWedges[idx];
+
+Pointer Not at Top?
+-------------------
+Change POINTER_OFFSET to match the arrow’s fixed location:
+- Top:    -Math.PI / 2
+- Right:   0
+- Bottom:  Math.PI / 2
+- Left:    Math.PI
+
+Why This Works
+--------------
+It decouples the reading of the wedge from any assumptions about the wheel’s rotation reference. Instead, the code measures which sector aligns with the *fixed* pointer, guaranteeing that the preview and the final result match the visual arrow every time.

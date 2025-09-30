@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
-  <title>EEG Machine</title>
+  <title>EEG Lab — Procedural</title>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <style>
     :root { 
@@ -17,7 +17,6 @@
       --panel-border:#b8d9b3;
     }
     html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font:14px/1.2 system-ui,Segoe UI,Roboto,Arial}
-    body{display:flex;flex-direction:column}
     #topbar{display:flex;flex-direction:row;flex-wrap:wrap;gap:.75rem;align-items:flex-end;padding:.5rem .75rem;border-bottom:1px solid var(--panel-border);background:var(--panel);position:sticky;top:0;z-index:2}
     .ctrl{display:flex;flex-direction:column;gap:.25rem;min-width:120px}
     .ctrl label{font-size:12px;opacity:.8;display:block}
@@ -29,7 +28,7 @@
     .radio{display:flex;gap:.75rem;align-items:center;flex-wrap:wrap}
     .mini{font-size:12px;padding:.25rem .45rem;border-radius:6px}
     .pill{background:#fff;border:1px solid var(--panel-border);border-radius:999px;padding:.2rem .5rem;font-size:12px;color:#245f24}
-    #wrap{position:relative;flex:1;min-height:0}
+    #wrap{position:relative;height:calc(100% - 96px)}
     #c{width:100%;height:100%;display:block}
     #err{position:absolute;left:8px;bottom:8px;background:#ffefef;border:1px solid #e6b0b0;border-radius:8px;padding:.35rem .55rem;font-size:12px;display:none;color:#7b1b1b}
     .popover{position:fixed;top:56px;right:12px;background:#fff;border:1px solid var(--panel-border);border-radius:8px;padding:.5rem .75rem;box-shadow:0 8px 24px rgba(0,0,0,.08);display:none;z-index:3}
@@ -48,10 +47,9 @@
   <div id="topbar">
     <div class="ctrl"><label>Montage</label>
       <select id="montageSel">
-        <option value="bipolar_longitudinal" selected>Longitudinal (Double Banana)</option>
+        <option value="bipolar_longitudinal" selected>Double Banana (Longitudinal)</option>
         <option value="bipolar_transverse">Transverse</option>
-        <option value="referential">Reference (ipsilateral ear A1/A2)</option>
-        <option value="average">Average reference (AVG)</option>
+        <option value="referential">Reference (A1/A2)</option>
       </select>
     </div>
     <div class="ctrl"><label>Timebase (mm/sec)</label>
@@ -81,8 +79,8 @@
         <label><input type="radio" name="mode" value="drowsy"> Drowsy</label>
         <label><input type="radio" name="mode" value="n1"> Sleep 1</label>
         <label><input type="radio" name="mode" value="n2"> Sleep 2</label>
-        <label><input type="radio" name="mode" value="sws"> SWS</label>
         <label><input type="radio" name="mode" value="rem"> REM</label>
+        <label><input type="radio" name="mode" value="sws"> SWS</label>
         <label class="pill"><input type="checkbox" id="eyesOpen"> Eyes open</label>
       </div>
     </fieldset>
@@ -121,13 +119,12 @@
 
 <script>
 /***********************
- * Electrodes & Montages
+ * 1) Electrodes & Montages
  ***********************/
 const ELECTRODES = [
   "Fp1","F3","C3","P3","O1","F7","T3","T5",
   "Fz","Cz","Pz",
   "Fp2","F4","C4","P4","O2","F8","T4","T6",
-  "Oz",
   "A1","A2"
 ];
 const DISPLAY_ORDER = [
@@ -149,18 +146,18 @@ const TRANSVERSE_CHAINS = [
 ];
 
 /***********************
- * Seeded RNG
+ * 2) Seeded RNG
  ***********************/
 function xmur3(str){let h=1779033703^str.length;for(let i=0;i<str.length;i++){h=Math.imul(h^str.charCodeAt(i),3432918353);h=h<<13|h>>>19;}return ()=>{h=Math.imul(h^ (h>>>16),2246822507);h=Math.imul(h^ (h>>>13),3266489909);h^=h>>>16;return h>>>0;};}
 function sfc32(a,b,c,d){return function(){a|=0;b|=0;c|=0;d|=0;var t=(a+b|0)+d|0;d=d+1|0;a=b^b>>>9;b=c+(c<<3)|0;c=(c<<21|c>>>11);c=c+t|0;return (t>>>0)/4294967296;};}
 function makeRNG(seedStr){ const seed = xmur3(seedStr); return sfc32(seed(),seed(),seed(),seed()); }
 
 /***********************
- * Signal Model
+ * 3) Signal Model
  ***********************/
-const Fs = 256;
-const BLINK_DUR = 0.35;      // s
-const EMG_PWR = 0.25;
+const Fs = 256;              // Hz
+const BLINK_DUR = 0.35;      // seconds
+const EMG_PWR = 0.25;        // scale
 
 function region(e){
   if (/^O/.test(e)) return 'occipital';
@@ -173,89 +170,124 @@ function lowpass(prev, x, a){ return prev + a*(x - prev); }
 
 class Channel {
   constructor(name, rng){
-    this.name=name; this.rng=rng;
-    this.phAlpha=this.rng()*Math.PI*2;
-    this.phBeta =this.rng()*Math.PI*2;
-    this.phTheta=this.rng()*Math.PI*2;
-    this.phDelta=this.rng()*Math.PI*2;
+    this.name = name; this.rng=rng;
+    this.phAlpha = this.rng()*Math.PI*2;
+    this.phBeta  = this.rng()*Math.PI*2;
+    this.phTheta = this.rng()*Math.PI*2;
+    this.phDelta = this.rng()*Math.PI*2;
     this.envA=0; this.envB=0; this.envT=0; this.envD=0;
     this.brown=0;
-    this.alphaJitter=(this.rng()-0.5)*0.2;
+    this.alphaJitter = (this.rng()-0.5)*0.2;
   }
   sample(t, opts){
     const r = region(this.name);
-    let A=8,B=6,T=6,D=3;
-    switch(opts.mode){
+    let A=8,B=6,T=6,D=3; // base amps
+
+    // Combined rhythm/state base bands
+    switch (opts.mode){
       case 'alpha': case 'awake':
         if (r==='occipital') A = (opts.eyesOpen? 6: 40); else if (r==='central') A = 10; else if (r==='frontal') A = 6; else A = 8;
-        B = (r==='frontal') ? 8 : 6; T = (r==='temporal') ? 7 : 5; D = 3; break;
+        B = (r==='frontal') ? 8 : 6; T = (r==='temporal') ? 7 : 5; D = 3;
+        break;
       case 'beta':
-        B = (r==='frontal')? 14 : 10; A = (r==='occipital') ? (opts.eyesOpen?5:12) : 6; T=6; D=3; break;
+        B = (r==='frontal')? 14 : 10; A = (r==='occipital') ? (opts.eyesOpen?5:12) : 6; T=6; D=3;
+        break;
       case 'theta': case 'drowsy':
         T = (r==='temporal'||r==='central'||opts.mode==='theta') ? 15 : 10; 
-        A = (r==='occipital') ? (opts.eyesOpen?4:12) : 6; B=6; D=4; break;
+        A = (r==='occipital') ? (opts.eyesOpen?4:12) : 6; B=6; D=4;
+        break;
       case 'delta':
-        D = (r==='frontal'||r==='central') ? 20 : 12; T=8; A=6; B=4; break;
+        D = (r==='frontal'||r==='central') ? 20 : 12; T=8; A=6; B=4;
+        break;
       case 'n1':
-        T = (r==='central') ? 16 : 12; A=6; B=6; D=5; break;
+        T = (r==='central') ? 16 : 12; A=6; B=6; D=5;
+        break;
       case 'n2':
-        T = (r==='central') ? 14 : 10; A=6; B=7; D=6; break;
+        T = (r==='central') ? 14 : 10; A=6; B=7; D=6;
+        break;
       case 'rem':
-        T = 12; B = 8; A = 5; D = 4; break;
+        // Low-voltage mixed frequency, theta-biased; minimal alpha
+        T = 12; B = 8; A = 5; D = 4;
+        break;
       case 'sws':
-        D = 35; T=6; A=4; B=3; break;
+        D = 35; T=6; A=4; B=3;
+        break;
     }
+
     this.envA = lowpass(this.envA, (this.rng()-0.5)*2, 0.002);
     this.envB = lowpass(this.envB, (this.rng()-0.5)*2, 0.004);
     this.envT = lowpass(this.envT, (this.rng()-0.5)*2, 0.003);
     this.envD = lowpass(this.envD, (this.rng()-0.5)*2, 0.0015);
+
     const fAlpha = ((opts.mode==='alpha' || opts.mode==='awake') && r==='occipital') ? opts.pdrHz : 8 + this.rng()*4;
     const fBeta  = 18 + this.rng()*10;
     const fTheta = 4.5 + this.rng()*2.5;
     const fDelta = 1.0 + this.rng()*1.5;
+
     this.phAlpha += 2*Math.PI*fAlpha/Fs;
     this.phBeta  += 2*Math.PI*fBeta /Fs;
     this.phTheta += 2*Math.PI*fTheta/Fs;
     this.phDelta += 2*Math.PI*fDelta/Fs;
+
     let y = 0;
     const alphaTerm = ((opts.mode==='alpha' || opts.mode==='awake') && r==='occipital')
       ? Math.sin(opts.pdrPhase + this.alphaJitter)
       : Math.sin(this.phAlpha);
+
     y += (A*(1+0.6*this.envA)) * alphaTerm;
     y += (B*(1+0.6*this.envB)) * Math.sin(this.phBeta);
     y += (T*(1+0.6*this.envT)) * Math.sin(this.phTheta);
     y += (D*(1+0.6*this.envD)) * Math.sin(this.phDelta);
-    if (opts.mode==='drowsy' && /^Fp|^F/.test(this.name)) y += 40*Math.sin(2*Math.PI*0.25*opts.clock);
-    if (opts.mode==='rem' && /^Fp|^F/.test(this.name)) {
-      const fREM = 0.8 + 0.4*Math.sin(0.2*opts.clock);
-      const burst = (Math.sin(2*Math.PI*0.12*opts.clock)>0.7) ? 1 : 0;
-      const saw = 2*(opts.clock*fREM - Math.floor(0.5 + opts.clock*fREM));
-      y += burst * 35 * (saw);
+
+    // Drowsy: slow eye movements over frontal (SEM ~0.25 Hz)
+    if (opts.mode==='drowsy' && /^Fp|^F/.test(this.name)) {
+      y += 40*Math.sin(2*Math.PI*0.25*opts.clock);
     }
-    if (opts.vertex && (this.name==='Cz' || this.name==='Fz')) y += opts.vertexShape * (this.name==='Cz' ? 120 : 60);
+
+    // REM: bursts of rapid eye movements (frontals) with sawtooth-like deflection 0.8–1.2 Hz
+    if (opts.mode==='rem' && /^Fp|^F/.test(this.name)) {
+      const fREM = 0.8 + 0.4*Math.sin(0.2*opts.clock); // vary between ~0.6-1.0 Hz subtly
+      const burst = (Math.sin(2*Math.PI*0.12*opts.clock)>0.7) ? 1 : 0; // intermittent bursts
+      const saw = 2*(opts.clock*fREM - Math.floor(0.5 + opts.clock*fREM)); // -1..1
+      y += burst * 35 * (saw); // modest amplitude
+    }
+
+    // N1: vertex sharp waves (Cz prominent, also Fz)
+    if (opts.vertex && (this.name==='Cz' || this.name==='Fz')) {
+      y += opts.vertexShape * (this.name==='Cz' ? 120 : 60);
+    }
+
+    // N2: spindles over central; K-complex fronto-central
     if (opts.spindleEnv && /^(C3|C4|Cz)$/.test(this.name)) {
-      const fSigma = 12 + 2*Math.sin(0.1*opts.clock);
+      const fSigma = 12 + 2*Math.sin(0.1*opts.clock); // 12–14 Hz slight wander
       y += 25*opts.spindleEnv*Math.sin(2*Math.PI*fSigma*opts.clock);
     }
-    if (opts.kcShape && /^(F3|F4|C3|C4|Cz|Fz)$/.test(this.name)) y += 120*opts.kcShape * (/(F|Fz)/.test(this.name)?1.0:0.8);
+    if (opts.kcShape && /^(F3|F4|C3|C4|Cz|Fz)$/.test(this.name)) {
+      y += 120*opts.kcShape * (/(F|Fz)/.test(this.name)?1.0:0.8);
+    }
+
+    // colored noise
     const w = (this.rng()-0.5)*4.0;
     this.brown = 0.98*this.brown + w;
     const pinkish = 0.9*this.brown + 0.1*w;
     y += pinkish;
+
+    // artifacts
     if (opts.blinkShape && /^Fp|^F[34]$/.test(this.name)) y += 120*opts.blinkShape;
     if (opts.chewWave && /^(T3|T4|T5|T6)$/.test(this.name)) y += 30*opts.chewWave;
     if (opts.sweatOffset && /^(Fp|F|C)/.test(this.name)) y += 20*opts.sweatOffset;
     if (opts.pop && this.rng()<0.0005) y += 200*(this.rng()-0.5);
     if (opts.emg && /^(F7|F8|T3|T4|T5|T6)$/.test(this.name)){
-      const hf = 30 + this.rng()*40;
+      const hf = 30 + this.rng()*40; // 30–70 Hz
       y += EMG_PWR*20*Math.sin(2*Math.PI*hf*opts.clock + 6*this.rng());
     }
+
     return y;
   }
 }
 
 /***********************
- * Engine state
+ * 4) Engine state
  ***********************/
 const state = {
   rng: makeRNG("EEG-1001"),
@@ -263,16 +295,17 @@ const state = {
   buffer: new Map(),
   idx: 0,
   seconds: 10,
-  uvPerDiv: 70,
+  uvPerDiv: 70,   // 7 µV/mm × 10 mm/div
   running: true,
   speed: 1,
   opts: {blink:false, chew:false, sweat:false, pop:false, emg:false},
   montage: 'bipolar_longitudinal',
-  mode: 'awake',
+  mode: 'awake',      // combined rhythm/state
   eyesOpen: false,
   pdrHz: 10.5,
   pdrPhase: 0,
   artClock: 0,
+  // sleep event states
   spindle: {active:false, t0:0, dur:0.0},
   kcomplex: {active:false, t0:0},
   vertex: {active:false, t0:0}
@@ -284,28 +317,24 @@ function initChannels(){
     state.channels.set(e, new Channel(e, state.rng));
     state.buffer.set(e, new Float32Array(Fs*state.seconds));
   });
-  // Synthetic buffer for average reference
-  state.buffer.set("AVG", new Float32Array(Fs*state.seconds));
   state.idx = 0;
 }
 
 /***********************
- * Montage helpers
+ * 5) Montage helpers
  ***********************/
-function leftHem(e){ return /^(Fp1|F3|C3|P3|O1|F7|T3|T5|A1|Fz|Cz|Pz)$/.test(e); }
-function avgElectrodes(){
-  // Use DISPLAY_ORDER as scalp set; excludes A1/A2 and Oz.
-  return DISPLAY_ORDER.slice();
+function leftHem(e){
+  return /^(Fp1|F3|C3|P3|O1|F7|T3|T5|A1|Fz|Cz|Pz)$/.test(e);
 }
-
 function montagePairs(){
-  const arr=[];
+  const arr = [];
   if (state.montage==='referential'){
-    for (const e of DISPLAY_ORDER){ const ref=leftHem(e)?'A1':'A2'; arr.push({a:e,b:ref,label:`${e}-${ref}`}); }
+    for (const e of DISPLAY_ORDER){
+      const ref = leftHem(e)? 'A1':'A2';
+      arr.push({a:e, b:ref, label:`${e}-${ref}`});
+    }
   } else if (state.montage==='bipolar_transverse'){
     for (const [a,b] of TRANSVERSE_CHAINS){ arr.push({a,b,label:`${a}-${b}`}); }
-  } else if (state.montage==='average'){
-    for (const e of avgElectrodes()){ arr.push({a:e,b:'AVG',label:`${e} - AVG`}); }
   } else {
     for (const [a,b] of LONGITUDINAL_CHAINS){ arr.push({a,b,label:`${a}-${b}`}); }
   }
@@ -313,11 +342,11 @@ function montagePairs(){
 }
 
 /***********************
- * Renderer
+ * 6) Renderer
  ***********************/
-const canvas=document.getElementById('c');
-const ctx=canvas.getContext('2d');
-const errBox=document.getElementById('err');
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const errBox = document.getElementById('err');
 
 function resize(){
   const dpr = Math.max(1, window.devicePixelRatio||1);
@@ -335,34 +364,38 @@ function drawGrid(rows, secs){
   ctx.fillRect(0,0,w,h);
   const pxPerSec = w / secs;
   ctx.lineWidth = 1;
+  // minor lines (0.2 s)
   ctx.beginPath();
   ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--grid-minor');
-  for (let s=0; s<secs*5; s++){ const x=Math.round(s*(pxPerSec/5))+0.5; ctx.moveTo(x,0); ctx.lineTo(x,h); }
+  for (let s=0; s<secs*5; s++){
+    const x = Math.round(s*(pxPerSec/5))+0.5;
+    ctx.moveTo(x,0); ctx.lineTo(x,h);
+  }
   ctx.stroke();
+  // major lines (1 s)
   ctx.beginPath();
   ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--grid-major');
-  for (let s=0; s<=secs; s++){ const x=Math.round(s*pxPerSec)+0.5; ctx.moveTo(x,0); ctx.lineTo(x,h); }
+  for (let s=0; s<=secs; s++){
+    const x = Math.round(s*pxPerSec)+0.5;
+    ctx.moveTo(x,0); ctx.lineTo(x,h);
+  }
   ctx.stroke();
   ctx.restore();
 }
 
 function groupColor(index){
-  const red=getComputedStyle(document.documentElement).getPropertyValue('--trace-red');
-  const blue=getComputedStyle(document.documentElement).getPropertyValue('--trace-blue');
-  const black=getComputedStyle(document.documentElement).getPropertyValue('--trace-black');
-  const label=montagePairs()[index]?.label||"";
+  const red  = getComputedStyle(document.documentElement).getPropertyValue('--trace-red');
+  const blue = getComputedStyle(document.documentElement).getPropertyValue('--trace-blue');
+  const black = getComputedStyle(document.documentElement).getPropertyValue('--trace-black');
+  const label = montagePairs()[index]?.label || "";
   if (/^(Fz-Cz|Cz-Pz)$/.test(label)) return black;
-  if (state.montage==='bipolar_longitudinal') return (Math.floor(index/4)%2===1)?red:blue;
-  if (state.montage==='bipolar_transverse') return (index%2===0)?blue:red;
+  if (state.montage==='bipolar_longitudinal') return (Math.floor(index/4)%2===1) ? red : blue;
+  if (state.montage==='bipolar_transverse')  return (index%2===0) ? blue : red;
   return '#333';
 }
 
 function computeRowMids(count){
-  // Reserve vertical padding so top channels (e.g., Fp1–F7) never get cut off near the toolbar.
-  // Use responsive padding with sensible minimums.
   const h = canvas.clientHeight;
-  const topPad = Math.max(56, Math.floor(h*0.07));   // ~7% of height, at least 56px
-  const bottomPad = Math.max(32, Math.floor(h*0.05)); // ~5% of height, at least 32px
   const useGaps = (state.montage==='bipolar_longitudinal');
   const defaultGap = useGaps ? 10 : 0;
   const extraBreaks = useGaps ? new Set([4,8,12]) : new Set();
@@ -375,13 +408,17 @@ function computeRowMids(count){
     if (extraBreaks.has(i)) extra += defaultGap*(extraFactor-1);
     totalExtra += extra;
   }
-  const base = (h - topPad - bottomPad - totalExtra) / count;
-  const y = []; let acc = 0;
+  const base = (h - totalExtra) / count;
+  const y = [];
+  let acc = 0;
   for (let i=0;i<count;i++){
     let extra = 0;
-    if (useGaps){ if (i>0 && i%4===0) extra += defaultGap; if (extraBreaks.has(i)) extra += defaultGap*(extraFactor-1); }
+    if (useGaps){
+      if (i>0 && i%4===0) extra += defaultGap;
+      if (extraBreaks.has(i)) extra += defaultGap*(extraFactor-1);
+    }
     acc += extra;
-    const rowTop = topPad + i*base + acc;
+    const rowTop = i*base + acc;
     y.push(rowTop + base/2);
   }
   return y;
@@ -398,10 +435,10 @@ function renderLabels(pairs, yMids, colorAtIndex){
 }
 
 /***********************
- * Timebase mapping
+ * 7) Timebase mapping
  ***********************/
 function secondsFromTimebase(mmps){
-  const v=parseInt(mmps,10);
+  const v = parseInt(mmps,10);
   if (v===15) return 20;
   if (v===30) return 10;
   if (v===60) return 5;
@@ -411,124 +448,222 @@ function secondsFromTimebase(mmps){
 /***********************
  * Sleep event helpers
  ***********************/
-function spindleEnvelope(t, t0, dur){ const x=(t-t0)/dur; if(x<0||x>1) return 0; return Math.sin(Math.PI*x)**2; }
-function kComplexShape(t, t0){ const x=t-t0; if(x<-0.1||x>1.0) return 0; const neg=x>=0&&x<=0.2?-Math.sin(Math.PI*(x/0.2)):0; const pos=(x>0.2&&x<=0.8)?Math.sin(Math.PI*((x-0.2)/0.6)):0; return neg+0.6*pos; }
-function vertexShape(t, t0){ const x=t-t0; if(x<0||x>0.15) return 0; return -Math.sin(Math.PI*(x/0.15)); }
+function spindleEnvelope(t, t0, dur){
+  const x = (t - t0) / dur; // 0..1
+  if (x<0 || x>1) return 0;
+  return Math.sin(Math.PI*x)**2; // smooth in/out
+}
+function kComplexShape(t, t0){
+  const x = t - t0; // seconds
+  if (x<-0.1 || x>1.0) return 0;
+  // biphasic: sharp neg (~0.2s) then broad pos (~0.6s)
+  const neg = x>=0 && x<=0.2 ? -Math.sin(Math.PI*(x/0.2)) : 0;
+  const posEnv = (x>0.2 && x<=0.8) ? Math.sin(Math.PI*((x-0.2)/0.6)) : 0;
+  return neg + 0.6*posEnv;
+}
+function vertexShape(t, t0){
+  const x = t - t0;
+  if (x<0 || x>0.15) return 0;
+  // sharp negative deflection
+  return -Math.sin(Math.PI*(x/0.15));
+}
 
 /***********************
- * Main loop
+ * 8) Main loop
  ***********************/
-let lastT=performance.now()/1000;
+let lastT = performance.now()/1000;
 function step(){
   try{
-    if(state.running){
-      const now=performance.now()/1000; const dt=Math.min(0.05, now-lastT); lastT=now;
-      const samples=Math.max(1, Math.floor(dt*Fs*state.speed));
-      for(let n=0;n<samples;n++){
+    if (state.running){
+      const now = performance.now()/1000;
+      const dt = Math.min(0.05, now - lastT);
+      lastT = now;
+
+      const samples = Math.max(1, Math.floor(dt*Fs*state.speed));
+      for (let n=0;n<samples;n++){
         state.pdrPhase += 2*Math.PI*state.pdrHz/Fs;
-        if(state.mode==='n2' && !state.spindle.active && Math.random()<0.02){ state.spindle.active=true; state.spindle.t0=state.artClock+Math.random()*0.5; state.spindle.dur=0.5+Math.random()*1.2; }
-        if(state.mode==='n2' && !state.kcomplex.active && Math.random()<0.005){ state.kcomplex.active=true; state.kcomplex.t0=state.artClock+Math.random()*0.3; }
-        if(state.mode==='n1' && !state.vertex.active && Math.random()<0.01){ state.vertex.active=true; state.vertex.t0=state.artClock+Math.random()*0.2; }
-        if(state.spindle.active && state.artClock>state.spindle.t0+state.spindle.dur) state.spindle.active=false;
-        if(state.kcomplex.active && state.artClock>state.kcomplex.t0+1.0) state.kcomplex.active=false;
-        if(state.vertex.active && state.artClock>state.vertex.t0+0.15) state.vertex.active=false;
-        const blinkT=state.artClock%1; let blinkShape=0;
-        if(state.opts.blink && blinkT<BLINK_DUR){ const u=blinkT/BLINK_DUR; blinkShape=Math.sin(Math.PI*u); }
-        const chewWave=state.opts.chew?Math.sin(2*Math.PI*3*state.artClock):0;
-        const sweatOffset=state.opts.sweat?Math.sin(2*Math.PI*0.2*state.artClock):0;
-        const opts={
-          mode:state.mode, eyesOpen:state.eyesOpen,
-          blinkShape,chewWave,sweatOffset,
-          pop:state.opts.pop, emg:state.opts.emg,
-          pdrPhase:state.pdrPhase, pdrHz:state.pdrHz,
-          clock:state.artClock,
-          spindleEnv:state.spindle.active?spindleEnvelope(state.artClock,state.spindle.t0,state.spindle.dur):0,
-          kcShape:state.kcomplex.active?kComplexShape(state.artClock,state.kcomplex.t0):0,
-          vertex:state.vertex.active, vertexShape:state.vertex.active?vertexShape(state.artClock,state.vertex.t0):0
-        };
-        const t=(state.idx%Fs)/Fs;
-        let sum=0, cnt=0;
-        for(const e of ELECTRODES){
-          const ch=state.channels.get(e);
-          const y=ch.sample(t+n/Fs, opts);
-          const buf=state.buffer.get(e);
-          buf[state.idx%buf.length]=y;
-          // contribute to AVG if scalp electrode (exclude ears and Oz)
-          if (avgElectrodes().includes(e)) { sum+=y; cnt++; }
+
+        // probabilistic sleep events
+        if (state.mode==='n2' && !state.spindle.active && Math.random()<0.02){ // ~once/50 frames
+          state.spindle.active = true;
+          state.spindle.t0 = state.artClock + Math.random()*0.5;
+          state.spindle.dur = 0.5 + Math.random()*1.2; // 0.5–1.7 s
         }
-        const avg = cnt? (sum/cnt) : 0;
-        const avgBuf = state.buffer.get("AVG");
-        avgBuf[state.idx%avgBuf.length] = avg;
-        state.idx++; state.artClock+=1/Fs;
+        if (state.mode==='n2' && !state.kcomplex.active && Math.random()<0.005){ // rarer
+          state.kcomplex.active = true;
+          state.kcomplex.t0 = state.artClock + Math.random()*0.3;
+        }
+        if (state.mode==='n1' && !state.vertex.active && Math.random()<0.01){
+          state.vertex.active = true;
+          state.vertex.t0 = state.artClock + Math.random()*0.2;
+        }
+
+        // decay events
+        if (state.spindle.active && state.artClock > state.spindle.t0 + state.spindle.dur) state.spindle.active=false;
+        if (state.kcomplex.active && state.artClock > state.kcomplex.t0 + 1.0) state.kcomplex.active=false;
+        if (state.vertex.active && state.artClock > state.vertex.t0 + 0.15) state.vertex.active=false;
+
+        // artifacts clocks
+        const blinkT = state.artClock % 1; // 1 Hz cycle
+        let blinkShape = 0;
+        if (state.opts.blink && blinkT < BLINK_DUR){
+          const u = blinkT/BLINK_DUR; // 0..1
+          blinkShape = Math.sin(Math.PI*u);
+        }
+        const chewWave = state.opts.chew ? Math.sin(2*Math.PI*3*state.artClock) : 0;
+        const sweatOffset = state.opts.sweat ? Math.sin(2*Math.PI*0.2*state.artClock) : 0;
+
+        const opts = {
+          mode: state.mode,
+          eyesOpen: state.eyesOpen,
+          blinkShape, chewWave, sweatOffset,
+          pop: state.opts.pop, emg: state.opts.emg,
+          pdrPhase: state.pdrPhase, pdrHz: state.pdrHz,
+          clock: state.artClock,
+          spindleEnv: state.spindle.active ? spindleEnvelope(state.artClock, state.spindle.t0, state.spindle.dur) : 0,
+          kcShape: state.kcomplex.active ? kComplexShape(state.artClock, state.kcomplex.t0) : 0,
+          vertex: state.vertex.active,
+          vertexShape: state.vertex.active ? vertexShape(state.artClock, state.vertex.t0) : 0
+        };
+
+        const t = (state.idx%Fs)/Fs;
+        for (const e of ELECTRODES){
+          const ch = state.channels.get(e);
+          const y = ch.sample(t + n/Fs, opts);
+          const buf = state.buffer.get(e);
+          buf[state.idx % buf.length] = y;
+        }
+        state.idx++;
+        state.artClock += 1/Fs;
       }
     }
-    const pairs=montagePairs(); drawGrid(pairs.length, state.seconds);
-    const w=canvas.clientWidth; const pxPerSec=w/state.seconds; const yMids=computeRowMids(pairs.length);
-    for(let i=0;i<pairs.length;i++){
-      const {a,b}=pairs[i]; const ra=state.buffer.get(a); const rb=state.buffer.get(b); if(!ra||!rb) continue;
-      const yMid=yMids[i]; ctx.beginPath(); ctx.strokeStyle=groupColor(i); ctx.lineWidth=1.2;
-      for(let x=0;x<w;x++){ const secAgo=(w-x)/pxPerSec; const idx=(state.idx-Math.floor(secAgo*Fs)); const len=ra.length; const j=((idx%len)+len)%len; const uv=ra[j]-rb[j]; const rowH=(canvas.clientHeight/pairs.length); const y=yMid-(uv/state.uvPerDiv)*(rowH/4); if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); }
+
+    const pairs = montagePairs();
+    drawGrid(pairs.length, state.seconds);
+
+    const w = canvas.clientWidth;
+    const pxPerSec = w / state.seconds;
+    const yMids = computeRowMids(pairs.length);
+
+    for (let i=0;i<pairs.length;i++){
+      const {a,b} = pairs[i];
+      const ringA = state.buffer.get(a);
+      const ringB = state.buffer.get(b);
+      if (!ringA || !ringB) continue;
+      const yMid = yMids[i];
+      ctx.beginPath();
+      ctx.strokeStyle = groupColor(i); ctx.lineWidth=1.2;
+      for (let x=0;x<w;x++){
+        const secAgo = (w - x)/pxPerSec;
+        const idx = (state.idx - Math.floor(secAgo*Fs));
+        const len = ringA.length;
+        const j = ((idx % len) + len) % len;
+        const uv = ringA[j] - ringB[j];
+        const rowH = (canvas.clientHeight/pairs.length);
+        const y  = yMid - (uv / state.uvPerDiv) * (rowH/4);
+        if (x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+      }
       ctx.stroke();
     }
-    renderLabels(pairs, yMids, groupColor); errBox.style.display='none';
-  }catch(e){ console.error(e); errBox.textContent='Render error: '+e.message; errBox.style.display='block'; }
+
+    renderLabels(pairs, yMids, groupColor);
+    errBox.style.display='none';
+  } catch(e){
+    console.error(e);
+    errBox.textContent = 'Render error: '+e.message;
+    errBox.style.display='block';
+  }
   requestAnimationFrame(step);
 }
 
 /***********************
- * UI wiring
+ * 9) UI wiring
  ***********************/
-const $=id=>document.getElementById(id);
+const $ = id=>document.getElementById(id);
 function uvPerDivFromSensitivity(uVperMM){ return (parseFloat(uVperMM)||7)*10; }
-function secondsFromUI(){ const tb=$('timebase'); return tb?secondsFromTimebase(tb.value):10; }
+function secondsFromUI(){ const tb = $('timebase'); return tb ? secondsFromTimebase(tb.value) : 10; }
 function regen(){
-  state.seconds=secondsFromUI(); const sensEl=$('sensitivity'); if(sensEl) state.uvPerDiv=uvPerDivFromSensitivity(sensEl.value);
-  state.opts={ blink:$('blink')?.checked||false, chew:$('chew')?.checked||false, sweat:$('sweat')?.checked||false, pop:$('pop')?.checked||false, emg:$('emg')?.checked||false };
-  state.montage=$('montageSel')?$('montageSel').value:state.montage;
-  state.pdrHz=10+(Math.random()*1); state.pdrPhase=0; state.artClock=0; initChannels();
+  state.seconds = secondsFromUI();
+  const sensEl=$('sensitivity'); if (sensEl) state.uvPerDiv = uvPerDivFromSensitivity(sensEl.value);
+  state.opts = {
+    blink: $('blink')?.checked || false,
+    chew:  $('chew')?.checked  || false,
+    sweat: $('sweat')?.checked || false,
+    pop:   $('pop')?.checked   || false,
+    emg:   $('emg')?.checked   || false
+  };
+  state.montage = $('montageSel') ? $('montageSel').value : state.montage;
+  state.pdrHz = 10 + (Math.random()*1);
+  state.pdrPhase = 0;
+  state.artClock = 0;
+  initChannels();
 }
 function updateEyesOpenEnabled(){
-  const dis=(state.mode==='n1'||state.mode==='n2'||state.mode==='sws'||state.mode==='rem');
-  const chk=$('eyesOpen'); if(!chk) return; chk.disabled=dis; if(dis) chk.checked=false; state.eyesOpen=chk.checked;
+  const dis = (state.mode==='n1' || state.mode==='n2' || state.mode==='sws' || state.mode==='rem');
+  const chk = $('eyesOpen');
+  if (!chk) return;
+  chk.disabled = dis;
+  if (dis) chk.checked = false;
+  state.eyesOpen = chk.checked;
 }
-if($('play')) $('play').addEventListener('click',()=>{ state.running=!state.running; $('play').textContent=state.running?'Pause':'Play'; });
-if($('montageSel')) $('montageSel').addEventListener('change',()=>{ state.montage=$('montageSel').value; });
-document.querySelectorAll('#modeRadios input[name="mode"]').forEach(el=>{
-  el.addEventListener('change',()=>{ if(el.checked){ state.mode=el.value; updateEyesOpenEnabled(); }});
-});
-if($('eyesOpen')) $('eyesOpen').addEventListener('change',()=>{ state.eyesOpen=$('eyesOpen').checked; });
-if($('speed')) $('speed').addEventListener('click',()=>{ state.speed=state.speed===1?2:1; $('speed').textContent=state.speed===1?'2× Speed':'1× Speed'; });
-const artBtn=$('artifactsBtn'); const artPanel=$('artifactsPanel');
-if(artBtn && artPanel){
-  artBtn.addEventListener('click',(e)=>{ e.stopPropagation(); artPanel.classList.toggle('open'); });
-  document.addEventListener('click',(e)=>{ if(!artPanel.contains(e.target) && e.target!==artBtn) artPanel.classList.remove('open'); });
-  artPanel.querySelectorAll('input').forEach(cb=>cb.addEventListener('change',()=>{ regen(); }));
-}
-if($('timebase')) $('timebase').addEventListener('change',()=>{ state.seconds=secondsFromTimebase($('timebase').value); initChannels(); });
-if($('sensitivity')) $('sensitivity').addEventListener('change',()=>{ state.uvPerDiv=uvPerDivFromSensitivity($('sensitivity').value); });
 
-/* Intro modal */
-(function(){ const modal=document.getElementById('introModal'); const closeBtn=document.getElementById('introClose'); function close(){ modal.setAttribute('hidden',''); } if(closeBtn) closeBtn.addEventListener('click', close); if(modal) modal.addEventListener('click',(e)=>{ if(e.target===modal) close(); }); document.addEventListener('keydown',(e)=>{ if(e.key==='Escape') close(); }); })();
+if ($('play')) $('play').addEventListener('click', ()=>{
+  state.running = !state.running;
+  $('play').textContent = state.running ? 'Pause' : 'Play';
+});
+if ($('montageSel')) $('montageSel').addEventListener('change', ()=>{ state.montage=$('montageSel').value; });
+document.querySelectorAll('#modeRadios input[name="mode"]').forEach(el=>{
+  el.addEventListener('change', ()=>{ if (el.checked){ state.mode = el.value; updateEyesOpenEnabled(); }});
+});
+if ($('eyesOpen')) $('eyesOpen').addEventListener('change', ()=>{ state.eyesOpen = $('eyesOpen').checked; });
+if ($('speed')) $('speed').addEventListener('click', ()=>{
+  state.speed = state.speed===1 ? 2 : 1;
+  $('speed').textContent = state.speed===1 ? '2× Speed' : '1× Speed';
+});
+const artBtn = $('artifactsBtn');
+const artPanel = $('artifactsPanel');
+if (artBtn && artPanel){
+  artBtn.addEventListener('click', (e)=>{ e.stopPropagation(); artPanel.classList.toggle('open'); });
+  document.addEventListener('click', (e)=>{ if (!artPanel.contains(e.target) && e.target!==artBtn) artPanel.classList.remove('open'); });
+  artPanel.querySelectorAll('input').forEach(cb=>cb.addEventListener('change', ()=>{ regen(); }));
+}
+if ($('timebase')) $('timebase').addEventListener('change', ()=>{ state.seconds = secondsFromTimebase($('timebase').value); initChannels(); });
+if ($('sensitivity')) $('sensitivity').addEventListener('change', ()=>{ state.uvPerDiv = uvPerDivFromSensitivity($('sensitivity').value); });
+
+/* Intro modal wiring (EEG runs behind it) */
+(function(){
+  const modal = document.getElementById('introModal');
+  const closeBtn = document.getElementById('introClose');
+  function close(){ modal.setAttribute('hidden',''); }
+  if (closeBtn) closeBtn.addEventListener('click', close);
+  if (modal) modal.addEventListener('click', (e)=>{ if(e.target===modal) close(); });
+  document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') close(); });
+})();
 
 /***********************
- * Self-tests & boot
+ * 10) Self-tests
  ***********************/
 function selfTests(){
-  const prev=state.montage;
-  state.montage='referential'; console.assert(montagePairs().length===DISPLAY_ORDER.length,'ref count');
-  state.montage='bipolar_longitudinal'; console.assert(montagePairs().length===LONGITUDINAL_CHAINS.length,'long count');
-  state.montage='bipolar_transverse'; console.assert(montagePairs().length===TRANSVERSE_CHAINS.length,'trans count');
+  const prev = state.montage;
+  state.montage='referential';
+  console.assert(montagePairs().length===DISPLAY_ORDER.length,'ref count');
+  state.montage='bipolar_longitudinal';
+  console.assert(montagePairs().length===LONGITUDINAL_CHAINS.length,'long count');
+  state.montage='bipolar_transverse';
+  console.assert(montagePairs().length===TRANSVERSE_CHAINS.length,'trans count');
   state.montage=prev;
 }
+
+// boot
 selfTests();
-const tbEl=document.getElementById('timebase'); if(tbEl) state.seconds=secondsFromTimebase(tbEl.value);
-const seEl=document.getElementById('sensitivity'); if(seEl) state.uvPerDiv=uvPerDivFromSensitivity(seEl.value);
+const tbEl=document.getElementById('timebase'); if (tbEl) state.seconds = secondsFromTimebase(tbEl.value);
+const seEl=document.getElementById('sensitivity'); if (seEl) state.uvPerDiv = uvPerDivFromSensitivity(seEl.value);
 resize();
 regen();
 updateEyesOpenEnabled();
 requestAnimationFrame(step);
 
-/* Physiology reference idea: learningeeg.com/normal-asleep */
+/* Reference for physiology ideas: learningeeg.com/normal-asleep */
 </script>
 </body>
 </html>

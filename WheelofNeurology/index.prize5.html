@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Wheel of Neurology</title>
+<title>Wheel of Neurology — v1.2 stable</title>
 <style>
 :root{
   --bg:#052b1a; --panel:#0b3526; --ink:#ffffff; --muted:#cfe6db;
@@ -241,19 +241,6 @@ footer{color:var(--muted);text-align:center;padding:6px 0 12px 0}
   </div>
 </div>
 
-
-
-<!-- POST-WIN MODAL -->
-<div id="postWinModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="postWinTitle">
-  <div class="dialog">
-    <h3 id="postWinTitle">Play another round?</h3>
-    <p style="margin:8px 0 16px;">Keep your bank and load a new clue, or start over from the beginning.</p>
-    <footer style="display:flex;gap:10px;justify-content:flex-end;">
-      <button id="startOverBtn" class="warn">Start over</button>
-      <button id="playAgainBtn" class="good">Play again</button>
-    </footer>
-  </div>
-</div>
 
 <!-- SOLVE MODAL -->
 <div id="solveModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="solveTitle">
@@ -556,82 +543,38 @@ function norm(a){
   function dollars(n){ return n.toLocaleString(undefined,{maximumFractionDigits:0}); }
 
   // -------- Board layout --------
-  
-function layoutBoard(answer){
-  function tokenLen(w){ let n=0; for(const ch of w){ if(isLetter(ch) || "'&-".includes(ch)) n++; } return n; }
-  function attempt(rows, cols){
-    const grid=Array.from({length:rows},()=>Array.from({length:cols},()=>({ch:"",type:"filler",revealed:true})));
-    const words=answer.toUpperCase().trim().split(" ").filter(Boolean);
-    let r=0,c=0;
-    for(const w of words){
-      const wlen=tokenLen(w); const sep = c>0?1:0;
-      if(c+sep+wlen>cols){ r++; c=0; } if(r>=rows) return null;
-      if(sep){ grid[r][c]={ch:"",type:"space",revealed:true}; c++; }
-      for(const ch of w){
-        if(isLetter(ch)) grid[r][c++]={ch,type:"letter",revealed:false};
-        else if("'&-".includes(ch)) grid[r][c++]={ch,type:"punct",revealed:true};
-        if(c>cols) return null;
+  function layoutBoard(answer){
+    function tokenLen(w){ let n=0; for(const ch of w){ if(isLetter(ch) || "'&-".includes(ch)) n++; } return n; }
+    function attempt(rows, cols){
+      const grid=Array.from({length:rows},()=>Array.from({length:cols},()=>({ch:"",type:"filler",revealed:true})));
+      const words=answer.toUpperCase().trim().split(" ").filter(Boolean);
+      let r=0,c=0;
+      for(const w of words){
+        const wlen=tokenLen(w); const sep = c>0?1:0;
+        if(c+sep+wlen>cols){ r++; c=0; } if(r>=rows) return null;
+        if(sep){ grid[r][c]={ch:"",type:"space",revealed:true}; c++; }
+        for(const ch of w){
+          if(isLetter(ch)) grid[r][c++]={ch,type:"letter",revealed:false};
+          else if("'&-".includes(ch)) grid[r][c++]={ch,type:"punct",revealed:true};
+          if(c>cols) return null;
+        }
+      }
+      return grid;
+    }
+    let grid=null, chosenCols=BOARD.minCols;
+    for(let cols=BOARD.minCols; cols<=BOARD.maxCols; cols++){ const g=attempt(BOARD.rows,cols); if(g){ grid=g; chosenCols=cols; break; } }
+    if(!grid){
+      for(let rows=BOARD.rows+1; rows<=BOARD.maxRows; rows++){
+        for(let cols=BOARD.minCols; cols<=BOARD.maxCols; cols++){
+          const g=attempt(rows,cols); if(g){ grid=g; chosenCols=cols; BOARD.rows=rows; break; }
+        }
+        if(grid) break;
       }
     }
-
-    // --- Center horizontally per row ---
-    for(let ri=0; ri<rows; ri++){
-      // find content bounds in row (anything not filler)
-      let first=-1, last=-1;
-      for(let ci=0; ci<cols; ci++){
-        if(grid[ri][ci].type !== "filler"){ first = ci; break; }
-      }
-      for(let ci=cols-1; ci>=0; ci--){
-        if(grid[ri][ci].type !== "filler"){ last = ci; break; }
-      }
-      if(first===-1){ continue; } // empty row
-      const width = (last-first+1);
-      const padLeft = Math.floor((cols - width)/2);
-      const padRight = cols - width - padLeft;
-      const newRow = [];
-      // left fillers
-      for(let k=0;k<padLeft;k++) newRow.push({ch:"",type:"filler",revealed:true});
-      // content
-      for(let k=first;k<=last;k++) newRow.push(grid[ri][k]);
-      // right fillers
-      for(let k=0;k<padRight;k++) newRow.push({ch:"",type:"filler",revealed:true});
-      grid[ri] = newRow;
-    }
-
-    // --- If content fits on a single row, move it to the middle row ---
-    const usedRows = [];
-    for(let ri=0; ri<rows; ri++){
-      if(grid[ri].some(cell => cell.type!=="filler")) usedRows.push(ri);
-    }
-    if(usedRows.length===1){
-      const src = usedRows[0];
-      const mid = Math.floor(rows/2);
-      if(src !== mid){
-        const emptyRow = Array.from({length:cols},()=>({ch:"",type:"filler",revealed:true}));
-        const rowCopy = grid[src];
-        grid[src] = emptyRow.slice();
-        grid[mid] = rowCopy;
-      }
-    }
-    return grid;
+    if(!grid){ grid=attempt(BOARD.maxRows,BOARD.maxCols)||[]; chosenCols=BOARD.maxCols; }
+    state.grid=grid; state.cols=chosenCols;
   }
 
-  let rows = BOARD.rows||3;
-  let cols = Math.max(BOARD.minCols||14, Math.min(BOARD.maxCols||20, Math.ceil(answer.length*1.1)));
-  state.cols = cols;
-  let g = attempt(rows, cols);
-  if(!g){
-    // try increasing rows up to maxRows
-    const maxRows = BOARD.maxRows||4;
-    for(let r=rows+1;r<=maxRows && !g;r++){
-      g = attempt(r, cols);
-      if(g){ rows=r; break; }
-    }
-  }
-  // fallback: if still null, force single-row layout
-  if(!g){ g = attempt(rows, cols) || Array.from({length:rows},()=>Array.from({length:cols},()=>({ch:"",type:"filler",revealed:true}))); }
-  state.grid = g;
-}
   function centerGridRows(){
     const cols = state.cols;
     for(let r=0;r<state.grid.length;r++){
@@ -947,17 +890,13 @@ function purchaseVowel(L){
     return hits;
 }
 
+  function celebrateWin(){
+    setStatus(`${CPL()} solved it! 🎉`);
+    state.canGuessConsonant=false; state.canBuyVowel=false;
+    buyVowelBtn.disabled=true; spinBtn.disabled=true;
+  }
 
-function celebrateWin(){
-  try{ playSfx('win'); }catch(e){}
-  try{ fireConfetti(); }catch(e){}
-  setStatus(`${CPL()} solved it! 🎉`);
-  if(spinBtn) spinBtn.disabled = true;
-  if(buyVowelBtn) buyVowelBtn.disabled = true;
-  if(typeof showPostWin==='function') showPostWin();
-}
-
-function endTurn(){
+  function endTurn(){
     state.canGuessConsonant=false; state.canBuyVowel=false; resetKeyboard(false);
     buyVowelBtn.disabled=true; spinBtn.disabled=false;
     if(state.players>1){
@@ -1060,18 +999,16 @@ function onSpinComplete(){
   }
 
   if(w.type === 'prize'){
-    const item = nextPrize ? nextPrize() : (PRIZES[Math.floor(Math.random()*PRIZES.length)]);
+    const item = PRIZES[Math.floor(Math.random()*PRIZES.length)];
     state.banks[state.currentPlayer] += PRIZE_VALUE;
     renderPlayers();
     playSfx('ding');
-    setStatus(`${CPL()} won a prize worth $${PRIZE_VALUE}! Pick a consonant.`);
+    setStatus(`${CPL()} won a prize worth $${PRIZE_VALUE}!`);
     openPrize(item);
     state.currentCash = 0;
-    state.canGuessConsonant = true;   // allow letter guess now
-    state.canBuyVowel = false;        // prize does not entitle vowel purchase by itself
-    resetKeyboard(true);
-    buyVowelBtn.disabled = true;
-    spinBtn.disabled = true;          // force guess flow like a cash landing
+    state.canGuessConsonant = false;
+    state.canBuyVowel = false;
+    resetKeyboard(false);
     return;
   }
 
@@ -1138,31 +1075,17 @@ const PRIZES = [
     "mini brain model (desk edition)",
     "gold-foil nerve root flash cards"
   ];
-  // Rotating randomized prize queue
-  let prizeQueue = [];
-  function _shuffle(a){
-  for(let i=a.length-1;i>0;i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-}
-  function _refillPrizeQueue(){ prizeQueue = PRIZES.slice(); _shuffle(prizeQueue); }
-  function nextPrize(){ if(prizeQueue.length===0) _refillPrizeQueue(); return prizeQueue.shift(); }
-
 function openPrize(prize){
-  try{ playSfx('win'); }catch(e){}
-  prizeContent.innerHTML = `<p style="font-size:1.1rem;line-height:1.4;">You’ve won a <b>${prize}</b> (valued at $${PRIZE_VALUE})!</p>`;
-  prizeModal.classList.add('show');
-}
+    try{ playSfx('win'); }catch(e){}
+    prizeContent.innerHTML = `<p style="font-size:1.1rem;line-height:1.4;">You’ve won a <b>${prize
+}</b> (valued at $${PRIZE_VALUE})!</p>`;
+    prizeModal.classList.add('show');
+  }
   function closePrize(){
-  prizeModal.classList.remove('show');
-  // After prize, player keeps turn and must guess a consonant (no spin yet)
-  state.canGuessConsonant = true;
-  state.canBuyVowel = false;
-  resetKeyboard(true);
-  buyVowelBtn.disabled = true;
-  spinBtn.disabled = true;
-  setStatus(`${CPL()} received a prize worth $${PRIZE_VALUE}. Pick a consonant.`);
+    prizeModal.classList.remove('show');
+    // After prize, player keeps turn and may spin again
+    setStatus(`${CPL()} received a prize worth $${PRIZE_VALUE}. Spin again!`);
+    spinBtn.disabled = false;
   }
   
   // New Puzzle from Options: reset sets and keyboard styles
@@ -1204,117 +1127,10 @@ closePrizeBtn.addEventListener('click', closePrize);
       b.disabled = false;
     });
   }
-
-  // -------- Confetti --------
-  
-  // -------- Confetti (rainbow) --------
-  function fireConfetti(durationMs=1400, count=200){
-  const c = document.createElement('canvas');
-  c.width = window.innerWidth;
-  c.height = window.innerHeight;
-  c.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9999';
-  document.body.appendChild(c);
-  const ctx = c.getContext('2d');
-  const TAU = Math.PI*2;
-  const P = [];
-  for(let i=0;i<count;i++){
-    const hue = Math.floor(Math.random()*360);
-    P.push({
-      x: Math.random()*c.width,
-      y: -10 - Math.random()*c.height*0.2,
-      r: 2 + Math.random()*4,
-      vx: (Math.random()-0.5)*6,
-      vy: 2 + Math.random()*4,
-      rot: Math.random()*TAU,
-      vr: (Math.random()-0.5)*0.3,
-      life: durationMs + Math.random()*400,
-      color: `hsl(${hue} 90% 55%)`
-    });
-  }
-  let start = null;
-  function step(ts){
-    if(!start) start = ts;
-    const t = ts - start;
-    ctx.clearRect(0,0,c.width,c.height);
-    for(const p of P){
-      p.x += p.vx;
-      p.y += p.vy;
-      p.vy += 0.05;
-      p.rot += p.vr;
-      ctx.save();
-      ctx.translate(p.x, p.y);
-      ctx.rotate(p.rot);
-      ctx.fillStyle = p.color;
-      ctx.fillRect(-p.r, -p.r*0.6, p.r*2, p.r*1.2);
-      ctx.restore();
-    }
-    if(t < durationMs){
-      requestAnimationFrame(step);
-    } else {
-      c.remove();
-    }
-  }
-  requestAnimationFrame(step);
-  const onResize = ()=>{ c.width = window.innerWidth; c.height = window.innerHeight; };
-  window.addEventListener('resize', onResize, {once:true});
-}
-function beginTurnSetup(){
-    // Called at the start of *current* player's turn
-    state.currentCash = 0;                 // not yet spun this turn
-    state.canGuessConsonant = false;       // can't guess consonants until a spin
-    state.canBuyVowel = state.banks[state.currentPlayer] >= state.vowelPrice;
-    resetKeyboard(true);                   // enable keyboard so vowels can be clicked
-    buyVowelBtn.disabled = !state.canBuyVowel || (state.players>1); // keep multiplayer rules
-    spinBtn.disabled = false;              // spinning is always allowed at turn start
-    setStatus(`${CPL()}: spin or buy a vowel.`);
-  }
-
-  // -------- Post-win flow --------
-  const postWinModal = document.getElementById('postWinModal');
-  const playAgainBtn = document.getElementById('playAgainBtn');
-  const startOverBtn = document.getElementById('startOverBtn');
-
-  function showPostWin(){
-    if(postWinModal) postWinModal.classList.add('show');
-  }
-  function hidePostWin(){
-    if(postWinModal) postWinModal.classList.remove('show');
-  }
-  function playAgainNextRound(){
-    hidePostWin();
-    // Keep banks; reset round-specific state and load a new puzzle
-    state.currentCash = 0;
-    state.guessed = new Set();
-    state.correct = new Set();
-    state.wrong = new Set();
-    if(clueTopEl) clueTopEl.textContent = "";
-    newPuzzle();          // uses current category selection, randomized
-    beginTurnSetup();     // allow spin or buy vowel
-  }
-  function startOver(){
-    hidePostWin();
-    // Reset banks & most state, return to initial player count flow if available
-    state.banks = Array.from({length:4}, ()=>0);
-    state.currentPlayer = 0;
-    state.players = 1;
-    if(typeof applySinglePlayerWheelRules === 'function') applySinglePlayerWheelRules();
-    // If there's a start modal, open it; otherwise load a fresh puzzle.
-    const startModal = document.getElementById('startModal') || document.getElementById('start'); 
-    if(startModal && startModal.classList){
-      try{ startModal.classList.add('show'); }catch(e){}
-    }
-    newPuzzle();
-    beginTurnSetup();
-    renderPlayers();
-  }
-  if(playAgainBtn) playAgainBtn.addEventListener('click', playAgainNextRound);
-  if(startOverBtn) startOverBtn.addEventListener('click', startOver);
-
-
 // -------- Clue & Solve --------
   
 function openClue(){
-  const p = state.currentPuzzle || puzzles[state.puzzleIndex] || {};
+  const p = puzzles[state.puzzleIndex] || {};
   const modal = document.getElementById('clueModal');
   if(!modal) return;
 
@@ -1344,7 +1160,7 @@ function closeClue(){ document.getElementById('clueModal').classList.remove('sho
     state.banks[state.currentPlayer] -= state.cluePrice;
     renderPlayers();
     state.cluePurchased = true;
-    const p = state.currentPuzzle || puzzles[state.puzzleIndex] || {};
+    const p = puzzles[state.puzzleIndex] || {};
     if(clueTopEl) clueTopEl.textContent = p.clue ? `Clue: ${p.clue}` : '';
     openClue();
   });
@@ -1420,52 +1236,39 @@ solveBtn.addEventListener('click', openSolve);
   cancelOptionsBtn.addEventListener('click', ()=> optionsModal.classList.remove('show'));
 
   // -------- New Puzzle / Init --------
-  
-function newPuzzle(index){
-  if(!puzzles.length){ puzzles = seedPuzzles.slice(); }
-  // Reset per-round state
-  state.cols = BOARD.minCols;
-  state.guessed.clear();
-  state.cluePurchased = false;
-
-  let cat = state.selectedCategory || 'RANDOM';
-  let source = puzzles;
-  // If RANDOM category is chosen, optionally pick a random category from the available list
-  if(cat === 'RANDOM' && state.categories && state.categories.length){
-    cat = state.categories[Math.floor(Math.random()*state.categories.length)];
+  function newPuzzle(index){
+    if(!puzzles.length){ puzzles = seedPuzzles.slice(); }
+    state.cols = BOARD.minCols; state.guessed.clear(); state.cluePurchased=false;
+    let source = puzzles;
+    let cat = state.selectedCategory || 'RANDOM';
+    if(cat === 'RANDOM' && state.categories && state.categories.length){ cat = state.categories[Math.floor(Math.random()*state.categories.length)]; }
+    if(cat && cat !== 'RANDOM'){
+      const filtered = puzzles.filter(p=>p.category===cat);
+      if(filtered.length) source = filtered;
+    }
+    // Enforce minimum 5 letters in the answer (ignore spaces/punct)
+    let eligible = source.filter(p=>letterCount(p.answer) >= 5);
+    if(!eligible.length){ eligible = puzzles.filter(p=>letterCount(p.answer) >= 5); }
+    if(!eligible.length){ eligible = source; }
+    const idx = (typeof index === "number") ? index : Math.floor(Math.random()*eligible.length);
+    state.puzzleIndex = idx;
+    const p = eligible[idx];
+    state.answer = (p.answer||"").toUpperCase();
+    categoryTopEl.textContent = (p.category ? `Category: ${p.category}` : "Category: —");
+    state.cluePurchased = false;
+    if(clueTopEl) clueTopEl.textContent = "";
+    layoutBoard(state.answer);
+    centerGridRows();
+    centerGridVertically();
+    renderBoard();
+    renderPlayers();
+    resetKeyboard(false);
+    buyVowelBtn.disabled = (state.players>1) || state.banks[state.currentPlayer] < state.vowelPrice;
+    drawWheel(); drawPreview();
+    setStatus(`Choose players, then spin to begin!`);
+    spinBtn.disabled=false;
   }
-  if(cat && cat !== 'RANDOM'){
-    const filtered = puzzles.filter(p=>p.category===cat);
-    if(filtered.length) source = filtered;
-  }
-
-  // Enforce minimum answer length (letters only)
-  let eligible = source.filter(p=>letterCount(p.answer) >= 5);
-  if(!eligible.length){ eligible = source.length ? source : puzzles; }
-
-  // Choose a puzzle
-  let pick = null;
-  if(typeof index === 'number' && index >=0 && index < source.length){
-    pick = source[index];
-  } else {
-    pick = eligible[Math.floor(Math.random()*eligible.length)];
-  }
-
-  // Save both a direct reference and the global index for compatibility
-  state.currentPuzzle = pick;
-  const globalIdx = puzzles.indexOf(pick);
-  state.puzzleIndex = (globalIdx >= 0 ? globalIdx : 0);
-
-  // Apply to board/UI
-  state.answer = (pick.answer||"").toUpperCase();
-  categoryTopEl.textContent = (pick.category ? `Category: ${pick.category}` : "Category: —");
-  if(clueTopEl) clueTopEl.textContent = "";
-  layoutBoard(state.answer);
-  renderBoard();
-  drawPreview();
-  beginTurnSetup();
-}
-newBtn.addEventListener('click', ()=> newPuzzle());
+  newBtn.addEventListener('click', ()=> newPuzzle());
 
   // Start modal logic
   startSpinBtn.addEventListener('click', () => {
@@ -1485,13 +1288,11 @@ newBtn.addEventListener('click', ()=> newPuzzle());
     if(!puzzles.length) puzzles = seedPuzzles.slice();
     state.categories = Array.from(new Set(puzzles.map(p=>p.category).filter(Boolean))).sort();
     renderPlayers();
-        _refillPrizeQueue();
     newPuzzle(0);
     // start modal already shown
   }
   applySinglePlayerWheelRules();
   init();
-  beginTurnSetup();
 window.addEventListener('load', ()=>{ try{ playSfx('intro'); }catch(e){} });
 </script>
 </body>

@@ -48,10 +48,9 @@
   <div id="topbar">
     <div class="ctrl"><label>Montage</label>
       <select id="montageSel">
-        <option value="bipolar_longitudinal" selected>Longitudinal (Double Banana)</option>
+        <option value="bipolar_longitudinal" selected>Double Banana (Longitudinal)</option>
         <option value="bipolar_transverse">Transverse</option>
-        <option value="referential">Reference (ipsilateral ear A1/A2)</option>
-        <option value="average">Average reference (AVG)</option>
+        <option value="referential">Reference (A1/A2)</option>
       </select>
     </div>
     <div class="ctrl"><label>Timebase (mm/sec)</label>
@@ -127,7 +126,6 @@ const ELECTRODES = [
   "Fp1","F3","C3","P3","O1","F7","T3","T5",
   "Fz","Cz","Pz",
   "Fp2","F4","C4","P4","O2","F8","T4","T6",
-  "Oz",
   "A1","A2"
 ];
 const DISPLAY_ORDER = [
@@ -284,8 +282,6 @@ function initChannels(){
     state.channels.set(e, new Channel(e, state.rng));
     state.buffer.set(e, new Float32Array(Fs*state.seconds));
   });
-  // Synthetic buffer for average reference
-  state.buffer.set("AVG", new Float32Array(Fs*state.seconds));
   state.idx = 0;
 }
 
@@ -293,19 +289,12 @@ function initChannels(){
  * Montage helpers
  ***********************/
 function leftHem(e){ return /^(Fp1|F3|C3|P3|O1|F7|T3|T5|A1|Fz|Cz|Pz)$/.test(e); }
-function avgElectrodes(){
-  // Use DISPLAY_ORDER as scalp set; excludes A1/A2 and Oz.
-  return DISPLAY_ORDER.slice();
-}
-
 function montagePairs(){
   const arr=[];
   if (state.montage==='referential'){
     for (const e of DISPLAY_ORDER){ const ref=leftHem(e)?'A1':'A2'; arr.push({a:e,b:ref,label:`${e}-${ref}`}); }
   } else if (state.montage==='bipolar_transverse'){
     for (const [a,b] of TRANSVERSE_CHAINS){ arr.push({a,b,label:`${a}-${b}`}); }
-  } else if (state.montage==='average'){
-    for (const e of avgElectrodes()){ arr.push({a:e,b:'AVG',label:`${e} - AVG`}); }
   } else {
     for (const [a,b] of LONGITUDINAL_CHAINS){ arr.push({a,b,label:`${a}-${b}`}); }
   }
@@ -447,18 +436,7 @@ function step(){
           vertex:state.vertex.active, vertexShape:state.vertex.active?vertexShape(state.artClock,state.vertex.t0):0
         };
         const t=(state.idx%Fs)/Fs;
-        let sum=0, cnt=0;
-        for(const e of ELECTRODES){
-          const ch=state.channels.get(e);
-          const y=ch.sample(t+n/Fs, opts);
-          const buf=state.buffer.get(e);
-          buf[state.idx%buf.length]=y;
-          // contribute to AVG if scalp electrode (exclude ears and Oz)
-          if (avgElectrodes().includes(e)) { sum+=y; cnt++; }
-        }
-        const avg = cnt? (sum/cnt) : 0;
-        const avgBuf = state.buffer.get("AVG");
-        avgBuf[state.idx%avgBuf.length] = avg;
+        for(const e of ELECTRODES){ const ch=state.channels.get(e); const y=ch.sample(t+n/Fs, opts); const buf=state.buffer.get(e); buf[state.idx%buf.length]=y; }
         state.idx++; state.artClock+=1/Fs;
       }
     }
