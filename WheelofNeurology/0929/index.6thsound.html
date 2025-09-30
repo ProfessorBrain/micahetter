@@ -129,10 +129,6 @@ header small{color:var(--muted)}
 .brand img{height:36px;display:block}
 /* Keyboard */
 .keyboard{display:grid;grid-template-columns:repeat(13,1fr);gap:8px}
-.keyboard button.correct{color:#16a34a !important;text-decoration:line-through;opacity:1}
-.keyboard button.wrong{color:#dc2626 !important;text-decoration:line-through;opacity:1}
-.keyboard button.correct:disabled,.keyboard button.wrong:disabled{opacity:1}
-
 .keyboard button{
   padding:10px 0;border-radius:10px;font-weight:900;
   border:1px solid rgba(211,175,94,.20);
@@ -167,6 +163,7 @@ footer{color:var(--muted);text-align:center;padding:6px 0 12px 0}
 /* Remove dim background/shadow around fullscreen wheel overlay */
 .wheelWrap.fullscreen{background:transparent !important; box-shadow:none !important;}
 
+.landed-flash{ outline: 3px solid rgba(255,255,255,.8); box-shadow: 0 0 12px 4px rgba(255,255,255,.8) inset; }
 </style>
 </head>
 <body>
@@ -198,8 +195,7 @@ footer{color:var(--muted);text-align:center;padding:6px 0 12px 0}
         </div>
                 <div id="playersBoard" class="players"></div>
         <div id="status" class="status"></div>
-        <div class="secondary">
-<button id="optionsBtn">Options</button></div>
+        <div class="secondary"><button id="optionsBtn">Options</button></div>
       </div>
     </div>
 
@@ -265,13 +261,8 @@ footer{color:var(--muted);text-align:center;padding:6px 0 12px 0}
       <label for="categorySelect">Category for new puzzles</label>
       <select id="categorySelect"></select>
     </div>
-    
-    <div class="optionsLine" style="display:flex;align-items:center;gap:10px;margin:10px 0;">
-      <button id="newBtn" class="warn">New Puzzle</button>
-      <small class="muted" style="opacity:.75;">Load a fresh random puzzle</small>
-    </div>
     <footer>
-      <button id="saveOptionsBtn" class="good">Save</button>
+      <button id="newBtn" style="margin-right:auto">New Puzzle</button><button id="saveOptionsBtn" class="good">Save</button>
       <button id="cancelOptionsBtn">Cancel</button>
     </footer>
   </div>
@@ -312,8 +303,7 @@ footer{color:var(--muted);text-align:center;padding:6px 0 12px 0}
         if(ch==='\"'){
           if(text[i+1]==='\"'){ field+='\"'; i++; }
           else{ inQuotes=false; }
-        } else {
-      playSfx('nope'); field+=ch; }
+        } else { field+=ch; }
       } else {
         if(ch==='\"'){ inQuotes=true; }
         else if(ch===','){ row.push(field); field=''; }
@@ -354,8 +344,7 @@ footer{color:var(--muted);text-align:center;padding:6px 0 12px 0}
     players:1, banks:[0,0,0], currentPlayer:0,
     vowelPrice:250, cluePrice:400, rotation:0,
     categories: [],
-    selectedCategory: 'RANDOM',
-    correct:new Set(), wrong:new Set()
+    selectedCategory: 'RANDOM'
   };
 
   // -------- DOM --------
@@ -399,29 +388,6 @@ footer{color:var(--muted);text-align:center;padding:6px 0 12px 0}
     return (String(s||'').match(/[A-Za-z]/g)||[]).length;
   }
 const VOWELS = new Set("AEIOU".split(""));
-
-  // -------- Audio (external mp3s) --------
-  const SFX = {
-  intro: new Audio('intro.mp3'),
-    spin: new Audio('clicks.mp3'),
-    lose: new Audio('lose.mp3'),
-    nope: new Audio('nope.mp3'),
-    ding: new Audio('ding.mp3')
-  };
-  Object.values(SFX).forEach(a => { try{ a.preload='auto'; a.crossOrigin='anonymous'; }catch(e){} });
-  try{ SFX.spin.loop = false; }catch(e){}
-
-  function playSfx(name){
-    const a = SFX[name];
-    if(!a) return;
-    try { a.currentTime = 0; a.play().catch(()=>{}); } catch(_) {}
-  }
-  function stopSfx(name){
-    const a = SFX[name];
-    if(!a) return;
-    try { a.pause(); a.currentTime = 0; } catch(_) {}
-  }
-  function stopAllSfx(){ try{ Object.keys(SFX).forEach(k=>stopSfx(k)); }catch(e){} }
   const sliceCount = wheelWedges.length;
   const sliceAngle = (Math.PI*2)/sliceCount;
 
@@ -635,15 +601,24 @@ const VOWELS = new Set("AEIOU".split(""));
 
   
   function wedgeAtPointer(){
-    const twoPI = Math.PI*2;
-    const pointer = -Math.PI/2;               // fixed top pointer
-    let a = pointer - state.rotation;         // wheel angle under pointer in wheel's local coords
-    a = ((a % twoPI) + twoPI) % twoPI;       // normalize [0, 2π)
-    // Choose the wedge whose CENTER is nearest the pointer
-    let idx = Math.floor((a + sliceAngle/2) / sliceAngle);
-    idx = ((idx % wheelWedges.length) + wheelWedges.length) % wheelWedges.length;
+    // Pointer is fixed at 12 o'clock (top). Canvas rotates clockwise for positive angles.
+    // Convert that fixed pointer direction into the wheel's LOCAL (unrotated) frame by subtracting the wheel rotation.
+    const TWO_PI = Math.PI * 2;
+    const slice = sliceAngle;
+    // wheel rotation (clockwise, in radians)
+    const theta = state.rotation || 0;
+    // pointer angle in screen coords relative to 3 o'clock = -π/2 (top)
+    // local angle = screen angle - theta (undo the wheel's clockwise rotation)
+    let local = (-Math.PI / 2) - theta;
+    // normalize to [0, 2π)
+    local = local % TWO_PI; if (local < 0) local += TWO_PI;
+    // choose the wedge that CONTAINS this angle
+    let idx = Math.floor(local / slice);
+    if (idx < 0) idx = 0;
+    idx = idx % wheelWedges.length;
     return idx;
-  }
+};
+
 
 function drawPreview(){
     const tmp=document.createElement('canvas');
@@ -679,18 +654,12 @@ function drawPreview(){
         }
       }
       b.disabled = !enable;
-      if(state.correct && state.correct.has(L)){ b.classList.add('correct'); b.disabled = true; }
-      if(state.wrong && state.wrong.has(L)){ b.classList.add('wrong'); b.disabled = true; }
       b.addEventListener('click', ()=>{
         if(b.disabled) return;
         if(state.canGuessConsonant && !VOWELS.has(L)){
-          const hits = handleLetterGuess(L);
-          if(hits>0){ b.classList.add('correct'); } else { b.classList.add('wrong'); }
-          b.disabled = true;
+          handleLetterGuess(L);
         } else if(state.canBuyVowel && VOWELS.has(L)){
-          const vh = purchaseVowel(L);
-          if(vh>0){ b.classList.add('correct'); } else { b.classList.add('wrong'); }
-          b.disabled = true;
+          purchaseVowel(L);
         }
       });
       keyboardEl.appendChild(b);
@@ -719,58 +688,38 @@ function drawPreview(){
     return true;
   }
 
-  
-function handleLetterGuess(L){
-    if(state.guessed.has(L)) return 0;
+  function handleLetterGuess(L){
+    if(state.guessed.has(L)) return;
     state.guessed.add(L);
     const hits = revealMatching(L);
     if(hits>0){
-      (state.correct||=new Set()).add(L);
-      playSfx('ding');
       const earned = hits*(state.currentCash||0);
       state.banks[state.currentPlayer]+=earned;
       renderPlayers();
       setStatus(`${CPL()} found ${hits} × ${L} for $${dollars(earned)}.`);
-      if(allRevealed()){ celebrateWin(); return hits; }
+      if(allRevealed()){ celebrateWin(); return; }
       state.canGuessConsonant=false;
       resetKeyboard(false);
       buyVowelBtn.disabled = (state.players>1) || (state.banks[state.currentPlayer] < state.vowelPrice);
       spinBtn.disabled = false;
     } else {
-      (state.wrong||=new Set()).add(L);
-      playSfx('nope');
       if(state.players===1){
-        setStatus(`No ${L}'s. Spin again.`);
-        state.canGuessConsonant=false; 
-        resetKeyboard(false);
-        buyVowelBtn.disabled=true; 
-        spinBtn.disabled=false;
-      } else {
-        setStatus(`${CPL()} guessed ${L}: none found. Turn passes.`);
-        endTurn();
-      }
+      setStatus(`No ${L}'s. Spin again.`);
+      state.canGuessConsonant=false; resetKeyboard(false);
+      buyVowelBtn.disabled=true; spinBtn.disabled=false;
+    } else {
+      setStatus(`${CPL()} guessed ${L}: none found. Turn passes.`);
+      endTurn();
     }
-    return hits;
-}
+    }
+  }
 
   function purchaseVowel(L){
-    if(!VOWELS.has(L)) return 0;
-    if(state.banks[state.currentPlayer] < state.vowelPrice) return 0;
+    if(!VOWELS.has(L)) return;
+    if(state.banks[state.currentPlayer] < state.vowelPrice) return;
     state.banks[state.currentPlayer] -= state.vowelPrice;
     renderPlayers();
     const hits = revealMatching(L);
-    state.guessed.add(L);
-    if(hits>0){ (state.correct||=new Set()).add(L); playSfx('ding'); }
-    else { (state.wrong||=new Set()).add(L); playSfx('nope'); }
-    setStatus(`Purchased ${L} for $${state.vowelPrice}. ${hits>0?hits+' revealed.':'None found.'}`);
-    state.canBuyVowel=false;
-    resetKeyboard(false);
-    buyVowelBtn.disabled = (state.players>1) || (state.banks[state.currentPlayer] < state.vowelPrice);
-    spinBtn.disabled = false;
-    if(hits===0){ endTurn(); } else { if(allRevealed()) celebrateWin(); }
-    return hits;
-  } else { (state.wrong||=new Set()).add(L); }
-    if(hits>0){ playSfx('ding'); } else { playSfx('nope'); }
     setStatus(`Purchased ${L} for $${state.vowelPrice}. ${hits>0?hits+' revealed.':'None found.'}`);
     state.canBuyVowel=false;
     resetKeyboard(false);
@@ -799,12 +748,15 @@ function handleLetterGuess(L){
   function animateSpin(){
     if(state.spinning) return;
     state.spinning = true;
+    _woN_startClunkSim();
+    _woN_initAudio();
+    state._tickIdx = _woN_currentIndex();
+    _woN_startTickLoop();
+    _woN_initAudio();
+    state._tickIdx = _woN_currentIndex();state._tickIdx = _woN_currentIndex();
     spinBtn.disabled = true;
     buyVowelBtn.disabled = true;
     setStatus(`${CPL()} is spinning...`);
-
-  // START spin SFX
-  playSfx('spin');
 
     // Fullscreen overlay clone
     const ghost = wheelWrap.cloneNode(true);
@@ -859,14 +811,19 @@ function handleLetterGuess(L){
         requestAnimationFrame(frame);
       } else {
         state.rotation = ((rot % twoPI) + twoPI) % twoPI;
+    // tick on sector boundary crossing
+    if (state.spinning) {
+      if (state._tickIdx === undefined) state._tickIdx = _woN_currentIndex();
+      const __cur = _woN_currentIndex();
+      if (__cur !== state._tickIdx) { _woN_tickClunk(); state._tickIdx = __cur; }
+    }
         drawWheel();
         drawPreview();
         setTimeout(()=>{
           document.body.removeChild(ghost);
           if(overlayPtr && overlayPtr.parentNode) overlayPtr.parentNode.removeChild(overlayPtr);
           window.removeEventListener('resize', positionOverlayPtr);
-          stopSfx('spin');
-        onSpinComplete();
+          onSpinComplete();
         }, 2000);
       }
     }
@@ -876,6 +833,11 @@ function handleLetterGuess(L){
 
   function onSpinComplete(){
     state.spinning = false;
+_woN_stopTickLoop();
+_woN_stopClunkSim(true);
+    _woN_stopClunkSim(true);
+    _woN_stopTickLoop();
+    delete state._tickIdx;
     const idx = wedgeAtPointer();
     const w = wheelWedges[idx];
     drawPreview(); // ensure peek shows landed wedge
@@ -896,14 +858,12 @@ function handleLetterGuess(L){
       setStatus(`${CPL()} landed on $${dollars(state.currentCash)}. Choose a consonant.`);
       // keep spin disabled until guess resolves
     } else if(w.type === 'bankrupt'){
-      playSfx('lose');
       state.currentCash = 0;
       state.banks[state.currentPlayer] = 0;
       renderPlayers();
       setStatus(`BANKRUPT! ${state.players>1 ? "Turn passes." : ""}`);
       endTurn();
     } else if(w.type === 'lose'){
-      playSfx('lose');
       setStatus(`Lose a turn.${state.players>1 ? " Turn passes." : ""}`);
       endTurn();
     } else if(w.type === 'clue'){
@@ -976,7 +936,6 @@ function handleLetterGuess(L){
       celebrateWin();
     } else {
       closeSolve(true);
-      playSfx('nope');
       setStatus(`Incorrect solution by ${CPL()}. Turn passes.`);
     }
   }
@@ -1077,7 +1036,166 @@ solveBtn.addEventListener('click', openSolve);
     // start modal already shown
   }
   init();
-window.addEventListener('load', ()=>{ try{ playSfx('intro'); }catch(e){} });
+
+function flashLandedWedge(idx){
+  try{
+    const el = document.querySelector(`[data-wedge-index="${'${idx}'}"]`);
+    if(!el) return;
+    el.classList.add('landed-flash');
+    setTimeout(()=>el.classList.remove('landed-flash'), 500);
+  }catch(e){}
+}
+
+
+function readLandedWedge(cb){
+  // Wait two frames to allow any easing/rounding to finish, then sample.
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      const i = wedgeAtPointer();
+      if (typeof cb === 'function') cb(i);
+    });
+  });
+}
+
+
+
+// ---- Deep "clunk" tick using WebAudio ----
+let _woN_audioCtx = null;
+let _woN_comp = null;          // dynamics compressor
+let _woN_master = null;        // master gain
+
+function _woN_initAudio(){
+  try{
+    if(!_woN_audioCtx) {
+      _woN_audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    // Some browsers require resume after a gesture
+    if(_woN_audioCtx.state === 'suspended'){
+      _woN_audioCtx.resume().catch(()=>{});
+    }
+    if(!_woN_master){
+      _woN_master = _woN_audioCtx.createGain();
+      _woN_master.gain.value = 0.7; // overall volume
+      _woN_comp = _woN_audioCtx.createDynamicsCompressor();
+      _woN_comp.threshold.value = -16;
+      _woN_comp.knee.value = 20;
+      _woN_comp.ratio.value = 8;
+      _woN_comp.attack.value = 0.003;
+      _woN_comp.release.value = 0.06;
+      _woN_master.connect(_woN_comp);
+      _woN_comp.connect(_woN_audioCtx.destination);
+    }
+  }catch(e){/* ignore */}
+}
+
+// Play a low, punchy "clunk": short pitch‑dropping oscillator + filtered noise burst
+
+function _woN_tickClunk(){
+  // Crisp "click": ultra-short triangle blip + filtered noise tick
+  if(!_woN_audioCtx) return;
+  const ctx = _woN_audioCtx;
+  const t0 = ctx.currentTime + 0.001;
+
+  // High-pass to keep it snappy, no bass tail
+  const hp = ctx.createBiquadFilter();
+  hp.type = 'highpass';
+  hp.frequency.value = 1800;
+  hp.Q.value = 0.7;
+
+  const mix = ctx.createGain();
+  mix.gain.value = 0.65; // overall click loudness
+  mix.connect(hp);
+  hp.connect(_woN_master);
+
+  // Very short oscillator blip (~2.6 kHz) with fast decay
+  const o = ctx.createOscillator();
+  o.type = 'triangle';
+  o.frequency.setValueAtTime(2600, t0);
+  const go = ctx.createGain();
+  go.gain.setValueAtTime(0.35, t0);
+  go.gain.exponentialRampToValueAtTime(0.001, t0 + 0.03);
+  o.connect(go); go.connect(mix);
+  o.start(t0); o.stop(t0 + 0.035);
+
+  // Tiny noise tick for attack
+  const buffer = ctx.createBuffer(1, 1024, 44100);
+  const data = buffer.getChannelData(0);
+  for(let i=0;i<data.length;i++){ data[i] = (Math.random()*2-1) * 0.9; }
+  const noise = ctx.createBufferSource();
+  noise.buffer = buffer;
+  const gn = ctx.createGain();
+  gn.gain.setValueAtTime(0.15, t0);
+  gn.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.02);
+  noise.connect(gn); gn.connect(mix);
+  noise.start(t0); noise.stop(t0 + 0.025);
+}
+function _woN_currentIndex(){
+  const TWO_PI = Math.PI * 2;
+  const slice = sliceAngle;
+  const theta = state.rotation || 0;
+  let local = (-Math.PI / 2) - theta;
+  local = local % TWO_PI; if (local < 0) local += TWO_PI;
+  let idx = Math.floor(local / slice);
+  return ((idx % wheelWedges.length) + wheelWedges.length) % wheelWedges.length;
+}
+
+
+// ---- Frame-based tick loop: fire clunk every time we enter a new wedge while spinning ----
+let _woN_tickLoopActive = false;
+function _woN_startTickLoop(){
+  if(_woN_tickLoopActive) return;
+  _woN_tickLoopActive = true;
+  // Initialize last index so we don't fire immediately unless we actually cross
+  if (state._tickIdx === undefined) state._tickIdx = _woN_currentIndex();
+  const step = ()=>{
+    if(!_woN_tickLoopActive) return;
+    try{
+      const cur = _woN_currentIndex();
+      if(cur !== state._tickIdx){
+        _woN_tickClunk();
+        state._tickIdx = cur;
+      }
+    }catch(e){ /* no-op */ }
+    requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+function _woN_stopTickLoop(){
+  _woN_tickLoopActive = false;
+  delete state._tickIdx;
+}
+
+
+
+
+// ---- Simulated click cadence during spin (decaying tempo) ----
+let _woN_simHandle = null;
+let _woN_simActive = false;
+
+function _woN_startClunkSim(){
+  _woN_initAudio();
+  if (_woN_simActive) return;
+  _woN_simActive = true;
+  let delay = 55;               // ms between clicks at start
+  const mul = 1.09;             // growth per click -> slows down
+  const maxDelay = 480;         // cap while spinning
+  const step = () => {
+    if(!_woN_simActive) return;
+    try { _woN_tickClunk(); } catch(e){}
+    delay = Math.min(maxDelay, Math.round(delay * mul));
+    _woN_simHandle = setTimeout(step, delay);
+  };
+  _woN_simHandle = setTimeout(step, delay);
+}
+
+function _woN_stopClunkSim(forceFinal=true){
+  if(_woN_simHandle){ try{ clearTimeout(_woN_simHandle);}catch(e){} _woN_simHandle = null; }
+  const wasActive = _woN_simActive;
+  _woN_simActive = false;
+  if(forceFinal && wasActive){
+    try { _woN_tickClunk(); } catch(e){}
+  }
+}
 </script>
 </body>
 </html>

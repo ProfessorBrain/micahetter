@@ -129,8 +129,8 @@ header small{color:var(--muted)}
 .brand img{height:36px;display:block}
 /* Keyboard */
 .keyboard{display:grid;grid-template-columns:repeat(13,1fr);gap:8px}
-.keyboard button.correct{color:#16a34a !important;text-decoration:line-through;opacity:1}
-.keyboard button.wrong{color:#dc2626 !important;text-decoration:line-through;opacity:1}
+.keyboard button.correct{color:#16a34a;text-decoration:line-through;opacity:1}
+.keyboard button.wrong{color:#dc2626;text-decoration:line-through;opacity:1}
 .keyboard button.correct:disabled,.keyboard button.wrong:disabled{opacity:1}
 
 .keyboard button{
@@ -688,9 +688,7 @@ function drawPreview(){
           if(hits>0){ b.classList.add('correct'); } else { b.classList.add('wrong'); }
           b.disabled = true;
         } else if(state.canBuyVowel && VOWELS.has(L)){
-          const vh = purchaseVowel(L);
-          if(vh>0){ b.classList.add('correct'); } else { b.classList.add('wrong'); }
-          b.disabled = true;
+          purchaseVowel(L);
         }
       });
       keyboardEl.appendChild(b);
@@ -719,57 +717,44 @@ function drawPreview(){
     return true;
   }
 
-  
-function handleLetterGuess(L){
-    if(state.guessed.has(L)) return 0;
+  function handleLetterGuess(L){
+    if(state.guessed.has(L)) return;
     state.guessed.add(L);
     const hits = revealMatching(L);
+    (state.correct||=new Set()).add(L);
+    if(hits>0){ (state.correct||=new Set()).add(L); } else { (state.wrong||=new Set()).add(L); }
+    if(hits>0){ playSfx('ding'); } else { playSfx('nope'); }
     if(hits>0){
-      (state.correct||=new Set()).add(L);
       playSfx('ding');
       const earned = hits*(state.currentCash||0);
       state.banks[state.currentPlayer]+=earned;
       renderPlayers();
       setStatus(`${CPL()} found ${hits} × ${L} for $${dollars(earned)}.`);
-      if(allRevealed()){ celebrateWin(); return hits; }
+      if(allRevealed()){ celebrateWin(); return; }
       state.canGuessConsonant=false;
       resetKeyboard(false);
       buyVowelBtn.disabled = (state.players>1) || (state.banks[state.currentPlayer] < state.vowelPrice);
       spinBtn.disabled = false;
     } else {
-      (state.wrong||=new Set()).add(L);
-      playSfx('nope');
       if(state.players===1){
-        setStatus(`No ${L}'s. Spin again.`);
-        state.canGuessConsonant=false; 
-        resetKeyboard(false);
-        buyVowelBtn.disabled=true; 
-        spinBtn.disabled=false;
-      } else {
-        setStatus(`${CPL()} guessed ${L}: none found. Turn passes.`);
-        endTurn();
-      }
-    }
+      setStatus(`No ${L}'s. Spin again.`);
+      state.canGuessConsonant=false; resetKeyboard(false);
+      buyVowelBtn.disabled=true; spinBtn.disabled=false;
+    } else {
+      setStatus(`${CPL()} guessed ${L}: none found. Turn passes.`);
+      endTurn();
     return hits;
-}
+}    }
+  }
 
   function purchaseVowel(L){
-    if(!VOWELS.has(L)) return 0;
-    if(state.banks[state.currentPlayer] < state.vowelPrice) return 0;
+    if(!VOWELS.has(L)) return;
+    if(state.banks[state.currentPlayer] < state.vowelPrice) return;
     state.banks[state.currentPlayer] -= state.vowelPrice;
     renderPlayers();
     const hits = revealMatching(L);
-    state.guessed.add(L);
-    if(hits>0){ (state.correct||=new Set()).add(L); playSfx('ding'); }
-    else { (state.wrong||=new Set()).add(L); playSfx('nope'); }
-    setStatus(`Purchased ${L} for $${state.vowelPrice}. ${hits>0?hits+' revealed.':'None found.'}`);
-    state.canBuyVowel=false;
-    resetKeyboard(false);
-    buyVowelBtn.disabled = (state.players>1) || (state.banks[state.currentPlayer] < state.vowelPrice);
-    spinBtn.disabled = false;
-    if(hits===0){ endTurn(); } else { if(allRevealed()) celebrateWin(); }
-    return hits;
-  } else { (state.wrong||=new Set()).add(L); }
+    (state.correct||=new Set()).add(L);
+    if(hits>0){ (state.correct||=new Set()).add(L); } else { (state.wrong||=new Set()).add(L); }
     if(hits>0){ playSfx('ding'); } else { playSfx('nope'); }
     setStatus(`Purchased ${L} for $${state.vowelPrice}. ${hits>0?hits+' revealed.':'None found.'}`);
     state.canBuyVowel=false;
