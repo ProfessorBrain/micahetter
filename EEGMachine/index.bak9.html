@@ -135,13 +135,6 @@ const DISPLAY_ORDER = [
   "Fz","Cz","Pz",
   "Fp2","F4","C4","P4","O2","F8","T4","T6"
 ];
-const AVERAGE_ORDER = [
-  "Fp1","F7","T3","T5",
-  "Fp2","F8","T4","T6",
-  "F3","C3","P3","O1",
-  "F4","C4","P4","O2",
-  "Fz","Cz","Pz"
-];
 const LONGITUDINAL_CHAINS = [
   ["Fp1","F7"],["F7","T3"],["T3","T5"],["T5","O1"],
   ["Fp2","F8"],["F8","T4"],["T4","T6"],["T6","O2"],
@@ -331,7 +324,7 @@ function montagePairs(){
     ];
     for (const [a,b] of lines){ arr.push({a,b,label:`${a}-${b}`}); }
   } else if (state.montage==='average'){
-    for (const e of AVERAGE_ORDER){ arr.push({a:e,b:'AVG',label:`${e} - AVG`}); }
+    for (const e of avgElectrodes()){ arr.push({a:e,b:'AVG',label:`${e} - AVG`}); }
   } else {
     for (const [a,b] of LONGITUDINAL_CHAINS){ arr.push({a,b,label:`${a}-${b}`}); }
   }
@@ -379,10 +372,7 @@ function groupColor(index){
   const label=montagePairs()[index]?.label||"";
   if (/^(Fz-Cz|Cz-Pz)$/.test(label)) return black;
   if (state.montage==='bipolar_longitudinal') return (Math.floor(index/4)%2===1)?red:blue;
-  if (state.montage==='bipolar_transverse'){
-    const redSet = new Set(['F3-Fz','Fz-F4','C3-Cz','Cz-C4','P3-Pz','Pz-P4']);
-    return redSet.has(label) ? red : black;
-  }
+  if (state.montage==='bipolar_transverse') return (index%2===0)?blue:red;
   return '#333';
 }
 
@@ -393,11 +383,11 @@ function computeRowMids(count){
   const topPad = Math.max(56, Math.floor(h*0.07));
   const bottomPad = Math.max(32, Math.floor(h*0.05));
   const isTrans = (state.montage==='bipolar_transverse');
-// Apply row gaps for longitudinal, transverse, and average
-const useGaps = (state.montage==='bipolar_longitudinal' || isTrans || state.montage==='average');
-const defaultGap = isTrans ? Math.max(28, Math.floor(h*0.025)) : 10;
-const extraBreaks = isTrans ? transverseBreaks() : (state.montage==='average' ? new Set([4,8,12,16]) : new Set([4,8,12]));
-const extraFactor = isTrans ? 2.8 : 2.2;
+  // Apply row gaps for BOTH longitudinal and transverse
+  const useGaps = (state.montage==='bipolar_longitudinal' || isTrans);
+  const defaultGap = isTrans ? Math.max(28, Math.floor(h*0.025)) : 10;
+  const extraBreaks = isTrans ? transverseBreaks() : new Set([4,8,12]);
+  const extraFactor = isTrans ? 2.8 : 2.2;
   let totalExtra = 0;
   for (let i=0;i<count;i++){
     if (!useGaps) continue;
@@ -410,7 +400,7 @@ const extraFactor = isTrans ? 2.8 : 2.2;
   const y = []; let acc = 0;
   for (let i=0;i<count;i++){
     let extra = 0;
-    if (useGaps){ if (!isTrans && i>0 && i%4===0) extra += defaultGap; if (extraBreaks.has(i)) extra += defaultGap*(extraFactor-1); }
+    if (useGaps){ if (i>0 && i%4===0) extra += defaultGap; if (extraBreaks.has(i)) extra += defaultGap*(extraFactor-1); }
     acc += extra;
     const rowTop = topPad + i*base + acc;
     y.push(rowTop + base/2);
@@ -420,33 +410,12 @@ const extraFactor = isTrans ? 2.8 : 2.2;
 
 function renderLabels(pairs, yMids, colorAtIndex){
   if (!pairs.length) return;
-  const bg = getComputedStyle(document.documentElement).getPropertyValue('--bg');
   ctx.textBaseline = 'middle';
   for (let i=0;i<pairs.length;i++){
     const label = pairs[i].label;
-    const isMid = /^(Fz-Cz|Cz-Pz)$/.test(label);
-    const font = isMid ? 'bold 12px system-ui,Segoe UI,Roboto,Arial' : '12px system-ui,Segoe UI,Roboto,Arial';
-    ctx.font = font;
-    const xText = 8;
-    const y = yMids[i];
-    const metrics = ctx.measureText(label);
-    const textW = Math.ceil(metrics.width);
-    const ascent = metrics.actualBoundingBoxAscent || 9;
-    const descent = metrics.actualBoundingBoxDescent || 3;
-    const textH = ascent + descent;
-    const padX = 4, padY = 2;
-    const rectX = xText - padX;
-    const rectY = y - textH/2 - padY;
-    const rectW = textW + 2*padX;
-    const rectH = textH + 2*padY;
-    // Background highlight
-    ctx.save();
-    ctx.fillStyle = bg;
-    ctx.fillRect(rectX, rectY, rectW, rectH);
-    ctx.restore();
-    // Text
     ctx.fillStyle = colorAtIndex(i);
-    ctx.fillText(label, xText, y);
+    ctx.font = /^(Fz-Cz|Cz-Pz)$/.test(label) ? 'bold 12px system-ui,Segoe UI,Roboto,Arial' : '12px system-ui,Segoe UI,Roboto,Arial';
+    ctx.fillText(label, 8, yMids[i]);
   }
 }
 

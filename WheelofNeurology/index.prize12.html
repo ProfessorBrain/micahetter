@@ -168,7 +168,6 @@ footer{color:var(--muted);text-align:center;padding:6px 0 12px 0}
 .wheelWrap.fullscreen{background:transparent !important; box-shadow:none !important;}
 
 </style>
-  <link rel="icon" type="image/png" href="favicon.png">
 </head>
 <body>
 <div class="wrap">
@@ -905,12 +904,8 @@ function handleLetterGuess(L){
       if(allRevealed()){ celebrateWin(); return hits; }
       state.canGuessConsonant=false;
       resetKeyboard(false);
-      buyVowelBtn.disabled = !state.canBuyVowel;
+      buyVowelBtn.disabled = (state.players>1) || (state.banks[state.currentPlayer] < state.vowelPrice);
       spinBtn.disabled = false;
-      // After a correct letter, allow buying a vowel if funds permit
-      state.canBuyVowel = state.banks[state.currentPlayer] >= state.vowelPrice;
-      if(buyVowelBtn) buyVowelBtn.disabled = !state.canBuyVowel;
-      resetKeyboard(true);
     } else {
       (state.wrong||=new Set()).add(L);
       playSfx('nope');
@@ -930,36 +925,26 @@ function handleLetterGuess(L){
 
   
 function purchaseVowel(L){
-  if(!VOWELS.has(L)) return 0;
-  if(state.banks[state.currentPlayer] < state.vowelPrice) return 0;
-  state.banks[state.currentPlayer] -= state.vowelPrice;
-  renderPlayers();
-
-  const hits = revealMatching(L);
-  state.guessed.add(L);
-
-  if(hits>0){
-    (state.correct||=new Set()).add(L);
-    playSfx('ding');
-  } else {
-    (state.wrong||=new Set()).add(L);
-    playSfx('nope');
-  }
-
-  setStatus(`Purchased ${L} for $${state.vowelPrice}. ${hits>0?hits+' revealed.':'None found.'}`);
-
-  if(hits>0){
-    // Allow consecutive vowel purchases if funds remain
-    state.canBuyVowel = state.banks[state.currentPlayer] >= state.vowelPrice;
-    if(buyVowelBtn) buyVowelBtn.disabled = !state.canBuyVowel;
-    resetKeyboard(true);
-    if(allRevealed()) celebrateWin();
-  } else {
-    // No hits — end the turn
-    endTurn();
-  }
-
-  return hits;
+    if(!VOWELS.has(L)) return 0;
+    if(state.banks[state.currentPlayer] < state.vowelPrice) return 0;
+    state.banks[state.currentPlayer] -= state.vowelPrice;
+    renderPlayers();
+    const hits = revealMatching(L);
+    state.guessed.add(L);
+    if(hits>0){
+      (state.correct||=new Set()).add(L);
+      playSfx('ding');
+    } else {
+      (state.wrong||=new Set()).add(L);
+      playSfx('nope');
+    }
+    setStatus(`Purchased ${L} for $${state.vowelPrice}. ${hits>0?hits+' revealed.':'None found.'}`);
+    state.canBuyVowel=false;
+    resetKeyboard(false);
+    buyVowelBtn.disabled = (state.players>1) || (state.banks[state.currentPlayer] < state.vowelPrice);
+    spinBtn.disabled = false;
+    if(hits===0){ endTurn(); } else { if(allRevealed()) celebrateWin(); }
+    return hits;
 }
 
 
@@ -1091,11 +1076,11 @@ function onSpinComplete(){
   }
 
   if(w.type === 'cash'){
-state.currentCash = w.value || 0;
+    state.currentCash = w.value || 0;
     state.canGuessConsonant = true;
     state.canBuyVowel = false;
     resetKeyboard(true);
-    buyVowelBtn.disabled = (state.banks[state.currentPlayer] < state.vowelPrice);
+    buyVowelBtn.disabled = (state.players>1) || (state.banks[state.currentPlayer] < state.vowelPrice);
     spinBtn.disabled = true;
     setStatus(`${CPL()} landed on $${w.value}. Pick a consonant.`);
     return;
