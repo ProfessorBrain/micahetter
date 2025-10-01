@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>EEG Lab — Procedural</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <style>
+    :root { 
+      --bg:#e9f7e6;
+      --grid-major:#2b6f2b;
+      --grid-minor:#a9d6a6;
+      --trace-blue:#1d49d8;
+      --trace-red:#c42424;
+      --trace-black:#000000;
+      --text:#0b1b12;
+      --panel:#f3fbf1;
+      --panel-border:#b8d9b3;
+    }
+    html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font:14px/1.2 system-ui,Segoe UI,Roboto,Arial}
+    #topbar{display:flex;flex-direction:row;flex-wrap:wrap;gap:.5rem;align-items:flex-start;padding:.5rem .75rem;border-bottom:1px solid var(--panel-border);background:var(--panel);position:sticky;top:0;z-index:2}
+    .ctrl{display:flex;flex-direction:column;gap:.25rem;min-width:100px}
+    .ctrl label{font-size:12px;opacity:.8;display:block}
+    select{background:#fff;color:var(--text);border:1px solid var(--panel-border);border-radius:6px;padding:.3rem .45rem;max-width:180px}
+    button{background:#fff;color:var(--text);border:1px solid var(--panel-border);border-radius:6px;padding:.35rem .6rem;cursor:pointer}
+    button:hover{filter:brightness(0.98)}
+    fieldset{border:1px solid var(--panel-border);border-radius:8px;padding:.35rem .5rem}
+    legend{font-size:12px;opacity:.85;padding:0 .25rem}
+    .radio{display:flex;gap:.75rem;align-items:center;flex-wrap:wrap}
+    .mini{font-size:12px;padding:.25rem .45rem;border-radius:6px}
+    .pill{background:#fff;border:1px solid var(--panel-border);border-radius:999px;padding:.2rem .5rem;font-size:12px;color:#245f24}
+    #wrap{position:relative;height:calc(100% - 90px)}
+    #c{width:100%;height:100%;display:block}
+    #err{position:absolute;left:8px;bottom:8px;background:#ffefef;border:1px solid #e6b0b0;border-radius:8px;padding:.35rem .55rem;font-size:12px;display:none;color:#7b1b1b}
+    .popover{position:fixed;top:56px;right:12px;background:#fff;border:1px solid var(--panel-border);border-radius:8px;padding:.5rem .75rem;box-shadow:0 8px 24px rgba(0,0,0,.08);display:none;z-index:3}
+    .popover.open{display:block}
+    /* Intro modal */
+    .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.25);z-index:5}
+    .modal[hidden]{display:none}
+    .modal-card{background:#fff;border:1px solid var(--panel-border);border-radius:12px;box-shadow:0 12px 28px rgba(0,0,0,.18);max-width:520px;width:min(92vw,520px);padding:1rem 1.25rem}
+    .modal-card h1{margin:0 0 .25rem 0;font-size:22px}
+    .modal-card p{margin:.25rem 0;line-height:1.35}
+    .modal-card .sub{opacity:.8;font-size:13px}
+    .modal-actions{display:flex;justify-content:flex-end;gap:.5rem;margin-top:.75rem}
+  </style>
+</head>
+<body>
+  <div id="topbar">
+    <div class="ctrl"><label>Montage</label>
+      <select id="montageSel">
+        <option value="bipolar_longitudinal" selected>Double Banana (Longitudinal)</option>
+        <option value="bipolar_transverse">Transverse</option>
+        <option value="referential">Reference (A1/A2)</option>
+      </select>
+    </div>
+    <div class="ctrl"><label>Timebase (mm/sec)</label>
+      <select id="timebase">
+        <option value="15">15 mm/sec</option>
+        <option value="30" selected>30 mm/sec</option>
+        <option value="60">60 mm/sec</option>
+      </select>
+    </div>
+    <div class="ctrl"><label>Sensitivity</label>
+      <select id="sensitivity">
+        <option value="3">3 µV/mm</option>
+        <option value="5">5 µV/mm</option>
+        <option value="7" selected>7 µV/mm</option>
+        <option value="10">10 µV/mm</option>
+        <option value="15">15 µV/mm</option>
+      </select>
+    </div>
+    <fieldset style="margin:0;display:flex;align-items:center;gap:.4rem;flex:0 1 auto;min-width:0"><legend>Rhythm</legend>
+      <div class="radio">
+        <label><input type="radio" name="rhythm" id="rhythm-delta" value="delta"> Delta</label>
+        <label><input type="radio" name="rhythm" id="rhythm-theta" value="theta"> Theta</label>
+        <label><input type="radio" name="rhythm" id="rhythm-alpha" value="alpha" checked> Alpha</label>
+        <label><input type="radio" name="rhythm" id="rhythm-beta" value="beta"> Beta</label>
+      </div>
+    </fieldset>
+    <fieldset style="margin:0;display:flex;align-items:center;gap:.4rem;flex:0 1 auto;min-width:0"><legend>State</legend>
+      <div class="radio">
+        <label><input type="radio" name="state" id="state-awake" value="awake" checked> Awake</label>
+        <label><input type="radio" name="state" id="state-drowsy" value="drowsy"> Drowsy</label>
+        <label><input type="radio" name="state" id="state-n1" value="n1"> Sleep stage 1</label>
+        <label><input type="radio" name="state" id="state-n2" value="n2"> Sleep stage 2</label>
+        <label><input type="radio" name="state" id="state-sws" value="sws"> Slow-wave sleep</label>
+        <label class="pill"><input type="checkbox" id="eyesOpen"> Eyes open</label>
+      </div>
+    </fieldset>
+    <div style="margin-left:auto;display:flex;gap:.4rem;align-items:center">
+      <button id="play">Pause</button>
+      <button id="speed" title="Toggle 1×/2×">2× Speed</button>
+      <button id="artifactsBtn" class="mini">Artifacts ▾</button>
+    </div>
+  </div>
+
+  <!-- Intro modal -->
+  <div id="introModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="introTitle">
+    <div class="modal-card">
+      <h1 id="introTitle">EEG Machine</h1>
+      <p class="sub">Created by <strong>Micah Etter, MD</strong></p>
+      <p><strong>Disclaimer:</strong> Not for medical use — educational purposes only.</p>
+      <div class="modal-actions">
+        <button id="introClose">Got it</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="artifactsPanel" class="popover">
+    <div style="display:flex;flex-direction:column;gap:.35rem">
+      <label><input id="blink" type="checkbox"> Eye blinks</label>
+      <label><input id="chew" type="checkbox"> Chewing</label>
+      <label><input id="sweat" type="checkbox"> Sweat</label>
+      <label><input id="pop" type="checkbox"> Electrode pop</label>
+      <label><input id="emg" type="checkbox"> EMG</label>
+    </div>
+  </div>
+
+  <div id="wrap"><canvas id="c"></canvas>
+    <div id="err"></div>
+  </div>
+
+<script>
+/***********************
+ * 1) Electrodes & Montages
+ ***********************/
+const ELECTRODES = [
+  "Fp1","F3","C3","P3","O1","F7","T3","T5",
+  "Fz","Cz","Pz",
+  "Fp2","F4","C4","P4","O2","F8","T4","T6",
+  "A1","A2"
+];
+const DISPLAY_ORDER = [
+  "Fp1","F3","C3","P3","O1","F7","T3","T5",
+  "Fz","Cz","Pz",
+  "Fp2","F4","C4","P4","O2","F8","T4","T6"
+];
+const LONGITUDINAL_CHAINS = [
+  ["Fp1","F7"],["F7","T3"],["T3","T5"],["T5","O1"],
+  ["Fp2","F8"],["F8","T4"],["T4","T6"],["T6","O2"],
+  ["Fp1","F3"],["F3","C3"],["C3","P3"],["P3","O1"],
+  ["Fp2","F4"],["F4","C4"],["C4","P4"],["P4","O2"],
+  ["Fz","Cz"],["Cz","Pz"]
+];
+const TRANSVERSE_CHAINS = [
+  ["Fp1","Fp2"],["F7","F8"],["F3","F4"],["T3","T4"],
+  ["C3","C4"],["T5","T6"],["P3","P4"],["O1","O2"],
+  ["Fz","Cz"],["Cz","Pz"]
+];
+
+/***********************
+ * 2) Seeded RNG
+ ***********************/
+function xmur3(str){let h=1779033703^str.length;for(let i=0;i<str.length;i++){h=Math.imul(h^str.charCodeAt(i),3432918353);h=h<<13|h>>>19;}return ()=>{h=Math.imul(h^ (h>>>16),2246822507);h=Math.imul(h^ (h>>>13),3266489909);h^=h>>>16;return h>>>0;};}
+function sfc32(a,b,c,d){return function(){a|=0;b|=0;c|=0;d|=0;var t=(a+b|0)+d|0;d=d+1|0;a=b^b>>>9;b=c+(c<<3)|0;c=(c<<21|c>>>11);c=c+t|0;return (t>>>0)/4294967296;};}
+function makeRNG(seedStr){ const seed = xmur3(seedStr); return sfc32(seed(),seed(),seed(),seed()); }
+
+/***********************
+ * 3) Signal Model
+ ***********************/
+const Fs = 256;              // Hz
+const BLINK_DUR = 0.35;      // seconds
+const EMG_PWR = 0.25;        // scale
+
+function region(e){
+  if (/^O/.test(e)) return 'occipital';
+  if (/^Fp/.test(e)) return 'frontal';
+  if (/^(F7|F8|T3|T4|T5|T6)/.test(e)) return 'temporal';
+  if (/^(P|C|Fz|Cz|Pz)/.test(e)) return 'central';
+  return 'other';
+}
+function lowpass(prev, x, a){ return prev + a*(x - prev); }
+
+class Channel {
+  constructor(name, rng){
+    this.name = name; this.rng=rng;
+    this.phAlpha = this.rng()*Math.PI*2;
+    this.phBeta  = this.rng()*Math.PI*2;
+    this.phTheta = this.rng()*Math.PI*2;
+    this.phDelta = this.rng()*Math.PI*2;
+    this.envA=0; this.envB=0; this.envT=0; this.envD=0;
+    this.brown=0;
+    this.alphaJitter = (this.rng()-0.5)*0.2;
+  }
+  sample(t, opts){
+    const r = region(this.name);
+    let A=8,B=6,T=6,D=3; // base amps
+    if (opts.mode==='alpha'){
+      if (r==='occipital') A = (opts.eyesOpen? 6: 40); else if (r==='central') A = 10; else if (r==='frontal') A = 6; else A = 8;
+      B = (r==='frontal') ? 8 : 6; T = (r==='temporal') ? 7 : 5; D = 3;
+    } else if (opts.mode==='theta'){
+      T = (r==='temporal'||r==='central') ? 15 : 10; A = (r==='occipital') ? (opts.eyesOpen?4:12) : 6; B=6; D=4;
+    } else if (opts.mode==='delta'){
+      D = (r==='frontal'||r==='central') ? 20 : 12; T=8; A=6; B=4;
+    } else if (opts.mode==='beta'){
+      B = (r==='frontal')? 14 : 10; A = (r==='occipital') ? (opts.eyesOpen?5:12) : 6; T=6; D=3;
+    }
+
+    /* Sleep/wake state modifiers */
+    switch (opts.stateMode){
+      case 'awake':
+        // no change; 'eyesOpen' already modulates alpha occipitally
+        break;
+      case 'drowsy':
+        T += 6; A = Math.min(A, 20); break;
+      case 'n1':
+        T += 10; A = Math.min(A, 15); break;
+      case 'n2':
+        T += 8; B += 4; break; // (approximate sigma enhancement)
+      case 'sws':
+        D += 20; A = Math.min(A, 8); B = Math.min(B, 6); break;
+      default: break;
+    }
+
+    this.envA = lowpass(this.envA, (this.rng()-0.5)*2, 0.002);
+    this.envB = lowpass(this.envB, (this.rng()-0.5)*2, 0.004);
+    this.envT = lowpass(this.envT, (this.rng()-0.5)*2, 0.003);
+    this.envD = lowpass(this.envD, (this.rng()-0.5)*2, 0.0015);
+
+    const fAlpha = (opts.mode==='alpha' && r==='occipital') ? opts.pdrHz : 8 + this.rng()*4;
+    const fBeta  = 18 + this.rng()*10;
+    const fTheta = 4.5 + this.rng()*2.5;
+    const fDelta = 1.0 + this.rng()*1.5;
+
+    this.phAlpha += 2*Math.PI*fAlpha/Fs;
+    this.phBeta  += 2*Math.PI*fBeta /Fs;
+    this.phTheta += 2*Math.PI*fTheta/Fs;
+    this.phDelta += 2*Math.PI*fDelta/Fs;
+
+    let y = 0;
+    const alphaTerm = (opts.mode==='alpha' && r==='occipital')
+      ? Math.sin(opts.pdrPhase + this.alphaJitter)
+      : Math.sin(this.phAlpha);
+
+    y += (A*(1+0.6*this.envA)) * alphaTerm;
+    y += (B*(1+0.6*this.envB)) * Math.sin(this.phBeta);
+    y += (T*(1+0.6*this.envT)) * Math.sin(this.phTheta);
+    y += (D*(1+0.6*this.envD)) * Math.sin(this.phDelta);
+
+    // colored noise
+    const w = (this.rng()-0.5)*4.0;
+    this.brown = 0.98*this.brown + w;
+    const pinkish = 0.9*this.brown + 0.1*w;
+    y += pinkish;
+
+    // artifacts from main loop
+    if (opts.blinkShape && /^Fp|^F[34]$/.test(this.name)) y += 120*opts.blinkShape;
+    if (opts.chewWave && /^(T3|T4|T5|T6)$/.test(this.name)) y += 30*opts.chewWave;
+    if (opts.sweatOffset && /^(Fp|F|C)/.test(this.name)) y += 20*opts.sweatOffset;
+    if (opts.pop && this.rng()<0.0005) y += 200*(this.rng()-0.5);
+    if (opts.emg && /^(F7|F8|T3|T4|T5|T6)$/.test(this.name)){
+      const hf = 30 + this.rng()*40; // 30–70 Hz
+      y += EMG_PWR*20*Math.sin(2*Math.PI*hf*opts.clock + 6*this.rng());
+    }
+
+    return y;
+  }
+}
+
+/***********************
+ * 4) Engine state
+ ***********************/
+const state = {
+  rng: makeRNG("EEG-1001"),
+  channels: new Map(),
+  buffer: new Map(),
+  idx: 0,
+  seconds: 10,
+  uvPerDiv: 70,   // 7 µV/mm × 10 mm/div
+  running: true,
+  speed: 1,
+  opts: {blink:false, chew:false, sweat:false, pop:false, emg:false},
+  montage: 'bipolar_longitudinal',
+  bgMode: 'alpha',
+  stateMode: 'awake',
+  eyesOpen: false,
+  pdrHz: 10.5,
+  pdrPhase: 0,
+  artClock: 0
+};
+
+function initChannels(){
+  state.channels.clear(); state.buffer.clear();
+  ELECTRODES.forEach(e=>{
+    state.channels.set(e, new Channel(e, state.rng));
+    state.buffer.set(e, new Float32Array(Fs*state.seconds));
+  });
+  state.idx = 0;
+}
+
+/***********************
+ * 5) Montage helpers
+ ***********************/
+function leftHem(e){
+  return /^(Fp1|F3|C3|P3|O1|F7|T3|T5|A1|Fz|Cz|Pz)$/.test(e);
+}
+function montagePairs(){
+  const arr = [];
+  if (state.montage==='referential'){
+    for (const e of DISPLAY_ORDER){
+      const ref = leftHem(e)? 'A1':'A2';
+      arr.push({a:e, b:ref, label:`${e}-${ref}`});
+    }
+  } else if (state.montage==='bipolar_transverse'){
+    for (const [a,b] of TRANSVERSE_CHAINS){ arr.push({a,b,label:`${a}-${b}`}); }
+  } else {
+    for (const [a,b] of LONGITUDINAL_CHAINS){ arr.push({a,b,label:`${a}-${b}`}); }
+  }
+  return arr;
+}
+
+/***********************
+ * 6) Renderer
+ ***********************/
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const errBox = document.getElementById('err');
+
+function resize(){
+  const dpr = Math.max(1, window.devicePixelRatio||1);
+  canvas.width = Math.floor(canvas.clientWidth * dpr);
+  canvas.height = Math.floor(canvas.clientHeight * dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+}
+window.addEventListener('resize', resize); resize();
+
+function drawGrid(rows, secs){
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  ctx.save();
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--bg');
+  ctx.fillRect(0,0,w,h);
+  const pxPerSec = w / secs;
+  ctx.lineWidth = 1;
+  // minor lines (0.2 s)
+  ctx.beginPath();
+  ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--grid-minor');
+  for (let s=0; s<secs*5; s++){
+    const x = Math.round(s*(pxPerSec/5))+0.5;
+    ctx.moveTo(x,0); ctx.lineTo(x,h);
+  }
+  ctx.stroke();
+  // major lines (1 s)
+  ctx.beginPath();
+  ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--grid-major');
+  for (let s=0; s<=secs; s++){
+    const x = Math.round(s*pxPerSec)+0.5;
+    ctx.moveTo(x,0); ctx.lineTo(x,h);
+  }
+  ctx.stroke();
+  ctx.restore();
+}
+
+function groupColor(index){
+  const red  = getComputedStyle(document.documentElement).getPropertyValue('--trace-red');
+  const blue = getComputedStyle(document.documentElement).getPropertyValue('--trace-blue');
+  const black = getComputedStyle(document.documentElement).getPropertyValue('--trace-black');
+  const label = montagePairs()[index]?.label || "";
+  if (/^(Fz-Cz|Cz-Pz)$/.test(label)) return black;
+  if (state.montage==='bipolar_longitudinal') return (Math.floor(index/4)%2===1) ? red : blue;
+  if (state.montage==='bipolar_transverse')  return (index%2===0) ? blue : red;
+  return '#333';
+}
+
+function computeRowMids(count){
+  const h = canvas.clientHeight;
+  const useGaps = (state.montage==='bipolar_longitudinal');
+  const defaultGap = useGaps ? 10 : 0;
+  const extraBreaks = useGaps ? new Set([4,8,12]) : new Set();
+  const extraFactor = 2.2;
+  let totalExtra = 0;
+  for (let i=0;i<count;i++){
+    if (!useGaps) continue;
+    let extra = 0;
+    if (i>0 && i%4===0) extra += defaultGap;
+    if (extraBreaks.has(i)) extra += defaultGap*(extraFactor-1);
+    totalExtra += extra;
+  }
+  const base = (h - totalExtra) / count;
+  const y = [];
+  let acc = 0;
+  for (let i=0;i<count;i++){
+    let extra = 0;
+    if (useGaps){
+      if (i>0 && i%4===0) extra += defaultGap;
+      if (extraBreaks.has(i)) extra += defaultGap*(extraFactor-1);
+    }
+    acc += extra;
+    const rowTop = i*base + acc;
+    y.push(rowTop + base/2);
+  }
+  return y;
+}
+
+function renderLabels(pairs, yMids, colorAtIndex){
+  if (!pairs.length) return;
+  for (let i=0;i<pairs.length;i++){
+    const label = pairs[i].label;
+    ctx.fillStyle = colorAtIndex(i);
+    ctx.font = /^(Fz-Cz|Cz-Pz)$/.test(label) ? 'bold 12px system-ui,Segoe UI,Roboto,Arial' : '12px system-ui,Segoe UI,Roboto,Arial';
+    ctx.fillText(label, 8, yMids[i] - 12);
+  }
+}
+
+/***********************
+ * 7) Timebase mapping
+ ***********************/
+function secondsFromTimebase(mmps){
+  const v = parseInt(mmps,10);
+  if (v===15) return 20;
+  if (v===30) return 10;
+  if (v===60) return 5;
+  return 10;
+}
+
+/***********************
+ * 8) Main loop
+ ***********************/
+let lastT = performance.now()/1000;
+function step(){
+  try{
+    if (state.running){
+      const now = performance.now()/1000;
+      const dt = Math.min(0.05, now - lastT);
+      lastT = now;
+
+      const samples = Math.max(1, Math.floor(dt*Fs*state.speed));
+      for (let n=0;n<samples;n++){
+        state.pdrPhase += 2*Math.PI*state.pdrHz/Fs;
+        // artifacts clocks
+        const blinkT = state.artClock % 1; // 1 Hz cycle
+        let blinkShape = 0;
+        if (state.opts.blink && blinkT < BLINK_DUR){
+          const u = blinkT/BLINK_DUR; // 0..1
+          blinkShape = Math.sin(Math.PI*u);
+        }
+        const chewWave = state.opts.chew ? Math.sin(2*Math.PI*3*state.artClock) : 0;
+        const sweatOffset = state.opts.sweat ? Math.sin(2*Math.PI*0.2*state.artClock) : 0;
+
+        const opts = {
+          blinkShape, chewWave, sweatOffset,
+          pop: state.opts.pop, emg: state.opts.emg,
+          mode: state.bgMode, stateMode: state.stateMode, eyesOpen: state.eyesOpen,
+          pdrPhase: state.pdrPhase, pdrHz: state.pdrHz,
+          clock: state.artClock
+        };
+        const t = (state.idx%Fs)/Fs;
+        for (const e of ELECTRODES){
+          const ch = state.channels.get(e);
+          const y = ch.sample(t + n/Fs, opts);
+          const buf = state.buffer.get(e);
+          buf[state.idx % buf.length] = y;
+        }
+        state.idx++;
+        state.artClock += 1/Fs;
+      }
+    }
+
+    const pairs = montagePairs();
+    drawGrid(pairs.length, state.seconds);
+
+    const w = canvas.clientWidth;
+    const pxPerSec = w / state.seconds;
+    const yMids = computeRowMids(pairs.length);
+
+    for (let i=0;i<pairs.length;i++){
+      const {a,b} = pairs[i];
+      const ringA = state.buffer.get(a);
+      const ringB = state.buffer.get(b);
+      if (!ringA || !ringB) continue;
+      const yMid = yMids[i];
+      ctx.beginPath();
+      ctx.strokeStyle = groupColor(i); ctx.lineWidth=1.2;
+      for (let x=0;x<w;x++){
+        const secAgo = (w - x)/pxPerSec;
+        const idx = (state.idx - Math.floor(secAgo*Fs));
+        const len = ringA.length;
+        const j = ((idx % len) + len) % len;
+        const uv = ringA[j] - ringB[j];
+        const rowH = (canvas.clientHeight/pairs.length);
+        const y  = yMid - (uv / state.uvPerDiv) * (rowH/4);
+        if (x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+      }
+      ctx.stroke();
+    }
+
+    renderLabels(pairs, yMids, groupColor);
+    errBox.style.display='none';
+  } catch(e){
+    console.error(e);
+    errBox.textContent = 'Render error: '+e.message;
+    errBox.style.display='block';
+  }
+  requestAnimationFrame(step);
+}
+
+/***********************
+ * 9) UI wiring
+ ***********************/
+const $ = id=>document.getElementById(id);
+function uvPerDivFromSensitivity(uVperMM){ return (parseFloat(uVperMM)||7)*10; }
+function regen(){
+  const tb = $('timebase'); if (tb) state.seconds = secondsFromTimebase(tb.value);
+  const sensEl=$('sensitivity'); if (sensEl) state.uvPerDiv = uvPerDivFromSensitivity(sensEl.value);
+  state.opts = {
+    blink: $('blink')?.checked || false,
+    chew:  $('chew')?.checked  || false,
+    sweat: $('sweat')?.checked || false,
+    pop:   $('pop')?.checked   || false,
+    emg:   $('emg')?.checked   || false
+  };
+  state.montage = $('montageSel') ? $('montageSel').value : state.montage;
+  state.pdrHz = 10 + (Math.random()*1);
+  state.pdrPhase = 0;
+  state.artClock = 0;
+  initChannels();
+}
+
+if ($('play')) $('play').addEventListener('click', ()=>{
+  state.running = !state.running;
+  $('play').textContent = state.running ? 'Pause' : 'Play';
+});
+if ($('montageSel')) $('montageSel').addEventListener('change', ()=>{ state.montage=$('montageSel').value; });
+['delta','theta','alpha','beta'].forEach(key=>{ const el=$('rhythm-'+key); if (el) el.addEventListener('change', ()=>{ if (el.checked){ state.bgMode=key; }}); });
+['awake','drowsy','n1','n2','sws'].forEach(key=>{ const el=$('state-'+key); if (el) el.addEventListener('change', ()=>{ if (el.checked){ state.stateMode=key; }}); });
+if ($('eyesOpen')) $('eyesOpen').addEventListener('change', ()=>{ state.eyesOpen = $('eyesOpen').checked; });
+if ($('speed')) $('speed').addEventListener('click', ()=>{
+  state.speed = state.speed===1 ? 2 : 1;
+  $('speed').textContent = state.speed===1 ? '2× Speed' : '1× Speed';
+});
+const artBtn = $('artifactsBtn');
+const artPanel = $('artifactsPanel');
+if (artBtn && artPanel){
+  artBtn.addEventListener('click', (e)=>{ e.stopPropagation(); artPanel.classList.toggle('open'); });
+  document.addEventListener('click', (e)=>{ if (!artPanel.contains(e.target) && e.target!==artBtn) artPanel.classList.remove('open'); });
+  artPanel.querySelectorAll('input').forEach(cb=>cb.addEventListener('change', ()=>{ regen(); }));
+}
+if ($('timebase')) $('timebase').addEventListener('change', ()=>{ state.seconds = secondsFromTimebase($('timebase').value); initChannels(); });
+if ($('sensitivity')) $('sensitivity').addEventListener('change', ()=>{ state.uvPerDiv = uvPerDivFromSensitivity($('sensitivity').value); });
+
+/* Intro modal wiring (EEG runs behind it) */
+(function(){
+  const modal = document.getElementById('introModal');
+  const closeBtn = document.getElementById('introClose');
+  function close(){ modal.setAttribute('hidden',''); }
+  if (closeBtn) closeBtn.addEventListener('click', close);
+  if (modal) modal.addEventListener('click', (e)=>{ if(e.target===modal) close(); });
+  document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') close(); });
+})();
+
+/***********************
+ * 10) Self-tests
+ ***********************/
+function selfTests(){
+  const prev = state.montage;
+  state.montage='referential';
+  console.assert(montagePairs().length===DISPLAY_ORDER.length,'ref count');
+  state.montage='bipolar_longitudinal';
+  console.assert(montagePairs().length===LONGITUDINAL_CHAINS.length,'long count');
+  state.montage='bipolar_transverse';
+  console.assert(montagePairs().length===TRANSVERSE_CHAINS.length,'trans count');
+  state.montage=prev;
+}
+
+// boot
+selfTests();
+const tbEl=document.getElementById('timebase'); if (tbEl) state.seconds = secondsFromTimebase(tbEl.value);
+const seEl=document.getElementById('sensitivity'); if (seEl) state.uvPerDiv = uvPerDivFromSensitivity(seEl.value);
+resize();
+regen();
+requestAnimationFrame(step);
+</script>
+</body>
+</html>

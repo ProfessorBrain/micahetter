@@ -167,12 +167,6 @@ footer{color:var(--muted);text-align:center;padding:6px 0 12px 0}
 /* Remove dim background/shadow around fullscreen wheel overlay */
 .wheelWrap.fullscreen{background:transparent !important; box-shadow:none !important;}
 
-
-.playersLabel{font-size:16px;font-weight:900;color:var(--ink);}
-#optTitle{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px;}
-.credit{position:absolute;left:50%;top:100%;transform:translate(-50%,8px);text-align:center;font-size:11px;color:#0e5539;opacity:.96;white-space:nowrap}
-
-.panel{position:relative}
 </style>
   <link rel="icon" type="image/png" href="favicon.png">
 </head>
@@ -207,9 +201,7 @@ footer{color:var(--muted);text-align:center;padding:6px 0 12px 0}
         <div id="status" class="status"></div>
         <div class="secondary">
 <button id="optionsBtn">Options</button></div>
-      
-      <div class="credit">created by micah etter, md</div>
-</div>
+      </div>
     </div>
 
     <!-- RIGHT -->
@@ -222,6 +214,8 @@ footer{color:var(--muted);text-align:center;padding:6px 0 12px 0}
       <div><div id="keyboard" class="keyboard"></div></div>
     </div>
   </div>
+
+  <footer>created by micah etter, md</footer>
 </div>
 
 <!-- CLUE MODAL -->
@@ -292,14 +286,11 @@ footer{color:var(--muted);text-align:center;padding:6px 0 12px 0}
 <div id="optionsModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="optTitle">
   <div class="dialog">
     <h3 id="optTitle">Options</h3>
-    <div class="field">
-  <label class="playersLabel">Players:</label>
-  <div class="options" role="radiogroup" aria-label="Players (Options)">
+    <div class="options" role="radiogroup" aria-label="Players (Options)">
       <label style="display:inline-flex;align-items:center;gap:6px;"><input type="radio" name="playersOptions" value="1"> 1</label>
       <label style="display:inline-flex;align-items:center;gap:6px;"><input type="radio" name="playersOptions" value="2"> 2</label>
       <label style="display:inline-flex;align-items:center;gap:6px;"><input type="radio" name="playersOptions" value="3"> 3</label>
     </div>
-</div>
     <div class="field">
       <label for="categorySelect">Category for new puzzles</label>
       <select id="categorySelect"></select>
@@ -813,7 +804,7 @@ function layoutBoard(answer){
     ctx.font = '800 18px ui-sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('NEUROLOGY!', 0, 0);
+    ctx.fillText('NEUROLOGY', 0, 0);
     ctx.restore();
   }
 

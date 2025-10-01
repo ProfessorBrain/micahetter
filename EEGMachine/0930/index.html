@@ -5,26 +5,6 @@
   <title>EEG Machine</title>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <style>
-/* Stronger Options button */
-button.options-strong{
-  padding: .45rem .8rem;
-  border-radius: .6rem;
-  border: 2px solid rgba(0,0,0,.2);
-  background: rgba(255,255,255,.85);
-  font-weight: 600;
-  box-shadow: 0 1px 2px rgba(0,0,0,.06);
-  transition: transform .06s ease, box-shadow .12s ease, background .12s ease;
-}
-button.options-strong:hover{
-  transform: translateY(-1px);
-  box-shadow: 0 3px 10px rgba(0,0,0,.12);
-  background: rgba(255,255,255,.95);
-}
-button.options-strong:active{
-  transform: translateY(0);
-  box-shadow: 0 1px 2px rgba(0,0,0,.08);
-}
-
     :root { 
       --bg:#e9f7e6;
       --grid-major:#2b6f2b;
@@ -108,7 +88,8 @@ button.options-strong:active{
     </fieldset>
     <div style="margin-left:auto;display:flex;gap:.4rem;align-items:center">
       <button id="play">Pause</button>
-      <button id="optionsBtn" class="options-strong">Options</button>
+      <button id="speed" title="Toggle 1×/2×">2× Speed</button>
+      <button id="artifactsBtn" class="mini">Artifacts ▾</button>
     </div>
   </div>
 
@@ -124,34 +105,15 @@ button.options-strong:active{
     </div>
   </div>
 
-  <!-- Options modal -->
-  <div id="optionsModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="optionsTitle" hidden>
-    <div class="modal-card">
-      <h1 id="optionsTitle">Options</h1>
-      <fieldset>
-        <legend>Artifacts</legend>
-        <div style="display:flex;flex-direction:column;gap:.35rem;margin-top:.25rem">
-          <label><input id="blink" type="checkbox"> Eye blinks</label>
-          <label><input id="chew" type="checkbox"> Chewing</label>
-          <label><input id="sweat" type="checkbox"> Sweat</label>
-          <label><input id="pop" type="checkbox"> Electrode pop</label>
-          <label><input id="emg" type="checkbox"> EMG</label>
-        </div>
-      </fieldset>
-
-      <fieldset>
-        <legend>Playback speed</legend>
-        <div style="display:flex;align-items:center;gap:.6rem;margin-top:.25rem">
-          <input id="speedSlider" type="range" min="0.25" max="5" step="0.25" value="1" style="width:260px">
-          <output id="speedValue" for="speedSlider">1.00×</output>
-        </div>
-        <p style="font-size:.9rem;opacity:.8;margin:.25rem 0 0">Range: 0.25× to 5×</p>
-      </fieldset>
-      <div class="modal-actions">
-        <button id="optionsClose">Close</button>
-      </div>
+  <div id="artifactsPanel" class="popover">
+    <div style="display:flex;flex-direction:column;gap:.35rem">
+      <label><input id="blink" type="checkbox"> Eye blinks</label>
+      <label><input id="chew" type="checkbox"> Chewing</label>
+      <label><input id="sweat" type="checkbox"> Sweat</label>
+      <label><input id="pop" type="checkbox"> Electrode pop</label>
+      <label><input id="emg" type="checkbox"> EMG</label>
     </div>
-  </div></div>
+  </div>
 
   <div id="wrap"><canvas id="c"></canvas>
     <div id="err"></div>
@@ -588,31 +550,12 @@ document.querySelectorAll('#modeRadios input[name="mode"]').forEach(el=>{
   el.addEventListener('change',()=>{ if(el.checked){ state.mode=el.value; updateEyesOpenEnabled(); }});
 });
 if($('eyesOpen')) $('eyesOpen').addEventListener('change',()=>{ state.eyesOpen=$('eyesOpen').checked; });
-const optBtn = $('optionsBtn');
-const optionsModal = document.getElementById('optionsModal');
-
-// Playback speed slider wiring
-const speedSlider = $('speedSlider');
-const speedValue = $('speedValue');
-if (speedSlider && speedValue) {
-  speedSlider.value = String(state.speed || 1);
-  speedValue.textContent = (Number(speedSlider.value)).toFixed(2) + '×';
-  speedSlider.addEventListener('input', () => {
-    const v = Math.max(0.25, Math.min(5, Number(speedSlider.value)));
-    state.speed = v || 1;
-    speedValue.textContent = v.toFixed(2) + '×';
-  });
-}
-
-const optionsClose = document.getElementById('optionsClose');
-if (optBtn && optionsModal) {
-  const openOptions = () => { optionsModal.hidden = false; };
-  const closeOptions = () => { optionsModal.hidden = true; };
-  optBtn.addEventListener('click', (e) => { e.stopPropagation(); openOptions(); });
-  optionsClose?.addEventListener('click', closeOptions);
-  optionsModal.addEventListener('click', (e) => { if (e.target === optionsModal) closeOptions(); });
-  document.addEventListener('keydown', (e) => { if (!optionsModal.hidden && e.key === 'Escape') closeOptions(); });
-  optionsModal.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.addEventListener('change', () => { regen(); }));
+if($('speed')) $('speed').addEventListener('click',()=>{ state.speed=state.speed===1?2:1; $('speed').textContent=state.speed===1?'2× Speed':'1× Speed'; });
+const artBtn=$('artifactsBtn'); const artPanel=$('artifactsPanel');
+if(artBtn && artPanel){
+  artBtn.addEventListener('click',(e)=>{ e.stopPropagation(); artPanel.classList.toggle('open'); });
+  document.addEventListener('click',(e)=>{ if(!artPanel.contains(e.target) && e.target!==artBtn) artPanel.classList.remove('open'); });
+  artPanel.querySelectorAll('input').forEach(cb=>cb.addEventListener('change',()=>{ regen(); }));
 }
 if($('timebase')) $('timebase').addEventListener('change',()=>{ state.seconds=secondsFromTimebase($('timebase').value); initChannels(); });
 if($('sensitivity')) $('sensitivity').addEventListener('change',()=>{ state.uvPerDiv=uvPerDivFromSensitivity($('sensitivity').value); });
