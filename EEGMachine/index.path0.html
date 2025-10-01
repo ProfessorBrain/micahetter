@@ -108,7 +108,6 @@ button.options-strong:active{
     </fieldset>
     <div style="margin-left:auto;display:flex;gap:.4rem;align-items:center">
       <button id="play">Pause</button>
-      <button id="pathologyBtn" class="options-strong">PATHOLOGY</button>
       <button id="optionsBtn" class="options-strong">Options</button>
     </div>
   </div>
@@ -138,22 +137,6 @@ button.options-strong:active{
           <label><input id="pop" type="checkbox"> Electrode pop</label>
           <label><input id="emg" type="checkbox"> EMG</label>
         </div>
-  <!-- Pathology modal -->
-  <div id="pathologyModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="pathologyTitle" hidden>
-    <div class="modal-card">
-      <h1 id="pathologyTitle">Pathology</h1>
-      <fieldset>
-        <legend>Potential patterns</legend>
-        <div style="display:flex;flex-direction:column;gap:.35rem;margin-top:.25rem">
-          <label><input id="gpd" type="checkbox"> Generalized periodic discharges (GPDs)</label>
-        </div>
-      </fieldset>
-      <div class="modal-actions">
-        <button id="pathologyClose">Close</button>
-      </div>
-    </div>
-  </div>
-
       </fieldset>
 
       <fieldset>
@@ -335,7 +318,6 @@ const state = {
   running: true,
   speed: 1,
   opts: {blink:false, chew:false, sweat:false, pop:false, emg:false},
-  pathology: {gpd:false},
   montage: 'bipolar_longitudinal',
   mode: 'awake',
   eyesOpen: false,
@@ -658,33 +640,6 @@ if (eoEl) { eoEl.checked = true; state.eyesOpen = true; }
 regen();
 updateEyesOpenEnabled();
 requestAnimationFrame(step);
-
-
-// Pathology modal wiring
-const pathologyBtn = $('pathologyBtn');
-const pathologyModal = document.getElementById('pathologyModal');
-const pathologyClose = document.getElementById('pathologyClose');
-const gpdBox = $('gpd');
-
-if (pathologyBtn && pathologyModal) {
-  pathologyBtn.addEventListener('click', () => {
-    pathologyModal.hidden = false;
-  });
-}
-if (pathologyClose) {
-  pathologyClose.addEventListener('click', () => pathologyModal.hidden = true);
-}
-if (pathologyModal) {
-  pathologyModal.addEventListener('click', (e) => { if (e.target === pathologyModal) pathologyModal.hidden = true; });
-  window.addEventListener('keydown', (e) => { if (!pathologyModal.hidden && e.key === 'Escape') pathologyModal.hidden = true; });
-}
-if (gpdBox) {
-  gpdBox.checked = !!(state.pathology && state.pathology.gpd);
-  gpdBox.addEventListener('change', () => {
-    state.pathology.gpd = gpdBox.checked;
-    // TODO: on future iterations, hook this into waveform generation.
-  });
-}
 
 /* Physiology reference idea: learningeeg.com/normal-asleep */
 </script>
