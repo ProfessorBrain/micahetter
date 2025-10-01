@@ -1521,7 +1521,7 @@ newBtn.addEventListener('click', ()=> newPuzzle());
     state.categories = Array.from(new Set(puzzles.map(p=>p.category).filter(Boolean))).sort();
     renderPlayers();
         _refillPrizeQueue();
-    newPuzzle();
+    newPuzzle(0);
     // start modal already shown
   }
   applySinglePlayerWheelRules();
