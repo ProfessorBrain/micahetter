@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The Digital Neurologist — Vanilla JS</title>
+  <link rel="icon" href="favicon.png" type="image/png" />
+  <style>
+    :root{
+      --bg:#f6f7fb;
+      --card:#ffffff;
+      --text:#0f172a;
+      --muted:#64748b;
+      --indigo:#4f46e5;
+      --indigo-700:#4338ca;
+      --indigo-50:#eef2ff;
+      --slate-200:#e2e8f0;
+      --slate-300:#cbd5e1;
+      --slate-400:#94a3b8;
+      --emerald-700:#047857;
+      --red-600:#dc2626;
+      --radius:14px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background:var(--bg);
+      color:var(--text);
+    }
+    h1{ text-align:center; margin:24px 0 8px; font-weight:800; }
+    .wrap{ max-width:1160px; margin:0 auto; padding:8px 16px 48px; }
+    .grid{ display:grid; grid-template-columns: 380px 1fr; gap:24px; align-items:start; }
+    .card{ background:var(--card); border:1px solid var(--slate-200); border-radius:var(--radius); padding:16px; box-shadow:0 1px 2px rgba(0,0,0,.04);}
+    .muted-title{ font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); }
+    .case-box{ min-height:220px; }
+    .summary-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
+    .summary-item{ border:1px solid var(--slate-200); border-radius:12px; padding:12px; min-height:64px; }
+    .value{ margin-top:4px; font-weight:600; }
+    .dash{ color:var(--slate-400) }
+    .stage-tabs{ display:flex; gap:8px; justify-content:center; margin:4px 0 12px; flex-wrap:wrap;}
+    .tab{ font-size:12px; padding:6px 10px; border-radius:999px; border:1px solid var(--slate-200); background:#fff; color:#111; }
+    .tab.active{ background:var(--indigo); color:#fff; border-color:var(--indigo-700); }
+    .section-title{ text-align:center; font-size:12px; text-transform:uppercase; color:var(--muted); margin:8px 0; }
+    .options{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
+    .chip{
+      padding:9px 14px; border:1px solid var(--slate-300); border-radius:999px;
+      background:#fff; color:#0f172a; font-size:13px; cursor:pointer; transition:.15s;
+    }
+    .chip:hover{ background:#f8fafc }
+    .chip.active{ background:var(--indigo); color:#fff; border-color:var(--indigo-700); }
+    .chip.disabled{ color:var(--slate-400); border-color:var(--slate-300); cursor:not-allowed; background:#fff; }
+    .chip.correct{ color:var(--emerald-700); font-weight:700; text-decoration:underline; }
+    .chip.wrong{ color:var(--red-600); text-decoration:line-through; border-color:#fecaca; }
+    .controls{ display:flex; justify-content:center; margin-top:12px; }
+    .btn{ background:var(--indigo); color:#fff; border:none; border-radius:10px; padding:10px 16px; cursor:pointer; font-weight:700; }
+    .btn:disabled{ opacity:.5; cursor:not-allowed; }
+    .group{ margin:14px 0 18px; }
+    .footer{ text-align:center; margin-top:8px; font-size:12px; color:var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>The Digital Neurologist</h1>
+    <div class="grid">
+      <!-- LEFT: Case + Summary -->
+      <div class="card">
+        <div class="muted-title">Case</div>
+        <div id="caseBox" class="case-box value"></div>
+
+        <div class="summary-grid" style="margin-top:10px">
+          <div class="summary-item">
+            <div class="muted-title">Pace</div>
+            <div id="sumPace" class="value dash">—</div>
+          </div>
+          <div class="summary-item">
+            <div class="muted-title">Pattern</div>
+            <div id="sumPattern" class="value dash">—</div>
+          </div>
+          <div class="summary-item">
+            <div class="muted-title">Localization</div>
+            <div id="sumLoc" class="value dash">—</div>
+          </div>
+          <div class="summary-item">
+            <div class="muted-title">Etiology</div>
+            <div id="sumEti" class="value dash">—</div>
+          </div>
+          <div class="summary-item" style="grid-column:1/3">
+            <div class="muted-title">Disease</div>
+            <div id="sumDz" class="value dash">—</div>
+          </div>
+        </div>
+        <div class="footer">created by micah etter, md</div>
+      </div>
+
+      <!-- RIGHT: Interactive panel -->
+      <div class="card">
+        <div class="stage-tabs">
+          <button class="tab active" data-stage="pace">• Pace</button>
+          <button class="tab" data-stage="localization">Localization</button>
+          <button class="tab" data-stage="etiology">Etiology</button>
+          <button class="tab" data-stage="disease">Disease</button>
+        </div>
+
+        <div id="stageContent"></div>
+      </div>
+    </div>
+  </div>
+
+<script>
+/** --------------- Data --------------- **/
+// Categories
+const PACE_TIME = ["Hyperacute","Acute","Subacute","Chronic"];
+const PACE_PATTERN = ["Unknown","Monophasic","Relapsing","Stepwise","Progressive"]; // "Unknown" offered in picker, but summary shows — when unset.
+const LOCALIZATION = [
+  "Cortex","Subcortical white matter","Basal ganglia","Thalamus",
+  "Midbrain","Pons","Medulla",
+  "Cerebellum Hemisphere","Cerebellum Midline",
+  "Corticospinal tracts","Spinothalamic tracts","Dorsal columns"
+];
+
+// Current case (edit these fields to wire to your CSV loader later)
+const currentCase = {
+  prompt: "68-year-old with sudden, minutes-old dysarthria, ataxia, and internuclear ophthalmoplegia/abducens findings after abrupt onset during routine activity; BP elevated on arrival.",
+  pace_timecourse: "Hyperacute",
+  pace_pattern: "Monophasic", // optional
+  localization: "Pons",
+  etiology: null,
+  disease: null
+};
+
+/** --------------- State --------------- **/
+const picked = {
+  pace_timecourse: null,
+  pace_pattern: null,
+  localization: [],
+  etiology: null,
+  disease: null
+};
+const locked = {
+  pace: false,
+  localization: false,
+  etiology: false,
+  disease: false
+};
+
+// Persist wrong guesses so they stay red/struck
+const wrong = {
+  pace_timecourse: new Set(),
+  pace_pattern: new Set(),
+  localization: new Set(),
+};
+
+// Utilities
+const norm = s => (s||"").toString().trim().toLowerCase();
+
+/** --------------- Rendering Helpers --------------- **/
+function qs(sel, root=document){ return root.querySelector(sel); }
+function qsa(sel, root=document){ return [...root.querySelectorAll(sel)]; }
+
+function setTab(stage){
+  qsa('.tab').forEach(t => t.classList.toggle('active', t.dataset.stage === stage));
+  renderStage(stage);
+}
+
+function updateSummary(){
+  // Only show values once locked; otherwise show dash
+  qs('#sumPace').textContent = locked.pace ? (picked.pace_timecourse || "—") : "—";
+  qs('#sumPace').classList.toggle('dash', !locked.pace || !picked.pace_timecourse);
+
+  qs('#sumPattern').textContent = locked.pace ? (picked.pace_pattern || "—") : "—";
+  qs('#sumPattern').classList.toggle('dash', !locked.pace || !picked.pace_pattern);
+
+  qs('#sumLoc').textContent = locked.localization ? (picked.localization.length ? picked.localization.join(", ") : "—") : "—";
+  qs('#sumLoc').classList.toggle('dash', !locked.localization || picked.localization.length===0);
+
+  qs('#sumEti').textContent = locked.etiology ? (picked.etiology || "—") : "—";
+  qs('#sumEti').classList.toggle('dash', !locked.etiology || !picked.etiology);
+
+  qs('#sumDz').textContent = locked.disease ? (picked.disease || "—") : "—";
+  qs('#sumDz').classList.toggle('dash', !locked.disease || !picked.disease);
+}
+
+function chip(base, {active=false, disabled=false, correct=false, wrong=false}={}){
+  const btn = document.createElement('button');
+  btn.className = 'chip';
+  if(active) btn.classList.add('active');
+  if(disabled) btn.classList.add('disabled');
+  if(correct) btn.classList.add('correct');
+  if(wrong) btn.classList.add('wrong');
+  btn.textContent = base;
+  return btn;
+}
+
+// Evaluate correctness
+function isPaceCorrect(opt){
+  if(!picked.pace_timecourse || norm(picked.pace_timecourse)!==norm(opt)) return false;
+  return norm(currentCase.pace_timecourse) === norm(opt);
+}
+function isPaceWrong(opt){
+  return wrong.pace_timecourse.has(opt) ||
+         (picked.pace_timecourse===opt && norm(currentCase.pace_timecourse)!==norm(opt));
+}
+
+function isPatternCorrect(opt){
+  if(!picked.pace_pattern || norm(picked.pace_pattern)!==norm(opt)) return false;
+  if(!currentCase.pace_pattern) return false;
+  return norm(currentCase.pace_pattern) === norm(opt);
+}
+function isPatternWrong(opt){
+  return wrong.pace_pattern.has(opt) ||
+         (picked.pace_pattern===opt && currentCase.pace_pattern && norm(currentCase.pace_pattern)!==norm(opt));
+}
+
+function isLocWrong(opt){
+  const correct = norm(currentCase.localization);
+  const pickedSet = new Set(picked.localization.map(norm));
+  const chosen = pickedSet.has(norm(opt));
+  // wrong if chosen and not equal to correct; or previously wrong
+  return wrong.localization.has(opt) || (chosen && norm(opt)!==correct);
+}
+function isLocCorrect(opt){
+  const correct = norm(currentCase.localization);
+  const pickedSet = new Set(picked.localization.map(norm));
+  return pickedSet.has(norm(opt)) && norm(opt)===correct;
+}
+
+/** --------------- Stage Renderers --------------- **/
+function renderPace(){
+  const root = document.createElement('div');
+
+  // Pace timecourse
+  const g1 = document.createElement('div');
+  g1.className = 'group';
+  g1.innerHTML = '<div class="section-title">Timecourse</div>';
+  const row1 = document.createElement('div'); row1.className='options';
+  PACE_TIME.forEach(opt => {
+    const btn = chip(opt, {
+      active: picked.pace_timecourse===opt,
+      correct: isPaceCorrect(opt),
+      wrong: isPaceWrong(opt)
+    });
+    btn.onclick = () => {
+      if(!currentCase) return;
+      picked.pace_timecourse = opt;
+      // persist wrong
+      if(norm(opt)!==norm(currentCase.pace_timecourse)) wrong.pace_timecourse.add(opt);
+      updateSummary();
+      setTab('pace'); // re-render
+    };
+    row1.appendChild(btn);
+  });
+  g1.appendChild(row1);
+  root.appendChild(g1);
+
+  // Pattern (optional picker; summary shows dash when unset)
+  const g2 = document.createElement('div');
+  g2.className = 'group';
+  g2.innerHTML = '<div class="section-title">Pattern</div>';
+  const row2 = document.createElement('div'); row2.className='options';
+  PACE_PATTERN.forEach(opt => {
+    const btn = chip(opt, {
+      active: picked.pace_pattern===opt,
+      correct: isPatternCorrect(opt),
+      wrong: isPatternWrong(opt)
+    });
+    btn.onclick = () => {
+      if(!currentCase) return;
+      picked.pace_pattern = opt;
+      if(currentCase.pace_pattern && norm(opt)!==norm(currentCase.pace_pattern)) wrong.pace_pattern.add(opt);
+      updateSummary();
+      setTab('pace');
+    };
+    row2.appendChild(btn);
+  });
+  g2.appendChild(row2);
+  root.appendChild(g2);
+
+  // Lock
+  const ctr = document.createElement('div'); ctr.className='controls';
+  const lock = document.createElement('button'); lock.className='btn'; lock.textContent='Paced!';
+  lock.disabled = !picked.pace_timecourse;
+  lock.onclick = () => { locked.pace = true; updateSummary(); setTab('localization'); };
+  ctr.appendChild(lock);
+  root.appendChild(ctr);
+
+  return root;
+}
+
+function renderLocalization(){
+  const root = document.createElement('div');
+  const g = document.createElement('div');
+  g.className='group';
+  g.innerHTML = '<div class="section-title">Central nervous system</div>';
+  const row = document.createElement('div'); row.className='options';
+  LOCALIZATION.forEach(opt => {
+    const btn = chip(opt, {
+      active: picked.localization.includes(opt),
+      correct: isLocCorrect(opt),
+      wrong: isLocWrong(opt)
+    });
+    btn.onclick = () => {
+      // toggle select (single-select for now to mimic original behavior)
+      picked.localization = [opt];
+      const correct = norm(currentCase.localization);
+      if(norm(opt)!==correct) wrong.localization.add(opt);
+      updateSummary();
+      setTab('localization');
+    };
+    row.appendChild(btn);
+  });
+  g.appendChild(row);
+  root.appendChild(g);
+
+  const ctr = document.createElement('div'); ctr.className='controls';
+  const lock = document.createElement('button'); lock.className='btn'; lock.textContent='Localized!';
+  lock.disabled = picked.localization.length===0;
+  lock.onclick = () => { locked.localization = true; updateSummary(); setTab('etiology'); };
+  ctr.appendChild(lock);
+  root.appendChild(ctr);
+  return root;
+}
+
+function renderEtiology(){
+  const root = document.createElement('div');
+  root.innerHTML = '<div class="section-title">Etiology (placeholder)</div>';
+  const ctr = document.createElement('div'); ctr.className='controls';
+  const lock = document.createElement('button'); lock.className='btn'; lock.textContent='Etiology!';
+  lock.onclick = () => { locked.etiology = true; updateSummary(); setTab('disease'); };
+  ctr.appendChild(lock);
+  root.appendChild(ctr);
+  return root;
+}
+
+function renderDisease(){
+  const root = document.createElement('div');
+  root.innerHTML = '<div class="section-title">Disease (placeholder)</div>';
+  const ctr = document.createElement('div'); ctr.className='controls';
+  const lock = document.createElement('button'); lock.className='btn'; lock.textContent='Diagnosed!';
+  lock.onclick = () => { locked.disease = true; updateSummary(); alert('Congrats!'); };
+  ctr.appendChild(lock);
+  root.appendChild(ctr);
+  return root;
+}
+
+function renderStage(stage){
+  const target = qs('#stageContent');
+  target.innerHTML = '';
+  if(stage==='pace') target.appendChild(renderPace());
+  else if(stage==='localization') target.appendChild(renderLocalization());
+  else if(stage==='etiology') target.appendChild(renderEtiology());
+  else target.appendChild(renderDisease());
+}
+
+// Init
+function init(){
+  qs('#caseBox').textContent = currentCase.prompt;
+  updateSummary();
+  setTab('pace');
+  qsa('.tab').forEach(btn => btn.onclick = () => setTab(btn.dataset.stage));
+}
+
+init();
+</script>
+</body>
+</html>

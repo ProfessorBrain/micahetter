@@ -1237,120 +1237,106 @@ if (_qn){
 </script>
 
 
-
-
-
 <script id="focal-seizure-sim">
 (function(){
-  // Add focal seizure overlay into the per-channel signal
-  function patchChannelSample(){
-    if (!window.Channel || Channel.prototype._seizurePatched) return;
+  // Compute additive focal seizure waveform for a given electrode name
+  window._focalSeizureWave = function(electrode, opts){
+    const s = window.state && state.focalSz;
+    if (!s || !s.active) return 0;
+    const t = opts.clock - s.t0;
+    if (t < 0 || t > s.dur) return 0;
+
+    // Which electrodes get the strongest effect
+    const isLeft  = s.side === 'left';
+    const focals  = isLeft ? ['F7','T3','T5'] : ['F8','T4','T6'];
+    const near    = isLeft ? ['F3','C3','P3','O1','Fp1'] : ['F4','C4','P4','O2','Fp2'];
+
+    let scale = 0;
+    if (focals.includes(electrode)) scale = 1.0;
+    else if (near.includes(electrode)) scale = 0.45;
+    else scale = 0.15;
+
+    // Phase evolution over 10s
+    let y = 0;
+    if (t < 2){ // 0-2s: low-voltage fast (20–25 Hz), building
+      const f = 20 + 5*t/2;
+      const amp = 20 * (t/2);
+      y += amp * Math.sin(2*Math.PI*f*opts.clock + s.ph);
+    } else if (t < 6){ // 2-6s: rhythmic 6–7 Hz with increasing amplitude
+      const f = 6.0 + 1.0*Math.sin(0.2*t);
+      const amp = 60 * ((t-2)/4);
+      y += amp * Math.sin(2*Math.PI*f*opts.clock + 0.2*s.ph);
+    } else if (t < 9){ // 6-9s: spike-and-wave 3–4 Hz high amplitude
+      const f = 3.5 + 0.2*Math.sin(0.3*t);
+      const base = 90 * ((t-6)/3);
+      // crude spike component
+      const saw = (opts.clock*f - Math.floor(opts.clock*f));
+      const spike = (saw<0.05?1-(saw/0.05):0);
+      y += base * Math.sin(2*Math.PI*f*opts.clock);
+      y += 180 * spike;
+    } else { // 9-10s: postictal slowing/suppression
+      const f = 1.0 + 0.5*Math.sin(0.5*t);
+      const amp = 40 * (1 - (t-9));
+      y += amp * Math.sin(2*Math.PI*f*opts.clock + 0.4*s.ph);
+    }
+    return scale * y;
+  };
+
+  // Patch Channel.prototype.sample to add seizure overlay without rewriting existing logic
+  if (window.Channel && !Channel.prototype._seizurePatched){
     const _orig = Channel.prototype.sample;
     Channel.prototype.sample = function(t, opts){
-      let y = _orig.call(this, t, opts);
-      const s = window.state && state.focalSz;
-      if (s && s.active){
-        const tRel = (opts && typeof opts.clock==='number') ? (opts.clock - s.t0) : 0;
-        if (tRel >= 0 && tRel <= s.dur){
-          const isLeft  = s.side === 'left';
-          const focals  = isLeft ? ['F7','T3','T5'] : ['F8','T4','T6'];
-          const near    = isLeft ? ['F3','C3','P3','O1','Fp1'] : ['F4','C4','P4','O2','Fp2'];
-          let scale = focals.includes(this.name) ? 1.0 : near.includes(this.name) ? 0.45 : 0.15;
-          let add = 0;
-          // Evolution
-          if (tRel < 2){
-            const f = 20 + 5*tRel/2;
-            const amp = 20 * (tRel/2);
-            add += amp * Math.sin(2*Math.PI*f*opts.clock + s.ph);
-          } else if (tRel < 6){
-            const f = 6.0 + 1.0*Math.sin(0.2*tRel);
-            const amp = 60 * ((tRel-2)/4);
-            add += amp * Math.sin(2*Math.PI*f*opts.clock + 0.2*s.ph);
-          } else if (tRel < 9){
-            const f = 3.5 + 0.2*Math.sin(0.3*tRel);
-            const base = 90 * ((tRel-6)/3);
-            const saw = (opts.clock*f - Math.floor(opts.clock*f));
-            const spike = (saw<0.05?1-(saw/0.05):0);
-            add += base * Math.sin(2*Math.PI*f*opts.clock);
-            add += 180 * spike;
-          } else {
-            const f = 1.0 + 0.5*Math.sin(0.5*tRel);
-            const amp = 40 * (1 - (tRel-9));
-            add += amp * Math.sin(2*Math.PI*f*opts.clock + 0.4*s.ph);
-          }
-          y += scale * add;
-        }
-      }
-      return y;
+      const base = _orig.call(this, t, opts);
+      return base + (window._focalSeizureWave ? _focalSeizureWave(this.name, opts) : 0);
     };
     Channel.prototype._seizurePatched = true;
   }
 
-  // Start 10s seizure & schedule auto-reset
-  function triggerFocalSeizure(){
-    window.state = window.state || {};
-    const rng = state.rng || Math.random;
-    const side = (rng() < 0.5) ? 'left' : 'right';
-    const ph = rng() * Math.PI*2;
-    const now = (state.clock || 0);
-    state.focalSz = {active:true, t0: now, dur: 10, side, ph};
-  }
-  function checkAndAutoReset(){
-    const s = window.state && state.focalSz;
-    if (!s || !s.active) return;
-    const now = state.clock || 0;
-    if (now - s.t0 >= s.dur){
-      s.active = false;
-      const el = document.getElementById('focalSz');
-      if (el) el.checked = false;
-      if (state.pathology) state.pathology.focalSeizure = false;
-      delete state.focalSz;
-    }
-  }
-
-  // Bind checkbox (works even if element is created/moved later)
-  function bindFocalCheckbox(){
+  // When user checks the checkbox, start a 10s seizure and auto-reset checkbox
+  function armFocalSeizure(){
     const el = document.getElementById('focalSz');
-    if (!el || el._focalBound) return;
-    el._focalBound = true;
+    if (!el) return;
     el.addEventListener('change', function(){
+      if (!el.checked){
+        if (window.state){ state.pathology.focalSeizure=false; delete state.focalSz; }
+        return;
+      }
       window.state = window.state || {};
       state.pathology = state.pathology || {};
-      if (el.checked){
-        state.pathology.focalSeizure = true;
-        triggerFocalSeizure();
-      } else {
-        if (state.focalSz) state.focalSz.active = false;
-        state.pathology.focalSeizure = false;
-        delete state.focalSz;
-      }
-      if (typeof regen === 'function') regen();
+      state.pathology.focalSeizure = true;
+      // choose side randomly for variety
+      const side = (state.rng && state.rng() < 0.5) ? 'left' : 'right';
+      const ph = Math.random()*Math.PI*2;
+      state.focalSz = {active:true, t0: (state.clock||0), dur:10, side, ph};
     });
   }
 
-  // Patch step() to run the auto-reset check every tick
-  function patchStep(){
-    if (!window.step || window._seizureStepPatched) return;
-    const _orig = step;
+  // Watch in step(): when seizure finishes, reset checkbox and flags
+  function patchStepReset(){
+    if (!window.step || window._seizureResetPatched) return;
+    const _origStep = step;
     window.step = function(){
-      checkAndAutoReset();
-      return _orig();
+      // pre
+      const s = window.state && state.focalSz;
+      if (s && s.active){
+        const now = state.clock || 0;
+        if (now - s.t0 >= s.dur){
+          s.active = false;
+          // reset UI checkbox
+          const el = document.getElementById('focalSz');
+          if (el) el.checked = false;
+          if (state.pathology) state.pathology.focalSeizure = false;
+          delete state.focalSz;
+        }
+      }
+      return _origStep();
     };
-    window._seizureStepPatched = true;
+    window._seizureResetPatched = true;
   }
 
   function init(){
-    patchChannelSample();
-    bindFocalCheckbox();
-    patchStep();
-    // In case the checkbox is added/moved later (Pathology modal build), observe DOM briefly
-    const obs = new MutationObserver(()=>bindFocalCheckbox());
-    obs.observe(document.documentElement, {subtree:true, childList:true});
-    // Also bind on modal open/close if those events exist
-    document.addEventListener('click', function(e){
-      // when opening pathology modal or toggling something inside, attempt bind
-      if (e.target && (e.target.id==='pathologyBtn' || e.target.closest('#pathologyModal'))) bindFocalCheckbox();
-    });
+    armFocalSeizure();
+    patchStepReset();
   }
 
   if (document.readyState === 'loading'){

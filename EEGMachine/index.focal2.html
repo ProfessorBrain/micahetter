@@ -108,20 +108,27 @@ button.options-strong:active{
 
 
 <style id="topbar-nowrap-patch">
+/* Keep the toolbar on a single line and push action buttons to the right */
 #topbar{ display:flex; align-items:center; gap:.5rem; flex-wrap:nowrap; }
 #rhythmFieldset{ flex:1 1 auto; min-width: 420px; margin:0; }
-#modeRadios{ display:flex; align-items:center; flex-wrap:nowrap; gap:.6rem; }
-#rhythmFieldset .pill{ margin:0 0 0 .6rem; white-space:nowrap; }
-#play{ margin-left:auto; }
-#play, #optionsBtn, #pathologyBtn, #quizBtnTop{ white-space:nowrap; flex:0 0 auto; }
+/* Make controls a bit more compact to fit everything */
 #topbar select, #topbar label, #topbar button{ font-size:12px; }
 #topbar button{ padding:6px 10px; line-height:1.1; }
+/* Radios inside rhythm/state: slightly tighter */
 #modeRadios label{ font-size:12px; margin-right:.35rem; }
+/* Push the first action button all the way to the right */
+#play{ margin-left:auto; }
+/* Ensure option/pathology/quiz sit inline to the right and don't wrap */
+#play, #optionsBtn, #pathologyBtn, #quizBtnTop{ white-space:nowrap; flex:0 0 auto; }
 </style>
 
 
-<style id="pathology-align-fix">
-#pathologyModal fieldset label{ margin-left:0 !important; }
+<style id="rhythm-inline-fix">
+/* Keep radios and Eyes open on the same row */
+#rhythmFieldset{ display:flex; align-items:center; flex-wrap:nowrap; gap:.6rem; min-width:0; }
+#modeRadios{ display:flex; align-items:center; flex-wrap:nowrap; gap:.6rem; }
+#rhythmFieldset .pill{ margin:0 0 0 .6rem; white-space:nowrap; }
+#rhythmFieldset legend{ margin-right:.6rem; }
 </style>
 
 </head>
@@ -165,7 +172,7 @@ button.options-strong:active{
         <label><input type="radio" name="mode" value="sws"> SWS</label>
         <label><input type="radio" name="mode" value="rem"> REM</label>
         <label class="pill"><input type="checkbox" id="eyesOpen"> Eyes open</label>
-      </div>
+      <label style="margin-left:.5rem"><input id="focalSz" type="checkbox"> Focal seizure</label></div>
     </fieldset>
     <div style="margin-left:auto;display:flex;gap:.4rem;align-items:center">
       <button id="play">Pause</button>
@@ -234,6 +241,8 @@ button.options-strong:active{
         </div>
       </fieldset>
       <div class="modal-actions">
+        <button id="startQuizBtn" class="options-strong" onclick="startQuiz()">Start Quiz</button>
+        <button id="endQuizBtn" onclick="endQuiz()">End Quiz</button>
         <button id="pathologyClose">Close</button>
       </div>
     </div>
@@ -930,7 +939,7 @@ const QUIZ_SPEC_BASE = [
   {key:'amplitude',    label:'Amplitude pattern',        options:['Normal','diffuse attenuation','focal attenuation']},
   {group:'Slowing',    parts:[
       {key:'slowingDist',  label:'', options:['None','Generalized','Focal - Left','Focal - Right']},
-      {key:'slowingTempo', label:'', options:['Intermittent','Continuous']}
+      {key:'slowingTempo', label:'', options:['No slowing','intermittent','continuous']}
   ]},
   {key:'periodic',     label:'Periodic / Rhythmic',      options:['None','GPDs','LPDs','BIPDs']},
   {key:'sleep',        label:'Sleep',                    options:['Awake','Drowsy','Stage 1','Stage 2','SWS','REM']},
@@ -1154,6 +1163,7 @@ if (_qn){
     btn.style.marginLeft = '6px';
     btn.addEventListener('click', function(){
       try{
+        // If quiz is active, just reveal the panel; else start a new one
         if (window.state && state.quiz && state.quiz.active){
           var panel = document.getElementById('quizPanel'); if(panel){ panel.style.display='block'; panel.style.zIndex='9999'; }
           var rf = document.getElementById('rhythmFieldset'); if(rf) rf.style.display='none';
@@ -1172,190 +1182,54 @@ if (_qn){
 </script>
 
 
+
+
+
 <script id="focal-seizure-wire">
 (function(){
-  function placeFocalSeizureAligned(){
+  function ensureFocalSeizureInPathology(){
     var modal = document.getElementById('pathologyModal');
     if(!modal) return;
     var fieldset = modal.querySelector('fieldset');
     if(!fieldset) return;
 
-    // Remove any Start/End Quiz buttons inside Pathology modal, if any exist in this build
-    modal.querySelectorAll('#startQuizBtn, #endQuizBtn').forEach(function(el){ el.remove(); });
+    // Find existing checkbox anywhere
+    var existingInput = document.getElementById('focalSz');
+    var label;
 
-    // Find the periodic row (GPDs/LPDs)
-    var lpd = modal.querySelector('#lpd');
-    var periodicRow = lpd ? (lpd.closest('label') ? lpd.closest('label').parentElement : lpd.parentElement) : null;
-    if (!periodicRow){
-      var lpdLabel = Array.from(modal.querySelectorAll('label')).find(function(l){ return /LPDs/i.test(l.textContent || ''); });
-      periodicRow = lpdLabel ? lpdLabel.parentElement : null;
-    }
-
-    // Create or reuse checkbox/label
-    var chk = document.getElementById('focalSz');
-    var label = chk ? (chk.closest('label') || chk) : null;
-    if (!chk){
+    if (existingInput){
+      // If it already lives in the modal, we're done; else move its label into the modal
+      label = existingInput.closest('label') || existingInput;
+      if (!fieldset.contains(label)){
+        fieldset.appendChild(label);
+      }
+    } else {
+      // Create label + checkbox
       label = document.createElement('label');
-      label.style.marginLeft = '0';
-      chk = document.createElement('input');
+      label.style.marginLeft = '.5rem';
+      var chk = document.createElement('input');
       chk.type = 'checkbox';
       chk.id = 'focalSz';
       label.appendChild(chk);
       label.appendChild(document.createTextNode(' Focal seizure'));
-    } else {
-      if (label && label.style) label.style.marginLeft = '0';
-    }
-
-    // Insert as a new row directly under the periodic row
-    if (periodicRow && periodicRow.parentElement){
-      var newRow = document.createElement('div');
-      if (periodicRow.getAttribute('style')){
-        newRow.setAttribute('style', periodicRow.getAttribute('style'));
-      } else {
-        newRow.style.display = 'flex';
-        newRow.style.gap = '.35rem';
-        newRow.style.marginTop = '.25rem';
-      }
-      newRow.appendChild(label);
-      periodicRow.insertAdjacentElement('afterend', newRow);
-    } else if (!fieldset.contains(label)) {
       fieldset.appendChild(label);
+      existingInput = chk;
     }
 
     // Wire behavior
-    chk.addEventListener('change', function(){
+    existingInput.addEventListener('change', function(){
       window.state = window.state || {};
       state.pathology = state.pathology || {};
-      state.pathology.focalSeizure = !!chk.checked;
-      if (typeof regen === 'function') regen();
-    });
-  }
-  if (document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', placeFocalSeizureAligned);
-  } else { placeFocalSeizureAligned(); }
-})();
-</script>
-
-
-
-
-
-<script id="focal-seizure-sim">
-(function(){
-  // Add focal seizure overlay into the per-channel signal
-  function patchChannelSample(){
-    if (!window.Channel || Channel.prototype._seizurePatched) return;
-    const _orig = Channel.prototype.sample;
-    Channel.prototype.sample = function(t, opts){
-      let y = _orig.call(this, t, opts);
-      const s = window.state && state.focalSz;
-      if (s && s.active){
-        const tRel = (opts && typeof opts.clock==='number') ? (opts.clock - s.t0) : 0;
-        if (tRel >= 0 && tRel <= s.dur){
-          const isLeft  = s.side === 'left';
-          const focals  = isLeft ? ['F7','T3','T5'] : ['F8','T4','T6'];
-          const near    = isLeft ? ['F3','C3','P3','O1','Fp1'] : ['F4','C4','P4','O2','Fp2'];
-          let scale = focals.includes(this.name) ? 1.0 : near.includes(this.name) ? 0.45 : 0.15;
-          let add = 0;
-          // Evolution
-          if (tRel < 2){
-            const f = 20 + 5*tRel/2;
-            const amp = 20 * (tRel/2);
-            add += amp * Math.sin(2*Math.PI*f*opts.clock + s.ph);
-          } else if (tRel < 6){
-            const f = 6.0 + 1.0*Math.sin(0.2*tRel);
-            const amp = 60 * ((tRel-2)/4);
-            add += amp * Math.sin(2*Math.PI*f*opts.clock + 0.2*s.ph);
-          } else if (tRel < 9){
-            const f = 3.5 + 0.2*Math.sin(0.3*tRel);
-            const base = 90 * ((tRel-6)/3);
-            const saw = (opts.clock*f - Math.floor(opts.clock*f));
-            const spike = (saw<0.05?1-(saw/0.05):0);
-            add += base * Math.sin(2*Math.PI*f*opts.clock);
-            add += 180 * spike;
-          } else {
-            const f = 1.0 + 0.5*Math.sin(0.5*tRel);
-            const amp = 40 * (1 - (tRel-9));
-            add += amp * Math.sin(2*Math.PI*f*opts.clock + 0.4*s.ph);
-          }
-          y += scale * add;
-        }
-      }
-      return y;
-    };
-    Channel.prototype._seizurePatched = true;
-  }
-
-  // Start 10s seizure & schedule auto-reset
-  function triggerFocalSeizure(){
-    window.state = window.state || {};
-    const rng = state.rng || Math.random;
-    const side = (rng() < 0.5) ? 'left' : 'right';
-    const ph = rng() * Math.PI*2;
-    const now = (state.clock || 0);
-    state.focalSz = {active:true, t0: now, dur: 10, side, ph};
-  }
-  function checkAndAutoReset(){
-    const s = window.state && state.focalSz;
-    if (!s || !s.active) return;
-    const now = state.clock || 0;
-    if (now - s.t0 >= s.dur){
-      s.active = false;
-      const el = document.getElementById('focalSz');
-      if (el) el.checked = false;
-      if (state.pathology) state.pathology.focalSeizure = false;
-      delete state.focalSz;
-    }
-  }
-
-  // Bind checkbox (works even if element is created/moved later)
-  function bindFocalCheckbox(){
-    const el = document.getElementById('focalSz');
-    if (!el || el._focalBound) return;
-    el._focalBound = true;
-    el.addEventListener('change', function(){
-      window.state = window.state || {};
-      state.pathology = state.pathology || {};
-      if (el.checked){
-        state.pathology.focalSeizure = true;
-        triggerFocalSeizure();
-      } else {
-        if (state.focalSz) state.focalSz.active = false;
-        state.pathology.focalSeizure = false;
-        delete state.focalSz;
-      }
-      if (typeof regen === 'function') regen();
-    });
-  }
-
-  // Patch step() to run the auto-reset check every tick
-  function patchStep(){
-    if (!window.step || window._seizureStepPatched) return;
-    const _orig = step;
-    window.step = function(){
-      checkAndAutoReset();
-      return _orig();
-    };
-    window._seizureStepPatched = true;
-  }
-
-  function init(){
-    patchChannelSample();
-    bindFocalCheckbox();
-    patchStep();
-    // In case the checkbox is added/moved later (Pathology modal build), observe DOM briefly
-    const obs = new MutationObserver(()=>bindFocalCheckbox());
-    obs.observe(document.documentElement, {subtree:true, childList:true});
-    // Also bind on modal open/close if those events exist
-    document.addEventListener('click', function(e){
-      // when opening pathology modal or toggling something inside, attempt bind
-      if (e.target && (e.target.id==='pathologyBtn' || e.target.closest('#pathologyModal'))) bindFocalCheckbox();
+      state.pathology.focalSeizure = !!existingInput.checked;
+      regen();
     });
   }
 
   if (document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', init);
-  } else { init(); }
+    document.addEventListener('DOMContentLoaded', ensureFocalSeizureInPathology);
+  } else {
+    ensureFocalSeizureInPathology();
+  }
 })();
 </script>
 
