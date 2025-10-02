@@ -1182,53 +1182,22 @@ if (_qn){
 </script>
 
 
-
-
-
 <script id="focal-seizure-wire">
 (function(){
-  function ensureFocalSeizureInPathology(){
-    var modal = document.getElementById('pathologyModal');
-    if(!modal) return;
-    var fieldset = modal.querySelector('fieldset');
-    if(!fieldset) return;
-
-    // Find existing checkbox anywhere
-    var existingInput = document.getElementById('focalSz');
-    var label;
-
-    if (existingInput){
-      // If it already lives in the modal, we're done; else move its label into the modal
-      label = existingInput.closest('label') || existingInput;
-      if (!fieldset.contains(label)){
-        fieldset.appendChild(label);
-      }
-    } else {
-      // Create label + checkbox
-      label = document.createElement('label');
-      label.style.marginLeft = '.5rem';
-      var chk = document.createElement('input');
-      chk.type = 'checkbox';
-      chk.id = 'focalSz';
-      label.appendChild(chk);
-      label.appendChild(document.createTextNode(' Focal seizure'));
-      fieldset.appendChild(label);
-      existingInput = chk;
-    }
-
-    // Wire behavior
-    existingInput.addEventListener('change', function(){
+  function bindFocalSz(){
+    var el = document.getElementById('focalSz');
+    if(!el) return;
+    el.addEventListener('change', function(){
       window.state = window.state || {};
       state.pathology = state.pathology || {};
-      state.pathology.focalSeizure = !!existingInput.checked;
+      state.pathology.focalSeizure = !!el.checked;
       regen();
     });
   }
-
   if (document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', ensureFocalSeizureInPathology);
+    document.addEventListener('DOMContentLoaded', bindFocalSz);
   } else {
-    ensureFocalSeizureInPathology();
+    bindFocalSz();
   }
 })();
 </script>

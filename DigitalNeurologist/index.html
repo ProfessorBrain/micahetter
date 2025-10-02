@@ -14,6 +14,8 @@
   <style>
     html, body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
   </style>
+
+  <link rel="icon" href="favicon.png" type="image/png" />
 </head>
 <body class="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 text-slate-900">
   <div id="root"></div>
@@ -216,6 +218,24 @@
         disease: null,
       });
       const [locked, setLocked] = useState({ pace_timecourse: false, localization: false, etiology: false, disease: false });
+      // --- Mismatch helpers (used to style choices in the main area) ---
+      const _norm = (s) => (s || "").toString().trim().toLowerCase();
+      const paceMismatch =
+        currentCase && picked.pace_timecourse
+          ? _norm(picked.pace_timecourse) !== _norm(currentCase.pace_timecourse)
+          : false;
+      const patternMismatch =
+        currentCase && currentCase.pace_pattern && picked.pace_pattern
+          ? _norm(picked.pace_pattern) !== _norm(currentCase.pace_pattern)
+          : false;
+      const localizationMismatch = (() => {
+        if (!currentCase || !currentCase.localization) return false;
+        if (!picked.localization || picked.localization.length === 0) return false;
+        const caseLoc = _norm(currentCase.localization);
+        const anyMatch = picked.localization.some((l) => _norm(l) === caseLoc);
+        return !anyMatch;
+      })();
+
 
       useEffect(() => {
         setPicked({ pace_timecourse: null, pace_pattern: null, localization: [], etiology: [], disease: null });
@@ -317,7 +337,7 @@
                               key={opt}
                               onClick={() => onPick("localization", opt)}
                               className={`px-3 py-2 rounded-xl border text-sm w-auto ${isPicked ? "bg-indigo-600 text-white border-indigo-700" : "bg-white hover:bg-indigo-50 border-slate-300"}`}
-                            >{opt}</button>
+                            ><span className={`${isPicked && localizationMismatch ? "text-red-600 line-through" : ""}`}>{opt}</span></button>
                           );
                         })}
                       </div>
@@ -330,7 +350,7 @@
                             <button
                               onClick={() => onPick("localization", opt)}
                               className={`px-3 py-2 rounded-xl border text-sm w-auto ${isPicked ? "bg-indigo-600 text-white border-indigo-700" : "bg-white hover:bg-indigo-50 border-slate-300"}`}
-                            >{opt}</button>
+                            ><span className={`${isPicked && localizationMismatch ? "text-red-600 line-through" : ""}`}>{opt}</span></button>
                           );
                         })()}
                       </div>
@@ -378,15 +398,15 @@
                   <div className="grid grid-cols-2 gap-2">
                     <div className="p-3 rounded-xl border bg-white">
                       <div className="text-[10px] uppercase tracking-wide text-slate-500">Pace</div>
-                      <div className="mt-1 text-sm font-medium">{picked.pace_timecourse || "—"}</div>
+                      <div className="mt-1 text-sm font-medium">{locked.pace_timecourse ? (picked.pace_timecourse || "—") : "—"}</div>
                     </div>
                     <div className="p-3 rounded-xl border bg-white">
-                      <div className="text-[10px] uppercase tracking-wide text-slate-500">Pattern (optional)</div>
-                      <div className="mt-1 text-sm font-medium">{picked.pace_pattern || "Unknown"}</div>
+                      <div className="text-[10px] uppercase tracking-wide text-slate-500">Pattern</div>
+                      <div className="mt-1 text-sm font-medium">{locked.pace_timecourse ? (picked.pace_pattern || "—") : "—"}</div>
                     </div>
                     <div className="p-3 rounded-xl border bg-white">
                       <div className="text-[10px] uppercase tracking-wide text-slate-500">Localization</div>
-                      <div className="mt-1 text-sm font-medium">{picked.localization.length ? picked.localization.join(", ") : "—"}</div>
+                      <div className="mt-1 text-sm font-medium">{locked.localization ? (picked.localization.length ? picked.localization.join(", ") : "—") : "—"}</div>
                     </div>
                     <div className="p-3 rounded-xl border bg-white">
                       <div className="text-[10px] uppercase tracking-wide text-slate-500">Etiology</div>
@@ -394,7 +414,7 @@
                     </div>
                     <div className="p-3 rounded-xl border bg-white col-span-2">
                       <div className="text-[10px] uppercase tracking-wide text-slate-500">Disease</div>
-                      <div className="mt-1 text-sm font-medium">{picked.disease || "—"}</div>
+                      <div className="mt-1 text-sm font-medium">{locked.disease ? (picked.disease || "—") : "—"}</div>
                     </div>
                   </div>
                 </Section>
@@ -430,14 +450,14 @@
                       <div className="w-full max-w-3xl mx-auto">
                         <div className="flex flex-wrap justify-center gap-2">
                           {PACE_TIME.map(opt => (
-                            <button key={opt} disabled={!currentCase} onClick={() => onPick("pace_timecourse", opt)} className={`px-3 py-2 rounded-xl border text-sm w-auto ${currentCase ? paceTone(opt) : "bg-white text-slate-400 border-slate-300 cursor-not-allowed"}`}>{opt}</button>
+                            <button key={opt} disabled={!currentCase} onClick={() => onPick("pace_timecourse", opt)} className={`${(picked.pace_timecourse === opt && currentCase && ((picked.pace_timecourse||"").toLowerCase() === (currentCase.pace_timecourse||"").toLowerCase())) ? "text-emerald-700 font-bold underline" : ""} ${(picked.pace_timecourse === opt && currentCase && ((picked.pace_timecourse||"").toLowerCase() !== (currentCase.pace_timecourse||"").toLowerCase())) ? "text-red-600 line-through border-red-300" : ""} px-3 py-2 rounded-xl border text-sm w-auto ${currentCase ? paceTone(opt) : "bg-white text-slate-400 border-slate-300 cursor-not-allowed"}`}><span className={`\${picked.pace_timecourse === opt && paceMismatch ? "text-red-600 line-through" : ""}`}>{opt}</span></button>
                           ))}
                         </div>
                         <div className="mt-4">
-                          <div className="mb-2 text-xs uppercase tracking-wide text-slate-500 text-center">Pattern (optional)</div>
+                          <div className="mb-2 text-xs uppercase tracking-wide text-slate-500 text-center">Pattern</div>
                           <div className="flex flex-wrap gap-2 justify-center">
                             {PACE_PATTERN.map(opt => (
-                              <button key={opt} disabled={!currentCase} onClick={() => onPickPattern(opt)} className={`px-3 py-1.5 rounded-full border text-xs ${currentCase ? (picked.pace_pattern === opt ? "bg-indigo-600 text-white border-indigo-700" : "bg-white hover:bg-indigo-50 border-slate-300 text-slate-700") : "bg-white text-slate-400 border-slate-300 cursor-not-allowed"}`}>{opt}</button>
+                              <button key={opt} disabled={!currentCase} onClick={() => onPickPattern(opt)} className={`${(picked.pace_pattern === opt && currentCase && currentCase.pace_pattern && ((picked.pace_pattern||"").toLowerCase() === (currentCase.pace_pattern||"").toLowerCase())) ? "text-emerald-700 font-bold underline" : ""} ${(picked.pace_pattern === opt && currentCase && currentCase.pace_pattern && ((picked.pace_pattern||"").toLowerCase() !== (currentCase.pace_pattern||"").toLowerCase())) ? "text-red-600 line-through border-red-300" : ""} px-3 py-1.5 rounded-full border text-xs ${currentCase ? (picked.pace_pattern === opt ? "bg-indigo-600 text-white border-indigo-700" : "bg-white hover:bg-indigo-50 border-slate-300 text-slate-700") : "bg-white text-slate-400 border-slate-300 cursor-not-allowed"}`}><span className={`\${picked.pace_pattern === opt && patternMismatch ? "text-red-600 line-through" : ""}`}>{opt}</span></button>
                             ))}
                           </div>
                         </div>

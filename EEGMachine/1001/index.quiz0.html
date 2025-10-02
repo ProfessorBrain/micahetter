@@ -5,18 +5,6 @@
   <title>EEG Machine</title>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <style>
-/* Quiz panel styles */
-#quizPanel{position:fixed;top:64px;right:8px;width:320px;max-width:38vw;background:rgba(255,255,255,.95);border:1px solid rgba(0,0,0,.12);border-radius:12px;padding:12px;box-shadow:0 6px 18px rgba(0,0,0,.14);display:none; z-index:9999;}
-#quizPanel h2{font-size:1.05rem;margin:.2rem 0 .4rem;font-weight:700}
-.quiz-step{margin:.6rem 0;border-top:1px dashed rgba(0,0,0,.15);padding-top:.5rem}
-.quiz-pills{display:flex;flex-wrap:wrap;gap:.4rem}
-.quiz-pill{padding:.28rem .6rem;border-radius:999px;border:1px solid rgba(0,0,0,.2);background:#fff;cursor:pointer;font-size:.9rem}
-.quiz-pill.active{background:#eef5ff;border-color:#6aa1ff}
-.quiz-pill.correct{background:#e7f8ea;border-color:#4db569}
-.quiz-pill.wrong{background:#fde7ea;border-color:#e05757}
-#quizBanner{position:absolute;top:10px;right:50%;transform:translateX(50%);background:#0c8;color:#fff;padding:.5rem .8rem;border-radius:.6rem;display:none;box-shadow:0 8px 24px rgba(0,0,0,.2);font-weight:700; z-index:10000;}
-#quizControls{display:flex;gap:.5rem;margin-top:.6rem}
-
 /* Stronger Options button */
 button.options-strong{
   padding: .45rem .8rem;
@@ -75,62 +63,6 @@ button.options-strong:active{
     .modal-card .sub{opacity:.8;font-size:13px}
     .modal-actions{display:flex;justify-content:flex-end;gap:.5rem;margin-top:.75rem}
   </style>
-
-<style id="quiz-style-patch">
-.quiz-pill.correct { font-weight: 700; color: #0a0; }
-.quiz-pill.wrong { color: #b00; text-decoration: line-through; }
-</style>
-
-
-<style id="quiz-layout-patch">
-#quizPanel{ width: 520px; max-width: 92vw; max-height: 80vh; overflow:auto; }
-#quizPanel .panel-title{ font-size: 14px; }
-.quiz-step{ margin:6px 10px; }
-.quiz-step > div:first-child{ font-weight:600; margin-bottom:4px; font-size:13px; }
-.quiz-pills{ display:flex; flex-wrap:wrap; gap:8px; }
-.quiz-subrow{ display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
-.quiz-pill{ padding:2px 10px; border-radius:16px; border:1px solid rgba(0,0,0,.15); background:#f6f7f8; font-size:12px; }
-.quiz-pill.active{ box-shadow:0 0 0 2px rgba(0,0,0,.08) inset; }
-.quiz-pill.correct{ font-weight:700; color:#0a0; }
-.quiz-pill.wrong{ color:#b00; text-decoration:line-through; }
-</style>
-
-
-<style id="quiz-next-hide">
-#quizNext{display:none !important;}
-</style>
-
-
-<style id="quiz-end-style">
-#quizPanel .quiz-controls{ display:flex; gap:8px; align-items:center; }
-#quizEnd{ display:inline-block; }
-</style>
-
-
-<style id="topbar-nowrap-patch">
-/* Keep the toolbar on a single line and push action buttons to the right */
-#topbar{ display:flex; align-items:center; gap:.5rem; flex-wrap:nowrap; }
-#rhythmFieldset{ flex:1 1 auto; min-width: 420px; margin:0; }
-/* Make controls a bit more compact to fit everything */
-#topbar select, #topbar label, #topbar button{ font-size:12px; }
-#topbar button{ padding:6px 10px; line-height:1.1; }
-/* Radios inside rhythm/state: slightly tighter */
-#modeRadios label{ font-size:12px; margin-right:.35rem; }
-/* Push the first action button all the way to the right */
-#play{ margin-left:auto; }
-/* Ensure option/pathology/quiz sit inline to the right and don't wrap */
-#play, #optionsBtn, #pathologyBtn, #quizBtnTop{ white-space:nowrap; flex:0 0 auto; }
-</style>
-
-
-<style id="rhythm-inline-fix">
-/* Keep radios and Eyes open on the same row */
-#rhythmFieldset{ display:flex; align-items:center; flex-wrap:nowrap; gap:.6rem; min-width:0; }
-#modeRadios{ display:flex; align-items:center; flex-wrap:nowrap; gap:.6rem; }
-#rhythmFieldset .pill{ margin:0 0 0 .6rem; white-space:nowrap; }
-#rhythmFieldset legend{ margin-right:.6rem; }
-</style>
-
 </head>
 <body>
   <div id="topbar">
@@ -158,7 +90,7 @@ button.options-strong:active{
         <option value="15">15 µV/mm</option>
       </select>
     </div>
-    <fieldset id="rhythmFieldset" style="margin:0;display:flex;align-items:center;gap:.4rem;flex:1 1 auto;min-width:240px"><legend>Rhythm / State</legend>
+    <fieldset style="margin:0;display:flex;align-items:center;gap:.4rem;flex:1 1 auto;min-width:240px"><legend>Rhythm / State</legend>
       <div class="radio" id="modeRadios">
         <!-- Order: delta, theta, alpha, beta (leftmost), then awake/drowsy, sleep 1/2, REM, SWS -->
         <label><input type="radio" name="mode" value="delta"> Delta</label>
@@ -172,7 +104,7 @@ button.options-strong:active{
         <label><input type="radio" name="mode" value="sws"> SWS</label>
         <label><input type="radio" name="mode" value="rem"> REM</label>
         <label class="pill"><input type="checkbox" id="eyesOpen"> Eyes open</label>
-      <label style="margin-left:.5rem"><input id="focalSz" type="checkbox"> Focal seizure</label></div>
+      </div>
     </fieldset>
     <div style="margin-left:auto;display:flex;gap:.4rem;align-items:center">
       <button id="play">Pause</button>
@@ -241,23 +173,10 @@ button.options-strong:active{
         </div>
       </fieldset>
       <div class="modal-actions">
-        <button id="startQuizBtn" class="options-strong" onclick="startQuiz()">Start Quiz</button>
-        <button id="endQuizBtn" onclick="endQuiz()">End Quiz</button>
         <button id="pathologyClose">Close</button>
       </div>
     </div>
   </div>
-
-
-  <div id="quizBanner">✔ Correct! New quiz ready.</div>
-  <aside id="quizPanel" aria-live="polite">
-    <h2>EEG Quiz</h2>
-    <div id="quizSteps"></div>
-    <div id="quizControls">
-      <button id="quizNext">Next</button>
-      <button id="quizNew">New Case</button>
-    </div>
-  </aside>
 
 
   <div id="wrap"><canvas id="c"></canvas>
@@ -403,28 +322,6 @@ function lpdLagLeft(e){
   if (/^(.*2|F4|C4|P4|O2)$/.test(e)) lag += 0.020; // right hemisphere latest
   return lag;
 }
-// Right-sided variants for BIPDs
-function lpdScaleRight(e){
-  if (/^(F8|T4|T6)$/.test(e)) return 1.0;
-  if (/^(Fp2|F4|C4|P4)$/.test(e)) return 0.65;
-  if (/^(O2)$/.test(e)) return 0.45;
-  if (/^(Fz|Cz|Pz)$/.test(e)) return 0.30;
-  if (/^(F7|T3|T5|Fp1|F3|C3|P3|O1)$/.test(e)) return 0.18;
-  return 0.25;
-}
-function lpdLagRight(e){
-  let lag = 0.0;
-  if (/^(T4|F8)$/.test(e)) lag += 0.000;
-  if (/^(T6)$/.test(e)) lag += 0.006;
-  if (/^(F4|C4)$/.test(e)) lag += 0.010;
-  if (/^(P4)$/.test(e)) lag += 0.014;
-  if (/^(O2)$/.test(e)) lag += 0.018;
-  if (/^(Fz|Cz|Pz)$/.test(e)) lag += 0.012;
-  if (/^(Fp2)$/.test(e)) lag += 0.008;
-  if (/^(.*1|F3|C3|P3|O1)$/.test(e)) lag += 0.020;
-  return lag;
-}
-
 
 
 
@@ -770,20 +667,6 @@ function step(){
           if (state.pathology && state.pathology.lpd) {
             y += lpdWave(state.artClock + n/Fs + lpdLagLeft(e), state.rng) * lpdScaleLeft(e);
           }
-
-          if (state.pathology && state.pathology.bipds) {
-            // Add independent right-sided LPD as well
-            y += lpdWave(state.artClock + 0.31 + n/Fs + lpdLagRight(e), state.rng) * lpdScaleRight(e);
-          }
-          // Apply quiz amplitude biases
-          if (state.quiz && state.quiz.active && state.quiz.bias){
-            const L = /^(Fp1|F3|C3|P3|O1|F7|T3|T5|Fz|Cz|Pz)$/.test(e);
-            let hemiScale = 1;
-            if (state.quiz.bias.leftScale!==1 && L) hemiScale = state.quiz.bias.leftScale;
-            if (state.quiz.bias.rightScale!==1 && !L) hemiScale = state.quiz.bias.rightScale;
-            const focalScale = (state.quiz.bias.focal[e]!==undefined) ? state.quiz.bias.focal[e] : 1;
-            y *= hemiScale * focalScale;
-          }
           const buf=state.buffer.get(e);
           buf[state.idx%buf.length]=y;
           // contribute to AVG if scalp electrode (exclude ears and Oz)
@@ -900,10 +783,6 @@ if (gpdBox) {
   gpdBox.checked = !!(state.pathology && state.pathology.gpd);
   gpdBox.addEventListener('change', ()=>{ state.pathology.gpd = gpdBox.checked; });
 }
-if (lpdBox) {
-  lpdBox.checked = !!(state.pathology && state.pathology.lpd);
-  lpdBox.addEventListener('change', ()=>{ state.pathology.lpd = lpdBox.checked; });
-}
 
 
 // Realism slider wiring
@@ -919,319 +798,7 @@ if (realismSlider && realismValue) {
   });
 }
 
-
-
-// ---------------- Quiz Mode ----------------
-state.quiz = {
-  active:false,
-  stepIndex:0,
-  truth:{},
-  answered:{},
-  order:[]
-};
-
-function randChoice(rng, arr){ return arr[Math.floor(rng()*arr.length)] }
-
-const QUIZ_SPEC_BASE = [
-  {key:'background',   label:'Background rhythm',        options:['delta','theta','alpha','beta']},
-  {key:'artifact',     label:'Artifact',                 options:['None','Eye blinks','Chewing','Sweat','EMG']},
-  {key:'symmetry',     label:'Symmetry',                 options:['symmetric','asymmetric']},
-  {key:'amplitude',    label:'Amplitude pattern',        options:['Normal','diffuse attenuation','focal attenuation']},
-  {group:'Slowing',    parts:[
-      {key:'slowingDist',  label:'', options:['None','Generalized','Focal - Left','Focal - Right']},
-      {key:'slowingTempo', label:'', options:['No slowing','intermittent','continuous']}
-  ]},
-  {key:'periodic',     label:'Periodic / Rhythmic',      options:['None','GPDs','LPDs','BIPDs']},
-  {key:'sleep',        label:'Sleep',                    options:['Awake','Drowsy','Stage 1','Stage 2','SWS','REM']},
-  {key:'epileptiform', label:'Epileptiform discharges',  options:['none','generalized','focal']}
-];
-
-function startQuiz(){
-  const rng = state.rng;
-
-  // Reset quiz state
-  state.quiz.active   = true;
-  state.quiz.stepIndex= 0;
-  state.quiz.answered = {};
-  state.quiz.bias     = {leftScale:1,rightScale:1,focal:{}};
-  state.quiz.slowing  = {};
-  state.quiz.spikes   = {};
-
-  // Random ground truth
-  const background = randChoice(rng, ['delta','theta','alpha','beta']);
-  const sleep      = randChoice(rng, ['Awake','Drowsy','Stage 1','Stage 2','SWS','REM']);
-  const artifact   = (rng()<0.25) ? randChoice(rng, ['Eye blinks','Chewing','Sweat','EMG']) : 'None';
-  const symmetry   = randChoice(rng, ['symmetric','asymmetric']);
-  const amplitude  = randChoice(rng, ['diffuse attenuation','focal attenuation']);
-  const slowScope  = randChoice(rng, ['Generalized','Focal']);
-  const slowTempo  = randChoice(rng, ['intermittent','continuous']);
-  const periodic   = randChoice(rng, ['None','GPDs','LPDs','BIPDs']);
-  const epileptiform = randChoice(rng, ['none','generalized','focal']);
-
-  let spindles='absent', kcomplexes='absent';
-  if (sleep==='Stage 2'){
-    spindles   = rng()<0.7 ? 'present' : 'absent';
-    kcomplexes = rng()<0.7 ? 'present' : 'absent';
-  }
-
-  state.quiz.truth = {
-    background, artifact, symmetry, amplitude,
-    slowingDist: (rng()<0.33 ? 'None' : (rng()<0.5 ? 'Generalized' : (rng()<0.5 ? 'Focal - Left' : 'Focal - Right'))),
-    slowingTempo: (rng()<0.5 ? 'Intermittent' : 'Continuous'),
-    periodic, sleep, spindles, kcomplexes, epileptiform
-  };
-
-  // Drive the simulator to match truth
-  state.mode = ({
-    'Stage 1':'n1','Stage 2':'n2','SWS':'sws','REM':'rem',
-    'Awake':'awake','Drowsy':'drowsy'
-  })[sleep] || 'awake';
-
-  state.pathology.gpd   = (periodic==='GPDs');
-  state.pathology.lpd   = (periodic==='LPDs' || periodic==='BIPDs');
-  state.pathology.bipds = (periodic==='BIPDs');
-
-  state.opts = state.opts || {};
-  state.opts.blink = (artifact==='Eye blinks');
-  state.opts.chew  = (artifact==='Chewing');
-  state.opts.sweat = (artifact==='Sweat');
-  state.opts.pop   = false;
-  state.opts.emg   = (artifact==='EMG');
-
-  if (symmetry==='asymmetric'){
-    const bias = 0.7 + 0.25*rng();
-    if (rng()<0.5){ state.quiz.bias.leftScale=bias; } else { state.quiz.bias.rightScale=bias; }
-  }
-  if (amplitude==='focal attenuation'){
-    const target = randChoice(rng, ['F7','T3','T5','F8','T4','T6','F3','C3','P3','F4','C4','P4','O1','O2']);
-    state.quiz.bias.focal[target]=0.55;
-  }
-
-  // --- Build the ordered spec the UI renderer consumes ---
-  state.quiz.order = [...QUIZ_SPEC_BASE];
-
-  // If stage 2, append N2 sub-steps
-  if (sleep==='Stage 2'){
-    state.quiz.order.push(
-      {key:'spindles',   label:'N2: sleep spindles', options:['present','absent']},
-      {key:'kcomplexes', label:'N2: K-complexes',    options:['present','absent']}
-    );
-  }
-
-  // Render UI
-  buildQuizUI();
-
-  // Show panel & hide rhythm radio row
-  const panel = document.getElementById('quizPanel');
-  if (panel){ panel.style.display='block'; panel.style.zIndex='9999'; }
-  const rf = document.getElementById('rhythmFieldset');
-  if (rf) rf.style.display='none';
-
-  // Close the pathology modal if open and regenerate signals
-  const pm = document.getElementById('pathologyModal');
-  if (pm) pm.hidden = true;
-  regen();
-}
-
-function buildQuizUI(){
-  const stepsEl = document.getElementById('quizSteps');
-  if (!stepsEl) return;
-  stepsEl.innerHTML = '';
-
-  state.quiz.order.forEach((step)=>{
-    // Grouped "Slowing" with two sub-rows
-    if (step.group && Array.isArray(step.parts)){
-      const container = document.createElement('div');
-      container.className = 'quiz-step';
-
-      const header = document.createElement('div');
-      header.textContent = step.group;
-      container.appendChild(header);
-
-      step.parts.forEach((row, rIndex)=>{
-        const rowWrap = document.createElement('div');
-        rowWrap.className = 'quiz-subrow';
-        row.options.forEach(opt=>{
-          const b = document.createElement('button');
-          b.className='quiz-pill';
-          b.textContent = opt;
-          b.addEventListener('click', ()=> onAnswer(row.key, opt, b));
-          rowWrap.appendChild(b);
-        });
-        container.appendChild(rowWrap);
-      });
-
-      stepsEl.appendChild(container);
-      return;
-    }
-
-    // Standard single-row step
-    const s = document.createElement('div');
-    s.className='quiz-step';
-
-    const h = document.createElement('div');
-    h.textContent = step.label;
-    s.appendChild(h);
-
-    const pills = document.createElement('div');
-    pills.className='quiz-pills';
-
-    step.options.forEach(opt=>{
-      const b = document.createElement('button');
-      b.className='quiz-pill';
-      b.textContent = opt;
-      b.addEventListener('click', ()=> onAnswer(step.key, opt, b));
-      pills.appendChild(b);
-    });
-
-    s.appendChild(pills);
-    stepsEl.appendChild(s);
-  });
-}
-
-function onAnswer(key, val, btn){
-  // toggle active visual
-  Array.from(btn.parentElement.children).forEach(el=>el.classList.remove('active'));
-  btn.classList.add('active');
-
-  // grade
-  const truth = (state.quiz.truth[key] ?? '').toString();
-  const isCorrect =
-    (val === truth) ||
-    (key==='spindles'   && val.toLowerCase() === truth.toLowerCase()) ||
-    (key==='kcomplexes' && val.toLowerCase() === truth.toLowerCase());
-
-  btn.classList.add(isCorrect ? 'correct' : 'wrong');
-  state.quiz.answered[key] = isCorrect;
-
-  checkWin();
-}
-
-function checkWin(){
-  const allAnswered = state.quiz.order.every(s => s.key in state.quiz.answered);
-  if (!allAnswered) return;
-
-  const allCorrect  = state.quiz.order.every(s => state.quiz.answered[s.key] === true);
-  const banner = document.getElementById('quizBanner');
-
-  if (banner){
-    banner.textContent = allCorrect ? '✔ Correct! New quiz ready.' : '✖ Not quite — answer all correctly.';
-    banner.style.display='block';
-    setTimeout(()=>{ banner.style.display='none'; if (allCorrect) startQuiz(); }, 1600);
-  }
-}
-
-function endQuiz(){
-  state.quiz.active = false;
-  const panel = document.getElementById('quizPanel');
-  if (panel){ panel.style.display='none'; }
-  const rf = document.getElementById('rhythmFieldset');
-  if (rf) rf.style.display='block';
-  const banner = document.getElementById('quizBanner');
-  if (banner) banner.style.display='none';
-  regen();
-}
-const _qn = document.getElementById('quizNew'); 
-if (_qn){ 
-  _qn.innerText = 'New Case'; 
-  _qn.addEventListener('click', ()=> startQuiz()); 
-  // Insert End Quiz button to the right if missing
-  if (!document.getElementById('quizEnd')){
-    const endBtn = document.createElement('button');
-    endBtn.id = 'quizEnd';
-    endBtn.textContent = 'End Quiz';
-    endBtn.className = _qn.className || '';
-    endBtn.style.marginLeft = '8px';
-    endBtn.addEventListener('click', endQuiz);
-    _qn.parentElement?.appendChild(endBtn);
-  }
-}
-
-// Pathology modal buttons are already wired above
+/* Physiology reference idea: learningeeg.com/normal-asleep */
 </script>
-
-<script id="quiz-topbtn-setup">
-(function(){
-  function ensureQuizTopButton(){
-    var opt = document.getElementById('optionsBtn');
-    if(!opt) return;
-    if(document.getElementById('quizBtnTop')) return;
-    var btn = document.createElement('button');
-    btn.id = 'quizBtnTop';
-    btn.textContent = 'Quiz';
-    btn.className = opt.className || '';
-    btn.style.marginLeft = '6px';
-    btn.addEventListener('click', function(){
-      try{
-        // If quiz is active, just reveal the panel; else start a new one
-        if (window.state && state.quiz && state.quiz.active){
-          var panel = document.getElementById('quizPanel'); if(panel){ panel.style.display='block'; panel.style.zIndex='9999'; }
-          var rf = document.getElementById('rhythmFieldset'); if(rf) rf.style.display='none';
-        } else if (typeof startQuiz === 'function'){
-          startQuiz();
-        }
-        var pm = document.getElementById('pathologyModal'); if(pm) pm.hidden = true;
-      }catch(e){ console.error(e); }
-    });
-    opt.insertAdjacentElement('afterend', btn);
-  }
-  if (document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', ensureQuizTopButton);
-  } else { ensureQuizTopButton(); }
-})();
-</script>
-
-
-
-
-
-<script id="focal-seizure-wire">
-(function(){
-  function ensureFocalSeizureInPathology(){
-    var modal = document.getElementById('pathologyModal');
-    if(!modal) return;
-    var fieldset = modal.querySelector('fieldset');
-    if(!fieldset) return;
-
-    // Find existing checkbox anywhere
-    var existingInput = document.getElementById('focalSz');
-    var label;
-
-    if (existingInput){
-      // If it already lives in the modal, we're done; else move its label into the modal
-      label = existingInput.closest('label') || existingInput;
-      if (!fieldset.contains(label)){
-        fieldset.appendChild(label);
-      }
-    } else {
-      // Create label + checkbox
-      label = document.createElement('label');
-      label.style.marginLeft = '.5rem';
-      var chk = document.createElement('input');
-      chk.type = 'checkbox';
-      chk.id = 'focalSz';
-      label.appendChild(chk);
-      label.appendChild(document.createTextNode(' Focal seizure'));
-      fieldset.appendChild(label);
-      existingInput = chk;
-    }
-
-    // Wire behavior
-    existingInput.addEventListener('change', function(){
-      window.state = window.state || {};
-      state.pathology = state.pathology || {};
-      state.pathology.focalSeizure = !!existingInput.checked;
-      regen();
-    });
-  }
-
-  if (document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', ensureFocalSeizureInPathology);
-  } else {
-    ensureFocalSeizureInPathology();
-  }
-})();
-</script>
-
 </body>
 </html>

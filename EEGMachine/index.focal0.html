@@ -172,7 +172,7 @@ button.options-strong:active{
         <label><input type="radio" name="mode" value="sws"> SWS</label>
         <label><input type="radio" name="mode" value="rem"> REM</label>
         <label class="pill"><input type="checkbox" id="eyesOpen"> Eyes open</label>
-      <label style="margin-left:.5rem"><input id="focalSz" type="checkbox"> Focal seizure</label></div>
+      </div>
     </fieldset>
     <div style="margin-left:auto;display:flex;gap:.4rem;align-items:center">
       <button id="play">Pause</button>
@@ -1178,58 +1178,6 @@ if (_qn){
   if (document.readyState === 'loading'){
     document.addEventListener('DOMContentLoaded', ensureQuizTopButton);
   } else { ensureQuizTopButton(); }
-})();
-</script>
-
-
-
-
-
-<script id="focal-seizure-wire">
-(function(){
-  function ensureFocalSeizureInPathology(){
-    var modal = document.getElementById('pathologyModal');
-    if(!modal) return;
-    var fieldset = modal.querySelector('fieldset');
-    if(!fieldset) return;
-
-    // Find existing checkbox anywhere
-    var existingInput = document.getElementById('focalSz');
-    var label;
-
-    if (existingInput){
-      // If it already lives in the modal, we're done; else move its label into the modal
-      label = existingInput.closest('label') || existingInput;
-      if (!fieldset.contains(label)){
-        fieldset.appendChild(label);
-      }
-    } else {
-      // Create label + checkbox
-      label = document.createElement('label');
-      label.style.marginLeft = '.5rem';
-      var chk = document.createElement('input');
-      chk.type = 'checkbox';
-      chk.id = 'focalSz';
-      label.appendChild(chk);
-      label.appendChild(document.createTextNode(' Focal seizure'));
-      fieldset.appendChild(label);
-      existingInput = chk;
-    }
-
-    // Wire behavior
-    existingInput.addEventListener('change', function(){
-      window.state = window.state || {};
-      state.pathology = state.pathology || {};
-      state.pathology.focalSeizure = !!existingInput.checked;
-      regen();
-    });
-  }
-
-  if (document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', ensureFocalSeizureInPathology);
-  } else {
-    ensureFocalSeizureInPathology();
-  }
 })();
 </script>
 
