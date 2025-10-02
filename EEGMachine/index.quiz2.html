@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <style>
 /* Quiz panel styles */
-#quizPanel{position:fixed;top:64px;right:8px;width:320px;max-width:38vw;background:rgba(255,255,255,.95);border:1px solid rgba(0,0,0,.12);border-radius:12px;padding:12px;box-shadow:0 6px 18px rgba(0,0,0,.14);display:none; z-index:9999;}
+#quizPanel{position:absolute;top:64px;right:8px;width:320px;max-width:38vw;background:rgba(255,255,255,.95);border:1px solid rgba(0,0,0,.12);border-radius:12px;padding:12px;box-shadow:0 6px 18px rgba(0,0,0,.14);display:none;}
 #quizPanel h2{font-size:1.05rem;margin:.2rem 0 .4rem;font-weight:700}
 .quiz-step{margin:.6rem 0;border-top:1px dashed rgba(0,0,0,.15);padding-top:.5rem}
 .quiz-pills{display:flex;flex-wrap:wrap;gap:.4rem}
@@ -14,7 +14,7 @@
 .quiz-pill.active{background:#eef5ff;border-color:#6aa1ff}
 .quiz-pill.correct{background:#e7f8ea;border-color:#4db569}
 .quiz-pill.wrong{background:#fde7ea;border-color:#e05757}
-#quizBanner{position:absolute;top:10px;right:50%;transform:translateX(50%);background:#0c8;color:#fff;padding:.5rem .8rem;border-radius:.6rem;display:none;box-shadow:0 8px 24px rgba(0,0,0,.2);font-weight:700 z-index:10000;}
+#quizBanner{position:absolute;top:10px;right:50%;transform:translateX(50%);background:#0c8;color:#fff;padding:.5rem .8rem;border-radius:.6rem;display:none;box-shadow:0 8px 24px rgba(0,0,0,.2);font-weight:700}
 #quizControls{display:flex;gap:.5rem;margin-top:.6rem}
 
 /* Stronger Options button */
@@ -185,8 +185,8 @@ button.options-strong:active{
         </div>
       </fieldset>
       <div class="modal-actions">
-        <button id="startQuizBtn" class="options-strong" onclick="startQuiz()">Start Quiz</button>
-        <button id="endQuizBtn" onclick="endQuiz()">End Quiz</button>
+        <button id="startQuizBtn" class="options-strong">Start Quiz</button>
+        <button id="endQuizBtn">End Quiz</button>
         <button id="pathologyClose">Close</button>
       </div>
     </div>
@@ -844,10 +844,6 @@ if (gpdBox) {
   gpdBox.checked = !!(state.pathology && state.pathology.gpd);
   gpdBox.addEventListener('change', ()=>{ state.pathology.gpd = gpdBox.checked; });
 }
-if (lpdBox) {
-  lpdBox.checked = !!(state.pathology && state.pathology.lpd);
-  lpdBox.addEventListener('change', ()=>{ state.pathology.lpd = lpdBox.checked; });
-}
 
 
 // Realism slider wiring
@@ -875,144 +871,91 @@ state.quiz = {
 
 function randChoice(rng, arr){ return arr[Math.floor(rng()*arr.length)] }
 
-
 function startQuiz(){
-  const rng = state.rng;
   state.quiz.active = true;
   state.quiz.stepIndex = 0;
   state.quiz.answered = {};
-  state.quiz.bias = {leftScale:1,rightScale:1,focal:{}};
-  state.quiz.slowing = {};
-  state.quiz.spikes = {};
-
+  // Build ground truth
+  const rng = state.rng;
   const background = randChoice(rng, ['alpha','beta','theta','delta','awake','drowsy']);
-  const sleep = randChoice(rng, ['awake','drowsy','stage 1','stage 2','SWS','REM']);
-  const artifact = (rng()<0.25) ? randChoice(rng, ['Eye blinks','Chewing','Sweat','EMG']) : 'None';
+  const sleep = randChoice(rng, ['awake','drowsy','n1','n2','sws','rem']);
+  const artifact = (rng()<0.25) ? randChoice(rng, ['blink','chew','sweat','emg']) : null;
   const symmetry = randChoice(rng, ['symmetric','asymmetric']);
   const amplitude = randChoice(rng, ['diffuse attenuation','focal attenuation']);
-  const slowScope = randChoice(rng, ['Generalized','Focal']);
-  const slowTempo = randChoice(rng, ['intermittent','continuous']);
-  const periodic = randChoice(rng, ['None','GPDs','LPDs','BIPDs']);
+  const slowingPattern = randChoice(rng, ['generalized intermittent slowing','generalized continuous slowing','focal intermittent slowing','focal continuous slowing']);
+  const periodic = randChoice(rng, ['none','gpd','lpd','bipds']);
   const epileptiform = randChoice(rng, ['none','generalized','focal']);
 
-  let spindles='absent', kcomplexes='absent';
-  if (sleep==='stage 2'){ spindles = rng()<0.7 ? 'present' : 'absent'; kcomplexes = rng()<0.7 ? 'present' : 'absent'; }
+  state.quiz.truth = { background, sleep, artifact, symmetry, amplitude, slowingPattern, periodic, epileptiform };
 
-  state.quiz.truth = { background, artifact, symmetry, amplitude, slowingScope:slowScope, slowingTempo:slowTempo, periodic, sleep, spindles, kcomplexes, epileptiform };
-
+  // Apply truth to generator (rendering) — background rhythm + sleep + periodic + artifact + symmetry/amplitude
+  // Background rhythm/mode
   state.mode = background;
-  if (sleep==='stage 1') state.mode='n1';
-  if (sleep==='stage 2') state.mode='n2';
-  if (sleep==='SWS') state.mode='sws';
-  if (sleep==='REM') state.mode='rem';
-  if (sleep==='awake') state.mode='awake';
-  if (sleep==='drowsy') state.mode='drowsy';
+  // Sleep stage-specific features
+  switch(sleep){
+    case 'n1': state.mode='n1'; break;
+    case 'n2': state.mode='n2'; break;
+    case 'sws': state.mode='sws'; break;
+    case 'rem': state.mode='rem'; break;
+    case 'awake': case 'drowsy': /* state.mode already covers */ break;
+  }
+  // Periodic pattern
+  state.pathology.gpd = (periodic==='gpd');
+  state.pathology.lpd = (periodic==='lpd' || periodic==='bipds'); // for bipds we will overlay bilateral LPD waves
+  state.pathology.bipds = (periodic==='bipds');
 
-  state.pathology.gpd = (periodic==='GPDs');
-  state.pathology.lpd = (periodic==='LPDs' || periodic==='BIPDs');
-  state.pathology.bipds = (periodic==='BIPDs');
-
-  state.opts = state.opts || {};
+  // Artifact
   state.opts.blink=false; state.opts.chew=false; state.opts.sweat=false; state.opts.pop=false; state.opts.emg=false;
-  if (artifact==='Eye blinks') state.opts.blink=true;
-  if (artifact==='Chewing') state.opts.chew=true;
-  if (artifact==='Sweat') state.opts.sweat=true;
-  if (artifact==='EMG') state.opts.emg=true;
+  if(artifact){ if(artifact==='blink') state.opts.blink=true;
+                if(artifact==='chew') state.opts.chew=true;
+                if(artifact==='sweat') state.opts.sweat=true;
+                if(artifact==='emg') state.opts.emg=true; }
 
+  // Symmetry and amplitude bias: asymmetric or focal attenuation
+  state.quiz.bias = { leftScale:1, rightScale:1, focal:{} };
   if (symmetry==='asymmetric'){
-    const bias = 0.7 + 0.25*rng();
-    if (rng()<0.5){ state.quiz.bias.leftScale=bias; } else { state.quiz.bias.rightScale=bias; }
+    // 15–30% hemisphere scale bias
+    const bias = 0.70 + 0.3*state.rng();
+    if (state.rng()<0.5){ state.quiz.bias.leftScale=bias; } else { state.quiz.bias.rightScale=bias; }
   }
   if (amplitude==='focal attenuation'){
-    const target = randChoice(rng, ['F7','T3','T5','F8','T4','T6','F3','C3','P3','F4','C4','P4','O1','O2']);
-    state.quiz.bias.focal[target]=0.55;
+    const target = randChoice(state.rng, ['F7','T3','T5','F8','T4','T6','F3','C3','P3','F4','C4','P4','O1','O2']);
+    state.quiz.bias.focal[target]=0.55; // reduce chosen electrode
   }
 
+  // Assemble order of steps
+  state.quiz.order = [
+    {key:'background', label:'Background rhythm', options:['alpha','beta','theta','delta','awake','drowsy']},
+    {key:'artifact', label:'Artifact', options:['none','blink','chew','sweat','emg']},
+    {key:'symmetry', label:'Symmetry', options:['symmetric','asymmetric']},
+    {key:'amplitude', label:'Amplitude pattern', options:['diffuse attenuation','focal attenuation']},
+    {key:'slowingPattern', label:'Slowing pattern', options:['generalized intermittent slowing','generalized continuous slowing','focal intermittent slowing','focal continuous slowing']},
+    {key:'periodic', label:'Periodic/Rhythmic', options:['none','gpd','lpd','bipds']},
+    {key:'sleep', label:'Sleep', options:['awake','drowsy','n1','n2','sws','rem']},
+    {key:'epileptiform', label:'Epileptiform', options:['none','generalized','focal']}
+  ];
+
   buildQuizUI();
-  var panel = document.getElementById('quizPanel'); if (panel) { panel.style.display='block'; panel.style.zIndex='9999'; }
-  var rf = document.getElementById('rhythmFieldset'); if (rf) rf.style.display='none';
-  var pm = document.getElementById('pathologyModal'); if (pm) pm.hidden = true;
+  $('quizPanel').style.display='block';
+  // Hide rhythm/state radios
+  const rhythmFieldset = document.getElementById('rhythmFieldset');
+  if (rhythmFieldset) rhythmFieldset.style.display='none';
+  const panel = document.getElementById('quizPanel');
+  if (panel) panel.style.display='block';
+  const pathModal = document.getElementById('pathologyModal');
+  if (pathModal) pathModal.hidden = true;
   regen();
 }
 
-function buildQuizUI(){
-  var panel = document.getElementById('quizPanel');
-  var steps = document.getElementById('quizSteps');
-  if (!panel || !steps) return;
-  steps.innerHTML='';
-  var spec = [
-    {key:'background', label:'Background rhythm', options:['alpha','beta','theta','delta','awake','drowsy']},
-    {key:'artifact', label:'Artifact', options:['None','Eye blinks','Chewing','Sweat','EMG']},
-    {key:'symmetry', label:'Symmetry', options:['symmetric','asymmetric']},
-    {key:'amplitude', label:'Amplitude pattern', options:['diffuse attenuation','focal attenuation']},
-    {key:'slowingScope', label:'Slowing scope', options:['Generalized','Focal']},
-    {key:'slowingTempo', label:'Slowing tempo', options:['intermittent','continuous']},
-    {key:'periodic', label:'Periodic / Rhythmic', options:['None','GPDs','LPDs','BIPDs']},
-    {key:'sleep', label:'Sleep', options:['awake','drowsy','stage 1','stage 2','SWS','REM']},
-    {key:'epileptiform', label:'Epileptiform discharges', options:['none','generalized','focal']}
-  ];
-  spec.forEach(function(step, idx){
-    var s = document.createElement('div'); s.className='quiz-step';
-    var h = document.createElement('div'); h.textContent = (idx+1)+'. '+step.label; s.appendChild(h);
-    var pills = document.createElement('div'); pills.className='quiz-pills';
-    step.options.forEach(function(opt){
-      var b = document.createElement('button'); b.className='quiz-pill'; b.textContent=opt;
-      b.addEventListener('click', function(){ onAnswer(step.key, opt, b); });
-      pills.appendChild(b);
-    });
-    s.appendChild(pills); steps.appendChild(s);
-
-    if (step.key==='sleep' && state.quiz.truth.sleep==='stage 2'){
-      var s2 = document.createElement('div'); s2.className='quiz-step';
-      var h2 = document.createElement('div'); h2.textContent='N2 features'; s2.appendChild(h2);
-      var pills2 = document.createElement('div'); pills2.className='quiz-pills';
-      ['Spindles present','Spindles absent','K-complexes present','K-complexes absent'].forEach(function(opt2){
-        var bb = document.createElement('button'); bb.className='quiz-pill'; bb.textContent=opt2;
-        bb.addEventListener('click', function(){
-          var k = opt2.indexOf('Spindles')>=0 ? 'spindles' : 'kcomplexes';
-          var v = opt2.indexOf('present')>=0 ? 'present' : 'absent';
-          onAnswer(k, v, bb);
-        });
-        pills2.appendChild(bb);
-      });
-      s2.appendChild(pills2); steps.appendChild(s2);
-    }
-  });
-  var submit = document.getElementById('quizSubmit');
-  var newq = document.getElementById('quizNew');
-  if (submit) submit.onclick = submitQuiz;
-  if (newq) newq.onclick = function(){ startQuiz(); };
-}
-
-function onAnswer(key, val, btn){
-  Array.from(btn.parentElement.children).forEach(function(el){ el.classList.remove('active','correct','wrong'); });
-  btn.classList.add('active');
-  var truth = state.quiz.truth[key] || 'None';
-  var isCorrect = (val === truth) ||
-                  (key==='spindles' && val.toLowerCase().indexOf(truth)>=0) ||
-                  (key==='kcomplexes' && val.toLowerCase().indexOf(truth)>=0);
-  btn.classList.add(isCorrect ? 'correct' : 'wrong');
-  state.quiz.answered[key] = isCorrect;
-}
-
-function submitQuiz(){
-  var needed = ['background','artifact','symmetry','amplitude','slowingScope','slowingTempo','periodic','sleep','epileptiform'];
-  if (state.quiz.truth.sleep==='stage 2'){ needed.push('spindles','kcomplexes'); }
-  var allAnswered = needed.every(function(k){ return state.quiz.answered[k] !== undefined; });
-  var ok = allAnswered && needed.every(function(k){ return state.quiz.answered[k] === true; });
-  var banner = document.getElementById('quizBanner');
-  if (banner){
-    banner.textContent = ok ? '✔ Correct! New quiz ready.' : '✖ Not quite — answer all correctly.';
-    banner.style.display='block'; setTimeout(function(){ banner.style.display='none'; }, 1600);
-  }
-  if (ok) startQuiz();
-}
 function endQuiz(){
   state.quiz.active=false;
-  var p = document.getElementById('quizPanel'); if (p) p.style.display='none';
-  var rf = document.getElementById('rhythmFieldset'); if (rf) rf.style.display='';
-  if (state.pathology){ state.pathology.bipds=false; state.pathology.gpd=false; state.pathology.lpd=false; }
-  if (typeof regen === 'function') regen();
+  const panel = document.getElementById('quizPanel');
+  if (panel) panel.style.display='none';
+  const rhythmFieldset = document.getElementById('rhythmFieldset');
+  if (rhythmFieldset) rhythmFieldset.style.display='';
+  // Clear pathology
+  state.pathology.bipds=false; state.pathology.gpd=false; state.pathology.lpd=false;
+  regen();
 }
 
 function buildQuizUI(){
