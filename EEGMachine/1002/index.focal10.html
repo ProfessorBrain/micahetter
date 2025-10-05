@@ -1,11 +1,6 @@
 <!doctype html>
 <html lang="en">
 <head>
-<link rel="icon" type="image/png" sizes="32x32" href="favicon.png?v=2">
-<link rel="shortcut icon" type="image/png" href="favicon.png?v=2">
-<link rel="apple-touch-icon" href="favicon.png?v=2">
-<meta name="theme-color" content="#ffffff">
-
   <meta charset="utf-8"/>
   <title>EEG Machine</title>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
@@ -1185,10 +1180,7 @@ if (_qn){
     var fieldset = modal.querySelector('fieldset');
     if(!fieldset) return;
 
-    // Remove any Start/End Quiz buttons inside Pathology modal, if any exist in this build
-    modal.querySelectorAll('#startQuizBtn, #endQuizBtn').forEach(function(el){ el.remove(); });
-
-    // Find the periodic row (GPDs/LPDs)
+    // Find LPD row to anchor under it
     var lpd = modal.querySelector('#lpd');
     var periodicRow = lpd ? (lpd.closest('label') ? lpd.closest('label').parentElement : lpd.parentElement) : null;
     if (!periodicRow){
@@ -1196,7 +1188,6 @@ if (_qn){
       periodicRow = lpdLabel ? lpdLabel.parentElement : null;
     }
 
-    // Create or reuse checkbox/label
     var chk = document.getElementById('focalSz');
     var label = chk ? (chk.closest('label') || chk) : null;
     if (!chk){
@@ -1207,37 +1198,30 @@ if (_qn){
       chk.id = 'focalSz';
       label.appendChild(chk);
       label.appendChild(document.createTextNode(' Focal seizure'));
-    } else {
-      if (label && label.style) label.style.marginLeft = '0';
-    }
+    } else if (label && label.style){ label.style.marginLeft='0'; }
 
-    // Insert as a new row directly under the periodic row
     if (periodicRow && periodicRow.parentElement){
+      // If our label already in DOM elsewhere, remove to reinsert
+      if (label.parentElement) label.parentElement.removeChild(label);
       var newRow = document.createElement('div');
       if (periodicRow.getAttribute('style')){
         newRow.setAttribute('style', periodicRow.getAttribute('style'));
       } else {
-        newRow.style.display = 'flex';
-        newRow.style.gap = '.35rem';
-        newRow.style.marginTop = '.25rem';
+        newRow.style.display='flex'; newRow.style.gap='.35rem'; newRow.style.marginTop='.25rem';
       }
       newRow.appendChild(label);
       periodicRow.insertAdjacentElement('afterend', newRow);
     } else if (!fieldset.contains(label)) {
       fieldset.appendChild(label);
     }
-
-    // Wire behavior
-    chk.addEventListener('change', function(){
-      window.state = window.state || {};
-      state.pathology = state.pathology || {};
-      state.pathology.focalSeizure = !!chk.checked;
-      if (typeof regen === 'function') regen();
+  }
+  function init(){
+    placeFocalSeizureAligned();
+    document.addEventListener('click', function(e){
+      if (e.target && (e.target.id==='pathologyBtn' || e.target.closest && e.target.closest('#pathologyModal'))) placeFocalSeizureAligned();
     });
   }
-  if (document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', placeFocalSeizureAligned);
-  } else { placeFocalSeizureAligned(); }
+  if (document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', init); } else { init(); }
 })();
 </script>
 
@@ -1249,128 +1233,81 @@ if (_qn){
 
 
 <script id="focal-seizure-sim">
-// Focal seizure generator (10 s) with spatial spread & evolution
 (function(){
-  // --- electrode layout (approximate 10–20, normalized) ---
-  const XY = {
-    Fp1:[-2,  3], Fp2:[ 2,  3],
-    F7: [-3,  1], F8: [ 3,  1],
-    F3: [-1,  1.4], F4:[ 1,  1.4],
-    Fz: [ 0,  1.7],
-    T3: [-3,  0],  T4:[ 3,  0],
-    C3: [-1,  0],  C4:[ 1,  0],
-    Cz: [ 0,  0],
-    T5: [-3, -1],  T6:[ 3, -1],
-    P3: [-1, -1.4], P4:[ 1,-1.4],
-    Pz: [ 0,-1.7],
-    O1: [-1.2,-2.6], O2:[ 1.2,-2.6],
-    A1:[-3.5,-0.4], A2:[ 3.5,-0.4]
-  };
-  function xy(name){ return XY[name] || [0,0]; }
-  function dist(a,b){ const dx=a[0]-b[0], dy=a[1]-b[1]; return Math.hypot(dx,dy); }
+  // 10–20 scalp coordinates (normalized)
+  const XY = {Fp1:[-2,3],Fp2:[2,3],F7:[-3,1],F8:[3,1],F3:[-1,1.4],F4:[1,1.4],Fz:[0,1.7],T3:[-3,0],T4:[3,0],C3:[-1,0],C4:[1,0],Cz:[0,0],T5:[-3,-1],T6:[3,-1],P3:[-1,-1.4],P4:[1,-1.4],Pz:[0,-1.7],O1:[-1.2,-2.6],O2:[1.2,-2.6],A1:[-3.5,-0.4],A2:[3.5,-0.4]};
+  function xy(n){return XY[n]||[0,0]}
+  function dist(a,b){const dx=a[0]-b[0],dy=a[1]-b[1];return Math.hypot(dx,dy)}
+  function logistic(x){return 1/(1+Math.exp(-x))}
+  function clamp(x,a,b){return Math.max(a,Math.min(b,x))}
+  function avgXY(list){let sx=0,sy=0;list.forEach(k=>{const p=xy(k);sx+=p[0];sy+=p[1];});return [sx/list.length,sy/list.length]}
 
-  // Defaults (µV, seconds, Hz)
-  const DEF = {
-    Fs: 512,
-    dur: 10,
-    f_start: 18, f_end: 3,
-    A_min: 10, A_max: 140,
-    t_mid: 5.0, k_f: 1.0,
-    t_gain: 2.5, k_a: 0.9,
-    tau0: 0.6, k_delay: 0.18, // s per spacing
-    lambda0: 2.8, v_spread: 0.15, // spacing/s
-    p_LFFA: 0.6,
-    spike_tau_r: 0.004, spike_tau_d: 0.028, // s
-    spike_S_rel: 0.6,
-    lambda0_spike: 2, lambda1_spike: 6 // /s
-  };
+  const DEF = {Fs:512,dur:10,f_start:18,f_end:3,A_min:10,A_max:140,t_mid:5,k_f:1,t_gain:2.5,k_a:0.9,tau0:0.6,k_delay:0.18,lambda0:2.8,v_spread:0.15,p_LFFA:0.6,spike_tau_r:0.004,spike_tau_d:0.028,spike_S_rel:0.6,lambda0_spike:2,lambda1_spike:6};
 
-  function logistic(x){ return 1/(1+Math.exp(-x)); }
-  function clamp(x,a,b){ return Math.max(a, Math.min(b,x)); }
-
-  // Create if not present
-  window.state = window.state || {};
-
-  // Patch Channel.sample to add seizure overlay
-  function patchChannelSample(){
+  // Patch once: add seizure overlay into Channel.prototype.sample
+  function patchSample(){
     if (!window.Channel || Channel.prototype._focalSeizurePatched) return;
     const _orig = Channel.prototype.sample;
     Channel.prototype.sample = function(t, opts){
       let y = _orig.call(this, t, opts);
-      const ict = state.focalSz;
+      const ict = window.state && state.focalSz;
       if (ict && ict.active){
         const now = opts.clock;
         const ch = ict.perChan[this.name];
         if (ch){
           const tprime = now - ict.t0 - ch.tau;
           if (tprime >= 0 && tprime <= ict.dur){
-            // Spread: allow lambda to grow linearly
             const lam = ict.lambda0 + ict.v_spread * tprime;
-            const w = Math.exp(-(ch.dist/lam)) + ch.mix; // update weight subtly over time
-            // Frequency evolution
+            const w = Math.exp(-(ch.dist/lam)) + ch.mix;
             const sDown = logistic(-(tprime - ict.t_mid)/ict.k_f);
-            const f = ict.f_end + (ict.f_start - ict.f_end) * sDown + ch.df;
-            // Amplitude evolution
+            let f = ict.f_end + (ict.f_start - ict.f_end) * sDown + ch.df;
             const sUp = logistic(-(tprime - ict.t_gain)/ict.k_a);
             const A0 = ict.A_min + (ict.A_max - ict.A_min) * (1 - sUp);
-            // Low-voltage fast onset window (crossfade if enabled)
             let A = A0, fUsed = f, spikesOff = false;
             if (ch.lffa && tprime < ch.lffaWin){
               const u = clamp(tprime/ch.lffaWin, 0, 1);
-              fUsed = 30 + 8*ch.noise1; // ~30±8 Hz
-              A = (1-u)* (8 + 7*ch.noise2) + u*A0;
+              fUsed = 30 + 8*ch.noise1;
+              A = (1-u)*(8 + 7*ch.noise2) + u*A0;
               spikesOff = true;
             }
-
-            // Slow AM envelope (wax/wane 0.05–0.1 Hz)
             const env = 0.85 + 0.25*Math.sin(2*Math.PI*(0.06+0.02*ch.noise3)*tprime + ch.phAM);
-
-            // Slightly non-sinusoidal core
             const phi = ch.ph + ict.theta * ch.dist + 0.15*ch.noise4;
             const base = Math.sin(2*Math.PI*fUsed*tprime + phi);
             const harm = Math.sin(2*Math.PI*(2*fUsed)*tprime + ch.ph2);
             let r = (A * w * env) * (base + 0.25*harm);
 
-            // Fragmentation near termination (last 1.5 s)
+            // Termination fragmentation (last ~1.5s)
             if (ict.dur - tprime < 1.5){
               const pfrag = 0.3 + 0.4*(1 - (ict.dur - tprime)/1.5);
               if (ch.rng() < pfrag){ r *= 0.3; }
             }
 
-            // Spike/sharp events (inhomogeneous rate)
+            // Spikes / sharps
             let spikeSum = 0;
             if (!spikesOff){
-              // update next spike schedule relative to tprime
               const rate = ict.lambda0_spike + ict.lambda1_spike * (fUsed/ict.f_start);
-              // expected probability per sample ~ rate/Fs; here check with sub-ms tolerance
               while (ch.nextSpikeTprime <= tprime){
-                // schedule next spike using exponential waiting time
-                const u = ch.rng(); const wait = -Math.log(1-u) / Math.max(1e-6, rate);
+                const u = ch.rng();
+                const wait = -Math.log(1-u) / Math.max(1e-6, rate);
                 ch.nextSpikeTprime += wait;
-                // phase locking: favor around +pi/2 with jitter
                 const pref = Math.PI/2 + (ch.rng()-0.5)*0.6;
                 ch.spikes.push({tprime: ch.nextSpikeTprime, phiPref: pref, alive:true});
               }
-              // accumulate active spikes
-              for (let sIdx=0; sIdx<ch.spikes.length; sIdx++){
-                const ev = ch.spikes[sIdx];
+              for (let i=0;i<ch.spikes.length;i++){
+                const ev = ch.spikes[i];
                 const tau = tprime - ev.tprime;
-                if (tau < -0.02) continue; // not yet
+                if (tau < -0.02) continue;
                 if (tau > 0.25){ ev.alive=false; continue; }
-                // shape: diff-of-exponentials
                 const spr = ict.spike_tau_r, sdp = ict.spike_tau_d;
                 const H = tau>=0 ? 1 : 0;
                 const spike = H*(Math.exp(-tau/sdp) - Math.exp(-tau/spr));
-                // shoulder slow wave 2–5 Hz damped
                 const swf = 3 + 2*ch.noise5;
                 const slow = 0.2*Math.exp(-tau/0.35)*Math.sin(2*Math.PI*swf*tau);
                 const S_peak = ict.spike_S_rel * (A*w*env);
                 spikeSum += S_peak * (spike + slow);
               }
-              // prune old spikes
               ch.spikes = ch.spikes.filter(s=>s.alive);
             }
-
             y += r + spikeSum;
           }
         }
@@ -1380,64 +1317,47 @@ if (_qn){
     Channel.prototype._focalSeizurePatched = true;
   }
 
-  // Setup per-channel seizure params on trigger
   function armFocalSeizure(){
-    // Pick a realistic temporal focus center
-    const sideLeft = (state.rng ? state.rng() : Math.random()) < 0.5;
-    const focus = sideLeft
-      ? avgXY(['F7','T3','T5'])
-      : avgXY(['F8','T4','T6']);
-    const now = state.clock || 0;
     const rng = state.rng || Math.random;
+    const sideLeft = (rng()<0.5);
+    const focus = sideLeft ? avgXY(['F7','T3','T5']) : avgXY(['F8','T4','T6']);
     const perChan = {};
     (window.ELECTRODES || Array.from((state.channels||new Map()).keys())).forEach(name=>{
       const d = dist(xy(name), focus);
-      const mix = (rng()-0.5)*0.10; // ε_mix
-      const lam0 = DEF.lambda0;
-      const w0 = Math.exp(-d/lam0) + mix;
-      const tau = DEF.tau0 + DEF.k_delay*d + (rng()-0.5)*0.10; // +/-50 ms
-      const ph = rng()*2*Math.PI;
-      const ph2 = rng()*2*Math.PI;
+      const mix = (rng()-0.5)*0.10;
+      const tau = DEF.tau0 + DEF.k_delay*d + (rng()-0.5)*0.10; // ±50ms
       perChan[name] = {
-        dist: d, mix, tau, ph, ph2,
-        df: (rng()-0.5)*0.6, // ±0.3 Hz
-        phAM: rng()*2*Math.PI,
-        noise1:rng(), noise2:rng(), noise3:rng(), noise4:rng(), noise5:rng(),
+        dist:d, mix, tau,
+        ph: rng()*2*Math.PI, ph2:rng()*2*Math.PI, phAM:rng()*2*Math.PI,
+        df: (rng()-0.5)*0.6,
+        noise1:rng(),noise2:rng(),noise3:rng(),noise4:rng(),noise5:rng(),
         lffa: (rng()<DEF.p_LFFA), lffaWin: 0.8 + 0.6*rng(),
-        spikes: [], nextSpikeTprime: 0.02, // start slightly after tprime=0
+        spikes: [], nextSpikeTprime: 0.02,
         rng: () => (state.rng ? state.rng() : Math.random())
       };
     });
-
     state.focalSz = {
-      active:true, t0: now, dur: DEF.dur,
-      f_start: DEF.f_start, f_end: DEF.f_end,
-      A_min: DEF.A_min, A_max: DEF.A_max,
-      t_mid: DEF.t_mid, k_f: DEF.k_f,
-      t_gain: DEF.t_gain, k_a: DEF.k_a,
-      lambda0: DEF.lambda0, v_spread: DEF.v_spread,
-      theta: 0.35, // rad/spacing spatial phase slope
-      spike_tau_r: DEF.spike_tau_r, spike_tau_d: DEF.spike_tau_d,
-      spike_S_rel: DEF.spike_S_rel,
-      lambda0_spike: DEF.lambda0_spike, lambda1_spike: DEF.lambda1_spike,
+      active:true, t0:(state.clock||0), dur:DEF.dur,
+      f_start:DEF.f_start, f_end:DEF.f_end,
+      A_min:DEF.A_min, A_max:DEF.A_max,
+      t_mid:DEF.t_mid, k_f:DEF.k_f,
+      t_gain:DEF.t_gain, k_a:DEF.k_a,
+      lambda0:DEF.lambda0, v_spread:DEF.v_spread,
+      theta:0.35,
+      spike_tau_r:DEF.spike_tau_r, spike_tau_d:DEF.spike_tau_d,
+      spike_S_rel:DEF.spike_S_rel,
+      lambda0_spike:DEF.lambda0_spike, lambda1_spike:DEF.lambda1_spike,
       perChan
     };
   }
 
-  function avgXY(list){
-    let sx=0, sy=0, n=0;
-    list.forEach(k=>{ const p=xy(k); sx+=p[0]; sy+=p[1]; n++; });
-    return [sx/n, sy/n];
-  }
-
-  // Auto-reset after dur, and uncheck box
-  function patchStep(){
+  function patchStepReset(){
     if (!window.step || window._focalResetPatched) return;
     const _orig = step;
     window.step = function(){
       const s = state.focalSz;
       if (s && s.active){
-        const now = state.clock || 0;
+        const now = state.artClock || 0;
         if (now - s.t0 >= s.dur){
           s.active = false;
           delete state.focalSz;
@@ -1451,7 +1371,6 @@ if (_qn){
     window._focalResetPatched = true;
   }
 
-  // Bind checkbox robustly
   function bindCheckbox(){
     const el = document.getElementById('focalSz');
     if (!el || el._boundFS) return;
@@ -1460,27 +1379,23 @@ if (_qn){
       state.pathology = state.pathology || {};
       if (el.checked){
         state.pathology.focalSeizure = true;
-        armFocalSeizure();
+        armFocalSeizure(); // overlay into scrolling EEG; no regen
       } else {
         if (state.focalSz) state.focalSz.active = false;
         delete state.focalSz;
         state.pathology.focalSeizure = false;
       }
-      if (typeof regen === 'function') regen();
     });
   }
 
   function init(){
-    patchChannelSample();
-    patchStep();
+    patchSample();
+    patchStepReset();
     bindCheckbox();
     const mo = new MutationObserver(bindCheckbox);
     mo.observe(document.documentElement, {subtree:true, childList:true});
   }
-
-  if (document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', init);
-  } else { init(); }
+  if (document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', init); } else { init(); }
 })();
 </script>
 

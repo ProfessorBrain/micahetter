@@ -1,11 +1,6 @@
 <!doctype html>
 <html lang="en">
 <head>
-<link rel="icon" type="image/png" sizes="32x32" href="favicon.png?v=2">
-<link rel="shortcut icon" type="image/png" href="favicon.png?v=2">
-<link rel="apple-touch-icon" href="favicon.png?v=2">
-<meta name="theme-color" content="#ffffff">
-
   <meta charset="utf-8"/>
   <title>EEG Machine</title>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
@@ -19,7 +14,7 @@
 .quiz-pill.active{background:#eef5ff;border-color:#6aa1ff}
 .quiz-pill.correct{background:#e7f8ea;border-color:#4db569}
 .quiz-pill.wrong{background:#fde7ea;border-color:#e05757}
-#quizBanner{position:absolute;top:10px;right:50%;transform:translateX(50%);background:#0c8;color:#fff;padding:.5rem .8rem;border-radius:.6rem;display:none;box-shadow:0 8px 24px rgba(0,0,0,.2);font-weight:700; z-index:10000;}
+#quizBanner{position:absolute;top:10px;right:50%;transform:translateX(50%);background:#0c8;color:#fff;padding:.5rem .8rem;border-radius:.6rem;display:none;box-shadow:0 8px 24px rgba(0,0,0,.2);font-weight:700 z-index:10000;}
 #quizControls{display:flex;gap:.5rem;margin-top:.6rem}
 
 /* Stronger Options button */
@@ -80,55 +75,6 @@ button.options-strong:active{
     .modal-card .sub{opacity:.8;font-size:13px}
     .modal-actions{display:flex;justify-content:flex-end;gap:.5rem;margin-top:.75rem}
   </style>
-
-<style id="quiz-style-patch">
-.quiz-pill.correct { font-weight: 700; color: #0a0; }
-.quiz-pill.wrong { color: #b00; text-decoration: line-through; }
-</style>
-
-
-<style id="quiz-layout-patch">
-#quizPanel{ width: 520px; max-width: 92vw; max-height: 80vh; overflow:auto; }
-#quizPanel .panel-title{ font-size: 14px; }
-.quiz-step{ margin:6px 10px; }
-.quiz-step > div:first-child{ font-weight:600; margin-bottom:4px; font-size:13px; }
-.quiz-pills{ display:flex; flex-wrap:wrap; gap:8px; }
-.quiz-subrow{ display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
-.quiz-pill{ padding:2px 10px; border-radius:16px; border:1px solid rgba(0,0,0,.15); background:#f6f7f8; font-size:12px; }
-.quiz-pill.active{ box-shadow:0 0 0 2px rgba(0,0,0,.08) inset; }
-.quiz-pill.correct{ font-weight:700; color:#0a0; }
-.quiz-pill.wrong{ color:#b00; text-decoration:line-through; }
-</style>
-
-
-<style id="quiz-next-hide">
-#quizNext{display:none !important;}
-</style>
-
-
-<style id="quiz-end-style">
-#quizPanel .quiz-controls{ display:flex; gap:8px; align-items:center; }
-#quizEnd{ display:inline-block; }
-</style>
-
-
-<style id="topbar-nowrap-patch">
-#topbar{ display:flex; align-items:center; gap:.5rem; flex-wrap:nowrap; }
-#rhythmFieldset{ flex:1 1 auto; min-width: 420px; margin:0; }
-#modeRadios{ display:flex; align-items:center; flex-wrap:nowrap; gap:.6rem; }
-#rhythmFieldset .pill{ margin:0 0 0 .6rem; white-space:nowrap; }
-#play{ margin-left:auto; }
-#play, #optionsBtn, #pathologyBtn, #quizBtnTop{ white-space:nowrap; flex:0 0 auto; }
-#topbar select, #topbar label, #topbar button{ font-size:12px; }
-#topbar button{ padding:6px 10px; line-height:1.1; }
-#modeRadios label{ font-size:12px; margin-right:.35rem; }
-</style>
-
-
-<style id="pathology-align-fix">
-#pathologyModal fieldset label{ margin-left:0 !important; }
-</style>
-
 </head>
 <body>
   <div id="topbar">
@@ -239,6 +185,8 @@ button.options-strong:active{
         </div>
       </fieldset>
       <div class="modal-actions">
+        <button id="startQuizBtn" class="options-strong" onclick="startQuiz()">Start Quiz</button>
+        <button id="endQuizBtn" onclick="endQuiz()">End Quiz</button>
         <button id="pathologyClose">Close</button>
       </div>
     </div>
@@ -251,7 +199,7 @@ button.options-strong:active{
     <div id="quizSteps"></div>
     <div id="quizControls">
       <button id="quizNext">Next</button>
-      <button id="quizNew">New Case</button>
+      <button id="quizNew">New Quiz</button>
     </div>
   </aside>
 
@@ -916,7 +864,6 @@ if (realismSlider && realismValue) {
 }
 
 
-
 // ---------------- Quiz Mode ----------------
 state.quiz = {
   active:false,
@@ -928,71 +875,49 @@ state.quiz = {
 
 function randChoice(rng, arr){ return arr[Math.floor(rng()*arr.length)] }
 
-const QUIZ_SPEC_BASE = [
-  {key:'background',   label:'Background rhythm',        options:['delta','theta','alpha','beta']},
-  {key:'artifact',     label:'Artifact',                 options:['None','Eye blinks','Chewing','Sweat','EMG']},
-  {key:'symmetry',     label:'Symmetry',                 options:['symmetric','asymmetric']},
-  {key:'amplitude',    label:'Amplitude pattern',        options:['Normal','diffuse attenuation','focal attenuation']},
-  {group:'Slowing',    parts:[
-      {key:'slowingDist',  label:'', options:['None','Generalized','Focal - Left','Focal - Right']},
-      {key:'slowingTempo', label:'', options:['Intermittent','Continuous']}
-  ]},
-  {key:'periodic',     label:'Periodic / Rhythmic',      options:['None','GPDs','LPDs','BIPDs']},
-  {key:'sleep',        label:'Sleep',                    options:['Awake','Drowsy','Stage 1','Stage 2','SWS','REM']},
-  {key:'epileptiform', label:'Epileptiform discharges',  options:['none','generalized','focal']}
-];
 
 function startQuiz(){
   const rng = state.rng;
-
-  // Reset quiz state
-  state.quiz.active   = true;
-  state.quiz.stepIndex= 0;
+  state.quiz.active = true;
+  state.quiz.stepIndex = 0;
   state.quiz.answered = {};
-  state.quiz.bias     = {leftScale:1,rightScale:1,focal:{}};
-  state.quiz.slowing  = {};
-  state.quiz.spikes   = {};
+  state.quiz.bias = {leftScale:1,rightScale:1,focal:{}};
+  state.quiz.slowing = {};
+  state.quiz.spikes = {};
 
-  // Random ground truth
-  const background = randChoice(rng, ['delta','theta','alpha','beta']);
-  const sleep      = randChoice(rng, ['Awake','Drowsy','Stage 1','Stage 2','SWS','REM']);
-  const artifact   = (rng()<0.25) ? randChoice(rng, ['Eye blinks','Chewing','Sweat','EMG']) : 'None';
-  const symmetry   = randChoice(rng, ['symmetric','asymmetric']);
-  const amplitude  = randChoice(rng, ['diffuse attenuation','focal attenuation']);
-  const slowScope  = randChoice(rng, ['Generalized','Focal']);
-  const slowTempo  = randChoice(rng, ['intermittent','continuous']);
-  const periodic   = randChoice(rng, ['None','GPDs','LPDs','BIPDs']);
+  const background = randChoice(rng, ['alpha','beta','theta','delta','awake','drowsy']);
+  const sleep = randChoice(rng, ['awake','drowsy','stage 1','stage 2','SWS','REM']);
+  const artifact = (rng()<0.25) ? randChoice(rng, ['Eye blinks','Chewing','Sweat','EMG']) : 'None';
+  const symmetry = randChoice(rng, ['symmetric','asymmetric']);
+  const amplitude = randChoice(rng, ['diffuse attenuation','focal attenuation']);
+  const slowScope = randChoice(rng, ['Generalized','Focal']);
+  const slowTempo = randChoice(rng, ['intermittent','continuous']);
+  const periodic = randChoice(rng, ['None','GPDs','LPDs','BIPDs']);
   const epileptiform = randChoice(rng, ['none','generalized','focal']);
 
   let spindles='absent', kcomplexes='absent';
-  if (sleep==='Stage 2'){
-    spindles   = rng()<0.7 ? 'present' : 'absent';
-    kcomplexes = rng()<0.7 ? 'present' : 'absent';
-  }
+  if (sleep==='stage 2'){ spindles = rng()<0.7 ? 'present' : 'absent'; kcomplexes = rng()<0.7 ? 'present' : 'absent'; }
 
-  state.quiz.truth = {
-    background, artifact, symmetry, amplitude,
-    slowingDist: (rng()<0.33 ? 'None' : (rng()<0.5 ? 'Generalized' : (rng()<0.5 ? 'Focal - Left' : 'Focal - Right'))),
-    slowingTempo: (rng()<0.5 ? 'Intermittent' : 'Continuous'),
-    periodic, sleep, spindles, kcomplexes, epileptiform
-  };
+  state.quiz.truth = { background, artifact, symmetry, amplitude, slowingScope:slowScope, slowingTempo:slowTempo, periodic, sleep, spindles, kcomplexes, epileptiform };
 
-  // Drive the simulator to match truth
-  state.mode = ({
-    'Stage 1':'n1','Stage 2':'n2','SWS':'sws','REM':'rem',
-    'Awake':'awake','Drowsy':'drowsy'
-  })[sleep] || 'awake';
+  state.mode = background;
+  if (sleep==='stage 1') state.mode='n1';
+  if (sleep==='stage 2') state.mode='n2';
+  if (sleep==='SWS') state.mode='sws';
+  if (sleep==='REM') state.mode='rem';
+  if (sleep==='awake') state.mode='awake';
+  if (sleep==='drowsy') state.mode='drowsy';
 
-  state.pathology.gpd   = (periodic==='GPDs');
-  state.pathology.lpd   = (periodic==='LPDs' || periodic==='BIPDs');
+  state.pathology.gpd = (periodic==='GPDs');
+  state.pathology.lpd = (periodic==='LPDs' || periodic==='BIPDs');
   state.pathology.bipds = (periodic==='BIPDs');
 
   state.opts = state.opts || {};
-  state.opts.blink = (artifact==='Eye blinks');
-  state.opts.chew  = (artifact==='Chewing');
-  state.opts.sweat = (artifact==='Sweat');
-  state.opts.pop   = false;
-  state.opts.emg   = (artifact==='EMG');
+  state.opts.blink=false; state.opts.chew=false; state.opts.sweat=false; state.opts.pop=false; state.opts.emg=false;
+  if (artifact==='Eye blinks') state.opts.blink=true;
+  if (artifact==='Chewing') state.opts.chew=true;
+  if (artifact==='Sweat') state.opts.sweat=true;
+  if (artifact==='EMG') state.opts.emg=true;
 
   if (symmetry==='asymmetric'){
     const bias = 0.7 + 0.25*rng();
@@ -1003,75 +928,104 @@ function startQuiz(){
     state.quiz.bias.focal[target]=0.55;
   }
 
-  // --- Build the ordered spec the UI renderer consumes ---
-  state.quiz.order = [...QUIZ_SPEC_BASE];
-
-  // If stage 2, append N2 sub-steps
-  if (sleep==='Stage 2'){
-    state.quiz.order.push(
-      {key:'spindles',   label:'N2: sleep spindles', options:['present','absent']},
-      {key:'kcomplexes', label:'N2: K-complexes',    options:['present','absent']}
-    );
-  }
-
-  // Render UI
   buildQuizUI();
-
-  // Show panel & hide rhythm radio row
-  const panel = document.getElementById('quizPanel');
-  if (panel){ panel.style.display='block'; panel.style.zIndex='9999'; }
-  const rf = document.getElementById('rhythmFieldset');
-  if (rf) rf.style.display='none';
-
-  // Close the pathology modal if open and regenerate signals
-  const pm = document.getElementById('pathologyModal');
-  if (pm) pm.hidden = true;
+  var panel = document.getElementById('quizPanel'); if (panel) { panel.style.display='block'; panel.style.zIndex='9999'; }
+  var rf = document.getElementById('rhythmFieldset'); if (rf) rf.style.display='none';
+  var pm = document.getElementById('pathologyModal'); if (pm) pm.hidden = true;
   regen();
 }
 
 function buildQuizUI(){
-  const stepsEl = document.getElementById('quizSteps');
-  if (!stepsEl) return;
-  stepsEl.innerHTML = '';
+  var panel = document.getElementById('quizPanel');
+  var steps = document.getElementById('quizSteps');
+  if (!panel || !steps) return;
+  steps.innerHTML='';
+  var spec = [
+    {key:'background', label:'Background rhythm', options:['alpha','beta','theta','delta','awake','drowsy']},
+    {key:'artifact', label:'Artifact', options:['None','Eye blinks','Chewing','Sweat','EMG']},
+    {key:'symmetry', label:'Symmetry', options:['symmetric','asymmetric']},
+    {key:'amplitude', label:'Amplitude pattern', options:['diffuse attenuation','focal attenuation']},
+    {key:'slowingScope', label:'Slowing scope', options:['Generalized','Focal']},
+    {key:'slowingTempo', label:'Slowing tempo', options:['intermittent','continuous']},
+    {key:'periodic', label:'Periodic / Rhythmic', options:['None','GPDs','LPDs','BIPDs']},
+    {key:'sleep', label:'Sleep', options:['awake','drowsy','stage 1','stage 2','SWS','REM']},
+    {key:'epileptiform', label:'Epileptiform discharges', options:['none','generalized','focal']}
+  ];
+  spec.forEach(function(step, idx){
+    var s = document.createElement('div'); s.className='quiz-step';
+    var h = document.createElement('div'); h.textContent = (idx+1)+'. '+step.label; s.appendChild(h);
+    var pills = document.createElement('div'); pills.className='quiz-pills';
+    step.options.forEach(function(opt){
+      var b = document.createElement('button'); b.className='quiz-pill'; b.textContent=opt;
+      b.addEventListener('click', function(){ onAnswer(step.key, opt, b); });
+      pills.appendChild(b);
+    });
+    s.appendChild(pills); steps.appendChild(s);
 
-  state.quiz.order.forEach((step)=>{
-    // Grouped "Slowing" with two sub-rows
-    if (step.group && Array.isArray(step.parts)){
-      const container = document.createElement('div');
-      container.className = 'quiz-step';
-
-      const header = document.createElement('div');
-      header.textContent = step.group;
-      container.appendChild(header);
-
-      step.parts.forEach((row, rIndex)=>{
-        const rowWrap = document.createElement('div');
-        rowWrap.className = 'quiz-subrow';
-        row.options.forEach(opt=>{
-          const b = document.createElement('button');
-          b.className='quiz-pill';
-          b.textContent = opt;
-          b.addEventListener('click', ()=> onAnswer(row.key, opt, b));
-          rowWrap.appendChild(b);
+    if (step.key==='sleep' && state.quiz.truth.sleep==='stage 2'){
+      var s2 = document.createElement('div'); s2.className='quiz-step';
+      var h2 = document.createElement('div'); h2.textContent='N2 features'; s2.appendChild(h2);
+      var pills2 = document.createElement('div'); pills2.className='quiz-pills';
+      ['Spindles present','Spindles absent','K-complexes present','K-complexes absent'].forEach(function(opt2){
+        var bb = document.createElement('button'); bb.className='quiz-pill'; bb.textContent=opt2;
+        bb.addEventListener('click', function(){
+          var k = opt2.indexOf('Spindles')>=0 ? 'spindles' : 'kcomplexes';
+          var v = opt2.indexOf('present')>=0 ? 'present' : 'absent';
+          onAnswer(k, v, bb);
         });
-        container.appendChild(rowWrap);
+        pills2.appendChild(bb);
       });
-
-      stepsEl.appendChild(container);
-      return;
+      s2.appendChild(pills2); steps.appendChild(s2);
     }
+  });
+  var submit = document.getElementById('quizSubmit');
+  var newq = document.getElementById('quizNew');
+  if (submit) submit.onclick = submitQuiz;
+  if (newq) newq.onclick = function(){ startQuiz(); };
+}
 
-    // Standard single-row step
+function onAnswer(key, val, btn){
+  Array.from(btn.parentElement.children).forEach(function(el){ el.classList.remove('active','correct','wrong'); });
+  btn.classList.add('active');
+  var truth = state.quiz.truth[key] || 'None';
+  var isCorrect = (val === truth) ||
+                  (key==='spindles' && val.toLowerCase().indexOf(truth)>=0) ||
+                  (key==='kcomplexes' && val.toLowerCase().indexOf(truth)>=0);
+  btn.classList.add(isCorrect ? 'correct' : 'wrong');
+  state.quiz.answered[key] = isCorrect;
+}
+
+function submitQuiz(){
+  var needed = ['background','artifact','symmetry','amplitude','slowingScope','slowingTempo','periodic','sleep','epileptiform'];
+  if (state.quiz.truth.sleep==='stage 2'){ needed.push('spindles','kcomplexes'); }
+  var allAnswered = needed.every(function(k){ return state.quiz.answered[k] !== undefined; });
+  var ok = allAnswered && needed.every(function(k){ return state.quiz.answered[k] === true; });
+  var banner = document.getElementById('quizBanner');
+  if (banner){
+    banner.textContent = ok ? '✔ Correct! New quiz ready.' : '✖ Not quite — answer all correctly.';
+    banner.style.display='block'; setTimeout(function(){ banner.style.display='none'; }, 1600);
+  }
+  if (ok) startQuiz();
+}
+function endQuiz(){
+  state.quiz.active=false;
+  var p = document.getElementById('quizPanel'); if (p) p.style.display='none';
+  var rf = document.getElementById('rhythmFieldset'); if (rf) rf.style.display='';
+  if (state.pathology){ state.pathology.bipds=false; state.pathology.gpd=false; state.pathology.lpd=false; }
+  if (typeof regen === 'function') regen();
+}
+
+function buildQuizUI(){
+  const steps = $('quizSteps');
+  steps.innerHTML='';
+  state.quiz.order.forEach((step, idx)=>{
     const s = document.createElement('div');
     s.className='quiz-step';
-
     const h = document.createElement('div');
-    h.textContent = step.label;
+    h.textContent = (idx+1)+'. '+step.label;
     s.appendChild(h);
-
     const pills = document.createElement('div');
     pills.className='quiz-pills';
-
     step.options.forEach(opt=>{
       const b = document.createElement('button');
       b.className='quiz-pill';
@@ -1079,410 +1033,62 @@ function buildQuizUI(){
       b.addEventListener('click', ()=> onAnswer(step.key, opt, b));
       pills.appendChild(b);
     });
-
     s.appendChild(pills);
-    stepsEl.appendChild(s);
+    steps.appendChild(s);
   });
 }
 
 function onAnswer(key, val, btn){
-  // toggle active visual
+  // mark active
   Array.from(btn.parentElement.children).forEach(el=>el.classList.remove('active'));
   btn.classList.add('active');
-
-  // grade
-  const truth = (state.quiz.truth[key] ?? '').toString();
-  const isCorrect =
-    (val === truth) ||
-    (key==='spindles'   && val.toLowerCase() === truth.toLowerCase()) ||
-    (key==='kcomplexes' && val.toLowerCase() === truth.toLowerCase());
-
-  btn.classList.add(isCorrect ? 'correct' : 'wrong');
-  state.quiz.answered[key] = isCorrect;
-
-  checkWin();
+  const truth = state.quiz.truth[key] || 'none';
+  if (val === truth){
+    btn.classList.add('correct');
+    state.quiz.answered[key]=true;
+    checkWin();
+  } else {
+    btn.classList.add('wrong');
+    state.quiz.answered[key]=false;
+  }
 }
 
 function checkWin(){
-  const allAnswered = state.quiz.order.every(s => s.key in state.quiz.answered);
-  if (!allAnswered) return;
-
-  const allCorrect  = state.quiz.order.every(s => state.quiz.answered[s.key] === true);
-  const banner = document.getElementById('quizBanner');
-
-  if (banner){
-    banner.textContent = allCorrect ? '✔ Correct! New quiz ready.' : '✖ Not quite — answer all correctly.';
+  const allCorrect = state.quiz.order.every(s => state.quiz.answered[s.key]);
+  if (allCorrect){
+    const banner=$('quizBanner');
     banner.style.display='block';
-    setTimeout(()=>{ banner.style.display='none'; if (allCorrect) startQuiz(); }, 1600);
+    setTimeout(()=>banner.style.display='none', 1600);
   }
 }
 
-function endQuiz(){
-  state.quiz.active = false;
-  const panel = document.getElementById('quizPanel');
-  if (panel){ panel.style.display='none'; }
-  const rf = document.getElementById('rhythmFieldset');
-  if (rf) rf.style.display='block';
-  const banner = document.getElementById('quizBanner');
-  if (banner) banner.style.display='none';
-  regen();
-}
-const _qn = document.getElementById('quizNew'); 
-if (_qn){ 
-  _qn.innerText = 'New Case'; 
-  _qn.addEventListener('click', ()=> startQuiz()); 
-  // Insert End Quiz button to the right if missing
-  if (!document.getElementById('quizEnd')){
-    const endBtn = document.createElement('button');
-    endBtn.id = 'quizEnd';
-    endBtn.textContent = 'End Quiz';
-    endBtn.className = _qn.className || '';
-    endBtn.style.marginLeft = '8px';
-    endBtn.addEventListener('click', endQuiz);
-    _qn.parentElement?.appendChild(endBtn);
-  }
-}
+$('quizNext').addEventListener('click', ()=>{ /* Future: collapse/expand steps */ });
+$('quizNew').addEventListener('click', ()=>{ startQuiz(); });
 
-// Pathology modal buttons are already wired above
+
+// Quiz mode buttons
+const startQuizBtn = $('startQuizBtn');
+const endQuizBtn = $('endQuizBtn');
+if (startQuizBtn) startQuizBtn.addEventListener('click', ()=>{ startQuiz(); });
+if (endQuizBtn) endQuizBtn.addEventListener('click', ()=>{ endQuiz(); });
+
+// Delegated listeners ensure clicks work even if DOM is rebuilt
+document.addEventListener('click', (e)=>{
+  const t = e.target;
+  if (!t) return;
+  if (t.id === 'startQuizBtn') { startQuiz(); e.preventDefault(); e.stopPropagation(); }
+  if (t.id === 'endQuizBtn')   { endQuiz();   e.preventDefault(); e.stopPropagation(); }
+});
+// Defensive: also bind once DOM is ready
+window.addEventListener('DOMContentLoaded', ()=>{
+  const s = document.getElementById('startQuizBtn');
+  const ebtn = document.getElementById('endQuizBtn');
+  if (s) s.addEventListener('click', startQuiz);
+  if (ebtn) ebtn.addEventListener('click', endQuiz);
+});
+
+
+/* Physiology reference idea: learningeeg.com/normal-asleep */
 </script>
-
-<script id="quiz-topbtn-setup">
-(function(){
-  function ensureQuizTopButton(){
-    var opt = document.getElementById('optionsBtn');
-    if(!opt) return;
-    if(document.getElementById('quizBtnTop')) return;
-    var btn = document.createElement('button');
-    btn.id = 'quizBtnTop';
-    btn.textContent = 'Quiz';
-    btn.className = opt.className || '';
-    btn.style.marginLeft = '6px';
-    btn.addEventListener('click', function(){
-      try{
-        if (window.state && state.quiz && state.quiz.active){
-          var panel = document.getElementById('quizPanel'); if(panel){ panel.style.display='block'; panel.style.zIndex='9999'; }
-          var rf = document.getElementById('rhythmFieldset'); if(rf) rf.style.display='none';
-        } else if (typeof startQuiz === 'function'){
-          startQuiz();
-        }
-        var pm = document.getElementById('pathologyModal'); if(pm) pm.hidden = true;
-      }catch(e){ console.error(e); }
-    });
-    opt.insertAdjacentElement('afterend', btn);
-  }
-  if (document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', ensureQuizTopButton);
-  } else { ensureQuizTopButton(); }
-})();
-</script>
-
-
-<script id="focal-seizure-wire">
-(function(){
-  function placeFocalSeizureAligned(){
-    var modal = document.getElementById('pathologyModal');
-    if(!modal) return;
-    var fieldset = modal.querySelector('fieldset');
-    if(!fieldset) return;
-
-    // Remove any Start/End Quiz buttons inside Pathology modal, if any exist in this build
-    modal.querySelectorAll('#startQuizBtn, #endQuizBtn').forEach(function(el){ el.remove(); });
-
-    // Find the periodic row (GPDs/LPDs)
-    var lpd = modal.querySelector('#lpd');
-    var periodicRow = lpd ? (lpd.closest('label') ? lpd.closest('label').parentElement : lpd.parentElement) : null;
-    if (!periodicRow){
-      var lpdLabel = Array.from(modal.querySelectorAll('label')).find(function(l){ return /LPDs/i.test(l.textContent || ''); });
-      periodicRow = lpdLabel ? lpdLabel.parentElement : null;
-    }
-
-    // Create or reuse checkbox/label
-    var chk = document.getElementById('focalSz');
-    var label = chk ? (chk.closest('label') || chk) : null;
-    if (!chk){
-      label = document.createElement('label');
-      label.style.marginLeft = '0';
-      chk = document.createElement('input');
-      chk.type = 'checkbox';
-      chk.id = 'focalSz';
-      label.appendChild(chk);
-      label.appendChild(document.createTextNode(' Focal seizure'));
-    } else {
-      if (label && label.style) label.style.marginLeft = '0';
-    }
-
-    // Insert as a new row directly under the periodic row
-    if (periodicRow && periodicRow.parentElement){
-      var newRow = document.createElement('div');
-      if (periodicRow.getAttribute('style')){
-        newRow.setAttribute('style', periodicRow.getAttribute('style'));
-      } else {
-        newRow.style.display = 'flex';
-        newRow.style.gap = '.35rem';
-        newRow.style.marginTop = '.25rem';
-      }
-      newRow.appendChild(label);
-      periodicRow.insertAdjacentElement('afterend', newRow);
-    } else if (!fieldset.contains(label)) {
-      fieldset.appendChild(label);
-    }
-
-    // Wire behavior
-    chk.addEventListener('change', function(){
-      window.state = window.state || {};
-      state.pathology = state.pathology || {};
-      state.pathology.focalSeizure = !!chk.checked;
-      if (typeof regen === 'function') regen();
-    });
-  }
-  if (document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', placeFocalSeizureAligned);
-  } else { placeFocalSeizureAligned(); }
-})();
-</script>
-
-
-
-
-
-
-
-
-<script id="focal-seizure-sim">
-// Focal seizure generator (10 s) with spatial spread & evolution
-(function(){
-  // --- electrode layout (approximate 10–20, normalized) ---
-  const XY = {
-    Fp1:[-2,  3], Fp2:[ 2,  3],
-    F7: [-3,  1], F8: [ 3,  1],
-    F3: [-1,  1.4], F4:[ 1,  1.4],
-    Fz: [ 0,  1.7],
-    T3: [-3,  0],  T4:[ 3,  0],
-    C3: [-1,  0],  C4:[ 1,  0],
-    Cz: [ 0,  0],
-    T5: [-3, -1],  T6:[ 3, -1],
-    P3: [-1, -1.4], P4:[ 1,-1.4],
-    Pz: [ 0,-1.7],
-    O1: [-1.2,-2.6], O2:[ 1.2,-2.6],
-    A1:[-3.5,-0.4], A2:[ 3.5,-0.4]
-  };
-  function xy(name){ return XY[name] || [0,0]; }
-  function dist(a,b){ const dx=a[0]-b[0], dy=a[1]-b[1]; return Math.hypot(dx,dy); }
-
-  // Defaults (µV, seconds, Hz)
-  const DEF = {
-    Fs: 512,
-    dur: 10,
-    f_start: 18, f_end: 3,
-    A_min: 10, A_max: 140,
-    t_mid: 5.0, k_f: 1.0,
-    t_gain: 2.5, k_a: 0.9,
-    tau0: 0.6, k_delay: 0.18, // s per spacing
-    lambda0: 2.8, v_spread: 0.15, // spacing/s
-    p_LFFA: 0.6,
-    spike_tau_r: 0.004, spike_tau_d: 0.028, // s
-    spike_S_rel: 0.6,
-    lambda0_spike: 2, lambda1_spike: 6 // /s
-  };
-
-  function logistic(x){ return 1/(1+Math.exp(-x)); }
-  function clamp(x,a,b){ return Math.max(a, Math.min(b,x)); }
-
-  // Create if not present
-  window.state = window.state || {};
-
-  // Patch Channel.sample to add seizure overlay
-  function patchChannelSample(){
-    if (!window.Channel || Channel.prototype._focalSeizurePatched) return;
-    const _orig = Channel.prototype.sample;
-    Channel.prototype.sample = function(t, opts){
-      let y = _orig.call(this, t, opts);
-      const ict = state.focalSz;
-      if (ict && ict.active){
-        const now = opts.clock;
-        const ch = ict.perChan[this.name];
-        if (ch){
-          const tprime = now - ict.t0 - ch.tau;
-          if (tprime >= 0 && tprime <= ict.dur){
-            // Spread: allow lambda to grow linearly
-            const lam = ict.lambda0 + ict.v_spread * tprime;
-            const w = Math.exp(-(ch.dist/lam)) + ch.mix; // update weight subtly over time
-            // Frequency evolution
-            const sDown = logistic(-(tprime - ict.t_mid)/ict.k_f);
-            const f = ict.f_end + (ict.f_start - ict.f_end) * sDown + ch.df;
-            // Amplitude evolution
-            const sUp = logistic(-(tprime - ict.t_gain)/ict.k_a);
-            const A0 = ict.A_min + (ict.A_max - ict.A_min) * (1 - sUp);
-            // Low-voltage fast onset window (crossfade if enabled)
-            let A = A0, fUsed = f, spikesOff = false;
-            if (ch.lffa && tprime < ch.lffaWin){
-              const u = clamp(tprime/ch.lffaWin, 0, 1);
-              fUsed = 30 + 8*ch.noise1; // ~30±8 Hz
-              A = (1-u)* (8 + 7*ch.noise2) + u*A0;
-              spikesOff = true;
-            }
-
-            // Slow AM envelope (wax/wane 0.05–0.1 Hz)
-            const env = 0.85 + 0.25*Math.sin(2*Math.PI*(0.06+0.02*ch.noise3)*tprime + ch.phAM);
-
-            // Slightly non-sinusoidal core
-            const phi = ch.ph + ict.theta * ch.dist + 0.15*ch.noise4;
-            const base = Math.sin(2*Math.PI*fUsed*tprime + phi);
-            const harm = Math.sin(2*Math.PI*(2*fUsed)*tprime + ch.ph2);
-            let r = (A * w * env) * (base + 0.25*harm);
-
-            // Fragmentation near termination (last 1.5 s)
-            if (ict.dur - tprime < 1.5){
-              const pfrag = 0.3 + 0.4*(1 - (ict.dur - tprime)/1.5);
-              if (ch.rng() < pfrag){ r *= 0.3; }
-            }
-
-            // Spike/sharp events (inhomogeneous rate)
-            let spikeSum = 0;
-            if (!spikesOff){
-              // update next spike schedule relative to tprime
-              const rate = ict.lambda0_spike + ict.lambda1_spike * (fUsed/ict.f_start);
-              // expected probability per sample ~ rate/Fs; here check with sub-ms tolerance
-              while (ch.nextSpikeTprime <= tprime){
-                // schedule next spike using exponential waiting time
-                const u = ch.rng(); const wait = -Math.log(1-u) / Math.max(1e-6, rate);
-                ch.nextSpikeTprime += wait;
-                // phase locking: favor around +pi/2 with jitter
-                const pref = Math.PI/2 + (ch.rng()-0.5)*0.6;
-                ch.spikes.push({tprime: ch.nextSpikeTprime, phiPref: pref, alive:true});
-              }
-              // accumulate active spikes
-              for (let sIdx=0; sIdx<ch.spikes.length; sIdx++){
-                const ev = ch.spikes[sIdx];
-                const tau = tprime - ev.tprime;
-                if (tau < -0.02) continue; // not yet
-                if (tau > 0.25){ ev.alive=false; continue; }
-                // shape: diff-of-exponentials
-                const spr = ict.spike_tau_r, sdp = ict.spike_tau_d;
-                const H = tau>=0 ? 1 : 0;
-                const spike = H*(Math.exp(-tau/sdp) - Math.exp(-tau/spr));
-                // shoulder slow wave 2–5 Hz damped
-                const swf = 3 + 2*ch.noise5;
-                const slow = 0.2*Math.exp(-tau/0.35)*Math.sin(2*Math.PI*swf*tau);
-                const S_peak = ict.spike_S_rel * (A*w*env);
-                spikeSum += S_peak * (spike + slow);
-              }
-              // prune old spikes
-              ch.spikes = ch.spikes.filter(s=>s.alive);
-            }
-
-            y += r + spikeSum;
-          }
-        }
-      }
-      return y;
-    };
-    Channel.prototype._focalSeizurePatched = true;
-  }
-
-  // Setup per-channel seizure params on trigger
-  function armFocalSeizure(){
-    // Pick a realistic temporal focus center
-    const sideLeft = (state.rng ? state.rng() : Math.random()) < 0.5;
-    const focus = sideLeft
-      ? avgXY(['F7','T3','T5'])
-      : avgXY(['F8','T4','T6']);
-    const now = state.clock || 0;
-    const rng = state.rng || Math.random;
-    const perChan = {};
-    (window.ELECTRODES || Array.from((state.channels||new Map()).keys())).forEach(name=>{
-      const d = dist(xy(name), focus);
-      const mix = (rng()-0.5)*0.10; // ε_mix
-      const lam0 = DEF.lambda0;
-      const w0 = Math.exp(-d/lam0) + mix;
-      const tau = DEF.tau0 + DEF.k_delay*d + (rng()-0.5)*0.10; // +/-50 ms
-      const ph = rng()*2*Math.PI;
-      const ph2 = rng()*2*Math.PI;
-      perChan[name] = {
-        dist: d, mix, tau, ph, ph2,
-        df: (rng()-0.5)*0.6, // ±0.3 Hz
-        phAM: rng()*2*Math.PI,
-        noise1:rng(), noise2:rng(), noise3:rng(), noise4:rng(), noise5:rng(),
-        lffa: (rng()<DEF.p_LFFA), lffaWin: 0.8 + 0.6*rng(),
-        spikes: [], nextSpikeTprime: 0.02, // start slightly after tprime=0
-        rng: () => (state.rng ? state.rng() : Math.random())
-      };
-    });
-
-    state.focalSz = {
-      active:true, t0: now, dur: DEF.dur,
-      f_start: DEF.f_start, f_end: DEF.f_end,
-      A_min: DEF.A_min, A_max: DEF.A_max,
-      t_mid: DEF.t_mid, k_f: DEF.k_f,
-      t_gain: DEF.t_gain, k_a: DEF.k_a,
-      lambda0: DEF.lambda0, v_spread: DEF.v_spread,
-      theta: 0.35, // rad/spacing spatial phase slope
-      spike_tau_r: DEF.spike_tau_r, spike_tau_d: DEF.spike_tau_d,
-      spike_S_rel: DEF.spike_S_rel,
-      lambda0_spike: DEF.lambda0_spike, lambda1_spike: DEF.lambda1_spike,
-      perChan
-    };
-  }
-
-  function avgXY(list){
-    let sx=0, sy=0, n=0;
-    list.forEach(k=>{ const p=xy(k); sx+=p[0]; sy+=p[1]; n++; });
-    return [sx/n, sy/n];
-  }
-
-  // Auto-reset after dur, and uncheck box
-  function patchStep(){
-    if (!window.step || window._focalResetPatched) return;
-    const _orig = step;
-    window.step = function(){
-      const s = state.focalSz;
-      if (s && s.active){
-        const now = state.clock || 0;
-        if (now - s.t0 >= s.dur){
-          s.active = false;
-          delete state.focalSz;
-          const el = document.getElementById('focalSz');
-          if (el) el.checked = false;
-          if (state.pathology) state.pathology.focalSeizure = false;
-        }
-      }
-      return _orig();
-    };
-    window._focalResetPatched = true;
-  }
-
-  // Bind checkbox robustly
-  function bindCheckbox(){
-    const el = document.getElementById('focalSz');
-    if (!el || el._boundFS) return;
-    el._boundFS = true;
-    el.addEventListener('change', function(){
-      state.pathology = state.pathology || {};
-      if (el.checked){
-        state.pathology.focalSeizure = true;
-        armFocalSeizure();
-      } else {
-        if (state.focalSz) state.focalSz.active = false;
-        delete state.focalSz;
-        state.pathology.focalSeizure = false;
-      }
-      if (typeof regen === 'function') regen();
-    });
-  }
-
-  function init(){
-    patchChannelSample();
-    patchStep();
-    bindCheckbox();
-    const mo = new MutationObserver(bindCheckbox);
-    mo.observe(document.documentElement, {subtree:true, childList:true});
-  }
-
-  if (document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', init);
-  } else { init(); }
-})();
-</script>
-
 </body>
 </html>

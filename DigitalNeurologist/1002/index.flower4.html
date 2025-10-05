@@ -3,10 +3,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>The Digital Neurologist</title>
+  <title>The Digital Neurologist — Flower Power Edition</title>
   <link rel="icon" href="favicon.png" type="image/png" />
   <style>
+    /* ---------- 60s-esque Flower & Brain vibe (Austin Powers / Price Is Right) ---------- */
     :root{
+      /* Groovy palette */
       --sun: #ffd54a;
       --hot: #ff4db8;
       --tangerine: #ff8a00;
@@ -28,11 +30,13 @@
     html,body{height:100%}
     body{
       margin:0;
-      font-family: "Cooper Black", "Trebuchet MS", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      font-family: "Cooper Black", "Comic Sans MS", "Trebuchet MS", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
       background: radial-gradient(1200px 700px at 20% 0%, #ffeab5 0%, #fffaf1 50%, #fffaf1 100%);
       color: var(--ink);
       text-rendering: optimizeLegibility;
     }
+
+    /* Header banner with thick lines and flower/brain doodles */
     .banner{
       position: relative;
       padding: 22px 16px 28px;
@@ -53,12 +57,20 @@
       letter-spacing: .01em;
       color: var(--line);
       text-shadow: 1px 1px 0 #fff;
-      font-weight: 900;
+    }
+    .subtitle{
+      text-align:center;
+      margin-top: 8px;
+      font-weight: 800;
+      color: var(--chip-border);
+      letter-spacing: .12em;
+      text-transform: uppercase;
     }
     .wrap{ max-width: 1180px; margin: 22px auto 56px; padding: 0 18px; }
     .grid{ display:grid; grid-template-columns: 380px 1fr; gap:28px; align-items:start; }
     @media (max-width: 980px){ .grid{ grid-template-columns: 1fr; } }
 
+    /* Cards with chunky borders and rounded corners */
     .card{
       background: var(--paper);
       border: 6px solid var(--line);
@@ -70,16 +82,30 @@
       position: relative;
       overflow: hidden;
     }
+    .card:before{
+      content: "";
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(circle at 12% -10%, rgba(255,77,184,.10) 0 120px, transparent 121px),
+        radial-gradient(circle at 100% 10%, rgba(0,194,178,.10) 0 140px, transparent 141px);
+      pointer-events: none;
+    }
+
+    /* Labels */
     .muted-title{ font-size:11px; text-transform:uppercase; letter-spacing:.14em; color: var(--chip-border); }
     .section-title{ text-align:center; font-size:13px; text-transform:uppercase; color: var(--chip-border); margin: 8px 0 6px; letter-spacing:.16em; }
     .section-header{ text-align:center; font-weight:900; margin:12px 0 6px; font-size: 18px; color: var(--line); text-transform: uppercase; letter-spacing:.12em; }
 
-    /* Case & Summary */
-    .case-box{ min-height:220px; white-space:pre-wrap; font-weight:700; font-size: 18px; line-height:1.4; }
+    /* Case and summary */
     .case-pill{
-      background: #ffffff; border: 4px solid var(--line); border-radius: 18px; padding: 12px 14px;
+      background: #ffffff;
+      border: 4px solid var(--line);
+      border-radius: 18px;
+      padding: 12px 14px;
       box-shadow: 0 4px 0 var(--line), 0 8px 16px var(--shadow);
     }
+
+    .case-box{ min-height:220px; white-space:pre-wrap; font-weight:700; font-size: 18px; line-height:1.4; }
     .summary-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:12px; }
     .summary-item{
       background: #fff5e8;
@@ -108,7 +134,7 @@
       box-shadow: 0 4px 0 var(--line), 0 0 0 6px #fff inset;
     }
 
-    /* Chips */
+    /* Option chips: chunky, bubbly, with thick lines */
     .options{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
     .chip{
       padding: 11px 16px;
@@ -123,9 +149,18 @@
     .chip:hover{ transform: translateY(-1px); filter: saturate(1.1); }
     .chip.active{ background: #d8d0ff; }
     .chip.disabled{ color: #8c7fb3; cursor:not-allowed; background:#eee6ff; }
-    .chip.correct{ background: #ccffe8; color: var(--good); text-decoration: underline; border-color: #064e3b; box-shadow: 0 4px 0 #064e3b, 0 8px 18px var(--shadow); }
-    .chip.wrong{ background: #ffe0ea; color: var(--bad); text-decoration: line-through; border-color: #7a0018; box-shadow: 0 4px 0 #7a0018, 0 8px 18px var(--shadow); }
+    .chip.correct{
+      background: #ccffe8; color: var(--good); text-decoration: underline;
+      border-color: #064e3b;
+      box-shadow: 0 4px 0 #064e3b, 0 8px 18px var(--shadow);
+    }
+    .chip.wrong{
+      background: #ffe0ea; color: var(--bad); text-decoration: line-through;
+      border-color: #7a0018;
+      box-shadow: 0 4px 0 #7a0018, 0 8px 18px var(--shadow);
+    }
 
+    /* Controls */
     .controls{ display:flex; justify-content:center; margin-top:12px; gap:10px; flex-wrap: wrap; }
     .btn{
       background: linear-gradient(180deg, #ffeb99 0%, #ffd54a 100%);
@@ -138,7 +173,16 @@
     .btn:disabled{ opacity:.5; cursor:not-allowed; }
     .btn:active{ transform: translateY(2px); box-shadow: 0 4px 0 var(--line); }
 
+    /* Footer */
     .footer{ text-align:center; margin-top:12px; font-size:12px; color: var(--chip-border); font-weight:700; }
+
+    /* Decorative corner flowers (SVG background shapes) */
+    .card .flower{
+      position:absolute; width:120px; height:120px; opacity:.18; pointer-events:none;
+      filter: saturate(1.2);
+    }
+    .flower.fl1{ top:-16px; left:-16px; transform: rotate(-10deg); }
+    .flower.fl2{ bottom:-10px; right:-14px; transform: rotate(20deg); }
   </style>
 </head>
 <body>
@@ -150,6 +194,23 @@
     <div class="grid">
       <!-- LEFT: Case + Summary -->
       <div class="card">
+        <svg class="flower fl1" viewBox="0 0 100 100" aria-hidden="true">
+          <g stroke="var(--line)" stroke-width="6" fill="var(--hot)">
+            <circle cx="50" cy="18" r="16"/><circle cx="82" cy="34" r="16"/>
+            <circle cx="82" cy="66" r="16"/><circle cx="50" cy="82" r="16"/>
+            <circle cx="18" cy="66" r="16"/><circle cx="18" cy="34" r="16"/>
+            <circle cx="50" cy="50" r="14" fill="var(--sun)"/>
+          </g>
+        </svg>
+        <svg class="flower fl2" viewBox="0 0 100 100" aria-hidden="true">
+          <g stroke="var(--line)" stroke-width="6" fill="var(--sea)">
+            <circle cx="50" cy="18" r="16"/><circle cx="82" cy="34" r="16"/>
+            <circle cx="82" cy="66" r="16"/><circle cx="50" cy="82" r="16"/>
+            <circle cx="18" cy="66" r="16"/><circle cx="18" cy="34" r="16"/>
+            <circle cx="50" cy="50" r="14" fill="var(--tangerine)"/>
+          </g>
+        </svg>
+
         <div class="muted-title">Case</div>
         <div id="caseBox" class="case-box value case-pill"></div>
 
@@ -180,6 +241,14 @@
 
       <!-- RIGHT: Interactive panel -->
       <div class="card">
+        <svg class="flower fl1" viewBox="0 0 100 100" aria-hidden="true">
+          <g stroke="var(--line)" stroke-width="6" fill="var(--violet)">
+            <circle cx="50" cy="18" r="16"/><circle cx="82" cy="34" r="16"/>
+            <circle cx="82" cy="66" r="16"/><circle cx="50" cy="82" r="16"/>
+            <circle cx="18" cy="66" r="16"/><circle cx="18" cy="34" r="16"/>
+            <circle cx="50" cy="50" r="14" fill="var(--sun)"/>
+          </g>
+        </svg>
         <div class="stage-tabs">
           <button class="tab active" data-stage="pace">• Pace</button>
           <button class="tab" data-stage="localization">Localization</button>
@@ -196,7 +265,9 @@
 /** --------------- Data --------------- **/
 const PACE_TIME = ["Hyperacute","Acute","Subacute","Chronic"];
 const PACE_PATTERN = ["Unknown","Monophasic","Relapsing","Stepwise","Progressive"]; // picker shows "Unknown"; summary shows — until set
+const ETIOLOGY_OPTS = ["Degenerative", "Infectious", "Inflammatory/Autoimmune", "Metabolic", "Migraine", "Neoplastic", "Seizure", "Toxic", "Vascular"];
 
+// Hierarchical localization (CNS + PNS)
 const LOCALIZATION_GROUPS = [
   { header: "Central nervous system", sections: [
     { title: "Cerebral hemisphere", items: ["Cortex","Subcortical white matter","Basal ganglia","Thalamus"] },
@@ -217,26 +288,25 @@ const LOCALIZATION_GROUPS = [
   ]},
 ];
 
-// DISEASE_DB imported from CSV (unique records with attributes)
+// Example case (edit/replace with CSV wiring)
 const DISEASE_DB = [{"disease": "Ischemic cortical infarct (MCA territory)", "etiology": "Vascular", "pace": "hyperacute", "pattern": "monophasic", "localization": "Cortex"}, {"disease": "Autoimmune encephalitis (e.g., anti-NMDA)", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "progressive", "localization": "Cortex"}, {"disease": "Focal cortical dysplasia / epilepsy focus", "etiology": "Seizure", "pace": "chronic", "pattern": "progressive", "localization": "Cortex"}, {"disease": "Herpes simplex encephalitis (temporal predominance)", "etiology": "Infectious", "pace": "subacute", "pattern": "progressive", "localization": "Cortex"}, {"disease": "Cortical venous thrombosis with hemorrhagic cortical lesions", "etiology": "Vascular", "pace": "acute", "pattern": "monophasic", "localization": "Cortex"}, {"disease": "Low‑grade glioma involving dominant frontal cortex", "etiology": "Neoplastic", "pace": "chronic", "pattern": "progressive", "localization": "Cortex"}, {"disease": "Cerebral amyloid angiopathy–related lobar hemorrhage", "etiology": "Vascular", "pace": "acute", "pattern": "monophasic", "localization": "Cortex"}, {"disease": "Migraine with aura causing transient focal deficits", "etiology": "Migraine", "pace": "acute", "pattern": "relapsing", "localization": "Cortex"}, {"disease": "Posterior reversible encephalopathy syndrome (PRES)", "etiology": "Vascular", "pace": "subacute", "pattern": "progressive", "localization": "Cortex"}, {"disease": "Cortical contusion from traumatic brain injury", "etiology": "Degenerative", "pace": "acute", "pattern": "monophasic", "localization": "Cortex"}, {"disease": "Rasmussen encephalitis", "etiology": "Inflammatory/Autoimmune", "pace": "chronic", "pattern": "progressive", "localization": "Cortex"}, {"disease": "Cerebral abscess involving cortical ribbon", "etiology": "Infectious", "pace": "subacute", "pattern": "progressive", "localization": "Cortex"}, {"disease": "Sturge–Weber syndrome with leptomeningeal angioma", "etiology": "Vascular", "pace": "chronic", "pattern": "progressive", "localization": "Cortex"}, {"disease": "Multiple sclerosis (demyelinating plaques)", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "relapsing", "localization": "Subcortical white matter"}, {"disease": "Small-vessel ischemic disease (leukoaraiosis)", "etiology": "Vascular", "pace": "chronic", "pattern": "stepwise", "localization": "Subcortical white matter"}, {"disease": "Progressive multifocal leukoencephalopathy (PML)", "etiology": "Infectious", "pace": "subacute", "pattern": "progressive", "localization": "Subcortical white matter"}, {"disease": "Acute disseminated encephalomyelitis (ADEM)", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "monophasic", "localization": "Subcortical white matter"}, {"disease": "CADASIL (hereditary small‑vessel disease)", "etiology": "Vascular", "pace": "chronic", "pattern": "stepwise", "localization": "Subcortical white matter"}, {"disease": "Adult‑onset adrenoleukodystrophy", "etiology": "Metabolic", "pace": "chronic", "pattern": "progressive", "localization": "Subcortical white matter"}, {"disease": "Toxic leukoencephalopathy from chemotherapy", "etiology": "Toxic", "pace": "subacute", "pattern": "progressive", "localization": "Subcortical white matter"}, {"disease": "HIV‑associated diffuse leukoencephalopathy", "etiology": "Infectious", "pace": "chronic", "pattern": "progressive", "localization": "Subcortical white matter"}, {"disease": "Metachromatic leukodystrophy (adult-onset)", "etiology": "Metabolic", "pace": "chronic", "pattern": "progressive", "localization": "Subcortical white matter"}, {"disease": "Alexander disease (adult form)", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Subcortical white matter"}, {"disease": "Radiation-induced leukoencephalopathy", "etiology": "Toxic", "pace": "subacute", "pattern": "progressive", "localization": "Subcortical white matter"}, {"disease": "Susac syndrome with callosal lesions", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "relapsing", "localization": "Subcortical white matter"}, {"disease": "Neurosarcoidosis with WM lesions", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "relapsing", "localization": "Subcortical white matter"}, {"disease": "Hypertensive intracerebral hemorrhage (putamen)", "etiology": "Vascular", "pace": "hyperacute", "pattern": "monophasic", "localization": "Basal ganglia"}, {"disease": "Lacunar infarct (lenticulostriate)", "etiology": "Vascular", "pace": "acute", "pattern": "monophasic", "localization": "Basal ganglia"}, {"disease": "Wilson disease (copper deposition)", "etiology": "Metabolic", "pace": "chronic", "pattern": "progressive", "localization": "Basal ganglia"}, {"disease": "Parkinson disease (basal ganglia circuit dysfunction)", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Basal ganglia"}, {"disease": "Huntington disease", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Basal ganglia"}, {"disease": "Hemiballismus from subthalamic nucleus infarct", "etiology": "Vascular", "pace": "acute", "pattern": "monophasic", "localization": "Basal ganglia"}, {"disease": "Toxoplasmosis in immunocompromised host", "etiology": "Infectious", "pace": "subacute", "pattern": "progressive", "localization": "Basal ganglia"}, {"disease": "Manganese deposition from parenteral nutrition or exposure", "etiology": "Toxic", "pace": "chronic", "pattern": "progressive", "localization": "Basal ganglia"}, {"disease": "Carbon monoxide poisoning with globus pallidus necrosis", "etiology": "Toxic", "pace": "acute", "pattern": "monophasic", "localization": "Basal ganglia"}, {"disease": "Hypoxic–ischemic injury with basal ganglia vulnerability", "etiology": "Vascular", "pace": "acute", "pattern": "monophasic", "localization": "Basal ganglia"}, {"disease": "NBIA (pantothenate kinase–associated neurodegeneration)", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Basal ganglia"}, {"disease": "MPTP-induced parkinsonism", "etiology": "Toxic", "pace": "subacute", "pattern": "progressive", "localization": "Basal ganglia"}, {"disease": "Nonketotic hyperglycemia chorea–ballism", "etiology": "Metabolic", "pace": "subacute", "pattern": "relapsing", "localization": "Basal ganglia"}, {"disease": "Thalamic ischemic infarct (PCA perforators)", "etiology": "Vascular", "pace": "acute", "pattern": "monophasic", "localization": "Thalamus"}, {"disease": "Hypertensive thalamic hemorrhage", "etiology": "Vascular", "pace": "hyperacute", "pattern": "monophasic", "localization": "Thalamus"}, {"disease": "Deep cerebral venous thrombosis with bithalamic lesions", "etiology": "Vascular", "pace": "subacute", "pattern": "monophasic", "localization": "Thalamus"}, {"disease": "Artery of Percheron infarct with bilateral paramedian thalamic involvement", "etiology": "Vascular", "pace": "acute", "pattern": "monophasic", "localization": "Thalamus"}, {"disease": "Wernicke encephalopathy with thalamic involvement", "etiology": "Metabolic", "pace": "subacute", "pattern": "progressive", "localization": "Thalamus"}, {"disease": "Thalamic glioma", "etiology": "Neoplastic", "pace": "chronic", "pattern": "progressive", "localization": "Thalamus"}, {"disease": "Creutzfeldt‑Jakob disease with pulvinar signal", "etiology": "Degenerative", "pace": "subacute", "pattern": "progressive", "localization": "Thalamus"}, {"disease": "Post‑stroke thalamic pain syndrome", "etiology": "Vascular", "pace": "chronic", "pattern": "progressive", "localization": "Thalamus"}, {"disease": "Thalamic cavernous malformation", "etiology": "Vascular", "pace": "subacute", "pattern": "stepwise", "localization": "Thalamus"}, {"disease": "Thalamic metastasis", "etiology": "Neoplastic", "pace": "subacute", "pattern": "progressive", "localization": "Thalamus"}, {"disease": "West Nile encephalitis with thalamic involvement", "etiology": "Infectious", "pace": "subacute", "pattern": "progressive", "localization": "Thalamus"}, {"disease": "Top-of-the-basilar syndrome with thalamic ischemia", "etiology": "Vascular", "pace": "acute", "pattern": "monophasic", "localization": "Thalamus"}, {"disease": "Bilateral thalamic infarcts from deep venous thrombosis", "etiology": "Vascular", "pace": "acute", "pattern": "monophasic", "localization": "Thalamus"}, {"disease": "Midbrain infarct (e.g., Weber syndrome)", "etiology": "Vascular", "pace": "acute", "pattern": "monophasic", "localization": "Midbrain"}, {"disease": "Tectal glioma", "etiology": "Neoplastic", "pace": "chronic", "pattern": "progressive", "localization": "Midbrain"}, {"disease": "Multiple sclerosis plaque (brainstem)", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "relapsing", "localization": "Midbrain"}, {"disease": "Dorsal midbrain syndrome from pineal mass", "etiology": "Neoplastic", "pace": "subacute", "pattern": "progressive", "localization": "Midbrain"}, {"disease": "Midbrain hemorrhage", "etiology": "Vascular", "pace": "acute", "pattern": "monophasic", "localization": "Midbrain"}, {"disease": "Progressive supranuclear palsy (midbrain atrophy)", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Midbrain"}, {"disease": "Listeria rhomboencephalitis involving midbrain", "etiology": "Infectious", "pace": "subacute", "pattern": "progressive", "localization": "Midbrain"}, {"disease": "Midbrain cavernous malformation", "etiology": "Vascular", "pace": "subacute", "pattern": "stepwise", "localization": "Midbrain"}, {"disease": "Midbrain tuberculoma", "etiology": "Infectious", "pace": "subacute", "pattern": "progressive", "localization": "Midbrain"}, {"disease": "Primary CNS lymphoma involving midbrain", "etiology": "Neoplastic", "pace": "subacute", "pattern": "progressive", "localization": "Midbrain"}, {"disease": "Neuromyelitis optica spectrum disorder (brainstem involvement)", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "relapsing", "localization": "Midbrain"}, {"disease": "Wernicke encephalopathy with midbrain findings", "etiology": "Metabolic", "pace": "subacute", "pattern": "progressive", "localization": "Midbrain"}, {"disease": "Midbrain abscess", "etiology": "Infectious", "pace": "subacute", "pattern": "progressive", "localization": "Midbrain"}, {"disease": "Central pontine myelinolysis (osmotic demyelination)", "etiology": "Metabolic", "pace": "subacute", "pattern": "progressive", "localization": "Pons"}, {"disease": "Pontine infarct (basilar territory)", "etiology": "Vascular", "pace": "acute", "pattern": "monophasic", "localization": "Pons"}, {"disease": "Cavernous malformation (pontine)", "etiology": "Vascular", "pace": "subacute", "pattern": "stepwise", "localization": "Pons"}, {"disease": "Basilar artery thrombosis causing locked‑in syndrome", "etiology": "Vascular", "pace": "hyperacute", "pattern": "monophasic", "localization": "Pons"}, {"disease": "Primary pontine hemorrhage", "etiology": "Vascular", "pace": "acute", "pattern": "monophasic", "localization": "Pons"}, {"disease": "Diffuse intrinsic pontine glioma (adult)", "etiology": "Neoplastic", "pace": "chronic", "pattern": "progressive", "localization": "Pons"}, {"disease": "Neurosarcoidosis involving the pons", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "relapsing", "localization": "Pons"}, {"disease": "Bacterial brainstem abscess (pontine)", "etiology": "Infectious", "pace": "subacute", "pattern": "progressive", "localization": "Pons"}, {"disease": "Radiation necrosis of the pons", "etiology": "Toxic", "pace": "subacute", "pattern": "progressive", "localization": "Pons"}, {"disease": "Pontine metastasis", "etiology": "Neoplastic", "pace": "subacute", "pattern": "progressive", "localization": "Pons"}, {"disease": "Bickerstaff brainstem encephalitis", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "relapsing", "localization": "Pons"}, {"disease": "Listeria brainstem encephalitis (pontine-predominant)", "etiology": "Infectious", "pace": "subacute", "pattern": "progressive", "localization": "Pons"}, {"disease": "Cavernous malformation with recurrent pontine hemorrhage", "etiology": "Vascular", "pace": "subacute", "pattern": "stepwise", "localization": "Pons"}, {"disease": "Lateral medullary infarct (Wallenberg)", "etiology": "Vascular", "pace": "acute", "pattern": "monophasic", "localization": "Medulla"}, {"disease": "Medullary glioma", "etiology": "Neoplastic", "pace": "chronic", "pattern": "progressive", "localization": "Medulla"}, {"disease": "Demyelinating lesion (MS)", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "relapsing", "localization": "Medulla"}, {"disease": "Medullary hemorrhage", "etiology": "Vascular", "pace": "acute", "pattern": "monophasic", "localization": "Medulla"}, {"disease": "Syringobulbia with bulbar symptoms", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Medulla"}, {"disease": "Chiari I malformation with medullary compression", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Medulla"}, {"disease": "Vertebral artery dissection with medullary ischemia", "etiology": "Vascular", "pace": "acute", "pattern": "monophasic", "localization": "Medulla"}, {"disease": "Lyme neuroborreliosis with lower cranial neuropathies", "etiology": "Infectious", "pace": "subacute", "pattern": "progressive", "localization": "Medulla"}, {"disease": "Area postrema syndrome (NMOSD)", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "relapsing", "localization": "Medulla"}, {"disease": "Medullary metastasis", "etiology": "Neoplastic", "pace": "subacute", "pattern": "progressive", "localization": "Medulla"}, {"disease": "Vertebral artery PICA aneurysm compressing medulla", "etiology": "Vascular", "pace": "subacute", "pattern": "progressive", "localization": "Medulla"}, {"disease": "Dorsal medullary infarct with hiccups and ataxia", "etiology": "Vascular", "pace": "acute", "pattern": "monophasic", "localization": "Medulla"}, {"disease": "Herpes zoster oticus with lower cranial neuropathies", "etiology": "Infectious", "pace": "subacute", "pattern": "progressive", "localization": "Medulla"}, {"disease": "Cerebellar infarct (PICA/SCA)", "etiology": "Vascular", "pace": "acute", "pattern": "monophasic", "localization": "Cerebellum Hemisphere"}, {"disease": "Metastatic tumor to cerebellum", "etiology": "Neoplastic", "pace": "subacute", "pattern": "progressive", "localization": "Cerebellum Hemisphere"}, {"disease": "Acute cerebellitis (post-infectious)", "etiology": "Infectious", "pace": "subacute", "pattern": "monophasic", "localization": "Cerebellum Hemisphere"}, {"disease": "Cerebellar hemorrhage (hemispheric)", "etiology": "Vascular", "pace": "acute", "pattern": "monophasic", "localization": "Cerebellum Hemisphere"}, {"disease": "Hemangioblastoma of cerebellar hemisphere", "etiology": "Neoplastic", "pace": "chronic", "pattern": "progressive", "localization": "Cerebellum Hemisphere"}, {"disease": "Paraneoplastic cerebellar degeneration (anti‑Yo)", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "progressive", "localization": "Cerebellum Hemisphere"}, {"disease": "Cerebellar abscess", "etiology": "Infectious", "pace": "subacute", "pattern": "progressive", "localization": "Cerebellum Hemisphere"}, {"disease": "Gluten‑related ataxia", "etiology": "Inflammatory/Autoimmune", "pace": "chronic", "pattern": "progressive", "localization": "Cerebellum Hemisphere"}, {"disease": "Cerebellar infarct from SCA branch occlusion", "etiology": "Vascular", "pace": "acute", "pattern": "monophasic", "localization": "Cerebellum Hemisphere"}, {"disease": "Cerebellar metastasis (lung primary)", "etiology": "Neoplastic", "pace": "subacute", "pattern": "progressive", "localization": "Cerebellum Hemisphere"}, {"disease": "Autoimmune GFAP astrocytopathy with cerebellar ataxia", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "relapsing", "localization": "Cerebellum Hemisphere"}, {"disease": "Lhermitte–Duclos disease (dysplastic gangliocytoma)", "etiology": "Neoplastic", "pace": "chronic", "pattern": "progressive", "localization": "Cerebellum Hemisphere"}, {"disease": "Subdural empyema causing cerebellar hemisphere irritation", "etiology": "Infectious", "pace": "subacute", "pattern": "progressive", "localization": "Cerebellum Hemisphere"}, {"disease": "Medulloblastoma (vermis)", "etiology": "Neoplastic", "pace": "subacute", "pattern": "progressive", "localization": "Cerebellum Midline"}, {"disease": "Alcoholic cerebellar degeneration (vermis-predominant)", "etiology": "Toxic", "pace": "chronic", "pattern": "progressive", "localization": "Cerebellum Midline"}, {"disease": "Vermian infarct", "etiology": "Vascular", "pace": "acute", "pattern": "monophasic", "localization": "Cerebellum Midline"}, {"disease": "Chiari I malformation with vermian/tonsillar descent", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Cerebellum Midline"}, {"disease": "Pilocytic astrocytoma of vermis (pediatric pattern)", "etiology": "Neoplastic", "pace": "subacute", "pattern": "progressive", "localization": "Cerebellum Midline"}, {"disease": "Wernicke encephalopathy with truncal ataxia", "etiology": "Metabolic", "pace": "subacute", "pattern": "progressive", "localization": "Cerebellum Midline"}, {"disease": "Vermian hemorrhage", "etiology": "Vascular", "pace": "acute", "pattern": "monophasic", "localization": "Cerebellum Midline"}, {"disease": "Hypothyroid‑related cerebellar ataxia", "etiology": "Metabolic", "pace": "subacute", "pattern": "progressive", "localization": "Cerebellum Midline"}, {"disease": "Spinocerebellar ataxia (vermis-predominant gait ataxia)", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Cerebellum Midline"}, {"disease": "Cerebellar vermis astrocytoma (adult)", "etiology": "Neoplastic", "pace": "subacute", "pattern": "progressive", "localization": "Cerebellum Midline"}, {"disease": "Alcohol withdrawal–related cerebellar dysfunction", "etiology": "Toxic", "pace": "subacute", "pattern": "progressive", "localization": "Cerebellum Midline"}, {"disease": "Acute vermian infarct from SCA/PICA watershed", "etiology": "Vascular", "pace": "acute", "pattern": "monophasic", "localization": "Cerebellum Midline"}, {"disease": "Congenital hypothyroidism with vermian ataxia", "etiology": "Metabolic", "pace": "chronic", "pattern": "progressive", "localization": "Cerebellum Midline"}, {"disease": "Lacunar infarct of posterior limb internal capsule", "etiology": "Vascular", "pace": "acute", "pattern": "monophasic", "localization": "Corticospinal tracts"}, {"disease": "Primary lateral sclerosis", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Corticospinal tracts"}, {"disease": "Cervical spondylotic myelopathy (CST involvement)", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Corticospinal tracts"}, {"disease": "Amyotrophic lateral sclerosis (UMN‑predominant signs)", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Corticospinal tracts"}, {"disease": "Hereditary spastic paraplegia", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Corticospinal tracts"}, {"disease": "HTLV‑1–associated tropical spastic paraparesis", "etiology": "Infectious", "pace": "chronic", "pattern": "progressive", "localization": "Corticospinal tracts"}, {"disease": "Intrinsic cervical cord tumor compressing CSTs", "etiology": "Neoplastic", "pace": "subacute", "pattern": "progressive", "localization": "Corticospinal tracts"}, {"disease": "Traumatic central cord injury with pyramidal signs", "etiology": "Vascular", "pace": "acute", "pattern": "stepwise", "localization": "Corticospinal tracts"}, {"disease": "Spinal cord infarct involving lateral columns", "etiology": "Vascular", "pace": "acute", "pattern": "monophasic", "localization": "Corticospinal tracts"}, {"disease": "Primary progressive multiple sclerosis with CST signs", "etiology": "Inflammatory/Autoimmune", "pace": "chronic", "pattern": "progressive", "localization": "Corticospinal tracts"}, {"disease": "Cervical OPLL compressing CSTs", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Corticospinal tracts"}, {"disease": "Radiation myelopathy with pyramidal tract involvement", "etiology": "Toxic", "pace": "subacute", "pattern": "progressive", "localization": "Corticospinal tracts"}, {"disease": "Copper deficiency myelopathy affecting CSTs", "etiology": "Metabolic", "pace": "subacute", "pattern": "progressive", "localization": "Corticospinal tracts"}, {"disease": "Syringomyelia (central cord)", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Spinothalamic tracts"}, {"disease": "Anterior spinal artery infarct", "etiology": "Vascular", "pace": "acute", "pattern": "monophasic", "localization": "Spinothalamic tracts"}, {"disease": "Multiple sclerosis plaque (cord)", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "relapsing", "localization": "Spinothalamic tracts"}, {"disease": "Brown‑Séquard syndrome from hemicord trauma", "etiology": "Vascular", "pace": "acute", "pattern": "stepwise", "localization": "Spinothalamic tracts"}, {"disease": "Intramedullary ependymoma with anterolateral tract compression", "etiology": "Neoplastic", "pace": "subacute", "pattern": "progressive", "localization": "Spinothalamic tracts"}, {"disease": "Neurosarcoidosis causing longitudinally extensive tract lesions", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "relapsing", "localization": "Spinothalamic tracts"}, {"disease": "Spinal cord contusion with anterolateral tract injury", "etiology": "Vascular", "pace": "acute", "pattern": "monophasic", "localization": "Spinothalamic tracts"}, {"disease": "Post‑herpetic myelitis affecting spinothalamic pathways", "etiology": "Infectious", "pace": "subacute", "pattern": "progressive", "localization": "Spinothalamic tracts"}, {"disease": "Anterior cord syndrome after aortic surgery", "etiology": "Vascular", "pace": "acute", "pattern": "monophasic", "localization": "Spinothalamic tracts"}, {"disease": "Spondylotic myelopathy with anterolateral tract involvement", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Spinothalamic tracts"}, {"disease": "Mycoplasma-associated myelitis (anterolateral)", "etiology": "Infectious", "pace": "subacute", "pattern": "progressive", "localization": "Spinothalamic tracts"}, {"disease": "Spinal dural AV fistula with anterolateral tract edema", "etiology": "Vascular", "pace": "subacute", "pattern": "progressive", "localization": "Spinothalamic tracts"}, {"disease": "Transverse myelitis with prominent pain-temperature deficit", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "monophasic", "localization": "Spinothalamic tracts"}, {"disease": "Subacute combined degeneration (B12 deficiency)", "etiology": "Metabolic", "pace": "subacute", "pattern": "progressive", "localization": "Dorsal columns"}, {"disease": "Tabes dorsalis (neurosyphilis)", "etiology": "Infectious", "pace": "chronic", "pattern": "progressive", "localization": "Dorsal columns"}, {"disease": "Posterior spinal artery infarct (posterior cord syndrome)", "etiology": "Vascular", "pace": "acute", "pattern": "monophasic", "localization": "Dorsal columns"}, {"disease": "Friedreich ataxia", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Dorsal columns"}, {"disease": "Copper deficiency myelopathy", "etiology": "Metabolic", "pace": "subacute", "pattern": "progressive", "localization": "Dorsal columns"}, {"disease": "Nitrous oxide–induced myelopathy", "etiology": "Toxic", "pace": "subacute", "pattern": "progressive", "localization": "Dorsal columns"}, {"disease": "HIV‑associated vacuolar myelopathy", "etiology": "Infectious", "pace": "chronic", "pattern": "progressive", "localization": "Dorsal columns"}, {"disease": "Autoimmune sensory ataxic neuropathy with dorsal column involvement", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "relapsing", "localization": "Dorsal columns"}, {"disease": "Sensory neuronopathy with dorsal column degeneration (paraneoplastic)", "etiology": "Neoplastic", "pace": "subacute", "pattern": "progressive", "localization": "Dorsal columns"}, {"disease": "HTLV-1–associated myelopathy with dorsal column signs", "etiology": "Infectious", "pace": "chronic", "pattern": "progressive", "localization": "Dorsal columns"}, {"disease": "Ataxia with vitamin E deficiency", "etiology": "Metabolic", "pace": "chronic", "pattern": "progressive", "localization": "Dorsal columns"}, {"disease": "Syphilitic meningomyelitis with posterior column involvement", "etiology": "Infectious", "pace": "subacute", "pattern": "progressive", "localization": "Dorsal columns"}, {"disease": "Autoimmune GFAP-related myelitis with dorsal column ataxia", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "relapsing", "localization": "Dorsal columns"}, {"disease": "Cervical radiculopathy from disc herniation", "etiology": "Degenerative", "pace": "acute", "pattern": "stepwise", "localization": "Cervical roots"}, {"disease": "Herpes zoster radiculitis (cervical)", "etiology": "Infectious", "pace": "subacute", "pattern": "monophasic", "localization": "Cervical roots"}, {"disease": "Foraminal stenosis (degenerative)", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Cervical roots"}, {"disease": "Pancoast tumor with C8–T1 radiculopathy", "etiology": "Neoplastic", "pace": "subacute", "pattern": "progressive", "localization": "Cervical roots"}, {"disease": "Lyme radiculitis involving cervical roots", "etiology": "Infectious", "pace": "subacute", "pattern": "progressive", "localization": "Cervical roots"}, {"disease": "Epidural metastasis causing foraminal compression", "etiology": "Neoplastic", "pace": "subacute", "pattern": "progressive", "localization": "Cervical roots"}, {"disease": "Rheumatoid pannus causing C1–C2 root irritation", "etiology": "Inflammatory/Autoimmune", "pace": "chronic", "pattern": "progressive", "localization": "Cervical roots"}, {"disease": "Cervical epidural hematoma with acute radiculopathy", "etiology": "Vascular", "pace": "acute", "pattern": "monophasic", "localization": "Cervical roots"}, {"disease": "Cervical spondylolisthesis causing multilevel radiculopathy", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Cervical roots"}, {"disease": "Perineural (Tarlov) cyst compressing cervical root", "etiology": "Degenerative", "pace": "subacute", "pattern": "progressive", "localization": "Cervical roots"}, {"disease": "Cervical root schwannoma", "etiology": "Neoplastic", "pace": "subacute", "pattern": "progressive", "localization": "Cervical roots"}, {"disease": "CMV radiculitis in immunocompromised host (cervical)", "etiology": "Infectious", "pace": "subacute", "pattern": "progressive", "localization": "Cervical roots"}, {"disease": "Acute facet dislocation with foraminal stenosis", "etiology": "Vascular", "pace": "acute", "pattern": "monophasic", "localization": "Cervical roots"}, {"disease": "Diabetic thoracic radiculopathy", "etiology": "Metabolic", "pace": "subacute", "pattern": "monophasic", "localization": "Thoracic roots"}, {"disease": "Herpes zoster radiculitis (thoracic)", "etiology": "Infectious", "pace": "subacute", "pattern": "monophasic", "localization": "Thoracic roots"}, {"disease": "Thoracic disc herniation", "etiology": "Degenerative", "pace": "acute", "pattern": "stepwise", "localization": "Thoracic roots"}, {"disease": "Spinal meningioma producing thoracic radicular pain", "etiology": "Neoplastic", "pace": "subacute", "pattern": "progressive", "localization": "Thoracic roots"}, {"disease": "Spinal dural arteriovenous fistula with myeloradiculopathy", "etiology": "Vascular", "pace": "subacute", "pattern": "progressive", "localization": "Thoracic roots"}, {"disease": "Tuberculous radiculitis (thoracic)", "etiology": "Infectious", "pace": "subacute", "pattern": "progressive", "localization": "Thoracic roots"}, {"disease": "Thoracic epidural hematoma after procedure", "etiology": "Vascular", "pace": "acute", "pattern": "monophasic", "localization": "Thoracic roots"}, {"disease": "Sarcoid‑related thoracic radiculopathy", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "relapsing", "localization": "Thoracic roots"}, {"disease": "Intercostal nerve sheath tumor (schwannoma)", "etiology": "Neoplastic", "pace": "subacute", "pattern": "progressive", "localization": "Thoracic roots"}, {"disease": "Zoster sine herpete thoracic radiculopathy", "etiology": "Infectious", "pace": "subacute", "pattern": "monophasic", "localization": "Thoracic roots"}, {"disease": "Diabetic truncal neuropathy", "etiology": "Metabolic", "pace": "subacute", "pattern": "monophasic", "localization": "Thoracic roots"}, {"disease": "Scheuermann disease with thoracic radicular pain", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Thoracic roots"}, {"disease": "Spinal epidural lipomatosis causing thoracic radiculopathy", "etiology": "Toxic", "pace": "subacute", "pattern": "progressive", "localization": "Thoracic roots"}, {"disease": "Lumbar disc herniation with radiculopathy", "etiology": "Degenerative", "pace": "acute", "pattern": "stepwise", "localization": "Lumbar roots"}, {"disease": "Cauda equina syndrome from central disk herniation", "etiology": "Degenerative", "pace": "acute", "pattern": "monophasic", "localization": "Lumbar roots"}, {"disease": "Spinal epidural abscess compressing roots", "etiology": "Infectious", "pace": "subacute", "pattern": "progressive", "localization": "Lumbar roots"}, {"disease": "Epidural hematoma compressing cauda equina roots", "etiology": "Vascular", "pace": "acute", "pattern": "monophasic", "localization": "Lumbar roots"}, {"disease": "Postoperative adhesive arachnoiditis", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "progressive", "localization": "Lumbar roots"}, {"disease": "Nerve root schwannoma (lumbar)", "etiology": "Neoplastic", "pace": "subacute", "pattern": "progressive", "localization": "Lumbar roots"}, {"disease": "Lyme radiculopathy (lumbosacral)", "etiology": "Infectious", "pace": "subacute", "pattern": "progressive", "localization": "Lumbar roots"}, {"disease": "Severe lumbar spinal stenosis with neurogenic claudication", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Lumbar roots"}, {"disease": "Foraminal osteophyte complex with L5 radiculopathy", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Lumbar roots"}, {"disease": "Perineural cyst causing S1 radiculopathy", "etiology": "Degenerative", "pace": "subacute", "pattern": "progressive", "localization": "Lumbar roots"}, {"disease": "Zoster radiculitis (lumbar)", "etiology": "Infectious", "pace": "subacute", "pattern": "monophasic", "localization": "Lumbar roots"}, {"disease": "Epidural lipomatosis compressing lumbar roots", "etiology": "Toxic", "pace": "subacute", "pattern": "progressive", "localization": "Lumbar roots"}, {"disease": "Lumbar root metastasis (perineural spread)", "etiology": "Neoplastic", "pace": "subacute", "pattern": "progressive", "localization": "Lumbar roots"}, {"disease": "Sensory neuronopathy (e.g., Sjögren-related)", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "progressive", "localization": "Dorsal root ganglia"}, {"disease": "Varicella-zoster reactivation (zoster)", "etiology": "Infectious", "pace": "subacute", "pattern": "monophasic", "localization": "Dorsal root ganglia"}, {"disease": "Cisplatin-induced sensory neuronopathy", "etiology": "Toxic", "pace": "subacute", "pattern": "progressive", "localization": "Dorsal root ganglia"}, {"disease": "Paraneoplastic sensory neuronopathy (anti‑Hu)", "etiology": "Neoplastic", "pace": "subacute", "pattern": "progressive", "localization": "Dorsal root ganglia"}, {"disease": "Immune checkpoint inhibitor–associated neuronopathy", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "progressive", "localization": "Dorsal root ganglia"}, {"disease": "Taxane‑induced sensory neuronopathy", "etiology": "Toxic", "pace": "subacute", "pattern": "progressive", "localization": "Dorsal root ganglia"}, {"disease": "Pyridoxine (vitamin B6) excess sensory neuronopathy", "etiology": "Toxic", "pace": "subacute", "pattern": "progressive", "localization": "Dorsal root ganglia"}, {"disease": "Celiac‑associated sensory neuronopathy", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "relapsing", "localization": "Dorsal root ganglia"}, {"disease": "FGFR3 antibody–associated sensory neuronopathy", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "relapsing", "localization": "Dorsal root ganglia"}, {"disease": "Parvovirus B19–associated DRG neuronitis", "etiology": "Infectious", "pace": "subacute", "pattern": "progressive", "localization": "Dorsal root ganglia"}, {"disease": "Platinum-based chemotherapy–induced DRG toxicity", "etiology": "Toxic", "pace": "subacute", "pattern": "progressive", "localization": "Dorsal root ganglia"}, {"disease": "Autoimmune sensory ganglionopathy post-vaccination", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "relapsing", "localization": "Dorsal root ganglia"}, {"disease": "HTLV-1–related sensory neuronopathy", "etiology": "Infectious", "pace": "chronic", "pattern": "progressive", "localization": "Dorsal root ganglia"}, {"disease": "Parsonage-Turner syndrome (neuralgic amyotrophy)", "etiology": "Inflammatory/Autoimmune", "pace": "acute", "pattern": "monophasic", "localization": "Brachial plexus"}, {"disease": "Traumatic avulsion / stretch injury", "etiology": "Degenerative", "pace": "hyperacute", "pattern": "monophasic", "localization": "Brachial plexus"}, {"disease": "Radiation-induced brachial plexopathy", "etiology": "Toxic", "pace": "chronic", "pattern": "progressive", "localization": "Brachial plexus"}, {"disease": "Neurogenic thoracic outlet syndrome", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Brachial plexus"}, {"disease": "Metastatic apical lung tumor infiltrating plexus", "etiology": "Neoplastic", "pace": "subacute", "pattern": "progressive", "localization": "Brachial plexus"}, {"disease": "Iatrogenic plexus injury after median sternotomy positioning", "etiology": "Toxic", "pace": "acute", "pattern": "monophasic", "localization": "Brachial plexus"}, {"disease": "Post‑infectious brachial plexopathy (immune‑mediated)", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "monophasic", "localization": "Brachial plexus"}, {"disease": "Radiation‑recall brachial plexopathy", "etiology": "Toxic", "pace": "subacute", "pattern": "progressive", "localization": "Brachial plexus"}, {"disease": "Pancoast tumor invading lower trunk", "etiology": "Neoplastic", "pace": "subacute", "pattern": "progressive", "localization": "Brachial plexus"}, {"disease": "Recurrent neuralgic amyotrophy with scapular winging", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "relapsing", "localization": "Brachial plexus"}, {"disease": "Diabetic amyotrophy affecting brachial plexus", "etiology": "Metabolic", "pace": "subacute", "pattern": "progressive", "localization": "Brachial plexus"}, {"disease": "Post-vaccination immune plexopathy", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "monophasic", "localization": "Brachial plexus"}, {"disease": "Lead exposure–related brachial neuropathy", "etiology": "Toxic", "pace": "subacute", "pattern": "progressive", "localization": "Brachial plexus"}, {"disease": "Diabetic lumbosacral radiculoplexus neuropathy", "etiology": "Metabolic", "pace": "subacute", "pattern": "progressive", "localization": "Lumbosacral plexus"}, {"disease": "Retroperitoneal hematoma compressing plexus", "etiology": "Vascular", "pace": "acute", "pattern": "monophasic", "localization": "Lumbosacral plexus"}, {"disease": "Postoperative lumbosacral plexopathy", "etiology": "Degenerative", "pace": "acute", "pattern": "monophasic", "localization": "Lumbosacral plexus"}, {"disease": "Pelvic malignancy invading plexus", "etiology": "Neoplastic", "pace": "subacute", "pattern": "progressive", "localization": "Lumbosacral plexus"}, {"disease": "Post‑radiation lumbosacral plexopathy", "etiology": "Toxic", "pace": "chronic", "pattern": "progressive", "localization": "Lumbosacral plexus"}, {"disease": "Iliopsoas abscess compressing plexus", "etiology": "Infectious", "pace": "subacute", "pattern": "progressive", "localization": "Lumbosacral plexus"}, {"disease": "Obstetric lumbosacral plexopathy", "etiology": "Degenerative", "pace": "acute", "pattern": "monophasic", "localization": "Lumbosacral plexus"}, {"disease": "Aortic/iliac aneurysm compressing plexus", "etiology": "Vascular", "pace": "subacute", "pattern": "progressive", "localization": "Lumbosacral plexus"}, {"disease": "Retroperitoneal sarcoma involving plexus", "etiology": "Neoplastic", "pace": "subacute", "pattern": "progressive", "localization": "Lumbosacral plexus"}, {"disease": "Hematogenous psoas abscess with plexus irritation", "etiology": "Infectious", "pace": "subacute", "pattern": "progressive", "localization": "Lumbosacral plexus"}, {"disease": "Iliac artery stent thrombosis with plexus ischemia", "etiology": "Vascular", "pace": "acute", "pattern": "monophasic", "localization": "Lumbosacral plexus"}, {"disease": "Endometriosis entrapping lumbosacral plexus", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Lumbosacral plexus"}, {"disease": "Pelvic radiation recall plexopathy", "etiology": "Toxic", "pace": "subacute", "pattern": "progressive", "localization": "Lumbosacral plexus"}, {"disease": "Length-dependent axonal polyneuropathy (diabetic)", "etiology": "Metabolic", "pace": "chronic", "pattern": "progressive", "localization": "Axon"}, {"disease": "Acute motor axonal neuropathy (AMAN)", "etiology": "Inflammatory/Autoimmune", "pace": "acute", "pattern": "progressive", "localization": "Axon"}, {"disease": "Toxic axonopathy (e.g., arsenic)", "etiology": "Toxic", "pace": "subacute", "pattern": "progressive", "localization": "Axon"}, {"disease": "Vasculitic neuropathy (mononeuritis multiplex)", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "stepwise", "localization": "Axon"}, {"disease": "AL amyloidosis peripheral neuropathy", "etiology": "Metabolic", "pace": "chronic", "pattern": "progressive", "localization": "Axon"}, {"disease": "HIV distal symmetric polyneuropathy", "etiology": "Infectious", "pace": "chronic", "pattern": "progressive", "localization": "Axon"}, {"disease": "Critical illness polyneuropathy", "etiology": "Toxic", "pace": "subacute", "pattern": "progressive", "localization": "Axon"}, {"disease": "Hereditary axonal neuropathy (CMT2)", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Axon"}, {"disease": "Thiamine deficiency–related axonal neuropathy", "etiology": "Metabolic", "pace": "subacute", "pattern": "progressive", "localization": "Axon"}, {"disease": "Organophosphate-induced axonopathy", "etiology": "Toxic", "pace": "subacute", "pattern": "progressive", "localization": "Axon"}, {"disease": "Paraneoplastic axonal neuropathy (anti-Hu)", "etiology": "Neoplastic", "pace": "subacute", "pattern": "progressive", "localization": "Axon"}, {"disease": "Hepatic failure–associated axonal neuropathy", "etiology": "Metabolic", "pace": "subacute", "pattern": "progressive", "localization": "Axon"}, {"disease": "Leprosy-related axonal neuropathy", "etiology": "Infectious", "pace": "chronic", "pattern": "progressive", "localization": "Axon"}, {"disease": "AIDP (Guillain-Barré syndrome)", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "progressive", "localization": "Myelin"}, {"disease": "CIDP", "etiology": "Inflammatory/Autoimmune", "pace": "chronic", "pattern": "relapsing", "localization": "Myelin"}, {"disease": "Charcot-Marie-Tooth disease type 1 (demyelinating)", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Myelin"}, {"disease": "Multifocal motor neuropathy with conduction block", "etiology": "Inflammatory/Autoimmune", "pace": "chronic", "pattern": "relapsing", "localization": "Myelin"}, {"disease": "IgM anti‑MAG demyelinating neuropathy", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Myelin"}, {"disease": "HNPP (hereditary neuropathy with liability to pressure palsies)", "etiology": "Degenerative", "pace": "chronic", "pattern": "relapsing", "localization": "Myelin"}, {"disease": "Diphtheritic polyneuropathy", "etiology": "Infectious", "pace": "subacute", "pattern": "progressive", "localization": "Myelin"}, {"disease": "POEMS‑associated demyelinating neuropathy", "etiology": "Neoplastic", "pace": "chronic", "pattern": "progressive", "localization": "Myelin"}, {"disease": "Acute-onset CIDP (A-CIDP)", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "progressive", "localization": "Myelin"}, {"disease": "CANOMAD (anti-disialosyl antibody neuropathy)", "etiology": "Inflammatory/Autoimmune", "pace": "chronic", "pattern": "relapsing", "localization": "Myelin"}, {"disease": "Osmotic demyelination peripheral neuropathy", "etiology": "Metabolic", "pace": "subacute", "pattern": "progressive", "localization": "Myelin"}, {"disease": "CMT1X (GJB1) demyelinating neuropathy", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Myelin"}, {"disease": "Cryoglobulinemic demyelinating neuropathy", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "relapsing", "localization": "Myelin"}, {"disease": "Lambert-Eaton myasthenic syndrome", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "progressive", "localization": "NMJ Pre‑synaptic"}, {"disease": "Botulism", "etiology": "Toxic", "pace": "acute", "pattern": "monophasic", "localization": "NMJ Pre‑synaptic"}, {"disease": "Aminoglycoside-induced NMJ blockade", "etiology": "Toxic", "pace": "acute", "pattern": "monophasic", "localization": "NMJ Pre‑synaptic"}, {"disease": "Congenital presynaptic CMS (choline acetyltransferase deficiency)", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "NMJ Pre‑synaptic"}, {"disease": "Hypermagnesemia‑related presynaptic blockade", "etiology": "Toxic", "pace": "acute", "pattern": "monophasic", "localization": "NMJ Pre‑synaptic"}, {"disease": "Tick paralysis", "etiology": "Infectious", "pace": "subacute", "pattern": "progressive", "localization": "NMJ Pre‑synaptic"}, {"disease": "β‑bungarotoxin snake envenomation (presynaptic)", "etiology": "Toxic", "pace": "hyperacute", "pattern": "monophasic", "localization": "NMJ Pre‑synaptic"}, {"disease": "Black widow envenomation with neuromuscular weakness", "etiology": "Toxic", "pace": "acute", "pattern": "monophasic", "localization": "NMJ Pre‑synaptic"}, {"disease": "Congenital presynaptic CMS (SYT2 mutation)", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "NMJ Pre‑synaptic"}, {"disease": "Hemicholinium exposure with presynaptic failure", "etiology": "Toxic", "pace": "acute", "pattern": "monophasic", "localization": "NMJ Pre‑synaptic"}, {"disease": "Botulinum wound toxin exposure", "etiology": "Toxic", "pace": "subacute", "pattern": "progressive", "localization": "NMJ Pre‑synaptic"}, {"disease": "Tick-borne neurotoxin–mediated paralysis (Dermacentor)", "etiology": "Infectious", "pace": "subacute", "pattern": "progressive", "localization": "NMJ Pre‑synaptic"}, {"disease": "Hyperkalemia-induced presynaptic transmission failure", "etiology": "Metabolic", "pace": "acute", "pattern": "monophasic", "localization": "NMJ Pre‑synaptic"}, {"disease": "Myasthenia gravis", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "relapsing", "localization": "NMJ Post‑synaptic"}, {"disease": "α-bungarotoxin envenomation (postsynaptic blockade)", "etiology": "Toxic", "pace": "hyperacute", "pattern": "monophasic", "localization": "NMJ Post‑synaptic"}, {"disease": "Congenital myasthenic syndrome (postsynaptic)", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "NMJ Post‑synaptic"}, {"disease": "MuSK‑positive myasthenia gravis", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "relapsing", "localization": "NMJ Post‑synaptic"}, {"disease": "Curare‑type non‑depolarizing neuromuscular blockade", "etiology": "Toxic", "pace": "hyperacute", "pattern": "monophasic", "localization": "NMJ Post‑synaptic"}, {"disease": "Succinylcholine‑induced prolonged depolarizing block", "etiology": "Toxic", "pace": "acute", "pattern": "monophasic", "localization": "NMJ Post‑synaptic"}, {"disease": "Congenital postsynaptic CMS (AChR deficiency)", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "NMJ Post‑synaptic"}, {"disease": "Snake α‑neurotoxin (cobra) postsynaptic blockade", "etiology": "Toxic", "pace": "hyperacute", "pattern": "monophasic", "localization": "NMJ Post‑synaptic"}, {"disease": "Seronegative generalized myasthenia gravis", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "relapsing", "localization": "NMJ Post‑synaptic"}, {"disease": "Congenital slow-channel syndrome", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "NMJ Post‑synaptic"}, {"disease": "Magnesium-induced postsynaptic weakness (iatrogenic)", "etiology": "Toxic", "pace": "acute", "pattern": "monophasic", "localization": "NMJ Post‑synaptic"}, {"disease": "Snakebite neurotoxicity with postsynaptic blockade (kraits)", "etiology": "Toxic", "pace": "hyperacute", "pattern": "monophasic", "localization": "NMJ Post‑synaptic"}, {"disease": "Penicillamine-triggered myasthenic syndrome", "etiology": "Toxic", "pace": "subacute", "pattern": "progressive", "localization": "NMJ Post‑synaptic"}, {"disease": "Polymyositis", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "progressive", "localization": "Proximal muscle"}, {"disease": "Dermatomyositis", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "progressive", "localization": "Proximal muscle"}, {"disease": "Limb-girdle muscular dystrophy", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Proximal muscle"}, {"disease": "Statin‑associated myopathy", "etiology": "Toxic", "pace": "subacute", "pattern": "progressive", "localization": "Proximal muscle"}, {"disease": "Immune‑mediated necrotizing myopathy (anti‑HMGCR)", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "progressive", "localization": "Proximal muscle"}, {"disease": "Hypothyroid myopathy", "etiology": "Metabolic", "pace": "chronic", "pattern": "progressive", "localization": "Proximal muscle"}, {"disease": "Glucocorticoid‑induced myopathy", "etiology": "Toxic", "pace": "subacute", "pattern": "progressive", "localization": "Proximal muscle"}, {"disease": "Mitochondrial myopathy with exercise intolerance", "etiology": "Metabolic", "pace": "chronic", "pattern": "progressive", "localization": "Proximal muscle"}, {"disease": "Inclusion body myositis with proximal involvement", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Proximal muscle"}, {"disease": "Sarcoid myopathy", "etiology": "Inflammatory/Autoimmune", "pace": "subacute", "pattern": "relapsing", "localization": "Proximal muscle"}, {"disease": "Hyperthyroid myopathy", "etiology": "Metabolic", "pace": "subacute", "pattern": "progressive", "localization": "Proximal muscle"}, {"disease": "Alcohol-related myopathy", "etiology": "Toxic", "pace": "subacute", "pattern": "progressive", "localization": "Proximal muscle"}, {"disease": "Late-onset Pompe disease", "etiology": "Metabolic", "pace": "chronic", "pattern": "progressive", "localization": "Proximal muscle"}, {"disease": "Inclusion body myositis", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Distal muscle"}, {"disease": "Distal myopathy (e.g., Welander)", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Distal muscle"}, {"disease": "Myotonic dystrophy type 1", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Distal muscle"}, {"disease": "Miyoshi distal myopathy (dysferlinopathy)", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Distal muscle"}, {"disease": "GNE myopathy (Nonaka)", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Distal muscle"}, {"disease": "Laing distal myopathy (MYH7)", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Distal muscle"}, {"disease": "Desmin‑related myofibrillar myopathy", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Distal muscle"}, {"disease": "Udd tibial muscular dystrophy", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Distal muscle"}, {"disease": "Distal nebulin (NEB) myopathy", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Distal muscle"}, {"disease": "HIBM (GNE) with rimmed vacuoles", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Distal muscle"}, {"disease": "Welander distal myopathy (if not present)", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Distal muscle"}, {"disease": "Myofibrillar myopathy with distal onset (FLNC)", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Distal muscle"}, {"disease": "Oculopharyngeal muscular dystrophy with distal weakness", "etiology": "Degenerative", "pace": "chronic", "pattern": "progressive", "localization": "Distal muscle"}];
 
-// Example case (edit/replace to wire dynamic cases)
 const currentCase = {
   prompt: "68-year-old with sudden, minutes-old dysarthria, ataxia, and internuclear ophthalmoplegia/abducens findings after abrupt onset during routine activity; BP elevated on arrival.",
   pace_timecourse: "Hyperacute",
   pace_pattern: "Monophasic",
   localization: "Pons",
-  etiology: "Vascular",
+  etiology: null,
   disease: null
 };
 
 /** --------------- State --------------- **/
 const picked = { pace_timecourse: null, pace_pattern: null, localization: [], etiology: null, disease: null };
 const locked = { pace: false, localization: false, etiology: false, disease: false };
-const wrong  = { pace_timecourse: new Set(), pace_pattern: new Set(), localization: new Set(), etiology: new Set(), disease: new Set() };
+const wrong = { pace_timecourse: new Set(), pace_pattern: new Set(), localization: new Set(), etiology: new Set(), disease: new Set() };
 
 const norm = s => (s||"").toString().trim().toLowerCase();
-const qs  = (sel, root=document)=>root.querySelector(sel);
+const qs = (sel, root=document)=>root.querySelector(sel);
 const qsa = (sel, root=document)=>[...root.querySelectorAll(sel)];
 
 /** --------------- UI Helpers --------------- **/
@@ -301,8 +371,8 @@ function isLocCorrect(opt){
   return picked.localization.some(l => norm(l)===norm(opt)) && norm(opt)===correct;
 }
 
+
 // Etiology helpers
-const ETIOLOGY_OPTS = ["Degenerative","Infectious","Inflammatory/Autoimmune","Metabolic","Migraine","Neoplastic","Seizure","Toxic","Vascular"];
 function isEtiCorrect(opt){
   if(!picked.etiology || (picked.etiology!==opt)) return false;
   if(!currentCase.etiology) return false;
@@ -313,24 +383,26 @@ function isEtiWrong(opt){
   return picked.etiology===opt && currentCase.etiology && norm(currentCase.etiology)!==norm(opt);
 }
 
-// Disease helpers + filtering (NO search; auto-filters by picks)
-function filterDiseasesByPicks(){
+
+// Disease helpers + filtering (auto-filter by etiology, pace, pattern, localization + text query)
+function filterDiseases(query, etiology, pace, localization, pattern){
   let items = DISEASE_DB.slice();
-  const contains = (a,b) => !b ? true : (norm(a).includes(norm(b)) || norm(b).includes(norm(a)));
-  const loc = picked.localization[0];
-  if (picked.etiology) items = items.filter(d => contains(d.etiology, picked.etiology));
-  if (picked.pace_timecourse) items = items.filter(d => contains(d.pace, picked.pace_timecourse));
-  if (picked.pace_pattern) items = items.filter(d => contains(d.pattern, picked.pace_pattern));
-  if (loc) items = items.filter(d => contains(d.localization, loc));
+  const n = s => (s||"").toString().trim().toLowerCase();
+  const contains = (a,b) => !b ? true : (n(a).includes(n(b)) || n(b).includes(n(a)));
+  if (etiology)    items = items.filter(d => contains(d.etiology, etiology));
+  if (pace)        items = items.filter(d => contains(d.pace, pace));
+  if (pattern)     items = items.filter(d => contains(d.pattern, pattern));
+  if (localization)items = items.filter(d => contains(d.localization, localization));
+  if (query)       items = items.filter(d => n(d.disease).includes(n(query)));
   return items.map(d => d.disease);
 }
 function isDzCorrect(opt){
   if(!picked.disease || picked.disease!==opt) return false;
   if(!currentCase.disease) return false;
-  return norm(currentCase.disease)===norm(opt);
+  return (picked.disease && (picked.disease+"").toLowerCase()) === ((currentCase.disease||"")+"").toLowerCase();
 }
 function isDzWrong(opt){
-  return wrong.disease.has(opt) || (picked.disease===opt && currentCase.disease && norm(currentCase.disease)!==norm(opt));
+  return wrong.disease.has(opt) || (picked.disease===opt && currentCase.disease && ((picked.disease||"").toLowerCase() !== (currentCase.disease||"").toLowerCase()));
 }
 
 /** --------------- Stage Renderers --------------- **/
@@ -377,6 +449,7 @@ function renderPace(){
 
 function renderLocalization(){
   const root = document.createElement('div');
+
   LOCALIZATION_GROUPS.forEach(group => {
     const h = document.createElement('div'); h.className='section-header'; h.textContent = group.header;
     root.appendChild(h);
@@ -387,7 +460,7 @@ function renderLocalization(){
       sec.items.forEach(opt => {
         const btn = chip(opt, { active: picked.localization.includes(opt), correct: isLocCorrect(opt), wrong: isLocWrong(opt) });
         btn.onclick = () => {
-          picked.localization = [opt]; // single-select
+          picked.localization = [opt]; // single-select behavior
           if(norm(opt)!==norm(currentCase.localization)) wrong.localization.add(opt);
           updateSummary(); setTab('localization');
         };
@@ -404,6 +477,7 @@ function renderLocalization(){
   ctr.appendChild(lock); root.appendChild(ctr);
   return root;
 }
+
 
 function renderEtiology(){
   const root = document.createElement('div');
@@ -437,15 +511,37 @@ function renderEtiology(){
   return root;
 }
 
+
 function renderDisease(){
   const root = document.createElement('div');
-  const header = document.createElement('div'); header.className='section-title'; header.textContent='Disease (from CSV)';
+  const header = document.createElement('div'); header.className='section-title'; header.textContent='Disease';
   root.appendChild(header);
 
-  const results = document.createElement('div'); results.className='options';
+  const controls = document.createElement('div'); controls.className='group';
+  const rowTop = document.createElement('div'); rowTop.style.display='flex'; rowTop.style.justifyContent='center'; rowTop.style.gap='10px'; rowTop.style.flexWrap='wrap';
+  const input = document.createElement('input');
+  input.type='search'; input.placeholder='Search diseases…'; input.style.padding='10px 12px'; input.style.border='4px solid var(--line)'; input.style.borderRadius='14px'; input.style.minWidth='260px'; input.style.fontWeight='800'; input.style.background='#fff';
+  if (renderDisease._lastQuery) input.value = renderDisease._lastQuery;
+  rowTop.appendChild(input);
+  controls.appendChild(rowTop);
+  root.appendChild(controls);
+
+  const filters = document.createElement('div'); filters.className='options';
+  function renderFilterChips(){
+    filters.innerHTML='';
+    [['Etiology', picked.etiology], ['Pace', picked.pace_timecourse], ['Pattern', picked.pace_pattern], ['Localization', picked.localization[0]]].forEach(([label,val])=>{
+      if(!val) return;
+      const chip = document.createElement('div'); chip.className='chip active'; chip.textContent = label+': '+val;
+      chip.style.cursor='default';
+      filters.appendChild(chip);
+    });
+  }
+  renderFilterChips();
+  root.appendChild(filters);
+
+  const results = document.createElement('div'); results.className='options'; results.style.marginTop='6px';
   root.appendChild(results);
 
-  // Pager
   const pager = document.createElement('div'); pager.className='controls';
   const prev = document.createElement('button'); prev.className='btn'; prev.textContent='‹ Prev';
   const next = document.createElement('button'); next.className='btn'; next.textContent='Next ›';
@@ -457,10 +553,11 @@ function renderDisease(){
   let page = renderDisease._lastPage || 0;
 
   function refresh(){
-    const items = filterDiseasesByPicks();
-    const pages = Math.max(1, Math.ceil(items.length / PAGE));
-    if (page >= pages) page = pages-1;
-    const start = page * PAGE;
+    renderFilterChips();
+    const items = filterDiseases(input.value, picked.etiology, picked.pace_timecourse, picked.localization[0], picked.pace_pattern);
+    const pages = Math.max(1, Math.ceil(items.length/PAGE));
+    if(page >= pages) page = pages-1;
+    const start = page*PAGE;
     const slice = items.slice(start, start+PAGE);
 
     results.innerHTML='';
@@ -468,7 +565,7 @@ function renderDisease(){
       const btn = chip(opt, { active: picked.disease===opt, correct: isDzCorrect(opt), wrong: isDzWrong(opt) });
       btn.onclick = () => {
         picked.disease = opt;
-        if(currentCase.disease && norm(opt)!==norm(currentCase.disease)) wrong.disease.add(opt);
+        if(currentCase.disease && ((opt||'').toLowerCase() !== (currentCase.disease||'').toLowerCase())) wrong.disease.add(opt);
         updateSummary(); refresh();
       };
       results.appendChild(btn);
@@ -476,9 +573,10 @@ function renderDisease(){
 
     count.textContent = `Showing ${start+1}-${Math.min(start+slice.length, items.length)} of ${items.length}`;
     prev.disabled = page<=0; next.disabled = page>=pages-1;
-    renderDisease._lastPage = page;
+    renderDisease._lastQuery = input.value; renderDisease._lastPage = page;
   }
 
+  input.oninput = () => { page = 0; refresh(); };
   prev.onclick = () => { if(page>0){ page--; refresh(); } };
   next.onclick = () => { page++; refresh(); };
 
@@ -487,7 +585,7 @@ function renderDisease(){
   const ctr = document.createElement('div'); ctr.className='controls';
   const lock = document.createElement('button'); lock.className='btn'; lock.textContent='Diagnosed!';
   lock.disabled = !picked.disease;
-  lock.onclick = () => { locked.disease = true; updateSummary(); alert('Diagnosis locked.'); };
+  lock.onclick = () => { locked.disease = true; updateSummary(); alert('Groovy! Diagnosis locked.'); };
   ctr.appendChild(lock); root.appendChild(ctr);
   return root;
 }
