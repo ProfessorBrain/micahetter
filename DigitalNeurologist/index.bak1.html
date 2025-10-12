@@ -222,8 +222,9 @@ const DISEASE_DB = [{"disease": "Ischemic cortical infarct (MCA territory)", "et
 
 // Example case (edit/replace to wire dynamic cases)
 // --- CSV -> Case loader (runtime) ---
-let currentCase = {}; // dynamic
+let currentCase = {};                          // was: const currentCase = { ... }  (now dynamic)
 
+// names the CSV might use (case-insensitive)
 const HEADER_ALIASES = {
   prompt:      ["prompt","case","scenario","case_prompt"],
   pace_time:   ["pace_timecourse","pace","timecourse","pace_time"],
@@ -233,32 +234,32 @@ const HEADER_ALIASES = {
   disease:     ["disease","dx","diagnosis"]
 };
 
+// tiny RFC4180-ish CSV parser (handles quotes/commas/newlines)
 function parseCSV(text){
   const rows = [];
-  let i=0, field="", row=[], inQ=false;
-  while(i < text.length){
+  let i = 0, field = "", row = [], inQ = false;
+  while (i < text.length) {
     const c = text[i];
-    if(inQ){
-      if(c === '"'){
-        if(text[i+1] === '"'){ field += '"'; i+=2; continue; }
+    if (inQ) {
+      if (c === '"') {
+        if (text[i + 1] === '"') { field += '"'; i += 2; continue; }
         inQ = false; i++; continue;
       }
       field += c; i++; continue;
     }
-    if(c === '"'){ inQ = true; i++; continue; }
-    if(c === ','){ row.push(field); field=""; i++; continue; }
-    if(c === '\n' || c === '\r'){
-      if(field.length || row.length){ row.push(field); rows.push(row); }
-      field=""; row=[];
-      if(c === '\r' && text[i+1] === '\n') i++;
+    if (c === '"') { inQ = true; i++; continue; }
+    if (c === ',') { row.push(field); field = ""; i++; continue; }
+    if (c === '\n' || c === '\r') {
+      if (field.length || row.length) { row.push(field); rows.push(row); }
+      field = ""; row = [];
+      if (c === '\r' && text[i + 1] === '\n') i++;
       i++; continue;
     }
     field += c; i++;
   }
-  if(field.length || row.length){ row.push(field); rows.push(row); }
+  if (field.length || row.length) { row.push(field); rows.push(row); }
   return rows;
 }
-
 function pickHeader(headers, names){
   const hmap = headers.map(h => (h||"").trim());
   for(const want of names){
@@ -292,11 +293,13 @@ async function loadCasesFromCSV(path="digitalneurologist-cases.csv"){
   return data.filter(r => r.prompt);
 }
 
+// picks and installs a fresh case, resets user state
 async function startRandomCase(){
   const all = await loadCasesFromCSV();
   const rnd = all[Math.floor(Math.random() * all.length)];
   currentCase = rnd;
 
+  // reset picks/locks/wrongs (preserve objects already declared below)
   try {
     picked.pace_timecourse = null;
     picked.pace_pattern    = null;
@@ -314,9 +317,12 @@ async function startRandomCase(){
     if (wrong && wrong.pace_pattern?.clear)    wrong.pace_pattern.clear();
     if (wrong && wrong.localization?.clear)    wrong.localization.clear();
     if (wrong && wrong.etiology?.clear)        wrong.etiology.clear();
-    if (wrong && wrong.disease?.clear) wrong.disease.clear();
-  } catch(e) {}
+    if (wrong && wrong.disease?.clear)         wrong.disease.clear();
+  } catch(e) {
+    console.warn("Reset state fallback:", e);
+  }
 
+  // render prompt + UI
   const box = document.querySelector('#caseBox');
   if (box) box.textContent = currentCase.prompt || "New case loaded.";
   if (typeof updateSummary === "function") updateSummary();
@@ -424,25 +430,9 @@ function isDzCorrect(opt){
   return norm(currentCase.disease)===norm(opt);
 }
 function isDzWrong(opt){
-  return wrong.disease.clear();
+  return wrong.disease.has(opt) || (picked.disease===opt && currentCase.disease && norm(currentCase.disease)!==norm(opt));
 }
 
-
-// lightweight in-app alert (modal-ish)
-function alertInApp(message, onConfirm){
-  const wrap = document.createElement('div');
-  wrap.style.position='fixed'; wrap.style.inset='0'; wrap.style.background='rgba(0,0,0,0.35)';
-  wrap.style.display='flex'; wrap.style.alignItems='center'; wrap.style.justifyContent='center'; wrap.style.zIndex='1000';
-  const box = document.createElement('div');
-  box.style.background='#111'; box.style.border='1px solid #333'; box.style.padding='16px'; box.style.borderRadius='12px'; box.style.maxWidth='420px';
-  box.innerHTML = `<div style="font-weight:600;margin-bottom:8px">Success</div><div style="margin-bottom:12px">${message}</div>`;
-  const row = document.createElement('div'); row.style.display='flex'; row.style.gap='8px'; row.style.justifyContent='flex-end';
-  const yes = document.createElement('button'); yes.className='btn'; yes.textContent='Yes';
-  const no  = document.createElement('button'); no.className='btn secondary'; no.textContent='No';
-  yes.onclick = () => { document.body.removeChild(wrap); onConfirm && onConfirm(); };
-  no.onclick  = () => { document.body.removeChild(wrap); };
-  row.appendChild(no); row.appendChild(yes); box.appendChild(row); wrap.appendChild(box); document.body.appendChild(wrap);
-}
 /** --------------- Stage Renderers --------------- **/
 function renderPace(){
   const root = document.createElement('div');
@@ -549,72 +539,56 @@ function renderEtiology(){
 
 function renderDisease(){
   const root = document.createElement('div');
-
-  const header = document.createElement('div');
-  header.className='section-title';
-  header.textContent='Disease';
+  const header = document.createElement('div'); header.className='section-title'; header.textContent='Disease (from CSV)';
   root.appendChild(header);
 
-  const hint = document.createElement('div');
-  hint.className='muted';
-  hint.style.marginBottom = '8px';
-  hint.textContent = 'Choose the specific disease. Options auto-filter by your Pace, Localization, and Etiology picks.';
-  root.appendChild(hint);
+  const results = document.createElement('div'); results.className='options';
+  root.appendChild(results);
 
-  const grid = document.createElement('div');
-  grid.className = 'options';
-  root.appendChild(grid);
+  // Pager
+  const pager = document.createElement('div'); pager.className='controls';
+  const prev = document.createElement('button'); prev.className='btn'; prev.textContent='‹ Prev';
+  const next = document.createElement('button'); next.className='btn'; next.textContent='Next ›';
+  const count = document.createElement('div'); count.className='section-title'; count.style.margin='8px 12px'; count.style.alignSelf='center';
+  pager.appendChild(prev); pager.appendChild(count); pager.appendChild(next);
+  root.appendChild(pager);
 
-  const candidates = Array.from(new Set(filterDiseasesByPicks()))
-                          .filter(Boolean)
-                          .sort((a,b)=>a.localeCompare(b));
+  const PAGE = 36;
+  let page = renderDisease._lastPage || 0;
 
-  if (candidates.length === 0){
-    const empty = document.createElement('div');
-    empty.className = 'muted';
-    empty.textContent = 'No matching options yet—pick Pace, Localization, and Etiology first.';
-    root.appendChild(empty);
-    return root;
+  function refresh(){
+    const items = filterDiseasesByPicks();
+    const pages = Math.max(1, Math.ceil(items.length / PAGE));
+    if (page >= pages) page = pages-1;
+    const start = page * PAGE;
+    const slice = items.slice(start, start+PAGE);
+
+    results.innerHTML='';
+    slice.forEach(opt => {
+      const btn = chip(opt, { active: picked.disease===opt, correct: isDzCorrect(opt), wrong: isDzWrong(opt) });
+      btn.onclick = () => {
+        picked.disease = opt;
+        if(currentCase.disease && norm(opt)!==norm(currentCase.disease)) wrong.disease.add(opt);
+        updateSummary(); refresh();
+      };
+      results.appendChild(btn);
+    });
+
+    count.textContent = `Showing ${start+1}-${Math.min(start+slice.length, items.length)} of ${items.length}`;
+    prev.disabled = page<=0; next.disabled = page>=pages-1;
+    renderDisease._lastPage = page;
   }
 
-  candidates.forEach(opt => {
-    const btn = chip(opt, {
-      active: picked.disease===opt,
-      correct: isDzCorrect(opt),
-      wrong: isDzWrong(opt),
-    });
-    btn.onclick = () => {
-      if (locked.disease) return;
-      picked.disease = opt;
-      if (currentCase.disease && norm(currentCase.disease)!==norm(opt)){
-        wrong.disease.clear();
-        btn.classList.add('wrong');
-        btn.style.textDecoration = 'line-through';
-      } else {
-        locked.disease = true;
-        btn.classList.add('correct');
-        alertInApp('Nice work! Correct diagnosis. Start another case?', () => {
-          if (typeof startRandomCase === 'function') startRandomCase();
-        });
-      }
-      updateSummary();
-      setTab('disease');
-    };
-    grid.appendChild(btn);
-  });
+  prev.onclick = () => { if(page>0){ page--; refresh(); } };
+  next.onclick = () => { page++; refresh(); };
 
-  const ctrl = document.createElement('div');
-  ctrl.className='controls';
-  const lockBtn = document.createElement('button'); lockBtn.className='btn';
-  lockBtn.textContent = locked.disease ? 'Locked' : 'Lock Disease';
-  lockBtn.disabled = locked.disease || !picked.disease;
-  lockBtn.onclick = () => { locked.disease = true; updateSummary(); setTab('disease'); };
-  const resetBtn = document.createElement('button'); resetBtn.className='btn secondary';
-  resetBtn.textContent = 'Reset';
-  resetBtn.onclick = () => { picked.disease=null; wrong.disease.clear(); locked.disease=false; updateSummary(); setTab('disease'); };
-  ctrl.appendChild(lockBtn); ctrl.appendChild(resetBtn);
-  root.appendChild(ctrl);
+  refresh();
 
+  const ctr = document.createElement('div'); ctr.className='controls';
+  const lock = document.createElement('button'); lock.className='btn'; lock.textContent='Diagnosed!';
+  lock.disabled = !picked.disease;
+  lock.onclick = () => { locked.disease = true; updateSummary(); alert('Diagnosis locked.'); };
+  ctr.appendChild(lock); root.appendChild(ctr);
   return root;
 }
 
@@ -629,6 +603,13 @@ function renderStage(stage){
 
 // Init
 async function init(){
+  try{
+    await startRandomCase();
+  }catch(err){
+    const box = document.querySelector('#caseBox');
+    if (box) box.textContent = "Couldn't load cases from digitalneurologist-cases.csv. Tip: serve this folder over http(s) so fetch() works.";
+    console.error(err);
+  }
   qs('#caseBox').textContent = currentCase.prompt;
   updateSummary();
   setTab('pace');

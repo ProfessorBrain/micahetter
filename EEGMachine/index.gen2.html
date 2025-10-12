@@ -394,15 +394,17 @@ function slow_uV(t){
 function spikeAndWave(t, aS=180, aW=100){
   return aS*spike_uV(t) - aW*slow_uV(Math.max(0, t-0.020));
 }
-// With 4s prelude build
+// Per-channel contribution (µV) at absolute EEG time tAbs
+
 function generalizedSeizure_uV(tAbs, e, ev){
   const t = tAbs - ev.t0;
   if (t<0 || t>ev.dur) return 0;
 
-  const preludeDur = 4.0;          
-  const tonicCore  = 6.0;          
-  const tonicEnd   = preludeDur + tonicCore; 
-  const clonicEnd  = ev.dur;       
+  // New: add a gentle 4 s evolution before the seizure fully kicks in
+  const preludeDur = 4.0;          // s (subtle build-up)
+  const tonicCore  = 6.0;          // s of core tonic after prelude
+  const tonicEnd   = preludeDur + tonicCore; // total tonic 10 s (4 s build + 6 s core)
+  const clonicEnd  = ev.dur;       // remainder is clonic to 20 s
 
   const w   = genSzScale(e);
   const lag = genSzLag(e);
@@ -410,9 +412,12 @@ function generalizedSeizure_uV(tAbs, e, ev){
   let y = 0;
 
   if (tCh <= preludeDur){
-    const u = Math.max(0, tCh/preludeDur);             
-    const lvfHz = 14 + 10*(0.5 + 0.5*Math.sin(0.6*tCh + 0.7));
+    // Prelude: low-voltage fast begins to appear, sparse spikes; amplitude rises from ~0 to modest
+    // Slightly less coherent feel via small frequency jitter
+    const u = Math.max(0, tCh/preludeDur);             // 0→1
+    const lvfHz = 14 + 10*(0.5 + 0.5*Math.sin(0.6*tCh + 0.7)); // 14–24 Hz with wobble
     const lvf   = 20*Math.sin(2*Math.PI*lvfHz*tCh);
+    // very sparse tiny spikes/polyspikes
     const burstPhase = (tCh % 0.33);
     let poly = 0;
     if (burstPhase < 0.05){
@@ -420,14 +425,16 @@ function generalizedSeizure_uV(tAbs, e, ev){
         const tk=k*0.012;
         poly += spike_uV(burstPhase - tk);
       }
-      poly *= 120;
+      poly *= 120; // much smaller than core tonic
     }
-    const growth = Math.pow(u, 1.4); 
+    // growth curve that starts very gentle then accelerates
+    const growth = Math.pow(u, 1.4); // ease-in
     y = growth*(lvf + poly);
 
   } else if (tCh <= tonicEnd){
-    const u = (tCh - preludeDur) / Math.max(0.001, tonicCore); 
-    const ramp = 0.4 + 0.8*u;                                  
+    // Core tonic: LVF + polyspike bursts with amplitude ramp
+    const u = (tCh - preludeDur) / Math.max(0.001, tonicCore); // 0→1 over core tonic
+    const ramp = 0.4 + 0.8*u;                                  // stronger build than before
     const lvfHz = 20 + 20*(0.5 + 0.5*Math.sin(0.15*tCh));
     const lvf   = 40*Math.sin(2*Math.PI*lvfHz*tCh);
     const burstPhase = (tCh % 0.20);
@@ -444,7 +451,8 @@ function generalizedSeizure_uV(tAbs, e, ev){
     y += 20*Math.sin(2*Math.PI*emgHz*tCh + 6*Math.random());
 
   } else {
-    const u = (tCh - tonicEnd) / Math.max(0.001, (clonicEnd - tonicEnd)); 
+    // Clonic: spike-and-wave bursts; base frequency decays 6→3 Hz; gaps deepen
+    const u = (tCh - tonicEnd) / Math.max(0.001, (clonicEnd - tonicEnd)); // 0→1
     const freq = 6 - 3*u;
     const period = 1/Math.max(3, Math.min(6, freq));
     const gap = 0.05 + 0.30*u;
@@ -462,66 +470,33 @@ function generalizedSeizure_uV(tAbs, e, ev){
   return w*y;
 }
 
-// Default focus: LEFT temporal-predominant (F7/T3/T5) with spread to ipsilateral frontal/parietal.
-function lpdWave(clock, rng){
-  const basePeriod = 1.0; // ~1 Hz
-  const dither = 0.03 * Math.sin(0.2*clock);
-  const period = basePeriod + dither;
-  const phase = (clock % period) / period;
-  const g = (mu, sigma, sign=1)=> sign*Math.exp(-0.5*((phase-mu)/sigma)**2);
-  // Biphasic/triphasic-like complex contained within ~250 ms
-  const c1 = g(0.04, 0.012, -1.0);
-  const c2 = g(0.09, 0.018, +0.7);
-  const c3 = g(0.16, 0.050, -0.45);
-  const gate = phase < 0.35 ? 1.0 : 0.0;
-  const amplitude_uV = 140;
-  return gate * amplitude_uV * (c1 + c2 + c3);
-}
-// Electrode scaling for LEFT-sided LPDs (temporal > frontal/parietal > occipital; contralateral small)
-function lpdScaleLeft(e){
-  if (/^(F7|T3|T5)$/.test(e)) return 1.0;
-  if (/^(Fp1|F3|C3|P3)$/.test(e)) return 0.65;
-  if (/^(O1)$/.test(e)) return 0.45;
-  if (/^(Fz|Cz|Pz)$/.test(e)) return 0.30;  // midline small
-  if (/^(F8|T4|T6|Fp2|F4|C4|P4|O2)$/.test(e)) return 0.18;  // contralateral
-  return 0.25;
-}
-// Tiny delays to avoid bipolar cancellation, biased to temporal onset then spread
-function lpdLagLeft(e){
-  let lag = 0.0;
-  if (/^(T3|F7)$/.test(e)) lag += 0.000;  // earliest
-  if (/^(T5)$/.test(e)) lag += 0.006;
-  if (/^(F3|C3)$/.test(e)) lag += 0.010;
-  if (/^(P3)$/.test(e)) lag += 0.014;
-  if (/^(O1)$/.test(e)) lag += 0.018;
-  if (/^(Fz|Cz|Pz)$/.test(e)) lag += 0.012;
-  if (/^(Fp1)$/.test(e)) lag += 0.008;
-  if (/^(.*2|F4|C4|P4|O2)$/.test(e)) lag += 0.020; // right hemisphere latest
-  return lag;
-}
-// Right-sided variants for BIPDs
-function lpdScaleRight(e){
-  if (/^(F8|T4|T6)$/.test(e)) return 1.0;
-  if (/^(Fp2|F4|C4|P4)$/.test(e)) return 0.65;
-  if (/^(O2)$/.test(e)) return 0.45;
-  if (/^(Fz|Cz|Pz)$/.test(e)) return 0.30;
-  if (/^(F7|T3|T5|Fp1|F3|C3|P3|O1)$/.test(e)) return 0.18;
-  return 0.25;
-}
-function lpdLagRight(e){
-  let lag = 0.0;
-  if (/^(T4|F8)$/.test(e)) lag += 0.000;
-  if (/^(T6)$/.test(e)) lag += 0.006;
-  if (/^(F4|C4)$/.test(e)) lag += 0.010;
-  if (/^(P4)$/.test(e)) lag += 0.014;
-  if (/^(O2)$/.test(e)) lag += 0.018;
-  if (/^(Fz|Cz|Pz)$/.test(e)) lag += 0.012;
-  if (/^(Fp2)$/.test(e)) lag += 0.008;
-  if (/^(.*1|F3|C3|P3|O1)$/.test(e)) lag += 0.020;
-  return lag;
-}
 
-
+/***********************
+ * Engine state
+ ***********************/
+const state = {
+  rng: makeRNG("EEG-1001"),
+  channels: new Map(),
+  buffer: new Map(),
+  idx: 0,
+  seconds: 10,
+  uvPerDiv: 70,
+  running: true,
+  realism: 0.75,
+  speed: 1,
+  opts: {blink:false, chew:false, sweat:false, pop:false, emg:false},
+  pathology: {gpd:false, lpd:false},
+  seizureEvents: [],
+  montage: 'bipolar_longitudinal',
+  mode: 'awake',
+  eyesOpen: false,
+  pdrHz: 10.5,
+  pdrPhase: 0,
+  artClock: 0,
+  spindle: {active:false, t0:0, dur:0.0},
+  kcomplex: {active:false, t0:0},
+  vertex: {active:false, t0:0}
+};
 
 
 function region(e){
@@ -620,33 +595,6 @@ class Channel {
   }
 }
 
-/***********************
- * Engine state
- ***********************/
-const state = {
-  rng: makeRNG("EEG-1001"),
-  channels: new Map(),
-  buffer: new Map(),
-  idx: 0,
-  seconds: 10,
-  uvPerDiv: 70,
-  running: true,
-  realism: 0.75,
-  speed: 1,
-  opts: {blink:false, chew:false, sweat:false, pop:false, emg:false},
-  pathology: {gpd:false, lpd:false},
-  seizureEvents: [],
-  montage: 'bipolar_longitudinal',
-  mode: 'awake',
-  eyesOpen: false,
-  pdrHz: 10.5,
-  pdrPhase: 0,
-  artClock: 0,
-  spindle: {active:false, t0:0, dur:0.0},
-  kcomplex: {active:false, t0:0},
-  vertex: {active:false, t0:0}
-};
-
 function initChannels(){
   state.channels.clear(); state.buffer.clear();
   ELECTRODES.forEach(e=>{
@@ -709,34 +657,22 @@ function resize(){
 }
 window.addEventListener('resize', resize); resize();
 
-
 function drawGrid(rows, secs){
   const w = canvas.clientWidth, h = canvas.clientHeight;
   ctx.save();
   ctx.clearRect(0,0,w,h);
   ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--bg');
   ctx.fillRect(0,0,w,h);
-
   const pxPerSec = w / secs;
-  const nowT = state.artClock || 0;
-
-  // Minor every 0.2 s
-  const minorSec = 0.2, minorPx = pxPerSec*minorSec, minorOffsetPx = (nowT % minorSec)*pxPerSec;
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--grid-minor');
-  for (let x = Math.round(w - minorOffsetPx) + 0.5; x >= -minorPx; x -= minorPx){ ctx.moveTo(x,0); ctx.lineTo(x,h); }
-  for (let x = Math.round(w - minorOffsetPx) + 0.5 + minorPx; x <= w + minorPx; x += minorPx){ ctx.moveTo(x,0); ctx.lineTo(x,h); }
+  for (let s=0; s<secs*5; s++){ const x=Math.round(s*(pxPerSec/5))+0.5; ctx.moveTo(x,0); ctx.lineTo(x,h); }
   ctx.stroke();
-
-  // Major every 1 s
-  const majorSec = 1.0, majorPx = pxPerSec*majorSec, majorOffsetPx = (nowT % majorSec)*pxPerSec;
   ctx.beginPath();
   ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--grid-major');
-  for (let x = Math.round(w - majorOffsetPx) + 0.5; x >= -majorPx; x -= majorPx){ ctx.moveTo(x,0); ctx.lineTo(x,h); }
-  for (let x = Math.round(w - majorOffsetPx) + 0.5 + majorPx; x <= w + majorPx; x += majorPx){ ctx.moveTo(x,0); ctx.lineTo(x,h); }
+  for (let s=0; s<=secs; s++){ const x=Math.round(s*pxPerSec)+0.5; ctx.moveTo(x,0); ctx.lineTo(x,h); }
   ctx.stroke();
-
   ctx.restore();
 }
 
@@ -884,6 +820,7 @@ function step(){
             // Add independent right-sided LPD as well
             y += lpdWave(state.artClock + 0.31 + n/Fs + lpdLagRight(e), state.rng) * lpdScaleRight(e);
           }
+          
           // Inject active generalized seizure events (additive, no redraw)
           if (state.seizureEvents && state.seizureEvents.length){
             const tAbs = state.artClock + n/Fs;
@@ -893,8 +830,7 @@ function step(){
               }
             }
           }
-
-          // Apply quiz amplitude biases
+// Apply quiz amplitude biases
           if (state.quiz && state.quiz.active && state.quiz.bias){
             const L = /^(Fp1|F3|C3|P3|O1|F7|T3|T5|Fz|Cz|Pz)$/.test(e);
             let hemiScale = 1;
@@ -912,18 +848,18 @@ function step(){
         const avgBuf = state.buffer.get("AVG");
         avgBuf[state.idx%avgBuf.length] = avg;
         state.idx++; state.artClock+=1/Fs;
-      // auto-uncheck and prune finished seizure events
-      if (state.seizureEvents && state.seizureEvents.length){
-        for (const ev of state.seizureEvents){
-          if (!ev.done && state.artClock >= ev.t0 + ev.dur){
-            ev.done = true;
-            const box = document.getElementById('genSz');
-            if (box) box.checked = false;
-          }
+      }
+    }
+    // auto-uncheck and prune finished seizure events
+    if (state.seizureEvents && state.seizureEvents.length){
+      for (const ev of state.seizureEvents){
+        if (!ev.done && state.artClock >= ev.t0 + ev.dur){
+          ev.done = true;
+          const box = document.getElementById('genSz');
+          if (box) box.checked = false;
         }
-        state.seizureEvents = state.seizureEvents.filter(ev => !ev.done);
       }
-      }
+      state.seizureEvents = state.seizureEvents.filter(ev => !ev.done);
     }
     const pairs=montagePairs(); drawGrid(pairs.length, state.seconds);
     const w=canvas.clientWidth; const pxPerSec=w/state.seconds; const yMids=computeRowMids(pairs.length);
@@ -1035,6 +971,7 @@ if (lpdBox) {
   lpdBox.checked = !!(state.pathology && state.pathology.lpd);
   lpdBox.addEventListener('change', ()=>{ state.pathology.lpd = lpdBox.checked; });
 }
+
 if (genSzBox){
   genSzBox.checked = false;
   genSzBox.addEventListener('change', ()=>{
@@ -1043,6 +980,7 @@ if (genSzBox){
       if (!active){
         state.seizureEvents.push({type:'generalized', t0: state.artClock, dur: 20.0, done:false});
       } else {
+        // keep it checked until current ends; we'll auto-uncheck at completion
         genSzBox.checked = true;
       }
     }

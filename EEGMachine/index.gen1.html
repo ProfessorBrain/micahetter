@@ -394,71 +394,48 @@ function slow_uV(t){
 function spikeAndWave(t, aS=180, aW=100){
   return aS*spike_uV(t) - aW*slow_uV(Math.max(0, t-0.020));
 }
-// With 4s prelude build
+// Per-channel contribution (µV) at absolute EEG time tAbs
 function generalizedSeizure_uV(tAbs, e, ev){
   const t = tAbs - ev.t0;
   if (t<0 || t>ev.dur) return 0;
-
-  const preludeDur = 4.0;          
-  const tonicCore  = 6.0;          
-  const tonicEnd   = preludeDur + tonicCore; 
-  const clonicEnd  = ev.dur;       
-
-  const w   = genSzScale(e);
+  const tonicDur = 8.0;
+  const clonicStart = tonicDur;
+  const clonicEnd = ev.dur;
+  const w = genSzScale(e);
   const lag = genSzLag(e);
   const tCh = t + lag;
-  let y = 0;
-
-  if (tCh <= preludeDur){
-    const u = Math.max(0, tCh/preludeDur);             
-    const lvfHz = 14 + 10*(0.5 + 0.5*Math.sin(0.6*tCh + 0.7));
-    const lvf   = 20*Math.sin(2*Math.PI*lvfHz*tCh);
-    const burstPhase = (tCh % 0.33);
-    let poly = 0;
-    if (burstPhase < 0.05){
-      for (let k=0;k<3;k++){
-        const tk=k*0.012;
-        poly += spike_uV(burstPhase - tk);
-      }
-      poly *= 120;
-    }
-    const growth = Math.pow(u, 1.4); 
-    y = growth*(lvf + poly);
-
-  } else if (tCh <= tonicEnd){
-    const u = (tCh - preludeDur) / Math.max(0.001, tonicCore); 
-    const ramp = 0.4 + 0.8*u;                                  
+  let y=0;
+  if (tCh <= tonicDur){
+    const ramp = 0.3 + 0.7*(tCh/tonicDur);
     const lvfHz = 20 + 20*(0.5 + 0.5*Math.sin(0.15*tCh));
-    const lvf   = 40*Math.sin(2*Math.PI*lvfHz*tCh);
+    const lvf = 40*Math.sin(2*Math.PI*lvfHz*tCh);
     const burstPhase = (tCh % 0.20);
-    let poly = 0;
+    let poly=0;
     if (burstPhase < 0.12){
       for (let k=0;k<4;k++){
         const tk=k*0.010;
         poly += spike_uV(burstPhase - tk);
       }
-      poly *= 230;
+      poly *= 220;
     }
     y = ramp*(lvf + poly);
     const emgHz = 35 + 25*Math.sin(0.3*tCh);
     y += 20*Math.sin(2*Math.PI*emgHz*tCh + 6*Math.random());
-
   } else {
-    const u = (tCh - tonicEnd) / Math.max(0.001, (clonicEnd - tonicEnd)); 
+    const u = (tCh - clonicStart) / Math.max(0.001,(clonicEnd-clonicStart));
     const freq = 6 - 3*u;
     const period = 1/Math.max(3, Math.min(6, freq));
     const gap = 0.05 + 0.30*u;
-    const cyc = (tCh - tonicEnd) % period;
+    const cyc = (tCh - clonicStart) % period;
     const inSupp = (cyc > period - gap);
     if (inSupp){
       y = -8;
     } else {
-      const ampSpike = 150 + 100*(0.6 + 0.4*Math.sin(0.5*(tCh-tonicEnd)));
-      const ampSlow  =  90 +  60*(0.5 + 0.5*Math.cos(0.4*(tCh-tonicEnd)));
+      const ampSpike = 150 + 100*(0.6 + 0.4*Math.sin(0.5*(tCh-clonicStart)));
+      const ampSlow  =  90 +  60*(0.5 + 0.5*Math.cos(0.4*(tCh-clonicStart)));
       y = spikeAndWave(cyc, ampSpike, ampSlow);
     }
   }
-
   return w*y;
 }
 
@@ -709,34 +686,22 @@ function resize(){
 }
 window.addEventListener('resize', resize); resize();
 
-
 function drawGrid(rows, secs){
   const w = canvas.clientWidth, h = canvas.clientHeight;
   ctx.save();
   ctx.clearRect(0,0,w,h);
   ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--bg');
   ctx.fillRect(0,0,w,h);
-
   const pxPerSec = w / secs;
-  const nowT = state.artClock || 0;
-
-  // Minor every 0.2 s
-  const minorSec = 0.2, minorPx = pxPerSec*minorSec, minorOffsetPx = (nowT % minorSec)*pxPerSec;
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--grid-minor');
-  for (let x = Math.round(w - minorOffsetPx) + 0.5; x >= -minorPx; x -= minorPx){ ctx.moveTo(x,0); ctx.lineTo(x,h); }
-  for (let x = Math.round(w - minorOffsetPx) + 0.5 + minorPx; x <= w + minorPx; x += minorPx){ ctx.moveTo(x,0); ctx.lineTo(x,h); }
+  for (let s=0; s<secs*5; s++){ const x=Math.round(s*(pxPerSec/5))+0.5; ctx.moveTo(x,0); ctx.lineTo(x,h); }
   ctx.stroke();
-
-  // Major every 1 s
-  const majorSec = 1.0, majorPx = pxPerSec*majorSec, majorOffsetPx = (nowT % majorSec)*pxPerSec;
   ctx.beginPath();
   ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--grid-major');
-  for (let x = Math.round(w - majorOffsetPx) + 0.5; x >= -majorPx; x -= majorPx){ ctx.moveTo(x,0); ctx.lineTo(x,h); }
-  for (let x = Math.round(w - majorOffsetPx) + 0.5 + majorPx; x <= w + majorPx; x += majorPx){ ctx.moveTo(x,0); ctx.lineTo(x,h); }
+  for (let s=0; s<=secs; s++){ const x=Math.round(s*pxPerSec)+0.5; ctx.moveTo(x,0); ctx.lineTo(x,h); }
   ctx.stroke();
-
   ctx.restore();
 }
 
@@ -884,6 +849,7 @@ function step(){
             // Add independent right-sided LPD as well
             y += lpdWave(state.artClock + 0.31 + n/Fs + lpdLagRight(e), state.rng) * lpdScaleRight(e);
           }
+          
           // Inject active generalized seizure events (additive, no redraw)
           if (state.seizureEvents && state.seizureEvents.length){
             const tAbs = state.artClock + n/Fs;
@@ -893,8 +859,7 @@ function step(){
               }
             }
           }
-
-          // Apply quiz amplitude biases
+// Apply quiz amplitude biases
           if (state.quiz && state.quiz.active && state.quiz.bias){
             const L = /^(Fp1|F3|C3|P3|O1|F7|T3|T5|Fz|Cz|Pz)$/.test(e);
             let hemiScale = 1;
@@ -912,18 +877,18 @@ function step(){
         const avgBuf = state.buffer.get("AVG");
         avgBuf[state.idx%avgBuf.length] = avg;
         state.idx++; state.artClock+=1/Fs;
-      // auto-uncheck and prune finished seizure events
-      if (state.seizureEvents && state.seizureEvents.length){
-        for (const ev of state.seizureEvents){
-          if (!ev.done && state.artClock >= ev.t0 + ev.dur){
-            ev.done = true;
-            const box = document.getElementById('genSz');
-            if (box) box.checked = false;
-          }
+      }
+    }
+    // auto-uncheck and prune finished seizure events
+    if (state.seizureEvents && state.seizureEvents.length){
+      for (const ev of state.seizureEvents){
+        if (!ev.done && state.artClock >= ev.t0 + ev.dur){
+          ev.done = true;
+          const box = document.getElementById('genSz');
+          if (box) box.checked = false;
         }
-        state.seizureEvents = state.seizureEvents.filter(ev => !ev.done);
       }
-      }
+      state.seizureEvents = state.seizureEvents.filter(ev => !ev.done);
     }
     const pairs=montagePairs(); drawGrid(pairs.length, state.seconds);
     const w=canvas.clientWidth; const pxPerSec=w/state.seconds; const yMids=computeRowMids(pairs.length);
@@ -1035,6 +1000,7 @@ if (lpdBox) {
   lpdBox.checked = !!(state.pathology && state.pathology.lpd);
   lpdBox.addEventListener('change', ()=>{ state.pathology.lpd = lpdBox.checked; });
 }
+
 if (genSzBox){
   genSzBox.checked = false;
   genSzBox.addEventListener('change', ()=>{
@@ -1043,6 +1009,7 @@ if (genSzBox){
       if (!active){
         state.seizureEvents.push({type:'generalized', t0: state.artClock, dur: 20.0, done:false});
       } else {
+        // keep it checked until current ends; we'll auto-uncheck at completion
         genSzBox.checked = true;
       }
     }
