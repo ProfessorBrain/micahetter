@@ -304,12 +304,6 @@ footer{color:var(--muted);text-align:center;padding:6px 0 12px 0}
       <label for="categorySelect">Category for new puzzles</label>
       <select id="categorySelect"></select>
     </div>
-    <div class="field">
-  <label style="display:inline-flex;align-items:center;gap:6px;">
-    <input type="checkbox" id="studentModeCheckbox">
-    Student mode
-  </label>
-</div>
     
     <div class="optionsLine" style="display:flex;align-items:center;gap:10px;margin:10px 0;">
       <button id="newBtn" class="warn">New Puzzle</button>
@@ -441,7 +435,7 @@ function arrangeWedgesNoAdjDuplicates(list){
              !_wedgeConflict(list[prevK], newKItem) &&
              !_wedgeConflict(newKItem, list[nextK])){
             [list[j], list[k]] = [list[k], list[j]];
-            swapped = true;
+            swapped = True;
             break;
           }
         }
@@ -484,8 +478,7 @@ const BOARD = { rows:3, minCols:14, maxCols:20, maxRows:4 };
     vowelPrice:250, cluePrice:400, rotation:0,
     categories: [],
     selectedCategory: 'RANDOM',
-    correct:new Set(), wrong:new Set(),
-    studentMode:false
+    correct:new Set(), wrong:new Set()
   };
 
   // -------- DOM --------
@@ -517,7 +510,6 @@ const BOARD = { rows:3, minCols:14, maxCols:20, maxRows:4 };
   const saveOptionsBtn = document.getElementById("saveOptionsBtn");
   const cancelOptionsBtn = document.getElementById("cancelOptionsBtn");
   const categorySelect = document.getElementById("categorySelect");
-  const studentModeCheckbox = document.getElementById("studentModeCheckbox");
   const startModal = document.getElementById("startModal");
   const startSpinBtn = document.getElementById("startSpinBtn");
   const startPlayerRadios = Array.from(startModal.querySelectorAll('.options input[type=radio]'));
@@ -1444,23 +1436,16 @@ solveBtn.addEventListener('click', openSolve);
     const rads = Array.from(optionsModal.querySelectorAll('.options input[type=radio]'));
     rads.forEach(r => r.checked = (parseInt(r.value,10) === state.players));
     populateCategorySelect();
-    if(studentModeCheckbox){ studentModeCheckbox.checked = !!state.studentMode; }
     optionsModal.classList.add('show');
   });
-  saveOptionsBtn.addEventListener('click', async ()=>{
+  saveOptionsBtn.addEventListener('click', ()=>{
     const sel = Array.from(optionsModal.querySelectorAll('.options input[type=radio]')).find(r=>r.checked);
     let n = Math.min(3, Math.max(1, parseInt(sel ? sel.value : '1', 10)));
-    const prevStudentMode = state.studentMode;
     state.players = n; state.banks=[0,0,0]; state.currentPlayer=0;
-    if(studentModeCheckbox){ state.studentMode = !!studentModeCheckbox.checked; }
     if(categorySelect){ state.selectedCategory = categorySelect.value || 'RANDOM'; }
     renderPlayers();
-    setStatus(`Players set to ${n}.` + (state.studentMode ? ' Student mode ON.' : ''));
+    setStatus(`Players set to ${n}.`);
     optionsModal.classList.remove('show');
-    if(prevStudentMode !== state.studentMode){
-      await loadPuzzlesForCurrentMode();
-    }
-    newPuzzle();
   });
   cancelOptionsBtn.addEventListener('click', ()=> optionsModal.classList.remove('show'));
 
@@ -1530,23 +1515,18 @@ newBtn.addEventListener('click', ()=> newPuzzle());
   });
   spinBtn.addEventListener('click', animateSpin);
 
-  async function loadPuzzlesForCurrentMode(){
-    const file = state.studentMode ? "wheelclues-MS1.csv" : "wheelclues.csv";
-    puzzles = await loadCsvPuzzles(file);
+  async function init(){
+    puzzles = await loadCsvPuzzles("wheelclues.csv");
     if(!puzzles.length) puzzles = seedPuzzles.slice();
     state.categories = Array.from(new Set(puzzles.map(p=>p.category).filter(Boolean))).sort();
-    populateCategorySelect();
-  }
-
-  async function init(){
-    await loadPuzzlesForCurrentMode();
     renderPlayers();
-    _refillPrizeQueue();
+        _refillPrizeQueue();
     newPuzzle();
     // start modal already shown
   }
   applySinglePlayerWheelRules();
   init();
+  beginTurnSetup();
 window.addEventListener('load', ()=>{ try{ playSfx('intro'); }catch(e){} });
 </script>
 </body>
