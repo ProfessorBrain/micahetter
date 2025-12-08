@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>💊 Capsule Connections</title>
+<style>
+:root{
+  --bg:#0f172a;
+  --card:#020617;
+  --accent:#22c55e;
+  --accent-soft:#064e3b;
+  --pill-red:#fb7185;
+  --pill-yellow:#facc15;
+  --pill-blue:#38bdf8;
+  --pill-purple:#a855f7;
+  --muted:#e2e8f0;
+  --muted-soft:#64748b;
+  --bottle-glass:#020617;
+  --bottle-outline:#38bdf8;
+  --bottle-locked:#16a34a;
+  --error:#f97373;
+  --warn:#f59e0b;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background:radial-gradient(circle at top,#1e293b 0,#020617 45%,#000 100%);
+  color:var(--muted);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;
+}
+.wrap{
+  width:min(1150px,98vw);
+  margin:0 auto;
+  padding:18px 12px 18px;
+}
+.top-row{
+  display:flex;
+  align-items:flex-start;
+  justify-content:flex-start;
+  gap:24px;
+  margin-top:8px;
+}
+.logo-bar{
+  display:flex;
+  align-items:flex-start;
+  justify-content:flex-start;
+  flex:0 0 auto;
+}
+.logo-img{
+  height:400px;
+  width:auto;
+  display:block;
+}
+.puzzle-row{
+  margin-top:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  flex-wrap:wrap;
+  font-size:13px;
+}
+.puzzle-row label{
+  text-transform:uppercase;
+  font-weight:700;
+  letter-spacing:.08em;
+  font-size:10px;
+  color:var(--muted-soft);
+}
+.puzzle-row select{
+  border-radius:999px;
+  padding:7px 16px;
+  border:1px solid #1f2937;
+  background:#020617;
+  color:var(--muted);
+  font-weight:600;
+  font-size:13px;
+  cursor:pointer;
+}
+#puzzleMeta{
+  font-size:11px;
+  color:var(--muted-soft);
+}
+
+
+/* toast */
+.toast-slot{
+  height:0;
+  margin:0;
+}
+.toast{
+  position:fixed;
+  top:16px;
+  right:16px;
+  z-index:40;
+  padding:8px 14px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:600;
+  border:1px solid transparent;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  pointer-events:none;
+  opacity:0;
+  transform:translateY(-8px);
+  transition:opacity .18s ease-out, transform .18s ease-out;
+}
+.toast.show{
+  opacity:1;
+  transform:translateY(0);
+}
+.toast.ok{
+  background:rgba(34,197,94,.12);
+  border-color:rgba(34,197,94,.55);
+  color:#bbf7d0;
+}
+.toast.warn{
+  background:rgba(245,158,11,.1);
+  border-color:rgba(245,158,11,.55);
+  color:#fed7aa;
+}
+.toast.err{
+  background:rgba(248,113,113,.1);
+  border-color:rgba(248,113,113,.55);
+  color:#fecaca;
+}
+
+/* workspace */
+.workspace{
+  margin-top:0;
+  padding:16px 16px 18px;
+  border-radius:20px;
+  background:radial-gradient(circle at top,#020617 0,#020617 55%,#000 100%);
+  border:1px solid #1f2937;
+  box-shadow:0 22px 55px rgba(15,23,42,.75);
+  flex:1 1 auto;
+  min-width:0;
+}
+
+/* bottles row */
+.bottles-row{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:16px;
+}
+.bottle{
+  width:180px;
+  max-width:45vw;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  cursor:pointer;
+}
+.bottle-shell{
+  position:relative;
+  width:100%;
+  max-width:180px;
+}
+.bottle-neck{
+  width:34%;
+  height:16px;
+  margin:0 auto;
+  border-radius:999px 999px 8px 8px;
+  background:linear-gradient(to right,#0b1120,#020617,#0b1120);
+  border:1px solid #1f2937;
+}
+.bottle-cap-line{
+  width:60%;
+  margin:0 auto;
+  border-bottom:2px solid rgba(148,163,184,.8);
+}
+.bottle-body{
+  margin-top:4px;
+  border-radius:40px 40px 14px 14px;
+  border:2px solid rgba(148,163,184,.45);
+  background:radial-gradient(circle at 30% 0,#0f172a 0,#020617 60%,#000 100%);
+  padding:10px 8px 18px;
+  min-height:230px;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  position:relative;
+  overflow:hidden;
+}
+.bottle-body::before{
+  content:"";
+  position:absolute;
+  inset:6px 10px auto auto;
+  width:40%;
+  height:40%;
+  border-radius:999px;
+  background:radial-gradient(circle at 0 0,rgba(148,163,184,.18) 0,transparent 70%);
+  opacity:.85;
+  pointer-events:none;
+}
+.bottle-body-inner{
+  position:relative;
+  display:flex;
+  flex-direction:column-reverse;
+  gap:4px;
+  z-index:1;
+}
+.bottle-status{
+  margin-top:4px;
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--muted-soft);
+}
+.bottle-label{
+  margin-top:2px;
+  font-size:12px;
+  font-weight:700;
+  text-align:center;
+  min-height:16px;
+  color:var(--muted);
+}
+.bottle-locked .bottle-body{
+  border-color:rgba(34,197,94,.75);
+  box-shadow:0 0 0 1px rgba(74,222,128,.25),0 0 22px rgba(22,163,74,.75);
+}
+.bottle-locked .bottle-label{
+  color:#bbf7d0;
+}
+.bottle-locked .bottle-status{
+  color:#86efac;
+}
+
+/* pills */
+.pill-tray{
+  margin-top:20px;
+  padding:12px 10px 4px;
+  border-radius:16px;
+  border:1px dashed rgba(148,163,184,.55);
+  background:radial-gradient(circle at top,#020617 0,#020617 60%,#000 100%);
+}
+.pill-tray-label{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--muted-soft);
+  margin-bottom:8px;
+  text-align:center;
+}
+.pill-grid{
+  display:grid;
+  grid-template-columns:repeat(4, minmax(0, 1fr));
+  gap:10px;
+  justify-items:center;
+}
+.pill{
+  min-width:120px;
+  max-width:210px;
+  padding:10px 16px;
+  border-radius:999px;
+  background:
+    linear-gradient(90deg,rgba(15,23,42,.95) 0,rgba(15,23,42,.93) 50%,rgba(15,23,42,.95) 100%),
+    linear-gradient(90deg,var(--pill-red) 0,var(--pill-yellow) 50%,var(--pill-blue) 100%);
+  background-clip:padding-box,border-box;
+  border:2px solid transparent;
+  color:#e5e7eb;
+  font-size:15px;
+  font-weight:800;
+  text-align:center;
+  box-shadow:0 6px 16px rgba(0,0,0,.75);
+  cursor:pointer;
+  position:relative;
+  user-select:none;
+  transition:transform .09s ease-out, box-shadow .09s ease-out;
+}
+.pill:hover{
+  transform:translateY(-1px);
+  box-shadow:0 10px 24px rgba(0,0,0,.85);
+}
+
+.pill::before{
+  content:"";
+  position:absolute;
+  inset:1px 30% auto 8px;
+  height:40%;
+  border-radius:999px;
+  background:radial-gradient(circle at 0 0,rgba(248,250,252,.24) 0,transparent 70%);
+  opacity:.9;
+  pointer-events:none;
+}
+.pill-selected{
+  box-shadow:0 0 0 2px rgba(59,130,246,.5),0 0 18px rgba(59,130,246,.75);
+}
+.pill-hint{
+  box-shadow:0 0 0 2px rgba(234,179,8,.7),0 0 14px rgba(234,179,8,.9);
+}
+.pill-locked{
+  opacity:.98;
+  cursor:default;
+  box-shadow:0 0 0 2px rgba(34,197,94,.8),0 0 18px rgba(22,163,74,.9);
+}
+.pill-dragging{
+  opacity:.75;
+}
+.bottle-drop-hover .bottle-body{
+  box-shadow:0 0 0 2px rgba(59,130,246,.7),0 0 18px rgba(59,130,246,.85);
+}
+
+/* controls */
+.controls{
+  margin-top:16px;
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:10px;
+}
+.btn{
+  border-radius:999px;
+  padding:10px 18px;
+  border:1px solid rgba(148,163,184,.6);
+  background:rgba(15,23,42,.9);
+  color:var(--muted);
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  cursor:pointer;
+}
+.btn:hover{
+  background:#0b1120;
+}
+.btn:disabled{
+  opacity:.4;
+  cursor:default;
+}
+#hint.btn{
+  border-color:rgba(234,179,8,.8);
+  background:rgba(23,23,23,.95);
+}
+#reset.btn{
+  border-color:rgba(248,113,113,.7);
+}
+#shuffle.btn{
+  border-color:rgba(56,189,248,.7);
+}
+
+/* footer */
+footer{
+  margin-top:14px;
+  text-align:center;
+  font-size:11px;
+  color:var(--muted-soft);
+}
+
+/* mobile */
+@media (max-width:700px){
+  .wrap{padding-top:22px;}
+  .top-row{
+    flex-direction:column;
+    align-items:center;
+    gap:12px;
+  }
+  .logo-bar{
+    justify-content:center;
+  }
+  .logo-img{
+    max-height:80px;
+  }
+  .bottle{width:45%;}
+  .bottle-body{min-height:130px;}
+}
+@media (max-width:480px){
+  .bottle{width:100%;max-width:none;}
+}
+
+/* confetti canvas */
+#confetti-canvas{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+  z-index:999;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top-row">
+  <div class="logo-bar">
+    <img src="capsuleconnectionlogo.png" alt="Capsule Connections logo" class="logo-img" />
+  </div>
+
+    <div class="toast-slot">
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </div>
+
+  <div class="workspace">
+    <div class="bottles-row" id="bottlesRow">
+      <div class="bottle" data-bottle-index="0">
+        <div class="bottle-shell">
+          <div class="bottle-neck"></div>
+          <div class="bottle-cap-line"></div>
+          <div class="bottle-body">
+            <div class="bottle-body-inner" data-bottle-pills></div>
+          </div>
+        </div>
+        <div class="bottle-label" data-bottle-label></div>
+        <div class="bottle-status" data-bottle-status>Empty bottle</div>
+      </div>
+      <div class="bottle" data-bottle-index="1">
+        <div class="bottle-shell">
+          <div class="bottle-neck"></div>
+          <div class="bottle-cap-line"></div>
+          <div class="bottle-body">
+            <div class="bottle-body-inner" data-bottle-pills></div>
+          </div>
+        </div>
+        <div class="bottle-label" data-bottle-label></div>
+        <div class="bottle-status" data-bottle-status>Empty bottle</div>
+      </div>
+      <div class="bottle" data-bottle-index="2">
+        <div class="bottle-shell">
+          <div class="bottle-neck"></div>
+          <div class="bottle-cap-line"></div>
+          <div class="bottle-body">
+            <div class="bottle-body-inner" data-bottle-pills></div>
+          </div>
+        </div>
+        <div class="bottle-label" data-bottle-label></div>
+        <div class="bottle-status" data-bottle-status>Empty bottle</div>
+      </div>
+      <div class="bottle" data-bottle-index="3">
+        <div class="bottle-shell">
+          <div class="bottle-neck"></div>
+          <div class="bottle-cap-line"></div>
+          <div class="bottle-body">
+            <div class="bottle-body-inner" data-bottle-pills></div>
+          </div>
+        </div>
+        <div class="bottle-label" data-bottle-label></div>
+        <div class="bottle-status" data-bottle-status>Empty bottle</div>
+      </div>
+    </div>
+
+    <div class="pill-tray" id="pillTray">
+      <div class="pill-grid" id="pillGrid"></div>
+    </div>
+  </div>
+
+  
+
+  
+  </div>
+
+  <div class="puzzle-row">
+    <label for="puzzleSelect">Puzzle</label>
+    <select id="puzzleSelect"></select>
+    <span id="puzzleMeta"></span>
+  </div>
+
+
+  <footer id="footerText">created by micah etter, md</footer>
+</div>
+
+<script>
+const CSV_URL = "./neuropharm-puzzles.csv";
+
+const toastEl = document.getElementById("toast");
+const puzzleSelectEl = document.getElementById("puzzleSelect");
+const puzzleMetaEl = document.getElementById("puzzleMeta");
+const footerEl = document.getElementById("footerText");
+const bottlesRowEl = document.getElementById("bottlesRow");
+const pillGridEl = document.getElementById("pillGrid");
+const pillTrayEl = document.getElementById("pillTray");
+const hintBtn = document.getElementById("hint");
+const shuffleBtn = document.getElementById("shuffle");
+const resetBtn = document.getElementById("reset");
+
+const BASE_FOOTER_TEXT = "created by micah etter, md";
+
+// simple CSV parser for this specific file format (no embedded commas)
+function parseCSV(text){
+  const lines = text.trim().split(/\r?\n/);
+  if(lines.length < 2) return [];
+  const headers = lines[0].split(",").map(h => h.trim());
+  const rows = [];
+  for(let i=1;i<lines.length;i++){
+    const line = lines[i].trim();
+    if(!line) continue;
+    const cols = line.split(",");
+    const obj = {};
+    headers.forEach((h, idx)=>{
+      obj[h] = (cols[idx] !== undefined ? cols[idx] : "").trim();
+    });
+    rows.push(obj);
+  }
+  return rows;
+}
+
+// convert CSV rows to puzzle objects
+function rowsToPuzzles(rows){
+  const map = new Map();
+  for(const r of rows){
+    const key = (r.date || r.Date || "").trim();
+    const category = (r.category || r.Category || "").trim();
+    if(!key || !category) continue;
+    const items = [
+      r.item1 || r.Item1 || "",
+      r.item2 || r.Item2 || "",
+      r.item3 || r.Item3 || "",
+      r.item4 || r.Item4 || ""
+    ].map(s => (s || "").trim()).filter(Boolean);
+    if(items.length !== 4) continue;
+    let puzzle = map.get(key);
+    if(!puzzle){
+      puzzle = {
+        id:key,
+        label:key,
+        author:(r.author || r.Author || "").trim(),
+        categories:[]
+      };
+      map.set(key, puzzle);
+    }else if(!puzzle.author && (r.author || r.Author)){
+      puzzle.author = (r.author || r.Author || "").trim();
+    }
+    const urls = [
+      r.url1 || r.URL1 || "",
+      r.url2 || r.URL2 || "",
+      r.url3 || r.URL3 || "",
+      r.url4 || r.URL4 || ""
+    ].map(s => (s || "").trim());
+    puzzle.categories.push({
+      name:category,
+      items,
+      color:null,
+      urls
+    });
+  }
+
+  const palette = ["#f97373","#facc15","#38bdf8","#a855f7"];
+  const puzzles = [];
+  for(const p of map.values()){
+    if(p.categories.length < 4) continue;
+    p.categories = p.categories.slice(0,4).map((cat, idx)=>({
+      ...cat,
+      color: palette[idx % palette.length]
+    }));
+    puzzles.push(p);
+  }
+  return puzzles;
+}
+
+// toast helper
+function showToast(msg, kind){
+  toastEl.textContent = msg;
+  toastEl.className = "toast show " + (kind || "");
+  if(kind !== "err"){
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(()=>{ toastEl.className = "toast"; }, 1800);
+  }
+}
+
+// confetti
+function getConfettiCanvas(){
+  let c = document.getElementById("confetti-canvas");
+  if(!c){
+    c = document.createElement("canvas");
+    c.id = "confetti-canvas";
+    document.body.appendChild(c);
+  }
+  const resize = ()=>{
+    c.width = window.innerWidth;
+    c.height = window.innerHeight;
+  };
+  resize();
+  const onResize = ()=>{
+    if(document.body.contains(c)){
+      resize();
+    }else{
+      window.removeEventListener("resize", onResize);
+    }
+  };
+  window.addEventListener("resize", onResize, {passive:true});
+  return c;
+}
+function fireConfetti(durationMs = 1300, count = 200){
+  const canvas = getConfettiCanvas();
+  const ctx = canvas.getContext("2d");
+  const palette = ["#f97373","#facc15","#38bdf8","#a855f7","#22c55e","#eab308"];
+  const w = canvas.width, h = canvas.height;
+  const cx = w / 2, cy = Math.max(120, h * 0.35);
+  const GRAVITY = 0.15, DRAG = 0.985, SPIN = 0.22;
+  const parts = [];
+  for(let i=0;i<count;i++){
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 6 + Math.random() * 7;
+    const vx = Math.cos(angle) * speed;
+    const vy = Math.sin(angle) * speed - 6;
+    const size = 4 + Math.random() * 6;
+    parts.push({
+      x:cx,y:cy,vx,vy,
+      w:size,h:size*0.6,
+      rot:Math.random()*Math.PI*2,
+      vr:(Math.random()-0.5)*SPIN,
+      color:palette[i % palette.length],
+      alpha:1
+    });
+  }
+  let start = performance.now();
+  function frame(now){
+    const t = now - start;
+    ctx.clearRect(0,0,w,h);
+    for(const p of parts){
+      p.vx *= DRAG;
+      p.vy = p.vy * DRAG + GRAVITY;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.rot += p.vr;
+      if(t > durationMs * 0.66){
+        p.alpha = Math.max(0, 1 - (t - durationMs*0.66)/(durationMs*0.34));
+      }
+      ctx.save();
+      ctx.globalAlpha = p.alpha;
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+      ctx.restore();
+    }
+    if(t < durationMs && parts.some(p => p.alpha > 0 && p.y < h + 30)){
+      requestAnimationFrame(frame);
+    }else{
+      if(canvas && canvas.parentNode) canvas.parentNode.removeChild(canvas);
+    }
+  }
+  requestAnimationFrame(frame);
+}
+
+// state
+let PUZZLES = [];
+let PUZZLE = null;
+let currentPuzzleIndex = 0;
+let itemToCategoryIndex = new Map();
+let bottleState = [];
+let selectedPill = null;
+let dragSourcePill = null;
+let hintedItems = new Set();
+let hintCategoryIndex = -1;
+
+function resetHintState(){
+  hintedItems.clear();
+  hintCategoryIndex = -1;
+  const pills = document.querySelectorAll(".pill");
+  pills.forEach(p => p.classList.remove("pill-hint"));
+}
+
+// bottles init
+function initBottleState(){
+  const bottleEls = bottlesRowEl.querySelectorAll(".bottle");
+  bottleState = [];
+  bottleEls.forEach((bottleEl, idx)=>{
+    const pillsEl = bottleEl.querySelector("[data-bottle-pills]");
+    const labelEl = bottleEl.querySelector("[data-bottle-label]");
+    const statusEl = bottleEl.querySelector("[data-bottle-status]");
+    // clear any existing DOM pills when resetting state
+    if (pillsEl) pillsEl.innerHTML = "";
+    bottleState.push({
+      el:bottleEl,
+      pillsEl,
+      labelEl,
+      statusEl,
+      items:[],
+      locked:false,
+      categoryIndex:null
+    });
+    bottleEl.classList.remove("bottle-locked");
+    labelEl.textContent = "";
+    // no default text like "Empty bottle"; keep status hidden until locked
+    statusEl.textContent = "";
+  });
+}
+
+function updateBottleStatus(idx){
+  const b = bottleState[idx];
+  if (!b.statusEl) return;
+  if (b.locked){
+    b.statusEl.textContent = "Locked in";
+    return;
+  }
+  // Hide status text for non-locked bottles (no "empty" or count text)
+  b.statusEl.textContent = "";
+}
+
+function renderFooter(){ footerEl.textContent = BASE_FOOTER_TEXT; }
+
+function lockPillTrayHeight(){
+  if(!pillTrayEl) return;
+  pillTrayEl.style.minHeight = "";
+  const h = pillTrayEl.offsetHeight;
+  if(h>0){ pillTrayEl.style.minHeight = h + "px"; }
+}
+
+// pill helpers
+function createPill(item, index){
+  const pill = document.createElement("button");
+  pill.type = "button";
+  pill.className = "pill";
+  pill.textContent = item;
+  pill.dataset.item = item;
+  pill.dataset.location = "tray";
+  // remember original tray slot so position stays stable
+  pill.dataset.slotIndex = String(index);
+  const row = Math.floor(index / 4) + 1;
+  const col = (index % 4) + 1;
+  pill.style.gridRow = String(row);
+  pill.style.gridColumn = String(col);
+  pill.addEventListener("click", onPillClick);
+  pill.draggable = true;
+  pill.addEventListener("dragstart", onPillDragStart);
+  pill.addEventListener("dragend", onPillDragEnd);
+  return pill;
+}
+
+function onPillClick(e){
+  const pill = e.currentTarget;
+  const loc = pill.dataset.location || "tray";
+  const isLocked = pill.classList.contains("pill-locked");
+  if(isLocked) return;
+
+  // if pill is inside a bottle, clicking returns it to tray
+  if(loc.startsWith("bottle")){
+    movePillToTray(pill);
+    return;
+  }
+
+  // in tray: treat as selection toggle
+  if(selectedPill === pill){
+    pill.classList.remove("pill-selected");
+    selectedPill = null;
+  }else{
+    if(selectedPill) selectedPill.classList.remove("pill-selected");
+    selectedPill = pill;
+    pill.classList.add("pill-selected");
+  }
+}
+
+function movePillToTray(pill){
+  const loc = pill.dataset.location || "tray";
+  if(loc.startsWith("bottle")){
+    const idx = parseInt(loc.replace("bottle",""),10);
+    if(!Number.isNaN(idx)){
+      const b = bottleState[idx];
+      if(b.locked) return false;
+      b.items = b.items.filter(x => x !== pill.dataset.item);
+      pill.dataset.location = "tray";
+      pillGridEl.appendChild(pill);
+      updateBottleStatus(idx);
+    }
+  }
+  pill.classList.remove("pill-selected");
+  if(selectedPill === pill){
+    selectedPill = null;
+  }
+  return true;
+}
+
+function onPillDragStart(e){
+  const pill = e.currentTarget;
+  if(pill.classList.contains("pill-locked")){
+    e.preventDefault();
+    return;
+  }
+  dragSourcePill = pill;
+  if(e.dataTransfer){
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", pill.dataset.item || "");
+  }
+  pill.classList.add("pill-dragging");
+}
+
+function onPillDragEnd(e){
+  const pill = e.currentTarget;
+  pill.classList.remove("pill-dragging");
+  dragSourcePill = null;
+  document.querySelectorAll(".bottle-drop-hover").forEach(el=>{
+    el.classList.remove("bottle-drop-hover");
+  });
+}
+
+function getDraggedPill(e){
+  if(dragSourcePill) return dragSourcePill;
+  if(e && e.dataTransfer){
+    const item = e.dataTransfer.getData("text/plain");
+    if(item){
+      return findPillElement(item);
+    }
+  }
+  return null;
+}
+
+function onBottleDragOver(e, idx){
+  const pill = getDraggedPill(e);
+  if(!PUZZLE || !pill) return;
+  e.preventDefault();
+  if(e.dataTransfer) e.dataTransfer.dropEffect = "move";
+}
+
+function onBottleDrop(e, idx){
+  e.preventDefault();
+  const pill = getDraggedPill(e);
+  if(!pill) return;
+  movePillToBottle(pill, idx);
+}
+
+function onBottleDragEnter(e, idx){
+  const pill = getDraggedPill(e);
+  if(!pill) return;
+  const b = bottleState[idx];
+  if(b && !b.locked){
+    b.el.classList.add("bottle-drop-hover");
+  }
+}
+
+function onBottleDragLeave(e, idx){
+  const b = bottleState[idx];
+  if(b){
+    b.el.classList.remove("bottle-drop-hover");
+  }
+}
+
+function onTrayDragOver(e){
+  if(!getDraggedPill(e)) return;
+  e.preventDefault();
+  if(e.dataTransfer) e.dataTransfer.dropEffect = "move";
+}
+
+function onTrayDrop(e){
+  e.preventDefault();
+  const pill = getDraggedPill(e);
+  if(!pill) return;
+  movePillToTray(pill);
+}
+
+function movePillToBottle(pill, bottleIdx){
+  const b = bottleState[bottleIdx];
+  if(b.locked){
+    showToast("That bottle is already locked in.", "warn");
+    return;
+  }
+  if(b.items.length >= 4){
+    showToast("That bottle is already full.", "warn");
+    return;
+  }
+  const item = pill.dataset.item;
+  // if currently in another bottle, remove from that bottle
+  const loc = pill.dataset.location || "tray";
+  if(loc.startsWith("bottle")){
+    const oldIdx = parseInt(loc.replace("bottle",""),10);
+    if(!Number.isNaN(oldIdx) && bottleState[oldIdx]){
+      const oldB = bottleState[oldIdx];
+      oldB.items = oldB.items.filter(x => x !== item);
+      updateBottleStatus(oldIdx);
+    }
+  }
+  pill.dataset.location = "bottle" + bottleIdx;
+  pill.classList.remove("pill-selected");
+  b.items.push(item);
+  b.pillsEl.appendChild(pill);
+  selectedPill = null;
+  updateBottleStatus(bottleIdx);
+  checkBottle(bottleIdx);
+}
+
+function onBottleClick(idx){
+  const b = bottleState[idx];
+  if(b.locked){
+    showToast("Bottle already solved.", "warn");
+    return;
+  }
+  if(!selectedPill){
+    // nothing selected; nothing to do
+    return;
+  }
+  movePillToBottle(selectedPill, idx);
+}
+
+// bottle correctness check
+function checkBottle(idx){
+  const b = bottleState[idx];
+  if(b.locked || b.items.length !== 4) return;
+  const firstCatIdx = itemToCategoryIndex.get(b.items[0]);
+  if(firstCatIdx === undefined){
+    wrongBottle(idx);
+    return;
+  }
+  for(const it of b.items){
+    const catIdx = itemToCategoryIndex.get(it);
+    if(catIdx !== firstCatIdx){
+      wrongBottle(idx);
+      return;
+    }
+  }
+  // correct group
+  lockBottle(idx, firstCatIdx);
+}
+
+function wrongBottle(idx){
+  const b = bottleState[idx];
+  // keep pills in the bottle; just inform the user
+  showToast("Those pills do not all belong together.", "err");
+  updateBottleStatus(idx);
+}
+
+function lockBottle(idx, categoryIndex){
+  const b = bottleState[idx];
+  const cat = PUZZLE.categories[categoryIndex];
+  b.locked = true;
+  b.categoryIndex = categoryIndex;
+  b.el.classList.add("bottle-locked");
+  b.labelEl.textContent = cat.name;
+  b.labelEl.style.color = "#bbf7d0";
+  b.statusEl.textContent = "Locked in";
+  const pills = b.pillsEl.querySelectorAll(".pill");
+  pills.forEach(p=>{
+    p.classList.add("pill-locked");
+    p.classList.remove("pill-selected");
+  });
+  showToast("Bottle locked: " + cat.name, "ok");
+  // check overall completion
+  const allLocked = bottleState.every(x => x.locked);
+  if(allLocked){
+    showToast("Puzzle complete!", "ok");
+    fireConfetti();
+  }
+}
+
+function findPillElement(item){
+  return document.querySelector('.pill[data-item="' + CSS.escape(item) + '"]');
+}
+
+// hint: highlight one new pill from a not-yet-solved group
+function chooseHintCategory(){
+  if(!PUZZLE) return -1;
+  const unsolved = PUZZLE.categories
+    .map((cat, idx)=>({cat, idx}))
+    .filter(entry => !bottleState.some(b => b.locked && b.categoryIndex === entry.idx));
+  if(!unsolved.length) return -1;
+  const choice = unsolved[Math.floor(Math.random()*unsolved.length)];
+  return choice.idx;
+}
+
+function onHint(){
+  if(!PUZZLE) return;
+  // pick or maintain hint category
+  const stillValid = hintCategoryIndex >= 0 &&
+    !bottleState.some(b => b.locked && b.categoryIndex === hintCategoryIndex);
+  if(!stillValid){
+    hintCategoryIndex = chooseHintCategory();
+    hintedItems.clear();
+  }
+  if(hintCategoryIndex < 0){
+    showToast("No categories left to hint.", "warn");
+    return;
+  }
+  const cat = PUZZLE.categories[hintCategoryIndex];
+  const remainingItems = cat.items.filter(it => !hintedItems.has(it));
+  if(!remainingItems.length){
+    showToast("All pills from this group are already hinted.", "warn");
+    return;
+  }
+  const item = remainingItems[Math.floor(Math.random()*remainingItems.length)];
+  hintedItems.add(item);
+  const pill = findPillElement(item);
+  if(pill){
+    pill.classList.add("pill-hint");
+    pill.scrollIntoView({behavior:"smooth",block:"center"});
+  }
+  showToast("Hint: one pill from a hidden group is glowing.", "warn");
+}
+
+// shuffle tray pills (only those not locked)
+function onShuffle(){
+  const pills = Array.from(pillGridEl.querySelectorAll(".pill"));
+  if(pills.length <= 1) return;
+  const pool = pills.slice();
+  for(let i=pool.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [pool[i],pool[j]]=[pool[j],pool[i]];
+  }
+  pillGridEl.innerHTML = "";
+  pool.forEach(p => pillGridEl.appendChild(p));
+}
+
+// reset puzzle to fresh state
+function onResetPuzzle(){
+  if(!PUZZLE) return;
+  setupBoardForPuzzle(PUZZLE);
+  showToast("Puzzle reset.", "ok");
+}
+
+// initial board setup
+function setupBoardForPuzzle(puzzle){
+  PUZZLE = puzzle;
+  selectedPill = null;
+  resetHintState();
+  initBottleState();
+  // map items to category indices
+  itemToCategoryIndex = new Map();
+  const allItems = [];
+  puzzle.categories.forEach((cat, catIdx)=>{
+    cat.items.forEach(it=>{
+      allItems.push(it);
+      itemToCategoryIndex.set(it, catIdx);
+    });
+  });
+  // random pill order
+  for(let i=allItems.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [allItems[i],allItems[j]]=[allItems[j],allItems[i]];
+  }
+  pillGridEl.innerHTML = "";
+  allItems.forEach((it, idx)=>{
+    const pill = createPill(it, idx);
+    pillGridEl.appendChild(pill);
+  });
+  lockPillTrayHeight();
+  updatePuzzleMeta();
+  renderFooter();
+  if (hintBtn) hintBtn.disabled = false;
+  if (shuffleBtn) shuffleBtn.disabled = false;
+  if (resetBtn) resetBtn.disabled = false;
+}
+
+function populatePuzzleSelect(){
+  puzzleSelectEl.innerHTML = "";
+  PUZZLES.forEach((pz, idx)=>{
+    const opt = document.createElement("option");
+    opt.value = String(idx);
+    opt.textContent = pz.label || ("Puzzle " + (idx+1));
+    puzzleSelectEl.appendChild(opt);
+  });
+}
+
+function updatePuzzleMeta(){
+  if(!PUZZLE || !PUZZLES.length){
+    if (puzzleMetaEl) puzzleMetaEl.textContent = "";
+    return;
+  }
+  if (puzzleMetaEl) puzzleMetaEl.textContent = "";
+}
+
+function setPuzzleIndex(idx){
+  if(idx < 0 || idx >= PUZZLES.length) return;
+  currentPuzzleIndex = idx;
+  const puzzle = PUZZLES[idx];
+  puzzleSelectEl.value = String(idx);
+  setupBoardForPuzzle(puzzle);
+}
+
+// events
+bottlesRowEl.querySelectorAll(".bottle").forEach(bottle=>{
+  const idx = parseInt(bottle.getAttribute("data-bottle-index"),10);
+  bottle.addEventListener("click", ()=>{
+    onBottleClick(idx);
+  });
+  bottle.addEventListener("dragover", (e)=>onBottleDragOver(e, idx));
+  bottle.addEventListener("drop", (e)=>onBottleDrop(e, idx));
+  bottle.addEventListener("dragenter", (e)=>onBottleDragEnter(e, idx));
+  bottle.addEventListener("dragleave", (e)=>onBottleDragLeave(e, idx));
+});
+
+pillGridEl.addEventListener("dragover", onTrayDragOver);
+pillGridEl.addEventListener("drop", onTrayDrop);
+
+if (hintBtn) hintBtn.addEventListener("click", onHint);
+if (shuffleBtn) shuffleBtn.addEventListener("click", onShuffle);
+if (resetBtn) resetBtn.addEventListener("click", onResetPuzzle);
+
+puzzleSelectEl.addEventListener("change", e=>{
+  const idx = parseInt(e.target.value,10);
+  if(!Number.isNaN(idx)){
+    setPuzzleIndex(idx);
+    showToast("Loaded new puzzle.", "ok");
+  }
+});
+
+
+
+// boot
+(async function boot(){
+  try{
+    const res = await fetch(CSV_URL, {cache:"no-store"});
+    if(!res.ok) throw new Error("HTTP " + res.status);
+    const text = await res.text();
+    const rows = parseCSV(text);
+    const puzzles = rowsToPuzzles(rows);
+    if(!puzzles.length) throw new Error("No valid puzzles found in CSV");
+    PUZZLES = puzzles;
+    populatePuzzleSelect();
+    setPuzzleIndex(0);
+  }catch(err){
+    console.warn("Auto-load failed for", CSV_URL, err);
+  }
+})();
+</script>
+</body>
+</html>
