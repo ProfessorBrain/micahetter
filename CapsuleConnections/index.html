@@ -471,6 +471,7 @@ const puzzleMetaEl = document.getElementById("puzzleMeta");
 const footerEl = document.getElementById("footerText");
 const bottlesRowEl = document.getElementById("bottlesRow");
 const pillGridEl = document.getElementById("pillGrid");
+const pillTrayEl = document.getElementById("pillTray");
 const hintBtn = document.getElementById("hint");
 const shuffleBtn = document.getElementById("shuffle");
 const resetBtn = document.getElementById("reset");
@@ -691,6 +692,13 @@ function updateBottleStatus(idx){
 }
 
 function renderFooter(){ footerEl.textContent = BASE_FOOTER_TEXT; }
+
+function lockPillTrayHeight(){
+  if(!pillTrayEl) return;
+  pillTrayEl.style.minHeight = "";
+  const h = pillTrayEl.offsetHeight;
+  if(h>0){ pillTrayEl.style.minHeight = h + "px"; }
+}
 
 // pill helpers
 function createPill(item, index){
@@ -1015,6 +1023,7 @@ function setupBoardForPuzzle(puzzle){
     const pill = createPill(it, idx);
     pillGridEl.appendChild(pill);
   });
+  lockPillTrayHeight();
   updatePuzzleMeta();
   renderFooter();
   if (hintBtn) hintBtn.disabled = false;
