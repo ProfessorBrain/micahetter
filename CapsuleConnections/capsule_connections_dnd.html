@@ -298,8 +298,6 @@ body{
   cursor:default;
   box-shadow:0 0 0 2px rgba(34,197,94,.8),0 0 18px rgba(22,163,74,.9);
 }
-
-/* drag-and-drop visual tweaks */
 .pill-dragging{
   opacity:.75;
 }
@@ -308,7 +306,6 @@ body{
 }
 
 /* controls */
-
 .controls{
   margin-top:16px;
   display:flex;
@@ -645,9 +642,9 @@ let currentPuzzleIndex = 0;
 let itemToCategoryIndex = new Map();
 let bottleState = [];
 let selectedPill = null;
+let dragSourcePill = null;
 let hintedItems = new Set();
 let hintCategoryIndex = -1;
-let dragSourcePill = null;
 
 function resetHintState(){
   hintedItems.clear();
@@ -696,7 +693,6 @@ function updateBottleStatus(idx){
 function renderFooter(){ footerEl.textContent = BASE_FOOTER_TEXT; }
 
 // pill helpers
-
 function createPill(item, index){
   const pill = document.createElement("button");
   pill.type = "button";
@@ -711,7 +707,6 @@ function createPill(item, index){
   pill.style.gridRow = String(row);
   pill.style.gridColumn = String(col);
   pill.addEventListener("click", onPillClick);
-  // drag-and-drop support
   pill.draggable = true;
   pill.addEventListener("dragstart", onPillDragStart);
   pill.addEventListener("dragend", onPillDragEnd);
@@ -726,15 +721,7 @@ function onPillClick(e){
 
   // if pill is inside a bottle, clicking returns it to tray
   if(loc.startsWith("bottle")){
-    const idx = parseInt(loc.replace("bottle",""),10);
-    if(!Number.isNaN(idx)){
-      const b = bottleState[idx];
-      if(b.locked) return;
-      b.items = b.items.filter(x => x !== pill.dataset.item);
-      pill.dataset.location = "tray";
-      pillGridEl.appendChild(pill);
-      updateBottleStatus(idx);
-    }
+    movePillToTray(pill);
     return;
   }
 
@@ -749,7 +736,26 @@ function onPillClick(e){
   }
 }
 
-// drag-and-drop helpers
+function movePillToTray(pill){
+  const loc = pill.dataset.location || "tray";
+  if(loc.startsWith("bottle")){
+    const idx = parseInt(loc.replace("bottle",""),10);
+    if(!Number.isNaN(idx)){
+      const b = bottleState[idx];
+      if(b.locked) return false;
+      b.items = b.items.filter(x => x !== pill.dataset.item);
+      pill.dataset.location = "tray";
+      pillGridEl.appendChild(pill);
+      updateBottleStatus(idx);
+    }
+  }
+  pill.classList.remove("pill-selected");
+  if(selectedPill === pill){
+    selectedPill = null;
+  }
+  return true;
+}
+
 function onPillDragStart(e){
   const pill = e.currentTarget;
   if(pill.classList.contains("pill-locked")){
@@ -775,36 +781,13 @@ function onPillDragEnd(e){
 
 function getDraggedPill(e){
   if(dragSourcePill) return dragSourcePill;
-  if(e.dataTransfer){
+  if(e && e.dataTransfer){
     const item = e.dataTransfer.getData("text/plain");
     if(item){
       return findPillElement(item);
     }
   }
   return null;
-}
-
-function movePillToTray(pill){
-  const item = pill.dataset.item;
-  const loc = pill.dataset.location || "tray";
-  if(loc.startsWith("bottle")){
-    const idx = parseInt(loc.replace("bottle",""),10);
-    if(!Number.isNaN(idx)){
-      const b = bottleState[idx];
-      if(b.locked){
-        showToast("Bottle already solved.", "warn");
-        return;
-      }
-      b.items = b.items.filter(x => x !== item);
-      updateBottleStatus(idx);
-    }
-  }
-  pill.dataset.location = "tray";
-  pill.classList.remove("pill-selected");
-  pillGridEl.appendChild(pill);
-  if(selectedPill === pill){
-    selectedPill = null;
-  }
 }
 
 function onBottleDragOver(e, idx){
@@ -838,8 +821,7 @@ function onBottleDragLeave(e, idx){
 }
 
 function onTrayDragOver(e){
-  const pill = getDraggedPill(e);
-  if(!pill) return;
+  if(!getDraggedPill(e)) return;
   e.preventDefault();
   if(e.dataTransfer) e.dataTransfer.dropEffect = "move";
 }
@@ -894,7 +876,6 @@ function onBottleClick(idx){
   movePillToBottle(selectedPill, idx);
 }
 
-// bottle correctness check
 // bottle correctness check
 function checkBottle(idx){
   const b = bottleState[idx];
@@ -967,39 +948,24 @@ function onHint(){
     !bottleState.some(b => b.locked && b.categoryIndex === hintCategoryIndex);
   if(!stillValid){
     hintCategoryIndex = chooseHintCategory();
-    
-// events
-bottlesRowEl.querySelectorAll(".bottle").forEach(bottle=>{
-  const idx = parseInt(bottle.getAttribute("data-bottle-index"),10);
-  bottle.addEventListener("click", ()=>{
-    onBottleClick(idx);
-  });
-  // drag-and-drop targets
-  bottle.addEventListener("dragover", (e)=>onBottleDragOver(e, idx));
-  bottle.addEventListener("drop", (e)=>onBottleDrop(e, idx));
-  bottle.addEventListener("dragenter", (e)=>onBottleDragEnter(e, idx));
-  bottle.addEventListener("dragleave", (e)=>onBottleDragLeave(e, idx));
-});
-
-// tray as drop target for returning pills
-pillGridEl.addEventListener("dragover", onTrayDragOver);
-pillGridEl.addEventListener("drop", onTrayDrop);
-
-if (hintBtn) hintBtn.addEventListener("click", onHint);
-if (shuffleBtn) shuffleBtn.addEventListener("click", onShuffle);
-if (resetBtn) resetBtn.addEventListener("click", onResetPuzzle);
-
-puzzleSelectEl.addEventListener("change", e=>{
-  const idx = parseInt(e.target.value,10);
-  if(!Number.isNaN(idx)){
-    setPuzzleIndex(idx);
-    showToast("Loaded new puzzle.", "ok");
+    hintedItems.clear();
   }
-});
-
-
-
-th",block:"center"});
+  if(hintCategoryIndex < 0){
+    showToast("No categories left to hint.", "warn");
+    return;
+  }
+  const cat = PUZZLE.categories[hintCategoryIndex];
+  const remainingItems = cat.items.filter(it => !hintedItems.has(it));
+  if(!remainingItems.length){
+    showToast("All pills from this group are already hinted.", "warn");
+    return;
+  }
+  const item = remainingItems[Math.floor(Math.random()*remainingItems.length)];
+  hintedItems.add(item);
+  const pill = findPillElement(item);
+  if(pill){
+    pill.classList.add("pill-hint");
+    pill.scrollIntoView({behavior:"smooth",block:"center"});
   }
   showToast("Hint: one pill from a hidden group is glowing.", "warn");
 }
@@ -1088,7 +1054,14 @@ bottlesRowEl.querySelectorAll(".bottle").forEach(bottle=>{
   bottle.addEventListener("click", ()=>{
     onBottleClick(idx);
   });
+  bottle.addEventListener("dragover", (e)=>onBottleDragOver(e, idx));
+  bottle.addEventListener("drop", (e)=>onBottleDrop(e, idx));
+  bottle.addEventListener("dragenter", (e)=>onBottleDragEnter(e, idx));
+  bottle.addEventListener("dragleave", (e)=>onBottleDragLeave(e, idx));
 });
+
+pillGridEl.addEventListener("dragover", onTrayDragOver);
+pillGridEl.addEventListener("drop", onTrayDrop);
 
 if (hintBtn) hintBtn.addEventListener("click", onHint);
 if (shuffleBtn) shuffleBtn.addEventListener("click", onShuffle);
