@@ -517,69 +517,19 @@
 
   <script>
     function parseCSVLoose(text) {
-      // Robust CSV parsing that respects quoted fields and commas inside quotes.
-      const rawRows = [];
-      let row = [];
-      let cur = "";
-      let inQuotes = false;
-
-      function pushField() {
-        row.push(cur);
-        cur = "";
-      }
-
-      function pushRow() {
-        if (row.length === 0) return;
-        // Only keep rows that have at least one non-empty cell
-        const hasContent = row.some(cell => (cell || "").trim() !== "");
-        if (hasContent) {
-          rawRows.push(row);
-        }
-        row = [];
-      }
-
-      for (let i = 0; i < text.length; i++) {
-        const ch = text[i];
-
-        if (ch === '"') {
-          // Handle escaped quote inside a quoted field ("")
-          if (inQuotes && text[i + 1] === '"') {
-            cur += '"';
-            i++;
-          } else {
-            inQuotes = !inQuotes;
-          }
-        } else if (ch === "," && !inQuotes) {
-          pushField();
-        } else if ((ch === "\n" || ch === "\r") && !inQuotes) {
-          // End of line
-          // Handle CRLF as a single newline
-          if (ch === "\r" && text[i + 1] === "\n") {
-            i++;
-          }
-          pushField();
-          pushRow();
-        } else {
-          cur += ch;
-        }
-      }
-
-      // Flush last field / row if needed
-      if (cur.length > 0 || row.length > 0) {
-        pushField();
-        pushRow();
-      }
-
-      // Map to the 4-column structure the rest of the code expects:
-      // [diagnosis, imageFile, stem, description+flag...]
-      const rows = rawRows.map(cols => {
-        const diagnosis = (cols[0] || "").trim();
-        const imageFile = (cols[1] || "").trim();
-        const stem = (cols[2] || "").trim();
-        const description = cols.slice(3).join(",").trim();
-        return [diagnosis, imageFile, stem, description];
+      const lines = text.split(/\r\n|\n|\r/);
+      const rows = [];
+      lines.forEach(line => {
+        const trimmed = line.trim();
+        if (!trimmed) return;
+        const parts = trimmed.split(",");
+        if (parts.length === 0) return;
+        const diagnosis = (parts[0] || "").trim();
+        const imageFile = (parts[1] || "").trim();
+        const stem = (parts[2] || "").trim();
+        const description = parts.slice(3).join(",").trim();
+        rows.push([diagnosis, imageFile, stem, description]);
       });
-
       return rows;
     }
 

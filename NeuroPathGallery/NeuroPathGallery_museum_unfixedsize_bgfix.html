@@ -7,7 +7,6 @@
     :root {
       --gold: #e7c26b;
       --gold-soft: #c9a862;
-      --frame-border: #3d2b17;
       --accent: #c05af7;
       --correct: #4caf50;
       --incorrect: #e53935;
@@ -20,7 +19,7 @@
     html, body {
       margin: 0;
       padding: 0;
-      height: 100%;
+      min-height: 100vh;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background:
         radial-gradient(circle at 20% 0%, #38385b 0, transparent 50%),
@@ -47,7 +46,6 @@
     header {
       text-align: center;
       margin-bottom: 4px;
-      position: relative;
     }
 
     .logo-wrap {
@@ -79,10 +77,10 @@
     }
 
     .frame {
-      position: relative;
       width: 30%;
       min-width: 230px;
       max-width: 320px;
+      position: relative;
       cursor: pointer;
       border-radius: 24px;
       padding: 14px;
@@ -187,11 +185,6 @@
       line-height: 1.4;
     }
 
-    .stem-text strong.case-label {
-      color: var(--gold);
-      font-weight: 600;
-    }
-
     .controls-row {
       display: flex;
       justify-content: space-between;
@@ -267,7 +260,16 @@
       color: #ffe6e6;
     }
 
+    .footer-note {
+      margin-top: 10px;
+      text-align: center;
+      font-size: 0.78rem;
+      color: #9e9ec6;
+      opacity: 0.9;
+    }
+
     .status-bar {
+      margin-top: 8px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -279,7 +281,6 @@
       border: 1px solid rgba(255, 255, 255, 0.06);
       box-shadow: 0 8px 18px rgba(0, 0, 0, 0.6);
       gap: 18px;
-      margin-top: 10px;
     }
 
     .status-label {
@@ -291,22 +292,7 @@
       font-weight: 600;
     }
 
-    .footer-note {
-      margin-top: 10px;
-      text-align: center;
-      font-size: 0.78rem;
-      color: #9e9ec6;
-      opacity: 0.9;
-    }
-
-    .footer-row {
-      margin-top: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
+    /* Options overlay */
     .options-overlay {
       position: fixed;
       inset: 0;
@@ -319,7 +305,7 @@
 
     .options-dialog {
       width: 100%;
-      max-width: 360px;
+      max-width: 380px;
       background: radial-gradient(circle at 0 0, #211b40 0%, #050313 60%);
       border-radius: 14px;
       border: 1px solid rgba(255, 255, 255, 0.2);
@@ -356,7 +342,6 @@
       justify-content: center;
       font-size: 0.9rem;
       cursor: pointer;
-      box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
       padding: 0;
     }
 
@@ -397,9 +382,20 @@
         max-width: 100%;
       }
 
-      .frame {
+      .frames-row {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .frame-inner {
         width: 100%;
-        max-width: none;
+        max-width: 600px;
+        height: auto;
+      }
+
+      .frame img {
+        width: 100%;
+        height: auto;
       }
 
       .controls-row {
@@ -409,11 +405,6 @@
 
       .buttons-group {
         justify-content: center;
-      }
-
-      .status-bar {
-        flex-direction: column;
-        gap: 4px;
       }
     }
   </style>
@@ -467,8 +458,7 @@
 
         <div class="controls-row">
           <div class="explanation-card">
-            <div id="explanationBody" class="explanation-body">
-            </div>
+            <div id="explanationBody" class="explanation-body"></div>
           </div>
           <div class="buttons-group">
             <button id="nextCaseBtn" class="primary">Next case</button>
@@ -477,8 +467,6 @@
         </div>
       </div>
     </div>
-
-
 
     <div id="optionsOverlay" class="options-overlay">
       <div class="options-dialog">
@@ -492,20 +480,20 @@
             <span>Step 1 cases only</span>
           </label>
 
-    <div id="statusBar" class="status-bar">
-      <div>
-        <span class="status-label">Cases answered:</span>
-        <span id="casesAnswered" class="status-value">0</span>
-      </div>
-      <div>
-        <span class="status-label">Correct:</span>
-        <span id="casesCorrect" class="status-value">0</span>
-      </div>
-      <div>
-        <span class="status-label">Accuracy:</span>
-        <span id="casesAccuracy" class="status-value">–</span>
-      </div>
-    </div>
+          <div id="statusBar" class="status-bar">
+            <div>
+              <span class="status-label">Cases answered:</span>
+              <span id="casesAnswered" class="status-value">0</span>
+            </div>
+            <div>
+              <span class="status-label">Correct:</span>
+              <span id="casesCorrect" class="status-value">0</span>
+            </div>
+            <div>
+              <span class="status-label">Accuracy:</span>
+              <span id="casesAccuracy" class="status-value">–</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -517,74 +505,20 @@
 
   <script>
     function parseCSVLoose(text) {
-      // Robust CSV parsing that respects quoted fields and commas inside quotes.
-      const rawRows = [];
-      let row = [];
-      let cur = "";
-      let inQuotes = false;
-
-      function pushField() {
-        row.push(cur);
-        cur = "";
-      }
-
-      function pushRow() {
-        if (row.length === 0) return;
-        // Only keep rows that have at least one non-empty cell
-        const hasContent = row.some(cell => (cell || "").trim() !== "");
-        if (hasContent) {
-          rawRows.push(row);
-        }
-        row = [];
-      }
-
-      for (let i = 0; i < text.length; i++) {
-        const ch = text[i];
-
-        if (ch === '"') {
-          // Handle escaped quote inside a quoted field ("")
-          if (inQuotes && text[i + 1] === '"') {
-            cur += '"';
-            i++;
-          } else {
-            inQuotes = !inQuotes;
-          }
-        } else if (ch === "," && !inQuotes) {
-          pushField();
-        } else if ((ch === "\n" || ch === "\r") && !inQuotes) {
-          // End of line
-          // Handle CRLF as a single newline
-          if (ch === "\r" && text[i + 1] === "\n") {
-            i++;
-          }
-          pushField();
-          pushRow();
-        } else {
-          cur += ch;
-        }
-      }
-
-      // Flush last field / row if needed
-      if (cur.length > 0 || row.length > 0) {
-        pushField();
-        pushRow();
-      }
-
-      // Map to the 4-column structure the rest of the code expects:
-      // [diagnosis, imageFile, stem, description+flag...]
-      const rows = rawRows.map(cols => {
-        const diagnosis = (cols[0] || "").trim();
-        const imageFile = (cols[1] || "").trim();
-        const stem = (cols[2] || "").trim();
-        const description = cols.slice(3).join(",").trim();
-        return [diagnosis, imageFile, stem, description];
+      const lines = text.split(/\\r\\n|\\n|\\r/);
+      const rows = [];
+      lines.forEach(line => {
+        const trimmed = line.trim();
+        if (!trimmed) return;
+        const parts = trimmed.split(",");
+        if (parts.length === 0) return;
+        rows.push(parts);
       });
-
       return rows;
     }
 
-    let allCases = [];
     let masterCases = [];
+    let allCases = [];
     let casePool = [];
     let currentChoices = [];
     let correctCase = null;
@@ -593,13 +527,16 @@
 
     let casesAnswered = 0;
     let casesCorrect = 0;
-    let caseCounter = 0;
 
     function updateStatusBar() {
-      document.getElementById("casesAnswered").textContent = String(casesAnswered);
-      document.getElementById("casesCorrect").textContent = String(casesCorrect);
-
+      const answeredEl = document.getElementById("casesAnswered");
+      const correctEl = document.getElementById("casesCorrect");
       const accuracyEl = document.getElementById("casesAccuracy");
+
+      if (answeredEl) answeredEl.textContent = String(casesAnswered);
+      if (correctEl) correctEl.textContent = String(casesCorrect);
+
+      if (!accuracyEl) return;
       if (casesAnswered === 0) {
         accuracyEl.textContent = "–";
       } else {
@@ -618,6 +555,7 @@
         casePool = [];
         return;
       }
+
       allCases = step1Only
         ? masterCases.filter(c => c.isStep1)
         : masterCases.slice();
@@ -627,10 +565,9 @@
         const errorEl = document.getElementById("errorMessage");
         if (errorEl) {
           errorEl.style.display = "block";
-          errorEl.textContent =
-            step1Only
-              ? "No cases are tagged as STEP1 in NeuroPathGallery.csv."
-              : "No cases are currently available.";
+          errorEl.textContent = step1Only
+            ? "No cases are tagged as STEP1 in NeuroPathGallery.csv."
+            : "No cases are currently available.";
         }
       } else {
         const errorEl = document.getElementById("errorMessage");
@@ -641,7 +578,6 @@
       }
     }
 
-
     function pickRandomFromArray(arr) {
       const idx = Math.floor(Math.random() * arr.length);
       return { value: arr[idx], index: idx };
@@ -650,10 +586,12 @@
     function createNewRound() {
       if (!allCases || allCases.length < 3) {
         const errorEl = document.getElementById("errorMessage");
-        errorEl.style.display = "block";
-        errorEl.innerHTML =
-          "Only <strong>" + (allCases ? allCases.length : 0) +
-          "</strong> case(s) are available in the current selection. This game needs at least 3 cases.";
+        if (errorEl) {
+          errorEl.style.display = "block";
+          errorEl.innerHTML =
+            "Only <strong>" + (allCases ? allCases.length : 0) +
+            "</strong> case(s) are available in the current selection. This game needs at least 3 cases.";
+        }
         return;
       }
 
@@ -661,18 +599,15 @@
         resetCasePool();
       }
 
-      // Pick the correct case from the pool
       const pick = pickRandomFromArray(casePool);
       const correctIndex = pick.value;
       casePool.splice(pick.index, 1);
 
       correctCase = allCases[correctIndex];
-      caseCounter += 1;
       hasAnswered = false;
 
       const correctDx = correctCase.diagnosis;
 
-      // Build distractor candidates with different diagnoses than the correct one
       const distractorCandidates = allCases
         .map((c, idx) => ({ case: c, idx }))
         .filter(({ case: c, idx }) => idx !== correctIndex && c.diagnosis !== correctDx);
@@ -688,7 +623,6 @@
       let distractorIndices = [];
 
       if (uniqueDx.length >= 2) {
-        // Choose two different diagnoses, then one random slide from each
         const dxPool = uniqueDx.slice();
         for (let i = dxPool.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
@@ -701,7 +635,6 @@
           return idxArr[r];
         });
       } else {
-        // Fallback: if not enough distinct diagnoses, just pick any other cases (may allow repeats)
         const availableIndices = allCases
           .map((c, idx) => idx)
           .filter(idx => idx !== correctIndex);
@@ -717,7 +650,6 @@
       const choiceIndices = [correctIndex].concat(distractorIndices);
       currentChoices = choiceIndices.map(idx => allCases[idx]);
 
-      // Shuffle the choices so the correct answer isn't always in position 0
       for (let i = currentChoices.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [currentChoices[i], currentChoices[j]] = [currentChoices[j], currentChoices[i]];
@@ -737,14 +669,14 @@
       });
 
       const stemEl = document.getElementById("stemText");
-      stemEl.textContent = correctCase.stem;
+      if (stemEl) {
+        stemEl.textContent = correctCase.stem;
+      }
 
       const explanationBody = document.getElementById("explanationBody");
-      explanationBody.textContent = "";
-
-      document.getElementById("nextCaseBtn").disabled = true;
-
-      updateStatusBar();
+      if (explanationBody) {
+        explanationBody.textContent = "";
+      }
     }
 
     function onFrameClicked(choiceIndex) {
@@ -768,24 +700,25 @@
       casesAnswered += 1;
 
       const explanationBody = document.getElementById("explanationBody");
-      if (chosenCase === correctCase) {
-        casesCorrect += 1;
-        explanationBody.innerHTML =
-          "<strong>Correct.</strong> This is <strong>" +
-          correctCase.diagnosis +
-          "</strong>. " +
-          (correctCase.description || "");
-      } else {
-        explanationBody.innerHTML =
-          "<strong>Not quite.</strong> You chose <strong>" +
-          chosenCase.diagnosis +
-          "</strong>, but the vignette best matches <strong>" +
-          correctCase.diagnosis +
-          "</strong>. " +
-          (correctCase.description || "");
+      if (explanationBody) {
+        if (chosenCase === correctCase) {
+          casesCorrect += 1;
+          explanationBody.innerHTML =
+            "<strong>Correct.</strong> This is <strong>" +
+            correctCase.diagnosis +
+            "</strong>. " +
+            (correctCase.description || "");
+        } else {
+          explanationBody.innerHTML =
+            "<strong>Not quite.</strong> You chose <strong>" +
+            chosenCase.diagnosis +
+            "</strong>, but the vignette best matches <strong>" +
+            correctCase.diagnosis +
+            "</strong>. " +
+            (correctCase.description || "");
+        }
       }
 
-      document.getElementById("nextCaseBtn").disabled = false;
       updateStatusBar();
     }
 
@@ -795,9 +728,9 @@
       const mainContent = document.getElementById("mainContent");
 
       try {
-        loadingEl.style.display = "block";
-        errorEl.style.display = "none";
-        mainContent.style.display = "none";
+        if (loadingEl) loadingEl.style.display = "block";
+        if (errorEl) errorEl.style.display = "none";
+        if (mainContent) mainContent.style.display = "none";
 
         const response = await fetch("NeuroPathGallery.csv", { cache: "no-store" });
         if (!response.ok) {
@@ -812,12 +745,15 @@
           const diagnosis = (cols[0] || "").trim();
           const imageFile = (cols[1] || "").trim();
           const stem = (cols[2] || "").trim();
-          const rawDesc = (cols[3] || "").trim();
+          const rawDesc = cols.slice(3).join(",").trim();
 
           if (!diagnosis || !imageFile || !stem) return;
 
-          const isStep1 = /\bSTEP1\b/i.test(rawDesc);
-          const description = rawDesc.replace(/\bSTEP1\b/gi, "").replace(/,\s*$/, "").trim();
+          const isStep1 = /\\bSTEP1\\b/i.test(rawDesc);
+          const description = rawDesc
+            .replace(/\\bSTEP1\\b/gi, "")
+            .replace(/,\\s*$/, "")
+            .trim();
 
           parsedCases.push({
             id: index,
@@ -830,31 +766,37 @@
         });
 
         masterCases = parsedCases;
+
         const step1Checkbox = document.getElementById("step1OnlyCheckbox");
         step1Only = !!(step1Checkbox && step1Checkbox.checked);
         rebuildActiveCasesFromFilter();
 
-        loadingEl.style.display = "none";
+        if (loadingEl) loadingEl.style.display = "none";
+
         if (!allCases || allCases.length === 0) {
-          errorEl.style.display = "block";
-          errorEl.textContent =
-            "NeuroPathGallery.csv was found, but no usable cases were parsed. " +
-            "Each line should look like: Diagnosis,ImageFileName,ClinicalStem,PathologyDescription";
+          if (errorEl) {
+            errorEl.style.display = "block";
+            errorEl.textContent =
+              "NeuroPathGallery.csv was found, but no usable cases were parsed. " +
+              "Each line should look like: Diagnosis,ImageFileName,ClinicalStem,PathologyDescription[,STEP1]";
+          }
           return;
         }
 
-        errorEl.style.display = "none";
-        mainContent.style.display = "block";
+        if (errorEl) errorEl.style.display = "none";
+        if (mainContent) mainContent.style.display = "block";
 
         updateStatusBar();
         createNewRound();
       } catch (err) {
         console.error(err);
-        loadingEl.style.display = "none";
-        errorEl.style.display = "block";
-        errorEl.textContent =
-          "There was a problem loading NeuroPathGallery.csv. " +
-          "Make sure it is in the same folder as this HTML file.";
+        if (loadingEl) loadingEl.style.display = "none";
+        if (errorEl) {
+          errorEl.style.display = "block";
+          errorEl.textContent =
+            "There was a problem loading NeuroPathGallery.csv. " +
+            "Make sure it is in the same folder as this HTML file.";
+        }
       }
     }
 
@@ -866,9 +808,12 @@
         });
       });
 
-      document.getElementById("nextCaseBtn").addEventListener("click", () => {
-        createNewRound();
-      });
+      const nextCaseBtn = document.getElementById("nextCaseBtn");
+      if (nextCaseBtn) {
+        nextCaseBtn.addEventListener("click", () => {
+          createNewRound();
+        });
+      }
 
       const optionsToggle = document.getElementById("optionsToggle");
       const optionsOverlay = document.getElementById("optionsOverlay");
@@ -880,11 +825,13 @@
           optionsOverlay.style.display = "flex";
         });
       }
+
       if (optionsCloseBtn && optionsOverlay) {
         optionsCloseBtn.addEventListener("click", () => {
           optionsOverlay.style.display = "none";
         });
       }
+
       if (optionsOverlay) {
         optionsOverlay.addEventListener("click", (evt) => {
           if (evt.target === optionsOverlay) {
@@ -892,6 +839,7 @@
           }
         });
       }
+
       if (step1Checkbox) {
         step1Checkbox.addEventListener("change", () => {
           step1Only = step1Checkbox.checked;
