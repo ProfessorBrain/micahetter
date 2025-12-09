@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <title>Neuropath Gallery</title>
-  <link rel="icon" type="image/png" href="favicon.png" />
   <style>
     :root {
       --gold: #e7c26b;
@@ -531,6 +530,7 @@
 
       function pushRow() {
         if (row.length === 0) return;
+        // Only keep rows that have at least one non-empty cell
         const hasContent = row.some(cell => (cell || "").trim() !== "");
         if (hasContent) {
           rawRows.push(row);
@@ -542,6 +542,7 @@
         const ch = text[i];
 
         if (ch === '"') {
+          // Handle escaped quote inside a quoted field ("")
           if (inQuotes && text[i + 1] === '"') {
             cur += '"';
             i++;
@@ -551,6 +552,8 @@
         } else if (ch === "," && !inQuotes) {
           pushField();
         } else if ((ch === "\n" || ch === "\r") && !inQuotes) {
+          // End of line
+          // Handle CRLF as a single newline
           if (ch === "\r" && text[i + 1] === "\n") {
             i++;
           }
@@ -561,11 +564,14 @@
         }
       }
 
+      // Flush last field / row if needed
       if (cur.length > 0 || row.length > 0) {
         pushField();
         pushRow();
       }
 
+      // Map to the 4-column structure the rest of the code expects:
+      // [diagnosis, imageFile, stem, description+flag...]
       const rows = rawRows.map(cols => {
         const diagnosis = (cols[0] || "").trim();
         const imageFile = (cols[1] || "").trim();
@@ -575,28 +581,6 @@
       });
 
       return rows;
-    }
-
-function normalizeImageFileName(name) {
-      if (!name) return "";
-      let base = name.trim();
-      // Normalize extension to lowercase .png and make name portion lowercase as well.
-      const lastSlash = base.lastIndexOf("/");
-      let dir = "";
-      let file = base;
-      if (lastSlash !== -1) {
-        dir = base.slice(0, lastSlash + 1);
-        file = base.slice(lastSlash + 1);
-      }
-      const dotIdx = file.lastIndexOf(".");
-      if (dotIdx === -1) {
-        file = file.toLowerCase() + ".png";
-      } else {
-        const stem = file.slice(0, dotIdx).toLowerCase();
-        const ext = file.slice(dotIdx).toLowerCase();
-        file = stem + ext;
-      }
-      return dir + file;
     }
 
     let allCases = [];
@@ -742,7 +726,7 @@ function normalizeImageFileName(name) {
       currentChoices.forEach((c, i) => {
         const imgEl = document.getElementById("frameImg" + i);
         if (imgEl) {
-          imgEl.src = "images/" + normalizeImageFileName(c.imageFile);
+          imgEl.src = "images/" + c.imageFile;
           imgEl.alt = c.diagnosis + " slide option";
         }
       });
