@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NeuroPathGallery CSV Debugger</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #050510;
+      color: #f5f5f5;
+      margin: 0;
+      padding: 16px;
+    }
+    h1 {
+      margin-top: 0;
+      font-size: 1.4rem;
+    }
+    .section {
+      margin-top: 12px;
+      padding: 10px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    pre {
+      background: rgba(0,0,0,0.6);
+      padding: 8px;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-size: 0.8rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    th, td {
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 4px 6px;
+      vertical-align: top;
+    }
+    th {
+      background: rgba(255,255,255,0.06);
+    }
+    code {
+      font-family: Consolas, "SF Mono", Menlo, monospace;
+    }
+    .error {
+      color: #ffb3b3;
+    }
+  </style>
+</head>
+<body>
+  <h1>NeuroPathGallery CSV Debugger</h1>
+  <p>This helper page loads <code>NeuroPathGallery.csv</code> and shows exactly what the game sees.</p>
+
+  <div id="status" class="section">Loading <code>NeuroPathGallery.csv</code>…</div>
+
+  <div class="section">
+    <h2>Raw lines</h2>
+    <p>Every non-empty line from the CSV (with line number):</p>
+    <pre id="rawLines">(waiting for CSV)</pre>
+  </div>
+
+  <div class="section">
+    <h2>Strictly valid rows (old game logic)</h2>
+    <p>
+      These are the rows that pass the strict check the original game used:<br>
+      &bull; At least 4 comma-separated columns<br>
+      &bull; Non-empty <code>Diagnosis</code>, <code>ImageFileName</code>, and <code>ClinicalStem</code>
+    </p>
+    <p id="strictSummary"></p>
+    <table id="strictTable" style="display:none;">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Diagnosis</th>
+          <th>ImageFileName</th>
+          <th>ClinicalStem</th>
+          <th>PathologyDescription</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    function parseCSVStrict(text) {
+      const lines = text.split(/\\r?\\n/);
+      const rawLines = [];
+      const strictCases = [];
+
+      lines.forEach((line, idx) => {
+        const trimmed = line.trim();
+        if (!trimmed) return;
+        rawLines.push({ index: idx + 1, text: line });
+
+        const parts = trimmed.split(",");
+        if (parts.length < 4) return;
+
+        const diagnosis = parts[0].trim();
+        const imageFile = parts[1].trim();
+        const stem = parts[2].trim();
+        const description = parts.slice(3).join(",").trim();
+
+        if (!diagnosis || !imageFile || !stem) return;
+
+        strictCases.push({
+          lineNumber: idx + 1,
+          diagnosis,
+          imageFile,
+          stem,
+          description
+        });
+      });
+
+      return { rawLines, strictCases };
+    }
+
+    async function init() {
+      const statusEl = document.getElementById("status");
+      const rawLinesEl = document.getElementById("rawLines");
+      const strictSummaryEl = document.getElementById("strictSummary");
+      const strictTable = document.getElementById("strictTable");
+      const strictTbody = strictTable.querySelector("tbody");
+
+      try {
+        statusEl.textContent = "Fetching NeuroPathGallery.csv…";
+        const resp = await fetch("NeuroPathGallery.csv", { cache: "no-store" });
+        if (!resp.ok) {
+          throw new Error("Fetch failed with status " + resp.status);
+        }
+        const text = await resp.text();
+
+        const { rawLines, strictCases } = parseCSVStrict(text);
+
+        // Show raw lines
+        if (rawLines.length === 0) {
+          rawLinesEl.textContent = "No non-empty lines were found.";
+        } else {
+          rawLinesEl.textContent = rawLines
+            .map(r => r.index + ": " + JSON.stringify(r.text))
+            .join("\\n");
+        }
+
+        // Show strict cases
+        strictSummaryEl.textContent =
+          "Found " + strictCases.length + " strictly valid row(s). " +
+          (strictCases.length < 3
+            ? "This is why the game complained about 'Need at least 3 valid rows'."
+            : "The game should be happy with this count.");
+
+        if (strictCases.length > 0) {
+          strictTable.style.display = "table";
+          strictCases.forEach((c, i) => {
+            const tr = document.createElement("tr");
+            const cells = [
+              "#" + (i + 1) + " (line " + c.lineNumber + ")",
+              c.diagnosis,
+              c.imageFile,
+              c.stem,
+              c.description
+            ];
+            cells.forEach(text => {
+              const td = document.createElement("td");
+              td.textContent = text;
+              tr.appendChild(td);
+            });
+            strictTbody.appendChild(tr);
+          });
+        }
+
+        statusEl.textContent = "Debug info loaded successfully.";
+      } catch (err) {
+        console.error(err);
+        statusEl.innerHTML =
+          "<span class='error'>Error loading NeuroPathGallery.csv: " +
+          err.message +
+          "</span>";
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", init);
+  </script>
+</body>
+</html>

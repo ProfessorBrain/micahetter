@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Neuropath Gallery</title>
+  <!--
+    Neuropath Gallery - CSV-Compatible Draft
+    ---------------------------------------
+    This version is tuned to work with the provided NeuroPathGallery.csv, which
+    has exactly 5 rows like:
+
+      Oligodendroglioma,oligodendroglioma.png,A man presents with oligodendroglioma,Here we see fried-egg cells
+      Glioblastoma,gbm.png,A woman presents with glioblastoma,Here we see necrosis and pseudopallisading
+      Medulloblastoma,medulloblastoma.png,A child presents with medulloblastoma,Here we see small round cells with high mitotic activity
+      Ependymoma,ependymoma.png,A person presents with ependymoma,Here we see see ependymal rosettes.
+      Meningioma,meningioma.png,A person presents with meningioma,Here we see whorls of cells.
+
+    Expected layout on disk:
+      NeuroPathGallery_compatible.html   (this file)
+      NeuroPathGallery.csv               (same folder)
+      /images/gbm.png
+      /images/medulloblastoma.png
+      /images/meningioma.png
+      /images/oligodendroglioma.png
+      /images/ependymoma.png
+  -->
+  <style>
+    :root {
+      --gold: #e7c26b;
+      --gold-soft: #c9a862;
+      --frame-border: #3d2b17;
+      --accent: #c05af7;
+      --correct: #4caf50;
+      --incorrect: #e53935;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 20% 0%, #38385b 0, transparent 50%),
+        radial-gradient(circle at 80% 0%, #1b1b2f 0, transparent 50%),
+        radial-gradient(circle at 50% 80%, #15121f 0, #050510 55%, #000000 100%);
+      color: #f5f5f5;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 20px 12px 32px;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 1120px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 4px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-weight: 600;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      font-size: 1.35rem;
+    }
+
+    header h1 span {
+      display: inline-block;
+      padding: 4px 12px;
+      border: 2px solid var(--gold);
+      border-radius: 6px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(0, 0, 0, 0.85));
+      box-shadow:
+        0 0 0 1px rgba(0, 0, 0, 0.6),
+        0 0 18px rgba(0, 0, 0, 0.9);
+    }
+
+    header p {
+      margin: 6px 0 0;
+      font-size: 0.9rem;
+      color: #c3c3de;
+    }
+
+    .tagline {
+      font-size: 0.78rem;
+      margin-top: 3px;
+      color: #b5b5da;
+      font-style: italic;
+    }
+
+    .gallery-shell {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.88rem;
+      color: #d9d8ff;
+      padding: 6px 10px;
+      background: rgba(6, 6, 22, 0.94);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.6);
+    }
+
+    .status-group {
+      display: flex;
+      gap: 12px;
+      align-items: baseline;
+      flex-wrap: wrap;
+    }
+
+    .status-label {
+      opacity: 0.85;
+    }
+
+    .status-value {
+      font-weight: 600;
+    }
+
+    .frames-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .frame {
+      position: relative;
+      width: 30%;
+      min-width: 230px;
+      max-width: 320px;
+      cursor: pointer;
+      border-radius: 14px;
+      border: 2px solid var(--frame-border);
+      padding: 10px;
+      background:
+        radial-gradient(circle at 0 0, rgba(255, 255, 255, 0.08), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(0, 0, 0, 0.8), #23150b 60%);
+      box-shadow:
+        0 14px 22px rgba(0, 0, 0, 0.8),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+      transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease,
+        filter 0.2s ease;
+    }
+
+    .frame:hover {
+      transform: translateY(-4px);
+      box-shadow:
+        0 18px 28px rgba(0, 0, 0, 0.9),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+      border-color: var(--gold-soft);
+      filter: brightness(1.03);
+    }
+
+    .frame.disabled {
+      cursor: default;
+      opacity: 0.9;
+      transform: none;
+      filter: grayscale(0.05);
+    }
+
+    .frame.correct {
+      border-color: var(--correct);
+      box-shadow:
+        0 0 0 2px rgba(67, 160, 71, 0.7),
+        0 16px 30px rgba(0, 0, 0, 0.9);
+    }
+
+    .frame.incorrect-chosen {
+      border-color: var(--incorrect);
+      box-shadow:
+        0 0 0 2px rgba(229, 57, 53, 0.7),
+        0 16px 30px rgba(0, 0, 0, 0.9);
+    }
+
+    .frame-inner {
+      border-radius: 8px;
+      overflow: hidden;
+      background: #0d0d18;
+    }
+
+    .frame img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .frame-title-bar {
+      text-align: center;
+      padding-top: 6px;
+      font-size: 0.8rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #f7f2e8;
+      opacity: 0.8;
+    }
+
+    .frame-key-label {
+      position: absolute;
+      top: 4px;
+      left: 8px;
+      font-size: 0.75rem;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.78);
+      color: var(--gold);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .stem-card {
+      margin-top: 4px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: rgba(8, 6, 18, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.85);
+    }
+
+    .stem-heading {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: #c5c0ff;
+      opacity: 0.9;
+      margin-bottom: 4px;
+    }
+
+    .stem-text {
+      font-size: 0.98rem;
+      line-height: 1.4;
+    }
+
+    .stem-text span.case-label {
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .controls-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .explanation-card {
+      flex: 1 1 260px;
+      min-height: 60px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: rgba(10, 10, 30, 0.94);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 0.9rem;
+      line-height: 1.35;
+      color: #f0e7ff;
+    }
+
+    .explanation-card .explanation-heading {
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: #b5a0ff;
+      opacity: 0.9;
+      margin-bottom: 2px;
+    }
+
+    .explanation-body strong {
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .buttons-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      font-family: inherit;
+      font-size: 0.9rem;
+      border-radius: 999px;
+      padding: 7px 16px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.18s ease, transform 0.12s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+    }
+
+    button.primary {
+      background: linear-gradient(135deg, #a14cf3, #501f9a);
+      color: #fff;
+      box-shadow: 0 10px 18px rgba(0, 0, 0, 0.8);
+    }
+
+    button.primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 24px rgba(0, 0, 0, 0.9);
+    }
+
+    button.secondary {
+      background: rgba(255, 255, 255, 0.06);
+      color: #f4f0ff;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    button.secondary:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    button:disabled {
+      opacity: 0.45;
+      cursor: default;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .loading,
+    .error-message {
+      text-align: center;
+      padding: 14px 10px;
+      border-radius: 10px;
+      background: rgba(8, 6, 22, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      color: #fdfdff;
+      font-size: 0.9rem;
+    }
+
+    .error-message {
+      border-color: #ff6b6b;
+      color: #ffe6e6;
+    }
+
+    .footer-note {
+      margin-top: 10px;
+      text-align: center;
+      font-size: 0.78rem;
+      color: #9e9ec6;
+      opacity: 0.9;
+    }
+
+    .footer-note span {
+      color: var(--gold);
+    }
+
+    @media (max-width: 799px) {
+      body {
+        align-items: stretch;
+      }
+
+      .page {
+        max-width: 100%;
+      }
+
+      .frame {
+        width: 100%;
+        max-width: none;
+      }
+
+      .status-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+      }
+
+      .controls-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .buttons-group {
+        justify-content: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <h1><span>Neuropath&nbsp;Gallery</span></h1>
+      <p>Three works on the wall. One lesion in the hall of the nervous system.</p>
+      <div class="tagline">Study tool – choose the neuropath slide that best matches the vignette.</div>
+    </header>
+
+    <div class="gallery-shell">
+      <div id="statusBar" class="status-bar">
+        <div class="status-group">
+          <div>
+            <span class="status-label">Cases answered:</span>
+            <span id="casesAnswered" class="status-value">0</span>
+          </div>
+          <div>
+            <span class="status-label">Correct:</span>
+            <span id="casesCorrect" class="status-value">0</span>
+          </div>
+          <div>
+            <span class="status-label">Accuracy:</span>
+            <span id="casesAccuracy" class="status-value">–</span>
+          </div>
+        </div>
+        <div class="status-group">
+          <span class="status-label">Current case:</span>
+          <span id="currentCaseLabel" class="status-value">Loading…</span>
+        </div>
+      </div>
+
+      <div id="loadingMessage" class="loading">
+        Loading gallery cases from <code>NeuroPathGallery.csv</code>…
+      </div>
+      <div id="errorMessage" class="error-message" style="display:none;">
+        There was a problem loading the CSV data.
+      </div>
+
+      <div id="mainContent" style="display:none;">
+        <div class="frames-row">
+          <div class="frame" data-choice-index="0">
+            <div class="frame-key-label">Gallery I</div>
+            <div class="frame-inner">
+              <img id="frameImg0" src="" alt="Neuropathology slide option 1">
+            </div>
+            <div class="frame-title-bar">Tap to choose this slide</div>
+          </div>
+
+          <div class="frame" data-choice-index="1">
+            <div class="frame-key-label">Gallery II</div>
+            <div class="frame-inner">
+              <img id="frameImg1" src="" alt="Neuropathology slide option 2">
+            </div>
+            <div class="frame-title-bar">Tap to choose this slide</div>
+          </div>
+
+          <div class="frame" data-choice-index="2">
+            <div class="frame-key-label">Gallery III</div>
+            <div class="frame-inner">
+              <img id="frameImg2" src="" alt="Neuropathology slide option 3">
+            </div>
+            <div class="frame-title-bar">Tap to choose this slide</div>
+          </div>
+        </div>
+
+        <div class="stem-card">
+          <div class="stem-heading">Tonight's case</div>
+          <div id="stemText" class="stem-text">
+            The curator is preparing the next vignette…
+          </div>
+        </div>
+
+        <div class="controls-row">
+          <div class="explanation-card">
+            <div class="explanation-heading">Pathology reveal</div>
+            <div id="explanationBody" class="explanation-body">
+              Make a selection to see the diagnosis and key histologic feature.
+            </div>
+          </div>
+          <div class="buttons-group">
+            <button id="nextCaseBtn" class="primary" disabled>Next case</button>
+            <button id="resetScoreBtn" class="secondary">Reset score</button>
+          </div>
+        </div>
+
+        <div class="footer-note">
+          Draft teaching tool for neuropathology review. <span>For educational use only.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ------- Simple CSV parsing tailored to NeuroPathGallery.csv -------
+    // Assumes no commas INSIDE fields; exactly 4 columns per non-empty line.
+    function parseCSVBasic(text) {
+      const lines = text.split(/\\r?\\n/).map(l => l.trim()).filter(l => l.length > 0);
+      const rows = [];
+      for (const line of lines) {
+        const cols = line.split(",").map(c => c.trim());
+        rows.push(cols);
+      }
+      return rows;
+    }
+
+    let allCases = [];        // { id, diagnosis, imageFile, stem, description }
+    let casePool = [];        // indices we can draw as the "correct" case
+    let currentChoices = [];  // 3 case objects for current question
+    let correctCase = null;
+    let hasAnswered = false;
+
+    let casesAnswered = 0;
+    let casesCorrect = 0;
+    let caseCounter = 0;
+
+    function updateStatusBar() {
+      const answeredEl = document.getElementById("casesAnswered");
+      const correctEl = document.getElementById("casesCorrect");
+      const accuracyEl = document.getElementById("casesAccuracy");
+      const labelEl = document.getElementById("currentCaseLabel");
+
+      answeredEl.textContent = casesAnswered.toString();
+      correctEl.textContent = casesCorrect.toString();
+
+      if (casesAnswered === 0) {
+        accuracyEl.textContent = "–";
+      } else {
+        const pct = Math.round((casesCorrect / casesAnswered) * 100);
+        accuracyEl.textContent = pct + "%";
+      }
+
+      labelEl.textContent = caseCounter === 0 ? "Preparing first case…" : "Case " + caseCounter;
+    }
+
+    function resetCasePool() {
+      casePool = allCases.map((_, idx) => idx);
+    }
+
+    function pickRandomFromArray(arr) {
+      const idx = Math.floor(Math.random() * arr.length);
+      return { value: arr[idx], index: idx };
+    }
+
+    function createNewRound() {
+      if (!allCases || allCases.length < 3) return;
+
+      if (casePool.length === 0) {
+        resetCasePool();
+      }
+
+      const { value: correctIndex, index: poolIndex } = pickRandomFromArray(casePool);
+      casePool.splice(poolIndex, 1);
+      correctCase = allCases[correctIndex];
+      caseCounter += 1;
+      hasAnswered = false;
+
+      // Build two distractors
+      const availableIndices = allCases.map((_, idx) => idx).filter(idx => idx !== correctIndex);
+      const choiceIndices = [correctIndex];
+
+      while (choiceIndices.length < 3 && availableIndices.length > 0) {
+        const pick = pickRandomFromArray(availableIndices);
+        choiceIndices.push(pick.value);
+        availableIndices.splice(pick.index, 1);
+      }
+
+      currentChoices = choiceIndices.map(idx => allCases[idx]);
+
+      // Shuffle choices so the correct slide isn't always in the same frame.
+      for (let i = currentChoices.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [currentChoices[i], currentChoices[j]] = [currentChoices[j], currentChoices[i]];
+      }
+
+      // Update images and text
+      currentChoices.forEach((c, i) => {
+        const imgEl = document.getElementById("frameImg" + i);
+        if (imgEl) {
+          imgEl.src = "images/" + c.imageFile;
+          imgEl.alt = c.diagnosis + " slide option";
+        }
+      });
+
+      const frameEls = document.querySelectorAll(".frame");
+      frameEls.forEach(frame => {
+        frame.classList.remove("correct", "incorrect-chosen", "disabled");
+        const titleBar = frame.querySelector(".frame-title-bar");
+        if (titleBar) titleBar.textContent = "Tap to choose this slide";
+      });
+
+      const stemEl = document.getElementById("stemText");
+      stemEl.innerHTML = '<span class="case-label">Vignette:</span> ' + correctCase.stem;
+
+      const explanationBody = document.getElementById("explanationBody");
+      explanationBody.textContent = "Make a selection to reveal the diagnosis and key histologic feature.";
+
+      document.getElementById("nextCaseBtn").disabled = true;
+
+      updateStatusBar();
+    }
+
+    function onFrameClicked(choiceIndex) {
+      if (hasAnswered || !currentChoices || !correctCase) return;
+      hasAnswered = true;
+
+      const chosenCase = currentChoices[choiceIndex];
+      const frameEls = document.querySelectorAll(".frame");
+
+      frameEls.forEach(frame => frame.classList.add("disabled"));
+
+      frameEls.forEach((frame, idx) => {
+        const thisCase = currentChoices[idx];
+        if (thisCase.id === correctCase.id) {
+          frame.classList.add("correct");
+        }
+        if (idx === choiceIndex && thisCase.id !== correctCase.id) {
+          frame.classList.add("incorrect-chosen");
+        }
+      });
+
+      casesAnswered += 1;
+
+      const explanationBody = document.getElementById("explanationBody");
+      if (chosenCase.id === correctCase.id) {
+        casesCorrect += 1;
+        explanationBody.innerHTML =
+          "<strong>Correct.</strong> This is <strong>" +
+          correctCase.diagnosis +
+          "</strong>. " +
+          correctCase.description;
+      } else {
+        explanationBody.innerHTML =
+          "<strong>Not quite.</strong> You selected <strong>" +
+          chosenCase.diagnosis +
+          "</strong>, but the vignette best matches <strong>" +
+          correctCase.diagnosis +
+          "</strong>. " +
+          correctCase.description;
+      }
+
+      document.getElementById("nextCaseBtn").disabled = false;
+      updateStatusBar();
+    }
+
+    function resetScore() {
+      casesAnswered = 0;
+      casesCorrect = 0;
+      caseCounter = 0;
+      resetCasePool();
+      updateStatusBar();
+      createNewRound();
+    }
+
+    async function init() {
+      const loadingEl = document.getElementById("loadingMessage");
+      const errorEl = document.getElementById("errorMessage");
+      const mainContent = document.getElementById("mainContent");
+
+      try {
+        loadingEl.style.display = "block";
+        errorEl.style.display = "none";
+        mainContent.style.display = "none";
+
+        const response = await fetch("NeuroPathGallery.csv", { cache: "no-store" });
+        if (!response.ok) {
+          throw new Error("Could not fetch NeuroPathGallery.csv");
+        }
+
+        const csvText = await response.text();
+        const rows = parseCSVBasic(csvText);
+
+        const parsedCases = [];
+        rows.forEach((cols, index) => {
+          if (!cols || cols.length < 4) return;
+          const diagnosis = cols[0].trim();
+          const imageFile = cols[1].trim();
+          const stem = cols[2].trim();
+          const description = cols[3].trim();
+
+          if (!diagnosis || !imageFile || !stem) return;
+
+          parsedCases.push({
+            id: index,
+            diagnosis,
+            imageFile,
+            stem,
+            description
+          });
+        });
+
+        if (parsedCases.length < 3) {
+          throw new Error("Need at least 3 valid rows in CSV; found " + parsedCases.length);
+        }
+
+        allCases = parsedCases;
+        resetCasePool();
+
+        loadingEl.style.display = "none";
+        errorEl.style.display = "none";
+        mainContent.style.display = "block";
+
+        updateStatusBar();
+        createNewRound();
+      } catch (err) {
+        console.error(err);
+        loadingEl.style.display = "none";
+        errorEl.style.display = "block";
+        errorEl.textContent =
+          "There was a problem loading NeuroPathGallery.csv. " +
+          "Make sure it is in the same folder as this HTML file and that each row has 4 comma-separated fields.";
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll(".frame").forEach(frame => {
+        frame.addEventListener("click", () => {
+          const idx = Number(frame.getAttribute("data-choice-index") || "0");
+          onFrameClicked(idx);
+        });
+      });
+
+      document.getElementById("nextCaseBtn").addEventListener("click", () => {
+        createNewRound();
+      });
+
+      document.getElementById("resetScoreBtn").addEventListener("click", () => {
+        resetScore();
+      });
+
+      init();
+    });
+  </script>
+</body>
+</html>
