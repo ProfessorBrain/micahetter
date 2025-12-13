@@ -1,0 +1,1245 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Plaque Man — Vascular Territory Pac‑Maze</title>
+  <style>
+    :root{
+      --bg:#070912;
+      --panel:#0c1022;
+      --panel2:#0a0f1d;
+      --ink:#e8ecff;
+      --muted:#aab2d6;
+      --accent:#72e6ff;
+      --accent2:#b6ff7a;
+      --danger:#ff6b8b;
+      --ok:#88ffb0;
+      --warn:#ffd166;
+      --line:rgba(255,255,255,.10);
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius:16px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--ink);
+      background:
+        radial-gradient(1200px 800px at 20% 15%, rgba(114,230,255,.12), transparent 60%),
+        radial-gradient(900px 700px at 80% 25%, rgba(182,255,122,.08), transparent 60%),
+        radial-gradient(1000px 900px at 50% 85%, rgba(255,107,139,.06), transparent 60%),
+        linear-gradient(180deg, #050611, #040514 55%, #03040e);
+      padding:24px 18px 96px; /* bottom padding patch */
+    }
+    .wrap{
+      max-width: 1200px;
+      margin:0 auto;
+      display:grid;
+      grid-template-columns: 420px 1fr;
+      gap:16px;
+      align-items:start;
+    }
+    header{
+      grid-column: 1 / -1;
+      display:flex;
+      gap:14px;
+      align-items:baseline;
+      justify-content:space-between;
+      padding:10px 2px 6px;
+    }
+    .title{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+    h1{
+      font-size: 22px;
+      margin:0;
+      letter-spacing:.2px;
+    }
+    .subtitle{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.25;
+    }
+    .chiprow{display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end;}
+    .chip{
+      font-size:12px;
+      padding:7px 10px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      background:rgba(255,255,255,.03);
+      color:var(--muted);
+    }
+    .panel{
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .panel .inner{padding:14px 14px 12px;}
+    .panel h2{
+      font-size: 14px;
+      margin:0 0 8px;
+      color:var(--muted);
+      font-weight:600;
+      letter-spacing:.25px;
+      text-transform:uppercase;
+    }
+    .stem{
+      background: rgba(0,0,0,.18);
+      border:1px solid var(--line);
+      border-radius: 14px;
+      padding:12px 12px;
+      line-height:1.35;
+      font-size: 14px;
+    }
+    .stem strong{color:var(--accent)}
+    .kpi{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin-top:10px;
+    }
+    .k{
+      background: rgba(0,0,0,.14);
+      border:1px solid var(--line);
+      border-radius: 14px;
+      padding:10px 10px;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    .k .lab{color:var(--muted); font-size:12px;}
+    .k .val{font-weight:700; font-size:14px;}
+    .controls{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:12px;
+      align-items:center;
+    }
+    button{
+      appearance:none;
+      border:1px solid var(--line);
+      color:var(--ink);
+      background: rgba(255,255,255,.04);
+      border-radius: 12px;
+      padding:9px 12px;
+      font-weight:650;
+      cursor:pointer;
+      transition: transform .04s ease, background .15s ease, border-color .15s ease;
+      user-select:none;
+    }
+    button:hover{background: rgba(255,255,255,.07); border-color: rgba(114,230,255,.22);}
+    button:active{transform: translateY(1px);}
+    button.primary{
+      background: linear-gradient(180deg, rgba(114,230,255,.20), rgba(114,230,255,.08));
+      border-color: rgba(114,230,255,.30);
+    }
+    button.good{
+      background: linear-gradient(180deg, rgba(182,255,122,.18), rgba(182,255,122,.06));
+      border-color: rgba(182,255,122,.28);
+    }
+    button.danger{
+      background: linear-gradient(180deg, rgba(255,107,139,.18), rgba(255,107,139,.06));
+      border-color: rgba(255,107,139,.28);
+    }
+    .toggle{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      margin-top:10px;
+      color:var(--muted);
+      font-size:13px;
+    }
+    .toggle input{transform: translateY(1px);}
+    .hint{
+      margin-top:10px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.35;
+    }
+    .msg{
+      margin-top:10px;
+      border-radius: 14px;
+      padding:10px 10px;
+      border:1px solid var(--line);
+      background: rgba(0,0,0,.14);
+      font-size:13px;
+      line-height:1.35;
+    }
+    .msg.ok{border-color: rgba(136,255,176,.32); background: rgba(136,255,176,.08); color: #d9ffe7;}
+    .msg.bad{border-color: rgba(255,107,139,.35); background: rgba(255,107,139,.08); color: #ffe4ec;}
+    .msg.warn{border-color: rgba(255,209,102,.35); background: rgba(255,209,102,.08); color: #fff3d6;}
+    .canvasWrap{
+      position:relative;
+      padding:14px;
+    }
+    .gameCard{
+      border-radius: var(--radius);
+      overflow:hidden;
+      border:1px solid var(--line);
+      background: rgba(0,0,0,.20);
+    }
+    canvas{
+      width:100%;
+      height:auto;
+      display:block;
+      background: radial-gradient(900px 650px at 50% 20%, rgba(255,255,255,.05), transparent 55%),
+                  radial-gradient(850px 650px at 50% 80%, rgba(114,230,255,.05), transparent 55%),
+                  rgba(0,0,0,.22);
+    }
+    .overlayHUD{
+      position:absolute;
+      inset:14px 14px auto 14px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      pointer-events:none;
+    }
+    .hudLeft,.hudRight{
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+      pointer-events:none;
+    }
+    .pill{
+      pointer-events:none;
+      font-size:12px;
+      padding:7px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(0,0,0,.25);
+      color:var(--muted);
+      backdrop-filter: blur(6px);
+    }
+    .pill strong{color:var(--ink)}
+    .mobilePad{
+      margin-top:12px;
+      display:none;
+      gap:10px;
+      justify-content:center;
+      flex-wrap:wrap;
+    }
+    .pad{
+      display:grid;
+      grid-template-columns: 56px 56px 56px;
+      grid-template-rows: 56px 56px 56px;
+      gap:8px;
+      user-select:none;
+    }
+    .pad button{
+      width:56px; height:56px;
+      border-radius: 14px;
+      font-size:18px;
+      padding:0;
+    }
+    .pad button.blank{
+      opacity:0;
+      pointer-events:none;
+    }
+    footer{
+      grid-column:1 / -1;
+      margin-top:8px;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.35;
+      opacity:.95;
+    }
+    .tiny{font-size:12px; color:var(--muted);}
+    a{color:var(--accent)}
+    @media (max-width: 980px){
+      .wrap{grid-template-columns: 1fr; }
+      .mobilePad{display:flex;}
+      header{flex-direction:column; align-items:flex-start;}
+      .chiprow{justify-content:flex-start;}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="title">
+        <h1>Plaque Man</h1>
+        <div class="subtitle">A Pac‑maze built from a top‑down Circle of Willis. Read the clinical stem, then navigate to the correct distal vessel “power pellet.”</div>
+      </div>
+      <div class="chiprow">
+        <div class="chip">Arrow keys / WASD</div>
+        <div class="chip">Power pellet = distal vessel</div>
+        <div class="chip">Study mode toggles labels</div>
+      </div>
+    </header>
+
+    <section class="panel">
+      <div class="inner">
+        <h2>Clinical stem</h2>
+        <div id="stem" class="stem"></div>
+
+        <div class="kpi">
+          <div class="k"><div class="lab">Lives</div><div class="val" id="lives">3</div></div>
+          <div class="k"><div class="lab">Score</div><div class="val" id="score">0</div></div>
+          <div class="k"><div class="lab">Target</div><div class="val" id="targetMask">Hidden</div></div>
+          <div class="k"><div class="lab">Mode</div><div class="val" id="mode">Normal</div></div>
+        </div>
+
+        <div class="controls">
+          <button class="primary" id="btnNext">Next Stem</button>
+          <button id="btnReset">Reset Position</button>
+          <button class="danger" id="btnNewRun">New Run</button>
+        </div>
+
+        <label class="toggle">
+          <input type="checkbox" id="toggleLabels" />
+          Study mode: show vessel labels on the maze
+        </label>
+
+        <div class="hint">
+          Objective: move <strong>Plaque Man</strong> to the <strong>correct power pellet</strong> (distal vessel) that best fits the stem’s localization. If you hit a wrong pellet, you’ll get feedback and can keep going.
+        </div>
+
+        <div id="msg" class="msg" style="display:none"></div>
+
+        <div class="mobilePad" aria-label="Mobile controls">
+          <div class="pad">
+            <button class="blank" tabindex="-1" aria-hidden="true"></button>
+            <button id="padUp" aria-label="Up">▲</button>
+            <button class="blank" tabindex="-1" aria-hidden="true"></button>
+
+            <button id="padLeft" aria-label="Left">◀</button>
+            <button id="padCenter" aria-label="Pause / Resume">⏯</button>
+            <button id="padRight" aria-label="Right">▶</button>
+
+            <button class="blank" tabindex="-1" aria-hidden="true"></button>
+            <button id="padDown" aria-label="Down">▼</button>
+            <button class="blank" tabindex="-1" aria-hidden="true"></button>
+          </div>
+        </div>
+
+        <div class="tiny" style="margin-top:10px">
+          Educational use only. Not medical advice.
+        </div>
+      </div>
+    </section>
+
+    <section class="panel canvasWrap">
+      <div class="overlayHUD">
+        <div class="hudLeft">
+          <div class="pill"><strong>Dots:</strong> <span id="dotsLeft">0</span></div>
+          <div class="pill"><strong>Pellets hit:</strong> <span id="pelletsHit">0</span></div>
+        </div>
+        <div class="hudRight">
+          <div class="pill"><strong>Status:</strong> <span id="status">Navigate</span></div>
+        </div>
+      </div>
+
+      <div class="gameCard">
+        <canvas id="c" width="900" height="700" aria-label="Plaque Man game board"></canvas>
+      </div>
+    </section>
+
+    <footer>
+      <div><strong>Tip:</strong> In normal mode, pellets aren’t labeled. Use the Circle of Willis layout (ICA → ACA/MCA; PCom → PCA; basilar apex → PCAs; basilar branches → SCA/AICA; vertebral branches → PICA; midline descending branch → anterior spinal artery).</div>
+    </footer>
+  </div>
+
+<script>
+(() => {
+  "use strict";
+
+  // -------------------------
+  // Board model (tile grid)
+  // -------------------------
+  const W = 41;   // tiles
+  const H = 31;
+
+  // 0 wall, 1 path
+  const grid = Array.from({length:H}, () => Array.from({length:W}, () => 0));
+  const dots = new Map();         // key "x,y" -> {type:"dot"|"pellet", pelletId?}
+  const pelletCells = new Map();  // pelletId -> {x,y}
+  const pelletHit = new Set();
+
+  const key = (x,y) => `${x},${y}`;
+
+  function inb(x,y){ return x>=0 && y>=0 && x<W && y<H; }
+
+  function carveCircle(cx, cy, r, thickness=2){
+    for (let y=0; y<H; y++){
+      for (let x=0; x<W; x++){
+        const d = Math.hypot(x - cx, y - cy);
+        if (Math.abs(d - r) <= thickness){
+          grid[y][x] = 1;
+        }
+      }
+    }
+  }
+  function carveLine(x1,y1,x2,y2, thickness=2){
+    const steps = Math.max(Math.abs(x2-x1), Math.abs(y2-y1)) * 3 + 1;
+    for (let i=0; i<=steps; i++){
+      const t = i/steps;
+      const x = x1 + (x2-x1)*t;
+      const y = y1 + (y2-y1)*t;
+      for (let oy=-thickness; oy<=thickness; oy++){
+        for (let ox=-thickness; ox<=thickness; ox++){
+          const xx = Math.round(x + ox);
+          const yy = Math.round(y + oy);
+          if (inb(xx,yy)) grid[yy][xx] = 1;
+        }
+      }
+    }
+  }
+
+  // Build a top-down Circle of Willis + vertebrobasilar branches.
+  // Coordinates are chosen to be recognizable (not perfect angiography, but anatomically consistent).
+  const CX = 20, CY = 12;
+
+  // Anterior circle (ACA/ACom) as an arc up top
+  carveCircle(CX, CY, 9, 1); // will represent "arterial ring" vibe
+  // Tighten: carve corridors where we want them (and "erase" later by leaving walls elsewhere)
+  // ICAs
+  carveLine(10, 22, 10, 12, 1);
+  carveLine(30, 22, 30, 12, 1);
+
+  // ACA (A1) to ACom region
+  carveLine(10, 12, 18, 8, 1);
+  carveLine(30, 12, 22, 8, 1);
+  // ACom bridge
+  carveLine(18, 8, 22, 8, 1);
+  // ACA (A2) forward
+  carveLine(20, 8, 16, 2, 1);
+  carveLine(20, 8, 24, 2, 1);
+
+  // MCA laterals
+  carveLine(10, 12, 2, 12, 1);
+  carveLine(30, 12, 38, 12, 1);
+
+  // Posterior circle: PCom and PCA (P1)
+  carveLine(10, 15, 14, 16, 1);   // left PCom-ish connector
+  carveLine(30, 15, 26, 16, 1);   // right PCom-ish connector
+
+  // Basilar apex into PCAs
+  carveLine(20, 15, 14, 16, 1);   // left PCA (P1/P2)
+  carveLine(20, 15, 26, 16, 1);   // right PCA
+
+  // Basilar trunk
+  carveLine(20, 24, 20, 15, 1);
+
+  // Vertebrals
+  carveLine(16, 29, 20, 24, 1);
+  carveLine(24, 29, 20, 24, 1);
+
+  // Anterior spinal artery (descending midline branch)
+  carveLine(20, 24, 20, 30, 1);
+
+  // Cerebellar branches
+  // SCA from basilar just below apex
+  carveLine(20, 17, 14, 19, 1);
+  carveLine(20, 17, 26, 19, 1);
+
+  // AICA from mid-basilar
+  carveLine(20, 20, 12, 20, 1);
+  carveLine(20, 20, 28, 20, 1);
+
+  // PICA from vertebrals
+  carveLine(16, 27, 8, 27, 1);
+  carveLine(24, 27, 32, 27, 1);
+
+  // Slight widening at intersections (to feel more Pac-like)
+  const widen = [
+    [10,12],[30,12],[20,15],[20,24],[20,8],[18,8],[22,8],
+    [14,16],[26,16],[20,20],[16,27],[24,27]
+  ];
+  for (const [x,y] of widen) carveLine(x,y,x,y,2);
+
+  // Add dots to all path cells
+  function rebuildDots(){
+    dots.clear();
+    pelletCells.clear();
+    pelletHit.clear();
+
+    for (let y=0; y<H; y++){
+      for (let x=0; x<W; x++){
+        if (grid[y][x] === 1) dots.set(key(x,y), {type:"dot"});
+      }
+    }
+
+    // Remove dots from around start area for readability
+    for (const [x,y] of [[20,28],[20,27],[20,26],[20,25],[20,24]]) dots.delete(key(x,y));
+
+    // Power pellets at distal ends
+    placePellet("L_ACA", 16, 2);
+    placePellet("R_ACA", 24, 2);
+    placePellet("L_MCA", 2, 12);
+    placePellet("R_MCA", 38, 12);
+    placePellet("L_PCA", 12, 17);
+    placePellet("R_PCA", 28, 17);
+    placePellet("BASILAR", 20, 15); // apex
+    placePellet("L_SCA", 14, 19);
+    placePellet("R_SCA", 26, 19);
+    placePellet("L_AICA", 12, 20);
+    placePellet("R_AICA", 28, 20);
+    placePellet("L_PICA", 8, 27);
+    placePellet("R_PICA", 32, 27);
+    placePellet("L_VERTEBRAL", 16, 29);
+    placePellet("R_VERTEBRAL", 24, 29);
+    placePellet("ANT_SPINAL", 20, 30);
+
+    // Ensure pellets override dots
+    for (const [id,pos] of pelletCells){
+      dots.set(key(pos.x,pos.y), {type:"pellet", pelletId:id});
+    }
+  }
+
+  function placePellet(id, x, y){
+    if (!inb(x,y) || grid[y][x] !== 1){
+      // in case grid drifted, find nearest path cell (fail-safe)
+      let best = null, bestD = 1e9;
+      for (let yy=0; yy<H; yy++){
+        for (let xx=0; xx<W; xx++){
+          if (grid[yy][xx] !== 1) continue;
+          const d = Math.hypot(xx-x, yy-y);
+          if (d < bestD){ bestD = d; best = {x:xx,y:yy}; }
+        }
+      }
+      pelletCells.set(id, best);
+    } else {
+      pelletCells.set(id, {x,y});
+    }
+  }
+
+  rebuildDots();
+
+  // -------------------------
+  // Clinical stems bank
+  // -------------------------
+  const CASES = [
+    {
+      id:"L_MCA",
+      title:"Dominant hemispheric cortical syndrome",
+      stem:`A 72-year-old right-handed patient develops sudden difficulty speaking. They are alert but produce short, effortful phrases and struggle to repeat. Exam shows right lower facial droop and weakness that is worse in the right arm than the leg. Visual fields suggest a right homonymous hemianopia.`,
+      explain:`This is a dominant hemisphere cortical syndrome with aphasia and contralateral face/arm-predominant weakness—most consistent with a <strong>left MCA</strong> infarct (often superior division when expressive aphasia is prominent).`
+    },
+    {
+      id:"R_MCA",
+      title:"Non-dominant hemispheric cortical syndrome",
+      stem:`A 68-year-old patient has abrupt onset of left arm and face weakness with left-sided sensory loss. They ignore stimuli on the left, consistently bump into objects on the left, and have a left homonymous hemianopia. Speech is fluent with intact comprehension.`,
+      explain:`Contralateral face/arm weakness plus prominent hemispatial neglect points to a non-dominant parietal lesion—classically a <strong>right MCA</strong> territory stroke.`
+    },
+    {
+      id:"L_ACA",
+      title:"Medial frontal syndrome (dominant)",
+      stem:`A 74-year-old right-handed patient has sudden right leg weakness and difficulty initiating movement. Family notes the patient is unusually apathetic and slow to respond. They have urinary urgency and occasionally cannot hold urine. Arm strength is relatively preserved.`,
+      explain:`Contralateral <strong>leg</strong>-predominant weakness with abulia/akinesia and urinary symptoms localizes to medial frontal/paracentral lobule—typical of a <strong>left ACA</strong> infarct.`
+    },
+    {
+      id:"R_ACA",
+      title:"Medial frontal syndrome (non-dominant)",
+      stem:`A 63-year-old patient develops abrupt left leg weakness and gait difficulty. They appear abulic and will not spontaneously engage unless prompted. There is mild left arm weakness but the leg is clearly worse. Sensation is relatively spared.`,
+      explain:`Leg-predominant motor deficit with abulia points to medial frontal cortex supplied by the <strong>right ACA</strong>.`
+    },
+    {
+      id:"L_PCA",
+      title:"Occipital-temporal syndrome (dominant)",
+      stem:`A 70-year-old right-handed patient suddenly cannot read printed words despite being able to write a sentence correctly. They have a right homonymous hemianopia. Language output is otherwise normal and motor exam is intact.`,
+      explain:`Alexia without agraphia with a contralateral homonymous hemianopia suggests a dominant occipital lesion involving splenial connections—classically a <strong>left PCA</strong> infarct.`
+    },
+    {
+      id:"R_PCA",
+      title:"Occipital syndrome (non-dominant)",
+      stem:`A 66-year-old patient presents with sudden onset of left homonymous hemianopia. Motor exam is normal. They describe vivid visual distortions and difficulty recognizing familiar faces, but language is intact.`,
+      explain:`Contralateral homonymous hemianopia localizes to occipital cortex; prosopagnosia/visual recognition issues can occur with right occipito-temporal involvement—consistent with a <strong>right PCA</strong> infarct.`
+    },
+    {
+      id:"BASILAR",
+      title:"Ventral pontine syndrome",
+      stem:`A 59-year-old patient suddenly collapses. They are awake and can track with vertical eye movements, but cannot speak or move their limbs. They can blink to command. Pupils are reactive and sensation seems intact.`,
+      explain:`Classic locked-in syndrome (ventral pons) is most associated with occlusion of the <strong>basilar artery</strong>.`
+    },
+    {
+      id:"L_AICA",
+      title:"Lateral pontine syndrome (AICA)",
+      stem:`A 61-year-old patient develops acute vertigo, nausea, and gait instability. Exam shows left facial weakness, decreased lacrimation, and loss of taste on the anterior tongue. Hearing is reduced on the left. There is left limb ataxia and decreased pain/temperature on the right body.`,
+      explain:`Lateral pontine findings with ipsilateral facial paralysis and hearing loss strongly suggest <strong>left AICA</strong> territory ischemia (labyrinthine artery involvement).`
+    },
+    {
+      id:"R_AICA",
+      title:"Lateral pontine syndrome (AICA)",
+      stem:`A 58-year-old patient has sudden vertigo and vomiting. Exam reveals right facial paralysis, reduced hearing on the right, and right-sided limb ataxia. Pain/temperature is reduced on the left side of the body.`,
+      explain:`Ipsilateral facial paralysis with hearing loss plus crossed sensory findings fits a <strong>right AICA</strong> infarct.`
+    },
+    {
+      id:"L_PICA",
+      title:"Lateral medullary syndrome (PICA)",
+      stem:`A 64-year-old patient has abrupt hoarseness, dysphagia, and persistent hiccups. Exam shows left ptosis and miosis, decreased pain/temperature on the left face, and decreased pain/temperature on the right body. They have severe left-sided limb ataxia and nystagmus.`,
+      explain:`Wallenberg (lateral medullary) syndrome localizes to <strong>left PICA</strong> territory (or vertebral branch), given dysphagia/hoarseness, Horner syndrome, crossed pain/temperature, and ataxia.`
+    },
+    {
+      id:"R_PICA",
+      title:"Lateral medullary syndrome (PICA)",
+      stem:`A 57-year-old patient presents with sudden dysphagia and hoarseness. Exam shows right Horner syndrome, diminished pain/temperature on the right face, and diminished pain/temperature on the left body. There is marked right-sided limb ataxia.`,
+      explain:`Crossed sensory findings with bulbar symptoms and ipsilateral ataxia localize to lateral medulla—most consistent with a <strong>right PICA</strong> infarct (or vertebral branch).`
+    },
+    {
+      id:"L_SCA",
+      title:"Superior cerebellar artery syndrome",
+      stem:`A 69-year-old patient develops abrupt dizziness and inability to coordinate the left arm and leg. They have severe left limb ataxia and dysmetria, with prominent nystagmus. Facial strength is intact and there is no hearing loss. Pain/temperature testing is relatively preserved.`,
+      explain:`Prominent ipsilateral cerebellar ataxia without the facial palsy/hearing loss typical of AICA points toward <strong>left SCA</strong> involvement.`
+    },
+    {
+      id:"R_SCA",
+      title:"Superior cerebellar artery syndrome",
+      stem:`A 62-year-old patient suddenly develops marked right-sided limb ataxia and dysmetria with nystagmus. There is no facial paralysis and hearing is intact. Strength is full but coordination is profoundly impaired on the right.`,
+      explain:`Isolated severe ipsilateral cerebellar limb ataxia without AICA/PICA signature cranial nerve findings suggests a <strong>right SCA</strong> infarct.`
+    },
+    {
+      id:"ANT_SPINAL",
+      title:"Anterior spinal artery syndrome",
+      stem:`A 55-year-old patient has sudden neck pain followed by bilateral arm and leg weakness. They lose pain and temperature sensation below the lesion level, but vibration and proprioception are relatively preserved. Reflexes are initially decreased but later become brisk.`,
+      explain:`Anterior cord syndrome (motor + spinothalamic loss with dorsal column sparing) is consistent with <strong>anterior spinal artery</strong> ischemia.`
+    },
+    {
+      id:"VERTEBRAL",
+      title:"Posterior circulation dissection/ischemia pattern",
+      stem:`A 49-year-old patient develops sudden posterior neck pain after minor trauma, followed hours later by vertigo and unsteady gait. Exam shows nystagmus and limb ataxia with subtle ipsilateral facial sensory change. The pattern suggests a posterior circulation source rather than cortical hemispheric stroke.`,
+      explain:`Acute neck pain with posterior circulation ischemic symptoms raises concern for <strong>vertebral artery</strong> pathology (e.g., dissection) supplying the medulla/cerebellum and its branches.`
+    }
+  ];
+
+  // For VERTEBRAL, we accept either left or right vertebral pellet.
+  const ACCEPT = {
+    "VERTEBRAL": new Set(["L_VERTEBRAL","R_VERTEBRAL"])
+  };
+
+  // -------------------------
+  // Game state
+  // -------------------------
+  const canvas = document.getElementById("c");
+  const ctx = canvas.getContext("2d");
+
+  const ui = {
+    stem: document.getElementById("stem"),
+    lives: document.getElementById("lives"),
+    score: document.getElementById("score"),
+    targetMask: document.getElementById("targetMask"),
+    mode: document.getElementById("mode"),
+    msg: document.getElementById("msg"),
+    dotsLeft: document.getElementById("dotsLeft"),
+    pelletsHit: document.getElementById("pelletsHit"),
+    status: document.getElementById("status"),
+    toggleLabels: document.getElementById("toggleLabels"),
+    btnNext: document.getElementById("btnNext"),
+    btnReset: document.getElementById("btnReset"),
+    btnNewRun: document.getElementById("btnNewRun"),
+  };
+
+  let showLabels = false;
+  ui.toggleLabels.addEventListener("change", () => {
+    showLabels = ui.toggleLabels.checked;
+    ui.mode.textContent = showLabels ? "Study" : "Normal";
+    ui.targetMask.textContent = showLabels ? "(labels visible)" : "Hidden";
+  });
+
+  // Player (tile-based smooth movement)
+  const player = {
+    x: 20, y: 28,
+    px: 20, py: 28,
+    dir: {x:0,y:0},
+    nextDir: {x:0,y:0},
+    speed: 6.5, // tiles/sec
+    mouth: 0
+  };
+
+  // Ghosts (plaque emboli)
+  const ghosts = [
+    {x: 10, y: 16, px: 10, py: 16, dir:{x:1,y:0}, speed: 4.8, frightened:0, home:{x:10,y:16}},
+    {x: 30, y: 16, px: 30, py: 16, dir:{x:-1,y:0}, speed: 4.8, frightened:0, home:{x:30,y:16}},
+  ];
+
+  let paused = false;
+  let lives = 3;
+  let score = 0;
+  let dotsEaten = 0;
+
+  let currentCase = null;
+  let runSolved = false;
+  let caseIndex = -1;
+
+  function setMsg(kind, html){
+    ui.msg.style.display = "block";
+    ui.msg.className = `msg ${kind||""}`;
+    ui.msg.innerHTML = html;
+  }
+  function clearMsg(){
+    ui.msg.style.display = "none";
+    ui.msg.textContent = "";
+    ui.msg.className = "msg";
+  }
+
+  function resetPosition(){
+    player.x = player.px = 20;
+    player.y = player.py = 28;
+    player.dir = {x:0,y:0};
+    player.nextDir = {x:0,y:0};
+
+    for (const g of ghosts){
+      g.x = g.px = g.home.x;
+      g.y = g.py = g.home.y;
+      g.dir = {x: (Math.random()<0.5?1:-1), y:0};
+      g.frightened = 0;
+    }
+  }
+
+  function newRun(){
+    lives = 3;
+    score = 0;
+    dotsEaten = 0;
+    runSolved = false;
+    pelletHit.clear();
+    rebuildDots();
+    resetPosition();
+    clearMsg();
+    ui.status.textContent = "Navigate";
+    pickNextCase(true);
+  }
+
+  function pickNextCase(resetPellets=false){
+    caseIndex = (caseIndex + 1) % CASES.length;
+    currentCase = CASES[caseIndex];
+
+    ui.stem.innerHTML = `
+      <div style="color:var(--muted);font-size:12px;margin-bottom:6px;">${escapeHtml(currentCase.title)}</div>
+      ${escapeHtml(currentCase.stem).replace(/\n/g,"<br>")}
+      <div style="margin-top:10px;color:var(--muted);font-size:12px;">
+        <strong style="color:var(--accent)">Task:</strong> Navigate to the distal vessel power pellet that best matches this localization.
+      </div>
+    `;
+
+    runSolved = false;
+    clearMsg();
+    ui.status.textContent = "Navigate";
+    if (!showLabels) ui.targetMask.textContent = "Hidden";
+    else ui.targetMask.textContent = "(labels visible)";
+
+    // optionally reset pellets per stem
+    if (resetPellets){
+      pelletHit.clear();
+    }
+  }
+
+  function escapeHtml(s){
+    return (s||"").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  }
+
+  // -------------------------
+  // Input
+  // -------------------------
+  function setNextDir(dx,dy){
+    if (paused) return;
+    player.nextDir = {x:dx,y:dy};
+  }
+  window.addEventListener("keydown", (e) => {
+    const k = e.key.toLowerCase();
+    if (k === "arrowup" || k === "w") setNextDir(0,-1);
+    else if (k === "arrowdown" || k === "s") setNextDir(0,1);
+    else if (k === "arrowleft" || k === "a") setNextDir(-1,0);
+    else if (k === "arrowright" || k === "d") setNextDir(1,0);
+    else if (k === " " || k === "p") { paused = !paused; ui.status.textContent = paused ? "Paused" : "Navigate"; }
+  });
+
+  // Mobile pad
+  const bindPad = (id,dx,dy) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener("click", () => setNextDir(dx,dy));
+  };
+  bindPad("padUp",0,-1);
+  bindPad("padDown",0,1);
+  bindPad("padLeft",-1,0);
+  bindPad("padRight",1,0);
+  const padCenter = document.getElementById("padCenter");
+  if (padCenter) padCenter.addEventListener("click", () => { paused = !paused; ui.status.textContent = paused ? "Paused" : "Navigate"; });
+
+  ui.btnReset.addEventListener("click", () => resetPosition());
+  ui.btnNext.addEventListener("click", () => pickNextCase(false));
+  ui.btnNewRun.addEventListener("click", () => newRun());
+
+  // -------------------------
+  // Helpers
+  // -------------------------
+  function isPath(x,y){
+    if (!inb(x,y)) return false;
+    return grid[y][x] === 1;
+  }
+  function neighbors(x,y){
+    const n = [];
+    if (isPath(x+1,y)) n.push({x:1,y:0});
+    if (isPath(x-1,y)) n.push({x:-1,y:0});
+    if (isPath(x,y+1)) n.push({x:0,y:1});
+    if (isPath(x,y-1)) n.push({x:0,y:-1});
+    return n;
+  }
+
+  function canMove(fromX, fromY, dx, dy){
+    return isPath(fromX + dx, fromY + dy);
+  }
+
+  function tryTurn(){
+    // only allow turning when centered on a tile
+    const onCenter = (Math.abs(player.px - player.x) < 1e-4) && (Math.abs(player.py - player.y) < 1e-4);
+    if (!onCenter) return;
+
+    const nd = player.nextDir;
+    if (nd.x === 0 && nd.y === 0) return;
+    if (canMove(player.x, player.y, nd.x, nd.y)){
+      player.dir = {x:nd.x, y:nd.y};
+    }
+  }
+
+  function stepEntity(ent, dt){
+    // ent uses x,y integer tile and px,py float
+    // Move continuously toward next tile if possible; otherwise stop at center.
+    const onCenter = (Math.abs(ent.px - ent.x) < 1e-4) && (Math.abs(ent.py - ent.y) < 1e-4);
+    if (onCenter){
+      // decide next movement if blocked
+      if (!canMove(ent.x, ent.y, ent.dir.x, ent.dir.y)){
+        ent.dir = {x:0,y:0};
+      }
+      // If moving, reserve next tile
+    }
+
+    if (ent.dir.x === 0 && ent.dir.y === 0) return;
+
+    const nx = ent.x + ent.dir.x;
+    const ny = ent.y + ent.dir.y;
+
+    if (!isPath(nx, ny)){
+      // can't go there
+      ent.dir = {x:0,y:0};
+      return;
+    }
+
+    const sp = ent.speed * dt;
+    ent.px += ent.dir.x * sp;
+    ent.py += ent.dir.y * sp;
+
+    // When we've crossed into next tile center, snap and advance tile coordinate
+    const arrivedX = (ent.dir.x !== 0) ? (Math.abs(ent.px - nx) < 0.02) : true;
+    const arrivedY = (ent.dir.y !== 0) ? (Math.abs(ent.py - ny) < 0.02) : true;
+
+    if ((ent.dir.x !== 0 && arrivedX) || (ent.dir.y !== 0 && arrivedY)){
+      ent.x = nx; ent.y = ny;
+      ent.px = ent.x; ent.py = ent.y;
+    }
+  }
+
+  function chooseGhostDir(g){
+    // Choose at tile centers. Prefer continuing; at intersections pick random excluding reverse when possible.
+    const opts = neighbors(g.x, g.y);
+    if (opts.length === 0) return {x:0,y:0};
+
+    const reverse = {x:-g.dir.x, y:-g.dir.y};
+    let filtered = opts.filter(o => !(o.x === reverse.x && o.y === reverse.y));
+    if (filtered.length === 0) filtered = opts;
+
+    // If frightened, random; else slight bias toward player by Manhattan distance
+    if (g.frightened > 0){
+      return filtered[Math.floor(Math.random()*filtered.length)];
+    }
+
+    // bias: pick direction that reduces distance with some randomness
+    const px = player.x, py = player.y;
+    filtered.sort((a,b) => {
+      const da = Math.abs((g.x+a.x)-px) + Math.abs((g.y+a.y)-py);
+      const db = Math.abs((g.x+b.x)-px) + Math.abs((g.y+b.y)-py);
+      return da - db;
+    });
+    const pick = (Math.random() < 0.70) ? filtered[0] : filtered[Math.floor(Math.random()*filtered.length)];
+    return pick;
+  }
+
+  // -------------------------
+  // Case checking / pellets
+  // -------------------------
+  function pelletDisplayName(id){
+    const map = {
+      "L_ACA":"Left ACA", "R_ACA":"Right ACA",
+      "L_MCA":"Left MCA", "R_MCA":"Right MCA",
+      "L_PCA":"Left PCA", "R_PCA":"Right PCA",
+      "L_SCA":"Left SCA", "R_SCA":"Right SCA",
+      "BASILAR":"Basilar",
+      "L_AICA":"Left AICA", "R_AICA":"Right AICA",
+      "L_PICA":"Left PICA", "R_PICA":"Right PICA",
+      "L_VERTEBRAL":"Left vertebral", "R_VERTEBRAL":"Right vertebral",
+      "ANT_SPINAL":"Anterior spinal artery",
+    };
+    return map[id] || id;
+  }
+
+  function isCorrectPellet(pelletId){
+    if (!currentCase) return false;
+
+    if (currentCase.id === "VERTEBRAL"){
+      return ACCEPT.VERTEBRAL.has(pelletId);
+    }
+    return pelletId === currentCase.id;
+  }
+
+  function onPelletHit(pelletId){
+    if (pelletHit.has(pelletId)) return; // already collected
+    pelletHit.add(pelletId);
+
+    const correct = isCorrectPellet(pelletId);
+    const name = pelletDisplayName(pelletId);
+
+    if (correct){
+      score += 250;
+      ui.status.textContent = "Correct!";
+      runSolved = true;
+      setMsg("ok", `
+        <div style="font-weight:800;margin-bottom:6px;color:var(--ok)">✅ Correct power pellet: ${escapeHtml(name)}</div>
+        <div>${currentCase.explain}</div>
+        <div style="margin-top:10px;color:var(--muted);font-size:12px;">
+          Press <strong>Next Stem</strong> to keep going, or start a <strong>New Run</strong>.
+        </div>
+      `);
+    } else {
+      score = Math.max(0, score - 80);
+      ui.status.textContent = "Try again";
+      setMsg("warn", `
+        <div style="font-weight:800;margin-bottom:6px;color:var(--warn)">⚠ Not quite: ${escapeHtml(name)}</div>
+        <div style="color:var(--muted);">Keep navigating—find the pellet that best matches the localization in the stem.</div>
+      `);
+    }
+
+    // power pellet effect: frighten ghosts briefly (even if wrong, for fun)
+    for (const g of ghosts) g.frightened = 5.5;
+  }
+
+  // -------------------------
+  // Dots
+  // -------------------------
+  function onEnterTile(x,y){
+    const k = key(x,y);
+    const item = dots.get(k);
+    if (!item) return;
+
+    if (item.type === "dot"){
+      dots.delete(k);
+      score += 5;
+      dotsEaten += 1;
+    } else if (item.type === "pellet"){
+      // consume pellet (leave it visually "eaten" but keep cell)
+      onPelletHit(item.pelletId);
+      // remove from dots map so it doesn't repeatedly trigger
+      dots.delete(k);
+    }
+  }
+
+  // -------------------------
+  // Collisions
+  // -------------------------
+  function collide(a,b){
+    return (a.x === b.x && a.y === b.y);
+  }
+
+  function loseLife(){
+    lives -= 1;
+    ui.status.textContent = "Ouch";
+    if (lives <= 0){
+      setMsg("bad", `
+        <div style="font-weight:800;margin-bottom:6px;color:var(--danger)">💥 Plaque got you.</div>
+        <div style="color:var(--muted);">Run over. Start a <strong>New Run</strong> to try again.</div>
+      `);
+      paused = true;
+      ui.status.textContent = "Paused";
+      return;
+    }
+    setMsg("bad", `
+      <div style="font-weight:800;margin-bottom:6px;color:var(--danger)">💥 Collision with plaque embolus.</div>
+      <div style="color:var(--muted);">Resetting position…</div>
+    `);
+    resetPosition();
+  }
+
+  function eatGhost(g){
+    score += 120;
+    g.x = g.px = g.home.x;
+    g.y = g.py = g.home.y;
+    g.dir = {x:(Math.random()<0.5?1:-1), y:0};
+    g.frightened = 0;
+  }
+
+  // -------------------------
+  // Rendering
+  // -------------------------
+  const TILE = 20; // internal scale; canvas will be sized to fit with DPR handling
+  function resizeCanvas(){
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    const w = Math.max(520, Math.floor(rect.width));
+    const h = Math.floor(w * (700/900)); // keep aspect-ish
+    canvas.style.height = h + "px";
+    canvas.width = Math.floor(w * dpr);
+    canvas.height = Math.floor(h * dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  window.addEventListener("resize", resizeCanvas);
+
+  function draw(){
+    const rect = canvas.getBoundingClientRect();
+    const cw = rect.width;
+    const ch = rect.height;
+
+    ctx.clearRect(0,0,cw,ch);
+
+    // Board transform: center the grid
+    const scale = Math.min(cw / (W*TILE), ch / (H*TILE));
+    const ox = (cw - W*TILE*scale) / 2;
+    const oy = (ch - H*TILE*scale) / 2;
+
+    ctx.save();
+    ctx.translate(ox, oy);
+    ctx.scale(scale, scale);
+
+    // subtle "brain" oval backdrop
+    ctx.save();
+    ctx.globalAlpha = 0.35;
+    ctx.fillStyle = "rgba(255,255,255,0.04)";
+    ctx.beginPath();
+    ctx.ellipse(W*TILE/2, H*TILE/2, W*TILE*0.46, H*TILE*0.40, 0, 0, Math.PI*2);
+    ctx.fill();
+    ctx.restore();
+
+    // Draw walls by drawing only paths with thick strokes and then overlaying walls as dark
+    // First draw path corridors as thick lines (based on grid)
+    // We'll draw each path tile as a rounded rect to give "vessel" look.
+    for (let y=0; y<H; y++){
+      for (let x=0; x<W; x++){
+        if (grid[y][x] !== 1) continue;
+        const px = x*TILE, py = y*TILE;
+        roundRect(px+2, py+2, TILE-4, TILE-4, 7);
+        ctx.fillStyle = "rgba(114,230,255,0.16)";
+        ctx.fill();
+      }
+    }
+
+    // Add vessel "lumen" highlight
+    for (let y=0; y<H; y++){
+      for (let x=0; x<W; x++){
+        if (grid[y][x] !== 1) continue;
+        const px = x*TILE, py = y*TILE;
+        roundRect(px+6, py+6, TILE-12, TILE-12, 6);
+        ctx.fillStyle = "rgba(182,255,122,0.06)";
+        ctx.fill();
+      }
+    }
+
+    // Dots / pellets
+    for (const [k, it] of dots.entries()){
+      const [x,y] = k.split(",").map(Number);
+      const cx = x*TILE + TILE/2;
+      const cy = y*TILE + TILE/2;
+      if (it.type === "dot"){
+        ctx.fillStyle = "rgba(232,236,255,0.65)";
+        ctx.beginPath();
+        ctx.arc(cx, cy, 2.2, 0, Math.PI*2);
+        ctx.fill();
+      } else if (it.type === "pellet"){
+        ctx.fillStyle = "rgba(255,209,102,0.85)";
+        ctx.beginPath();
+        ctx.arc(cx, cy, 6.5, 0, Math.PI*2);
+        ctx.fill();
+        ctx.strokeStyle = "rgba(255,209,102,0.25)";
+        ctx.lineWidth = 2.2;
+        ctx.stroke();
+      }
+    }
+
+    // Draw "eaten" pellets as hollow rings
+    for (const pid of pelletHit){
+      const pos = pelletCells.get(pid);
+      if (!pos) continue;
+      const cx = pos.x*TILE + TILE/2;
+      const cy = pos.y*TILE + TILE/2;
+      ctx.strokeStyle = "rgba(255,209,102,0.22)";
+      ctx.lineWidth = 2.2;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 6.5, 0, Math.PI*2);
+      ctx.stroke();
+    }
+
+    // Labels in study mode
+    if (showLabels){
+      ctx.save();
+      ctx.font = "12px ui-sans-serif, system-ui";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "bottom";
+      ctx.fillStyle = "rgba(232,236,255,0.86)";
+      for (const [pid, pos] of pelletCells.entries()){
+        const cx = pos.x*TILE + TILE/2;
+        const cy = pos.y*TILE + TILE/2 - 10;
+        const label = pelletDisplayName(pid);
+        drawTextHalo(label, cx, cy);
+      }
+      ctx.restore();
+    }
+
+    // Player
+    const pCx = player.px*TILE + TILE/2;
+    const pCy = player.py*TILE + TILE/2;
+    const angle = Math.atan2(player.dir.y, player.dir.x);
+    const mouth = 0.28 + 0.20*Math.abs(Math.sin(player.mouth));
+    const r = 8.8;
+
+    ctx.save();
+    ctx.translate(pCx, pCy);
+    if (player.dir.x !== 0 || player.dir.y !== 0) ctx.rotate(angle);
+    ctx.fillStyle = "rgba(114,230,255,0.95)";
+    ctx.beginPath();
+    ctx.moveTo(0,0);
+    ctx.arc(0,0,r, mouth, Math.PI*2 - mouth);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+
+    // Ghosts
+    for (const g of ghosts){
+      const gx = g.px*TILE + TILE/2;
+      const gy = g.py*TILE + TILE/2;
+      const frightened = g.frightened > 0;
+      ctx.save();
+      ctx.translate(gx,gy);
+      ctx.fillStyle = frightened ? "rgba(182,255,122,0.9)" : "rgba(255,107,139,0.9)";
+      // body
+      ctx.beginPath();
+      ctx.arc(0, -2, 8.5, Math.PI, 0);
+      ctx.lineTo(8.5, 8);
+      // scalloped bottom
+      for (let i=0;i<5;i++){
+        const xx = 8.5 - i*(17/4);
+        ctx.quadraticCurveTo(xx-2.2, 6, xx-(17/8), 8);
+      }
+      ctx.lineTo(-8.5, 8);
+      ctx.closePath();
+      ctx.fill();
+      // eyes
+      ctx.fillStyle = "rgba(7,9,18,0.95)";
+      ctx.beginPath(); ctx.arc(-3.2,-2.2,1.9,0,Math.PI*2); ctx.arc(3.2,-2.2,1.9,0,Math.PI*2); ctx.fill();
+      ctx.restore();
+    }
+
+    // Maze border vignette
+    ctx.save();
+    ctx.strokeStyle = "rgba(255,255,255,0.08)";
+    ctx.lineWidth = 3;
+    roundRect(6,6, W*TILE-12, H*TILE-12, 18);
+    ctx.stroke();
+    ctx.restore();
+
+    ctx.restore();
+  }
+
+  function roundRect(x,y,w,h,r){
+    ctx.beginPath();
+    ctx.moveTo(x+r,y);
+    ctx.arcTo(x+w,y, x+w,y+h, r);
+    ctx.arcTo(x+w,y+h, x,y+h, r);
+    ctx.arcTo(x,y+h, x,y, r);
+    ctx.arcTo(x,y, x+w,y, r);
+    ctx.closePath();
+  }
+
+  function drawTextHalo(text, x, y){
+    ctx.save();
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = "rgba(0,0,0,0.55)";
+    ctx.strokeText(text, x, y);
+    ctx.fillText(text, x, y);
+    ctx.restore();
+  }
+
+  // -------------------------
+  // Main loop
+  // -------------------------
+  let last = performance.now();
+
+  function tick(now){
+    const dt = Math.min(0.035, (now - last)/1000);
+    last = now;
+
+    if (!paused){
+      // Player turning and movement
+      tryTurn();
+
+      // If currently stopped, allow starting if nextDir is viable
+      const onCenter = (Math.abs(player.px - player.x) < 1e-4) && (Math.abs(player.py - player.y) < 1e-4);
+      if (onCenter && (player.dir.x === 0 && player.dir.y === 0)){
+        const nd = player.nextDir;
+        if (canMove(player.x, player.y, nd.x, nd.y)){
+          player.dir = {x:nd.x,y:nd.y};
+        }
+      }
+
+      stepEntity(player, dt);
+      player.mouth += dt * 10.0;
+
+      // On entering a new tile center, consume dot/pellet
+      if ((Math.abs(player.px - player.x) < 1e-4) && (Math.abs(player.py - player.y) < 1e-4)){
+        onEnterTile(player.x, player.y);
+      }
+
+      // Ghosts update
+      for (const g of ghosts){
+        if ((Math.abs(g.px - g.x) < 1e-4) && (Math.abs(g.py - g.y) < 1e-4)){
+          const nd = chooseGhostDir(g);
+          g.dir = nd;
+        }
+        if (g.frightened > 0) g.frightened = Math.max(0, g.frightened - dt);
+        g.speed = g.frightened > 0 ? 3.6 : 4.8;
+        stepEntity(g, dt);
+      }
+
+      // Collisions
+      for (const g of ghosts){
+        if (collide(player, g)){
+          if (g.frightened > 0){
+            eatGhost(g);
+          } else {
+            loseLife();
+          }
+        }
+      }
+    }
+
+    // UI updates
+    ui.lives.textContent = String(lives);
+    ui.score.textContent = String(score);
+    ui.dotsLeft.textContent = String(countDotsRemaining());
+    ui.pelletsHit.textContent = String(pelletHit.size);
+
+    draw();
+    requestAnimationFrame(tick);
+  }
+
+  function countDotsRemaining(){
+    let n = 0;
+    for (const v of dots.values()) if (v.type === "dot") n++;
+    return n;
+  }
+
+  // Initialize
+  function init(){
+    resizeCanvas();
+    newRun();
+    paused = false;
+    requestAnimationFrame(tick);
+  }
+
+  init();
+
+})();
+</script>
+</body>
+</html>
