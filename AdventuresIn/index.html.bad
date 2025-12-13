@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1" name="viewport" />
+  <title>Adventures in Psychiatry — Case Index</title>
+  <style>
+    /* Lightweight “Twine-ish” vibe (dark, serif, roomy) */
+    @keyframes appear { from { opacity: 0; transform: translateY(6px);} to { opacity: 1; transform: translateY(0);} }
+    @keyframes flicker { 0%,29%,31%,63%,65%,77%,79%,86%,88%,91%,93% {opacity:0.6} 30%{opacity:.75} 64%{opacity:.85} 78%{opacity:.9} 87%{opacity:.95} 92%,to{opacity:1} }
+
+    :root{
+      --bg: #000;
+      --fg: #fff;
+      --muted: rgba(255,255,255,0.7);
+      --muted2: rgba(255,255,255,0.45);
+      --card: rgba(255,255,255,0.06);
+      --card2: rgba(255,255,255,0.10);
+      --border: rgba(255,255,255,0.18);
+      --accent: #9fd3ff;
+      --accent2: #ffb3e6;
+      --danger: #ff6b6b;
+    }
+
+    html, body { height: 100%; }
+    body{
+      margin:0;
+      background: var(--bg);
+      color: var(--fg);
+      font: 100% Georgia, serif;
+      line-height: 1.5em;
+      font-size: 1.2em;
+    }
+
+    .wrap{
+      padding: 5% 5%;
+      max-width: 1100px;
+      margin: 0 auto;
+      animation: appear .35s ease-out both;
+    }
+
+    header{
+      display:flex;
+      gap: 16px;
+      align-items: baseline;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    h1{
+      margin:0;
+      font-size: 1.9em;
+      line-height: 1.15em;
+      letter-spacing: 0.2px;
+    }
+
+    .subtitle{
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.95em;
+    }
+
+    .toolbar{
+      width: 100%;
+      display:flex;
+      gap: 10px;
+      align-items:center;
+      flex-wrap: wrap;
+      margin: 18px 0 14px;
+    }
+
+    input[type="search"]{
+      flex: 1 1 260px;
+      background: rgba(255,255,255,0.06);
+      color: var(--fg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font: inherit;
+      outline: none;
+    }
+    input[type="search"]::placeholder{ color: var(--muted2); }
+
+    .btn{
+      appearance:none;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.06);
+      color: var(--fg);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font: inherit;
+      cursor: pointer;
+      user-select:none;
+      transition: transform .05s ease, background .15s ease, border-color .15s ease;
+      text-decoration: none;
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+    .btn:hover{ background: rgba(255,255,255,0.10); border-color: rgba(255,255,255,0.28); }
+    .btn:active{ transform: translateY(1px); }
+
+    .btn.primary{
+      border-color: rgba(159,211,255,0.55);
+      background: rgba(159,211,255,0.10);
+    }
+    .btn.primary:hover{
+      background: rgba(159,211,255,0.14);
+      border-color: rgba(159,211,255,0.70);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .card{
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 14px 12px;
+      animation: appear .25s ease-out both;
+    }
+
+    .card:hover{ background: var(--card2); border-color: rgba(255,255,255,0.28); }
+
+    .card a{
+      color: var(--fg);
+      text-decoration: none;
+      display:block;
+    }
+
+    .caseLabel{
+      display:flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .caseNum{
+      font-weight: bold;
+      letter-spacing: 0.3px;
+    }
+
+    .pill{
+      font-size: 0.85em;
+      color: var(--muted);
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.05);
+      padding: 2px 8px;
+      border-radius: 999px;
+      animation: flicker 4.5s linear infinite;
+    }
+
+    .title{
+      color: var(--muted);
+      font-size: 0.98em;
+      line-height: 1.25em;
+      overflow-wrap: anywhere;
+    }
+
+    .status{
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 0.92em;
+    }
+
+    .hint{
+      margin-top: 6px;
+      color: var(--muted2);
+      font-size: 0.9em;
+    }
+
+    .error{
+      color: var(--danger);
+    }
+
+    .footer{
+      margin-top: 18px;
+      color: var(--muted2);
+      font-size: 0.9em;
+    }
+
+    .small{
+      font-size: 0.9em;
+      color: var(--muted2);
+    }
+
+    code{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.95em;
+      color: rgba(255,255,255,0.92);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 1px 6px;
+      border-radius: 6px;
+    }
+
+    .divider{
+      height: 1px;
+      background: rgba(255,255,255,0.12);
+      margin: 16px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Adventures in Psychiatry</h1>
+        <div class="subtitle">Choose a case. Drop new case files into this same folder and they’ll show up automatically (when served over http/https).</div>
+      </div>
+      <div class="small" id="countLabel">Loading…</div>
+    </header>
+
+    <div class="toolbar">
+      <input id="search" type="search" placeholder="Filter cases (e.g., “3”, “schizoaffective”, “case 12”)…" autocomplete="off" />
+      <a class="btn primary" id="continueBtn" href="#" style="display:none;">▶ Continue last case</a>
+      <button class="btn" id="randomBtn" type="button" disabled>🎲 Random case</button>
+      <button class="btn" id="reloadBtn" type="button">↻ Refresh</button>
+      <button class="btn" id="localScanBtn" type="button" style="display:none;">📁 Scan folder (local)</button>
+      <input id="folderPicker" type="file" webkitdirectory multiple style="display:none;" />
+    </div>
+
+    <div class="grid" id="grid"></div>
+
+    <div class="status" id="status"></div>
+    <div class="hint" id="hint"></div>
+
+    <div class="divider"></div>
+
+    <div class="footer">
+      <div><span class="small">Naming convention expected:</span> <code>AdventuresInPsychiatry-Case#.html</code></div>
+      <div class="small" style="margin-top:6px;">
+        Tip: If you’re opening this via <code>file://</code>, browsers usually block directory/neighbor-file discovery. Easiest fix: run a tiny local server (e.g., <code>python -m http.server</code>) or host via GitHub Pages.
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  const PREFIX = "AdventuresInPsychiatry-Case";
+  const SUFFIX = ".html";
+
+  // Scan settings: fast + resilient to gaps
+  const MAX_N = 250;                 // hard ceiling
+  const STOP_AFTER_CONSEC_MISS = 18; // stop after N consecutive 404s once we've found at least one case
+  const CONCURRENCY = 10;
+
+  const grid = document.getElementById("grid");
+  const statusEl = document.getElementById("status");
+  const hintEl = document.getElementById("hint");
+  const searchEl = document.getElementById("search");
+  const countLabel = document.getElementById("countLabel");
+  const randomBtn = document.getElementById("randomBtn");
+  const reloadBtn = document.getElementById("reloadBtn");
+  const continueBtn = document.getElementById("continueBtn");
+  const localScanBtn = document.getElementById("localScanBtn");
+  const folderPicker = document.getElementById("folderPicker");
+
+  let cases = [];     // { n, href, title }
+  let filtered = [];  // same
+  let scanAbort = false;
+
+  function esc(s){ return (s||"").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+  function setStatus(msg, cls){
+    statusEl.className = "status" + (cls ? (" " + cls) : "");
+    statusEl.textContent = msg || "";
+  }
+
+  function setHint(msg){
+    hintEl.textContent = msg || "";
+  }
+
+  function makeCard(c){
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `
+      <a href="${esc(c.href)}" data-href="${esc(c.href)}">
+        <div class="caseLabel">
+          <div class="caseNum">Case ${c.n}</div>
+          <div class="pill">OPEN</div>
+        </div>
+        <div class="title">${esc(c.title || ("Adventures in Psychiatry — Case " + c.n))}</div>
+      </a>
+    `;
+    div.querySelector("a").addEventListener("click", () => {
+      try { localStorage.setItem("AIP_lastCaseHref", c.href); localStorage.setItem("AIP_lastCaseN", String(c.n)); } catch(e){}
+    });
+    return div;
+  }
+
+  function render(){
+    grid.innerHTML = "";
+    const list = filtered.length ? filtered : cases;
+
+    if (!cases.length){
+      countLabel.textContent = "0 cases";
+      randomBtn.disabled = true;
+      return;
+    }
+
+    countLabel.textContent = `${list.length} case${list.length === 1 ? "" : "s"} shown (${cases.length} total found)`;
+    randomBtn.disabled = (cases.length === 0);
+
+    list.sort((a,b) => a.n - b.n).forEach(c => grid.appendChild(makeCard(c)));
+  }
+
+  function applyFilter(){
+    const q = (searchEl.value || "").trim().toLowerCase();
+    if (!q){
+      filtered = [];
+      render();
+      return;
+    }
+    filtered = cases.filter(c => {
+      const hay = (`case ${c.n} ${c.title || ""} ${c.href}`).toLowerCase();
+      return hay.includes(q);
+    });
+    render();
+  }
+
+  searchEl.addEventListener("input", applyFilter);
+
+  randomBtn.addEventListener("click", () => {
+    if (!cases.length) return;
+    const c = cases[Math.floor(Math.random() * cases.length)];
+    try { localStorage.setItem("AIP_lastCaseHref", c.href); localStorage.setItem("AIP_lastCaseN", String(c.n)); } catch(e){}
+    window.location.href = c.href;
+  });
+
+  reloadBtn.addEventListener("click", () => {
+    scanAbort = true; // stop any existing scan
+    setTimeout(() => { scanAbort = false; start(); }, 40);
+  });
+
+  function setupContinue(){
+    try{
+      const href = localStorage.getItem("AIP_lastCaseHref");
+      const n = localStorage.getItem("AIP_lastCaseN");
+      if (href){
+        continueBtn.href = href;
+        continueBtn.textContent = n ? `▶ Continue Case ${n}` : "▶ Continue last case";
+        continueBtn.style.display = "inline-flex";
+      }
+    }catch(e){}
+  }
+
+  // Attempt to extract the <title> for nicer listing.
+  function extractTitle(htmlText){
+    const m = htmlText.match(/<title>([^<]{1,200})<\/title>/i);
+    return m ? m[1].trim() : "";
+  }
+
+  async function fetchCase(n){
+    const href = `${PREFIX}${n}${SUFFIX}`;
+
+    // Use GET (not HEAD) so it works consistently on GitHub Pages, and to grab title.
+    // Avoid caching so newly dropped files show up on refresh.
+    const res = await fetch(href, { cache: "no-store" });
+    if (!res.ok) return null;
+
+    const text = await res.text();
+    const title = extractTitle(text) || `Adventures in Psychiatry — Case ${n}`;
+    return { n, href, title };
+  }
+
+  async function scanHosted(){
+    cases = [];
+    filtered = [];
+    render();
+
+    setStatus("Scanning for cases…");
+    setHint("");
+
+    let consecMiss = 0;
+    let anyFound = false;
+
+    // Concurrency-limited queue over 1..MAX_N
+    let nextN = 1;
+
+    async function worker(){
+      while (!scanAbort){
+        const n = nextN++;
+        if (n > MAX_N) break;
+
+        // Stop early if we’ve hit a long stretch of misses after finding at least one case.
+        if (anyFound && consecMiss >= STOP_AFTER_CONSEC_MISS) break;
+
+        let result = null;
+        try{
+          result = await fetchCase(n);
+        }catch(e){
+          // If fetch itself errors (often file://), bubble up so we can switch to local scan mode.
+          throw e;
+        }
+
+        if (scanAbort) break;
+
+        if (result){
+          cases.push(result);
+          anyFound = true;
+          consecMiss = 0;
+          setStatus(`Found Case ${n}…`);
+          // Render incrementally for responsiveness
+          render();
+        }else{
+          consecMiss += 1;
+        }
+      }
+    }
+
+    const workers = [];
+    for (let i=0; i<CONCURRENCY; i++){
+      workers.push(worker());
+    }
+
+    await Promise.all(workers);
+
+    // Final render + status
+    cases.sort((a,b) => a.n - b.n);
+    applyFilter();
+
+    if (!cases.length){
+      setStatus("No cases found in this folder (or your browser blocked scanning).", "error");
+      setHint("If you’re opening this via file://, click “Scan folder (local)”, or serve the folder over http/https.");
+      randomBtn.disabled = true;
+    }else{
+      setStatus(`Ready. Found ${cases.length} case${cases.length===1?"":"s"}.`);
+      setHint("Drop a new file like AdventuresInPsychiatry-Case5.html into this folder, then hit Refresh.");
+      randomBtn.disabled = false;
+    }
+  }
+
+  // Local file mode (user selects a folder; we list matching filenames from the chooser)
+  function enableLocalMode(msg){
+    localScanBtn.style.display = "inline-flex";
+    setStatus(msg || "Local file mode: select the folder containing your case HTML files.", "error");
+    setHint("This is the browser-safe way to enumerate files when opening index.html directly from disk.");
+  }
+
+  localScanBtn.addEventListener("click", () => folderPicker.click());
+  folderPicker.addEventListener("change", () => {
+    const files = Array.from(folderPicker.files || []);
+    const matches = [];
+    const re = new RegExp("^" + PREFIX.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "(\\d+)" + SUFFIX.replace(".", "\\.") + "$", "i");
+    for (const f of files){
+      const name = (f && f.name) ? f.name : "";
+      const m = name.match(re);
+      if (m){
+        const n = parseInt(m[1], 10);
+        matches.push({ n, href: name, title: `Adventures in Psychiatry — Case ${n}` });
+      }
+    }
+    cases = matches.sort((a,b) => a.n - b.n);
+    filtered = [];
+    render();
+    applyFilter();
+    if (!cases.length){
+      setStatus("No matching case files found in the selected folder.", "error");
+      setHint(`Expected filenames like ${PREFIX}1${SUFFIX}`);
+    }else{
+      setStatus(`Ready (local). Found ${cases.length} case${cases.length===1?"":"s"}.`);
+      setHint("Tip: for clickable links to work locally, keep index.html in the same folder as the case files.");
+      randomBtn.disabled = false;
+    }
+  });
+
+  async function start(){
+    setupContinue();
+
+    // If we're on file://, fetch scanning is likely to fail; pre-enable local mode button.
+    if (location.protocol === "file:"){
+      enableLocalMode("You’re viewing this via file:// — browsers usually block auto-discovery. Use local scan or serve over http.");
+      // Still try hosted scan in case the browser allows it (some do with flags); but it often fails quickly.
+    }
+
+    try{
+      await scanHosted();
+    }catch(e){
+      enableLocalMode("Auto-scan failed (likely due to file:// restrictions). Use local scan or serve this folder over http/https.");
+    }
+  }
+
+  start();
+})();
+</script>
+</body>
+</html>
