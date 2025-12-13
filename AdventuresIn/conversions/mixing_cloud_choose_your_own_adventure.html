@@ -1,0 +1,902 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The Mixing Cloud Mystery — A Click-Through Clinical Adventure</title>
+  <style>
+    :root{
+      --bg1:#0b1020;
+      --bg2:#0a0f16;
+      --card:#0f172a;
+      --card2:#0b1223;
+      --text:#e5e7eb;
+      --muted:#a7b0c0;
+      --accent:#7dd3fc;
+      --accent2:#c4b5fd;
+      --warn:#fbbf24;
+      --ok:#34d399;
+      --bad:#fb7185;
+      --border:rgba(255,255,255,0.10);
+      --shadow: 0 14px 40px rgba(0,0,0,0.45);
+      --radius: 18px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+
+    html, body { height: 100%; }
+    body{
+      margin:0;
+      font-family: var(--sans);
+      color: var(--text);
+      background:
+        radial-gradient(1200px 700px at 20% 0%, rgba(124, 58, 237, 0.25), transparent 60%),
+        radial-gradient(1000px 600px at 90% 20%, rgba(14, 165, 233, 0.22), transparent 55%),
+        radial-gradient(900px 650px at 40% 100%, rgba(34, 197, 94, 0.12), transparent 55%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      overflow-x:hidden;
+    }
+
+    .wrap{
+      min-height: 100%;
+      padding: 28px 18px 120px; /* bottom padding so text never gets cut off */
+      box-sizing: border-box;
+      display:flex;
+      justify-content:center;
+      align-items:flex-start;
+    }
+
+    .app{
+      width: min(980px, 100%);
+    }
+
+    .topbar{
+      display:flex;
+      gap:14px;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      margin-bottom: 14px;
+    }
+
+    .brand{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+
+    .brand h1{
+      margin:0;
+      font-size: 20px;
+      letter-spacing: 0.2px;
+      font-weight: 800;
+    }
+
+    .brand .sub{
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+      max-width: 680px;
+    }
+
+    .pillrow{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .chip{
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.03);
+      padding: 8px 10px;
+      border-radius: 999px;
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      user-select:none;
+    }
+
+    .chip strong{ color: var(--text); font-weight: 700; }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      overflow:hidden;
+    }
+
+    .card-inner{
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00));
+      padding: 18px 18px 16px;
+    }
+
+    .titleRow{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom: 10px;
+    }
+
+    .nodeTitle{
+      font-size: 18px;
+      font-weight: 800;
+      margin:0;
+    }
+
+    .nodeMeta{
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 12px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .bar{
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      overflow:hidden;
+      border: 1px solid rgba(255,255,255,0.06);
+      width: 160px;
+    }
+    .bar > div{
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 999px;
+      transition: width 300ms ease;
+    }
+
+    .content{
+      margin-top: 6px;
+      font-size: 15px;
+      line-height: 1.55;
+    }
+    .content p{
+      margin: 10px 0;
+      color: var(--text);
+    }
+    .content .muted{ color: var(--muted); }
+
+    .diagram{
+      margin-top: 12px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 14px;
+      background: rgba(0,0,0,0.18);
+      padding: 10px;
+      overflow:auto;
+    }
+    .diagram .caption{
+      margin: 8px 4px 2px;
+      color: var(--muted);
+      font-size: 12px;
+      font-family: var(--mono);
+    }
+
+    .choices{
+      margin-top: 14px;
+      display:grid;
+      gap:10px;
+    }
+
+    .btn{
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      padding: 12px 12px;
+      border-radius: 14px;
+      cursor:pointer;
+      text-align:left;
+      transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+    .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.22); }
+    .btn:active{ transform: translateY(0px); }
+    .btn .small{
+      display:block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 4px;
+      font-family: var(--mono);
+    }
+
+    .footerRow{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255,255,255,0.10);
+    }
+
+    .ghost{
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(0,0,0,0.12);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 14px;
+      cursor:pointer;
+      font-size: 13px;
+      font-family: var(--mono);
+      transition: background 120ms ease, border-color 120ms ease;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+    .ghost:hover{ background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.24); }
+
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.70);
+      border: 1px solid rgba(255,255,255,0.16);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 14px;
+      box-shadow: 0 16px 50px rgba(0,0,0,0.55);
+      max-width: min(860px, calc(100% - 24px));
+      font-size: 13px;
+      line-height: 1.4;
+      opacity: 0;
+      pointer-events:none;
+      transition: opacity 220ms ease, transform 220ms ease;
+    }
+    .toast.show{
+      opacity: 1;
+      transform: translateX(-50%) translateY(-4px);
+    }
+    .toast .tag{
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.18);
+      margin-right: 8px;
+      display:inline-block;
+      vertical-align: baseline;
+    }
+    .tag.ok{ color: var(--ok); border-color: rgba(52,211,153,0.45); background: rgba(52,211,153,0.10); }
+    .tag.warn{ color: var(--warn); border-color: rgba(251,191,36,0.55); background: rgba(251,191,36,0.10); }
+    .tag.bad{ color: var(--bad); border-color: rgba(251,113,133,0.55); background: rgba(251,113,133,0.10); }
+
+    .kbd{
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .btn, .bar > div, .toast { transition: none !important; }
+      .btn:hover{ transform:none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="app">
+      <div class="topbar">
+        <div class="brand">
+          <h1>The Mixing Cloud Mystery</h1>
+          <div class="sub">
+            A click-through, choose-your-path clinical reasoning story adapted (with paraphrase) from a public tweetorial by Dr. Casey Albin.
+            <span class="muted">Educational use only; not medical advice.</span>
+          </div>
+        </div>
+        <div class="pillrow">
+          <div class="chip" title="Your score increases when your choice matches the intended reasoning path.">
+            <span>Score</span> <strong id="score">0</strong>
+          </div>
+          <div class="chip" title="Progress through the adventure.">
+            <span>Step</span> <strong id="step">1</strong>/<span id="stepTotal">1</span>
+          </div>
+          <div class="chip" title="Keyboard: 1–9 select choices; B = back; R = restart.">
+            <span class="kbd">Keys:</span> <strong>1–9</strong> <span class="kbd">B</span> <span class="kbd">R</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" role="application" aria-label="Choose your own adventure story">
+        <div class="card-inner">
+          <div class="titleRow">
+            <h2 class="nodeTitle" id="nodeTitle">Loading…</h2>
+            <div class="nodeMeta">
+              <span id="nodeTag" class="chip" style="padding:6px 10px;">Case</span>
+              <div class="bar" aria-label="progress bar"><div id="progressFill"></div></div>
+            </div>
+          </div>
+
+          <div class="content" id="content"></div>
+
+          <div class="diagram" id="diagram" style="display:none;">
+            <div id="diagramInner"></div>
+            <div class="caption" id="diagramCaption"></div>
+          </div>
+
+          <div class="choices" id="choices"></div>
+
+          <div class="footerRow">
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <button class="ghost" id="backBtn" type="button">← Back</button>
+              <button class="ghost" id="restartBtn" type="button">↻ Restart</button>
+            </div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+              <a class="ghost" href="https://x.com/caseyalbin/status/1531774132970569729" target="_blank" rel="noreferrer">Open original thread on X ↗</a>
+              <a class="ghost" href="https://threadreaderapp.com/thread/1531774132970569729.html" target="_blank" rel="noreferrer">Open unrolled thread ↗</a>
+            </div>
+          </div>
+
+          <div class="muted" style="margin-top:14px; font-size:12px; line-height:1.45;">
+            Credit: Adapted from the public tweetorial “An unusual case of lateral medullary stroke” / “mixing cloud” by Casey Albin, MD (May 31, 2022).
+            This page paraphrases the thread into an interactive format; it does not reproduce the thread verbatim.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    "use strict";
+
+    // Minimal, dependency-free story engine.
+    const story = {
+      start: {
+        tag: "Welcome",
+        title: "A mystery brainstem case",
+        content: [
+          "You are called to the CV-ICU for a patient with three key findings:",
+          "• Left-sided pupil constriction (miosis) noticed on exam",
+          "• Prominent vertigo",
+          "• Altered consciousness (they are not reliably awake and interactive)",
+          "",
+          "People guessed cervical artery dissection. That’s reasonable — but in this case, that’s not the explanation.",
+          "Your job: click through, make the best clinical reasoning choices, and see what’s actually going on."
+        ],
+        choices: [
+          { label: "Start the consult", next: "localize", delta: 0, feedback: {kind:"ok", text:"Let’s localize."}}
+        ]
+      },
+
+      localize: {
+        tag: "Step 1",
+        title: "Where does this localize best?",
+        content: [
+          "Given *left miosis*, *vertigo*, and the overall picture, which single location is the best fit?"
+        ],
+        choices: [
+          { label: "Left lateral medulla", next: "localize_correct", delta: +2,
+            feedback: {kind:"ok", text:"Yes — Horner’s + vestibular symptoms point strongly to the lateral medulla."}},
+          { label: "Left lateral pons", next: "localize_pitfall", delta: 0,
+            feedback: {kind:"warn", text:"Close — the pons can do this, but the intended target here is the lateral medulla."}},
+          { label: "Cerebellar hemisphere", next: "localize_pitfall", delta: 0,
+            feedback: {kind:"bad", text:"Vertigo can mislead, but Horner’s syndrome should push you toward a brainstem localization."}},
+          { label: "Thalamus", next: "localize_pitfall", delta: 0,
+            feedback: {kind:"bad", text:"Thalamic lesions don’t usually explain Horner’s + vestibular symptoms together in this way."}}
+        ]
+      },
+
+      localize_pitfall: {
+        tag: "Step 1",
+        title: "Refocus on the pattern",
+        content: [
+          "Key clue: unilateral miosis suggests sympathetic pathway involvement (a Horner’s pattern).",
+          "Vertigo points toward vestibular nuclei pathways.",
+          "The combination is classic for a *lateral medullary* process (though the lateral pons can overlap)."
+        ],
+        choices: [
+          { label: "Proceed with left lateral medulla as the working localization", next: "localize_correct", delta: +1,
+            feedback: {kind:"ok", text:"Good — choose a working localization and move on."}}
+        ]
+      },
+
+      localize_correct: {
+        tag: "Step 2",
+        title: "But what explains the altered consciousness?",
+        content: [
+          "A lateral medullary stroke explains Horner’s and vertigo well.",
+          "But the patient is also intermittently unresponsive / obtunded.",
+          "What’s the best explanation in this case?"
+        ],
+        choices: [
+          { label: "Central hypoventilation causing hypercarbia (Ondine’s curse physiology)", next: "ondines", delta: +2,
+            feedback: {kind:"ok", text:"Correct — the issue is ventilation, not a primary cortical problem."}},
+          { label: "Seizure with post-ictal state", next: "ondines_pitfall", delta: 0,
+            feedback: {kind:"warn", text:"Possible in many cases, but here the physiology is respiratory failure with hypercarbia."}},
+          { label: "Large hemispheric stroke", next: "ondines_pitfall", delta: 0,
+            feedback: {kind:"bad", text:"The focal signs are brainstem; the mental status change has a different driver here."}}
+        ]
+      },
+
+      ondines_pitfall: {
+        tag: "Step 2",
+        title: "The ABG tells the story",
+        content: [
+          "In the real case, the initial ABG after intubation showed marked hypercarbia.",
+          "During spontaneous breathing trials, the patient repeatedly became apneic when they fell asleep.",
+          "That pattern points to *loss of automatic respiratory drive* from medullary respiratory pattern generators."
+        ],
+        choices: [
+          { label: "Reframe AMS as hypercarbic respiratory failure from medullary involvement", next: "ondines", delta: +1,
+            feedback: {kind:"ok", text:"Exactly. Now think vascular supply."}}
+        ]
+      },
+
+      ondines: {
+        tag: "Step 3",
+        title: "Vessel territory: what supplies a lateral medullary infarct?",
+        content: [
+          "With a *left* lateral medullary localization, which arterial supply is most relevant?"
+        ],
+        choices: [
+          { label: "Left vertebral artery or its PICA branch", next: "cta_clue", delta: +2,
+            feedback: {kind:"ok", text:"Yes — vertebral/PICA territory is the key."}},
+          { label: "Anterior cerebral artery", next: "cta_clue", delta: 0,
+            feedback: {kind:"bad", text:"That would not match a lateral medullary syndrome."}},
+          { label: "Basilar tip (PCA territory)", next: "cta_clue", delta: 0,
+            feedback: {kind:"bad", text:"Basilar tip/PCA territory doesn’t fit this localization."}}
+        ]
+      },
+
+      cta_clue: {
+        tag: "Step 4",
+        title: "CTA clue: asymmetric opacification",
+        content: [
+          "CTA shows something weird:",
+          "The *left* side of the vertebrobasilar system looks more contrast-bright than the right.",
+          "",
+          "If you were thinking dissection, how would you usually interpret reduced opacification?"
+        ],
+        choices: [
+          { label: "The side with reduced opacification may reflect the dissected / thrombosed vessel", next: "cta_dissection_logic", delta: +1,
+            feedback: {kind:"ok", text:"That’s the usual heuristic — but watch what happens next."}},
+          { label: "The brighter side must be the dissected side", next: "cta_dissection_pitfall", delta: 0,
+            feedback: {kind:"warn", text:"Not typically — dissection more often reduces filling/opacification."}},
+          { label: "Opacification differences are meaningless", next: "cta_dissection_pitfall", delta: 0,
+            feedback: {kind:"bad", text:"Sometimes timing matters — but here the asymmetry is the central clue."}}
+        ]
+      },
+
+      cta_dissection_pitfall: {
+        tag: "Step 4",
+        title: "Why the 'dissection' story starts to wobble",
+        content: [
+          "In a vertebral dissection, you often see diminished opacification on the affected side.",
+          "Also, vertebral-territory strokes tend to be *ipsilateral* to the diseased vertebral artery.",
+          "",
+          "But here the clinical syndrome points left, while the CTA brightness pattern tempts you to look right.",
+          "Something doesn’t add up."
+        ],
+        choices: [
+          { label: "Keep going — look for a missing piece of context", next: "reveal_ecmo", delta: +1,
+            feedback: {kind:"ok", text:"Good. When imaging and exam don’t align, context matters."}}
+        ]
+      },
+
+      cta_dissection_logic: {
+        tag: "Step 4",
+        title: "So… why is the left side brighter?",
+        content: [
+          "If diminished filling suggests pathology on that side, then the *right* vertebral looks suspicious.",
+          "But the exam localizes to the *left* lateral medulla.",
+          "",
+          "Before you anchor: what’s the single most important piece of background that changes how you read the CTA in this case?"
+        ],
+        choices: [
+          { label: "The patient is on VA-ECMO in the CV-ICU", next: "reveal_ecmo", delta: +2,
+            feedback: {kind:"ok", text:"Bingo. ECMO can completely change contrast dynamics."}},
+          { label: "The patient recently had a lumbar puncture", next: "reveal_ecmo", delta: 0,
+            feedback: {kind:"bad", text:"That wouldn’t explain this vascular opacification pattern."}},
+          { label: "The patient is febrile with endocarditis", next: "reveal_ecmo", delta: 0,
+            feedback: {kind:"warn", text:"Important in many strokes, but not the key to the CTA asymmetry here."}}
+        ]
+      },
+
+      reveal_ecmo: {
+        tag: "Step 5",
+        title: "Reveal: VA-ECMO changes everything",
+        content: [
+          "The missing context: the patient is in the CV-ICU on ECMO for severe heart failure awaiting transplant.",
+          "Specifically: *VA-ECMO* (venous drainage, arterial return).",
+          "",
+          "On VA-ECMO, blood is drained from the venous side, oxygenated by the circuit, and returned to the arterial side to perfuse the body."
+        ],
+        choices: [
+          { label: "Next: how does contrast move in a CTA when a patient is on ECMO?", next: "contrast_path", delta: 0,
+            feedback: {kind:"ok", text:"Let’s talk contrast flow."}}
+        ]
+      },
+
+      contrast_path: {
+        tag: "Step 6",
+        title: "CTA on ECMO: where does the contrast go?",
+        content: [
+          "During CTA, much of the injected contrast is captured by venous drainage and routed through the ECMO circuit.",
+          "That means a lot of contrast re-enters the patient from the circuit’s *arterial return*.",
+          "",
+          "So when you see one side of the arch/branches opacify more, you should ask: which vessels are being perfused more by ECMO-returned blood?"
+        ],
+        choices: [
+          { label: "The 'brighter' side may reflect direct ECMO perfusion rather than dissection", next: "mixing_cloud", delta: +2,
+            feedback: {kind:"ok", text:"Exactly — now find the mixing point."}},
+          { label: "ECMO has no meaningful effect on CTA", next: "mixing_cloud", delta: 0,
+            feedback: {kind:"bad", text:"It can have a huge effect. The rest of the case hinges on that."}}
+        ]
+      },
+
+      mixing_cloud: {
+        tag: "Step 7",
+        title: "Find the mixing cloud",
+        content: [
+          "Key concept: the 'mixing cloud' is the point where blood from the ECMO arterial return meets blood ejected by the patient’s native heart.",
+          "On CTA, you can sometimes infer it by tracking where contrast-rich blood mixes with contrast-poor blood in the aortic arch.",
+          "",
+          "In this case, the mixing appears in the arch between two major branches."
+        ],
+        diagram: {
+          caption: "Schematic (not to scale): mixing cloud between the left common carotid and left subclavian.",
+          svg: `
+            <svg viewBox="0 0 860 260" width="100%" height="260" role="img" aria-label="ECMO mixing cloud schematic">
+              <defs>
+                <linearGradient id="g1" x1="0" x2="1">
+                  <stop offset="0" stop-color="rgba(125,211,252,0.95)"/>
+                  <stop offset="1" stop-color="rgba(196,181,253,0.95)"/>
+                </linearGradient>
+                <linearGradient id="g2" x1="0" x2="1">
+                  <stop offset="0" stop-color="rgba(229,231,235,0.55)"/>
+                  <stop offset="1" stop-color="rgba(229,231,235,0.15)"/>
+                </linearGradient>
+              </defs>
+
+              <!-- Aorta arch -->
+              <path d="M 120 190 C 210 60, 380 40, 520 70 C 640 95, 710 135, 740 190"
+                    fill="none" stroke="rgba(229,231,235,0.50)" stroke-width="18" stroke-linecap="round"/>
+
+              <!-- Heart -->
+              <path d="M 78 190
+                       C 60 170, 60 140, 85 132
+                       C 103 126, 115 138, 120 148
+                       C 125 138, 137 126, 155 132
+                       C 180 140, 180 170, 162 190
+                       C 145 210, 120 225, 120 225
+                       C 120 225, 95 210, 78 190 Z"
+                    fill="rgba(251,113,133,0.35)" stroke="rgba(251,113,133,0.65)" stroke-width="2"/>
+
+              <!-- Native heart outflow -->
+              <path d="M 140 175 C 180 145, 220 110, 250 90"
+                    fill="none" stroke="rgba(251,113,133,0.55)" stroke-width="10" stroke-linecap="round"/>
+
+              <!-- ECMO return -->
+              <path d="M 785 210 C 750 190, 710 170, 690 150"
+                    fill="none" stroke="url(#g1)" stroke-width="10" stroke-linecap="round"/>
+
+              <!-- Branches -->
+              <path d="M 330 95 L 330 35" stroke="rgba(229,231,235,0.45)" stroke-width="12" stroke-linecap="round"/>
+              <path d="M 430 76 L 430 20" stroke="rgba(229,231,235,0.45)" stroke-width="12" stroke-linecap="round"/>
+              <path d="M 560 86 L 560 20" stroke="rgba(229,231,235,0.45)" stroke-width="12" stroke-linecap="round"/>
+
+              <!-- Mixing cloud -->
+              <circle cx="505" cy="79" r="22" fill="rgba(251,191,36,0.28)" stroke="rgba(251,191,36,0.75)" stroke-width="2"/>
+              <text x="535" y="86" font-family="ui-monospace, monospace" font-size="14" fill="rgba(251,191,36,0.95)">mixing cloud</text>
+
+              <!-- Labels -->
+              <text x="292" y="18" font-family="ui-monospace, monospace" font-size="13" fill="rgba(229,231,235,0.80)">Brachiocephalic</text>
+              <text x="388" y="18" font-family="ui-monospace, monospace" font-size="13" fill="rgba(229,231,235,0.80)">L common carotid</text>
+              <text x="540" y="18" font-family="ui-monospace, monospace" font-size="13" fill="rgba(229,231,235,0.80)">L subclavian</text>
+
+              <text x="40" y="245" font-family="ui-monospace, monospace" font-size="12" fill="rgba(167,176,192,0.95)">
+                Dark red = native heart output; cyan/purple = ECMO-returned contrast-rich blood
+              </text>
+            </svg>
+          `
+        },
+        choices: [
+          { label: "Between the left common carotid and the left subclavian", next: "which_vessels", delta: +2,
+            feedback: {kind:"ok", text:"Yes — that placement explains the asymmetric opacification."}},
+          { label: "At the aortic root (before any arch branches)", next: "mixing_cloud_wrong", delta: 0,
+            feedback: {kind:"warn", text:"If it were that proximal, you’d expect a different pattern across arch branches."}},
+          { label: "At the basilar tip", next: "mixing_cloud_wrong", delta: 0,
+            feedback: {kind:"bad", text:"The mixing cloud is in the aorta/arch, not intracranial."}}
+        ]
+      },
+
+      mixing_cloud_wrong: {
+        tag: "Step 7",
+        title: "Use the branch pattern",
+        content: [
+          "Think like a plumber: if the mixing is very proximal, most branches would share similar contrast density.",
+          "If the mixing is between two branches, vessels proximal to that point behave differently than vessels distal to it.",
+          "",
+          "Here, the clue is that the left vertebral territory behaves differently from the others."
+        ],
+        choices: [
+          { label: "Place the mixing cloud between the left common carotid and left subclavian", next: "which_vessels", delta: +1,
+            feedback: {kind:"ok", text:"Great. Now map perfusion."}}
+        ]
+      },
+
+      which_vessels: {
+        tag: "Step 8",
+        title: "Which brain-supplying vessel gets direct ECMO-perfused blood?",
+        content: [
+          "If the brachiocephalic and left common carotid are getting more native-heart blood,",
+          "and the left subclavian is getting more ECMO-returned blood,",
+          "",
+          "then among the four major brain-supplying vessels (R ICA, L ICA, R vertebral, L vertebral), which is most directly fed by the ECMO side?"
+        ],
+        choices: [
+          { label: "Left vertebral artery (via the left subclavian)", next: "source_of_stroke", delta: +2,
+            feedback: {kind:"ok", text:"Exactly — only the left vertebral is getting that direct ECMO-returned stream here."}},
+          { label: "Right vertebral artery", next: "which_vessels_wrong", delta: 0,
+            feedback: {kind:"warn", text:"Not in this mixing-cloud configuration."}},
+          { label: "Both internal carotids equally", next: "which_vessels_wrong", delta: 0,
+            feedback: {kind:"bad", text:"The carotids are more proximally fed by the native heart in this setup."}}
+        ]
+      },
+
+      which_vessels_wrong: {
+        tag: "Step 8",
+        title: "Trace the branch origins",
+        content: [
+          "Left vertebral arises from the left subclavian.",
+          "So when the left subclavian is on the ECMO-favored side of the mixing cloud, the left vertebral can preferentially carry contrast-rich, circuit-returned blood."
+        ],
+        choices: [
+          { label: "So: left vertebral is the key", next: "source_of_stroke", delta: +1,
+            feedback: {kind:"ok", text:"Now: where did the stroke come from?"}}
+        ]
+      },
+
+      source_of_stroke: {
+        tag: "Step 9",
+        title: "So where did the lateral medullary stroke come from?",
+        content: [
+          "Now the pieces match:",
+          "• Clinical syndrome: left lateral medulla",
+          "• CTA: left vertebral territory looks contrast-rich because it’s being directly perfused by ECMO-returned blood",
+          "",
+          "Given that, what is the most likely source of embolic material to the left vertebral territory in this case?"
+        ],
+        choices: [
+          { label: "The ECMO circuit", next: "wrapup", delta: +2,
+            feedback: {kind:"ok", text:"Yes — circuit-associated thromboembolism is the intended explanation here."}},
+          { label: "A right vertebral dissection", next: "wrapup", delta: 0,
+            feedback: {kind:"warn", text:"That narrative doesn’t fit once you account for ECMO-driven contrast dynamics."}},
+          { label: "A left carotid plaque", next: "wrapup", delta: 0,
+            feedback: {kind:"bad", text:"That would better fit anterior circulation findings."}}
+        ]
+      },
+
+      wrapup: {
+        tag: "Finish",
+        title: "Takeaways",
+        content: [
+          "This case is hard for multiple reasons: localization, physiology, imaging interpretation, and the mechanics of ECMO.",
+          "",
+          "High-yield lessons:",
+          "1) In AMS, look carefully for subtle focal signs (pupils matter).",
+          "2) If you’re asked to evaluate a stroke on ECMO, learn the circuit configuration.",
+          "3) When possible, identify the contrast mixing cloud — it can explain surprising opacification patterns.",
+          "",
+          "Want the original visuals and wording? Use the links below to open the source thread."
+        ],
+        choices: [
+          { label: "Restart and try to max the score", next: "start", delta: 0,
+            feedback: {kind:"ok", text:"Resetting."}}
+        ]
+      }
+    };
+
+    const ordered = [
+      "start","localize","localize_pitfall","localize_correct","ondines_pitfall","ondines",
+      "cta_clue","cta_dissection_logic","cta_dissection_pitfall","reveal_ecmo","contrast_path",
+      "mixing_cloud","mixing_cloud_wrong","which_vessels","which_vessels_wrong","source_of_stroke","wrapup"
+    ];
+    const stepIndex = {};
+    ordered.forEach((id, i) => stepIndex[id] = i);
+
+    const el = (id) => document.getElementById(id);
+
+    const ui = {
+      title: el("nodeTitle"),
+      tag: el("nodeTag"),
+      content: el("content"),
+      choices: el("choices"),
+      score: el("score"),
+      step: el("step"),
+      stepTotal: el("stepTotal"),
+      progressFill: el("progressFill"),
+      backBtn: el("backBtn"),
+      restartBtn: el("restartBtn"),
+      toast: el("toast"),
+      diagram: el("diagram"),
+      diagramInner: el("diagramInner"),
+      diagramCaption: el("diagramCaption"),
+    };
+
+    const STORAGE_KEY = "mixingCloudAdventure_v1";
+
+    let state = {
+      node: "start",
+      score: 0,
+      history: []
+    };
+
+    function loadState(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(!raw) return;
+        const parsed = JSON.parse(raw);
+        if(parsed && story[parsed.node]){
+          state = parsed;
+        }
+      }catch(e){}
+    }
+
+    function saveState(){
+      try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+    }
+
+    let toastTimer = null;
+    function showToast(kind, text){
+      clearTimeout(toastTimer);
+      const tagClass = kind === "ok" ? "ok" : (kind === "warn" ? "warn" : "bad");
+      const tagText = kind === "ok" ? "Nice" : (kind === "warn" ? "Consider" : "Not quite");
+      ui.toast.innerHTML = `<span class="tag ${tagClass}">${tagText}</span>${escapeHtml(text)}`;
+      ui.toast.classList.add("show");
+      toastTimer = setTimeout(() => ui.toast.classList.remove("show"), 1800);
+    }
+
+    function escapeHtml(s){
+      return String(s)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    function setNode(nextId, delta=0, pushHistory=true){
+      if(!story[nextId]) nextId = "start";
+      if(pushHistory) state.history.push(state.node);
+      state.node = nextId;
+      state.score = Math.max(0, state.score + (delta || 0));
+      saveState();
+      render();
+      window.scrollTo({top: 0, behavior: "smooth"});
+    }
+
+    function goBack(){
+      const prev = state.history.pop();
+      if(prev && story[prev]){
+        state.node = prev;
+        saveState();
+        render();
+        window.scrollTo({top: 0, behavior: "smooth"});
+      }else{
+        state.history = [];
+        saveState();
+        render();
+      }
+    }
+
+    function restart(){
+      state = { node: "start", score: 0, history: [] };
+      saveState();
+      render();
+      window.scrollTo({top: 0, behavior: "smooth"});
+    }
+
+    function render(){
+      const node = story[state.node] || story.start;
+
+      ui.title.textContent = node.title;
+      ui.tag.textContent = node.tag || "Case";
+
+      // content
+      ui.content.innerHTML = "";
+      (node.content || []).forEach(line => {
+        if(line === ""){
+          const spacer = document.createElement("div");
+          spacer.style.height = "6px";
+          ui.content.appendChild(spacer);
+          return;
+        }
+        const p = document.createElement("p");
+        p.textContent = line;
+        ui.content.appendChild(p);
+      });
+
+      // diagram
+      if(node.diagram && node.diagram.svg){
+        ui.diagram.style.display = "block";
+        ui.diagramInner.innerHTML = node.diagram.svg;
+        ui.diagramCaption.textContent = node.diagram.caption || "";
+      }else{
+        ui.diagram.style.display = "none";
+        ui.diagramInner.innerHTML = "";
+        ui.diagramCaption.textContent = "";
+      }
+
+      // choices
+      ui.choices.innerHTML = "";
+      const choices = node.choices || [];
+      choices.forEach((c, idx) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "btn";
+        const label = `${idx+1}. ${c.label}`;
+        b.textContent = label;
+
+        if(c.hint){
+          const s = document.createElement("span");
+          s.className = "small";
+          s.textContent = c.hint;
+          b.appendChild(s);
+        }
+
+        b.addEventListener("click", () => {
+          if(c.feedback) showToast(c.feedback.kind || "ok", c.feedback.text || "");
+          setNode(c.next, c.delta || 0, true);
+        });
+        ui.choices.appendChild(b);
+      });
+
+      // meta
+      ui.score.textContent = String(state.score);
+
+      // step is the max step index reached (in ordered list) for a simple progress indicator
+      const idx = stepIndex[state.node] ?? 0;
+      const max = ordered.length - 1;
+      ui.step.textContent = String(Math.min(max+1, idx+1));
+      ui.stepTotal.textContent = String(max+1);
+      ui.progressFill.style.width = `${Math.round(((idx) / max) * 100)}%`;
+
+      ui.backBtn.disabled = state.history.length === 0;
+      ui.backBtn.style.opacity = state.history.length === 0 ? "0.45" : "1";
+      ui.backBtn.style.cursor = state.history.length === 0 ? "not-allowed" : "pointer";
+    }
+
+    // events
+    ui.backBtn.addEventListener("click", goBack);
+    ui.restartBtn.addEventListener("click", restart);
+
+    document.addEventListener("keydown", (e) => {
+      if(e.key === "b" || e.key === "B"){ goBack(); }
+      if(e.key === "r" || e.key === "R"){ restart(); }
+
+      // number keys choose options
+      const k = e.key;
+      if(k >= "1" && k <= "9"){
+        const idx = Number(k) - 1;
+        const node = story[state.node] || story.start;
+        const c = (node.choices || [])[idx];
+        if(c){
+          if(c.feedback) showToast(c.feedback.kind || "ok", c.feedback.text || "");
+          setNode(c.next, c.delta || 0, true);
+        }
+      }
+    });
+
+    loadState();
+    render();
+  </script>
+</body>
+</html>
