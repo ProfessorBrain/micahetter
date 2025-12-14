@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
+<title>Plaque Man</title>
+<style>
+  :root{
+    --bg:#0b0d10;
+    --panel:#11151c;
+    --ink:#e9eef5;
+    --muted:#a9b6c7;
+    --maze:#0a0a0a;
+    --path:#0a0a0a;
+    --line:#2a3342;
+    --good:#3ddc97;
+    --bad:#ff5c7a;
+    --warn:#ffd166;
+  }
+  html,body{height:100%; margin:0; background:var(--bg); color:var(--ink); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;}
+  .wrap{max-width:980px; margin:0 auto; padding:14px 12px 24px;}
+  .title{display:flex; gap:10px; align-items:baseline; justify-content:space-between; flex-wrap:wrap;}
+  .title h1{font-size:18px; margin:0; letter-spacing:.4px;}
+  .title .meta{font-size:12px; color:var(--muted);}
+  .panel{
+    background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:14px;
+    padding:12px 12px;
+    margin-top:10px;
+  }
+  #stem{font-size:14px; line-height:1.35; margin:0;}
+  #status{margin-top:8px; font-size:13px; color:var(--muted);}
+  #status strong{color:var(--ink);}
+  .game{
+    margin-top:12px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+  }
+  canvas{
+    width:min(92vw, 720px);
+    height:auto;
+    border-radius:16px;
+    background:#f2f2f2;
+    box-shadow:0 8px 24px rgba(0,0,0,.35);
+    border:1px solid rgba(255,255,255,.10);
+    image-rendering: pixelated;
+    touch-action:none;
+  }
+  .kbd{
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size:11px;
+    padding:2px 6px;
+    border-radius:7px;
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.04);
+    color:var(--ink);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="title">
+    <h1>Plaque Man</h1>
+    <div class="meta">Arrow keys / WASD to move · Touch a distal power pellet to answer · <span class="kbd">N</span> new case</div>
+  </div>
+
+  <div class="panel">
+    <p id="stem"></p>
+    <div id="status">Case: <strong id="caseN">1</strong> · Score: <strong id="score">0</strong></div>
+  </div>
+
+  <div class="game">
+    <canvas id="c" width="720" height="720" aria-label="Plaque Man maze"></canvas>
+  </div>
+
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  // =============================
+  // Maze geometry (vector, PNG-free)
+  // =============================
+  const CW = 720, CH = 720;
+
+  // Thickness of "vessel corridors"
+  const T = 54;
+
+  // Utility
+  const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+
+  // Rects that form the walkable corridor (black vessel "walls" in your reference image)
+  // This is an approximation of the provided Circle-of-Willis silhouette.
+  const rects = [];
+  const addRect = (x,y,w,h)=>rects.push({x,y,w,h});
+
+  // Upper circulation: big "frame" + two ACA stalks + long lateral arms
+  // Midline long horizontal bar (lateral arms)
+  addRect(0, 240, CW, T);
+
+  // Upper rectangle frame
+  const upperX = 160, upperY = 120, upperW = 400, upperH = 120;
+  addRect(upperX, upperY, upperW, T);                          // top
+  addRect(upperX, upperY, T, upperH + T);                      // left side down to midline bar
+  addRect(upperX + upperW - T, upperY, T, upperH + T);         // right side
+
+  // ACA stalks (two vertical)
+  addRect(270, 0, T, upperY);
+  addRect(396, 0, T, upperY);
+
+  // Carotid "shoulders" (small horizontal nubs that make the step-like look)
+  addRect(upperX - 90, upperY + 10, 90, T);
+  addRect(upperX + upperW, upperY + 10, 90, T);
+
+  // Basilar trunk
+  const trunkX = Math.round((CW - T)/2);
+  addRect(trunkX, 240 + T, T, 260);
+
+  // Cerebellar ladder rungs (3 pairs)
+  const rungH = Math.round(T * 0.58);
+  const rungW = 150;
+  const rungGap = 10;
+  const rungYs = [315, 375, 435]; // visually matches your reference
+  for (const y of rungYs){
+    addRect(trunkX - rungW, y, rungW - rungGap, rungH);
+    addRect(trunkX + T + rungGap, y, rungW - rungGap, rungH);
+  }
+
+  // Bottom "square" (outline)
+  const sqOuterW = 210, sqOuterH = 200;
+  const sqX = trunkX - Math.round((sqOuterW - T)/2);
+  const sqY = 500;
+  addRect(sqX, sqY, sqOuterW, T);                               // top bar
+  addRect(sqX, sqY, T, sqOuterH);                               // left bar
+  addRect(sqX + sqOuterW - T, sqY, T, sqOuterH);                // right bar
+  addRect(sqX, sqY + sqOuterH - T, sqOuterW, T);                // bottom bar
+
+  // Vertebral arms (lateral)
+  addRect(sqX - 120, sqY + 70, 120, T);
+  addRect(sqX + sqOuterW, sqY + 70, 120, T);
+
+  // Anterior spinal artery (added subtle midline drop for gameplay clarity)
+  // Connects to basilar/trunk region and drops below the square.
+  addRect(trunkX + Math.round(T*0.35), sqY + sqOuterH - T, Math.round(T*0.30), 150);
+
+  // Build an offscreen "maze" bitmap for fast collision checks
+  const off = document.createElement("canvas");
+  off.width = CW; off.height = CH;
+  const og = off.getContext("2d", { alpha: false });
+  og.fillStyle = "#f2f2f2";
+  og.fillRect(0,0,CW,CH);
+  og.fillStyle = "#000";
+  for (const r of rects) og.fillRect(r.x, r.y, r.w, r.h);
+
+  // Pixel mask for collision (1 byte per pixel)
+  const mazeData = og.getImageData(0,0,CW,CH).data;
+  const isWalkable = (px,py)=>{
+    const x = px|0, y = py|0;
+    if (x<0 || y<0 || x>=CW || y>=CH) return false;
+    const i = (y*CW + x)*4;
+    // walkable if pixel is "black"
+    return mazeData[i] < 32;
+  };
+
+  // =============================
+  // Game content
+  // =============================
+  const V = {
+    L_ACA: "Left ACA",   R_ACA: "Right ACA",
+    L_MCA: "Left MCA",   R_MCA: "Right MCA",
+    L_PCA: "Left PCA",   R_PCA: "Right PCA",
+    L_SCA: "Left SCA",   R_SCA: "Right SCA",
+    Basilar: "Basilar",
+    L_AICA: "Left AICA", R_AICA: "Right AICA",
+    L_PICA: "Left PICA", R_PICA: "Right PICA",
+    L_VA: "Left vertebral", R_VA: "Right vertebral",
+    ASA: "Anterior spinal artery"
+  };
+
+  // Distal "power pellets" (placed to match the silhouette)
+  const pellets = [
+    {key:"L_ACA",   x:270 + T/2, y:18},
+    {key:"R_ACA",   x:396 + T/2, y:18},
+    {key:"L_MCA",   x:18,        y:240 + T/2},
+    {key:"R_MCA",   x:CW-18,     y:240 + T/2},
+    {key:"L_PCA",   x:upperX + T/2,              y:240 + T/2},
+    {key:"R_PCA",   x:upperX + upperW - T/2,     y:240 + T/2},
+    {key:"Basilar", x:trunkX + T/2,              y:240 + T + 10},
+    {key:"L_SCA",   x:trunkX - 22 - rungW/2,     y:rungYs[0] + rungH/2},
+    {key:"R_SCA",   x:trunkX + T + 22 + rungW/2, y:rungYs[0] + rungH/2},
+    {key:"L_AICA",  x:trunkX - 22 - rungW/2,     y:rungYs[1] + rungH/2},
+    {key:"R_AICA",  x:trunkX + T + 22 + rungW/2, y:rungYs[1] + rungH/2},
+    {key:"L_PICA",  x:trunkX - 22 - rungW/2,     y:rungYs[2] + rungH/2},
+    {key:"R_PICA",  x:trunkX + T + 22 + rungW/2, y:rungYs[2] + rungH/2},
+    {key:"L_VA",    x:sqX - 120 + 12,            y:sqY + 70 + T/2},
+    {key:"R_VA",    x:sqX + sqOuterW + 120 - 12, y:sqY + 70 + T/2},
+    {key:"ASA",     x:trunkX + T/2,              y:sqY + sqOuterH + 120}
+  ];
+
+  // Subtle, non-telegraphy-ish stems (still localize)
+  const stems = {
+    L_ACA: [
+      "A 69-year-old right-handed man develops sudden behavioral slowing and difficulty initiating movements. Exam shows contralateral leg weakness > arm, mild grasp reflex, and urinary urgency.",
+      "A 58-year-old woman has abrupt onset of contralateral leg-predominant weakness and abulia. Sensation is relatively spared in the face and arm."
+    ],
+    R_ACA: [
+      "A 72-year-old man suddenly becomes apathetic and slow to respond. Exam shows contralateral leg weakness > arm, with frontal release signs and new urinary incontinence.",
+      "A 61-year-old woman develops acute contralateral leg heaviness with marked difficulty initiating speech and movement; face and arm are comparatively less affected."
+    ],
+    L_MCA: [
+      "A 64-year-old right-handed woman has sudden contralateral face/arm weakness with gaze preference toward the side of the lesion. She struggles to produce fluent language and naming is impaired.",
+      "A 55-year-old man develops abrupt contralateral arm and face weakness and numbness. He has difficulty repeating and finding words, but leg strength is relatively preserved."
+    ],
+    R_MCA: [
+      "A 70-year-old woman has acute contralateral face/arm weakness and sensory loss with gaze deviation. She ignores stimuli on the contralateral side and is unaware of the deficit.",
+      "A 60-year-old man develops sudden contralateral arm/face weakness and hemisensory loss with profound neglect and spatial disorientation; leg involvement is mild."
+    ],
+    L_PCA: [
+      "A 66-year-old right-handed man suddenly reports missing objects on one side of his visual field. Reading becomes markedly difficult despite intact writing, and the neurologic exam is otherwise near-normal.",
+      "A 59-year-old woman develops abrupt visual field loss on one side with preserved motor strength. She has trouble identifying familiar objects visually."
+    ],
+    R_PCA: [
+      "A 63-year-old man suddenly cannot see items on one side of his visual field. Motor exam is normal; he is startled when approached from the affected side.",
+      "A 57-year-old woman develops acute homonymous visual field loss with difficulty recognizing faces; strength and primary sensation are intact."
+    ],
+    Basilar: [
+      "A 62-year-old man develops sudden vertigo, dysarthria, and rapidly progressive bilateral weakness. Within minutes he is awake but can only communicate with vertical eye movements.",
+      "A 68-year-old woman abruptly collapses with fluctuating consciousness, dysarthria, and bilateral long-tract signs."
+    ],
+    L_SCA: [
+      "A 54-year-old man has sudden severe ipsilateral limb ataxia and dysmetria with slurred speech. Facial weakness is minimal; sensation is largely intact.",
+      "A 60-year-old woman develops abrupt ipsilateral cerebellar signs (past-pointing, intention tremor) with gait instability and nystagmus."
+    ],
+    R_SCA: [
+      "A 56-year-old woman develops acute ipsilateral limb ataxia and dysarthria with prominent gait instability and nystagmus; motor strength is otherwise preserved.",
+      "A 63-year-old man has sudden ipsilateral dysmetria and truncal ataxia without clear facial paralysis."
+    ],
+    L_AICA: [
+      "A 58-year-old woman develops acute vertigo and vomiting with ipsilateral facial weakness and decreased taste. She also reports ipsilateral hearing changes and has ataxia.",
+      "A 67-year-old man has sudden vertigo, nystagmus, ipsilateral facial paralysis, and hearing loss, with ipsilateral limb ataxia."
+    ],
+    R_AICA: [
+      "A 61-year-old man presents with abrupt vertigo, nystagmus, ipsilateral facial weakness, and reduced lacrimation. He notes ipsilateral hearing loss and has ataxia.",
+      "A 52-year-old woman develops sudden vertigo with ipsilateral facial paralysis and hearing loss; gait is markedly ataxic."
+    ],
+    L_PICA: [
+      "A 49-year-old man has abrupt vertigo with hoarseness and dysphagia. Exam shows ipsilateral loss of facial pain/temperature, contralateral loss of body pain/temperature, and ipsilateral Horner syndrome.",
+      "A 73-year-old woman develops sudden nausea and gait instability with severe dysphagia and hiccups; exam shows crossed sensory findings and ipsilateral Horner syndrome."
+    ],
+    R_PICA: [
+      "A 51-year-old woman presents with acute vertigo, dysphagia, and hoarseness. Exam shows crossed pain/temperature deficits and ipsilateral Horner syndrome.",
+      "A 65-year-old man develops sudden vomiting and imbalance with severe dysphagia; exam reveals ipsilateral facial pain/temperature loss with contralateral body pain/temperature loss."
+    ],
+    L_VA: [
+      "A 42-year-old man develops posterior neck pain after minor trauma followed by recurrent brief episodes of vertigo and visual blurring. Neuro exam between episodes is subtle, with mild ipsilateral limb ataxia.",
+      "A 38-year-old woman has acute occipital headache and neck pain with transient diplopia and imbalance; symptoms wax and wane over hours."
+    ],
+    R_VA: [
+      "A 45-year-old man develops sudden neck pain after a workout and then experiences intermittent vertigo and unsteady gait. Exam shows mild ipsilateral ataxia without prominent facial weakness.",
+      "A 40-year-old woman has acute occipital headache/neck pain with episodic posterior-circulation symptoms (vertigo, diplopia, imbalance) that fluctuate."
+    ],
+    ASA: [
+      "A 66-year-old man develops sudden bilateral leg weakness after a hypotensive episode. He has loss of pain/temperature below a clear level, but vibration and proprioception are relatively preserved.",
+      "A 59-year-old woman develops acute paraplegia with urinary retention and loss of pinprick below the lesion; dorsal column modalities are largely spared."
+    ]
+  };
+
+  const vesselKeys = Object.keys(V);
+
+  // =============================
+  // Canvas + drawing
+  // =============================
+  const canvas = document.getElementById("c");
+  const ctx = canvas.getContext("2d", { alpha: false });
+
+  // Pre-rendered maze background
+  const mazeImg = off; // already drawn
+
+  function drawPacman(x,y,dir,open=0.35){
+    // dir: 0R 1D 2L 3U
+    const r = 12;
+    const base = [0, Math.PI/2, Math.PI, -Math.PI/2][dir] || 0;
+    const mouth = open * Math.PI;
+    ctx.beginPath();
+    ctx.moveTo(x,y);
+    ctx.arc(x,y,r, base + mouth/2, base - mouth/2, true);
+    ctx.closePath();
+    ctx.fillStyle = "#ffcf33";
+    ctx.fill();
+  }
+
+  function draw(){
+    // background
+    ctx.drawImage(mazeImg,0,0);
+
+    // pellets
+    for (const p of pellets){
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 11, 0, Math.PI*2);
+      ctx.fillStyle = "#111";
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 7, 0, Math.PI*2);
+      ctx.fillStyle = "#f2f2f2";
+      ctx.fill();
+    }
+
+    // pacman
+    drawPacman(player.x, player.y, player.dir, player.mouth);
+  }
+
+  // =============================
+  // Movement + collision
+  // =============================
+  const keys = new Set();
+  window.addEventListener("keydown", (e)=>{
+    const k = e.key.toLowerCase();
+    if (["arrowup","arrowdown","arrowleft","arrowright"," "].includes(k)) e.preventDefault();
+    keys.add(k);
+    if (k === "n") newCase();
+  }, {passive:false});
+
+  window.addEventListener("keyup", (e)=>{
+    keys.delete(e.key.toLowerCase());
+  });
+
+  // Touch joystick (simple swipe)
+  let touchStart = null;
+  canvas.addEventListener("touchstart", (e)=>{
+    if (!e.touches || e.touches.length!==1) return;
+    const t = e.touches[0];
+    touchStart = {x:t.clientX, y:t.clientY};
+  }, {passive:true});
+  canvas.addEventListener("touchend", (e)=>{
+    if (!touchStart) return;
+    const t = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0] : null;
+    if (!t) return;
+    const dx = t.clientX - touchStart.x;
+    const dy = t.clientY - touchStart.y;
+    touchStart = null;
+    const ax = Math.abs(dx), ay = Math.abs(dy);
+    if (Math.max(ax,ay) < 16) return;
+    if (ax > ay){
+      queueDir(dx>0 ? 0 : 2);
+    } else {
+      queueDir(dy>0 ? 1 : 3);
+    }
+  }, {passive:true});
+
+  const start = {x: trunkX + T/2, y: sqY + 70 + T/2};
+
+  const player = {
+    x: start.x,
+    y: start.y,
+    r: 9,
+    dir: 0,
+    want: 0,
+    mouth: 0.34
+  };
+
+  function resetPlayer(){
+    player.x = start.x;
+    player.y = start.y;
+    player.dir = 0;
+    player.want = 0;
+  }
+
+  function queueDir(d){
+    player.want = d;
+  }
+
+  function readDirFromKeys(){
+    // prefer last-pressed behavior via order
+    if (keys.has("arrowleft") || keys.has("a")) return 2;
+    if (keys.has("arrowright") || keys.has("d")) return 0;
+    if (keys.has("arrowup") || keys.has("w")) return 3;
+    if (keys.has("arrowdown") || keys.has("s")) return 1;
+    return null;
+  }
+
+  function canMove(dir, nx, ny){
+    // sample a few points around player radius
+    const r = player.r;
+    const pts = [
+      [nx+r, ny], [nx-r, ny], [nx, ny+r], [nx, ny-r],
+      [nx+r*0.7, ny+r*0.7], [nx-r*0.7, ny+r*0.7], [nx+r*0.7, ny-r*0.7], [nx-r*0.7, ny-r*0.7]
+    ];
+    for (const [px,py] of pts){
+      if (!isWalkable(px,py)) return false;
+    }
+    return true;
+  }
+
+  // =============================
+  // Case logic
+  // =============================
+  let caseN = 1;
+  let score = 0;
+  let current = null; // { key, stem }
+  let locked = false;
+  let flash = {t:0, kind:""};
+
+  const stemEl = document.getElementById("stem");
+  const caseEl = document.getElementById("caseN");
+  const scoreEl = document.getElementById("score");
+
+  function pick(arr){ return arr[(Math.random()*arr.length)|0]; }
+
+  function newCase(){
+    locked = false;
+    current = null;
+    resetPlayer();
+
+    const key = pick(vesselKeys);
+    const stem = pick(stems[key] || ["A patient presents with acute neurologic deficits."]);
+    current = {key, stem};
+
+    stemEl.textContent = stem;
+    caseEl.textContent = String(caseN);
+    scoreEl.textContent = String(score);
+  }
+
+  function dist2(ax,ay,bx,by){ const dx=ax-bx, dy=ay-by; return dx*dx+dy*dy; }
+
+  function onPelletHit(p){
+    if (locked) return;
+    locked = true;
+
+    const correct = (p.key === current.key);
+    if (correct){
+      score += 1;
+      flash = {t: 1.0, kind:"good"};
+    } else {
+      flash = {t: 1.0, kind:"bad"};
+    }
+
+    // brief pause then next case
+    setTimeout(()=>{
+      caseN += 1;
+      newCase();
+    }, 650);
+  }
+
+  // =============================
+  // Main loop
+  // =============================
+  let last = performance.now();
+  function tick(now){
+    const dt = Math.min(0.033, (now - last)/1000);
+    last = now;
+
+    // input
+    const kdir = readDirFromKeys();
+    if (kdir !== null) queueDir(kdir);
+
+    // movement
+    const speed = 220; // px/sec
+    // attempt to turn into wanted direction first (feels responsive)
+    const dirOrder = [player.want, player.dir].filter((v,i,a)=>a.indexOf(v)===i);
+
+    for (const d of dirOrder){
+      if (d === null || d === undefined) continue;
+      let dx=0, dy=0;
+      if (d===0) dx=1;
+      if (d===2) dx=-1;
+      if (d===1) dy=1;
+      if (d===3) dy=-1;
+
+      const nx = player.x + dx*speed*dt;
+      const ny = player.y + dy*speed*dt;
+
+      if (canMove(d, nx, ny)){
+        player.x = nx; player.y = ny; player.dir = d;
+        break;
+      }
+    }
+
+    // mouth animation
+    player.mouth = 0.18 + 0.22*Math.abs(Math.sin(now/120));
+
+    // pellet collision
+    for (const p of pellets){
+      if (dist2(player.x, player.y, p.x, p.y) < (14*14)){
+        onPelletHit(p);
+        break;
+      }
+    }
+
+    // draw
+    draw();
+
+    // feedback flash overlay
+    if (flash.t > 0){
+      flash.t -= dt*1.5;
+      ctx.save();
+      ctx.globalAlpha = clamp(flash.t,0,1)*0.35;
+      ctx.fillStyle = (flash.kind==="good") ? "#2cffb0" : "#ff2f5b";
+      ctx.fillRect(0,0,CW,CH);
+      ctx.restore();
+    }
+
+    requestAnimationFrame(tick);
+  }
+
+  // init
+  newCase();
+  requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>

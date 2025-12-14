@@ -1,0 +1,875 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Sid’s Hanukkah Plinko</title>
+  <style>
+    :root{
+      --bg1:#061226;
+      --bg2:#0b2a5a;
+      --panel:#0d1b33cc;
+      --text:#eaf2ff;
+      --muted:#b7c7e6;
+      --accent:#7dd3fc;
+      --accent2:#fbbf24;
+      --good:#34d399;
+      --danger:#fb7185;
+      --border:#2a4a86;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius:18px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+
+    html,body{height:100%; margin:0; font-family:var(--sans); color:var(--text); background: radial-gradient(1200px 700px at 20% 10%, #143a7a 0%, var(--bg2) 35%, var(--bg1) 100%);}
+    /* subtle stars */
+    body:before{
+      content:"";
+      position:fixed; inset:0;
+      background-image:
+        radial-gradient(circle at 12% 18%, rgba(255,255,255,.14) 0 1px, transparent 2px),
+        radial-gradient(circle at 67% 22%, rgba(255,255,255,.10) 0 1px, transparent 2px),
+        radial-gradient(circle at 83% 61%, rgba(255,255,255,.12) 0 1px, transparent 2px),
+        radial-gradient(circle at 28% 74%, rgba(255,255,255,.10) 0 1px, transparent 2px),
+        radial-gradient(circle at 52% 82%, rgba(255,255,255,.10) 0 1px, transparent 2px);
+      opacity:.9;
+      pointer-events:none;
+    }
+
+    .wrap{
+      max-width:980px;
+      margin:0 auto;
+      padding:18px 14px 24px;
+      box-sizing:border-box;
+    }
+
+    header{
+      display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+      margin:6px 0 12px;
+    }
+    .title{
+      display:flex; align-items:center; gap:12px;
+    }
+    .mark{
+      width:42px; height:42px;
+      border-radius:12px;
+      display:grid; place-items:center;
+      background: linear-gradient(135deg, rgba(125,211,252,.22), rgba(251,191,36,.16));
+      border:1px solid rgba(125,211,252,.35);
+      box-shadow: var(--shadow);
+      font-size:22px;
+      user-select:none;
+    }
+    h1{font-size:20px; margin:0; letter-spacing:.2px;}
+    .sub{color:var(--muted); font-size:13px; margin-top:4px; max-width:62ch;}
+    .panel{
+      background: linear-gradient(180deg, rgba(13,27,51,.92), rgba(10,20,38,.84));
+      border: 1px solid rgba(42,74,134,.65);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:12px;
+      align-items:start;
+    }
+
+    .board{
+      padding:14px;
+    }
+
+    .canvasWrap{
+      position:relative;
+      border-radius: 16px;
+      overflow:hidden;
+      border:1px solid rgba(42,74,134,.7);
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.00));
+    }
+    canvas{
+      width:100%;
+      height:auto;
+      display:block;
+      touch-action: none; /* we manage pointer */
+      background: transparent;
+    }
+
+    .hud{
+      display:flex; flex-wrap:wrap; gap:8px;
+      align-items:center; justify-content:space-between;
+      margin-top:12px;
+    }
+    .statRow{
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+    }
+    .pill{
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(125,211,252,.32);
+      background: rgba(9,20,40,.55);
+      color:var(--text);
+      font-size:13px;
+      display:flex; align-items:center; gap:8px;
+      user-select:none;
+    }
+    .pill b{font-variant-numeric: tabular-nums;}
+    .pill .k{color:var(--muted); font-weight:600; font-size:12px; letter-spacing:.2px;}
+    .btnRow{
+      display:flex; gap:8px; flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    button{
+      border-radius: 12px;
+      border:1px solid rgba(125,211,252,.35);
+      background: rgba(125,211,252,.14);
+      color: var(--text);
+      padding:10px 12px;
+      font-weight:700;
+      letter-spacing:.2px;
+      cursor:pointer;
+      box-shadow: 0 6px 18px rgba(0,0,0,.18);
+      transition: transform .06s ease, background .15s ease, border-color .15s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    button:active{transform: translateY(1px);}
+    button:hover{background: rgba(125,211,252,.18);}
+    button:disabled{
+      opacity:.55; cursor:not-allowed;
+      background: rgba(125,211,252,.08);
+    }
+    .primary{
+      background: rgba(251,191,36,.18);
+      border-color: rgba(251,191,36,.35);
+    }
+    .primary:hover{background: rgba(251,191,36,.22);}
+    .danger{
+      background: rgba(251,113,133,.16);
+      border-color: rgba(251,113,133,.34);
+    }
+
+    .side{
+      padding:14px;
+    }
+    .card{
+      padding:12px;
+      border-radius: 16px;
+      border:1px solid rgba(42,74,134,.6);
+      background: rgba(9,20,40,.45);
+    }
+    .card h2{
+      font-size:14px; margin:0 0 8px;
+      letter-spacing:.2px;
+    }
+    .small{font-size:13px; color:var(--muted); line-height:1.35;}
+    .hr{height:1px; background: rgba(42,74,134,.55); margin:12px 0;}
+    .controls{
+      display:grid; gap:10px;
+    }
+    .field{
+      display:grid; gap:6px;
+    }
+    label{font-size:12px; color:var(--muted); font-weight:700; letter-spacing:.2px;}
+    input[type="range"]{width:100%;}
+    .rangeRow{display:flex; align-items:center; gap:10px;}
+    .mono{font-family:var(--mono); font-variant-numeric: tabular-nums;}
+    .note{font-size:12px; color:rgba(234,242,255,.88);}
+
+    .toast{
+      position:fixed;
+      left:50%;
+      transform:translateX(-50%);
+      bottom:18px;
+      padding:10px 12px;
+      border-radius: 14px;
+      background: rgba(10,20,38,.92);
+      border:1px solid rgba(125,211,252,.35);
+      box-shadow: var(--shadow);
+      color: var(--text);
+      font-size:13px;
+      max-width:min(92vw, 520px);
+      z-index:50;
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .18s ease, transform .18s ease;
+    }
+    .toast.show{
+      opacity:1;
+      transform: translateX(-50%) translateY(-2px);
+    }
+
+    .footer{
+      margin-top:12px;
+      color:rgba(183,199,230,.78);
+      font-size:12px;
+      text-align:center;
+    }
+
+    @media (max-width: 860px){
+      .grid{grid-template-columns:1fr; }
+      header{align-items:flex-start;}
+      .btnRow{justify-content:flex-start;}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="title">
+        <div class="mark" aria-hidden="true">🕎</div>
+        <div>
+          <h1>Sid’s Hanukkah Plinko</h1>
+          <div class="sub">Drop 4 tokens. Watch them bounce through the pegs. Land in a slot to win <span class="mono">$100–$1000</span>.</div>
+        </div>
+      </div>
+      <div class="pill" title="One-player game">
+        <span aria-hidden="true">👤</span><span class="k">PLAYER</span> <b>Sid</b>
+      </div>
+    </header>
+
+    <div class="grid">
+      <div class="panel board">
+        <div class="canvasWrap" id="canvasWrap">
+          <canvas id="plinko" width="900" height="1200" aria-label="Plinko board"></canvas>
+        </div>
+
+        <div class="hud">
+          <div class="statRow">
+            <div class="pill"><span aria-hidden="true">🪙</span><span class="k">TOKENS</span> <b id="tokensLeft">4</b></div>
+            <div class="pill"><span aria-hidden="true">💰</span><span class="k">TOTAL</span> <b class="mono" id="total">$0</b></div>
+            <div class="pill" title="Tap/click across the top to choose the drop point."><span aria-hidden="true">🎯</span><span class="k">DROP X</span> <b class="mono" id="dropX">$—</b></div>
+          </div>
+
+          <div class="btnRow">
+            <button class="primary" id="dropBtn">Drop Token</button>
+            <button id="resetBtn" class="danger">New Game</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel side">
+        <div class="card">
+          <h2>How to play</h2>
+          <div class="small">
+            <ul style="margin:0; padding-left:18px;">
+              <li>Tap/click near the top of the board to set your drop point.</li>
+              <li>Hit <b>Drop Token</b>. One token falls at a time.</li>
+              <li>You get <b>4 tokens</b>. Your score is the sum of the landing slots.</li>
+            </ul>
+            <div class="hr"></div>
+            <div class="note">
+              Tip: If you want it easier/harder, change “Bounciness” or “Wind” below.
+            </div>
+          </div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="card controls">
+          <h2>Board settings</h2>
+
+          <div class="field">
+            <label for="bouncy">Bounciness <span class="mono" id="bouncyVal">0.72</span></label>
+            <input id="bouncy" type="range" min="0.35" max="0.92" step="0.01" value="0.72" />
+          </div>
+
+          <div class="field">
+            <label for="wind">Wind <span class="mono" id="windVal">0.00</span></label>
+            <input id="wind" type="range" min="-0.25" max="0.25" step="0.01" value="0.00" />
+            <div class="small">Negative = left, positive = right. Gentle drift only.</div>
+          </div>
+
+          <div class="field">
+            <label for="speed">Animation speed <span class="mono" id="speedVal">1.00</span></label>
+            <input id="speed" type="range" min="0.70" max="1.50" step="0.01" value="1.00" />
+          </div>
+
+          <div class="field">
+            <label>Landing values</label>
+            <div id="valuesList" class="small mono"></div>
+          </div>
+        </div>
+
+        <div class="footer">Happy Hanukkah, Sid. 🟦⭐🟦</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  // ---------- helpers ----------
+  const $ = (id) => document.getElementById(id);
+  const canvas = $("plinko");
+  const wrap = $("canvasWrap");
+  const ctx = canvas.getContext("2d", { alpha: true });
+
+  const toastEl = $("toast");
+  let toastTimer = null;
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove("show"), 1400);
+  }
+
+  function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
+
+  // ---------- responsive scaling ----------
+  function fitCanvas(){
+    // Keep internal resolution high for crispness
+    const cssW = wrap.clientWidth;
+    const targetAspect = 900/1200; // original
+    const cssH = Math.round(cssW / targetAspect);
+    canvas.style.height = cssH + "px";
+
+    const dpr = Math.max(1, Math.min(2.25, window.devicePixelRatio || 1));
+    canvas.width  = Math.round(cssW * dpr);
+    canvas.height = Math.round(cssH * dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+
+    // Update board metrics based on CSS pixels
+    state.W = cssW;
+    state.H = cssH;
+    buildBoard();
+    draw(); // redraw static immediately
+  }
+
+  // ---------- game state ----------
+  const state = {
+    W: 900,
+    H: 1200,
+    pegRows: 10,
+    pegRadius: 6,
+    ballRadius: 10,
+    gravity: 0.40,
+    wind: 0.0,
+    restitution: 0.72,
+    friction: 0.995,
+    speed: 1.0,
+
+    tokensTotal: 4,
+    tokensLeft: 4,
+    total: 0,
+
+    // bins
+    bins: [],
+    binCount: 10,
+    binHeight: 110,
+    binValues: [100,200,300,400,500,600,700,800,900,1000],
+
+    // geometry
+    pegs: [],
+    walls: [],
+
+    // ball
+    ball: null,
+    dropping: false,
+    dropX: null,
+
+    // confetti
+    confetti: [],
+    celebrating: false,
+  };
+
+  // ---------- UI bindings ----------
+  const tokensLeftEl = $("tokensLeft");
+  const totalEl = $("total");
+  const dropXEl = $("dropX");
+  const dropBtn = $("dropBtn");
+  const resetBtn = $("resetBtn");
+
+  const bouncy = $("bouncy");
+  const bouncyVal = $("bouncyVal");
+  const wind = $("wind");
+  const windVal = $("windVal");
+  const speed = $("speed");
+  const speedVal = $("speedVal");
+  const valuesList = $("valuesList");
+
+  function updateHUD(){
+    tokensLeftEl.textContent = String(state.tokensLeft);
+    totalEl.textContent = "$" + state.total.toLocaleString();
+    dropXEl.textContent = state.dropX == null ? "$—" : Math.round(state.dropX) + "px";
+    dropBtn.disabled = state.dropping || state.tokensLeft <= 0 || state.celebrating;
+  }
+
+  bouncy.addEventListener("input", () => {
+    state.restitution = parseFloat(bouncy.value);
+    bouncyVal.textContent = state.restitution.toFixed(2);
+  });
+  wind.addEventListener("input", () => {
+    state.wind = parseFloat(wind.value);
+    windVal.textContent = state.wind.toFixed(2);
+  });
+  speed.addEventListener("input", () => {
+    state.speed = parseFloat(speed.value);
+    speedVal.textContent = state.speed.toFixed(2);
+  });
+
+  // ---------- board build ----------
+  function buildBoard(){
+    // pegs
+    state.pegs = [];
+    const topPad = 70;
+    const leftPad = 32;
+    const rightPad = 32;
+    const usableW = state.W - leftPad - rightPad;
+    const rowGap = (state.H - topPad - state.binHeight - 40) / (state.pegRows + 0.5);
+    const colsBase = 9;
+
+    for(let r=0; r<state.pegRows; r++){
+      const y = topPad + (r+1) * rowGap;
+      const stagger = (r % 2) * 0.5;
+      const cols = colsBase + (r>=6 ? 1 : 0);
+      for(let c=0; c<cols; c++){
+        const t = (c + 0.5 + stagger) / cols;
+        const x = leftPad + t * usableW;
+        state.pegs.push({x, y, r: state.pegRadius});
+      }
+    }
+
+    // walls: outer boundaries + bin dividers
+    state.walls = [];
+    const floorY = state.H - state.binHeight;
+
+    // outer walls (slanted slightly inward for nicer funnel)
+    state.walls.push({ax: 18, ay: 18, bx: 26, by: floorY});             // left
+    state.walls.push({ax: state.W-18, ay: 18, bx: state.W-26, by: floorY}); // right
+    // floor just above bins (ball will still fall into bins area, so we use landing detection instead)
+    // bin dividers
+    state.bins = [];
+    const bw = state.W / state.binCount;
+    for(let i=0;i<state.binCount;i++){
+      const x0 = i*bw;
+      state.bins.push({
+        i,
+        x0,
+        x1: x0 + bw,
+        value: state.binValues[i]
+      });
+      // divider lines (skip the far left edge; draw separately)
+      if(i>0){
+        state.walls.push({ax:x0, ay:floorY, bx:x0, by:state.H});
+      }
+    }
+
+    // update values list
+    valuesList.innerHTML = state.binValues.map((v,i)=>`[${i+1}] $${v}`).join("<br/>");
+  }
+
+  // ---------- input: choose drop X ----------
+  function pointerToCanvasX(e){
+    const rect = canvas.getBoundingClientRect();
+    const clientX = (e.touches && e.touches[0]) ? e.touches[0].clientX : e.clientX;
+    return clamp(clientX - rect.left, 24, rect.width - 24);
+  }
+
+  function setDropXFromEvent(e){
+    const rect = canvas.getBoundingClientRect();
+    const x = pointerToCanvasX(e);
+    // store in CSS pixels
+    state.dropX = x;
+    updateHUD();
+    draw(); // show marker
+  }
+
+  canvas.addEventListener("pointerdown", (e) => {
+    // only allow selecting in the upper region, but we'll accept anywhere and clamp visually
+    setDropXFromEvent(e);
+  });
+
+  // iOS Safari sometimes doesn't send pointer events with scroll; add touch fallback
+  canvas.addEventListener("touchstart", (e) => {
+    setDropXFromEvent(e);
+  }, {passive:true});
+
+  // ---------- ball physics ----------
+  function spawnBall(){
+    const x = state.dropX ?? (state.W * 0.5);
+    state.ball = {
+      x, y: 30,
+      vx: (Math.random()*2 - 1) * 0.4,
+      vy: 0,
+      r: state.ballRadius,
+      landed: false,
+    };
+  }
+
+  function segmentNormal(ax,ay,bx,by){
+    const dx = bx-ax, dy = by-ay;
+    const len = Math.hypot(dx,dy) || 1;
+    // normal pointing "inward" doesn't matter much; we'll resolve by pushing out along shortest direction
+    return {nx: -dy/len, ny: dx/len, dx, dy, len};
+  }
+
+  function closestPointOnSegment(px,py, ax,ay, bx,by){
+    const dx = bx-ax, dy = by-ay;
+    const l2 = dx*dx + dy*dy;
+    if(l2 === 0) return {x:ax,y:ay,t:0};
+    let t = ((px-ax)*dx + (py-ay)*dy) / l2;
+    t = clamp(t, 0, 1);
+    return {x: ax + t*dx, y: ay + t*dy, t};
+  }
+
+  function collideWithPegs(ball){
+    for(const p of state.pegs){
+      const dx = ball.x - p.x;
+      const dy = ball.y - p.y;
+      const dist = Math.hypot(dx,dy);
+      const min = ball.r + p.r;
+      if(dist > 0 && dist < min){
+        const nx = dx / dist;
+        const ny = dy / dist;
+
+        // push out
+        const overlap = (min - dist);
+        ball.x += nx * overlap;
+        ball.y += ny * overlap;
+
+        // reflect velocity (simple)
+        const vn = ball.vx*nx + ball.vy*ny;
+        if(vn < 0){
+          ball.vx -= (1 + state.restitution) * vn * nx;
+          ball.vy -= (1 + state.restitution) * vn * ny;
+        }
+        // a little randomness to avoid stuck paths
+        ball.vx += (Math.random()*2-1) * 0.04;
+      }
+    }
+  }
+
+  function collideWithWalls(ball){
+    for(const w of state.walls){
+      const cp = closestPointOnSegment(ball.x, ball.y, w.ax, w.ay, w.bx, w.by);
+      const dx = ball.x - cp.x;
+      const dy = ball.y - cp.y;
+      const dist = Math.hypot(dx,dy);
+      if(dist > 0 && dist < ball.r){
+        const nx = dx/dist;
+        const ny = dy/dist;
+
+        // push out
+        const overlap = (ball.r - dist);
+        ball.x += nx * overlap;
+        ball.y += ny * overlap;
+
+        // reflect velocity if moving into wall
+        const vn = ball.vx*nx + ball.vy*ny;
+        if(vn < 0){
+          ball.vx -= (1 + state.restitution) * vn * nx;
+          ball.vy -= (1 + state.restitution) * vn * ny;
+        }
+      }
+    }
+  }
+
+  function stepPhysics(){
+    const ball = state.ball;
+    if(!ball) return;
+
+    // integrate
+    const dt = state.speed;
+    ball.vy += state.gravity * dt;
+    ball.vx += state.wind * dt;
+    ball.vx *= state.friction;
+    ball.vy *= state.friction;
+
+    ball.x += ball.vx * dt;
+    ball.y += ball.vy * dt;
+
+    // basic bounds clamp (top)
+    if(ball.y < 10){ ball.y = 10; ball.vy = Math.abs(ball.vy); }
+
+    collideWithPegs(ball);
+    collideWithWalls(ball);
+
+    // land detection
+    const floorY = state.H - state.binHeight;
+    const bottomY = state.H - 10;
+    // once the ball is deep into bin area and slow-ish, score it
+    if(ball.y > floorY + 22 && !ball.landed){
+      // if it's near bottom or slowed down, treat as landed
+      const slow = Math.hypot(ball.vx, ball.vy) < 1.15;
+      if(ball.y > bottomY - ball.r - 8 || slow){
+        ball.landed = true;
+        scoreBall(ball);
+      }
+    }
+  }
+
+  function scoreBall(ball){
+    // Determine bin by x
+    const bw = state.W / state.binCount;
+    const idx = clamp(Math.floor(ball.x / bw), 0, state.binCount-1);
+    const v = state.binValues[idx];
+    state.total += v;
+    state.tokensLeft -= 1;
+    state.dropping = false;
+    updateHUD();
+
+    toast(`Landed in $${v}!`);
+
+    // remove ball after a short beat
+    setTimeout(() => { state.ball = null; }, 350);
+
+    if(state.tokensLeft <= 0){
+      setTimeout(() => finishGame(), 500);
+    }
+  }
+
+  // ---------- confetti ----------
+  function launchConfetti(){
+    state.confetti = [];
+    state.celebrating = true;
+    const n = 150;
+    for(let i=0;i<n;i++){
+      state.confetti.push({
+        x: state.W/2 + (Math.random()*2-1)*40,
+        y: 30 + Math.random()*40,
+        vx: (Math.random()*2-1)*3.3,
+        vy: Math.random()*-2.6 - 1.5,
+        g: 0.09 + Math.random()*0.06,
+        w: 6 + Math.random()*6,
+        h: 4 + Math.random()*6,
+        a: Math.random()*Math.PI*2,
+        va: (Math.random()*2-1)*0.18,
+        life: 260 + Math.random()*80,
+        type: Math.random() < 0.5 ? "rect" : "star"
+      });
+    }
+  }
+
+  function stepConfetti(){
+    if(!state.celebrating) return;
+    for(const p of state.confetti){
+      p.vy += p.g;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.a += p.va;
+      p.life -= 1;
+    }
+    state.confetti = state.confetti.filter(p => p.life > 0 && p.y < state.H + 50);
+    if(state.confetti.length === 0){
+      state.celebrating = false;
+      updateHUD();
+    }
+  }
+
+  function drawStar(x,y,r,rot){
+    ctx.save();
+    ctx.translate(x,y);
+    ctx.rotate(rot);
+    ctx.beginPath();
+    for(let i=0;i<5;i++){
+      const a = i * (Math.PI * 2) / 5;
+      const a2 = a + Math.PI/5;
+      ctx.lineTo(Math.cos(a)*r, Math.sin(a)*r);
+      ctx.lineTo(Math.cos(a2)*r*0.45, Math.sin(a2)*r*0.45);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // ---------- rendering ----------
+  function draw(){
+    ctx.clearRect(0,0,state.W,state.H);
+
+    // decorative top bar
+    ctx.save();
+    ctx.globalAlpha = 0.9;
+    ctx.fillStyle = "rgba(125,211,252,0.08)";
+    ctx.fillRect(0,0,state.W,52);
+    ctx.restore();
+
+    // drop marker
+    if(state.dropX != null){
+      ctx.save();
+      ctx.globalAlpha = 0.9;
+      ctx.strokeStyle = "rgba(251,191,36,0.75)";
+      ctx.lineWidth = 2;
+      ctx.setLineDash([6,6]);
+      ctx.beginPath();
+      ctx.moveTo(state.dropX, 0);
+      ctx.lineTo(state.dropX, 70);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = "rgba(251,191,36,0.22)";
+      ctx.beginPath();
+      ctx.arc(state.dropX, 24, 9, 0, Math.PI*2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // pegs
+    for(const p of state.pegs){
+      ctx.save();
+      ctx.fillStyle = "rgba(234,242,255,0.70)";
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.fill();
+
+      ctx.globalAlpha = 0.18;
+      ctx.fillStyle = "rgba(125,211,252,0.9)";
+      ctx.beginPath();
+      ctx.arc(p.x-1.1, p.y-1.2, p.r, 0, Math.PI*2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // walls / dividers
+    ctx.save();
+    ctx.strokeStyle = "rgba(42,74,134,0.85)";
+    ctx.lineWidth = 3;
+    ctx.lineCap = "round";
+    for(const w of state.walls){
+      ctx.beginPath();
+      ctx.moveTo(w.ax, w.ay);
+      ctx.lineTo(w.bx, w.by);
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // bins + values
+    const floorY = state.H - state.binHeight;
+    ctx.save();
+    ctx.fillStyle = "rgba(9,20,40,0.65)";
+    ctx.fillRect(0, floorY, state.W, state.binHeight);
+
+    // top edge
+    ctx.strokeStyle = "rgba(125,211,252,0.22)";
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(0,floorY); ctx.lineTo(state.W,floorY); ctx.stroke();
+
+    const bw = state.W / state.binCount;
+    ctx.font = "700 16px " + getComputedStyle(document.documentElement).getPropertyValue("--mono");
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    for(let i=0;i<state.binCount;i++){
+      const x = (i+0.5)*bw;
+      const v = state.binValues[i];
+      // gentle highlight for higher values
+      const alpha = 0.10 + (v/1000)*0.12;
+      ctx.fillStyle = `rgba(251,191,36,${alpha.toFixed(3)})`;
+      ctx.fillRect(i*bw+1, floorY+1, bw-2, state.binHeight-2);
+
+      ctx.fillStyle = "rgba(234,242,255,0.92)";
+      ctx.fillText("$"+v, x, floorY + state.binHeight/2);
+    }
+    ctx.restore();
+
+    // ball
+    if(state.ball){
+      const b = state.ball;
+      ctx.save();
+      ctx.fillStyle = "rgba(125,211,252,0.92)";
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, b.r, 0, Math.PI*2);
+      ctx.fill();
+
+      ctx.globalAlpha = 0.35;
+      ctx.fillStyle = "rgba(255,255,255,1)";
+      ctx.beginPath();
+      ctx.arc(b.x-3, b.y-4, b.r*0.45, 0, Math.PI*2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // confetti
+    if(state.celebrating){
+      ctx.save();
+      ctx.globalAlpha = 0.92;
+      for(const p of state.confetti){
+        // alternate cool/warm tones
+        const warm = (p.life % 2) === 0;
+        ctx.fillStyle = warm ? "rgba(251,191,36,0.95)" : "rgba(125,211,252,0.95)";
+        if(p.type === "rect"){
+          ctx.save();
+          ctx.translate(p.x,p.y);
+          ctx.rotate(p.a);
+          ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+          ctx.restore();
+        }else{
+          drawStar(p.x,p.y, Math.min(p.w,p.h), p.a);
+        }
+      }
+      ctx.restore();
+    }
+  }
+
+  // ---------- loop ----------
+  function tick(){
+    if(state.dropping) stepPhysics();
+    if(state.celebrating) stepConfetti();
+    draw();
+    requestAnimationFrame(tick);
+  }
+
+  // ---------- game flow ----------
+  function dropToken(){
+    if(state.dropping || state.tokensLeft<=0 || state.celebrating) return;
+    state.dropping = true;
+    spawnBall();
+    updateHUD();
+  }
+
+  function finishGame(){
+    toast(`Game over! Total: $${state.total.toLocaleString()}`);
+    launchConfetti();
+    updateHUD();
+  }
+
+  function newGame(){
+    state.tokensLeft = state.tokensTotal;
+    state.total = 0;
+    state.ball = null;
+    state.dropping = false;
+    state.celebrating = false;
+    state.confetti = [];
+    state.dropX = null;
+    updateHUD();
+    toast("New game — pick a drop point!");
+  }
+
+  dropBtn.addEventListener("click", dropToken);
+  resetBtn.addEventListener("click", newGame);
+
+  // Keyboard support: Space / Enter drops; Left/Right nudges drop point
+  window.addEventListener("keydown", (e) => {
+    if(e.key === " " || e.key === "Enter"){
+      e.preventDefault();
+      dropToken();
+    }else if(e.key === "ArrowLeft" || e.key === "ArrowRight"){
+      const step = 14;
+      const x = state.dropX ?? (state.W/2);
+      state.dropX = clamp(x + (e.key==="ArrowLeft" ? -step : step), 24, state.W-24);
+      updateHUD();
+    }
+  });
+
+  // ---------- init ----------
+  function init(){
+    // set defaults from sliders
+    state.restitution = parseFloat(bouncy.value);
+    bouncyVal.textContent = state.restitution.toFixed(2);
+    state.wind = parseFloat(wind.value);
+    windVal.textContent = state.wind.toFixed(2);
+    state.speed = parseFloat(speed.value);
+    speedVal.textContent = state.speed.toFixed(2);
+
+    fitCanvas();
+    updateHUD();
+    toast("Tap near the top to choose a drop point!");
+    tick();
+  }
+
+  window.addEventListener("resize", () => fitCanvas());
+  init();
+})();
+</script>
+</body>
+</html>
