@@ -1,0 +1,1330 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>EtterBank Plinko</title>
+  <style>
+    :root{
+      --bg1:#061226;
+      --bg2:#0b2a5a;
+      --text:#eaf2ff;
+      --muted:#b7c7e6;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius:18px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+
+    html,body{height:100%; margin:0; font-family:var(--sans); color:var(--text); background: radial-gradient(1200px 700px at 20% 10%, #143a7a 0%, var(--bg2) 35%, var(--bg1) 100%);}
+    body{overflow:hidden;}
+    body:before{
+      content:"";
+      position:fixed; inset:0;
+      background-image:
+        radial-gradient(circle at 12% 18%, rgba(255,255,255,.14) 0 1px, transparent 2px),
+        radial-gradient(circle at 67% 22%, rgba(255,255,255,.10) 0 1px, transparent 2px),
+        radial-gradient(circle at 83% 61%, rgba(255,255,255,.12) 0 1px, transparent 2px),
+        radial-gradient(circle at 28% 74%, rgba(255,255,255,.10) 0 1px, transparent 2px),
+        radial-gradient(circle at 52% 82%, rgba(255,255,255,.10) 0 1px, transparent 2px);
+      opacity:.9;
+      pointer-events:none;
+    }
+
+    .wrap{
+      max-width:980px;
+      margin:0 auto;
+      box-sizing:border-box;
+      padding:18px 14px max(14px, env(safe-area-inset-bottom, 0px));
+      height: 100svh;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    header{
+      display:flex; align-items:flex-start; justify-content:center; gap:12px;
+      margin:0;
+      flex: 0 0 auto;
+    }
+    .title{
+      display:flex; align-items:center; justify-content:center; gap:12px;
+      text-align:center;
+    }
+    .mark{
+      width:42px; height:42px;
+      border-radius:12px;
+      display:grid; place-items:center;
+      background: linear-gradient(135deg, rgba(125,211,252,.22), rgba(251,191,36,.16));
+      border:1px solid rgba(125,211,252,.35);
+      box-shadow: var(--shadow);
+      font-size:22px;
+      user-select:none;
+    }
+    h1{font-size:20px; margin:0; letter-spacing:.2px; text-align:center;}
+    .sub{color:var(--muted); font-size:13px; margin-top:4px; max-width:62ch; text-align:center;}
+    .mono{font-family:var(--mono); font-variant-numeric: tabular-nums;}
+
+    .panel{
+      background: linear-gradient(180deg, rgba(13,27,51,.92), rgba(10,20,38,.84));
+      border: 1px solid rgba(42,74,134,.65);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      flex: 1 1 auto;
+      min-height: 0;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .board{
+      padding:14px;
+      flex: 1 1 auto;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      min-height: 0;
+    }
+
+    .tokenTray{
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      padding:10px 10px;
+      border-radius: 16px;
+      border:1px solid rgba(42,74,134,.6);
+      background: rgba(9,20,40,.45);
+      user-select:none;
+      flex: 0 0 auto;
+    }
+    .trayLabel{
+      display:flex; align-items:center; gap:8px;
+      color:var(--muted);
+      font-weight:800;
+      letter-spacing:.2px;
+      font-size:12px;
+      margin-right:6px;
+    }
+    .coin{
+      width:42px; height:42px;
+      border-radius: 999px;
+      display:grid;
+      place-items:center;
+      font-size:20px;
+      border:1px solid rgba(251,191,36,.45);
+      background: radial-gradient(14px 14px at 30% 30%, rgba(255,255,255,.35), rgba(251,191,36,.20) 45%, rgba(125,211,252,.10) 100%);
+      box-shadow: 0 10px 18px rgba(0,0,0,.22);
+      cursor: grab;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: none;
+      position:relative;
+    }
+    .coin:active{ cursor: grabbing; transform: translateY(1px); }
+    .coin.used{
+      opacity:.35;
+      filter:saturate(.4);
+      cursor:not-allowed;
+      box-shadow:none;
+    }
+    .coin.used:active{transform:none;}
+    .coinGlyph{
+      width:26px; height:26px;
+      display:grid; place-items:center;
+      border-radius: 999px;
+      background: radial-gradient(10px 10px at 30% 30%, rgba(255,255,255,.32), rgba(255,255,255,0) 60%),
+                  radial-gradient(18px 18px at 50% 65%, rgba(0,0,0,.18), rgba(0,0,0,0) 70%);
+    }
+    .coinGlyph svg{width:22px; height:22px; display:block;}
+    .coinRing{
+      position:absolute; inset:4px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.18);
+      pointer-events:none;
+    }
+
+    .coin .mini{
+      position:absolute;
+      bottom:-6px; right:-6px;
+      font-size:14px;
+      opacity:.95;
+    }
+
+    .canvasWrap{
+      position:relative;
+      border-radius: 16px;
+      overflow:hidden;
+      border:1px solid rgba(42,74,134,.7);
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.00));
+      flex: 1 1 auto;
+      min-height: 0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .canvasWrap.dropReady{
+      outline: 2px solid rgba(251,191,36,.35);
+      outline-offset: 3px;
+    }
+    canvas{
+      display:block;
+      touch-action: none;
+      background: transparent;
+      /* width/height set by JS to fit viewport */
+    }
+
+    .hud{
+      display:flex; flex-wrap:wrap; gap:8px;
+      align-items:center; justify-content:center;
+      flex: 0 0 auto;
+    }
+    .pill{
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(125,211,252,.32);
+      background: rgba(9,20,40,.55);
+      color:var(--text);
+      font-size:13px;
+      display:flex; align-items:center; gap:8px;
+      user-select:none;
+    }
+    .pill b{font-variant-numeric: tabular-nums;}
+    .pill .k{color:var(--muted); font-weight:600; font-size:12px; letter-spacing:.2px;}
+
+    .gearBtn{
+      position:fixed;
+      right:14px;
+      bottom: max(14px, env(safe-area-inset-bottom, 0px));
+      z-index:60;
+      width:52px;
+      height:52px;
+      border-radius: 16px;
+      border:1px solid rgba(125,211,252,.35);
+      background: rgba(125,211,252,.14);
+      color: var(--text);
+      font-size:22px;
+      display:grid;
+      place-items:center;
+      box-shadow: var(--shadow);
+      cursor:pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .gearBtn:active{transform: translateY(1px);}
+    .gearBtn:hover{background: rgba(125,211,252,.18);}
+
+    .modalOverlay{
+      position:fixed;
+      inset:0;
+      background: rgba(0,0,0,.55);
+      z-index:70;
+      display:none;
+      align-items:flex-end;
+      justify-content:center;
+      padding: 12px;
+    }
+    .modalOverlay.show{display:flex;}
+    .modal{
+      width:min(560px, 96vw);
+      border-radius: 18px;
+      border:1px solid rgba(42,74,134,.75);
+      background: linear-gradient(180deg, rgba(13,27,51,.96), rgba(10,20,38,.92));
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      max-height: min(78svh, 640px);
+      display:flex;
+      flex-direction:column;
+    }
+    .modalHeader{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:12px 12px;
+      border-bottom:1px solid rgba(42,74,134,.55);
+      flex: 0 0 auto;
+    }
+    .modalHeader h2{
+      margin:0;
+      font-size:14px;
+      letter-spacing:.2px;
+    }
+    .closeBtn{
+      border-radius: 12px;
+      border:1px solid rgba(125,211,252,.35);
+      background: rgba(125,211,252,.12);
+      color: var(--text);
+      padding:8px 10px;
+      font-weight:800;
+      cursor:pointer;
+    }
+    .closeBtn:active{transform: translateY(1px);}
+    .modalBody{
+      padding:12px;
+      display:grid;
+      gap:12px;
+      overflow:auto;
+      -webkit-overflow-scrolling: touch;
+      flex: 1 1 auto;
+      min-height:0;
+    }
+    .field{display:grid; gap:6px;}
+    label{font-size:12px; color:var(--muted); font-weight:800; letter-spacing:.2px;}
+    input[type="range"]{width:100%;}
+    .small{font-size:13px; color:var(--muted); line-height:1.35;}
+    .btnRow{
+      display:flex;
+      gap:8px;
+      justify-content:flex-end;
+      flex-wrap:wrap;
+      padding:12px;
+      border-top:1px solid rgba(42,74,134,.55);
+      flex: 0 0 auto;
+    }
+    button{
+      border-radius: 12px;
+      border:1px solid rgba(125,211,252,.35);
+      background: rgba(125,211,252,.14);
+      color: var(--text);
+      padding:10px 12px;
+      font-weight:800;
+      letter-spacing:.2px;
+      cursor:pointer;
+      box-shadow: 0 6px 18px rgba(0,0,0,.18);
+      transition: transform .06s ease, background .15s ease, border-color .15s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    button:active{transform: translateY(1px);}
+    button:hover{background: rgba(125,211,252,.18);}
+    .danger{
+      background: rgba(251,113,133,.16);
+      border-color: rgba(251,113,133,.34);
+    }
+
+    .toast{
+      position:fixed;
+      left:50%;
+      transform:translateX(-50%);
+      bottom: calc(max(14px, env(safe-area-inset-bottom, 0px)) + 64px);
+      padding:10px 12px;
+      border-radius: 14px;
+      background: rgba(10,20,38,.92);
+      border:1px solid rgba(125,211,252,.35);
+      box-shadow: var(--shadow);
+      color: var(--text);
+      font-size:13px;
+      max-width:min(92vw, 520px);
+      z-index:80;
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .18s ease, transform .18s ease;
+    }
+    .toast.show{
+      opacity:1;
+      transform: translateX(-50%) translateY(-2px);
+    }
+  
+
+    .dreidelLayer{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      overflow:hidden;
+    }
+    .dreidel{
+      position:absolute;
+      will-change: transform;
+      opacity: 0.86;
+      filter: drop-shadow(0 10px 16px rgba(0,0,0,.28));
+    }
+    .dreidelSpin{
+      width:100%;
+      height:100%;
+      transform-origin: 50% 60%;
+      animation: dreidelSpin var(--dur, 1.2s) linear infinite;
+    }
+    .dreidelWobble{
+      width:100%;
+      height:100%;
+      animation: dreidelWobble var(--wob, 0.9s) ease-in-out infinite;
+      transform-origin: 50% 60%;
+    }
+    @keyframes dreidelSpin{
+      from{ transform: rotate(0deg); }
+      to{ transform: rotate(360deg); }
+    }
+    @keyframes dreidelWobble{
+      0%,100%{ transform: rotate(-6deg) translateY(0px); }
+      50%{ transform: rotate(6deg) translateY(-2px); }
+    }
+
+</style>
+</head>
+<body>
+  <div class="wrap" id="wrap">
+    <header>
+      <div class="title">
+        <div class="mark" aria-hidden="true">🕎</div>
+        <div>
+          <h1>EtterBank Plinko</h1>
+          <div class="sub"></div>
+        </div>
+      </div>
+    </header>
+
+    <div class="panel">
+      <div class="board">
+        <div class="tokenTray" id="tokenTray" aria-label="Token tray">
+          
+        </div>
+
+        <div class="canvasWrap" id="canvasWrap">
+          <div class="dreidelLayer" id="dreidelLayer" aria-hidden="true"></div>
+          <canvas id="plinko" aria-label="Plinko board"></canvas>
+        </div>
+
+        <div class="hud">
+<div class="pill"><span aria-hidden="true">💰</span><span class="k">TOTAL</span> <b class="mono" id="total">$0</b></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="gearBtn" id="gearBtn" aria-label="Options">⚙️</button>
+
+  <div class="modalOverlay" id="modalOverlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Options">
+      <div class="modalHeader">
+        <h2>Options</h2>
+        <button class="closeBtn" id="closeBtn" aria-label="Close options">Close</button>
+      </div>
+      <div class="modalBody">
+        <div class="field">
+          <label for="bouncy">Bounciness <span class="mono" id="bouncyVal">0.90</span></label>
+          <input id="bouncy" type="range" min="0.81" max="0.99" step="0.01" value="0.90" />
+        </div>
+
+        <div class="field">
+          <label for="wind">Wind <span class="mono" id="windVal">0.00</span></label>
+          <input id="wind" type="range" min="-0.25" max="0.25" step="0.01" value="0.00" />
+          <div class="small">Negative = left, positive = right.</div>
+        </div>
+<div class="field">
+          <label for="gravity">Gravity <span class="mono" id="gravityVal">0.10</span></label>
+          <input id="gravity" type="range" min="0.00" max="0.20" step="0.01" value="0.10" />
+        </div>
+</div>
+
+      <div class="btnRow">
+        <button class="danger" id="restartBtn">Restart (new random values)</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- MIDI playback (loads only when needed) -->
+  <script src="https://cdn.jsdelivr.net/npm/tone@14.8.49/build/Tone.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tonejs/midi@2.0.28/build/Midi.min.js"></script>
+
+  <script>
+(() => {
+
+  // Hanukkah MIDI music (plays only while a token is falling)
+  // Set this to a publicly-accessible .mid URL (or host one on your site / GitHub Pages).
+  const HANUKKAH_MIDI_URL = "https://ics.uci.edu/~dhirschb/midi/jewish/hanukka.mid";
+
+  let _midiReady = null;
+  let _midiSynth = null;
+  let _midiPart = null;
+  let _midiPlaying = false;
+
+  async function ensureMidiReady(){
+    if(_midiReady) return _midiReady;
+
+    _midiReady = (async () => {
+      // If the CDN didn't load (offline, blocked), silently skip.
+      if(typeof Tone === "undefined" || typeof Midi === "undefined") return;
+
+      // iOS requires audio start in a user gesture; spawnBall is called from drag/drop.
+      await Tone.start();
+
+      // Fetch + parse MIDI
+      const res = await fetch(HANUKKAH_MIDI_URL, { cache: "force-cache" });
+      if(!res.ok) throw new Error("MIDI fetch failed: " + res.status);
+      const buf = await res.arrayBuffer();
+      const midi = new Midi(buf);
+
+      // Pick the first track that has notes
+      const track = midi.tracks.find(t => t && t.notes && t.notes.length);
+      if(!track) throw new Error("No MIDI notes found.");
+
+      // Simple synth
+      _midiSynth = new Tone.PolySynth(Tone.Synth, {
+        volume: -10,
+        oscillator: { type: "triangle" },
+        envelope: { attack: 0.01, decay: 0.1, sustain: 0.2, release: 0.3 }
+      }).toDestination();
+
+      // Transport setup
+      Tone.Transport.stop();
+      Tone.Transport.cancel(0);
+      Tone.Transport.loop = true;
+      Tone.Transport.loopStart = 0;
+      Tone.Transport.loopEnd = midi.duration || 8;
+
+      // Apply tempo if available
+      const tempo = (midi.header && midi.header.tempos && midi.header.tempos[0] && midi.header.tempos[0].bpm) ? midi.header.tempos[0].bpm : 120;
+      Tone.Transport.bpm.value = tempo;
+
+      // Schedule notes
+      _midiPart = new Tone.Part((time, n) => {
+        _midiSynth.triggerAttackRelease(n.name, n.duration, time, n.velocity);
+      }, track.notes.map(n => ({
+        time: n.time,
+        name: n.name,
+        duration: n.duration,
+        velocity: (n.velocity ?? 0.8)
+      })));
+
+      _midiPart.start(0);
+      _midiPart.loop = true;
+      _midiPart.loopEnd = midi.duration || 8;
+    })().catch(err => {
+      console.warn("MIDI disabled:", err);
+      _midiReady = null;
+    });
+
+    return _midiReady;
+  }
+
+  function startHanukkahMidi(){
+    if(_midiPlaying) return;
+    if(!HANUKKAH_MIDI_URL || HANUKKAH_MIDI_URL.includes("YOUR_MIDI_URL_HERE")) return; // not configured
+    _midiPlaying = true;
+
+    ensureMidiReady().then(() => {
+      if(typeof Tone === "undefined") return;
+      if(!_midiPlaying) return; // drop ended before load
+      if(Tone.Transport.state !== "started") Tone.Transport.start("+0.02");
+    });
+  }
+
+  function stopHanukkahMidi(){
+    if(!_midiPlaying) return;
+    _midiPlaying = false;
+    if(typeof Tone === "undefined") return;
+    try{
+      Tone.Transport.stop();
+      Tone.Transport.position = 0;
+    }catch(e){}
+  }
+
+
+  const $ = (id) => document.getElementById(id);
+  const canvas = $("plinko");
+  const canvasWrap = $("canvasWrap");
+  const ctx = canvas.getContext("2d", { alpha: true });
+  const dreidelLayer = $("dreidelLayer");
+
+  const toastEl = $("toast");
+  let toastTimer = null;
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove("show"), 1400);
+  }
+  function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
+
+  const state = {
+    W: 900,
+    H: 1200,
+    pegRows: 10,
+    pegRadius: 6,
+    ballRadius: 10,
+    gravity: 0.10,
+    wind: 0.0,
+    restitution: 0.72,
+    friction: 0.995,
+    speed: 1.0,
+
+    tokensTotal: 4,
+    tokensLeft: 4,
+    total: 0,
+    jackpotHit: false,
+
+    bins: [],
+    binCount: 11,
+    binHeight: 110,
+    binX0: 26,
+    binX1: 874,
+    binValues: [100,200,300,400,500,600,700,800,900,1000],
+
+    pegs: [],
+    walls: [],
+
+    ball: null,
+    dropping: false,
+    dropX: null,
+
+    confetti: [],
+    celebrating: false,
+
+    tokens: [],
+  };
+
+  const totalEl = $("total");
+  const tokenTray = $("tokenTray");
+
+  const bouncy = $("bouncy");
+  const bouncyVal = $("bouncyVal");
+  const wind = $("wind");
+  const windVal = $("windVal");
+  const gravity = $("gravity");
+  const gravityVal = $("gravityVal");
+
+  const gearBtn = $("gearBtn");
+  const modalOverlay = $("modalOverlay");
+  const closeBtn = $("closeBtn");
+  const restartBtn = $("restartBtn");
+
+  function openModal(){
+    modalOverlay.classList.add("show");
+    modalOverlay.setAttribute("aria-hidden","false");
+  }
+  function closeModal(){
+    modalOverlay.classList.remove("show");
+    modalOverlay.setAttribute("aria-hidden","true");
+  }
+  gearBtn.addEventListener("click", openModal);
+  closeBtn.addEventListener("click", closeModal);
+  modalOverlay.addEventListener("pointerdown", (e) => { if(e.target === modalOverlay) closeModal(); });
+  window.addEventListener("keydown", (e) => { if(e.key === "Escape") closeModal(); });
+
+  function updateHUD(){
+    totalEl.textContent = "$" + state.total.toLocaleString();
+  }
+
+  bouncy.addEventListener("input", () => {
+    state.restitution = parseFloat(bouncy.value);
+    bouncyVal.textContent = state.restitution.toFixed(2);
+  });
+  wind.addEventListener("input", () => {
+    state.wind = parseFloat(wind.value);
+    windVal.textContent = state.wind.toFixed(2);
+  });
+gravity.addEventListener("input", () => {
+    state.gravity = parseFloat(gravity.value);
+    gravityVal.textContent = state.gravity.toFixed(2);
+  });
+
+  function shuffle(arr){
+    for(let i=arr.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function randomizeBinValues(){
+    // Always keep $1000 in the center, with $100 on either side.
+    // Remaining bins are filled with $200–$900 in a random order.
+    const pool = shuffle([200,300,400,500,600,700,800,900]);
+    const n = state.binCount;
+    const mid = Math.floor(n/2);
+    const arr = new Array(n).fill(null);
+    arr[mid] = 1000;
+    if(mid-1 >= 0) arr[mid-1] = 100;
+    if(mid+1 < n) arr[mid+1] = 100;
+    for(let i=0;i<n;i++){
+      if(arr[i] == null) arr[i] = pool.shift();
+    }
+    state.binValues = arr;
+  }
+
+  // Fit board without scrolling: canvas is centered inside canvasWrap and scaled to fit both width & height.
+  function fitCanvas(){
+    const slotW = Math.max(1, canvasWrap.clientWidth);
+    const slotH = Math.max(1, canvasWrap.clientHeight);
+
+    const baseW = 900;
+    const baseH = 1200;
+    const scale = Math.max(0.1, Math.min(slotW / baseW, slotH / baseH));
+
+    const cssW = Math.floor(baseW * scale);
+    const cssH = Math.floor(baseH * scale);
+
+    canvas.style.width = cssW + "px";
+    canvas.style.height = cssH + "px";
+
+    const dpr = Math.max(1, Math.min(2.25, window.devicePixelRatio || 1));
+    canvas.width  = Math.round(cssW * dpr);
+    canvas.height = Math.round(cssH * dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+
+    state.W = cssW;
+    state.H = cssH;
+    buildBoard();
+    draw();
+  }
+
+  function buildBoard(){
+    state.pegs = [];
+    const topPad = 70 * (state.H / 1200);
+    const leftPad = 32 * (state.W / 900);
+    const rightPad = 32 * (state.W / 900);
+    const usableW = state.W - leftPad - rightPad;
+
+    // keep bins readable when board shrinks
+    state.binHeight = Math.max(82, Math.min(120, Math.round(110 * (state.H / 1200))));
+
+    const rowGap = (state.H - topPad - state.binHeight - 40) / (state.pegRows + 0.5);
+    const colsBase = 9;
+    state.pegRadius = Math.max(4, Math.round(6 * (state.W / 900)));
+    state.ballRadius = Math.max(7, Math.round(10 * (state.W / 900)));
+
+    for(let r=0; r<state.pegRows; r++){
+      const y = topPad + (r+1) * rowGap;
+      const stagger = (r % 2) * 0.5;
+      const cols = colsBase + (r>=6 ? 1 : 0);
+      for(let c=0; c<cols; c++){
+        const t = (c + 0.5 + stagger) / cols;
+        const x = leftPad + t * usableW;
+        state.pegs.push({x, y, r: state.pegRadius});
+      }
+    }
+
+    state.walls = [];
+    const floorY = state.H - state.binHeight;
+
+    // Side wall geometry (slanted at the top, inset at the bottom)
+    const wallTopInset = Math.max(14, Math.round(18 * (state.W/900)));
+    const wallBottomInset = Math.max(18, Math.round(26 * (state.W/900)));
+
+    state.binX0 = wallBottomInset;
+    state.binX1 = state.W - wallBottomInset;
+
+    state.walls.push({ax: wallTopInset, ay: 18, bx: state.binX0, by: floorY});
+    state.walls.push({ax: state.W - wallTopInset, ay: 18, bx: state.binX1, by: floorY});
+
+    // Bins live strictly inside the side walls so the outer bins never get clipped.
+    state.bins = [];
+    const binsW = state.binX1 - state.binX0;
+    const bw = binsW / state.binCount;
+    for(let i=0;i<state.binCount;i++){
+      const x0 = state.binX0 + i*bw;
+      state.bins.push({ i, x0, x1: x0 + bw, value: state.binValues[i] });
+      if(i>0){
+        state.walls.push({ax:x0, ay:floorY, bx:x0, by:state.H});
+      }
+    }
+  }
+
+  function buildTokens(){
+    state.tokens = [];
+    for(let i=0;i<state.tokensTotal;i++){
+      state.tokens.push({id: "t"+i, used:false});
+    }
+    renderTokens();
+    updateHUD();
+  }
+
+  function renderTokens(){
+    tokenTray.querySelectorAll(".coin").forEach(n => n.remove());
+    for(const t of state.tokens){
+      const el = document.createElement("div");
+      el.className = "coin" + (t.used ? " used" : "");
+      el.setAttribute("role","button");
+      el.setAttribute("aria-label", t.used ? "Used token" : "Token");
+      el.dataset.tid = t.id;
+      el.innerHTML = `<div class='coinGlyph' aria-hidden='true'><svg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'><path d='M12 3.2 4.6 16.6h14.8L12 3.2Z' stroke='rgba(255,255,255,0.92)' stroke-width='1.4'/><path d='M12 20.8 19.4 7.4H4.6L12 20.8Z' stroke='rgba(255,255,255,0.92)' stroke-width='1.4'/></svg></div><div class='coinRing' aria-hidden='true'></div>`;
+      tokenTray.appendChild(el);
+    }
+  }
+
+  function getTokenById(id){ return state.tokens.find(t => t.id === id); }
+
+  function useOneToken(){
+    const t = state.tokens.find(x => !x.used);
+    if(!t) return null;
+    t.used = true;
+    state.tokensLeft -= 1;
+    renderTokens();
+    updateHUD();
+    return t;
+  }
+
+  // Drag & drop
+  let drag = null;
+  function rectContains(rect, x, y){
+    return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+  }
+  function pointerXY(e){
+    if(e.touches && e.touches[0]) return {x:e.touches[0].clientX, y:e.touches[0].clientY};
+    return {x:e.clientX, y:e.clientY};
+  }
+
+  function beginDrag(tokenEl, e){
+    const tid = tokenEl.dataset.tid;
+    const tok = getTokenById(tid);
+    if(!tok || tok.used) return;
+    if(state.dropping || state.celebrating) { toast("Wait for the token to land!"); return; }
+    if(state.tokensLeft <= 0) return;
+
+    const {x,y} = pointerXY(e);
+
+    const ghost = tokenEl.cloneNode(true);
+    ghost.classList.remove("used");
+    ghost.style.position = "fixed";
+    ghost.style.left = (x - 21) + "px";
+    ghost.style.top = (y - 21) + "px";
+    ghost.style.pointerEvents = "none";
+    ghost.style.opacity = "0.95";
+    ghost.style.zIndex = "9999";
+    ghost.style.transform = "scale(1.02)";
+    document.body.appendChild(ghost);
+
+    tokenEl.style.opacity = "0.35";
+    drag = { tid, ghost, originEl: tokenEl };
+    canvasWrap.classList.add("dropReady");
+
+    tokenEl.setPointerCapture?.(e.pointerId);
+  }
+
+  function moveDrag(e){
+    if(!drag) return;
+    const {x,y} = pointerXY(e);
+    drag.ghost.style.left = (x - 21) + "px";
+    drag.ghost.style.top = (y - 21) + "px";
+
+    const rect = canvas.getBoundingClientRect();
+    const over = rectContains(rect, x, y);
+    canvasWrap.classList.toggle("dropReady", over);
+  }
+
+  function endDrag(e){
+    if(!drag) return;
+    const {x,y} = pointerXY(e);
+    const rect = canvas.getBoundingClientRect();
+    const over = rectContains(rect, x, y);
+
+    drag.originEl.style.opacity = "";
+
+    if(over && !state.dropping && !state.celebrating){
+      const used = useOneToken();
+      if(!used){
+        cleanupDrag();
+        toast("No tokens left!");
+        return;
+      }
+      const xLocal = clamp(x - rect.left, 18, rect.width - 18);
+      state.dropX = xLocal;
+      spawnBall();
+      state.dropping = true;
+      toast("Dropped!");
+    }else{
+      toast("Drop cancelled.");
+    }
+
+    cleanupDrag();
+  }
+
+  function cleanupDrag(){
+    if(!drag) return;
+    canvasWrap.classList.remove("dropReady");
+    drag.ghost?.remove();
+    drag = null;
+  }
+
+  tokenTray.addEventListener("pointerdown", (e) => {
+    const el = e.target.closest?.(".coin");
+    if(!el) return;
+    beginDrag(el, e);
+  });
+  window.addEventListener("pointermove", (e) => moveDrag(e), {passive:true});
+  window.addEventListener("pointerup", (e) => endDrag(e), {passive:true});
+  window.addEventListener("pointercancel", () => cleanupDrag(), {passive:true});
+
+  // Physics
+  function spawnBall(){
+    const x = state.dropX ?? (state.W * 0.5);
+    // Hanukkah miracle: if nobody has hit $1000 yet, the *last* token is gently guided to the center.
+    const shouldBless = (!state.jackpotHit && state.tokensLeft === 0);
+    startDreidelsDOM();
+    state.ball = {
+      x, y: 30 * (state.H/1200),
+      vx: (Math.random()*2 - 1) * 0.4,
+      vy: 0,
+      r: state.ballRadius,
+      landed: false,
+      blessed: shouldBless,
+    };
+  }
+
+  function closestPointOnSegment(px,py, ax,ay, bx,by){
+    const dx = bx-ax, dy = by-ay;
+    const l2 = dx*dx + dy*dy;
+    if(l2 === 0) return {x:ax,y:ay,t:0};
+    let t = ((px-ax)*dx + (py-ay)*dy) / l2;
+    t = clamp(t, 0, 1);
+    return {x: ax + t*dx, y: ay + t*dy, t};
+  }
+
+  function collideWithPegs(ball){
+    for(const p of state.pegs){
+      const dx = ball.x - p.x;
+      const dy = ball.y - p.y;
+      const dist = Math.hypot(dx,dy);
+      const min = ball.r + p.r;
+      if(dist > 0 && dist < min){
+        const nx = dx / dist;
+        const ny = dy / dist;
+
+        const overlap = (min - dist);
+        ball.x += nx * overlap;
+        ball.y += ny * overlap;
+
+        const vn = ball.vx*nx + ball.vy*ny;
+        if(vn < 0){
+          ball.vx -= (1 + state.restitution) * vn * nx;
+          ball.vy -= (1 + state.restitution) * vn * ny;
+        }
+        ball.vx += (Math.random()*2-1) * 0.04;
+      }
+    }
+  }
+
+  function collideWithWalls(ball){
+    for(const w of state.walls){
+      const cp = closestPointOnSegment(ball.x, ball.y, w.ax, w.ay, w.bx, w.by);
+      const dx = ball.x - cp.x;
+      const dy = ball.y - cp.y;
+      const dist = Math.hypot(dx,dy);
+      if(dist > 0 && dist < ball.r){
+        const nx = dx/dist;
+        const ny = dy/dist;
+
+        const overlap = (ball.r - dist);
+        ball.x += nx * overlap;
+        ball.y += ny * overlap;
+
+        const vn = ball.vx*nx + ball.vy*ny;
+        if(vn < 0){
+          ball.vx -= (1 + state.restitution) * vn * nx;
+          ball.vy -= (1 + state.restitution) * vn * ny;
+        }
+      }
+    }
+  }
+
+  function stepPhysics(){
+    const ball = state.ball;
+    if(!ball) return;
+
+    const dt = state.speed;
+    ball.vy += state.gravity * dt;
+    ball.vx += state.wind * dt;
+    ball.vx *= state.friction;
+    ball.vy *= state.friction;
+
+
+    // Gentle guidance for the blessed (last) token so at least one lands in the $1000 middle bin.
+    if(ball.blessed && !state.jackpotHit){
+      const floorY = state.H - state.binHeight;
+      const bw = (state.binX1 - state.binX0) / state.binCount;
+      const mid = Math.floor(state.binCount/2);
+      const targetX = state.binX0 + (mid + 0.5) * bw;
+
+      // Start nudging in the lower half so it feels like "luck" rather than a teleport.
+      const pullStartY = floorY - Math.max(560, Math.round(state.H * 0.45));
+      if(ball.y > pullStartY){
+        const t = clamp((ball.y - pullStartY) / Math.max(1, (floorY - pullStartY)), 0, 1);
+        const dx = targetX - ball.x;
+
+        // Very small acceleration that ramps up smoothly; hard-capped to avoid zips.
+        const gain = 0.002 + 0.008 * t;
+        const ax = clamp(dx * gain, -0.28, 0.28);
+        ball.vx += ax * dt;
+
+        // Soft "funnel" corridor that narrows as the ball nears the bins (no hard snapping).
+        const funnelTop = floorY - Math.max(620, Math.round(state.H * 0.50));
+        if(ball.y > funnelTop){
+          const t2 = clamp((ball.y - funnelTop) / Math.max(1, (floorY - funnelTop)), 0, 1);
+          const half = (bw * 0.98) * (1 - t2) + (bw/2 - ball.r - 2) * t2;
+          const minX = targetX - half;
+          const maxX = targetX + half;
+
+          if(ball.x < minX || ball.x > maxX){
+            const desiredX = clamp(ball.x, minX, maxX);
+            const dx2 = desiredX - ball.x;
+
+            // Gentle position easing (small px/frame), stronger only near the very bottom.
+            const maxShift = (0.8 + 3.2 * t2);
+            const shift = clamp(dx2, -maxShift, maxShift) * dt;
+            ball.x += shift;
+            ball.vx += shift * 0.04;
+          }
+        }
+
+        // Keep horizontal speed reasonable so guidance looks semi-realistic.
+        ball.vx = clamp(ball.vx, -3.0, 3.0);
+      }
+    }
+
+
+
+    const floorY = state.H - state.binHeight;
+    const bottomY = state.H - 10;
+
+    if(ball.y > floorY + 18 && !ball.landed){
+      const slow = Math.hypot(ball.vx, ball.vy) < 1.15;
+      if(ball.y > bottomY - ball.r - 8 || slow){
+        ball.landed = true;
+        scoreBall(ball);
+      }
+    }
+  }
+
+  function scoreBall(ball){
+    const bw = (state.binX1 - state.binX0) / state.binCount;
+    const idx = clamp(Math.floor((ball.x - state.binX0) / bw), 0, state.binCount-1);
+    const v = state.binValues[idx];
+    state.total += v;
+    if(v === 1000) state.jackpotHit = true;
+
+    toast(`Landed in $${v}!`);
+
+    state.dropping = false;
+    stopHanukkahMidi();
+    clearDreidelsDOM();
+    updateHUD();
+
+    setTimeout(() => { state.ball = null; }, 320);
+
+    if(state.tokensLeft <= 0){
+      setTimeout(() => finishGame(), 450);
+    }
+  }
+
+  // Confetti
+  function launchConfetti(){
+    state.confetti = [];
+    state.celebrating = true;
+    const n = 140;
+    for(let i=0;i<n;i++){
+      state.confetti.push({
+        x: state.W/2 + (Math.random()*2-1)*40,
+        y: 20 + Math.random()*40,
+        vx: (Math.random()*2-1)*3.3,
+        vy: Math.random()*-2.6 - 1.5,
+        g: 0.09 + Math.random()*0.06,
+        w: 6 + Math.random()*6,
+        h: 4 + Math.random()*6,
+        a: Math.random()*Math.PI*2,
+        va: (Math.random()*2-1)*0.18,
+        life: 230 + Math.random()*80,
+        type: Math.random() < 0.5 ? "rect" : "star"
+      });
+    }
+  }
+  function stepConfetti(){
+    if(!state.celebrating) return;
+    for(const p of state.confetti){
+      p.vy += p.g;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.a += p.va;
+      p.life -= 1;
+    }
+    state.confetti = state.confetti.filter(p => p.life > 0 && p.y < state.H + 50);
+    if(state.confetti.length === 0){
+      state.celebrating = false;
+      updateHUD();
+    }
+  }
+  function drawStar(x,y,r,rot){
+    ctx.save();
+    ctx.translate(x,y);
+    ctx.rotate(rot);
+    ctx.beginPath();
+    for(let i=0;i<5;i++){
+      const a = i * (Math.PI * 2) / 5;
+      const a2 = a + Math.PI/5;
+      ctx.lineTo(Math.cos(a)*r, Math.sin(a)*r);
+      ctx.lineTo(Math.cos(a2)*r*0.45, Math.sin(a2)*r*0.45);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // Dreidels (DOM overlay — only in the side gutters, never over the board)
+  const DREIDEL_SVG = `<svg viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="rgba(234,242,255,0.92)"/>
+      <stop offset="1" stop-color="rgba(125,211,252,0.55)"/>
+    </linearGradient>
+  </defs>
+  <path d="M60 8 L72 30 L48 30 Z" fill="rgba(251,191,36,0.78)" stroke="rgba(251,191,36,0.45)" stroke-width="3" />
+  <path d="M60 30 L98 58 L78 124 L42 124 L22 58 Z" fill="url(#g)" stroke="rgba(125,211,252,0.65)" stroke-width="3" />
+  <path d="M60 46 L72 70 L48 70 Z" fill="rgba(9,20,40,0.45)"/>
+  <path d="M60 92 L72 68 L48 68 Z" fill="rgba(9,20,40,0.45)"/>
+  <ellipse cx="48" cy="64" rx="12" ry="28" transform="rotate(18 48 64)" fill="rgba(255,255,255,0.25)"/>
+  <circle cx="96" cy="60" r="4" fill="rgba(251,191,36,0.9)"/>
+  <circle cx="24" cy="60" r="4" fill="rgba(251,191,36,0.9)"/>
+</svg>`;
+
+  function clearDreidelsDOM(){
+    if(!dreidelLayer) return;
+    dreidelLayer.textContent = "";
+  }
+
+  function startDreidelsDOM(){
+    if(!dreidelLayer) return;
+    clearDreidelsDOM();
+
+    const wrapRect = canvasWrap.getBoundingClientRect();
+    const cRect = canvas.getBoundingClientRect();
+
+    const leftZoneW = Math.max(0, cRect.left - wrapRect.left);
+    const rightZoneW = Math.max(0, wrapRect.right - cRect.right);
+
+    // Need gutter space to show them; otherwise skip.
+    if(leftZoneW < 36 && rightZoneW < 36) return;
+
+    const yTop = Math.max(10, (cRect.top - wrapRect.top) + 10);
+    const yBot = Math.min(wrapRect.height - 20, (cRect.top - wrapRect.top) + cRect.height * 0.55);
+
+    const n = 10;
+    for(let i=0;i<n;i++) {
+      const side = (leftZoneW >= 36 && rightZoneW >= 36) ? (Math.random() < 0.5 ? "L":"R")
+                  : (leftZoneW >= 36 ? "L" : "R");
+
+      const zoneX0 = (side === "L") ? 0 : (wrapRect.width - rightZoneW);
+      const zoneW  = (side === "L") ? leftZoneW : rightZoneW;
+
+      const size = clamp(Math.round((56 + Math.random()*34) * (wrapRect.width/980)), 38, 88);
+      const x = zoneX0 + Math.random() * Math.max(1, zoneW - size);
+      const y = yTop + Math.random() * Math.max(1, (yBot - yTop));
+
+      const el = document.createElement("div");
+      el.className = "dreidel";
+      el.style.left = x + "px";
+      el.style.top = y + "px";
+      el.style.width = size + "px";
+      el.style.height = size + "px";
+      el.style.setProperty("--dur", (0.75 + Math.random()*0.95).toFixed(2) + "s");
+      el.style.setProperty("--wob", (0.65 + Math.random()*0.60).toFixed(2) + "s");
+      el.style.opacity = (0.60 + Math.random()*0.35).toFixed(2);
+
+      const wob = document.createElement("div");
+      wob.className = "dreidelWobble";
+
+      const spin = document.createElement("div");
+      spin.className = "dreidelSpin";
+      if(Math.random() < 0.5) spin.style.animationDirection = "reverse";
+
+      spin.innerHTML = DREIDEL_SVG;
+      wob.appendChild(spin);
+      el.appendChild(wob);
+      dreidelLayer.appendChild(el);
+    }
+  }
+
+  // Render
+  function draw(){
+    ctx.clearRect(0,0,state.W,state.H);
+
+    ctx.save();
+    ctx.globalAlpha = 0.9;
+    ctx.fillStyle = "rgba(125,211,252,0.08)";
+    ctx.fillRect(0,0,state.W,Math.max(36, Math.round(52*(state.H/1200))));
+    ctx.restore();
+
+    if(state.dropX != null){
+      ctx.save();
+      ctx.globalAlpha = 0.65;
+      ctx.strokeStyle = "rgba(251,191,36,0.75)";
+      ctx.lineWidth = 2;
+      ctx.setLineDash([6,6]);
+      ctx.beginPath();
+      ctx.moveTo(state.dropX, 0);
+      ctx.lineTo(state.dropX, Math.max(44, Math.round(70*(state.H/1200))));
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.restore();
+    }
+
+    for(const p of state.pegs){
+      ctx.save();
+      ctx.fillStyle = "rgba(234,242,255,0.70)";
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.fill();
+
+      ctx.globalAlpha = 0.18;
+      ctx.fillStyle = "rgba(125,211,252,0.9)";
+      ctx.beginPath();
+      ctx.arc(p.x-1.1, p.y-1.2, p.r, 0, Math.PI*2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    ctx.save();
+    ctx.strokeStyle = "rgba(42,74,134,0.85)";
+    ctx.lineWidth = 3;
+    ctx.lineCap = "round";
+    for(const w of state.walls){
+      ctx.beginPath();
+      ctx.moveTo(w.ax, w.ay);
+      ctx.lineTo(w.bx, w.by);
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    const floorY = state.H - state.binHeight;
+    ctx.save();
+    ctx.fillStyle = "rgba(9,20,40,0.65)";
+    ctx.fillRect(0, floorY, state.W, state.binHeight);
+
+    ctx.strokeStyle = "rgba(125,211,252,0.22)";
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(0,floorY); ctx.lineTo(state.W,floorY); ctx.stroke();
+
+    const bw = (state.binX1 - state.binX0) / state.binCount;
+    const fontPx = Math.max(11, Math.min(16, Math.round(16*(state.W/900))));
+    const monoFont = getComputedStyle(document.documentElement).getPropertyValue("--mono");
+
+    ctx.font = "800 " + fontPx + "px " + monoFont;
+ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    for(let i=0;i<state.binCount;i++){
+      const x = state.binX0 + (i+0.5)*bw;
+      const v = state.binValues[i];
+      const alpha = 0.10 + (v/1000)*0.12;
+      ctx.fillStyle = `rgba(251,191,36,${alpha.toFixed(3)})`;
+      ctx.fillRect(state.binX0 + i*bw + 1, floorY+1, bw-2, state.binHeight-2);
+      ctx.fillStyle = "rgba(234,242,255,0.92)";
+      {
+      const label = "$"+v;
+      // Fit text to bin width (prevents horizontal squish/overlap on narrow bins)
+      let px = fontPx;
+      ctx.font = "800 " + px + "px " + monoFont;
+      const maxW = bw - 10;
+      const tw = ctx.measureText(label).width;
+      if(tw > maxW){
+        px = Math.max(9, Math.floor(px * (maxW / tw)));
+        ctx.font = "800 " + px + "px " + monoFont;
+      }
+
+      // Stagger label heights so neighboring bins don't collide visually
+      const baseY = floorY + state.binHeight * 0.52;
+      let y = baseY + (i % 2 === 0 ? -px * 0.35 : px * 0.55);
+      y = clamp(y, floorY + px * 0.85, floorY + state.binHeight - px * 0.85);
+
+      ctx.fillText(label, x, y);
+    }}
+    ctx.restore();
+
+    if(state.ball){
+      const b = state.ball;
+      ctx.save();
+      ctx.fillStyle = "rgba(125,211,252,0.92)";
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, b.r, 0, Math.PI*2);
+      ctx.fill();
+
+      ctx.globalAlpha = 0.35;
+      ctx.fillStyle = "rgba(255,255,255,1)";
+      ctx.beginPath();
+      ctx.arc(b.x-3, b.y-4, b.r*0.45, 0, Math.PI*2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    if(state.celebrating){
+      ctx.save();
+      ctx.globalAlpha = 0.92;
+      for(const p of state.confetti){
+        const warm = (p.life % 2) === 0;
+        ctx.fillStyle = warm ? "rgba(251,191,36,0.95)" : "rgba(125,211,252,0.95)";
+        if(p.type === "rect"){
+          ctx.save();
+          ctx.translate(p.x,p.y);
+          ctx.rotate(p.a);
+          ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+          ctx.restore();
+        }else{
+          drawStar(p.x,p.y, Math.min(p.w,p.h), p.a);
+        }
+      }
+      ctx.restore();
+    }
+  }
+
+  function tick(){
+    if(state.dropping) stepPhysics();
+    if(state.celebrating) stepConfetti();
+    draw();
+    requestAnimationFrame(tick);
+  }
+
+  function finishGame(){
+    toast(`Done! Total: $${state.total.toLocaleString()}`);
+    launchConfetti();
+    updateHUD();
+  }
+
+  function restart(){
+    state.tokensLeft = state.tokensTotal;
+    state.total = 0;
+    state.jackpotHit = false;
+    state.ball = null;
+    state.dropping = false;
+    stopHanukkahMidi();
+    state.celebrating = false;
+    state.confetti = [];
+    state.dropX = null;
+    stopHanukkahMidi();
+    clearDreidelsDOM();
+
+    randomizeBinValues();
+    buildTokens();
+    buildBoard();
+    draw();
+    toast("Restarted — new values!");
+  }
+  restartBtn.addEventListener("click", () => { closeModal(); restart(); });
+
+  function init(){
+    state.restitution = parseFloat(bouncy.value);
+    bouncyVal.textContent = state.restitution.toFixed(2);
+    state.wind = parseFloat(wind.value);
+    windVal.textContent = state.wind.toFixed(2);
+state.gravity = parseFloat(gravity.value);
+    gravityVal.textContent = state.gravity.toFixed(2);
+
+    randomizeBinValues();
+    buildTokens();
+
+    // Wait a frame so flex layout has real heights, then fit.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        fitCanvas();
+        toast("Drag a token onto the board to drop it!");
+        tick();
+      });
+    });
+  }
+
+  // Refit on resize/orientation change without changing bin values.
+  window.addEventListener("resize", () => {
+    requestAnimationFrame(() => fitCanvas());
+  });
+
+  init();
+})();
+</script>
+</body>
+</html>

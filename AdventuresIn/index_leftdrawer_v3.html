@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Adventures — Index</title>
+  <style>
+    :root{
+      --panelW: min(94vw, 1320px);
+      --panelH: min(92vh, 880px);
+      --drawerW: 280px;
+      --border: rgba(255,255,255,0.22);
+      --text: #ffffff;
+      --muted: rgba(255,255,255,0.72);
+      --focus: rgba(0,191,255,0.65);
+      --radius: 14px;
+      --shadow: 0 20px 60px rgba(0,0,0,0.60);
+      --font: Georgia, serif;
+      --panelBg: #000;
+      --drawerBg: #050505;
+    }
+
+    html, body{
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden; /* all scrolling happens inside panels */
+      background: #000; /* avoid stacked/overlapping background images */
+      color: var(--text);
+      font-family: var(--font);
+    }
+
+    .wrap{
+      width: 100vw;
+      height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 3vh 3vw;
+      box-sizing: border-box;
+    }
+
+    .panel{
+      width: var(--panelW);
+      height: var(--panelH);
+      background: var(--panelBg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      display: flex;
+      min-width: 320px;
+      min-height: 420px;
+    }
+
+    /* Drawer (always left on desktop; slide-over on small screens) */
+    .drawer{
+      width: var(--drawerW);
+      min-width: 220px;
+      max-width: 380px;
+      background: var(--drawerBg);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .drawerHeader{
+      padding: 14px 14px 10px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .brandBtn{
+      font: inherit;
+      color: var(--text);
+      background: transparent;
+      border: 0;
+      padding: 0;
+      text-align: left;
+      cursor: pointer;
+      outline: none;
+    }
+    .brandBtn:focus-visible{ box-shadow: 0 0 0 3px var(--focus); border-radius: 8px; }
+
+    .drawerTitle{
+      font-weight: 700;
+      font-size: 1.05rem;
+      line-height: 1.15;
+    }
+
+    .drawerSubtitle{
+      display: block;
+      font-weight: 400;
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .closeBtn{
+      display: none;
+      font: inherit;
+      line-height: 1;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.18);
+      color: var(--text);
+      cursor: pointer;
+      outline: none;
+      white-space: nowrap;
+    }
+    .closeBtn:hover{ background: rgba(255,255,255,0.10); border-color: rgba(255,255,255,0.28); }
+    .closeBtn:focus-visible{ box-shadow: 0 0 0 3px var(--focus); }
+
+    .drawerBody{
+      padding: 10px 12px 12px 12px;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+      flex: 1;
+    }
+
+    /* Sidebar sections (expand/collapse) */
+    .sections{
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-bottom: 10px;
+    }
+
+    details.section{
+      border: 1px solid rgba(255,255,255,0.16);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.03);
+      overflow: hidden;
+    }
+
+    summary.sectionHeader{
+      list-style: none;
+      cursor: pointer;
+      user-select: none;
+      padding: 10px 10px;
+      font-weight: 700;
+      color: var(--text);
+      outline: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: rgba(255,255,255,0.04);
+      border-bottom: 1px solid rgba(255,255,255,0.10);
+    }
+
+    summary.sectionHeader::-webkit-details-marker{ display:none; }
+    summary.sectionHeader::marker{ content: ""; }
+
+    summary.sectionHeader:focus-visible{
+      box-shadow: 0 0 0 3px var(--focus);
+      border-radius: 10px;
+    }
+
+    summary.sectionHeader::after{
+      content: "▸";
+      font-weight: 700;
+      color: var(--muted);
+      transform: rotate(0deg);
+      transition: transform 0.16s ease, color 0.16s ease;
+    }
+
+    details.section[open] > summary.sectionHeader::after{
+      transform: rotate(90deg);
+      color: var(--text);
+    }
+
+    .sectionInner{
+      padding: 10px 10px 10px 10px;
+    }
+
+    .status{
+      color: var(--muted);
+      font-size: 0.95rem;
+      padding: 6px 2px 10px 2px;
+      min-height: 1.2em;
+    }
+
+    .caseList{
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .caseBtn{
+      font: inherit;
+      text-align: left;
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 10px;
+      padding: 9px 10px;
+      cursor: pointer;
+      transition: transform 0.08s ease, background 0.12s ease, border-color 0.12s ease;
+      outline: none;
+    }
+    .caseBtn:hover{ background: rgba(255,255,255,0.10); border-color: rgba(255,255,255,0.28); }
+    .caseBtn:active{ transform: translateY(1px); }
+    .caseBtn:focus-visible{ box-shadow: 0 0 0 3px var(--focus); }
+    .caseBtn.active{ background: rgba(0,191,255,0.14); border-color: rgba(0,191,255,0.45); }
+
+    /* Main viewer */
+    .main{
+      flex: 1;
+      min-width: 0;
+      position: relative;
+      background: #000;
+    }
+
+    .content{
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    .welcome{
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      text-align: center;
+      color: var(--text);
+      background: #000;
+    }
+
+    .welcomeInner{
+      max-width: 680px;
+      line-height: 1.6;
+      font-size: 1.15rem;
+    }
+
+    .welcomeInner .muted{
+      color: var(--muted);
+      font-size: 1.0rem;
+      margin-top: 10px;
+    }
+
+    iframe{
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #000;
+      display: none;
+    }
+
+    /* Mobile controls: slide-out drawer + floating open button */
+    .openDrawerBtn{
+      display: none;
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 6;
+      font: inherit;
+      line-height: 1;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.18);
+      color: var(--text);
+      cursor: pointer;
+      outline: none;
+      white-space: nowrap;
+    }
+    .openDrawerBtn:hover{ background: rgba(255,255,255,0.10); border-color: rgba(255,255,255,0.28); }
+    .openDrawerBtn:focus-visible{ box-shadow: 0 0 0 3px var(--focus); }
+
+    .scrim{
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.60);
+      z-index: 9;
+    }
+
+    @media (max-width: 900px){
+      :root{ --drawerW: min(84vw, 320px); }
+      .panel{ width: min(96vw, 1320px); height: min(94vh, 900px); }
+      .openDrawerBtn{ display: inline-block; }
+      .closeBtn{ display: inline-block; }
+
+      .drawer{
+        position: fixed;
+        top: 50%;
+        left: 0;
+        transform: translate(-105%, -50%);
+        height: var(--panelH);
+        width: var(--drawerW);
+        max-width: none;
+        z-index: 10;
+        border-right: 1px solid var(--border);
+        border-top-left-radius: var(--radius);
+        border-bottom-left-radius: var(--radius);
+        box-shadow: var(--shadow);
+        transition: transform 0.2s ease;
+      }
+      .drawer.open{ transform: translate(0%, -50%); }
+      .scrim.show{ display: block; }
+
+      /* panel becomes just the viewer frame; drawer is floating */
+      .panel{ display: block; position: relative; }
+      .main{ height: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="panel" role="application" aria-label="Adventures case index">
+
+      <aside class="drawer" id="drawer" aria-label="Case list">
+        <div class="drawerHeader">
+          <button class="brandBtn" id="brandBtn" type="button" aria-label="Return to welcome view">
+            <div class="drawerTitle">Adventures</div>
+            <span class="drawerSubtitle">Select a series</span>
+          </button>
+          <button class="closeBtn" id="closeDrawerBtn" type="button" aria-label="Close case list" title="Close">✕</button>
+        </div>
+
+        <div class="drawerBody">
+          <div class="sections" id="sections">
+            <details class="section" id="sec-psy" open>
+              <summary class="sectionHeader">Adventures in Psychiatry</summary>
+              <div class="sectionInner">
+                <div class="status" id="statusPsy">Loading...</div>
+                <div class="caseList" id="caseListPsy" aria-live="polite"></div>
+              </div>
+            </details>
+
+            <details class="section" id="sec-im">
+              <summary class="sectionHeader">Adventures in Internal Medicine</summary>
+              <div class="sectionInner">
+                <div class="caseList" id="caseListIM" aria-live="polite"></div>
+              </div>
+            </details>
+
+            <details class="section" id="sec-neuro">
+              <summary class="sectionHeader">Adventures in Neurology</summary>
+              <div class="sectionInner">
+                <div class="caseList" id="caseListNeuro" aria-live="polite"></div>
+              </div>
+            </details>
+
+            <details class="section" id="sec-surg">
+              <summary class="sectionHeader">Adventures in Surgery</summary>
+              <div class="sectionInner">
+                <div class="caseList" id="caseListSurg" aria-live="polite"></div>
+              </div>
+            </details>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main" aria-label="Case viewer">
+        <button class="openDrawerBtn" id="openDrawerBtn" type="button" aria-label="Open case list" title="Cases">☰ Cases</button>
+        <div class="content">
+          <div class="welcome" id="welcome">
+            <div class="welcomeInner">
+              <div>Welcome.</div>
+              <div class="muted">Select a case from the list on the left.</div>
+            </div>
+          </div>
+          <iframe id="caseFrame" title="Case viewer" loading="lazy" referrerpolicy="no-referrer"></iframe>
+        </div>
+      </main>
+
+    </div>
+  </div>
+
+  <div class="scrim" id="scrim" aria-hidden="true"></div>
+
+  <script>
+    /* Adventures — Index (left drawer + in-page case viewer + expandable sections) */
+    (function(){
+      const DYN = {
+        id: "psy",
+        title: "Adventures in Psychiatry",
+        prefix: "AdventuresInPsychiatry-Case",
+        suffix: ".html",
+        maxN: 300,
+        stopAfterConsecMiss: 20,
+      };
+
+      const PLACEHOLDERS = [
+        { id: "im", title: "Adventures in Internal Medicine", count: 3 },
+        { id: "neuro", title: "Adventures in Neurology", count: 3 },
+        { id: "surg", title: "Adventures in Surgery", count: 3 },
+      ];
+
+      const els = {
+        drawer: document.getElementById("drawer"),
+        openDrawerBtn: document.getElementById("openDrawerBtn"),
+        closeDrawerBtn: document.getElementById("closeDrawerBtn"),
+        scrim: document.getElementById("scrim"),
+
+        statusPsy: document.getElementById("statusPsy"),
+        listPsy: document.getElementById("caseListPsy"),
+        listIM: document.getElementById("caseListIM"),
+        listNeuro: document.getElementById("caseListNeuro"),
+        listSurg: document.getElementById("caseListSurg"),
+
+        frame: document.getElementById("caseFrame"),
+        welcome: document.getElementById("welcome"),
+        brandBtn: document.getElementById("brandBtn"),
+      };
+
+      let current = null; // { section, n, href, kind }
+      const caseButtons = new Map(); // "section:n" -> button
+
+      function key(section, n){ return `${section}:${n}`; }
+      function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
+
+      async function exists(url){
+        try{
+          let res = await fetch(url, { method: "HEAD", cache: "no-store" });
+          if (res.ok) return true;
+          if (res.status === 405 || res.status === 403) {
+            res = await fetch(url, { method: "GET", cache: "no-store" });
+            return res.ok;
+          }
+          return false;
+        }catch(_e){
+          return false;
+        }
+      }
+
+      function setDrawerOpen(open){
+        const isNarrow = window.matchMedia("(max-width: 900px)").matches;
+        if (!isNarrow) return; // drawer stays visible on desktop
+        els.drawer.classList.toggle("open", !!open);
+        els.scrim.classList.toggle("show", !!open);
+        els.scrim.setAttribute("aria-hidden", open ? "false" : "true");
+      }
+
+      function clearActive(){
+        for (const btn of caseButtons.values()) btn.classList.remove("active");
+      }
+
+      function setHash(section, n){
+        const h = (section && n) ? `#section=${encodeURIComponent(section)}&case=${encodeURIComponent(String(n))}` : "#";
+        try{ history.replaceState(null, "", h); }catch(_e){}
+      }
+
+      function parseHash(){
+        const h = (location.hash || "").replace(/^#/, "");
+        if (!h) return null;
+        try{
+          const p = new URLSearchParams(h);
+          const section = (p.get("section") || "").trim();
+          const c = (p.get("case") || "").trim();
+          if (!section || !c) return null;
+          const n = parseInt(c, 10);
+          if (!Number.isFinite(n)) return null;
+          return { section, n };
+        }catch(_e){
+          return null;
+        }
+      }
+
+      function showWelcome(clearHash = true){
+        current = null;
+        clearActive();
+        els.frame.removeAttribute("srcdoc");
+        els.frame.src = "about:blank";
+        els.frame.style.display = "none";
+        els.welcome.style.display = "grid";
+        if (clearHash) setHash(null, null);
+        setDrawerOpen(false);
+      }
+
+      function placeholderHTML(seriesTitle, n){
+        const safeTitle = String(seriesTitle || "").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${safeTitle} — Case ${n}</title>
+        <style>html,body{height:100%;margin:0;background:#000;color:#fff;font-family:Georgia,serif} .wrap{min-height:100%;display:grid;place-items:center;padding:28px} .card{max-width:780px;border:1px solid rgba(255,255,255,0.22);border-radius:14px;padding:18px 18px 16px;background:rgba(255,255,255,0.03);box-shadow:0 20px 60px rgba(0,0,0,0.60)} h1{margin:0 0 10px;font-size:1.35rem} p{margin:0.4rem 0;line-height:1.6} .muted{color:rgba(255,255,255,0.72)}</style></head>
+        <body><div class="wrap"><div class="card"><h1>${safeTitle} — Case ${n}</h1>
+        <p class="muted">Placeholder case. This series will be built out later.</p>
+        <p>For now, this page is here to confirm navigation and layout.</p>
+        </div></div></body></html>`;
+      }
+
+      function loadExternal(section, n, href){
+        current = { section, n, href, kind: "external" };
+        clearActive();
+        const btn = caseButtons.get(key(section, n));
+        if (btn) btn.classList.add("active");
+
+        els.welcome.style.display = "none";
+        els.frame.style.display = "block";
+        els.frame.removeAttribute("srcdoc");
+        els.frame.src = href;
+
+        setHash(section, n);
+        setDrawerOpen(false);
+      }
+
+      function loadPlaceholder(section, n, title){
+        current = { section, n, href: null, kind: "placeholder" };
+        clearActive();
+        const btn = caseButtons.get(key(section, n));
+        if (btn) btn.classList.add("active");
+
+        els.welcome.style.display = "none";
+        els.frame.style.display = "block";
+        els.frame.src = "about:blank";
+        els.frame.srcdoc = placeholderHTML(title, n);
+
+        setHash(section, n);
+        setDrawerOpen(false);
+      }
+
+      function buildCaseButton(section, n, href, titleForPlaceholder){
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "caseBtn";
+        btn.textContent = `Case ${n}`;
+        const go = () => {
+          if (href){
+            loadExternal(section, n, href);
+          } else {
+            loadPlaceholder(section, n, titleForPlaceholder || "");
+          }
+        };
+        btn.addEventListener("click", go);
+        btn.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " "){
+            e.preventDefault();
+            go();
+          }
+        });
+        return btn;
+      }
+
+      function buildPlaceholderLists(){
+        const map = {
+          im: els.listIM,
+          neuro: els.listNeuro,
+          surg: els.listSurg,
+        };
+
+        for (const def of PLACEHOLDERS){
+          const listEl = map[def.id];
+          if (!listEl) continue;
+          listEl.innerHTML = "";
+          for (let n = 1; n <= def.count; n++){
+            const btn = buildCaseButton(def.id, n, null, def.title);
+            listEl.appendChild(btn);
+            caseButtons.set(key(def.id, n), btn);
+          }
+        }
+      }
+
+      async function scanPsychCases(){
+        els.statusPsy.textContent = "Loading...";
+        els.listPsy.innerHTML = "";
+
+        // remove any previously scanned psychiatry buttons
+        for (const k of Array.from(caseButtons.keys())){
+          if (k.startsWith("psy:")) caseButtons.delete(k);
+        }
+
+        const found = [];
+        let consecMiss = 0;
+        let anyFound = false;
+
+        for (let n = 1; n <= DYN.maxN; n++){
+          const href = `${DYN.prefix}${n}${DYN.suffix}`;
+          const ok = await exists(href);
+
+          if (ok){
+            found.push({ n, href });
+            anyFound = true;
+            consecMiss = 0;
+          } else {
+            consecMiss += 1;
+          }
+
+          if (anyFound && consecMiss >= DYN.stopAfterConsecMiss) break;
+          if (n % 12 === 0) await sleep(10);
+        }
+
+        if (!found.length){
+          els.statusPsy.textContent = "No cases found.";
+          return { found: [] };
+        }
+
+        els.statusPsy.textContent = "";
+        found.sort((a,b) => a.n - b.n);
+
+        for (const c of found){
+          const btn = buildCaseButton("psy", c.n, c.href, DYN.title);
+          els.listPsy.appendChild(btn);
+          caseButtons.set(key("psy", c.n), btn);
+        }
+
+        return { found };
+      }
+
+      function initFromHashBeforeScan(){
+        const req = parseHash();
+        if (!req) return req;
+
+        // if it's a placeholder section, we can load immediately
+        const ph = PLACEHOLDERS.find(x => x.id === req.section);
+        if (ph){
+          const n = req.n;
+          if (n >= 1 && n <= ph.count){
+            loadPlaceholder(ph.id, n, ph.title);
+            return req;
+          }
+        }
+
+        // if it's psychiatry, keep the welcome screen but don't clear hash
+        showWelcome(false);
+        return req;
+      }
+
+      async function init(){
+        buildPlaceholderLists();
+        const requested = initFromHashBeforeScan();
+
+        // If nothing requested, show welcome normally
+        if (!requested) showWelcome(true);
+
+        const result = await scanPsychCases();
+        const req = requested || parseHash();
+        if (req && req.section === "psy"){
+          const k = key("psy", req.n);
+          if (caseButtons.has(k)){
+            const href = `${DYN.prefix}${req.n}${DYN.suffix}`;
+            loadExternal("psy", req.n, href);
+          }
+        }
+
+        // if nothing is loaded at this point, keep welcome
+        if (!current) showWelcome(false);
+      }
+
+      // UI wiring
+      els.openDrawerBtn.addEventListener("click", () => setDrawerOpen(true));
+      els.closeDrawerBtn.addEventListener("click", () => setDrawerOpen(false));
+      els.scrim.addEventListener("click", () => setDrawerOpen(false));
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") setDrawerOpen(false);
+      });
+
+      els.brandBtn.addEventListener("click", () => showWelcome(true));
+
+      window.addEventListener("resize", () => {
+        const isNarrow = window.matchMedia("(max-width: 900px)").matches;
+        if (!isNarrow){
+          els.drawer.classList.remove("open");
+          els.scrim.classList.remove("show");
+          els.scrim.setAttribute("aria-hidden", "true");
+        }
+      });
+
+      if (document.readyState === "loading"){
+        document.addEventListener("DOMContentLoaded", init);
+      } else {
+        init();
+      }
+    })();
+  </script>
+</body>
+</html>
