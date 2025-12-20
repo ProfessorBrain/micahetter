@@ -1,0 +1,782 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
+<title>Plaque Man</title>
+<style>
+  :root{
+    --bg:#0b0d10;
+    --panel:#11151c;
+    --ink:#e9eef5;
+    --muted:#a9b6c7;
+    --maze:#0a0a0a;
+    --path:#0a0a0a;
+    --line:#2a3342;
+    --good:#3ddc97;
+    --bad:#ff5c7a;
+    --warn:#ffd166;
+  }
+  html,body{height:100%; margin:0; background:var(--bg); color:var(--ink); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;}
+  .wrap{max-width:980px; margin:0 auto; padding:14px 12px 24px;}
+  .title{display:flex; gap:10px; align-items:baseline; justify-content:space-between; flex-wrap:wrap;}
+  .title h1{font-size:18px; margin:0; letter-spacing:.4px;}
+  .title .meta{font-size:12px; color:var(--muted);}
+  .panel{
+    background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:14px;
+    padding:12px 12px;
+    margin-top:10px;
+  }
+  #stem{font-size:14px; line-height:1.35; margin:0;}
+  #status{margin-top:8px; font-size:13px; color:var(--muted);}
+  #status strong{color:var(--ink);}
+  .game{
+    margin-top:12px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+  }
+  canvas{
+    width:720px;
+    height:720px;
+    max-width:92vw;
+    max-height:92vh;
+    aspect-ratio: 1 / 1;
+    border-radius:16px;
+    background:#14161a;
+    box-shadow:0 10px 30px rgba(0,0,0,.45), 0 0 0 4px rgba(0,180,255,.60), 0 0 22px rgba(0,180,255,.55), 0 0 50px rgba(0,90,255,.30);
+    border:3px solid rgba(0,180,255,.90);
+    image-rendering: pixelated;
+    touch-action:none;
+  }
+  .kbd{
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size:11px;
+    padding:2px 6px;
+    border-radius:7px;
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.04);
+    color:var(--ink);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="title">
+    <h1>Plaque Man</h1>
+    <div class="meta"></div>
+  </div>
+
+  <div class="panel">
+    <p id="stem"></p>
+    <div id="status">Case: <strong id="caseN">1</strong> · Score: <strong id="score">0</strong></div>
+  </div>
+
+  <div class="game">
+    <canvas id="c" width="720" height="720" aria-label="Plaque Man maze"></canvas>
+  </div>
+
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  // =============================
+  // Maze geometry (vector, PNG-free)
+  // =============================
+  const CW = 720, CH = 720;
+
+  // Thickness of "vessel corridors" (uniform everywhere)
+  const T = 54;
+
+  // Overlap to ensure corridors truly intersect for a non-zero-radius player
+  const O = 18;
+
+  // Utility
+  const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+
+
+  const wrap = (v, max)=>{
+    v = v % max;
+    if (v < 0) v += max;
+    return v;
+  };
+  // Rects that form the walkable corridor (black vessel "walls" in your reference image)
+  // This is an approximation of the provided Circle-of-Willis silhouette.
+  const rects = [];
+  const addRect = (x,y,w,h)=>rects.push({x,y,w,h});
+
+  // Upper circulation: big "frame" + two ACA stalks + long lateral arms
+  // Midline long horizontal bar (lateral arms)
+  addRect(0, 240, CW, T);
+
+  // Upper rectangle frame
+  const upperX = 160, upperY = 120, upperW = 400, upperH = 120;
+  addRect(upperX, upperY, upperW, T);                          // top
+  addRect(upperX, upperY, T, upperH + T);                      // left side down to midline bar
+  addRect(upperX + upperW - T, upperY, T, upperH + T);         // right side
+
+  // ACA stalks (two vertical)
+  addRect(270, 0, T, upperY + O);
+  addRect(396, 0, T, upperY + O);
+
+  // Lateral wrap tunnels (outer horizontal corridors): extend all the way to the playfield edge
+  // and sit flush with the upper bar to avoid tiny misaligned corner stubs.
+  addRect(0, upperY, upperX + O, T);
+  addRect(upperX + upperW - O, upperY, CW - (upperX + upperW - O), T);
+
+  // Basilar trunk (connects the CoW to the posterior circulation)
+const trunkX = Math.round((CW - T)/2);
+
+// Bottom "square" (junction box outline)
+// Moved slightly upward so the vertebrals can descend to the bottom edge (as in your reference).
+const sqOuterW = 180, sqOuterH = 200;
+const sqY = 450;
+const sqX = trunkX - Math.round((sqOuterW - T)/2);
+
+// Basilar trunk goes from the posterior bar down into the square top.
+// Use overlap so the ship (non-zero radius) can pass through intersections cleanly.
+const trunkTopY = 240 + T - O;
+const trunkBottomY = sqY + O;
+addRect(trunkX, trunkTopY, T, trunkBottomY - trunkTopY);
+
+// Square outline
+addRect(sqX, sqY, sqOuterW, T);                               // top
+addRect(sqX, sqY, T, sqOuterH);                               // left
+addRect(sqX + sqOuterW - T, sqY, T, sqOuterH);                // right
+// Cerebellar branches
+// SCA + AICA connect directly to the basilar (rungs touch the trunk).
+// Corridor thickness is uniform, so rung height == T.
+const rungH = T;
+const rungW = 150;
+
+const rungY_SCA  = 315;
+const rungY_AICA = 375;
+
+for (const y of [rungY_SCA, rungY_AICA]){
+  addRect(trunkX - rungW, y, rungW + O, rungH);   // left rung (overlaps trunk)
+  addRect(trunkX + T - O, y, rungW + O, rungH);   // right rung (overlaps trunk)
+}
+
+// Vertebral arteries: descend to the bottom of the screen (as in the reference image)
+const vertY0 = sqY + sqOuterH;
+const vertYStart = vertY0 - O;
+const vertH  = CH - vertYStart;
+addRect(sqX,                vertYStart, T, vertH);                 // left VA column
+addRect(sqX + sqOuterW - T, vertYStart, T, vertH);                 // right VA column
+
+// PICA: comes off the vertebrals (not the basilar)
+const picaY = sqY + 70;
+const picaLen = 160;
+addRect(sqX - picaLen,      picaY, picaLen + O, rungH);                // left PICA (overlaps left VA)
+addRect(sqX + sqOuterW - O, picaY, picaLen + O, rungH);                // right PICA (overlaps right VA)
+
+// NOTE: No anterior spinal artery in this maze (matches the reference silhouette).
+
+// Build an offscreen "maze" bitmap for fast collision checks (corridors = black)
+  const off = document.createElement("canvas");
+  off.width = CW; off.height = CH;
+  const og = off.getContext("2d", { alpha: false });
+  og.fillStyle = "#f2f2f2";
+  og.fillRect(0,0,CW,CH);
+  og.fillStyle = "#000";
+  for (const r of rects) og.fillRect(r.x, r.y, r.w, r.h);
+
+  // Pixel mask for collision (1 byte per pixel)
+  const mazeData = og.getImageData(0,0,CW,CH).data;
+  const isWalkable = (px,py)=>{
+    // Toroidal wrap: exiting one edge re-enters on the opposite edge.
+    let x = px|0, y = py|0;
+    x = ((x % CW) + CW) % CW;
+    y = ((y % CH) + CH) % CH;
+    const i = (y*CW + x)*4;
+    // walkable if pixel is "black"
+    return mazeData[i] < 32;
+  };
+
+  // Pre-render a neon "arcade" visual version of the maze (outer boundary only; no internal seam-lines)
+  const mazeVis = document.createElement("canvas");
+  mazeVis.width = CW; mazeVis.height = CH;
+  const vg = mazeVis.getContext("2d"); // alpha true (glow compositing)
+
+  // background (dark gray)
+  vg.fillStyle = "#1b1f24";
+  vg.fillRect(0,0,CW,CH);
+
+  // corridors (near-black)
+  vg.fillStyle = "#050607";
+  for (const r of rects) vg.fillRect(r.x, r.y, r.w, r.h);
+
+  // Build an edge image from the collision mask so ONLY the outer boundary glows.
+  const edge = document.createElement("canvas");
+  edge.width = CW; edge.height = CH;
+  const eg = edge.getContext("2d");
+  const edgeImg = eg.createImageData(CW,CH);
+  const ed = edgeImg.data;
+
+  const isCorr = (i)=>mazeData[i] < 32;
+
+  // Portal zones: remove neon "walls" at wrap openings so tunnels look open.
+  // We widen by 1px so the crisp outline (shifted copies) doesn't "re-seal" the mouth.
+  const inPortalZone = (x,y)=>{
+    // Horizontal wrap openings: upper lateral tunnel (MCA row) and posterior bar ends (PCA row)
+    const inMcaY = (y >= upperY && y < upperY + T);
+    const inPcaY = (y >= 240   && y < 240   + T);
+    const inLeftPortal  = (x <= 1)      && (inMcaY || inPcaY);
+    const inRightPortal = (x >= CW - 2) && (inMcaY || inPcaY);
+
+    // Top wrap openings: ACA stalks
+    const inAca1X = (x >= 270 && x < 270 + T);
+    const inAca2X = (x >= 396 && x < 396 + T);
+    const inTopPortal = (y <= 1) && (inAca1X || inAca2X);
+
+    // Bottom wrap openings: vertebral arteries
+    const inVaLX = (x >= sqX && x < sqX + T);
+    const inVaRX = (x >= (sqX + sqOuterW - T) && x < (sqX + sqOuterW));
+    const inBottomPortal = (y >= CH - 2) && (inVaLX || inVaRX);
+
+    return inLeftPortal || inRightPortal || inTopPortal || inBottomPortal;
+  };
+
+  for (let y=0; y<CH; y++){
+    for (let x=0; x<CW; x++){
+      const i = (y*CW + x)*4;
+      if (!isCorr(i)) continue;
+
+      let edgePx = false;
+
+      // Treat canvas border as an edge, EXCEPT at portal mouths (wrap openings).
+      if (x===0 || x===CW-1 || y===0 || y===CH-1){
+        edgePx = !inPortalZone(x,y);
+      } else {
+        const left  = i - 4;
+        const right = i + 4;
+        const up    = i - (CW*4);
+        const down  = i + (CW*4);
+        if (!isCorr(left) || !isCorr(right) || !isCorr(up) || !isCorr(down)) edgePx = true;
+      }
+
+      if (edgePx){
+        ed[i]   = 255;
+        ed[i+1] = 70;
+        ed[i+2] = 70;
+        ed[i+3] = 255;
+      }
+    }
+  }
+  eg.putImageData(edgeImg, 0, 0);
+
+  // glow pass
+  vg.save();
+  vg.globalAlpha = 0.9;
+  vg.shadowColor = "rgba(255, 55, 55, 0.95)";
+  vg.shadowBlur = 22;
+  vg.drawImage(edge, 0, 0);
+  vg.restore();
+
+  // crisp pass (slightly thicker)
+  vg.save();
+  const offsets = [[0,0],[1,0],[-1,0],[0,1],[0,-1]];
+  for (const [dx,dy] of offsets) vg.drawImage(edge, dx, dy);
+  vg.restore();
+
+// =============================
+  // Game content
+  // =============================
+  const V = {
+    L_ACA: "Left ACA",   R_ACA: "Right ACA",
+    L_MCA: "Left MCA",   R_MCA: "Right MCA",
+    L_PCA: "Left PCA",   R_PCA: "Right PCA",
+    L_SCA: "Left SCA",   R_SCA: "Right SCA",
+L_AICA: "Left AICA", R_AICA: "Right AICA",
+    L_PICA: "Left PICA", R_PICA: "Right PICA",
+// (Anterior spinal artery intentionally omitted)
+  };
+
+  // Distal "power pellets" (placed to match the silhouette)
+const pellets = [
+  {key:"L_ACA",   x:270 + T/2, y:18},
+  {key:"R_ACA",   x:396 + T/2, y:18},
+
+  // MCA distal: wrap tunnels (upper lateral arms)
+  {key:"L_MCA",   x:18,        y:upperY + T/2},
+  {key:"R_MCA",   x:CW-18,     y:upperY + T/2},
+
+  // PCA distal: far ends of the posterior bar
+  {key:"L_PCA",   x:18,        y:240 + T/2},
+  {key:"R_PCA",   x:CW-18,     y:240 + T/2},
+
+  {key:"L_SCA",   x:trunkX - rungW + 18,           y:rungY_SCA  + rungH/2},
+  {key:"R_SCA",   x:trunkX + T + rungW - 18,       y:rungY_SCA  + rungH/2},
+
+  {key:"L_AICA",  x:trunkX - rungW + 18,           y:rungY_AICA + rungH/2},
+  {key:"R_AICA",  x:trunkX + T + rungW - 18,       y:rungY_AICA + rungH/2},
+
+  {key:"L_PICA",  x:(sqX - picaLen) + 18,          y:picaY + rungH/2},
+  {key:"R_PICA",  x:(sqX + sqOuterW + picaLen) - 18, y:picaY + rungH/2},
+// (Anterior spinal artery pellet intentionally omitted)
+];
+
+
+  // Subtle, non-telegraphy-ish stems (still localize)
+  const stems = {
+    L_ACA: [
+      "A 69-year-old right-handed man develops sudden behavioral slowing and difficulty initiating movements. Exam shows right leg weakness > arm, mild grasp reflex, and urinary urgency.",
+      "A 58-year-old woman has abrupt onset of right leg-predominant weakness and abulia. Sensation is relatively spared in the face and right arm."
+    ],
+    R_ACA: [
+      "A 72-year-old man suddenly becomes apathetic and slow to respond. Exam shows left leg weakness > arm, with frontal release signs and new urinary incontinence.",
+      "A 61-year-old woman develops acute left leg heaviness with marked difficulty initiating speech and movement; the face and left arm are comparatively less affected."
+    ],
+    L_MCA: [
+      "A 64-year-old right-handed woman has sudden right face/arm weakness with gaze preference toward the left. She struggles to produce fluent language and naming is impaired.",
+      "A 55-year-old man develops abrupt right arm and face weakness and numbness. He has difficulty repeating and finding words, but right leg strength is relatively preserved."
+    ],
+    R_MCA: [
+      "A 70-year-old woman has acute left face/arm weakness and sensory loss with gaze deviation. She ignores stimuli on the left side and is unaware of the deficit.",
+      "A 60-year-old man develops sudden left arm/face weakness and hemisensory loss with profound left-sided neglect and spatial disorientation; left leg involvement is mild."
+    ],
+    L_PCA: [
+      "A 66-year-old right-handed man suddenly reports missing objects on the right side of his visual field. Reading becomes markedly difficult despite intact writing, and motor exam is normal.",
+      "A 59-year-old woman develops abrupt right homonymous visual field loss with preserved motor strength. She has trouble identifying familiar objects visually."
+    ],
+    R_PCA: [
+      "A 63-year-old man suddenly cannot see items on the left side of his visual field. Motor exam is normal; he is startled when approached from the left.",
+      "A 57-year-old woman develops acute left homonymous visual field loss with difficulty recognizing faces; strength and primary sensation are intact."
+    ],
+
+    L_SCA: [
+      "A 54-year-old man has sudden severe left limb ataxia and dysmetria with slurred speech. Facial weakness is minimal; sensation is largely intact.",
+      "A 60-year-old woman develops abrupt left-sided cerebellar signs (past-pointing, intention tremor) with gait instability and nystagmus."
+    ],
+    R_SCA: [
+      "A 56-year-old woman develops acute right limb ataxia and dysarthria with prominent gait instability and nystagmus; motor strength is otherwise preserved.",
+      "A 63-year-old man has sudden right-sided dysmetria and truncal ataxia without clear facial paralysis."
+    ],
+    L_AICA: [
+      "A 58-year-old woman develops acute vertigo and vomiting with left facial weakness and decreased taste. She also reports left-sided hearing changes and has left limb ataxia.",
+      "A 67-year-old man has sudden vertigo, nystagmus, left facial paralysis, and left-sided hearing loss, with left limb ataxia."
+    ],
+    R_AICA: [
+      "A 61-year-old man presents with abrupt vertigo, nystagmus, right facial weakness, and reduced lacrimation. He notes right-sided hearing loss and has right limb ataxia.",
+      "A 52-year-old woman develops sudden vertigo with right facial paralysis and right-sided hearing loss; gait is markedly ataxic."
+    ],
+    L_PICA: [
+      "A 49-year-old man has abrupt vertigo with hoarseness and dysphagia. Exam shows left facial pain/temperature loss, right body pain/temperature loss, and left Horner syndrome.",
+      "A 73-year-old woman develops sudden nausea and gait instability with severe dysphagia and hiccups; exam shows left Horner syndrome with crossed pain/temperature deficits."
+    ],
+    R_PICA: [
+      "A 51-year-old woman presents with acute vertigo, dysphagia, and hoarseness. Exam shows right facial pain/temperature loss, left body pain/temperature loss, and right Horner syndrome.",
+      "A 65-year-old man develops sudden vomiting and imbalance with severe dysphagia; exam reveals right Horner syndrome with crossed pain/temperature deficits."
+    ],
+// (Anterior spinal artery intentionally omitted)
+  };
+
+    // Only include territories that have a corresponding distal pellet on the maze
+  const vesselKeys = Array.from(new Set(pellets.map(p=>p.key)));
+
+  // =============================
+  // Canvas + drawing
+  // =============================
+  const canvas = document.getElementById("c");
+  const ctx = canvas.getContext("2d", { alpha: false });
+const fitCanvasCSS = () => {
+  // Keep the entire maze visible without scrolling:
+  // fit to the smaller of (available viewport height below the canvas top) and width.
+  const rect = canvas.getBoundingClientRect();
+  const availH = Math.max(320, window.innerHeight - rect.top - 16);
+  const availW = Math.max(320, window.innerWidth * 0.92);
+  const size = Math.min(720, availH, availW);
+  canvas.style.width = size + "px";
+  canvas.style.height = size + "px";
+};
+window.addEventListener("resize", fitCanvasCSS, {passive:true});
+// run after layout
+requestAnimationFrame(fitCanvasCSS);
+setTimeout(fitCanvasCSS, 50); 
+
+  // Pre-rendered maze background
+  const mazeImg = mazeVis; // neon pre-rendered
+
+  function forEachWrappedCopy(x,y,pad,cb){
+  const xs = [x], ys = [y];
+  if (x < pad) xs.push(x + CW);
+  if (x > CW - pad) xs.push(x - CW);
+  if (y < pad) ys.push(y + CH);
+  if (y > CH - pad) ys.push(y - CH);
+  for (const xx of xs){
+    for (const yy of ys){
+      cb(xx,yy);
+    }
+  }
+}
+
+function drawShip(x,y,dir,phase=0.0){
+  // dir: 0R 1D 2L 3U
+  const ang = [0, Math.PI/2, Math.PI, -Math.PI/2][dir] ?? 0;
+  const r = 13;
+
+  ctx.save();
+  ctx.translate(x,y);
+  ctx.rotate(ang);
+
+  // body
+  ctx.beginPath();
+  ctx.moveTo(r, 0);
+  ctx.lineTo(-r*0.85, -r*0.65);
+  ctx.lineTo(-r*0.55, 0);
+  ctx.lineTo(-r*0.85, r*0.65);
+  ctx.closePath();
+  ctx.fillStyle = "#a7d9ff";
+  ctx.fill();
+
+  // cockpit
+  ctx.beginPath();
+  ctx.arc(-r*0.1, 0, r*0.18, 0, Math.PI*2);
+  ctx.fillStyle = "#0b0d10";
+  ctx.fill();
+
+  // thrust flicker
+  const flick = 0.35 + 0.65*Math.abs(Math.sin(phase*6.283185307179586));
+  ctx.beginPath();
+  ctx.moveTo(-r*0.95, 0);
+  ctx.lineTo(-r*1.35, -r*0.25*flick);
+  ctx.lineTo(-r*1.35, r*0.25*flick);
+  ctx.closePath();
+  ctx.fillStyle = "#ffcf33";
+  ctx.fill();
+
+  ctx.restore();
+}
+
+function drawShipWrapped(x,y,dir,phase){
+  const pad = 24;
+  forEachWrappedCopy(x,y,pad,(xx,yy)=> drawShip(xx,yy,dir,phase));
+}
+
+  function draw(){
+  // background
+  ctx.drawImage(mazeImg,0,0);
+
+  // pellets (activation requires a grenade explosion)
+  for (const p of pellets){
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 11, 0, Math.PI*2);
+    ctx.fillStyle = "#111";
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 7, 0, Math.PI*2);
+    ctx.fillStyle = "#f2f2f2";
+    ctx.fill();
+  }
+
+  // grenades
+  for (const g of grenades){
+    const age01 = clamp((tNow - g.t0)/GRENADE_FUSE_MS, 0, 1);
+    forEachWrappedCopy(g.x, g.y, 28, (xx,yy)=> drawGrenade(xx,yy,age01));
+  }
+
+  // explosions
+  for (const ex of explosions){
+    const a = clamp((tNow - ex.t0)/EXPLOSION_MS, 0, 1);
+    const r = EXPLOSION_R * (0.55 + 0.85*a);
+    const alpha = (1-a) * 0.55;
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = "#ffcf33";
+    forEachWrappedCopy(ex.x, ex.y, EXPLOSION_R + 28, (xx,yy)=>{
+      ctx.beginPath();
+      ctx.arc(xx, yy, r, 0, Math.PI*2);
+      ctx.stroke();
+    });
+    ctx.restore();
+  }
+
+  // player ship
+  drawShipWrapped(player.x, player.y, player.dir, player.mouth);
+}
+
+  // =============================
+  // Movement + collision
+  // =============================
+  const keys = new Set();
+  window.addEventListener("keydown", (e)=>{
+  const k = e.key.toLowerCase();
+  if (["arrowup","arrowdown","arrowleft","arrowright"," ","w","a","s","d"].includes(k)) e.preventDefault();
+
+  if (k === " "){
+    dropGrenade();
+    return;
+  }
+
+  keys.add(k);
+  if (k === "n") newCase();
+}, {passive:false});
+
+  window.addEventListener("keyup", (e)=>{
+    keys.delete(e.key.toLowerCase());
+  });
+
+  // Touch joystick (simple swipe)
+  let touchStart = null;
+  canvas.addEventListener("touchstart", (e)=>{
+    if (!e.touches || e.touches.length!==1) return;
+    const t = e.touches[0];
+    touchStart = {x:t.clientX, y:t.clientY};
+  }, {passive:true});
+  canvas.addEventListener("touchend", (e)=>{
+    if (!touchStart) return;
+    const t = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0] : null;
+    if (!t) return;
+    const dx = t.clientX - touchStart.x;
+    const dy = t.clientY - touchStart.y;
+    touchStart = null;
+    const ax = Math.abs(dx), ay = Math.abs(dy);
+    if (Math.max(ax,ay) < 16){ dropGrenade(); return; }
+    if (ax > ay){
+      queueDir(dx>0 ? 0 : 2);
+    } else {
+      queueDir(dy>0 ? 1 : 3);
+    }
+  }, {passive:true});
+
+  const start = {x: trunkX + T/2, y: sqY + T/2};
+
+  const player = {
+    x: start.x,
+    y: start.y,
+    r: 9,
+    dir: 0,
+    want: 0,
+    mouth: 0.34
+  };
+
+  function resetPlayer(){
+    player.x = start.x;
+    player.y = start.y;
+    player.dir = 0;
+    player.want = 0;
+  }
+
+  function queueDir(d){
+    player.want = d;
+  }// =============================
+// Grenades (spacebar / tap)
+// =============================
+const GRENADE_FUSE_MS = 950;    // ~1 second
+const EXPLOSION_MS    = 420;
+const EXPLOSION_R     = 30;
+const grenades = [];
+const explosions = [];
+let lastGrenadeMs = -1;
+let tNow = performance.now();
+
+function toroidalDelta(a,b,span){
+  let d = a - b;
+  if (d > span/2) d -= span;
+  if (d < -span/2) d += span;
+  return d;
+}
+function toroidalDist2(x1,y1,x2,y2){
+  const dx = toroidalDelta(x1,x2,CW);
+  const dy = toroidalDelta(y1,y2,CH);
+  return dx*dx + dy*dy;
+}
+function nearestPelletInRadius(x,y,r){
+  const rr = r*r;
+  let best = null, bestD = 1e18;
+  for (const p of pellets){
+    const d2 = toroidalDist2(x,y,p.x,p.y);
+    if (d2 <= rr && d2 < bestD){
+      best = p; bestD = d2;
+    }
+  }
+  return best;
+}
+
+function dropGrenade(){
+  if (locked) return;
+  const now = performance.now();
+  if (now - lastGrenadeMs < 250) return;
+  lastGrenadeMs = now;
+  grenades.push({x: player.x, y: player.y, t0: now});
+}
+
+function explodeAt(x,y,now){
+  explosions.push({x, y, t0: now});
+  const hit = nearestPelletInRadius(x,y,EXPLOSION_R);
+  if (hit) onPelletHit(hit);
+}
+
+function drawGrenade(x,y,age01){
+  const r = 6;
+  // body
+  ctx.beginPath();
+  ctx.arc(x,y,r,0,Math.PI*2);
+  ctx.fillStyle = "#d7d7d7";
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(x,y,r-2,0,Math.PI*2);
+  ctx.fillStyle = "#3a3a3a";
+  ctx.fill();
+  // fuse spark
+  ctx.beginPath();
+  ctx.arc(x + r*0.65, y - r*0.75, 2.2, 0, Math.PI*2);
+  ctx.fillStyle = (age01 > 0.82) ? "#ff3b30" : "#ffcf33";
+  ctx.fill();
+}
+
+  function readDirFromKeys(){
+    // prefer last-pressed behavior via order
+    if (keys.has("arrowleft") || keys.has("a")) return 2;
+    if (keys.has("arrowright") || keys.has("d")) return 0;
+    if (keys.has("arrowup") || keys.has("w")) return 3;
+    if (keys.has("arrowdown") || keys.has("s")) return 1;
+    return null;
+  }
+
+  function canMove(dir, nx, ny){
+    // sample a few points around player radius
+    const r = player.r;
+    const pts = [
+      [nx+r, ny], [nx-r, ny], [nx, ny+r], [nx, ny-r],
+      [nx+r*0.7, ny+r*0.7], [nx-r*0.7, ny+r*0.7], [nx+r*0.7, ny-r*0.7], [nx-r*0.7, ny-r*0.7]
+    ];
+    for (const [px,py] of pts){
+      if (!isWalkable(px,py)) return false;
+    }
+    return true;
+  }
+
+  // =============================
+  // Case logic
+  // =============================
+  let caseN = 1;
+  let score = 0;
+  let current = null; // { key, stem }
+  let locked = false;
+  let flash = {t:0, kind:""};
+
+  const stemEl = document.getElementById("stem");
+  const caseEl = document.getElementById("caseN");
+  const scoreEl = document.getElementById("score");
+
+  function pick(arr){ return arr[(Math.random()*arr.length)|0]; }
+
+  function newCase(){
+    locked = false;
+    current = null;
+    // keep player position between rounds
+
+    const key = pick(vesselKeys);
+    const stem = pick(stems[key] || ["A patient presents with acute neurologic deficits."]);
+    current = {key, stem};
+
+    stemEl.textContent = stem;
+    caseEl.textContent = String(caseN);
+    scoreEl.textContent = String(score);
+    fitCanvasCSS();
+  }
+
+  function dist2(ax,ay,bx,by){ const dx=ax-bx, dy=ay-by; return dx*dx+dy*dy; }
+
+  function onPelletHit(p){
+    if (locked) return;
+    locked = true;
+
+    const correct = (p.key === current.key);
+    if (correct){
+      score += 1;
+      flash = {t: 1.0, kind:"good"};
+    } else {
+      flash = {t: 1.0, kind:"bad"};
+    }
+
+    // brief pause then next case
+    setTimeout(()=>{
+      caseN += 1;
+      newCase();
+    }, 650);
+  }
+
+  // =============================
+  // Main loop
+  // =============================
+  let last = performance.now();
+  function tick(now){
+    const dt = Math.min(0.033, (now - last)/1000);
+    last = now;
+
+    // input
+    const kdir = readDirFromKeys();
+    if (kdir !== null) queueDir(kdir);
+
+    // movement
+    const speed = 220; // px/sec
+    // attempt to turn into wanted direction first (feels responsive)
+    const dirOrder = [player.want, player.dir].filter((v,i,a)=>a.indexOf(v)===i);
+
+    for (const d of dirOrder){
+      if (d === null || d === undefined) continue;
+      let dx=0, dy=0;
+      if (d===0) dx=1;
+      if (d===2) dx=-1;
+      if (d===1) dy=1;
+      if (d===3) dy=-1;
+
+      const nx = wrap(player.x + dx*speed*dt, CW);
+      const ny = wrap(player.y + dy*speed*dt, CH);
+
+      if (canMove(d, nx, ny)){
+        player.x = nx; player.y = ny; player.dir = d;
+        break;
+      }
+    }
+
+    // mouth animation
+    player.mouth = 0.18 + 0.22*Math.abs(Math.sin(now/120));
+
+// grenades (pellets activate only via explosion, not by touch)
+for (let i = grenades.length - 1; i >= 0; i--){
+  const g = grenades[i];
+  if (now - g.t0 >= GRENADE_FUSE_MS){
+    grenades.splice(i, 1);
+    explodeAt(g.x, g.y, now);
+  }
+}
+for (let i = explosions.length - 1; i >= 0; i--){
+  const ex = explosions[i];
+  if (now - ex.t0 >= EXPLOSION_MS){
+    explosions.splice(i, 1);
+  }
+}
+
+    // draw
+    tNow = now;
+    draw();
+
+    // feedback flash overlay
+    if (flash.t > 0){
+      flash.t -= dt*1.5;
+      ctx.save();
+      ctx.globalAlpha = clamp(flash.t,0,1)*0.35;
+      ctx.fillStyle = (flash.kind==="good") ? "#2cffb0" : "#ff2f5b";
+      ctx.fillRect(0,0,CW,CH);
+      ctx.restore();
+    }
+
+    requestAnimationFrame(tick);
+  }
+
+  // init
+  fitCanvasCSS();
+  newCase();
+  requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>

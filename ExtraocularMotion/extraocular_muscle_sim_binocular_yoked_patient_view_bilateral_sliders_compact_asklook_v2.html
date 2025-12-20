@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Extraocular Muscle Simulator – Binocular Yoked (Patient View, Bilateral Sliders)</title>
+  <style>
+    :root{
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background-color:#0f172a;
+      color:#e5e7eb;
+    }
+    body{margin:0;padding:0;}
+    .app{
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      align-items:stretch;
+      justify-content:center;
+      padding:12px;
+      box-sizing:border-box;
+    }
+    .header{text-align:center;margin-bottom:12px;}
+    .header h1{margin:0;font-size:1.6rem;letter-spacing:0.04em;}
+    .header p{margin:4px 0 0;font-size:0.9rem;color:#9ca3af;}
+
+    /* 3-column layout: OD sliders | eyes | OS sliders */
+    .main{
+      display:flex;
+      gap:10px;
+      align-items:stretch;
+      justify-content:center;
+      flex-wrap:nowrap;
+    }
+
+    .eye-panel{
+      background: radial-gradient(circle at 20% 20%, #1f2937, #020617);
+      border-radius:18px;
+      padding:12px;
+      position:relative;
+      box-shadow:0 18px 40px rgba(0,0,0,0.7);
+      flex:0 1 560px;
+      min-width:460px;
+    }
+
+    .eyes-row{
+      display:flex;
+      justify-content:center;
+      align-items:flex-start;
+      gap:24px;
+      flex-wrap:nowrap; /* always side-by-side */
+      overflow-x:auto;
+      -webkit-overflow-scrolling:touch;
+      padding-bottom:6px;
+    }
+
+    .eye-column{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:6px;
+      flex:0 0 auto;
+    }
+
+    .eye-label{
+      margin:0;
+      font-size:0.80rem;
+      text-transform:uppercase;
+      letter-spacing:0.07em;
+      color:#9ca3af;
+    }
+
+    .eye-wrapper{position:relative;width:260px;height:260px;}
+    svg.vectorCanvas{position:absolute;inset:0;pointer-events:none;}
+
+    .eye-circle{
+      position:absolute;inset:20px;margin:auto;
+      width:220px;height:220px;border-radius:50%;
+      background: radial-gradient(circle at 30% 30%, #ffffff, #e5e7eb);
+      box-shadow:
+        0 0 0 6px rgba(15,23,42,0.8),
+        0 20px 35px rgba(0,0,0,0.8);
+      overflow:hidden;
+      touch-action:none;
+      cursor:grab;
+    }
+    .eye-circle.dragging{cursor:grabbing;}
+
+    .corneal-highlight{
+      position:absolute;top:26%;left:22%;
+      width:80px;height:80px;border-radius:50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.8), transparent 70%);
+      pointer-events:none;
+      opacity:0.85;
+      filter:blur(1px);
+    }
+
+    .iris{
+      position:absolute;top:50%;left:50%;
+      width:110px;height:110px;margin:-55px 0 0 -55px;
+      border-radius:50%;
+      background:
+        radial-gradient(circle at 30% 30%, #93c5fd, #1d4ed8 55%, #020617 75%),
+        repeating-conic-gradient(from 0deg,
+          rgba(147,197,253,0.15) 0deg 8deg,
+          rgba(30,64,175,0.75) 8deg 16deg);
+      box-shadow:
+        inset 0 0 18px rgba(15,23,42,0.8),
+        0 0 8px rgba(37,99,235,0.8);
+      transform-origin:center center;
+      transition:transform 0.06s linear;
+      pointer-events:none;
+    }
+
+    .pupil{
+      position:absolute;top:50%;left:50%;
+      width:40px;height:40px;margin:-20px 0 0 -20px;
+      border-radius:50%;
+      background: radial-gradient(circle at 30% 30%, #111827, #020617 70%);
+      box-shadow:0 0 16px rgba(0,0,0,0.9), 0 0 3px rgba(0,0,0,0.8);
+      pointer-events:none;
+    }
+
+    .axes-labels{
+      position:absolute;inset:0;
+      pointer-events:none;
+      font-size:0.7rem;
+      color:#9ca3af;
+      text-shadow:0 0 4px rgba(0,0,0,0.8);
+    }
+    .axes-labels .up{position:absolute;top:4px;left:50%;transform:translateX(-50%);}
+    .axes-labels .down{position:absolute;bottom:4px;left:50%;transform:translateX(-50%);}
+    .axes-labels .left{position:absolute;top:50%;left:4px;transform:translateY(-50%);}
+    .axes-labels .right{position:absolute;top:50%;right:4px;transform:translateY(-50%);}
+
+    .eye-footer{margin-top:10px;font-size:0.8rem;color:#9ca3af;text-align:center;}
+    .gaze-readout{font-weight:600;color:#fbbf24;}
+
+    .controls{
+      flex:0 1 420px;
+      background: radial-gradient(circle at 80% 0%, #1f2937, #020617);
+      border-radius:18px;
+      padding:12px;
+      box-shadow:0 18px 40px rgba(0,0,0,0.7);
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      max-height: 680px;
+      overflow-y:auto;
+      min-width: 300px;
+    }
+    .controls h2{margin:0;font-size:1.0rem;}
+    .controls p{margin:2px 0 6px;font-size:0.80rem;color:#9ca3af;}
+
+    .slider-group{
+      margin-bottom:6px;
+      padding:6px 8px;
+      border-radius:10px;
+      background:rgba(15,23,42,0.85);
+      border:1px solid rgba(55,65,81,0.8);
+    }
+
+    .slider-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:baseline;
+      gap:8px;
+      margin-bottom:4px;
+      font-size:0.80rem;
+    }
+
+    .muscle-name{font-weight:600;letter-spacing:0.03em;}
+    .muscle-name .side-tag{
+      font-size:0.7rem;
+      font-weight:500;
+      color:#9ca3af;
+      text-transform:uppercase;
+      margin-left:4px;
+    }
+
+    .slider-value{
+      font-feature-settings:"tnum" 1, "lnum" 1;
+      color:#e5e7eb;
+      min-width:32px;
+      text-align:right;
+      font-size:0.8rem;
+    }
+
+    .slider-subtext{font-size:0.70rem;color:#9ca3af;}
+
+    input[type="range"]{
+      width:100%;
+      appearance:none;
+      height:5px;
+      border-radius:999px;
+      background: linear-gradient(90deg, #22c55e, #eab308, #ef4444);
+      outline:none;
+      margin:4px 0 0;
+    }
+    input[type="range"]::-webkit-slider-thumb{
+      appearance:none;
+      width:14px;height:14px;border-radius:50%;
+      background:#e5e7eb;
+      border:2px solid #0f172a;
+      box-shadow:0 0 0 3px rgba(248,250,252,0.25);
+      cursor:pointer;
+    }
+    input[type="range"]::-moz-range-thumb{
+      width:14px;height:14px;border-radius:50%;
+      background:#e5e7eb;
+      border:2px solid #0f172a;
+      box-shadow:0 0 0 3px rgba(248,250,252,0.25);
+      cursor:pointer;
+    }
+    input[type="range"]::-moz-range-track{
+      height:5px;border-radius:999px;
+      background: linear-gradient(90deg, #22c55e, #eab308, #ef4444);
+    }
+
+    .buttons-row{
+      display:flex;
+      gap:8px;
+      justify-content:flex-start;
+      margin-top:4px;
+      flex-wrap:wrap;
+    }
+    button{
+      border-radius:999px;
+      border:1px solid #4b5563;
+      background:rgba(15,23,42,0.9);
+      color:#e5e7eb;
+      padding:6px 12px;
+      font-size:0.8rem;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      box-shadow:0 8px 16px rgba(0,0,0,0.6);
+      transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.08s ease, border-color 0.08s ease;
+    }
+    button span.icon{font-size:0.9rem;}
+    button:hover{
+      transform: translateY(-1px);
+      background: rgba(15,23,42,1);
+      border-color: #9ca3af;
+      box-shadow: 0 12px 22px rgba(0,0,0,0.75);
+    }
+    button:active{
+      transform: translateY(1px) scale(0.98);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.8);
+    }
+
+    .legend{
+      margin-top:4px;
+      font-size:0.75rem;
+      color:#9ca3af;
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap:4px 12px;
+    }
+    .legend-item{display:flex;align-items:baseline;gap:6px;}
+    .legend-swatch{
+      width:10px;height:10px;border-radius:50%;
+      background:#93c5fd;
+      box-shadow:0 0 6px rgba(59,130,246,0.8);
+    }
+    .legend-label{font-size:0.72rem;}
+
+    
+    .ask-look{
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .ask-look-grid{
+      display: grid;
+      grid-template-columns: 44px auto 44px;
+      grid-template-rows: 44px 44px 44px;
+      gap: 8px;
+      align-items: center;
+      justify-items: center;
+      width: min(420px, 100%);
+    }
+    .ask-center{
+      grid-column: 2;
+      grid-row: 2;
+      padding: 10px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(75,85,99,0.9);
+      background: rgba(15,23,42,0.75);
+      color: #e5e7eb;
+      font-size: 0.9rem;
+      letter-spacing: 0.02em;
+      text-align: center;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.55);
+      user-select: none;
+      line-height: 1.1;
+      min-width: 160px;
+    }
+    .ask-btn{
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      border: 1px solid #4b5563;
+      background: rgba(15,23,42,0.9);
+      color: #e5e7eb;
+      font-size: 1.05rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 18px rgba(0,0,0,0.6);
+      transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.08s ease, border-color 0.08s ease;
+      user-select: none;
+    }
+    .ask-btn:hover{
+      transform: translateY(-1px);
+      border-color: #9ca3af;
+      box-shadow: 0 14px 24px rgba(0,0,0,0.75);
+      background: rgba(15,23,42,1);
+    }
+    .ask-btn:active{
+      transform: translateY(1px) scale(0.98);
+      box-shadow: 0 7px 12px rgba(0,0,0,0.8);
+    }
+    .ask-up{ grid-column: 2; grid-row: 1; }
+    .ask-left{ grid-column: 1; grid-row: 2; }
+    .ask-right{ grid-column: 3; grid-row: 2; }
+    .ask-down{ grid-column: 2; grid-row: 3; }
+
+    .ask-hint{
+      font-size: 0.75rem;
+      color: #9ca3af;
+      text-align: center;
+    }
+
+    @media (max-width: 1150px){
+      /* Keep everything in one row; scale down instead of wrapping. */
+      .main{flex-wrap:nowrap; align-items:flex-start;}
+      .controls{
+        flex:0 0 280px;
+        min-width:280px;
+        padding:10px;
+        max-height: calc(100vh - 160px);
+      }
+      .controls p{display:none;}          /* reclaim vertical space */
+      .slider-subtext{display:none;}      /* compact mode */
+      .legend{display:none;}              /* compact mode */
+      .buttons-row{margin-top:2px;}
+      .slider-group{padding:6px 8px; margin-bottom:6px;}
+      .slider-header{font-size:0.78rem;}
+      input[type="range"]{height:5px;}
+      input[type="range"]::-webkit-slider-thumb{width:14px;height:14px;}
+      input[type="range"]::-moz-range-thumb{width:14px;height:14px;}
+
+      .eye-panel{
+        flex:0 0 430px;
+        min-width:430px;
+        padding:12px;
+      }
+      .eyes-row{gap:18px;}
+      .eye-wrapper{width:210px;height:210px;}
+      .eye-circle{inset:16px;width:178px;height:178px;}
+      .corneal-highlight{width:60px;height:60px;}
+      .iris{width:92px;height:92px;margin:-46px 0 0 -46px;}
+      .pupil{width:30px;height:30px;margin:-15px 0 0 -15px;}
+    }
+
+    @media (max-width: 980px){
+      /* Smaller laptop / narrow desktop: still one row, tighter sizing */
+      .controls{
+        flex:0 0 240px;
+        min-width:240px;
+        padding:9px;
+        max-height: calc(100vh - 150px);
+      }
+      .eye-panel{
+        flex:0 0 360px;
+        min-width:360px;
+        padding:10px;
+      }
+      .eyes-row{gap:14px;}
+      .eye-wrapper{width:170px;height:170px;}
+      .eye-circle{inset:12px;width:146px;height:146px;}
+      .corneal-highlight{width:48px;height:48px;}
+      .iris{width:78px;height:78px;margin:-39px 0 0 -39px;}
+      .pupil{width:26px;height:26px;margin:-13px 0 0 -13px;}
+      .header h1{font-size:1.35rem;}
+      .header p{font-size:0.85rem;}
+    }
+
+    @media (max-width: 860px){
+      /* If it *still* doesn't fit, allow horizontal scrolling rather than stacking. */
+      .main{overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:6px;}
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <h1>Extraocular Muscle Simulator – Binocular Yoked (Patient View)</h1>
+    <p>
+      Display is as if you are facing the patient (patient’s <strong>right</strong> eye appears on your <strong>left</strong>).
+      Drag either eye to set conjugate gaze. Each side has its own muscle sliders.
+    </p>
+  </div>
+
+  <div class="main">
+    <!-- OD sliders (left side of screen) -->
+    <section class="controls" aria-label="Right eye muscle controls">
+      <h2>Patient RIGHT (OD) muscle meters</h2>
+      <p>Adjust OD muscle activation (weakness &lt; 50, overactivity &gt; 50). Yoked gaze updates OS to match conjugate position.</p>
+
+      <div class="slider-group">
+        <div class="slider-header">
+          <div class="muscle-name">Medial rectus <span class="side-tag">(adduction)</span></div>
+          <div class="slider-value" id="od_mrVal">50</div>
+        </div>
+        <input id="od_mr" type="range" min="0" max="100" value="50"/>
+        <div class="slider-subtext">OD: toward nose (adduction → patient left gaze).</div>
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-header">
+          <div class="muscle-name">Lateral rectus <span class="side-tag">(abduction)</span></div>
+          <div class="slider-value" id="od_lrVal">50</div>
+        </div>
+        <input id="od_lr" type="range" min="0" max="100" value="50"/>
+        <div class="slider-subtext">OD: toward temple (abduction → patient right gaze).</div>
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-header">
+          <div class="muscle-name">Superior rectus <span class="side-tag">(elevates + adducts)</span></div>
+          <div class="slider-value" id="od_srVal">50</div>
+        </div>
+        <input id="od_sr" type="range" min="0" max="100" value="50"/>
+        <div class="slider-subtext">Primary: elevation. Secondary: adduction, intorsion.</div>
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-header">
+          <div class="muscle-name">Inferior rectus <span class="side-tag">(depresses + adducts)</span></div>
+          <div class="slider-value" id="od_irVal">50</div>
+        </div>
+        <input id="od_ir" type="range" min="0" max="100" value="50"/>
+        <div class="slider-subtext">Primary: depression. Secondary: adduction, extorsion.</div>
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-header">
+          <div class="muscle-name">Superior oblique <span class="side-tag">(depresses + abducts)</span></div>
+          <div class="slider-value" id="od_soVal">50</div>
+        </div>
+        <input id="od_so" type="range" min="0" max="100" value="50"/>
+        <div class="slider-subtext">Primary: intorsion. Secondary: depression in adduction, abduction.</div>
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-header">
+          <div class="muscle-name">Inferior oblique <span class="side-tag">(elevates + abducts)</span></div>
+          <div class="slider-value" id="od_ioVal">50</div>
+        </div>
+        <input id="od_io" type="range" min="0" max="100" value="50"/>
+        <div class="slider-subtext">Primary: extorsion. Secondary: elevation in adduction, abduction.</div>
+      </div>
+
+      <div class="buttons-row">
+        <button id="resetBtn" type="button"><span class="icon">↺</span> Reset</button>
+        <button id="cardinalBtn" type="button"><span class="icon">✚</span> Cardinal gazes</button>
+      </div>
+
+      <div class="legend">
+        <div class="legend-item"><div class="legend-swatch"></div><div class="legend-label">Yellow arrows: conjugate gaze vector.</div></div>
+      </div>
+    </section>
+
+    <!-- Eyes (center) -->
+    <section class="eye-panel" aria-label="Binocular eye visualization">
+      <div class="eyes-row">
+        <!-- Patient RIGHT eye appears on viewer LEFT -->
+        <div class="eye-column">
+          <h3 class="eye-label">Patient RIGHT (OD)</h3>
+          <div class="eye-wrapper">
+            <svg class="vectorCanvas" viewBox="0 0 260 260" aria-hidden="true">
+              <defs>
+                <marker id="arrowHeadRight" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto" markerUnits="strokeWidth">
+                  <path d="M0,0 L8,4 L0,8 z" fill="#fbbf24"/>
+                </marker>
+              </defs>
+              <line x1="130" y1="20" x2="130" y2="240" stroke="rgba(75,85,99,0.7)" stroke-width="1.2" stroke-dasharray="4 4"/>
+              <line x1="20" y1="130" x2="240" y2="130" stroke="rgba(75,85,99,0.7)" stroke-width="1.2" stroke-dasharray="4 4"/>
+              <line id="netVectorRight" x1="130" y1="130" x2="130" y2="130" stroke="#fbbf24" stroke-width="3" marker-end="url(#arrowHeadRight)" opacity="0.0"/>
+            </svg>
+
+            <div class="eye-circle" data-eye="right">
+              <div class="corneal-highlight"></div>
+              <div class="iris" id="irisOD"><div class="pupil"></div></div>
+            </div>
+
+            <!-- Patient view: OD temporal = outer (viewer left), nasal = inner (viewer right) -->
+            <div class="axes-labels" aria-hidden="true">
+              <div class="up">Up</div>
+              <div class="down">Down</div>
+              <div class="left">Temporal</div>
+              <div class="right">Nasal</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Patient LEFT eye appears on viewer RIGHT -->
+        <div class="eye-column">
+          <h3 class="eye-label">Patient LEFT (OS)</h3>
+          <div class="eye-wrapper">
+            <svg class="vectorCanvas" viewBox="0 0 260 260" aria-hidden="true">
+              <defs>
+                <marker id="arrowHeadLeft" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto" markerUnits="strokeWidth">
+                  <path d="M0,0 L8,4 L0,8 z" fill="#fbbf24"/>
+                </marker>
+              </defs>
+              <line x1="130" y1="20" x2="130" y2="240" stroke="rgba(75,85,99,0.7)" stroke-width="1.2" stroke-dasharray="4 4"/>
+              <line x1="20" y1="130" x2="240" y2="130" stroke="rgba(75,85,99,0.7)" stroke-width="1.2" stroke-dasharray="4 4"/>
+              <line id="netVectorLeft" x1="130" y1="130" x2="130" y2="130" stroke="#fbbf24" stroke-width="3" marker-end="url(#arrowHeadLeft)" opacity="0.0"/>
+            </svg>
+
+            <div class="eye-circle" data-eye="left">
+              <div class="corneal-highlight"></div>
+              <div class="iris" id="irisOS"><div class="pupil"></div></div>
+            </div>
+
+            <!-- Patient view: OS nasal = inner (viewer left), temporal = outer (viewer right) -->
+            <div class="axes-labels" aria-hidden="true">
+              <div class="up">Up</div>
+              <div class="down">Down</div>
+              <div class="left">Nasal</div>
+              <div class="right">Temporal</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ask-look" aria-label="Ask patient to look controls">
+        <div class="ask-look-grid">
+          <button class="ask-btn ask-up" type="button" id="askUp" aria-label="Ask patient to look up">↑</button>
+          <button class="ask-btn ask-left" type="button" id="askLeft" aria-label="Ask patient to look left">←</button>
+          <div class="ask-center" aria-label="Ask patient to look prompt">
+            Ask to Look
+          </div>
+          <button class="ask-btn ask-right" type="button" id="askRight" aria-label="Ask patient to look right">→</button>
+          <button class="ask-btn ask-down" type="button" id="askDown" aria-label="Ask patient to look down">↓</button>
+        </div>
+        <div class="ask-hint">Arrows are in <strong>patient directions</strong> (↑ up, ← patient-left, → patient-right, ↓ down).</div>
+      </div>
+
+      <div class="eye-footer">
+        Conjugate gaze: <span class="gaze-readout" id="gazeReadout">Primary position</span>
+      </div>
+    </section>
+
+    <!-- OS sliders (right side of screen, to the right of the left eye) -->
+    <section class="controls" aria-label="Left eye muscle controls">
+      <h2>Patient LEFT (OS) muscle meters</h2>
+      <p>Adjust OS muscle activation. In yoked mode, changing OS drives conjugate gaze and updates OD accordingly.</p>
+
+      <div class="slider-group">
+        <div class="slider-header">
+          <div class="muscle-name">Medial rectus <span class="side-tag">(adduction)</span></div>
+          <div class="slider-value" id="os_mrVal">50</div>
+        </div>
+        <input id="os_mr" type="range" min="0" max="100" value="50"/>
+        <div class="slider-subtext">OS: toward nose (adduction → patient right gaze).</div>
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-header">
+          <div class="muscle-name">Lateral rectus <span class="side-tag">(abduction)</span></div>
+          <div class="slider-value" id="os_lrVal">50</div>
+        </div>
+        <input id="os_lr" type="range" min="0" max="100" value="50"/>
+        <div class="slider-subtext">OS: toward temple (abduction → patient left gaze).</div>
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-header">
+          <div class="muscle-name">Superior rectus <span class="side-tag">(elevates + adducts)</span></div>
+          <div class="slider-value" id="os_srVal">50</div>
+        </div>
+        <input id="os_sr" type="range" min="0" max="100" value="50"/>
+        <div class="slider-subtext">Primary: elevation. Secondary: adduction, intorsion.</div>
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-header">
+          <div class="muscle-name">Inferior rectus <span class="side-tag">(depresses + adducts)</span></div>
+          <div class="slider-value" id="os_irVal">50</div>
+        </div>
+        <input id="os_ir" type="range" min="0" max="100" value="50"/>
+        <div class="slider-subtext">Primary: depression. Secondary: adduction, extorsion.</div>
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-header">
+          <div class="muscle-name">Superior oblique <span class="side-tag">(depresses + abducts)</span></div>
+          <div class="slider-value" id="os_soVal">50</div>
+        </div>
+        <input id="os_so" type="range" min="0" max="100" value="50"/>
+        <div class="slider-subtext">Primary: intorsion. Secondary: depression in adduction, abduction.</div>
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-header">
+          <div class="muscle-name">Inferior oblique <span class="side-tag">(elevates + abducts)</span></div>
+          <div class="slider-value" id="os_ioVal">50</div>
+        </div>
+        <input id="os_io" type="range" min="0" max="100" value="50"/>
+        <div class="slider-subtext">Primary: extorsion. Secondary: elevation in adduction, abduction.</div>
+      </div>
+
+      <div class="legend">
+        <div class="legend-item"><div class="legend-swatch"></div><div class="legend-label">Tip: drag the left eye or adjust OS sliders here.</div></div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+  // Patient-space convention:
+  // h > 0  = patient looks to their RIGHT.
+  // When facing the patient, patient-right is on the viewer's LEFT -> horizontal is flipped for rendering.
+  //
+  // We keep a single "conjugate gaze" state (h, v). Either eye's sliders can drive it.
+  // When gaze is set, both sets of sliders are updated from gaze using eye-specific mapping.
+
+  const state = {
+    gazeH: 0, // patient-space
+    gazeV: 0, // patient-space
+    isProgrammatic: false,
+    lastDriver: "drag" // "od" | "os" | "drag"
+  };
+
+  const irisOD = document.getElementById("irisOD");
+  const irisOS = document.getElementById("irisOS");
+  const netVectorRight = document.getElementById("netVectorRight");
+  const netVectorLeft  = document.getElementById("netVectorLeft");
+  const gazeReadout = document.getElementById("gazeReadout");
+  const resetBtn = document.getElementById("resetBtn");
+  const cardinalBtn = document.getElementById("cardinalBtn");
+  const eyeCircles = document.querySelectorAll(".eye-circle");
+
+
+  const askUpBtn = document.getElementById("askUp");
+  const askDownBtn = document.getElementById("askDown");
+  const askLeftBtn = document.getElementById("askLeft");
+  const askRightBtn = document.getElementById("askRight");
+
+  const GAZE_SCALE = 1.4; // keep in sync with setGazeDirect scaling
+
+  function getCurrentNorm(){
+    return {
+      h: Math.max(-1, Math.min(1, state.gazeH / GAZE_SCALE)),
+      v: Math.max(-1, Math.min(1, state.gazeV / GAZE_SCALE))
+    };
+  }
+
+  function animateGazeTo(targetHNorm, targetVNorm, ms=180){
+    const start = getCurrentNorm();
+    const endH = Math.max(-1, Math.min(1, targetHNorm));
+    const endV = Math.max(-1, Math.min(1, targetVNorm));
+    const t0 = performance.now();
+
+    function easeInOut(t){
+      // smoothstep
+      return t*t*(3 - 2*t);
+    }
+
+    function step(now){
+      const t = Math.min(1, (now - t0) / ms);
+      const e = easeInOut(t);
+      const h = start.h + (endH - start.h) * e;
+      const v = start.v + (endV - start.v) * e;
+      setGazeDirect(h, v);
+      if (t < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  function wireAskButtons(){
+    if (!askUpBtn) return;
+
+    // Patient-direction arrows:
+    // ↑ up (v=+1)
+    // ↓ down (v=-1)
+    // ← patient-left gaze (h=-1)
+    // → patient-right gaze (h=+1)
+    askUpBtn.addEventListener("click", () => animateGazeTo(0, 1));
+    askDownBtn.addEventListener("click", () => animateGazeTo(0, -1));
+    askLeftBtn.addEventListener("click", () => animateGazeTo(1, 0));
+    askRightBtn.addEventListener("click", () => animateGazeTo(-1, 0));
+  }
+
+
+  const MAX_VECTOR_MAG = 1.8;
+  const MAX_OFFSET_PX = 40;
+  const ARROW_SCALE = 55;
+  const SVG_CENTER = 130;
+
+  // OD muscle vectors in patient-space (as in prior version)
+  const OD = {
+    mr: { label:"Medial rectus",   horiz:-1.0, vert: 0.0, valId:"od_mrVal", sliderId:"od_mr" },
+    lr: { label:"Lateral rectus",  horiz: 1.0, vert: 0.0, valId:"od_lrVal", sliderId:"od_lr" },
+    sr: { label:"Superior rectus", horiz:-0.3, vert: 1.0, valId:"od_srVal", sliderId:"od_sr" },
+    ir: { label:"Inferior rectus", horiz:-0.3, vert:-1.0, valId:"od_irVal", sliderId:"od_ir" },
+    so: { label:"Superior oblique",horiz: 0.3, vert:-0.7, valId:"od_soVal", sliderId:"od_so" },
+    io: { label:"Inferior oblique",horiz: 0.3, vert: 0.7, valId:"od_ioVal", sliderId:"od_io" }
+  };
+
+  // OS muscle vectors in patient-space:
+  // Horizontal actions are mirrored vs OD:
+  // - OS MR adducts (toward nose) = patient RIGHT gaze (h positive)
+  // - OS LR abducts (toward temple) = patient LEFT gaze (h negative)
+  // SR/IR adduct (toward nose) -> patient RIGHT (positive), so horiz sign flips.
+  // Obliques abduct -> patient LEFT (negative), so horiz sign flips.
+  const OS = {
+    mr: { label:"Medial rectus",   horiz: 1.0, vert: 0.0, valId:"os_mrVal", sliderId:"os_mr" },
+    lr: { label:"Lateral rectus",  horiz:-1.0, vert: 0.0, valId:"os_lrVal", sliderId:"os_lr" },
+    sr: { label:"Superior rectus", horiz: 0.3, vert: 1.0, valId:"os_srVal", sliderId:"os_sr" },
+    ir: { label:"Inferior rectus", horiz: 0.3, vert:-1.0, valId:"os_irVal", sliderId:"os_ir" },
+    so: { label:"Superior oblique",horiz:-0.3, vert:-0.7, valId:"os_soVal", sliderId:"os_so" },
+    io: { label:"Inferior oblique",horiz:-0.3, vert: 0.7, valId:"os_ioVal", sliderId:"os_io" }
+  };
+
+  const odSliders = {};
+  const osSliders = {};
+  Object.keys(OD).forEach(k => odSliders[k] = document.getElementById(OD[k].sliderId));
+  Object.keys(OS).forEach(k => osSliders[k] = document.getElementById(OS[k].sliderId));
+
+  function clampVector(h, v, maxMag){
+    let mag = Math.sqrt(h*h + v*v) || 0;
+    if (mag > maxMag && mag > 0){
+      const s = maxMag / mag;
+      h *= s; v *= s; mag = maxMag;
+    }
+    return { h, v, mag };
+  }
+
+  function describeGaze(h, v){
+    const mag = Math.sqrt(h*h + v*v);
+    if (mag < 0.05) return "Primary position";
+
+    const dirH = h > 0.12 ? "patient right" : (h < -0.12 ? "patient left" : "");
+    const dirV = v > 0.12 ? "up" : (v < -0.12 ? "down" : "");
+
+    if (dirH && dirV) return `${dirV} + ${dirH}`;
+    if (dirH) return dirH;
+    if (dirV) return dirV;
+    return "Near primary";
+  }
+
+  function renderGaze(hPatient, vPatient){
+    const { h, v, mag } = clampVector(hPatient, vPatient, MAX_VECTOR_MAG);
+
+    // Patient view: horizontal is flipped for on-screen rendering
+    const screenH = -h;
+    const offsetX = screenH * MAX_OFFSET_PX;
+    const offsetY = -v * MAX_OFFSET_PX;
+
+    irisOD.style.transform = `translate(${offsetX.toFixed(1)}px, ${offsetY.toFixed(1)}px)`;
+    irisOS.style.transform = `translate(${offsetX.toFixed(1)}px, ${offsetY.toFixed(1)}px)`;
+
+    const endX = SVG_CENTER + screenH * ARROW_SCALE;
+    const endY = SVG_CENTER - v * ARROW_SCALE;
+
+    function updateArrow(line){
+      if (!line) return;
+      if (mag < 0.03){
+        line.setAttribute("opacity","0.0");
+      } else {
+        line.setAttribute("opacity","1.0");
+        line.setAttribute("x1", SVG_CENTER);
+        line.setAttribute("y1", SVG_CENTER);
+        line.setAttribute("x2", endX);
+        line.setAttribute("y2", endY);
+      }
+    }
+    updateArrow(netVectorRight);
+    updateArrow(netVectorLeft);
+
+    gazeReadout.textContent = describeGaze(h, v);
+  }
+
+  function computeNetFromSliders(eye){
+    let netH = 0, netV = 0;
+    const defs = (eye === "od") ? OD : OS;
+    const sliders = (eye === "od") ? odSliders : osSliders;
+
+    for (const k of Object.keys(defs)){
+      const def = defs[k];
+      const raw = Number(sliders[k].value);
+      const delta = (raw - 50) / 50;
+
+      const span = document.getElementById(def.valId);
+      if (span) span.textContent = String(raw);
+
+      netH += delta * def.horiz;
+      netV += delta * def.vert;
+    }
+    const { h, v } = clampVector(netH, netV, MAX_VECTOR_MAG);
+    return { h, v };
+  }
+
+  // Inverse mapping: gaze -> slider values (smooth)
+  // hNorm, vNorm in [-1, 1] (patient-space)
+  function gazeToODSliders(hNorm, vNorm){
+    const base = 50;
+    const clampVal = (x)=>Math.max(0, Math.min(100, x));
+
+    const h = Math.max(-1, Math.min(1, hNorm||0));
+    const v = Math.max(-1, Math.min(1, vNorm||0));
+    const mag = Math.sqrt(h*h + v*v);
+    const strength = Math.min(1, mag);
+
+    const horizGain = 45;
+    let mr = base - horizGain * h;
+    let lr = base + horizGain * h;
+
+    const vertGainRectus = 40;
+    const vertGainOblique = 30;
+    const abductionFactor = Math.max(0, h); // OD abduction in patient-right
+
+    let sr=base, ir=base, so=base, io=base;
+
+    if (v > 0.01){
+      const rectusShare = 0.3 + 0.5 * abductionFactor; // more abduction -> SR dominates
+      const obliqueShare = 1 - rectusShare;
+      const extraRect = vertGainRectus * v * strength;
+      const extraObl  = vertGainOblique * v * strength;
+      sr = base + extraRect * rectusShare;
+      io = base + extraObl  * obliqueShare;
+      ir = base - 20 * v * strength;
+      so = base - 10 * v * strength;
+    } else if (v < -0.01){
+      const vAbs = -v;
+      const rectusShare = 0.3 + 0.5 * abductionFactor; // more abduction -> IR dominates
+      const obliqueShare = 1 - rectusShare;
+      const extraRect = vertGainRectus * vAbs * strength;
+      const extraObl  = vertGainOblique * vAbs * strength;
+      ir = base + extraRect * rectusShare;
+      so = base + extraObl  * obliqueShare;
+      sr = base - 20 * vAbs * strength;
+      io = base - 10 * vAbs * strength;
+    }
+
+    if (Math.abs(v) < 0.15 * Math.max(strength, 0.15)){
+      sr=(sr+base)/2; ir=(ir+base)/2; so=(so+base)/2; io=(io+base)/2;
+    }
+
+    return {
+      mr: clampVal(mr), lr: clampVal(lr), sr: clampVal(sr), ir: clampVal(ir), so: clampVal(so), io: clampVal(io)
+    };
+  }
+
+  function gazeToOSSliders(hNorm, vNorm){
+    const base = 50;
+    const clampVal = (x)=>Math.max(0, Math.min(100, x));
+
+    const h = Math.max(-1, Math.min(1, hNorm||0));
+    const v = Math.max(-1, Math.min(1, vNorm||0));
+    const mag = Math.sqrt(h*h + v*v);
+    const strength = Math.min(1, mag);
+
+    const horizGain = 45;
+    // OS horizontal is opposite of OD:
+    // patient right (h>0) -> OS adduction (MR increases), OS LR decreases
+    let mr = base + horizGain * h;
+    let lr = base - horizGain * h;
+
+    const vertGainRectus = 40;
+    const vertGainOblique = 30;
+    // OS abduction occurs in patient-left gaze (h<0)
+    const abductionFactor = Math.max(0, -h);
+
+    let sr=base, ir=base, so=base, io=base;
+
+    if (v > 0.01){
+      const rectusShare = 0.3 + 0.5 * abductionFactor; // more abduction (patient-left) -> SR dominates
+      const obliqueShare = 1 - rectusShare;            // more adduction (patient-right) -> IO dominates
+      const extraRect = vertGainRectus * v * strength;
+      const extraObl  = vertGainOblique * v * strength;
+      sr = base + extraRect * rectusShare;
+      io = base + extraObl  * obliqueShare;
+      ir = base - 20 * v * strength;
+      so = base - 10 * v * strength;
+    } else if (v < -0.01){
+      const vAbs = -v;
+      const rectusShare = 0.3 + 0.5 * abductionFactor; // more abduction -> IR dominates
+      const obliqueShare = 1 - rectusShare;            // more adduction -> SO dominates
+      const extraRect = vertGainRectus * vAbs * strength;
+      const extraObl  = vertGainOblique * vAbs * strength;
+      ir = base + extraRect * rectusShare;
+      so = base + extraObl  * obliqueShare;
+      sr = base - 20 * vAbs * strength;
+      io = base - 10 * vAbs * strength;
+    }
+
+    if (Math.abs(v) < 0.15 * Math.max(strength, 0.15)){
+      sr=(sr+base)/2; ir=(ir+base)/2; so=(so+base)/2; io=(io+base)/2;
+    }
+
+    return {
+      mr: clampVal(mr), lr: clampVal(lr), sr: clampVal(sr), ir: clampVal(ir), so: clampVal(so), io: clampVal(io)
+    };
+  }
+
+  function applySliders(eye, values){
+    const defs = (eye === "od") ? OD : OS;
+    const sliders = (eye === "od") ? odSliders : osSliders;
+    for (const k of Object.keys(values)){
+      sliders[k].value = String(Math.round(values[k]));
+      const span = document.getElementById(defs[k].valId);
+      if (span) span.textContent = sliders[k].value;
+    }
+  }
+
+  function setGazeFromSliders(driverEye){
+    if (state.isProgrammatic) return;
+    state.lastDriver = driverEye;
+
+    const { h, v } = computeNetFromSliders(driverEye);
+
+    // Update conjugate gaze
+    state.gazeH = h;
+    state.gazeV = v;
+
+    // Render from gaze
+    renderGaze(state.gazeH, state.gazeV);
+
+    // Update the opposite eye sliders to match the same gaze
+    state.isProgrammatic = true;
+    try{
+      const maxNorm = 1.4; // same scale used in drag mapping
+      const hNorm = Math.max(-1, Math.min(1, state.gazeH / maxNorm));
+      const vNorm = Math.max(-1, Math.min(1, state.gazeV / maxNorm));
+
+      if (driverEye === "od"){
+        applySliders("os", gazeToOSSliders(hNorm, vNorm));
+      } else {
+        applySliders("od", gazeToODSliders(hNorm, vNorm));
+      }
+    } finally {
+      state.isProgrammatic = false;
+    }
+  }
+
+  function setGazeDirect(hNorm, vNorm){
+    // hNorm, vNorm in [-1,1], patient-space
+    const scale = GAZE_SCALE;
+    state.gazeH = hNorm * scale;
+    state.gazeV = vNorm * scale;
+    state.lastDriver = "drag";
+
+    renderGaze(state.gazeH, state.gazeV);
+
+    state.isProgrammatic = true;
+    try{
+      applySliders("od", gazeToODSliders(hNorm, vNorm));
+      applySliders("os", gazeToOSSliders(hNorm, vNorm));
+    } finally {
+      state.isProgrammatic = false;
+    }
+  }
+
+  // Slider listeners
+  Object.keys(OD).forEach(k=>{
+    odSliders[k].addEventListener("input", ()=>setGazeFromSliders("od"));
+    odSliders[k].addEventListener("change", ()=>setGazeFromSliders("od"));
+  });
+  Object.keys(OS).forEach(k=>{
+    osSliders[k].addEventListener("input", ()=>setGazeFromSliders("os"));
+    osSliders[k].addEventListener("change", ()=>setGazeFromSliders("os"));
+  });
+
+  // Drag: pointer dx screen-left should map to patient-right
+  let isDragging = false;
+  let activePointerId = null;
+  let activeCircle = null;
+
+  function handlePointer(e, circleElem){
+    const rect = circleElem.getBoundingClientRect();
+    const cx = rect.left + rect.width/2;
+    const cy = rect.top + rect.height/2;
+    const dx = e.clientX - cx;
+    const dy = e.clientY - cy;
+
+    const maxDrag = rect.width * 0.40;
+
+    const hNorm = Math.max(-1, Math.min(1, (-dx)/maxDrag));
+    const vNorm = Math.max(-1, Math.min(1, (-dy)/maxDrag));
+
+    setGazeDirect(hNorm, vNorm);
+  }
+
+  eyeCircles.forEach(circle=>{
+    circle.addEventListener("pointerdown",(e)=>{
+      isDragging = true;
+      activePointerId = e.pointerId;
+      activeCircle = circle;
+      circle.classList.add("dragging");
+      circle.setPointerCapture(e.pointerId);
+      e.preventDefault();
+      handlePointer(e, circle);
+    });
+
+    circle.addEventListener("pointermove",(e)=>{
+      if (!isDragging || e.pointerId !== activePointerId) return;
+      e.preventDefault();
+      handlePointer(e, activeCircle);
+    });
+
+    const end = (e)=>{
+      if (!isDragging || e.pointerId !== activePointerId) return;
+      isDragging = false;
+      if (activeCircle){
+        activeCircle.classList.remove("dragging");
+        try{ activeCircle.releasePointerCapture(e.pointerId); } catch(err){}
+      }
+      activePointerId = null;
+      activeCircle = null;
+    };
+
+    circle.addEventListener("pointerup", end);
+    circle.addEventListener("pointercancel", end);
+    circle.addEventListener("pointerleave", end);
+  });
+
+  // Buttons
+  resetBtn.addEventListener("click", ()=>{
+    state.isProgrammatic = true;
+    try{
+      applySliders("od", {mr:50, lr:50, sr:50, ir:50, so:50, io:50});
+      applySliders("os", {mr:50, lr:50, sr:50, ir:50, so:50, io:50});
+    } finally {
+      state.isProgrammatic = false;
+    }
+    setGazeDirect(0, 0);
+  });
+
+  const cardinalTargets = [
+    { name:"Primary", h:0,  v:0  },
+    { name:"Patient right gaze", h: 1, v:0 },
+    { name:"Patient left gaze",  h:-1, v:0 },
+    { name:"Up + patient right", h: 1, v: 1 },
+    { name:"Up + patient left",  h:-1, v: 1 },
+    { name:"Down + patient right", h: 1, v:-1 },
+    { name:"Down + patient left",  h:-1, v:-1 }
+  ];
+  let cardIdx = 0;
+  cardinalBtn.addEventListener("click", ()=>{
+    cardIdx = (cardIdx + 1) % cardinalTargets.length;
+    const t = cardinalTargets[cardIdx];
+
+    // Normalize diagonals to unit circle
+    let h = t.h, v = t.v;
+    const mag = Math.sqrt(h*h + v*v) || 1;
+    if (mag > 1){
+      h /= mag; v /= mag;
+    }
+    setGazeDirect(h, v);
+    gazeReadout.textContent = `${t.name} (${gazeReadout.textContent})`;
+  });
+
+  // Initial state
+  wireAskButtons();
+  setGazeDirect(0,0);
+</script>
+</body>
+</html>

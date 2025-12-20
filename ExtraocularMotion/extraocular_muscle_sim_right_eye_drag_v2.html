@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Extraocular Muscle Simulator – Right Eye</title>
+  <style>
+    :root {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background-color: #0f172a;
+      color: #e5e7eb;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: center;
+      padding: 16px;
+      box-sizing: border-box;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 1.6rem;
+      letter-spacing: 0.04em;
+    }
+
+    .header p {
+      margin: 4px 0 0;
+      font-size: 0.9rem;
+      color: #9ca3af;
+    }
+
+    .main {
+      display: flex;
+      gap: 16px;
+      align-items: stretch;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .eye-panel {
+      background: radial-gradient(circle at 20% 20%, #1f2937, #020617);
+      border-radius: 18px;
+      padding: 16px;
+      position: relative;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.7);
+      flex: 0 1 420px;
+    }
+
+    .eye-wrapper {
+      position: relative;
+      width: 360px;
+      height: 360px;
+      margin: 0 auto;
+    }
+
+    #vectorCanvas {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .eye-circle {
+      position: absolute;
+      inset: 30px;
+      margin: auto;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #ffffff, #e5e7eb);
+      box-shadow:
+        0 0 0 6px rgba(15,23,42,0.8),
+        0 20px 35px rgba(0,0,0,0.8);
+      overflow: hidden;
+      touch-action: none;
+      cursor: grab;
+    }
+
+    .eye-circle.dragging {
+      cursor: grabbing;
+    }
+
+    .corneal-highlight {
+      position: absolute;
+      top: 26%;
+      left: 22%;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.8), transparent 70%);
+      pointer-events: none;
+      opacity: 0.85;
+      filter: blur(1px);
+    }
+
+    #iris {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 150px;
+      height: 150px;
+      margin: -75px 0 0 -75px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 30% 30%, #93c5fd, #1d4ed8 55%, #020617 75%),
+        repeating-conic-gradient(from 0deg,
+          rgba(147,197,253,0.15) 0deg 8deg,
+          rgba(30,64,175,0.75) 8deg 16deg);
+      box-shadow:
+        inset 0 0 18px rgba(15,23,42,0.8),
+        0 0 8px rgba(37,99,235,0.8);
+      transform-origin: center center;
+      transition: transform 0.06s linear;
+      pointer-events: none;
+    }
+
+    #pupil {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 54px;
+      height: 54px;
+      margin: -27px 0 0 -27px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #111827, #020617 70%);
+      box-shadow:
+        0 0 16px rgba(0,0,0,0.9),
+        0 0 3px rgba(0,0,0,0.8);
+      pointer-events: none;
+    }
+
+    .axes-labels {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      font-size: 0.7rem;
+      color: #9ca3af;
+      text-shadow: 0 0 4px rgba(0,0,0,0.8);
+    }
+
+    .axes-labels .up    { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); }
+    .axes-labels .down  { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); }
+    .axes-labels .left  { position: absolute; top: 50%; left: 8px; transform: translateY(-50%); }
+    .axes-labels .right { position: absolute; top: 50%; right: 8px; transform: translateY(-50%); }
+
+    .eye-footer {
+      margin-top: 10px;
+      font-size: 0.8rem;
+      color: #9ca3af;
+      text-align: center;
+    }
+
+    .gaze-readout {
+      font-weight: 600;
+      color: #fbbf24;
+    }
+
+    .controls {
+      flex: 0 1 420px;
+      background: radial-gradient(circle at 80% 0%, #1f2937, #020617);
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.7);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 620px;
+      overflow-y: auto;
+    }
+
+    .controls h2 {
+      margin: 0;
+      font-size: 1.1rem;
+    }
+
+    .controls p {
+      margin: 2px 0 8px;
+      font-size: 0.85rem;
+      color: #9ca3af;
+    }
+
+    .slider-group {
+      margin-bottom: 8px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: rgba(15,23,42,0.85);
+      border: 1px solid rgba(55,65,81,0.8);
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 4px;
+      font-size: 0.85rem;
+    }
+
+    .muscle-name {
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+
+    .muscle-name .side-tag {
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: #9ca3af;
+      text-transform: uppercase;
+      margin-left: 4px;
+    }
+
+    .slider-value {
+      font-feature-settings: "tnum" 1, "lnum" 1;
+      color: #e5e7eb;
+      min-width: 32px;
+      text-align: right;
+      font-size: 0.8rem;
+    }
+
+    .slider-subtext {
+      font-size: 0.75rem;
+      color: #9ca3af;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      appearance: none;
+      height: 6px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #22c55e, #eab308, #ef4444);
+      outline: none;
+      margin: 4px 0 0;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #e5e7eb;
+      border: 2px solid #0f172a;
+      box-shadow: 0 0 0 3px rgba(248,250,252,0.25);
+      cursor: pointer;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #e5e7eb;
+      border: 2px solid #0f172a;
+      box-shadow: 0 0 0 3px rgba(248,250,252,0.25);
+      cursor: pointer;
+    }
+
+    input[type="range"]::-moz-range-track {
+      height: 6px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #22c55e, #eab308, #ef4444);
+    }
+
+    .buttons-row {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-start;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border-radius: 999px;
+      border: 1px solid #4b5563;
+      background: rgba(15,23,42,0.9);
+      color: #e5e7eb;
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.6);
+      transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.08s ease, border-color 0.08s ease;
+    }
+
+    button span.icon {
+      font-size: 0.9rem;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      background: rgba(15,23,42,1);
+      border-color: #9ca3af;
+      box-shadow: 0 12px 22px rgba(0,0,0,0.75);
+    }
+
+    button:active {
+      transform: translateY(1px) scale(0.98);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.8);
+    }
+
+    .legend {
+      margin-top: 4px;
+      font-size: 0.75rem;
+      color: #9ca3af;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 4px 12px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .legend-swatch {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #93c5fd;
+      box-shadow: 0 0 6px rgba(59,130,246,0.8);
+    }
+
+    .legend-label {
+      font-size: 0.72rem;
+    }
+
+    @media (max-width: 900px) {
+      .eye-wrapper {
+        width: 300px;
+        height: 300px;
+      }
+
+      .eye-circle {
+        inset: 30px;
+        width: 240px;
+        height: 240px;
+      }
+
+      #iris {
+        width: 120px;
+        height: 120px;
+        margin: -60px 0 0 -60px;
+      }
+
+      #pupil {
+        width: 44px;
+        height: 44px;
+        margin: -22px 0 0 -22px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <h1>Extraocular Muscle Simulator – Right Eye</h1>
+    <p>
+      Drag the muscle sliders or drag directly on the eye to change activation. Balanced sliders (~50) represent primary gaze;
+      deviations simulate paresis or overactivity.
+    </p>
+  </div>
+
+  <div class="main">
+    <!-- Eye panel -->
+    <section class="eye-panel" aria-label="Right eye visualization">
+      <div class="eye-wrapper">
+        <!-- Vector overlay -->
+        <svg id="vectorCanvas" viewBox="0 0 360 360">
+          <defs>
+            <marker id="arrowHead" markerWidth="8" markerHeight="8" refX="4" refY="4"
+                    orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L8,4 L0,8 z" fill="#fbbf24"/>
+            </marker>
+          </defs>
+          <!-- Neutral crosshair -->
+          <line x1="180" y1="40" x2="180" y2="320"
+                stroke="rgba(75,85,99,0.7)" stroke-width="1.2" stroke-dasharray="4 4"/>
+          <line x1="40" y1="180" x2="320" y2="180"
+                stroke="rgba(75,85,99,0.7)" stroke-width="1.2" stroke-dasharray="4 4"/>
+          <!-- Net gaze vector (updated in JS) -->
+          <line id="netVector" x1="180" y1="180" x2="180" y2="180"
+                stroke="#fbbf24" stroke-width="3"
+                marker-end="url(#arrowHead)" opacity="0.0"/>
+        </svg>
+
+        <div class="eye-circle">
+          <div class="corneal-highlight"></div>
+          <div id="iris">
+            <div id="pupil"></div>
+          </div>
+        </div>
+
+        <div class="axes-labels">
+          <div class="up">Up (elevation)</div>
+          <div class="down">Down (depression)</div>
+          <div class="left">Left (adduction)</div>
+          <div class="right">Right (abduction)</div>
+        </div>
+      </div>
+
+      <div class="eye-footer">
+        Net gaze: <span class="gaze-readout" id="gazeReadout">Primary position</span>
+      </div>
+    </section>
+
+    <!-- Controls -->
+    <section class="controls" aria-label="Extraocular muscle controls">
+      <h2>Muscle activation meters</h2>
+      <p>
+        Each slider is an activation meter for one extraocular muscle of the right eye.
+        Values below 50 simulate weakness; values above 50 simulate overactivity.
+      </p>
+
+      <!-- Recti -->
+      <div class="slider-group">
+        <div class="slider-header">
+          <div class="muscle-name">
+            Medial rectus <span class="side-tag">(adduction)</span>
+          </div>
+          <div class="slider-value" id="mrVal">50</div>
+        </div>
+        <input id="mr" type="range" min="0" max="100" value="50" />
+        <div class="slider-subtext">Pulls the right eye toward the nose (adduction).</div>
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-header">
+          <div class="muscle-name">
+            Lateral rectus <span class="side-tag">(abduction)</span>
+          </div>
+          <div class="slider-value" id="lrVal">50</div>
+        </div>
+        <input id="lr" type="range" min="0" max="100" value="50" />
+        <div class="slider-subtext">Pulls the right eye toward the temple (abduction).</div>
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-header">
+          <div class="muscle-name">
+            Superior rectus <span class="side-tag">(elevates + adducts)</span>
+          </div>
+          <div class="slider-value" id="srVal">50</div>
+        </div>
+        <input id="sr" type="range" min="0" max="100" value="50" />
+        <div class="slider-subtext">
+          Primary action: elevation. Secondary: adduction and intorsion.
+        </div>
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-header">
+          <div class="muscle-name">
+            Inferior rectus <span class="side-tag">(depresses + adducts)</span>
+          </div>
+          <div class="slider-value" id="irVal">50</div>
+        </div>
+        <input id="ir" type="range" min="0" max="100" value="50" />
+        <div class="slider-subtext">
+          Primary action: depression. Secondary: adduction and extorsion.
+        </div>
+      </div>
+
+      <!-- Obliques -->
+      <div class="slider-group">
+        <div class="slider-header">
+          <div class="muscle-name">
+            Superior oblique <span class="side-tag">(depresses + abducts)</span>
+          </div>
+          <div class="slider-value" id="soVal">50</div>
+        </div>
+        <input id="so" type="range" min="0" max="100" value="50" />
+        <div class="slider-subtext">
+          Primary action: intorsion. Important secondary action: depression in adducted gaze, plus abduction.
+        </div>
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-header">
+          <div class="muscle-name">
+            Inferior oblique <span class="side-tag">(elevates + abducts)</span>
+          </div>
+          <div class="slider-value" id="ioVal">50</div>
+        </div>
+        <input id="io" type="range" min="0" max="100" value="50" />
+        <div class="slider-subtext">
+          Primary action: extorsion. Important secondary action: elevation in adducted gaze, plus abduction.
+        </div>
+      </div>
+
+      <div class="buttons-row">
+        <button id="resetBtn" type="button">
+          <span class="icon">↺</span>
+          Reset to primary gaze
+        </button>
+        <button id="cardinalBtn" type="button">
+          <span class="icon">✚</span>
+          Step through cardinal gazes
+        </button>
+      </div>
+
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-swatch"></div>
+          <div class="legend-label">
+            Yellow arrow: net pull on the globe from the current activation pattern.
+          </div>
+        </div>
+        <div class="legend-item">
+          <div class="legend-swatch" style="background:#22c55e; box-shadow:0 0 6px rgba(34,197,94,0.8);"></div>
+          <div class="legend-label">
+            0–50: relative weakness compared with primary gaze tone.
+          </div>
+        </div>
+        <div class="legend-item">
+          <div class="legend-swatch" style="background:#ef4444; box-shadow:0 0 6px rgba(239,68,68,0.8);"></div>
+          <div class="legend-label">
+            50–100: relative overactivity compared with primary gaze tone.
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+  // Muscle vectors: slider value 50 = baseline tone (primary gaze).
+  // Each muscle has a unit pull vector in horizontal (H) and vertical (V) components.
+  // H: + = abduction (right), - = adduction (left)
+  // V: + = elevation (up),     - = depression (down)
+
+  const muscles = {
+    mr: { label: "Medial rectus",  horiz: -1.0,  vert:  0.0, valueSpanId: "mrVal" },
+    lr: { label: "Lateral rectus", horiz:  1.0,  vert:  0.0, valueSpanId: "lrVal" },
+    sr: { label: "Superior rectus",horiz: -0.3, vert:  1.0, valueSpanId: "srVal" },
+    ir: { label: "Inferior rectus",horiz: -0.3, vert: -1.0, valueSpanId: "irVal" },
+    so: { label: "Superior oblique",horiz:  0.3, vert: -0.7, valueSpanId: "soVal" },
+    io: { label: "Inferior oblique",horiz:  0.3, vert:  0.7, valueSpanId: "ioVal" }
+  };
+
+  const iris = document.getElementById("iris");
+  const netVectorLine = document.getElementById("netVector");
+  const gazeReadout = document.getElementById("gazeReadout");
+  const resetBtn = document.getElementById("resetBtn");
+  const cardinalBtn = document.getElementById("cardinalBtn");
+  const eyeCircle = document.querySelector(".eye-circle");
+
+  const sliders = {};
+  Object.keys(muscles).forEach(key => {
+    sliders[key] = document.getElementById(key);
+  });
+
+  const MAX_VECTOR_MAG = 1.8;
+  const MAX_OFFSET_PX = 50;
+  const ARROW_SCALE = 70;
+
+  function clampVector(h, v, maxMag) {
+    let mag = Math.sqrt(h*h + v*v) || 0;
+    if (mag > maxMag && mag > 0) {
+      const scale = maxMag / mag;
+      h *= scale;
+      v *= scale;
+      mag = maxMag;
+    }
+    return { h, v, mag };
+  }
+
+  function describeGaze(h, v) {
+    const mag = Math.sqrt(h*h + v*v);
+    if (mag < 0.05) {
+      return "Primary position (balanced pull)";
+    }
+
+    const dirH = h > 0.12 ? "right (abduction)" :
+                 h < -0.12 ? "left (adduction)" : "";
+    const dirV = v > 0.12 ? "up (elevation)" :
+                 v < -0.12 ? "down (depression)" : "";
+
+    let text = "";
+    if (dirV && dirH) {
+      text = dirV + " and " + dirH;
+    } else if (dirV) {
+      text = dirV;
+    } else if (dirH) {
+      text = dirH;
+    } else {
+      text = "Near primary position";
+    }
+
+    const dominant = findDominantMuscles();
+    if (dominant.length > 0) {
+      text += " – dominant pull from " + dominant.join(", ");
+    }
+    return text;
+  }
+
+  function findDominantMuscles() {
+    const dominant = [];
+    for (const key of Object.keys(muscles)) {
+      const slider = sliders[key];
+      const val = Number(slider.value);
+      const delta = Math.abs((val - 50) / 50);
+      if (delta >= 0.6) {
+        dominant.push(muscles[key].label);
+      }
+    }
+    return dominant;
+  }
+
+  function renderGaze(h, v) {
+    // Apply shared clamping and then render eye and arrow smoothly.
+    const { h: hh, v: vv, mag } = clampVector(h, v, MAX_VECTOR_MAG);
+
+    const offsetX = hh * MAX_OFFSET_PX;
+    const offsetY = -vv * MAX_OFFSET_PX; // screen y is inverted vs clinical up/down
+
+    iris.style.transform = "translate(" + offsetX.toFixed(1) + "px, " + offsetY.toFixed(1) + "px)";
+
+    const centerX = 180;
+    const centerY = 180;
+    const endX = centerX + hh * ARROW_SCALE;
+    const endY = centerY - vv * ARROW_SCALE;
+
+    if (mag < 0.03) {
+      netVectorLine.setAttribute("opacity", "0.0");
+    } else {
+      netVectorLine.setAttribute("opacity", "1.0");
+      netVectorLine.setAttribute("x1", centerX);
+      netVectorLine.setAttribute("y1", centerY);
+      netVectorLine.setAttribute("x2", endX);
+      netVectorLine.setAttribute("y2", endY);
+    }
+
+    gazeReadout.textContent = describeGaze(hh, vv);
+  }
+
+  function computeNetFromSliders(updateLabels = true) {
+    let netH = 0;
+    let netV = 0;
+
+    for (const key of Object.keys(muscles)) {
+      const slider = sliders[key];
+      const muscle = muscles[key];
+      const rawVal = Number(slider.value);
+      const delta = (rawVal - 50) / 50; // -1..1
+
+      if (updateLabels) {
+        const span = document.getElementById(muscle.valueSpanId);
+        if (span) span.textContent = rawVal.toString();
+      }
+
+      netH += delta * muscle.horiz;
+      netV += delta * muscle.vert;
+    }
+
+    const { h, v, mag } = clampVector(netH, netV, MAX_VECTOR_MAG);
+    return { h, v, mag };
+  }
+
+  function updateFromSliders() {
+    const { h, v } = computeNetFromSliders(true);
+    renderGaze(h, v);
+  }
+
+  // Approximate inverse: map a desired gaze direction (normalized hNorm, vNorm in [-1,1])
+  // to a smooth set of slider values. This does NOT re-render; it only makes sliders
+  // reflect the dragged gaze.
+  function updateSlidersForGaze(hNorm, vNorm) {
+    const base = 50;
+    const clampVal = (val) => Math.max(0, Math.min(100, val));
+
+    const h = Math.max(-1, Math.min(1, hNorm || 0));
+    const v = Math.max(-1, Math.min(1, vNorm || 0));
+    const mag = Math.sqrt(h * h + v * v);
+    const strength = Math.min(1, mag);
+
+    // Horizontal balance between medial and lateral rectus
+    const horizGain = 45;
+    let mr = base - horizGain * h; // h>0 (right) -> MR weaker
+    let lr = base + horizGain * h; // h>0 (right) -> LR stronger
+
+    // Vertical balance: share elevation/depression between recti and obliques.
+    const vertGainRectus = 40;
+    const vertGainOblique = 30;
+
+    // How adducted are we? h<0 = adduction, h>0 = abduction.
+    const adductionFactor = Math.max(0, -h); // 0..1 when looking left
+    const abductionFactor = Math.max(0, h);  // 0..1 when looking right
+
+    let sr = base;
+    let ir = base;
+    let so = base;
+    let io = base;
+
+    if (v > 0.01) { // up gaze
+      const vAbs = v;
+      // In abduction: SR dominates; in adduction: IO takes more load.
+      const rectusShare = 0.3 + 0.5 * abductionFactor;       // 0.3..0.8
+      const obliqueShare = 1 - rectusShare;                  // 0.2..0.7
+      const extraRect = vertGainRectus * vAbs * strength;
+      const extraObl  = vertGainOblique * vAbs * strength;
+
+      sr = base + extraRect * rectusShare;
+      io = base + extraObl  * obliqueShare;
+
+      // Mild inhibition of antagonists
+      ir = base - 20 * vAbs * strength;
+      so = base - 10 * vAbs * strength;
+    } else if (v < -0.01) { // down gaze
+      const vAbs = -v;
+      // In abduction: IR dominates; in adduction: SO takes more load.
+      const rectusShare = 0.3 + 0.5 * abductionFactor;       // 0.3..0.8
+      const obliqueShare = 1 - rectusShare;                  // 0.2..0.7
+      const extraRect = vertGainRectus * vAbs * strength;
+      const extraObl  = vertGainOblique * vAbs * strength;
+
+      ir = base + extraRect * rectusShare;
+      so = base + extraObl  * obliqueShare;
+
+      sr = base - 20 * vAbs * strength;
+      io = base - 10 * vAbs * strength;
+    }
+
+    // If almost purely horizontal, keep vertical muscles nearer to baseline
+    if (Math.abs(v) < 0.15 * Math.max(strength, 0.15)) {
+      sr = (sr + base) / 2;
+      ir = (ir + base) / 2;
+      so = (so + base) / 2;
+      io = (io + base) / 2;
+    }
+
+    const vals = {
+      mr: clampVal(mr),
+      lr: clampVal(lr),
+      sr: clampVal(sr),
+      ir: clampVal(ir),
+      so: clampVal(so),
+      io: clampVal(io)
+    };
+
+    for (const key of Object.keys(vals)) {
+      const slider = sliders[key];
+      const muscle = muscles[key];
+      slider.value = String(Math.round(vals[key]));
+      const span = document.getElementById(muscle.valueSpanId);
+      if (span) span.textContent = slider.value;
+    }
+  }
+
+  // Reset all sliders
+  resetBtn.addEventListener("click", () => {
+    for (const key of Object.keys(muscles)) {
+      sliders[key].value = "50";
+    }
+    updateFromSliders();
+  });
+
+  // Step through cardinal gazes by setting a pattern on the sliders
+  const cardinalPatterns = [
+    { name: "Primary position", values: { mr:50, lr:50, sr:50, ir:50, so:50, io:50 } },
+    { name: "Right gaze (abduction)", values: { mr:30, lr:80, sr:45, ir:45, so:60, io:60 } },
+    { name: "Left gaze (adduction)", values: { mr:80, lr:30, sr:60, ir:60, so:40, io:40 } },
+    { name: "Up-right (SR + IO)", values: { mr:40, lr:75, sr:80, ir:30, so:40, io:80 } },
+    { name: "Up-left (SR + IO in adduction)", values: { mr:75, lr:35, sr:80, ir:30, so:35, io:75 } },
+    { name: "Down-right (IR + SO)", values: { mr:40, lr:75, sr:30, ir:80, so:80, io:30 } },
+    { name: "Down-left (IR + SO in adduction)", values: { mr:75, lr:35, sr:30, ir:80, so:80, io:30 } }
+  ];
+  let cardinalIndex = 0;
+
+  cardinalBtn.addEventListener("click", () => {
+    cardinalIndex = (cardinalIndex + 1) % cardinalPatterns.length;
+    const pattern = cardinalPatterns[cardinalIndex];
+    for (const key of Object.keys(muscles)) {
+      const val = pattern.values[key] ?? 50;
+      sliders[key].value = val.toString();
+    }
+    updateFromSliders();
+    gazeReadout.textContent = pattern.name + " – " + gazeReadout.textContent;
+  });
+
+  // Attach slider listeners
+  for (const key of Object.keys(muscles)) {
+    sliders[key].addEventListener("input", updateFromSliders);
+    sliders[key].addEventListener("change", updateFromSliders);
+  }
+
+  // Drag-to-gaze interaction on the globe.
+  let isDraggingEye = false;
+
+  function updateGazeFromPointerEvent(e) {
+    const rect = eyeCircle.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+
+    const dx = e.clientX - cx; // + right, - left
+    const dy = e.clientY - cy; // + down, - up
+
+    const maxDrag = rect.width * 0.40; // smooth radius
+    const hNorm = Math.max(-1, Math.min(1, dx / maxDrag));
+    const vNorm = Math.max(-1, Math.min(1, -dy / maxDrag)); // invert so up is positive
+
+    // Scale this normalized vector into our muscle model space
+    const scale = 1.4;
+    const h = hNorm * scale;
+    const v = vNorm * scale;
+
+    // Directly render from the pointer vector for smooth motion
+    renderGaze(h, v);
+
+    // Then smoothly update sliders to reflect an approximate muscle pattern
+    updateSlidersForGaze(hNorm, vNorm);
+  }
+
+  eyeCircle.addEventListener("pointerdown", (e) => {
+    isDraggingEye = true;
+    eyeCircle.classList.add("dragging");
+    eyeCircle.setPointerCapture(e.pointerId);
+    e.preventDefault();
+    updateGazeFromPointerEvent(e);
+  });
+
+  eyeCircle.addEventListener("pointermove", (e) => {
+    if (!isDraggingEye) return;
+    e.preventDefault();
+    updateGazeFromPointerEvent(e);
+  });
+
+  function endEyeDrag(e) {
+    if (!isDraggingEye) return;
+    isDraggingEye = false;
+    eyeCircle.classList.remove("dragging");
+    try {
+      eyeCircle.releasePointerCapture(e.pointerId);
+    } catch (err) {
+      // ignore if pointer was not captured
+    }
+  }
+
+  eyeCircle.addEventListener("pointerup", endEyeDrag);
+  eyeCircle.addEventListener("pointercancel", endEyeDrag);
+  eyeCircle.addEventListener("pointerleave", (e) => {
+    if (isDraggingEye) endEyeDrag(e);
+  });
+
+  // Initial render
+  updateFromSliders();
+</script>
+</body>
+</html>
