@@ -1,0 +1,1992 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
+<title>Plaque Man</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b0d10;
+    --panel:#11151c;
+    --ink:#e9eef5;
+    --muted:#a9b6c7;
+    --maze:#0a0a0a;
+    --path:#0a0a0a;
+    --line:#2a3342;
+    --good:#3ddc97;
+    --bad:#ff5c7a;
+    --warn:#ffd166;
+    --font-ui: "Orbitron", "Share Tech Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    --font-body: "Share Tech Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  }
+  html,body{height:100%; margin:0; background:var(--bg); color:var(--ink); font-family:var(--font-body);}
+  .wrap{max-width:980px; margin:0 auto; padding:14px 12px 24px;}
+  .title{display:flex; gap:10px; align-items:baseline; justify-content:flex-start; flex-wrap:wrap;}
+  .title h1{font-family:var(--font-ui); font-size:19px; margin:0; letter-spacing:1px; text-transform:uppercase;}
+  .title .meta{font-family:var(--font-ui); font-size:12px; color:var(--muted); letter-spacing:.6px;}
+  .panel{
+    background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:14px;
+    padding:12px 12px;
+    margin-top:0;
+  }
+
+  .layout{
+    margin-top:12px;
+    display:flex;
+    gap:14px;
+    align-items:flex-start;
+    justify-content:center;
+  }
+  .leftCol{
+    width:min(340px, 92vw);
+    flex:0 0 auto;
+  }
+  .leftActions{
+    margin-top:10px;
+    display:flex;
+    justify-content:flex-start;
+  }
+  .rightCol{
+    flex:1 1 520px;
+    display:flex;
+    justify-content:center;
+  }
+  @media (max-width: 860px){
+    .layout{flex-direction:column; align-items:stretch;}
+    .leftCol{width:100%;}
+    .leftActions{justify-content:flex-start;}
+    .rightCol{justify-content:center;}
+  }
+  #stem{font-family:var(--font-body); font-size:clamp(18px, 2.2vw, 22px); line-height:1.5; margin:0; color:var(--ink);
+  text-shadow: 0 0 10px rgba(0, 190, 255, 0.12);
+}
+  #stem strong{font-weight:750;}
+  .game{
+    margin-top:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+  
+    position:relative;
+  }
+  canvas{
+    width:720px;
+    height:720px;
+    max-width:92vw;
+    max-height:92vh;
+    aspect-ratio: 1 / 1;
+    border-radius:16px;
+    background:#14161a;
+    box-shadow:0 10px 30px rgba(0,0,0,.45), 0 0 0 4px rgba(0,180,255,.60), 0 0 22px rgba(0,180,255,.55), 0 0 50px rgba(0,90,255,.30);
+    border:3px solid rgba(0,180,255,.90);
+    image-rendering: pixelated;
+    touch-action:none;
+  }
+  .kbd{
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size:11px;
+    padding:2px 6px;
+    border-radius:7px;
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.04);
+    color:var(--ink);
+  }
+  .iconBtn{
+    cursor:pointer;
+    border:1px solid rgba(255,255,255,.14);
+    background:rgba(255,255,255,.04);
+    color:var(--ink);
+    border-radius:10px;
+    padding:6px 10px;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+  
+    font-family:var(--font-ui);}
+  .iconBtn:hover{background:rgba(255,255,255,.07);}
+  .iconBtn:active{transform:translateY(1px);}
+  .iconBtn svg{
+    width:16px;
+    height:16px;
+    display:block;
+    fill:none;
+    stroke:currentColor;
+    stroke-width:2.2;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+  }
+  .modalBackdrop{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.55);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:18px;
+    z-index:50;
+  }
+  .modalBackdrop.hidden{display:none;}
+  .hidden{display:none !important;}
+  .modalBox{
+    width:min(420px, 92vw);
+    background:rgba(18,22,29,.98);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:16px;
+    padding:14px 14px 12px;
+    box-shadow:0 24px 70px rgba(0,0,0,.55);
+  }
+  .modalHead{
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    gap:10px;
+    margin-bottom:12px;
+  }
+  .modalHead .h{font-weight:700; letter-spacing:.3px;
+    font-family:var(--font-ui); letter-spacing:1px; text-transform:uppercase;}
+  .toggleRow{
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    gap:10px;
+    padding:10px 10px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,.10);
+    background:rgba(255,255,255,.03);
+  }
+  .toggleRow span{color:var(--ink); font-size:14px;}
+  .toggleRow input{width:20px; height:20px;}
+  .modalHint{
+    margin-top:10px;
+    color:var(--muted);
+    font-size:12px;
+    line-height:1.35;
+  }
+
+
+  /* Shop */
+  .shopTop{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin:2px 0 10px;
+  }
+  .shopStat{
+    font-family:var(--font-ui);
+    font-size:12px;
+    letter-spacing:.7px;
+    text-transform:uppercase;
+    color:rgba(233,238,245,.92);
+  }
+  .shopList{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .shopItem{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:12px;
+    padding:10px 10px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,.10);
+    background:rgba(255,255,255,.03);
+  }
+  .shopItem .name{
+    font-family:var(--font-ui);
+    font-weight:800;
+    letter-spacing:.9px;
+    text-transform:uppercase;
+    font-size:13px;
+    margin:0;
+  }
+  .shopItem .desc{
+    margin-top:4px;
+    font-size:12px;
+    color:var(--muted);
+    line-height:1.35;
+  }
+  .shopMsg{
+    margin-top:10px;
+    min-height:16px;
+    font-size:12px;
+    color:var(--muted);
+  }
+  .shopMsg.bad{color:#ff8aa0;}
+  .shopMsg.good{color:#7fffd4;}
+
+
+  .gameOver{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    pointer-events:none;
+  }
+  .gameOverBox{
+    pointer-events:none;
+    padding:18px 22px;
+    border-radius:16px;
+    background: rgba(0,0,0,.55);
+    border: 2px solid rgba(0,180,255,.65);
+    box-shadow: 0 0 14px rgba(0,180,255,.55), 0 0 36px rgba(0,90,255,.35);
+    text-align:center;
+    letter-spacing:.08em;
+  }
+  .goTitle{
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-weight: 800;
+    font-size: 20px;
+    color: #eaf6ff;
+  }
+  .goSub{
+    margin-top:6px;
+    font-size: 12px;
+    color: rgba(234,246,255,.85);
+  }
+
+  button{font-family:var(--font-ui); letter-spacing:.6px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="title">
+    <h1>Plaque Man</h1>
+  </div>
+
+  <div class="layout">
+    <div class="leftCol">
+      <div class="panel">
+    <p id="stem"></p>
+  </div>
+      <div class="leftActions">
+        <button id="btnSettings" class="iconBtn" type="button" aria-label="Settings">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/>
+          <path d="M19.4 15a7.8 7.8 0 0 0 .1-1l2-1.5-2-3.5-2.4.6a8 8 0 0 0-1.7-1l-.3-2.5h-4l-.3 2.5a8 8 0 0 0-1.7 1L6.7 9l-2 3.5 2 1.5a7.8 7.8 0 0 0 .1 1l-2 1.5 2 3.5 2.4-.6c.5.4 1.1.8 1.7 1l.3 2.5h4l.3-2.5c.6-.2 1.2-.6 1.7-1l2.4.6 2-3.5-2-1.5Z"/>
+        </svg>
+      </button>
+      </div>
+    </div>
+
+    <div class="rightCol">
+      <div class="game">
+    <canvas id="c" width="720" height="720" aria-label="Plaque Man maze"></canvas>
+    <div id="gameOver" class="gameOver hidden" aria-live="polite">
+      <div class="gameOverBox">
+        <div class="goTitle">GAME OVER</div>
+        <div class="goSub">Press N for a new game</div>
+      </div>
+    </div>
+  </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Settings modal -->
+  <div id="settingsBackdrop" class="modalBackdrop hidden" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <div class="modalBox">
+      <div class="modalHead">
+        <div class="h" id="settingsTitle">Settings</div>
+        <button id="btnCloseSettings" class="iconBtn" type="button" aria-label="Close settings">✕</button>
+      </div>
+      <label class="toggleRow">
+        <span>Vessel labels</span>
+        <input id="toggleLabels" type="checkbox" />
+      </label>
+      <label class="toggleRow" style="margin-top:10px;">
+        <span>Enemies</span>
+        <input id="toggleEnemies" type="checkbox" />
+      </label>
+      <div class="modalHint">Toggle labels and enemies.</div>
+    </div>
+  </div>
+
+  <!-- Shop modal -->
+  <div id="shopBackdrop" class="modalBackdrop hidden" role="dialog" aria-modal="true" aria-labelledby="shopTitle">
+    <div class="modalBox">
+      <div class="modalHead">
+        <div class="h" id="shopTitle">Shop</div>
+        <button id="btnCloseShop" class="iconBtn" type="button" aria-label="Close shop">✕</button>
+      </div>
+
+      <div class="shopTop">
+        <div class="shopStat">Currency: 💊 <span id="shopCash">0</span></div>
+        <div class="shopStat">Ammo: <span id="shopAmmo">0</span></div>
+      </div>
+
+      <div class="shopList">
+        <div class="shopItem">
+          <div class="left">
+            <div class="name">Blaster Pack</div>
+            <div class="desc">Adds 15 blaster shots. Fire with <b>F</b>.</div>
+          </div>
+          <div class="buy">
+            <button id="buyBlaster" type="button">Buy (💊 6)</button>
+          </div>
+        </div>
+
+        <div class="shopItem">
+          <div class="left">
+            <div class="name">Extra Heart</div>
+            <div class="desc">Gain +1 life (max 5).</div>
+          </div>
+          <div class="buy">
+            <button id="buyHeart" type="button">Buy (💊 4)</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="shopMsg" class="shopMsg"></div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  "use strict";
+
+  // =============================
+  // Maze geometry (vector, PNG-free)
+  // =============================
+  const CW = 720, CH = 720;
+
+
+  // Spawn padding to avoid edge artifacts
+  const WALL_PAD = 18;
+  // Thickness of "vessel corridors" (uniform everywhere)
+  const T = 54;
+
+  // Overlap to ensure corridors truly intersect for a non-zero-radius player
+  const O = 18;
+
+  // Utility
+  const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+
+
+  const wrap = (v, max)=>{
+    v = v % max;
+    if (v < 0) v += max;
+    return v;
+  };
+  // Rects that form the walkable corridor (black vessel "walls" in your reference image)
+  // This is an approximation of the provided Circle-of-Willis silhouette.
+  const rects = [];
+  const addRect = (x,y,w,h)=>rects.push({x,y,w,h});
+
+  // Upper circulation: big "frame" + two ACA stalks + long lateral arms
+  // Midline long horizontal bar (lateral arms)
+  addRect(0, 240, CW, T);
+
+  // Upper rectangle frame
+  const upperX = 160, upperY = 120, upperW = 400, upperH = 120;
+  addRect(upperX, upperY, upperW, T);                          // top
+  addRect(upperX, upperY, T, upperH + T);                      // left side down to midline bar
+  addRect(upperX + upperW - T, upperY, T, upperH + T);         // right side
+
+  // ACA stalks (two vertical)
+  addRect(270, 0, T, upperY + O);
+  addRect(396, 0, T, upperY + O);
+
+  // Lateral wrap tunnels (outer horizontal corridors): extend all the way to the playfield edge
+  // and sit flush with the upper bar to avoid tiny misaligned corner stubs.
+  addRect(0, upperY, upperX + O, T);
+  addRect(upperX + upperW - O, upperY, CW - (upperX + upperW - O), T);
+
+  // Basilar trunk (connects the CoW to the posterior circulation)
+const trunkX = Math.round((CW - T)/2);
+
+// Bottom "square" (junction box outline)
+// Moved slightly upward so the vertebrals can descend to the bottom edge (as in your reference).
+const sqOuterW = 180, sqOuterH = 200;
+const sqY = 450;
+const sqX = trunkX - Math.round((sqOuterW - T)/2);
+
+// Basilar trunk goes from the posterior bar down into the square top.
+// Use overlap so the ship (non-zero radius) can pass through intersections cleanly.
+const trunkTopY = 240 + T - O;
+const trunkBottomY = sqY + O;
+addRect(trunkX, trunkTopY, T, trunkBottomY - trunkTopY);
+
+// Square outline
+addRect(sqX, sqY, sqOuterW, T);                               // top
+addRect(sqX, sqY, T, sqOuterH);                               // left
+addRect(sqX + sqOuterW - T, sqY, T, sqOuterH);                // right
+// Cerebellar branches
+// SCA + AICA connect directly to the basilar (rungs touch the trunk).
+// Corridor thickness is uniform, so rung height == T.
+const rungH = T;
+const rungW = 150;
+
+const rungY_SCA  = 315;
+const rungY_AICA = 375;
+
+for (const y of [rungY_SCA, rungY_AICA]){
+  addRect(trunkX - rungW, y, rungW + O, rungH);   // left rung (overlaps trunk)
+  addRect(trunkX + T - O, y, rungW + O, rungH);   // right rung (overlaps trunk)
+}
+
+// Vertebral arteries: descend to the bottom of the screen (as in the reference image)
+const vertY0 = sqY + sqOuterH;
+const vertYStart = vertY0 - O;
+const vertH  = CH - vertYStart;
+addRect(sqX,                vertYStart, T, vertH);                 // left VA column
+addRect(sqX + sqOuterW - T, vertYStart, T, vertH);                 // right VA column
+
+// PICA: comes off the vertebrals (not the basilar)
+const picaY = sqY + 70;
+const picaLen = 160;
+addRect(sqX - picaLen,      picaY, picaLen + O, rungH);                // left PICA (overlaps left VA)
+addRect(sqX + sqOuterW - O, picaY, picaLen + O, rungH);                // right PICA (overlaps right VA)
+
+// NOTE: No anterior spinal artery in this maze (matches the reference silhouette).
+
+// Build an offscreen "maze" bitmap for fast collision checks (corridors = black)
+  const off = document.createElement("canvas");
+  off.width = CW; off.height = CH;
+  const og = off.getContext("2d", { alpha: false });
+  og.fillStyle = "#f2f2f2";
+  og.fillRect(0,0,CW,CH);
+  og.fillStyle = "#000";
+  for (const r of rects) og.fillRect(r.x, r.y, r.w, r.h);
+
+  // Pixel mask for collision (1 byte per pixel)
+  const mazeData = og.getImageData(0,0,CW,CH).data;
+  const isWalkable = (px,py)=>{
+    // Toroidal wrap: exiting one edge re-enters on the opposite edge.
+    let x = px|0, y = py|0;
+    x = ((x % CW) + CW) % CW;
+    y = ((y % CH) + CH) % CH;
+    const i = (y*CW + x)*4;
+    // walkable if pixel is "black"
+    return mazeData[i] < 32;
+  };
+
+  // Pre-render a neon "arcade" visual version of the maze (outer boundary only; no internal seam-lines)
+  const mazeVis = document.createElement("canvas");
+  mazeVis.width = CW; mazeVis.height = CH;
+  const vg = mazeVis.getContext("2d"); // alpha true (glow compositing)
+
+  // background (dark gray)
+  vg.fillStyle = "#1b1f24";
+  vg.fillRect(0,0,CW,CH);
+
+  // corridors (near-black)
+  vg.fillStyle = "#050607";
+  for (const r of rects) vg.fillRect(r.x, r.y, r.w, r.h);
+
+  // Build an edge image from the collision mask so ONLY the outer boundary glows.
+  const edge = document.createElement("canvas");
+  edge.width = CW; edge.height = CH;
+  const eg = edge.getContext("2d");
+  const edgeImg = eg.createImageData(CW,CH);
+  const ed = edgeImg.data;
+
+  const isCorr = (i)=>mazeData[i] < 32;
+
+  // Portal zones: remove neon "walls" at wrap openings so tunnels look open.
+  // We widen by 1px so the crisp outline (shifted copies) doesn't "re-seal" the mouth.
+  const inPortalZone = (x,y)=>{
+    // Horizontal wrap openings: upper lateral tunnel (MCA row) and posterior bar ends (PCA row)
+    const inMcaY = (y >= upperY && y < upperY + T);
+    const inPcaY = (y >= 240   && y < 240   + T);
+    const inLeftPortal  = (x <= 1)      && (inMcaY || inPcaY);
+    const inRightPortal = (x >= CW - 2) && (inMcaY || inPcaY);
+
+    // Top wrap openings: ACA stalks
+    const inAca1X = (x >= 270 && x < 270 + T);
+    const inAca2X = (x >= 396 && x < 396 + T);
+    const inTopPortal = (y <= 1) && (inAca1X || inAca2X);
+
+    // Bottom wrap openings: vertebral arteries
+    const inVaLX = (x >= sqX && x < sqX + T);
+    const inVaRX = (x >= (sqX + sqOuterW - T) && x < (sqX + sqOuterW));
+    const inBottomPortal = (y >= CH - 2) && (inVaLX || inVaRX);
+
+    return inLeftPortal || inRightPortal || inTopPortal || inBottomPortal;
+  };
+
+  for (let y=0; y<CH; y++){
+    for (let x=0; x<CW; x++){
+      const i = (y*CW + x)*4;
+      if (!isCorr(i)) continue;
+
+      let edgePx = false;
+
+      // Treat canvas border as an edge, EXCEPT at portal mouths (wrap openings).
+      if (x===0 || x===CW-1 || y===0 || y===CH-1){
+        edgePx = !inPortalZone(x,y);
+      } else {
+        const left  = i - 4;
+        const right = i + 4;
+        const up    = i - (CW*4);
+        const down  = i + (CW*4);
+        if (!isCorr(left) || !isCorr(right) || !isCorr(up) || !isCorr(down)) edgePx = true;
+      }
+
+      if (edgePx){
+        ed[i]   = 255;
+        ed[i+1] = 70;
+        ed[i+2] = 70;
+        ed[i+3] = 255;
+      }
+    }
+  }
+  eg.putImageData(edgeImg, 0, 0);
+
+  // glow pass
+  vg.save();
+  vg.globalAlpha = 0.9;
+  vg.shadowColor = "rgba(255, 55, 55, 0.95)";
+  vg.shadowBlur = 22;
+  vg.drawImage(edge, 0, 0);
+  vg.restore();
+
+  // crisp pass (slightly thicker)
+  vg.save();
+  const offsets = [[0,0],[1,0],[-1,0],[0,1],[0,-1]];
+  for (const [dx,dy] of offsets) vg.drawImage(edge, dx, dy);
+  vg.restore();
+
+// =============================
+  // Game content
+  // =============================
+  const V = {
+    L_ACA: "Left ACA",   R_ACA: "Right ACA",
+    L_MCA: "Left MCA",   R_MCA: "Right MCA",
+    L_PCA: "Left PCA",   R_PCA: "Right PCA",
+    L_SCA: "Left SCA",   R_SCA: "Right SCA",
+L_AICA: "Left AICA", R_AICA: "Right AICA",
+    L_PICA: "Left PICA", R_PICA: "Right PICA",
+// (Anterior spinal artery intentionally omitted)
+  };
+
+  // Distal "power pellets" (placed to match the silhouette)
+const pellets = [
+  {key:"L_ACA",   x:270 + T/2, y:18},
+  {key:"R_ACA",   x:396 + T/2, y:18},
+
+  // MCA distal: wrap tunnels (upper lateral arms)
+  {key:"L_MCA",   x:18,        y:upperY + T/2},
+  {key:"R_MCA",   x:CW-18,     y:upperY + T/2},
+
+  // PCA distal: far ends of the posterior bar
+  {key:"L_PCA",   x:18,        y:240 + T/2},
+  {key:"R_PCA",   x:CW-18,     y:240 + T/2},
+
+  {key:"L_SCA",   x:trunkX - rungW + 18,           y:rungY_SCA  + rungH/2},
+  {key:"R_SCA",   x:trunkX + T + rungW - 18,       y:rungY_SCA  + rungH/2},
+
+  {key:"L_AICA",  x:trunkX - rungW + 18,           y:rungY_AICA + rungH/2},
+  {key:"R_AICA",  x:trunkX + T + rungW - 18,       y:rungY_AICA + rungH/2},
+
+  {key:"L_PICA",  x:(sqX - picaLen) + 18,          y:picaY + rungH/2},
+  {key:"R_PICA",  x:(sqX + sqOuterW + picaLen) - 18, y:picaY + rungH/2},
+// (Anterior spinal artery pellet intentionally omitted)
+];
+
+
+  // Subtle, non-telegraphy-ish stems (still localize)
+  const stems = {
+    L_ACA: [
+      "A 69-year-old right-handed man develops sudden behavioral slowing and difficulty initiating movements. Exam shows right leg weakness > arm, mild grasp reflex, and urinary urgency.",
+      "A 58-year-old woman has abrupt onset of right leg-predominant weakness and abulia. Sensation is relatively spared in the face and right arm."
+    ],
+    R_ACA: [
+      "A 72-year-old man suddenly becomes apathetic and slow to respond. Exam shows left leg weakness > arm, with frontal release signs and new urinary incontinence.",
+      "A 61-year-old woman develops acute left leg heaviness with marked difficulty initiating speech and movement; the face and left arm are comparatively less affected."
+    ],
+    L_MCA: [
+      "A 64-year-old right-handed woman has sudden right face/arm weakness with gaze preference toward the left. She struggles to produce fluent language and naming is impaired.",
+      "A 55-year-old man develops abrupt right arm and face weakness and numbness. He has difficulty repeating and finding words, but right leg strength is relatively preserved."
+    ],
+    R_MCA: [
+      "A 70-year-old woman has acute left face/arm weakness and sensory loss with gaze deviation. She ignores stimuli on the left side and is unaware of the deficit.",
+      "A 60-year-old man develops sudden left arm/face weakness and hemisensory loss with profound left-sided neglect and spatial disorientation; left leg involvement is mild."
+    ],
+    L_PCA: [
+      "A 66-year-old right-handed man suddenly reports missing objects on the right side of his visual field. Reading becomes markedly difficult despite intact writing, and motor exam is normal.",
+      "A 59-year-old woman develops abrupt right homonymous visual field loss with preserved motor strength. She has trouble identifying familiar objects visually."
+    ],
+    R_PCA: [
+      "A 63-year-old man suddenly cannot see items on the left side of his visual field. Motor exam is normal; he is startled when approached from the left.",
+      "A 57-year-old woman develops acute left homonymous visual field loss with difficulty recognizing faces; strength and primary sensation are intact."
+    ],
+
+    L_SCA: [
+      "A 54-year-old man has sudden severe left limb ataxia and dysmetria with slurred speech. Facial weakness is minimal; sensation is largely intact.",
+      "A 60-year-old woman develops abrupt left-sided cerebellar signs (past-pointing, intention tremor) with gait instability and nystagmus."
+    ],
+    R_SCA: [
+      "A 56-year-old woman develops acute right limb ataxia and dysarthria with prominent gait instability and nystagmus; motor strength is otherwise preserved.",
+      "A 63-year-old man has sudden right-sided dysmetria and truncal ataxia without clear facial paralysis."
+    ],
+    L_AICA: [
+      "A 58-year-old woman develops acute vertigo and vomiting with left facial weakness and decreased taste. She also reports left-sided hearing changes and has left limb ataxia.",
+      "A 67-year-old man has sudden vertigo, nystagmus, left facial paralysis, and left-sided hearing loss, with left limb ataxia."
+    ],
+    R_AICA: [
+      "A 61-year-old man presents with abrupt vertigo, nystagmus, right facial weakness, and reduced lacrimation. He notes right-sided hearing loss and has right limb ataxia.",
+      "A 52-year-old woman develops sudden vertigo with right facial paralysis and right-sided hearing loss; gait is markedly ataxic."
+    ],
+    L_PICA: [
+      "A 49-year-old man has abrupt vertigo with hoarseness and dysphagia. Exam shows left facial pain/temperature loss, right body pain/temperature loss, and left Horner syndrome.",
+      "A 73-year-old woman develops sudden nausea and gait instability with severe dysphagia and hiccups; exam shows left Horner syndrome with crossed pain/temperature deficits."
+    ],
+    R_PICA: [
+      "A 51-year-old woman presents with acute vertigo, dysphagia, and hoarseness. Exam shows right facial pain/temperature loss, left body pain/temperature loss, and right Horner syndrome.",
+      "A 65-year-old man develops sudden vomiting and imbalance with severe dysphagia; exam reveals right Horner syndrome with crossed pain/temperature deficits."
+    ],
+// (Anterior spinal artery intentionally omitted)
+  };
+
+    // Only include territories that have a corresponding distal pellet on the maze
+  const vesselKeys = Array.from(new Set(pellets.map(p=>p.key)));
+
+  // =============================
+  // Canvas + drawing
+  // =============================
+  const canvas = document.getElementById("c");
+  // =============================
+  // Settings
+  // =============================
+  let showLabels = false;
+  try { showLabels = JSON.parse(localStorage.getItem("plaqueMan_showLabels") || "false"); } catch(e){ showLabels = false; }
+
+
+  let enemiesEnabled = true;
+  try { enemiesEnabled = JSON.parse(localStorage.getItem("plaqueMan_enemiesEnabled") || "true"); } catch(e){ enemiesEnabled = true; }
+
+  const btnSettings = document.getElementById("btnSettings");
+  const settingsBackdrop = document.getElementById("settingsBackdrop");
+  const btnCloseSettings = document.getElementById("btnCloseSettings");
+  const toggleLabels = document.getElementById("toggleLabels");
+  const toggleEnemies = document.getElementById("toggleEnemies");
+
+  // Shop UI
+  const shopBackdrop = document.getElementById("shopBackdrop");
+  const btnCloseShop = document.getElementById("btnCloseShop");
+  const shopCashEl = document.getElementById("shopCash");
+  const shopAmmoEl = document.getElementById("shopAmmo");
+  const buyBlasterBtn = document.getElementById("buyBlaster");
+  const buyHeartBtn = document.getElementById("buyHeart");
+  const shopMsgEl = document.getElementById("shopMsg");
+
+  const setShopMsg = (msg, kind="")=>{
+    if (!shopMsgEl) return;
+    shopMsgEl.textContent = msg || "";
+    shopMsgEl.classList.remove("bad","good");
+    if (kind) shopMsgEl.classList.add(kind);
+  };
+
+  const openSettings = ()=>{
+    if (!settingsBackdrop) return;
+    settingsBackdrop.classList.remove("hidden");
+    if (toggleLabels) toggleLabels.checked = !!showLabels;
+    if (toggleEnemies) toggleEnemies.checked = !!enemiesEnabled;
+    setShopMsg("");
+  };
+  const closeSettings = ()=>{
+    if (!settingsBackdrop) return;
+    settingsBackdrop.classList.add("hidden");
+  };
+
+  const isUIPaused = () =>
+    (settingsBackdrop && !settingsBackdrop.classList.contains("hidden")) ||
+    (shopBackdrop && !shopBackdrop.classList.contains("hidden"));
+
+  const openShop = ()=>{
+    if (!shopBackdrop) return;
+    shopBackdrop.classList.remove("hidden");
+    setShopMsg("");
+    if (typeof refreshShopHUD === "function") refreshShopHUD();
+  };
+  const closeShop = ()=>{
+    if (!shopBackdrop) return;
+    shopBackdrop.classList.add("hidden");
+    setShopMsg("");
+  };
+
+  btnSettings?.addEventListener("click", openSettings);
+  btnCloseSettings?.addEventListener("click", closeSettings);
+  settingsBackdrop?.addEventListener("click", (e)=>{ if (e.target === settingsBackdrop) closeSettings(); });
+  window.addEventListener("keydown", (e)=>{
+    if (e.key !== "Escape") return;
+    if (shopBackdrop && !shopBackdrop.classList.contains("hidden")) closeShop();
+    if (settingsBackdrop && !settingsBackdrop.classList.contains("hidden")) closeSettings();
+  }, {passive:true});
+
+  toggleLabels?.addEventListener("change", ()=>{
+    showLabels = !!toggleLabels.checked;
+    try { localStorage.setItem("plaqueMan_showLabels", JSON.stringify(showLabels)); } catch(e){}
+  });
+
+
+  toggleEnemies?.addEventListener("change", ()=>{
+    enemiesEnabled = !!toggleEnemies.checked;
+    try { localStorage.setItem("plaqueMan_enemiesEnabled", JSON.stringify(enemiesEnabled)); } catch(e){}
+    if (enemiesEnabled){
+      if (typeof initEnemies === "function") initEnemies();
+    } else {
+      if (typeof enemies !== "undefined" && enemies && enemies.length !== undefined) enemies.length = 0;
+    }
+  });
+
+  btnCloseShop?.addEventListener("click", closeShop);
+  shopBackdrop?.addEventListener("click", (e)=>{ if (e.target === shopBackdrop) closeShop(); });
+
+  buyBlasterBtn?.addEventListener("click", ()=>{ if (typeof buyBlasterPack === "function") buyBlasterPack(); });
+  buyHeartBtn?.addEventListener("click", ()=>{ if (typeof buyHeart === "function") buyHeart(); });
+
+  const ctx = canvas.getContext("2d", { alpha: false });
+const fitCanvasCSS = () => {
+  // Keep the entire maze visible without scrolling:
+  // fit to the smaller of (available viewport height below the canvas top) and width.
+  const rect = canvas.getBoundingClientRect();
+  const availH = Math.max(320, window.innerHeight - rect.top - 16);
+  const availW = Math.max(320, window.innerWidth * 0.92);
+  const size = Math.min(720, availH, availW);
+  canvas.style.width = size + "px";
+  canvas.style.height = size + "px";
+};
+window.addEventListener("resize", fitCanvasCSS, {passive:true});
+// run after layout
+requestAnimationFrame(fitCanvasCSS);
+setTimeout(fitCanvasCSS, 50); 
+
+  // Pre-rendered maze background
+  const mazeImg = mazeVis; // neon pre-rendered
+
+  function forEachWrappedCopy(x,y,pad,cb){
+  const xs = [x], ys = [y];
+  if (x < pad) xs.push(x + CW);
+  if (x > CW - pad) xs.push(x - CW);
+  if (y < pad) ys.push(y + CH);
+  if (y > CH - pad) ys.push(y - CH);
+  for (const xx of xs){
+    for (const yy of ys){
+      cb(xx,yy);
+    }
+  }
+}
+
+function drawShip(x,y,dir,phase=0.0){
+  // dir: 0R 1D 2L 3U
+  const ang = [0, Math.PI/2, Math.PI, -Math.PI/2][dir] ?? 0;
+  const r = 13;
+
+  ctx.save();
+  ctx.translate(x,y);
+  ctx.rotate(ang);
+
+  // body
+  ctx.beginPath();
+  ctx.moveTo(r, 0);
+  ctx.lineTo(-r*0.85, -r*0.65);
+  ctx.lineTo(-r*0.55, 0);
+  ctx.lineTo(-r*0.85, r*0.65);
+  ctx.closePath();
+  ctx.fillStyle = "#a7d9ff";
+  ctx.fill();
+
+  // cockpit
+  ctx.beginPath();
+  ctx.arc(-r*0.1, 0, r*0.18, 0, Math.PI*2);
+  ctx.fillStyle = "#0b0d10";
+  ctx.fill();
+
+  // thrust flicker
+  const flick = 0.35 + 0.65*Math.abs(Math.sin(phase*6.283185307179586));
+  ctx.beginPath();
+  ctx.moveTo(-r*0.95, 0);
+  ctx.lineTo(-r*1.35, -r*0.25*flick);
+  ctx.lineTo(-r*1.35, r*0.25*flick);
+  ctx.closePath();
+  ctx.fillStyle = "#ffcf33";
+  ctx.fill();
+
+  ctx.restore();
+}
+
+function drawShipWrapped(x,y,dir,phase){
+  const pad = 24;
+  forEachWrappedCopy(x,y,pad,(xx,yy)=> drawShip(xx,yy,dir,phase));
+}
+
+  function drawLabels(){
+    ctx.save();
+    ctx.font = "700 24px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", monospace";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "#ff2d2d";
+    ctx.strokeStyle = "rgba(0,0,0,0.65)";
+    ctx.lineWidth = 5;
+    ctx.shadowColor = "rgba(255, 40, 40, 0.95)";
+    ctx.shadowBlur = 18;
+
+    const label = (t,x,y,align="left")=>{
+      ctx.textAlign = align;
+      ctx.strokeText(t, x, y);
+      ctx.fillText(t, x, y);
+    };
+
+    // Approximate placements to match the reference screenshot
+    label("L ACA", 270 + T/2, 86, "center");
+    label("R ACA", 396 + T/2, 86, "center");
+
+    label("L MCA", 36, upperY + T/2, "left");
+    label("R MCA", CW-36, upperY + T/2, "right");
+
+    label("L PCA", 36, 240 + T/2, "left");
+    label("R PCA", CW-36, 240 + T/2, "right");
+
+    const OUT = 58;
+
+    label("L SCA",  trunkX - rungW - OUT, rungY_SCA  + rungH/2, "right");
+    label("R SCA",  trunkX + T + rungW + OUT, rungY_SCA  + rungH/2, "left");
+
+    label("L AICA", trunkX - rungW - OUT, rungY_AICA + rungH/2, "right");
+    label("R AICA", trunkX + T + rungW + OUT, rungY_AICA + rungH/2, "left");
+
+    label("L PICA", 36, picaY + rungH/2, "left");
+    label("R PICA", CW-36, picaY + rungH/2, "right");
+
+    ctx.restore();
+  }
+
+  function draw(){
+  // background
+  ctx.drawImage(mazeImg,0,0);
+
+  if (showLabels) drawLabels();
+
+  // pellets (activation requires a grenade explosion)
+  for (const p of pellets){
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 11, 0, Math.PI*2);
+    ctx.fillStyle = "#111";
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 7, 0, Math.PI*2);
+    ctx.fillStyle = "#f2f2f2";
+    ctx.fill();
+  }
+
+
+  // currency pills
+  for (const c of loot){
+    ctx.save();
+    ctx.shadowColor = "rgba(0, 255, 255, 0.70)";
+    ctx.shadowBlur = 12;
+    const w = 16, h = 9;
+    ctx.translate(c.x, c.y);
+    ctx.rotate(0.25);
+
+    // capsule outline path
+    ctx.beginPath();
+    const r = h/2;
+    ctx.moveTo(-w/2 + r, -h/2);
+    ctx.lineTo(w/2 - r, -h/2);
+    ctx.arc(w/2 - r, 0, r, -Math.PI/2, Math.PI/2);
+    ctx.lineTo(-w/2 + r, h/2);
+    ctx.arc(-w/2 + r, 0, r, Math.PI/2, -Math.PI/2);
+    ctx.closePath();
+
+    ctx.fillStyle = "#0b0b0b";
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "#8ff6ff";
+    ctx.stroke();
+
+    // left half
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(-w/2 + 1.2, -h/2 + 1.2, w/2 - 1.8, h - 2.4);
+    ctx.clip();
+    ctx.beginPath();
+    ctx.moveTo(-w/2 + r, -h/2);
+    ctx.lineTo(w/2 - r, -h/2);
+    ctx.arc(w/2 - r, 0, r, -Math.PI/2, Math.PI/2);
+    ctx.lineTo(-w/2 + r, h/2);
+    ctx.arc(-w/2 + r, 0, r, Math.PI/2, -Math.PI/2);
+    ctx.closePath();
+    ctx.fillStyle = "#b7fff0";
+    ctx.fill();
+    ctx.restore();
+
+    // right half
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0.6, -h/2 + 1.2, w/2 - 1.8, h - 2.4);
+    ctx.clip();
+    ctx.beginPath();
+    ctx.moveTo(-w/2 + r, -h/2);
+    ctx.lineTo(w/2 - r, -h/2);
+    ctx.arc(w/2 - r, 0, r, -Math.PI/2, Math.PI/2);
+    ctx.lineTo(-w/2 + r, h/2);
+    ctx.arc(-w/2 + r, 0, r, Math.PI/2, -Math.PI/2);
+    ctx.closePath();
+    ctx.fillStyle = "#5df0ff";
+    ctx.fill();
+    ctx.restore();
+
+    // seam
+    ctx.beginPath();
+    ctx.moveTo(0, -h/2 + 1.5);
+    ctx.lineTo(0, h/2 - 1.5);
+    ctx.strokeStyle = "rgba(0,0,0,0.45)";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
+
+  // shop icon (appears periodically)
+  if (shopIcon && shopIcon.active){
+    drawShopIconWrapped(shopIcon, tNow);
+  }
+
+  // blaster shots
+  for (const s of shots){
+    drawShotWrapped(s, tNow);
+  }
+
+  // grenades
+  for (const g of grenades){
+    const age01 = clamp((tNow - g.t0)/GRENADE_FUSE_MS, 0, 1);
+    // Grenade visuals do NOT wrap across borders (matches non-wrapping explosions).
+    drawGrenade(g.x, g.y, age01);
+  }
+
+  // explosions
+  for (const ex of explosions){
+    const a = clamp((tNow - ex.t0)/EXPLOSION_MS, 0, 1);
+    const r = EXPLOSION_R * (0.55 + 0.85*a);
+    const alpha = (1-a) * 0.55;
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = "#ffcf33";
+    // Explosion visuals do NOT wrap across borders.
+    ctx.beginPath();
+    ctx.arc(ex.x, ex.y, r, 0, Math.PI*2);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // enemies
+  if (enemiesEnabled){
+    for (const e of enemies){
+      if (!e.alive) continue;
+      drawEnemyWrapped(e, tNow);
+    }
+  }
+
+  // player ship
+  drawShipWrapped(player.x, player.y, player.dir, player.mouth);
+
+  // lives HUD (top-left, inside the playfield)
+  ctx.save();
+  const hearts = "❤️".repeat(Math.max(0, lives));
+  ctx.textAlign = "left";
+  ctx.textBaseline = "top";
+  ctx.font = '20px "Orbitron", "Share Tech Mono", ui-monospace, monospace';
+  ctx.shadowColor = "rgba(255, 60, 120, 0.85)";
+  ctx.shadowBlur = 14;
+  ctx.fillStyle = "#ffffff";
+  ctx.fillText(hearts, 22, 18);
+  // cash HUD (under hearts)
+  ctx.shadowColor = "rgba(0, 190, 255, 0.85)";
+  ctx.shadowBlur = 18;
+  ctx.font = '16px "Orbitron", "Share Tech Mono", ui-monospace, monospace';
+  ctx.fillStyle = "#e9fbff";
+  ctx.fillText("💊 " + String(cash), 22, 44);
+  // ammo HUD (under currency). Hidden entirely at 0.
+  if (ammo > 0){
+    ctx.shadowColor = "rgba(0, 255, 210, 0.90)";
+    ctx.shadowBlur = 18;
+    ctx.font = '14px "Orbitron", "Share Tech Mono", ui-monospace, monospace';
+    ctx.fillStyle = "#ddfff7";
+    ctx.fillText("🔫 " + String(ammo), 22, 66);
+  }
+  // score HUD (top-right, inside the playfield)
+  ctx.textAlign = "right";
+  ctx.textBaseline = "top";
+  ctx.shadowColor = "rgba(0, 180, 255, 0.95)";
+  ctx.shadowBlur = 20;
+  ctx.font = '18px "Orbitron", "Share Tech Mono", ui-monospace, monospace';
+  ctx.fillStyle = "#eaf6ff";
+  ctx.fillText("Score: " + String(score), CW - 22, 18);
+  ctx.restore();
+
+}
+
+  // =============================
+  // Movement + collision
+  // =============================
+  const keys = new Set();
+  window.addEventListener("keydown", (e)=>{
+  const k = e.key.toLowerCase();
+  if (["arrowup","arrowdown","arrowleft","arrowright"," ","w","a","s","d"].includes(k)) e.preventDefault();
+
+  if (isUIPaused()) return;
+
+  if (k === " "){
+    dropGrenade();
+    return;
+  }
+
+  if (k === "control"){
+    fireShot();
+    return;
+  }
+
+  keys.add(k);
+  if (k === "n") {
+    if (gameOver) restartGame();
+    else newCase();
+  }
+}, {passive:false});
+
+  window.addEventListener("keyup", (e)=>{
+    keys.delete(e.key.toLowerCase());
+  });
+
+  // Touch joystick (simple swipe)
+  let touchStart = null;
+  canvas.addEventListener("touchstart", (e)=>{
+    if (!e.touches || e.touches.length!==1) return;
+    const t = e.touches[0];
+    touchStart = {x:t.clientX, y:t.clientY};
+  }, {passive:true});
+  canvas.addEventListener("touchend", (e)=>{
+    if (!touchStart) return;
+    const t = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0] : null;
+    if (!t) return;
+    const dx = t.clientX - touchStart.x;
+    const dy = t.clientY - touchStart.y;
+    touchStart = null;
+    const ax = Math.abs(dx), ay = Math.abs(dy);
+    if (Math.max(ax,ay) < 16){ dropGrenade(); return; }
+    if (ax > ay){
+      queueDir(dx>0 ? 0 : 2);
+    } else {
+      queueDir(dy>0 ? 1 : 3);
+    }
+  }, {passive:true});
+
+  const start = {x: trunkX + T/2, y: sqY + T/2};
+
+  const player = {
+    x: start.x,
+    y: start.y,
+    r: 9,
+    dir: 0,
+    want: 0,
+    mouth: 0.34
+  };
+
+  function resetPlayer(){
+    player.x = start.x;
+    player.y = start.y;
+    player.dir = 0;
+    player.want = 0;
+  }
+
+
+  // =============================
+  // Currency pills (2 on the maze at all times)
+  // Collect by touching OR by grenade explosion
+  // =============================
+  const LOOT_COUNT = 2;
+  const LOOT_R = 7;
+  const loot = []; // {x,y,val}
+
+
+  // =============================
+  // Shop icon (spawns periodically)
+  // =============================
+  const SHOP_SPAWN_MS = 30000;
+  const SHOP_LIFETIME_MS = 12000;
+  const SHOP_R = 12;
+  const shopIcon = {active:false, x:0, y:0, expiresAt:0};
+  let nextShopSpawnAt = performance.now() + SHOP_SPAWN_MS;
+
+  // =============================
+  // Enemies (2 per screen)
+  // =============================
+  const ENEMY_COUNT = 2;
+  const ENEMY_R = 9;
+  const ENEMY_SPEED = 165;
+  const enemies = []; // {x,y,r,dir,nextDecisionAt,alive,respawnAt,phase}
+
+  // For collisions in a wrapping playfield (movement wraps; explosions do NOT)
+  function dist2Wrap(x1,y1,x2,y2){
+    let dx = Math.abs(x1-x2);
+    dx = Math.min(dx, CW - dx);
+    let dy = Math.abs(y1-y2);
+    dy = Math.min(dy, CH - dy);
+    return dx*dx + dy*dy;
+  }
+
+  function reverseDir(d){ return (d + 2) & 3; }
+
+  function possibleDirsAt(x,y,r){
+    const step = 10;
+    const out = [];
+    for (let d=0; d<4; d++){
+      let dx=0, dy=0;
+      if (d===0) dx=1;
+      if (d===2) dx=-1;
+      if (d===1) dy=1;
+      if (d===3) dy=-1;
+      const nx = wrap(x + dx*step, CW);
+      const ny = wrap(y + dy*step, CH);
+      if (canMove(d, nx, ny, r)) out.push(d);
+    }
+    return out;
+  }
+
+  function spawnEnemy(){
+    for (let tries = 0; tries < 1400; tries++){
+      const x = Math.random() * (CW - 2*ENEMY_R) + ENEMY_R;
+      const y = Math.random() * (CH - 2*ENEMY_R) + ENEMY_R;
+
+      if (!circleFitsOnMaze(x,y,ENEMY_R+2)) continue;
+      if (tooCloseToPellets(x,y)) continue;
+      if (typeof tooCloseToLoot === "function" && tooCloseToLoot(x,y)) continue;
+      // keep away from the player a bit
+      if (dist2Wrap(x,y,player.x,player.y) < (150*150)) continue;
+
+      // keep away from other enemies
+      let ok = true;
+      for (const e of enemies){
+        if (e.alive && dist2Wrap(x,y,e.x,e.y) < (90*90)) { ok = false; break; }
+      }
+      if (!ok) continue;
+
+      const dir = (Math.random()*4)|0;
+      return {x, y, r: ENEMY_R, dir, nextDecisionAt: performance.now() + 250 + Math.random()*650, alive:true, respawnAt:0, phase: Math.random()*10};
+    }
+    // fallback
+    return {x: start.x, y: start.y, r: ENEMY_R, dir:2, nextDecisionAt: performance.now()+400, alive:true, respawnAt:0, phase: Math.random()*10};
+  }
+
+  function initEnemies(){
+    enemies.length = 0;
+    for (let i=0; i<ENEMY_COUNT; i++){
+      enemies.push(spawnEnemy());
+    }
+  }
+
+  function updateEnemies(dt, now){
+    for (const e of enemies){
+      if (!e.alive){
+        if (now >= e.respawnAt){
+          const ne = spawnEnemy();
+          e.x = ne.x; e.y = ne.y; e.dir = ne.dir;
+          e.nextDecisionAt = now + 220 + Math.random()*720;
+          e.alive = true;
+        }
+        continue;
+      }
+
+      const opts = possibleDirsAt(e.x, e.y, e.r);
+      if (opts.length === 0) continue;
+
+      if (!opts.includes(e.dir)){
+        e.dir = opts[(Math.random()*opts.length)|0];
+        e.nextDecisionAt = now + 240 + Math.random()*700;
+      } else if (opts.length >= 3 && now >= e.nextDecisionAt){
+        // intersection: prefer not to reverse unless forced
+        const rev = reverseDir(e.dir);
+        let choices = opts.filter(d=>d!==rev);
+        if (choices.length === 0) choices = opts;
+        // usually keep going, sometimes turn
+        if (Math.random() < 0.35){
+          e.dir = choices[(Math.random()*choices.length)|0];
+        }
+        e.nextDecisionAt = now + 260 + Math.random()*760;
+      }
+
+      let dx=0, dy=0;
+      if (e.dir===0) dx=1;
+      if (e.dir===2) dx=-1;
+      if (e.dir===1) dy=1;
+      if (e.dir===3) dy=-1;
+
+      const nx = wrap(e.x + dx*ENEMY_SPEED*dt, CW);
+      const ny = wrap(e.y + dy*ENEMY_SPEED*dt, CH);
+
+      if (canMove(e.dir, nx, ny, e.r)){
+        e.x = nx; e.y = ny;
+      } else {
+        // blocked -> turn
+        const rev = reverseDir(e.dir);
+        let choices = opts.filter(d=>d!==rev);
+        if (choices.length === 0) choices = opts;
+        e.dir = choices[(Math.random()*choices.length)|0];
+        e.nextDecisionAt = now + 200 + Math.random()*600;
+      }
+
+      e.phase += dt;
+    }
+  }
+
+  // If the ship hits an enemy, you lose a life (but the case does NOT advance).
+  let invulnUntil = 0;
+  function checkEnemyCollisions(now){
+    if (gameOver) return;
+    if (now < invulnUntil) return;
+
+    const rr = (player.r + ENEMY_R + 2);
+    const rr2 = rr*rr;
+
+    for (const e of enemies){
+      if (!e.alive) continue;
+      if (dist2Wrap(player.x, player.y, e.x, e.y) <= rr2){
+        lives = Math.max(0, lives - 1);
+        flash = {t: 1.0, kind:"bad"};
+        invulnUntil = now + 1100;
+
+        // respawn enemies away from the ship to prevent instant re-hit
+        for (const ee of enemies){
+          ee.alive = false;
+          ee.respawnAt = now + 260 + Math.random()*360;
+        }
+
+        if (lives <= 0){
+          setGameOver(true);
+        } else {
+          locked = true;
+          setTimeout(()=>{ locked = false; }, 220);
+        }
+        break;
+      }
+    }
+  }
+
+  // Grenade explosions can temporarily clear enemies (explosions do NOT wrap across borders).
+  function damageEnemiesInRadius(x,y,r,now){
+    const rr2 = r*r;
+    for (const e of enemies){
+      if (!e.alive) continue;
+      if (dist2Plain(x,y,e.x,e.y) <= rr2){
+        e.alive = false;
+        e.respawnAt = now + 850 + Math.random()*250;
+      }
+    }
+  }
+
+  function drawEnemy(x,y,dir,phase=0.0){
+    const ang = [0, Math.PI/2, Math.PI, -Math.PI/2][dir] ?? 0;
+    const r = 12;
+    ctx.save();
+    ctx.translate(x,y);
+    ctx.rotate(ang);
+
+    ctx.shadowColor = "rgba(255, 0, 255, 0.95)";
+    ctx.shadowBlur = 18;
+
+    // saucer body
+    ctx.beginPath();
+    ctx.ellipse(0, 0, r*1.15, r*0.75, 0, 0, Math.PI*2);
+    ctx.fillStyle = "#cf5bff";
+    ctx.fill();
+
+    // dome
+    ctx.beginPath();
+    ctx.ellipse(r*0.15, -r*0.15, r*0.45, r*0.32, 0, 0, Math.PI*2);
+    ctx.fillStyle = "#0b0d10";
+    ctx.fill();
+
+    // eye
+    ctx.beginPath();
+    ctx.arc(r*0.55, 0, 2.3, 0, Math.PI*2);
+    ctx.fillStyle = "#ffffff";
+    ctx.fill();
+
+    // thruster flicker
+    const flick = 0.3 + 0.7*Math.abs(Math.sin(phase*7.2));
+    ctx.beginPath();
+    ctx.moveTo(-r*1.25, 0);
+    ctx.lineTo(-r*1.6, -r*0.25*flick);
+    ctx.lineTo(-r*1.6, r*0.25*flick);
+    ctx.closePath();
+    ctx.fillStyle = "#ff2d2d";
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  function drawEnemyWrapped(e, now){
+    const pad = 24;
+    forEachWrappedCopy(e.x, e.y, pad, (xx,yy)=> drawEnemy(xx,yy,e.dir, e.phase + now*0.001));
+  }
+
+
+  function circleFitsOnMaze(x,y,r){
+    // sample around the circle; uses walkable mask (walkability itself wraps)
+    const pts = [
+      [x+r, y], [x-r, y], [x, y+r], [x, y-r],
+      [x+r*0.7, y+r*0.7], [x-r*0.7, y+r*0.7], [x+r*0.7, y-r*0.7], [x-r*0.7, y-r*0.7]
+    ];
+    for (const [px,py] of pts){
+      if (!isWalkable(px,py)) return false;
+    }
+    return true;
+  }
+
+  function tooCloseToPellets(x,y){
+    for (const p of pellets){
+      if (dist2Plain(x,y,p.x,p.y) < (28*28)) return true;
+    }
+    return false;
+  }
+
+  function tooCloseToLoot(x,y){
+    for (const q of loot){
+      if (dist2Plain(x,y,q.x,q.y) < (30*30)) return true;
+    }
+    return false;
+  }
+
+  function tooCloseToPlayer(x,y){
+    return dist2Plain(x,y,player.x,player.y) < (40*40);
+  }
+
+  function spawnLootOne(){
+    for (let tries = 0; tries < 700; tries++){
+      const x = Math.random() * (CW - 2*LOOT_R) + LOOT_R;
+      const y = Math.random() * (CH - 2*LOOT_R) + LOOT_R;
+
+      if (!circleFitsOnMaze(x,y,LOOT_R+2)) continue;
+      if (tooCloseToPellets(x,y)) continue;
+      if (tooCloseToLoot(x,y)) continue;
+      if (tooCloseToPlayer(x,y)) continue;
+
+      loot.push({x, y, val: 1});
+      return true;
+    }
+    return false;
+  }
+
+  function ensureLootCount(){
+    while (loot.length < LOOT_COUNT){
+      if (!spawnLootOne()) break;
+    }
+  }
+
+  function collectLootAtIndex(i){
+    const it = loot[i];
+    cash += (it?.val || 1);
+    loot.splice(i, 1);
+    ensureLootCount();
+    if (typeof refreshShopHUD === "function") refreshShopHUD();
+  }
+
+  function collectLootByTouch(){
+    const rr = (player.r + LOOT_R + 2);
+    const rr2 = rr*rr;
+    for (let i = loot.length - 1; i >= 0; i--){
+      if (dist2Plain(player.x, player.y, loot[i].x, loot[i].y) <= rr2){
+        collectLootAtIndex(i);
+      }
+    }
+  }
+
+  
+  function spawnShopIcon(now){
+    for (let tries = 0; tries < 700; tries++){
+      const x = WALL_PAD + Math.random()*(CW - 2*WALL_PAD);
+      const y = WALL_PAD + Math.random()*(CH - 2*WALL_PAD);
+
+      if (!circleFitsOnMaze(x, y, SHOP_R + 2)) continue;
+      if (tooCloseToPellets(x, y, SHOP_R + 10)) continue;
+
+      let ok = true;
+      for (const c of loot){
+        if (dist2Plain(x,y,c.x,c.y) < (SHOP_R + LOOT_R + 12)*(SHOP_R + LOOT_R + 12)){
+          ok = false; break;
+        }
+      }
+      if (!ok) continue;
+
+      if (dist2Plain(x,y,player.x,player.y) < (SHOP_R + player.r + 34)*(SHOP_R + player.r + 34)) continue;
+
+      shopIcon.active = true;
+      shopIcon.x = x;
+      shopIcon.y = y;
+      shopIcon.expiresAt = now + SHOP_LIFETIME_MS;
+      return true;
+    }
+    return false;
+  }
+
+  function updateShopIcon(now){
+    if (shopIcon.active && now >= shopIcon.expiresAt){
+      shopIcon.active = false;
+    }
+    if (!shopIcon.active && now >= nextShopSpawnAt){
+      spawnShopIcon(now);
+      nextShopSpawnAt = now + SHOP_SPAWN_MS;
+    }
+  }
+
+  function maybeOpenShopByTouch(now){
+    if (!shopIcon.active) return;
+    const rr = (player.r + SHOP_R + 2);
+    if (dist2Wrap(player.x, player.y, shopIcon.x, shopIcon.y) <= rr*rr){
+      shopIcon.active = false;
+      openShop();
+      if (typeof refreshShopHUD === "function") refreshShopHUD();
+    }
+  }
+
+
+function collectLootInRadius(x,y,r){
+    // IMPORTANT: explosions do NOT wrap across borders, so use plain distance
+    const rr2 = r*r;
+    for (let i = loot.length - 1; i >= 0; i--){
+      if (dist2Plain(x,y,loot[i].x, loot[i].y) <= rr2){
+        collectLootAtIndex(i);
+      }
+    }
+  }
+
+  function queueDir(d){
+    player.want = d;
+  }// =============================
+// Grenades (spacebar / tap)
+// =============================
+const GRENADE_FUSE_MS = 950;    // ~1 second
+const EXPLOSION_MS    = 420;
+const EXPLOSION_R     = 30;
+const grenades = [];
+const explosions = [];
+const shots = [];
+const SHOT_SPEED = 560;
+const SHOT_R = 3;
+const SHOT_TTL_MS = 1200;
+let lastShotMs = -1;
+
+let lastGrenadeMs = -1;
+let tNow = performance.now();
+
+function dist2Plain(x1,y1,x2,y2){
+  const dx = x1 - x2;
+  const dy = y1 - y2;
+  return dx*dx + dy*dy;
+}
+function nearestPelletInRadius(x,y,r){
+  // IMPORTANT: explosions do NOT wrap across screen borders.
+  const rr = r*r;
+  let best = null, bestD = 1e18;
+  for (const p of pellets){
+    const d2 = dist2Plain(x,y,p.x,p.y);
+    if (d2 <= rr && d2 < bestD){
+      best = p; bestD = d2;
+    }
+  }
+  return best;
+}
+
+function dropGrenade(){
+  if (locked || gameOver) return;
+  const now = performance.now();
+  if (now - lastGrenadeMs < 250) return;
+  lastGrenadeMs = now;
+  grenades.push({x: player.x, y: player.y, t0: now});
+}
+
+
+function fireShot(){
+  if (locked || gameOver) return;
+  if (!hasBlaster || ammo <= 0) return;
+
+  const now = performance.now();
+  if (now - lastShotMs < 120) return;
+  lastShotMs = now;
+
+  const dir = player.dir ?? 0;
+  let dx=0, dy=0;
+  if (dir===0) dx=1;
+  if (dir===2) dx=-1;
+  if (dir===1) dy=1;
+  if (dir===3) dy=-1;
+
+  // spawn a bit in front of the ship
+  const sx = player.x + dx*(player.r + 10);
+  const sy = player.y + dy*(player.r + 10);
+  // shots do NOT wrap; if spawned off-screen, skip
+  if (sx < 0 || sx > CW || sy < 0 || sy > CH) return;
+// if immediately blocked, don't fire
+  if (!canMove(dir, sx, sy, SHOT_R+1)) return;
+
+  ammo = Math.max(0, ammo - 1);
+  if (typeof refreshShopHUD === "function") refreshShopHUD();
+
+  shots.push({x: sx, y: sy, dir, t0: now});
+}
+
+function explodeAt(x,y,now){
+  explosions.push({x, y, t0: now});
+  // collect currency pills (no wrap)
+  collectLootInRadius(x,y,EXPLOSION_R);
+  // enemies can be cleared by an explosion (no wrap)
+  if (enemiesEnabled) damageEnemiesInRadius(x,y,EXPLOSION_R,now);
+
+  // shop icon can be opened by an explosion (no wrap)
+  if (shopIcon && shopIcon.active && dist2Plain(x,y,shopIcon.x,shopIcon.y) <= (EXPLOSION_R*EXPLOSION_R)){
+    shopIcon.active = false;
+    openShop();
+    if (typeof refreshShopHUD === "function") refreshShopHUD();
+  }
+
+  const hit = nearestPelletInRadius(x,y,EXPLOSION_R);
+  if (hit) onPelletHit(hit);
+}
+
+
+function drawGrenade(x,y,age01){
+  const r = 6;
+  // body
+  ctx.beginPath();
+  ctx.arc(x,y,r,0,Math.PI*2);
+  ctx.fillStyle = "#d7d7d7";
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(x,y,r-2,0,Math.PI*2);
+  ctx.fillStyle = "#3a3a3a";
+  ctx.fill();
+  // fuse spark
+  ctx.beginPath();
+  ctx.arc(x + r*0.65, y - r*0.75, 2.2, 0, Math.PI*2);
+  ctx.fillStyle = (age01 > 0.82) ? "#ff3b30" : "#ffcf33";
+  ctx.fill();
+}
+
+
+function drawShot(x,y,dir,now){
+  const ang = (dir===0)?0 : (dir===1)?Math.PI/2 : (dir===2)?Math.PI : -Math.PI/2;
+  const pulse = 0.6 + 0.4*Math.sin(now/80);
+  ctx.save();
+  ctx.translate(x,y);
+  ctx.rotate(ang);
+  ctx.globalAlpha = 0.95;
+  ctx.shadowColor = "rgba(0,220,255,.85)";
+  ctx.shadowBlur = 12 * pulse;
+  ctx.fillStyle = "rgba(160,245,255,.95)";
+  ctx.fillRect(-7, -1.5, 14, 3);
+  ctx.restore();
+}
+
+function drawShotWrapped(s, now){
+  forEachWrappedCopy(s.x, s.y, 20, (xx,yy)=> drawShot(xx,yy,s.dir,now));
+}
+
+function drawShopIcon(x,y,now){
+  const pulse = 0.55 + 0.45*Math.sin(now/150);
+  ctx.save();
+  ctx.translate(x,y);
+  ctx.shadowColor = "rgba(40,170,255,.9)";
+  ctx.shadowBlur = 18 * pulse;
+  ctx.fillStyle = "rgba(40,170,255,.25)";
+  ctx.beginPath();
+  ctx.arc(0,0,13,0,Math.PI*2);
+  ctx.fill();
+  ctx.lineWidth = 2.2;
+  ctx.strokeStyle = "rgba(40,170,255,.85)";
+  ctx.beginPath();
+  ctx.arc(0,0,13,0,Math.PI*2);
+  ctx.stroke();
+
+  // tiny cart-ish glyph
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = "rgba(210,250,255,.95)";
+  ctx.beginPath();
+  ctx.moveTo(-6,-3);
+  ctx.lineTo(5,-3);
+  ctx.lineTo(3,4);
+  ctx.lineTo(-4,4);
+  ctx.closePath();
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(-2,7,2,0,Math.PI*2);
+  ctx.arc(4,7,2,0,Math.PI*2);
+  ctx.stroke();
+
+  ctx.restore();
+}
+
+function drawShopIconWrapped(icon, now){
+  forEachWrappedCopy(icon.x, icon.y, 26, (xx,yy)=> drawShopIcon(xx,yy,now));
+}
+
+function updateShots(dt, now){
+  if (!shots.length) return;
+
+  for (let i = shots.length - 1; i >= 0; i--){
+    const s = shots[i];
+    if (now - s.t0 > SHOT_TTL_MS){
+      shots.splice(i, 1);
+      continue;
+    }
+
+    let dx=0, dy=0;
+    if (s.dir===0) dx=1;
+    if (s.dir===2) dx=-1;
+    if (s.dir===1) dy=1;
+    if (s.dir===3) dy=-1;
+
+    const nx = s.x + dx*SHOT_SPEED*dt;
+    const ny = s.y + dy*SHOT_SPEED*dt;
+
+    // shots do NOT wrap; if they leave the playfield, remove them
+    if (nx < 0 || nx > CW || ny < 0 || ny > CH){
+      shots.splice(i, 1);
+      continue;
+    }
+if (!canMove(s.dir, nx, ny, SHOT_R)){
+      shots.splice(i, 1);
+      continue;
+    }
+
+    s.x = nx; s.y = ny;
+
+    // shots can collect currency pills (wrap distance)
+    for (let j = loot.length - 1; j >= 0; j--){
+      const c = loot[j];
+      if (dist2Plain(s.x,s.y,c.x,c.y) <= (SHOT_R+7)*(SHOT_R+7)){
+        loot.splice(j,1);
+        cash += 1;
+        if (typeof refreshShopHUD === "function") refreshShopHUD();
+      }
+    }
+
+    // shots can open the shop icon (wrap distance)
+    if (shopIcon && shopIcon.active && dist2Plain(s.x,s.y,shopIcon.x,shopIcon.y) <= (SHOT_R+12)*(SHOT_R+12)){
+      shopIcon.active = false;
+      shots.splice(i, 1);
+      openShop();
+      if (typeof refreshShopHUD === "function") refreshShopHUD();
+      continue;
+    }
+
+    // shots can destroy enemies
+    if (enemiesEnabled){
+      for (const e of enemies){
+        if (!e.alive) continue;
+        if (dist2Plain(s.x,s.y,e.x,e.y) <= (SHOT_R+e.r)*(SHOT_R+e.r)){
+          e.alive = false;
+          shots.splice(i, 1);
+          break;
+        }
+      }
+    }
+  }
+}
+
+
+
+  function readDirFromKeys(){
+    // prefer last-pressed behavior via order
+    if (keys.has("arrowleft") || keys.has("a")) return 2;
+    if (keys.has("arrowright") || keys.has("d")) return 0;
+    if (keys.has("arrowup") || keys.has("w")) return 3;
+    if (keys.has("arrowdown") || keys.has("s")) return 1;
+    return null;
+  }
+
+  function canMove(dir, nx, ny, rOverride){
+    // sample a few points around a circle of radius rOverride (defaults to player radius)
+    const r = (rOverride ?? player.r);
+    const pts = [
+      [nx+r, ny], [nx-r, ny], [nx, ny+r], [nx, ny-r],
+      [nx+r*0.7, ny+r*0.7], [nx-r*0.7, ny+r*0.7], [nx+r*0.7, ny-r*0.7], [nx-r*0.7, ny-r*0.7]
+    ];
+    for (const [px,py] of pts){
+      if (!isWalkable(px,py)) return false;
+    }
+    return true;
+  }
+
+  // =============================
+  // Case logic
+  // =============================
+  let caseN = 1;
+  let score = 0;
+  let lives = 3;
+  let cash = 0; // currency collected from small pills
+  let hasBlaster = false;
+  let ammo = 0;
+  let gameOver = false;
+  let current = null; // { key, stem }
+  let locked = false;
+  let flash = {t:0, kind:""};
+
+  const stemEl = document.getElementById("stem");
+  const gameOverEl = document.getElementById("gameOver");
+
+  function pick(arr){ return arr[(Math.random()*arr.length)|0]; }
+
+  
+
+  function updateHUD(){
+    // HUD is rendered on-canvas (hearts, currency, score). Keep this hook for future.
+  }
+
+
+  function refreshShopHUD(){
+    if (shopCashEl) shopCashEl.textContent = String(cash);
+    if (shopAmmoEl) shopAmmoEl.textContent = String(ammo);
+  }
+
+  function buyBlasterPack(){
+    const cost = 6;
+    if (cash < cost){
+      setShopMsg("Not enough 💊.", "bad");
+      return;
+    }
+    cash -= cost;
+    hasBlaster = true;
+    ammo += 15;
+    setShopMsg("Blaster loaded (+15).", "good");
+    refreshShopHUD();
+  }
+
+  function buyHeart(){
+    const cost = 4;
+    const maxLives = 5;
+    if (lives >= maxLives){
+      setShopMsg("Already at max hearts.", "bad");
+      return;
+    }
+    if (cash < cost){
+      setShopMsg("Not enough 💊.", "bad");
+      return;
+    }
+    cash -= cost;
+    lives += 1;
+    setShopMsg("+1 heart.", "good");
+    refreshShopHUD();
+  }
+
+  function setGameOver(on){
+    gameOver = on;
+    if (on){
+      gameOverEl.classList.remove("hidden");
+      locked = true;
+      grenades.length = 0;
+      explosions.length = 0;
+    } else {
+      gameOverEl.classList.add("hidden");
+    }
+  }
+
+  function restartGame(){
+    score = 0;
+    lives = 3;
+    cash = 0;
+    hasBlaster = false;
+    ammo = 0;
+    shots.length = 0;
+    shopIcon.active = false;
+    nextShopSpawnAt = performance.now() + SHOP_SPAWN_MS;
+    loot.length = 0;
+    ensureLootCount();
+    if (enemiesEnabled) initEnemies(); else enemies.length = 0;
+    invulnUntil = 0;
+    caseN = 1;
+    setGameOver(false);
+    locked = false;
+    newCase();
+  }
+
+function newCase(){
+    locked = false;
+    current = null;
+    // keep player position between rounds
+
+    const key = pick(vesselKeys);
+    const stem = pick(stems[key] || ["A patient presents with acute neurologic deficits."]);
+    current = {key, stem};
+
+    stemEl.textContent = stem;
+    updateHUD();
+    fitCanvasCSS();
+  }
+
+  function dist2(ax,ay,bx,by){ const dx=ax-bx, dy=ay-by; return dx*dx+dy*dy; }
+
+  function onPelletHit(p){
+    if (locked || gameOver) return;
+
+    const correct = (p.key === current.key);
+    if (correct){
+      locked = true;
+      score += 100;
+      flash = {t: 1.0, kind:"good"};
+      updateHUD();
+
+      // brief pause then next case
+      setTimeout(()=>{
+        caseN += 1;
+        newCase();
+      }, 650);
+      return;
+    }
+
+    // wrong answer: do NOT advance the case
+    lives = Math.max(0, lives - 1);
+    flash = {t: 1.0, kind:"bad"};
+    updateHUD();
+
+    if (lives <= 0){
+      setGameOver(true);
+      return;
+    }
+
+    // small lockout to prevent rapid multi-hits from one blast
+    locked = true;
+    setTimeout(()=>{ locked = false; }, 280);
+  }
+
+  // =============================
+  // Main loop
+  // =============================
+  let last = performance.now();
+  function tick(now){
+    const dt = Math.min(0.033, (now - last)/1000);
+    last = now;
+
+    
+    if (gameOver){
+      tNow = now;
+      draw();
+      // feedback flash overlay still allowed
+      if (flash.t > 0){
+        flash.t -= dt*1.5;
+        ctx.save();
+        ctx.globalAlpha = clamp(flash.t,0,1)*0.35;
+        ctx.fillStyle = (flash.kind === "good") ? "#2cffb0" : "#ff2f5b";
+        ctx.fillRect(0,0,CW,CH);
+        ctx.restore();
+      }
+      requestAnimationFrame(tick);
+      return;
+    }
+
+    // pause gameplay while a modal is open
+    if (isUIPaused()){
+      tNow = now;
+      draw();
+      // feedback flash overlay
+      if (flash.t > 0){
+        flash.t -= dt*1.5;
+        ctx.save();
+        ctx.globalAlpha = clamp(flash.t,0,1)*0.35;
+        ctx.fillStyle = (flash.kind==="good") ? "#2cffb0" : "#ff2f5b";
+        ctx.fillRect(0,0,CW,CH);
+        ctx.restore();
+      }
+      requestAnimationFrame(tick);
+      return;
+    }
+
+// input
+    const kdir = readDirFromKeys();
+    if (kdir !== null) queueDir(kdir);
+
+    // periodic shop icon
+    updateShopIcon(now);
+
+    // movement
+    const speed = 220; // px/sec
+    // attempt to turn into wanted direction first (feels responsive)
+    const dirOrder = [player.want, player.dir].filter((v,i,a)=>a.indexOf(v)===i);
+
+    for (const d of dirOrder){
+      if (d === null || d === undefined) continue;
+      let dx=0, dy=0;
+      if (d===0) dx=1;
+      if (d===2) dx=-1;
+      if (d===1) dy=1;
+      if (d===3) dy=-1;
+
+      const nx = wrap(player.x + dx*speed*dt, CW);
+      const ny = wrap(player.y + dy*speed*dt, CH);
+
+      if (canMove(d, nx, ny)){
+        player.x = nx; player.y = ny; player.dir = d;
+        break;
+      }
+    }
+
+    // mouth animation
+    player.mouth = 0.18 + 0.22*Math.abs(Math.sin(now/120));
+
+    // enemies
+    if (enemiesEnabled){
+      updateEnemies(dt, now);
+      checkEnemyCollisions(now);
+    }
+
+    // collect currency pills by touch
+    collectLootByTouch();
+
+    // open shop by touching the shop icon
+    maybeOpenShopByTouch(now);
+
+    // blaster shots
+    updateShots(dt, now);
+
+// grenades (pellets activate only via explosion, not by touch)
+for (let i = grenades.length - 1; i >= 0; i--){
+  const g = grenades[i];
+  if (now - g.t0 >= GRENADE_FUSE_MS){
+    grenades.splice(i, 1);
+    explodeAt(g.x, g.y, now);
+  }
+}
+for (let i = explosions.length - 1; i >= 0; i--){
+  const ex = explosions[i];
+  if (now - ex.t0 >= EXPLOSION_MS){
+    explosions.splice(i, 1);
+  }
+}
+
+    // draw
+    tNow = now;
+    draw();
+
+    // feedback flash overlay
+    if (flash.t > 0){
+      flash.t -= dt*1.5;
+      ctx.save();
+      ctx.globalAlpha = clamp(flash.t,0,1)*0.35;
+      ctx.fillStyle = (flash.kind==="good") ? "#2cffb0" : "#ff2f5b";
+      ctx.fillRect(0,0,CW,CH);
+      ctx.restore();
+    }
+
+    requestAnimationFrame(tick);
+  }
+
+  // init
+  fitCanvasCSS();
+  newCase();
+  ensureLootCount();
+  if (enemiesEnabled) initEnemies(); else enemies.length = 0;
+  requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>
