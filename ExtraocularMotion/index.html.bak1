@@ -73,10 +73,7 @@
     }
 
     .eye-wrapper{position:relative;width:260px;height:260px;}
-    svg.vectorCanvas{position:absolute;inset:0;pointer-events:none;
-      -webkit-clip-path: circle(41% at 50% 50%);
-      clip-path: circle(41% at 50% 50%);
-    }
+    svg.vectorCanvas{position:absolute;inset:0;pointer-events:none;}
 
     .eye-circle{
       position:absolute;inset:20px;margin:auto;
@@ -287,9 +284,8 @@
       column-gap: 3px;
       align-items: center;
       justify-items: center;
-      width: fit-content;
-      max-width: 100%;
-      }
+      width: min(420px, 100%);
+    }
     .ask-center{
       grid-column: 2;
       grid-row: 2;
@@ -354,10 +350,6 @@
     .ask-left{ grid-column: 1; grid-row: 2; }
     .ask-right{ grid-column: 3; grid-row: 2; }
     .ask-down{ grid-column: 2; grid-row: 3; }
-    .ask-upleft{ grid-column: 1; grid-row: 1; }
-    .ask-upright{ grid-column: 3; grid-row: 1; }
-    .ask-downleft{ grid-column: 1; grid-row: 3; }
-    .ask-downright{ grid-column: 3; grid-row: 3; }
 
     .ask-hint{
       font-size: 0.75rem;
@@ -571,129 +563,7 @@
       /* If it *still* doesn't fit, allow horizontal scrolling rather than stacking. */
       .main{overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:6px;}
     }
-  
-    /* --- Game mode: Name the Lesion --- */
-    .lesion-row{
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-    }
-    .lesion-btn.lesion-btn-game{
-      border-color:#6d28d9;
-    }
-    .lesion-btn.lesion-btn-game:hover{
-      border-color:#8b5cf6;
-    }
-
-    body.game-mode .controls{
-      visibility:hidden; /* keep layout stable but hide sandbox controls */
-    }
-    body.game-mode #lesionBtn{
-      opacity:0.45;
-      pointer-events:none;
-      filter: grayscale(0.4);
-    }
-
-    .game-panel{
-      margin-top:10px;
-      border:1px solid rgba(148,163,184,0.22);
-      background: rgba(15,23,42,0.72);
-      border-radius:16px;
-      padding:12px 14px;
-      box-shadow:0 12px 24px rgba(0,0,0,0.55);
-      max-width: 520px;
-      margin-left:auto;
-      margin-right:auto;
-    }
-    .game-top{
-      display:flex;
-      align-items:flex-end;
-      justify-content:space-between;
-      gap:12px;
-      flex-wrap:wrap;
-    }
-    .game-title{
-      font-weight:700;
-      letter-spacing:0.02em;
-      color:#e5e7eb;
-      font-size:0.95rem;
-    }
-    .game-stats{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      color:#cbd5e1;
-      font-size:0.82rem;
-      opacity:0.95;
-    }
-    .game-dot{ opacity:0.55; }
-    .game-label{ color:#9ca3af; margin-right:6px; font-size:0.75rem; letter-spacing:0.02em; text-transform:uppercase; }
-    .game-controls{
-      display:flex;
-      gap:10px;
-      margin-top:10px;
-      align-items:center;
-      flex-wrap:wrap;
-      justify-content:center;
-    }
-    .game-select-wrap{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid rgba(75,85,99,0.75);
-      background: rgba(2,6,23,0.55);
-    }
-    .game-select-wrap select{
-      background: transparent;
-      color:#e5e7eb;
-      border:none;
-      outline:none;
-      font-size:0.86rem;
-    }
-    .game-select-wrap option{
-      background:#0b1220;
-      color:#e5e7eb;
-    }
-    .mini-btn{
-      border-radius:999px;
-      border:1px solid rgba(75,85,99,0.85);
-      background: rgba(2,6,23,0.55);
-      color:#e5e7eb;
-      padding:6px 12px;
-      font-size:0.82rem;
-      cursor:pointer;
-      box-shadow:0 8px 16px rgba(0,0,0,0.45);
-      transition: transform 0.08s ease, box-shadow 0.08s ease, border-color 0.08s ease, background 0.08s ease, opacity 0.08s ease;
-    }
-    .mini-btn:hover{
-      transform: translateY(-1px);
-      border-color:#64748b;
-      box-shadow:0 10px 18px rgba(0,0,0,0.5);
-    }
-    .mini-btn:disabled{
-      opacity:0.5;
-      cursor:not-allowed;
-      transform:none;
-      box-shadow:0 8px 16px rgba(0,0,0,0.35);
-    }
-    .mini-btn-primary{
-      border-color:#2563eb;
-      background: rgba(37,99,235,0.18);
-    }
-    .mini-btn-primary:hover{
-      border-color:#3b82f6;
-      background: rgba(59,130,246,0.22);
-    }
-    .game-feedback{
-      margin-top:10px;
-      text-align:center;
-      color:#e5e7eb;
-      font-size:0.9rem;
-      min-height:1.2em;
-    }
-</style>
+  </style>
 </head>
 <body>
 <div class="app">
@@ -813,15 +683,11 @@
 </div>
 <div aria-label="Ask patient to look controls" class="ask-look">
 <div class="ask-look-grid">
-<button aria-label="Ask eyes to move up-left" class="ask-btn ask-upleft" id="askUpLeft" type="button">↖</button>
 <button aria-label="Ask patient to look up" class="ask-btn ask-up" id="askUp" type="button">↑</button>
-<button aria-label="Ask eyes to move up-right" class="ask-btn ask-upright" id="askUpRight" type="button">↗</button>
 <button aria-label="Ask patient to look left" class="ask-btn ask-left" id="askLeft" type="button">←</button>
 <button class="ask-center" id="askCenter" type="button" aria-label="Center gaze">Ask to Look</button>
 <button aria-label="Ask patient to look right" class="ask-btn ask-right" id="askRight" type="button">→</button>
-<button aria-label="Ask eyes to move down-left" class="ask-btn ask-downleft" id="askDownLeft" type="button">↙</button>
 <button aria-label="Ask patient to look down" class="ask-btn ask-down" id="askDown" type="button">↓</button>
-<button aria-label="Ask eyes to move down-right" class="ask-btn ask-downright" id="askDownRight" type="button">↘</button>
 </div>
 </div>
 <div class="eye-footer">
@@ -829,44 +695,6 @@
 </div>
       <div class="lesion-row">
         <button class="lesion-btn" id="lesionBtn" type="button">Add a lesion</button>
-        <button class="lesion-btn lesion-btn-game" id="nameLesionBtn" type="button">Name a Lesion</button>
-      </div>
-
-      <div class="game-panel" id="gamePanel" aria-live="polite" hidden>
-        <div class="game-top">
-          <div class="game-title">Name the Lesion</div>
-          <div class="game-stats">
-            <span class="game-stat"><span class="game-label">Time</span> <span id="gameTimer">0.0s</span></span>
-            <span class="game-dot">•</span>
-            <span class="game-stat"><span class="game-label">Looks</span> <span id="gameLooks">0</span></span>
-            <span class="game-dot">•</span>
-            <span class="game-stat"><span class="game-label">Score</span> <span id="gameScore">0</span></span>
-          </div>
-        </div>
-
-        <div class="game-controls">
-          <button class="mini-btn" id="gameNewRound" type="button">New round</button>
-
-          <label class="game-select-wrap" aria-label="Select diagnosis to submit">
-            <span class="game-label">Diagnosis</span>
-            <select id="diagnosisSelect">
-              <option value="" selected disabled>Select…</option>
-              <option value="R_CN_VI">Right CN VI palsy</option>
-              <option value="L_CN_VI">Left CN VI palsy</option>
-              <option value="R_CN_IV">Right CN IV palsy</option>
-              <option value="L_CN_IV">Left CN IV palsy</option>
-              <option value="R_CN_III">Right CN III palsy</option>
-              <option value="L_CN_III">Left CN III palsy</option>
-              <option value="R_INO">Right INO (right MLF lesion)</option>
-              <option value="L_INO">Left INO (left MLF lesion)</option>
-            </select>
-          </label>
-
-          <button class="mini-btn mini-btn-primary" id="submitGuess" type="button" disabled>Submit</button>
-          <button class="mini-btn" id="revealLesionBtn" type="button" disabled>Reveal lesion</button>
-        </div>
-
-        <div class="game-feedback" id="gameFeedback"></div>
       </div>
 
 </section>
@@ -1027,18 +855,6 @@
   const lesionBtn = document.getElementById("lesionBtn");
   const lesionModal = document.getElementById("lesionModal");
   const lesionClose = document.getElementById("lesionClose");
-  const nameLesionBtn = document.getElementById("nameLesionBtn");
-
-  const gamePanel = document.getElementById("gamePanel");
-  const gameNewRoundBtn = document.getElementById("gameNewRound");
-  const diagnosisSelect = document.getElementById("diagnosisSelect");
-  const submitGuessBtn = document.getElementById("submitGuess");
-  const revealLesionBtn = document.getElementById("revealLesionBtn");
-  const gameTimerEl = document.getElementById("gameTimer");
-  const gameLooksEl = document.getElementById("gameLooks");
-  const gameScoreEl = document.getElementById("gameScore");
-  const gameFeedbackEl = document.getElementById("gameFeedback");
-
 
   const eyeCircles = document.querySelectorAll(".eye-circle");
 
@@ -1047,10 +863,6 @@
   const askDownBtn = document.getElementById("askDown");
   const askLeftBtn = document.getElementById("askLeft");
   const askRightBtn = document.getElementById("askRight");
-  const askUpLeftBtn = document.getElementById("askUpLeft");
-  const askUpRightBtn = document.getElementById("askUpRight");
-  const askDownLeftBtn = document.getElementById("askDownLeft");
-  const askDownRightBtn = document.getElementById("askDownRight");
   const askCenterBtn = document.getElementById("askCenter");
 
   const GAZE_SCALE = 1.4; // keep in sync with setGazeDirect scaling
@@ -1087,37 +899,18 @@
   function wireAskButtons(){
     if (!askUpBtn) return;
 
-    const __animate = animateGazeTo;
-    const doAsk = (h, v) => {
-      if (game.active && game.roundActive){
-        game.looks++;
-        updateGameHUD();
-      }
-      __animate(h, v);
-    };
-
     // Patient-direction arrows:
     // ↑ up (v=+1)
     // ↓ down (v=-1)
     // ← patient-left gaze (h=-1)
     // → patient-right gaze (h=+1)
-    askUpBtn.addEventListener("click", () => doAsk(0, 1));
-    askDownBtn.addEventListener("click", () => doAsk(0, -1));
-    askLeftBtn.addEventListener("click", () => doAsk(1, 0));
-        askRightBtn.addEventListener("click", () => doAsk(-1, 0));
-
-    // Diagonals (screen directions):
-    // ↖ up-left  = up + patient right (h=+1, v=+1)
-    // ↗ up-right = up + patient left  (h=-1, v=+1)
-    // ↙ down-left  = down + patient right (h=+1, v=-1)
-    // ↘ down-right = down + patient left  (h=-1, v=-1)
-    if (askUpLeftBtn) askUpLeftBtn.addEventListener("click", () => doAsk(1, 1));
-    if (askUpRightBtn) askUpRightBtn.addEventListener("click", () => doAsk(-1, 1));
-    if (askDownLeftBtn) askDownLeftBtn.addEventListener("click", () => doAsk(1, -1));
-    if (askDownRightBtn) askDownRightBtn.addEventListener("click", () => doAsk(-1, -1));
+    askUpBtn.addEventListener("click", () => animateGazeTo(0, 1));
+    askDownBtn.addEventListener("click", () => animateGazeTo(0, -1));
+    askLeftBtn.addEventListener("click", () => animateGazeTo(1, 0));
+    askRightBtn.addEventListener("click", () => animateGazeTo(-1, 0));
 
     if (askCenterBtn){
-      askCenterBtn.addEventListener("click", () => doAsk(0, 0));
+      askCenterBtn.addEventListener("click", () => animateGazeTo(0, 0));
     }
   }
 
@@ -1162,248 +955,6 @@
 const enabled = { od: {}, os: {} };
   const mlf = { right: false, left: false };
   muscleKeys.forEach(k => { enabled.od[k] = true; enabled.os[k] = true; });
-
-  // --- Name the Lesion game mode ---
-  const game = {
-    active: false,
-    roundActive: false,
-    startMs: null,
-    looks: 0,
-    score: 0,
-    answerId: null,
-    answerLabel: null,
-    raf: null,
-    sandboxSnapshot: null
-  };
-
-  const DIAG_POOL = [
-    { id:"R_CN_VI",  label:"Right CN VI palsy",  apply: ()=>{ setMuscleEnabled("od","lr", false); } },
-    { id:"L_CN_VI",  label:"Left CN VI palsy",   apply: ()=>{ setMuscleEnabled("os","lr", false); } },
-    { id:"R_CN_IV",  label:"Right CN IV palsy",  apply: ()=>{ setMuscleEnabled("od","so", false); } },
-    { id:"L_CN_IV",  label:"Left CN IV palsy",   apply: ()=>{ setMuscleEnabled("os","so", false); } },
-    { id:"R_CN_III", label:"Right CN III palsy", apply: ()=>{
-        ["mr","sr","ir","io"].forEach(k=> setMuscleEnabled("od", k, false));
-      } },
-    { id:"L_CN_III", label:"Left CN III palsy",  apply: ()=>{
-        ["mr","sr","ir","io"].forEach(k=> setMuscleEnabled("os", k, false));
-      } },
-    { id:"R_INO",    label:"Right INO (right MLF lesion)", apply: ()=>{ mlf.right = true; } },
-    { id:"L_INO",    label:"Left INO (left MLF lesion)",   apply: ()=>{ mlf.left  = true; } }
-  ];
-
-  function deepClone(obj){
-    return JSON.parse(JSON.stringify(obj));
-  }
-
-  function snapshotSandbox(){
-    const snap = {
-      enabled: deepClone(enabled),
-      mlf: deepClone(mlf),
-      sliders: { od:{}, os:{} },
-      gazeH: state.gazeH,
-      gazeV: state.gazeV
-    };
-    muscleKeys.forEach(k=>{
-      snap.sliders.od[k] = Number(odSliders[k]?.value ?? 50);
-      snap.sliders.os[k] = Number(osSliders[k]?.value ?? 50);
-    });
-    return snap;
-  }
-
-  function restoreSandbox(snap){
-    if (!snap) return;
-
-    // Restore enabled flags and slider values
-    muscleKeys.forEach(k=>{
-      setMuscleEnabled("od", k, !!snap.enabled.od[k]);
-      setMuscleEnabled("os", k, !!snap.enabled.os[k]);
-    });
-
-    mlf.right = !!snap.mlf.right;
-    mlf.left  = !!snap.mlf.left;
-
-    muscleKeys.forEach(k=>{
-      if (odSliders[k]) odSliders[k].value = String(snap.sliders.od[k]);
-      if (osSliders[k]) osSliders[k].value = String(snap.sliders.os[k]);
-    });
-
-    refreshLesionCheckboxes();
-    renderFromSliders();
-
-    const hNorm = Math.max(-1, Math.min(1, (snap.gazeH || 0) / GAZE_SCALE));
-    const vNorm = Math.max(-1, Math.min(1, (snap.gazeV || 0) / GAZE_SCALE));
-    setGazeDirect(hNorm, vNorm);
-  }
-
-  function refreshLesionCheckboxes(){
-    // Muscle checkboxes
-    ["od","os"].forEach(eye=>{
-      muscleKeys.forEach(k=>{
-        const cb = document.getElementById(`lesion_${eye}_${k}`);
-        if (cb) cb.checked = !!enabled[eye][k];
-      });
-    });
-    // MLF checkboxes
-    const mlfRightCb = document.getElementById("lesion_mlf_right");
-    const mlfLeftCb  = document.getElementById("lesion_mlf_left");
-    if (mlfRightCb) mlfRightCb.checked = !!mlf.right;
-    if (mlfLeftCb)  mlfLeftCb.checked  = !!mlf.left;
-  }
-
-  function resetToNormal(){
-    // All muscles enabled + all sliders neutral
-    muscleKeys.forEach(k=>{
-      setMuscleEnabled("od", k, true);
-      setMuscleEnabled("os", k, true);
-      if (odSliders[k]) odSliders[k].value = "50";
-      if (osSliders[k]) osSliders[k].value = "50";
-    });
-    mlf.right = false;
-    mlf.left = false;
-    refreshLesionCheckboxes();
-    renderFromSliders();
-  }
-
-  function setGameUIVisible(isVisible){
-    if (!gamePanel) return;
-    gamePanel.hidden = !isVisible;
-  }
-
-  function updateGameHUD(){
-    if (gameLooksEl) gameLooksEl.textContent = String(game.looks);
-    if (gameScoreEl) gameScoreEl.textContent = String(game.score);
-  }
-
-  function formatTime(ms){
-    const s = Math.max(0, ms / 1000);
-    return `${s.toFixed(1)}s`;
-  }
-
-  function tickTimer(){
-    if (!game.roundActive) return;
-    const now = performance.now();
-    if (gameTimerEl && game.startMs != null){
-      gameTimerEl.textContent = formatTime(now - game.startMs);
-    }
-    game.raf = requestAnimationFrame(tickTimer);
-  }
-
-  function startRound(){
-    resetToNormal();
-
-    // Pick answer
-    const pick = DIAG_POOL[Math.floor(Math.random() * DIAG_POOL.length)];
-    game.answerId = pick.id;
-    game.answerLabel = pick.label;
-
-    // Apply lesion pattern
-    pick.apply();
-    refreshLesionCheckboxes();
-    renderFromSliders();
-
-    // Reset exam
-    animateGazeTo(0, 0);
-
-    // Reset scorekeeping
-    game.looks = 0;
-    game.roundActive = true;
-    game.startMs = performance.now();
-
-    if (gameFeedbackEl) gameFeedbackEl.textContent = "Round started. Use Ask to Look, then submit your diagnosis.";
-    if (diagnosisSelect){
-      diagnosisSelect.value = "";
-      diagnosisSelect.disabled = false;
-    }
-    if (submitGuessBtn) submitGuessBtn.disabled = true; // enable once user chooses
-    if (revealLesionBtn) revealLesionBtn.disabled = true;
-
-    updateGameHUD();
-
-    if (game.raf) cancelAnimationFrame(game.raf);
-    game.raf = requestAnimationFrame(tickTimer);
-  }
-
-  function endRoundAndScore(isCorrect){
-    game.roundActive = false;
-    if (game.raf) cancelAnimationFrame(game.raf);
-    game.raf = null;
-
-    const elapsedMs = (performance.now() - (game.startMs ?? performance.now()));
-    const secs = Math.max(0, elapsedMs / 1000);
-
-    let pts = 0;
-    if (isCorrect){
-      // Simple scoring: base 100, minus looks and time
-      pts = Math.round(Math.max(10, 100 - (game.looks * 6) - (secs * 2.2)));
-      game.score += pts;
-    }
-
-    updateGameHUD();
-
-    return { pts, secs };
-  }
-
-  function submitGuess(){
-    if (!game.active || !game.roundActive) return;
-    if (!diagnosisSelect) return;
-
-    const guess = diagnosisSelect.value;
-    if (!guess) return;
-
-    const isCorrect = (guess === game.answerId);
-    const result = endRoundAndScore(isCorrect);
-
-    if (submitGuessBtn) submitGuessBtn.disabled = true;
-    if (revealLesionBtn) revealLesionBtn.disabled = false;
-
-    if (gameFeedbackEl){
-      if (isCorrect){
-        gameFeedbackEl.textContent = `Correct: ${game.answerLabel}. ${formatTime(result.secs*1000)} • Looks ${game.looks} • +${result.pts}`;
-      } else {
-        const prettyGuess = diagnosisSelect.options[diagnosisSelect.selectedIndex]?.textContent?.trim() || "Your guess";
-        gameFeedbackEl.textContent = `Incorrect (${prettyGuess}). Correct: ${game.answerLabel}. ${formatTime(result.secs*1000)} • Looks ${game.looks}`;
-      }
-    }
-  }
-
-  function enterGameMode(){
-    if (game.active) return;
-    game.active = true;
-
-    game.sandboxSnapshot = snapshotSandbox();
-
-    document.body.classList.add("game-mode");
-    setGameUIVisible(true);
-
-    if (lesionBtn) lesionBtn.disabled = true;
-    if (nameLesionBtn) nameLesionBtn.textContent = "Exit Game";
-
-    if (gameNewRoundBtn){
-      gameNewRoundBtn.disabled = false;
-    }
-    startRound();
-  }
-
-  function exitGameMode(){
-    if (!game.active) return;
-
-    game.active = false;
-    game.roundActive = false;
-    if (game.raf) cancelAnimationFrame(game.raf);
-    game.raf = null;
-
-    document.body.classList.remove("game-mode");
-    setGameUIVisible(false);
-
-    if (lesionBtn) lesionBtn.disabled = false;
-    if (nameLesionBtn) nameLesionBtn.textContent = "Name a Lesion";
-
-    // Restore sandbox exactly as it was
-    restoreSandbox(game.sandboxSnapshot);
-    game.sandboxSnapshot = null;
-
-    if (gameFeedbackEl) gameFeedbackEl.textContent = "";
-  }
 
 
   function setMuscleEnabled(eye, k, isEnabled){
@@ -1919,39 +1470,6 @@ if (mlfRightCb){
 // Initial state
   wireAskButtons();
   wireLesionUI();
-  // Game mode wiring
-  if (nameLesionBtn){
-    nameLesionBtn.addEventListener("click", ()=>{
-      if (game.active) exitGameMode();
-      else enterGameMode();
-    });
-  }
-
-  if (diagnosisSelect){
-    diagnosisSelect.addEventListener("change", ()=>{
-      if (!submitGuessBtn) return;
-      submitGuessBtn.disabled = !(game.active && game.roundActive && !!diagnosisSelect.value);
-    });
-  }
-
-  if (submitGuessBtn){
-    submitGuessBtn.addEventListener("click", submitGuess);
-  }
-
-  if (gameNewRoundBtn){
-    gameNewRoundBtn.addEventListener("click", ()=>{
-      if (!game.active) return;
-      startRound();
-    });
-  }
-
-  if (revealLesionBtn){
-    revealLesionBtn.addEventListener("click", ()=>{
-      if (!game.active) return;
-      openLesionModal();
-    });
-  }
-
   setGazeDirect(0,0);
 </script>
 </body>
