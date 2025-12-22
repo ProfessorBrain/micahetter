@@ -150,7 +150,6 @@
       height: auto;
       border-radius: 6px;
       box-shadow: 0 3px 6px rgba(0, 0, 0, 0.55);
-      transform-origin: center center;
     }
 
     .frame-title-bar {
@@ -600,19 +599,6 @@ function normalizeImageFileName(name) {
       return dir + file;
     }
 
-    function applyRandomOrientation(imgEl) {
-      if (!imgEl) return;
-      const flipH = Math.random() < 0.5;
-      const flipV = Math.random() < 0.5;
-      const rotate180 = Math.random() < 0.5;
-      const transforms = [];
-      if (flipH) transforms.push("scaleX(-1)");
-      if (flipV) transforms.push("scaleY(-1)");
-      if (rotate180) transforms.push("rotate(180deg)");
-      imgEl.style.transform = transforms.length ? transforms.join(" ") : "none";
-    }
-
-
     let allCases = [];
     let masterCases = [];
     let casePool = [];
@@ -758,7 +744,6 @@ function normalizeImageFileName(name) {
         if (imgEl) {
           imgEl.src = "images/" + normalizeImageFileName(c.imageFile);
           imgEl.alt = c.diagnosis + " slide option";
-          applyRandomOrientation(imgEl);
         }
       });
 

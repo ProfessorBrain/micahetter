@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HomeBank</title>
+  <style>
+    :root{
+      --bg:#0b0c10;
+      --panel:#12141a;
+      --panel2:#0f1116;
+      --text:#e7eaf0;
+      --muted:#a7afc2;
+      --line:#232838;
+      --good:#38c172;
+      --warn:#ffb020;
+      --bad:#ff4d4f;
+      --btn:#1f6feb;
+      --btn2:#2d3345;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      --r:14px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      background:linear-gradient(180deg, #090a0d 0%, #0b0c10 60%, #07080b 100%);
+      color:var(--text);
+    }
+    header{
+      padding:18px 16px;
+      border-bottom:1px solid var(--line);
+      background:rgba(18,20,26,0.8);
+      backdrop-filter: blur(10px);
+      position:sticky; top:0; z-index:10;
+    }
+    header .row{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      max-width:980px; margin:0 auto;
+    }
+    .brand{display:flex; align-items:baseline; gap:10px;}
+    .brand h1{font-size:18px; margin:0; letter-spacing:0.2px;}
+    .pill{
+      font-family:var(--mono);
+      font-size:12px;
+      padding:3px 8px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      color:var(--muted);
+      background:rgba(15,17,22,0.7);
+    }
+    main{max-width:980px; margin:0 auto; padding:18px 16px 60px;}
+    .card{
+      background:rgba(18,20,26,0.92);
+      border:1px solid var(--line);
+      border-radius:var(--r);
+      padding:14px;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.25);
+    }
+    .grid{display:grid; gap:14px;}
+    @media (min-width: 860px){
+      .grid.two{grid-template-columns: 1fr 1fr;}
+      .grid.three{grid-template-columns: 1fr 1fr 1fr;}
+    }
+    .row{display:flex; gap:10px; align-items:center;}
+    .row.wrap{flex-wrap:wrap}
+    .spacer{flex:1}
+    label{display:block; font-size:12px; color:var(--muted); margin-bottom:6px;}
+    input, select, textarea{
+      width:100%;
+      padding:10px 10px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:rgba(15,17,22,0.9);
+      color:var(--text);
+      outline:none;
+    }
+    textarea{min-height:90px; resize:vertical;}
+    input:focus, select:focus, textarea:focus{border-color:#3b82f6;}
+    .btn{
+      border:1px solid transparent;
+      background:var(--btn);
+      color:#fff;
+      padding:10px 12px;
+      border-radius:12px;
+      font-weight:600;
+      cursor:pointer;
+      user-select:none;
+    }
+    .btn.secondary{
+      background:var(--btn2);
+      border-color:var(--line);
+      color:var(--text);
+      font-weight:600;
+    }
+    .btn.ghost{
+      background:transparent;
+      border-color:var(--line);
+      color:var(--text);
+    }
+    .btn.danger{background:var(--bad);}
+    .btn:disabled{opacity:0.55; cursor:not-allowed;}
+    .muted{color:var(--muted)}
+    .mono{font-family:var(--mono)}
+    .kpi{
+      display:flex; flex-direction:column; gap:6px;
+      padding:14px;
+      border:1px solid var(--line);
+      border-radius:var(--r);
+      background:rgba(15,17,22,0.7);
+    }
+    .kpi .label{font-size:12px; color:var(--muted)}
+    .kpi .value{font-size:28px; font-weight:800; letter-spacing:0.2px}
+    .kpi .sub{font-size:12px; color:var(--muted)}
+    .table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:13px;
+      overflow:hidden;
+      border-radius:12px;
+      border:1px solid var(--line);
+    }
+    .table th, .table td{
+      padding:10px 10px;
+      border-bottom:1px solid rgba(35,40,56,0.75);
+      vertical-align:top;
+    }
+    .table th{
+      text-align:left;
+      background:rgba(15,17,22,0.9);
+      color:var(--muted);
+      font-weight:700;
+      font-size:12px;
+      letter-spacing:0.2px;
+    }
+    .table tr:last-child td{border-bottom:none;}
+    .tag{
+      display:inline-flex; align-items:center;
+      padding:3px 8px;
+      border-radius:999px;
+      font-size:12px;
+      border:1px solid var(--line);
+      color:var(--muted);
+      background:rgba(15,17,22,0.7);
+      white-space:nowrap;
+    }
+    .tag.good{border-color:rgba(56,193,114,0.35); color:rgba(56,193,114,0.95)}
+    .tag.warn{border-color:rgba(255,176,32,0.35); color:rgba(255,176,32,0.95)}
+    .tag.bad{border-color:rgba(255,77,79,0.35); color:rgba(255,77,79,0.95)}
+    .toast{
+      position:fixed;
+      left:50%;
+      transform:translateX(-50%);
+      bottom:18px;
+      max-width:min(760px, calc(100vw - 28px));
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(18,20,26,0.95);
+      box-shadow: 0 12px 34px rgba(0,0,0,0.35);
+      display:none;
+      z-index:999;
+    }
+    .toast .row{gap:8px;}
+    .toast .dot{width:10px; height:10px; border-radius:999px; background:var(--btn); flex:0 0 auto;}
+    .divider{height:1px; background:var(--line); margin:12px 0;}
+    .hidden{display:none !important;}
+    .small{font-size:12px;}
+    .right{text-align:right}
+    a{color:#7cb8ff}
+  </style>
+</head>
+<body>
+<header>
+  <div class="row">
+    <div class="brand">
+      <h1>HomeBank</h1>
+      <span id="rolePill" class="pill hidden">role</span>
+      <span id="userPill" class="pill hidden">user</span>
+    </div>
+    <div class="row">
+      <button id="btnRefresh" class="btn ghost hidden" type="button">Refresh</button>
+      <button id="btnLogout" class="btn secondary hidden" type="button">Log out</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- LOGIN -->
+  <section id="viewLogin" class="grid">
+    <div class="card">
+      <div class="row wrap">
+        <div style="min-width:260px; flex:1">
+          <label for="loginName">Who are you?</label>
+          <select id="loginName"></select>
+        </div>
+        <div style="min-width:260px; flex:1">
+          <label for="loginPass">Passphrase</label>
+          <input id="loginPass" type="password" autocomplete="current-password" placeholder="Simple keyword/phrase" />
+        </div>
+        <div style="min-width:160px;">
+          <label>&nbsp;</label>
+          <button id="btnLogin" class="btn" type="button">Log in</button>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="muted small">
+        Tip: If you forget your passphrase, ask the parent admin to reset it.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="muted small">
+        This UI must be served from Google Apps Script (HtmlService). Paste this file into an Apps Script HTML file
+        named <span class="mono">HomeBank_Index</span> (without .html in the GAS file name), then deploy the web app.
+      </div>
+    </div>
+  </section>
+
+  <!-- KID DASHBOARD -->
+  <section id="viewKid" class="grid hidden">
+    <div class="grid two">
+      <div class="kpi">
+        <div class="label">Current balance</div>
+        <div id="kidBalance" class="value">$0.00</div>
+        <div id="kidBalanceSub" class="sub">Calculated from posted transactions</div>
+      </div>
+      <div class="card">
+        <div class="row wrap">
+          <button id="btnKidWithdraw" class="btn" type="button">Request withdrawal</button>
+          <button id="btnKidDeposit" class="btn secondary" type="button">Record deposit</button>
+          <div class="spacer"></div>
+          <span id="kidPendingCount" class="tag warn hidden">0 pending</span>
+        </div>
+        <div class="divider"></div>
+        <div class="muted small">Requests are tracked here. Parent admin approves and can attach receipts.</div>
+      </div>
+    </div>
+
+    <div class="grid two">
+      <div class="card">
+        <div>
+          <div style="font-weight:800">Pending requests</div>
+          <div class="muted small">Not yet fulfilled</div>
+        </div>
+        <div class="divider"></div>
+        <div id="kidPendingWrap"></div>
+      </div>
+
+      <div class="card">
+        <div>
+          <div style="font-weight:800">Recent activity</div>
+          <div class="muted small">Last 10 posted transactions</div>
+        </div>
+        <div class="divider"></div>
+        <div id="kidRecentWrap"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ADMIN DASHBOARD -->
+  <section id="viewAdmin" class="grid hidden">
+    <div class="grid three">
+      <div class="kpi">
+        <div class="label">House total (posted)</div>
+        <div id="adminTotal" class="value">$0.00</div>
+        <div class="sub">Sum of all kids’ posted balances</div>
+      </div>
+      <div class="kpi">
+        <div class="label">Pending requests</div>
+        <div id="adminPendingKpi" class="value">0</div>
+        <div class="sub">Awaiting decision</div>
+      </div>
+      <div class="card">
+        <div style="font-weight:800">Quick actions</div>
+        <div class="divider"></div>
+        <div class="row wrap">
+          <button id="btnAdminNewTxn" class="btn secondary" type="button">Add transaction</button>
+          <button id="btnAdminNewUser" class="btn ghost" type="button">Add user</button>
+        </div>
+        <div class="muted small" style="margin-top:10px">
+          Admin can post deposits/adjustments directly and approve/deny requests.
+        </div>
+      </div>
+    </div>
+
+    <div class="grid two">
+      <div class="card">
+        <div class="row wrap">
+          <div>
+            <div style="font-weight:800">Pending requests</div>
+            <div class="muted small">Approve/deny + fulfill + receipt link</div>
+          </div>
+          <div class="spacer"></div>
+          <button id="btnAdminRefreshPending" class="btn ghost" type="button">Refresh list</button>
+        </div>
+        <div class="divider"></div>
+        <div id="adminPendingWrap"></div>
+      </div>
+
+      <div class="card">
+        <div>
+          <div style="font-weight:800">Account balances</div>
+          <div class="muted small">Posted balances only</div>
+        </div>
+        <div class="divider"></div>
+        <div id="adminBalancesWrap"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MODAL -->
+  <section id="modal" class="hidden" aria-hidden="true">
+    <div id="modalBackdrop" style="position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:1000;"></div>
+    <div style="position:fixed; inset:0; display:flex; align-items:center; justify-content:center; padding:14px; z-index:1001;">
+      <div class="card" style="width:min(760px, 100%);">
+        <div class="row">
+          <div>
+            <div id="modalTitle" style="font-weight:900; font-size:16px;">Title</div>
+            <div id="modalSub" class="muted small">Sub</div>
+          </div>
+          <div class="spacer"></div>
+          <button id="btnModalClose" class="btn ghost" type="button">Close</button>
+        </div>
+        <div class="divider"></div>
+        <div id="modalBody"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="toast" class="toast">
+  <div class="row">
+    <div class="dot"></div>
+    <div id="toastText">Toast</div>
+    <div class="spacer"></div>
+    <button id="toastClose" class="btn ghost small" type="button">OK</button>
+  </div>
+</div>
+
+<script>
+  const state = { session: null, users: [] };
+  const $ = (id) => document.getElementById(id);
+
+  function money(n){
+    const v = Number(n || 0);
+    return v.toLocaleString(undefined, { style:'currency', currency:'USD' });
+  }
+
+  function showToast(msg){ $('toastText').textContent = msg; $('toast').style.display = 'block'; }
+  function hideToast(){ $('toast').style.display = 'none'; }
+  $('toastClose').addEventListener('click', hideToast);
+
+  function setView(which){
+    $('viewLogin').classList.toggle('hidden', which !== 'login');
+    $('viewKid').classList.toggle('hidden', which !== 'kid');
+    $('viewAdmin').classList.toggle('hidden', which !== 'admin');
+
+    const loggedIn = (which !== 'login');
+    $('btnLogout').classList.toggle('hidden', !loggedIn);
+    $('btnRefresh').classList.toggle('hidden', !loggedIn);
+
+    if (loggedIn){
+      $('rolePill').classList.remove('hidden');
+      $('userPill').classList.remove('hidden');
+      $('rolePill').textContent = state.session.role.toUpperCase();
+      $('userPill').textContent = state.session.displayName;
+    } else {
+      $('rolePill').classList.add('hidden');
+      $('userPill').classList.add('hidden');
+    }
+  }
+
+  function openModal(title, sub, bodyNode){
+    $('modalTitle').textContent = title;
+    $('modalSub').textContent = sub || '';
+    const body = $('modalBody');
+    body.innerHTML = '';
+    body.appendChild(bodyNode);
+    $('modal').classList.remove('hidden');
+    $('modal').setAttribute('aria-hidden', 'false');
+  }
+  function closeModal(){
+    $('modal').classList.add('hidden');
+    $('modal').setAttribute('aria-hidden', 'true');
+  }
+  $('btnModalClose').addEventListener('click', closeModal);
+  $('modalBackdrop').addEventListener('click', closeModal);
+
+  function gsRun(fnName, args){
+    return new Promise((resolve, reject) => {
+      google.script.run.withSuccessHandler(resolve).withFailureHandler(reject)[fnName](args);
+    });
+  }
+
+  async function loadUsers(){
+    const res = await gsRun('apiListUsersPublic', {});
+    state.users = res.users || [];
+    const sel = $('loginName');
+    sel.innerHTML = '';
+    for (const u of state.users){
+      const opt = document.createElement('option');
+      opt.value = u.userId;
+      opt.textContent = u.displayName;
+      sel.appendChild(opt);
+    }
+  }
+
+  async function login(){
+    const userId = $('loginName').value;
+    const passphrase = $('loginPass').value || '';
+    if (!userId || !passphrase.trim()){ showToast('Pick a name and enter your passphrase.'); return; }
+
+    $('btnLogin').disabled = true;
+    try{
+      const res = await gsRun('apiLogin', { userId, passphrase });
+      if (!res.ok){ showToast(res.error || 'Login failed.'); return; }
+      state.session = res.session;
+      $('loginPass').value = '';
+
+      if (state.session.role === 'admin'){ setView('admin'); await refreshAdmin(); }
+      else { setView('kid'); await refreshKid(); }
+
+      showToast('Logged in.');
+    }catch(e){
+      console.error(e); showToast('Login error.');
+    }finally{
+      $('btnLogin').disabled = false;
+    }
+  }
+
+  async function logout(){
+    if (!state.session) return;
+    try{ await gsRun('apiLogout', { token: state.session.token }); }catch(e){}
+    state.session = null;
+    setView('login');
+    showToast('Logged out.');
+  }
+
+  async function refreshKid(){
+    const res = await gsRun('apiGetKidDashboard', { token: state.session.token });
+    if (!res.ok){ showToast(res.error || 'Could not refresh.'); return; }
+
+    $('kidBalance').textContent = money(res.balance);
+    $('kidPendingCount').classList.toggle('hidden', !(res.pendingRequests?.length));
+    $('kidPendingCount').textContent = `${res.pendingRequests?.length || 0} pending`;
+
+    const pendingWrap = $('kidPendingWrap');
+    pendingWrap.innerHTML = '';
+    pendingWrap.appendChild(res.pendingRequests?.length ? renderRequestsTable(res.pendingRequests, { adminMode:false }) :
+      htmlNode(`<div class="muted small">No pending requests.</div>`));
+
+    const recentWrap = $('kidRecentWrap');
+    recentWrap.innerHTML = '';
+    recentWrap.appendChild(res.recentTransactions?.length ? renderTransactionsTable(res.recentTransactions) :
+      htmlNode(`<div class="muted small">No transactions yet.</div>`));
+  }
+
+  async function refreshAdmin(){
+    const res = await gsRun('apiGetAdminDashboard', { token: state.session.token });
+    if (!res.ok){ showToast(res.error || 'Could not refresh.'); return; }
+
+    $('adminTotal').textContent = money(res.houseTotal || 0);
+    $('adminPendingKpi').textContent = String(res.pendingRequests?.length || 0);
+
+    const pendingWrap = $('adminPendingWrap');
+    pendingWrap.innerHTML = '';
+    pendingWrap.appendChild(res.pendingRequests?.length ? renderRequestsTable(res.pendingRequests, { adminMode:true }) :
+      htmlNode(`<div class="muted small">No pending requests.</div>`));
+
+    const balancesWrap = $('adminBalancesWrap');
+    balancesWrap.innerHTML = '';
+    balancesWrap.appendChild(renderBalancesTable(res.balances || []));
+  }
+
+  function renderTransactionsTable(txns){
+    const table = document.createElement('table');
+    table.className = 'table';
+    table.innerHTML = `<thead><tr>
+        <th style="width:120px">Date</th>
+        <th>Memo</th>
+        <th style="width:120px">Type</th>
+        <th style="width:120px" class="right">Amount</th>
+      </tr></thead><tbody></tbody>`;
+    const tb = table.querySelector('tbody');
+    for (const t of txns){
+      const tr = document.createElement('tr');
+      const amt = Number(t.amount || 0);
+      tr.innerHTML = `<td class="mono">${escapeHtml(t.date || '')}</td>
+        <td>${escapeHtml(t.memo || '')}</td>
+        <td><span class="tag">${escapeHtml(t.type || '')}</span></td>
+        <td class="right mono" style="${amt<0?'color:rgba(255,77,79,0.95)':'color:rgba(56,193,114,0.95)'}">${money(amt)}</td>`;
+      tb.appendChild(tr);
+    }
+    return table;
+  }
+
+  function renderBalancesTable(rows){
+    const table = document.createElement('table');
+    table.className = 'table';
+    table.innerHTML = `<thead><tr><th>Kid</th><th class="right">Balance</th></tr></thead><tbody></tbody>`;
+    const tb = table.querySelector('tbody');
+    for (const r of rows){
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${escapeHtml(r.displayName || '')}</td>
+        <td class="right mono">${money(r.balance || 0)}</td>`;
+      tb.appendChild(tr);
+    }
+    return table;
+  }
+
+  function renderRequestsTable(reqs, opts){
+    const adminMode = !!opts?.adminMode;
+    const table = document.createElement('table');
+    table.className = 'table';
+    table.innerHTML = `<thead><tr>
+        <th style="width:120px">Date</th>
+        ${adminMode ? '<th style="width:140px">Kid</th>' : ''}
+        <th>Request</th>
+        <th style="width:110px" class="right">Amount</th>
+        <th style="width:120px">Status</th>
+        ${adminMode ? '<th style="width:180px">Actions</th>' : ''}
+      </tr></thead><tbody></tbody>`;
+    const tb = table.querySelector('tbody');
+
+    for (const r of reqs){
+      const tr = document.createElement('tr');
+      const amt = Number(r.amount || 0);
+      tr.innerHTML = `<td class="mono">${escapeHtml(r.date || '')}</td>
+        ${adminMode ? `<td>${escapeHtml(r.kidName || '')}</td>` : ''}
+        <td>
+          <div style="font-weight:700">${escapeHtml(r.kind || '')}: ${escapeHtml(r.purpose || '')}</div>
+          ${r.link ? `<div class="small muted"><a href="${escapeAttr(r.link)}" target="_blank" rel="noopener noreferrer">Link</a></div>` : ''}
+          ${r.notes ? `<div class="small muted">${escapeHtml(r.notes)}</div>` : ''}
+        </td>
+        <td class="right mono" style="${r.kind==='withdrawal'?'color:rgba(255,77,79,0.95)':'color:rgba(56,193,114,0.95)'}">${money(r.kind==='withdrawal' ? -Math.abs(amt) : Math.abs(amt))}</td>
+        <td>${statusBadge(r.status)}</td>
+        ${adminMode ? `<td></td>` : ''}`;
+
+      if (adminMode){
+        const td = tr.querySelectorAll('td')[5];
+        const wrap = document.createElement('div');
+        wrap.className = 'row wrap';
+
+        const btnApprove = document.createElement('button');
+        btnApprove.className = 'btn';
+        btnApprove.type = 'button';
+        btnApprove.textContent = 'Approve / fulfill';
+        btnApprove.addEventListener('click', () => openFulfillModal(r));
+
+        const btnDeny = document.createElement('button');
+        btnDeny.className = 'btn danger';
+        btnDeny.type = 'button';
+        btnDeny.textContent = 'Deny';
+        btnDeny.addEventListener('click', () => denyRequest(r));
+
+        wrap.appendChild(btnApprove);
+        wrap.appendChild(btnDeny);
+        td.appendChild(wrap);
+      }
+
+      tb.appendChild(tr);
+    }
+    return table;
+  }
+
+  function statusBadge(status){
+    const s = String(status || '').toLowerCase();
+    if (s === 'pending') return `<span class="tag warn">pending</span>`;
+    if (s === 'fulfilled' || s === 'approved') return `<span class="tag good">${escapeHtml(s)}</span>`;
+    if (s === 'denied' || s === 'cancelled') return `<span class="tag bad">${escapeHtml(s)}</span>`;
+    return `<span class="tag">${escapeHtml(s || 'unknown')}</span>`;
+  }
+
+  function openKidRequestModal(kind){
+    const body = document.createElement('div');
+    body.className = 'grid';
+    body.innerHTML = `
+      <div class="grid two">
+        <div><label>Kind</label><input value="${kind}" disabled /></div>
+        <div><label>Amount (USD)</label><input id="reqAmount" inputmode="decimal" placeholder="e.g., 15.99" /></div>
+      </div>
+      <div>
+        <label>${kind === 'withdrawal' ? 'What do you want to buy?' : 'Where did this money come from?'}</label>
+        <input id="reqPurpose" placeholder="${kind === 'withdrawal' ? 'e.g., Roblox gift card' : 'e.g., gift from grandma'}" />
+      </div>
+      <div class="grid two">
+        <div><label>Link (optional)</label><input id="reqLink" placeholder="https://..." /></div>
+        <div><label>Notes (optional)</label><input id="reqNotes" placeholder="Anything else?" /></div>
+      </div>
+      <div class="row wrap">
+        <button id="btnSubmitReq" class="btn" type="button">Submit</button>
+        <button id="btnCancelReq" class="btn ghost" type="button">Cancel</button>
+      </div>
+      <div class="muted small">Withdrawals are pending until fulfilled. Deposits may auto-post or require approval (admin setting).</div>
+    `;
+    body.querySelector('#btnCancelReq').addEventListener('click', closeModal);
+    body.querySelector('#btnSubmitReq').addEventListener('click', async () => {
+      const amount = Number(body.querySelector('#reqAmount').value);
+      const purpose = body.querySelector('#reqPurpose').value?.trim();
+      const link = body.querySelector('#reqLink').value?.trim();
+      const notes = body.querySelector('#reqNotes').value?.trim();
+      if (!(amount > 0) || !purpose){ showToast('Enter a positive amount and a purpose.'); return; }
+
+      const btn = body.querySelector('#btnSubmitReq');
+      btn.disabled = true;
+      try{
+        const res = await gsRun('apiCreateRequest', { token: state.session.token, kind, amount, purpose, link, notes });
+        if (!res.ok){ showToast(res.error || 'Could not submit.'); return; }
+        closeModal(); showToast('Submitted.'); await refreshKid();
+      }catch(e){ console.error(e); showToast('Submit error.'); }
+      finally{ btn.disabled = false; }
+    });
+    openModal(kind === 'withdrawal' ? 'Request a withdrawal' : 'Record a deposit', 'Fill this out and submit.', body);
+  }
+
+  function openFulfillModal(req){
+    const body = document.createElement('div');
+    body.className = 'grid';
+    const amt = Number(req.amount || 0);
+    body.innerHTML = `
+      <div class="grid two">
+        <div><label>Kid</label><input value="${escapeAttr(req.kidName || '')}" disabled /></div>
+        <div><label>Kind</label><input value="${escapeAttr(req.kind || '')}" disabled /></div>
+      </div>
+      <div><label>Purpose</label><input value="${escapeAttr(req.purpose || '')}" disabled /></div>
+      <div class="grid two">
+        <div><label>Fulfilled amount (USD)</label><input id="fulfillAmount" inputmode="decimal" value="${amt}" /></div>
+        <div><label>Receipt URL (optional)</label><input id="receiptUrl" placeholder="https://drive.google.com/..." /></div>
+      </div>
+      <div><label>Admin note (optional)</label><textarea id="adminNote" placeholder="Any note for the record"></textarea></div>
+      <div class="row wrap">
+        <button id="btnFulfill" class="btn" type="button">Approve + post transaction</button>
+        <button id="btnCancel" class="btn ghost" type="button">Cancel</button>
+      </div>
+      <div class="muted small">This creates a posted transaction tied to the request.</div>
+    `;
+    body.querySelector('#btnCancel').addEventListener('click', closeModal);
+    body.querySelector('#btnFulfill').addEventListener('click', async () => {
+      const fulfilledAmount = Number(body.querySelector('#fulfillAmount').value);
+      const receiptUrl = body.querySelector('#receiptUrl').value?.trim();
+      const adminNote = body.querySelector('#adminNote').value?.trim();
+      if (!(fulfilledAmount > 0)){ showToast('Enter a positive fulfilled amount.'); return; }
+
+      const btn = body.querySelector('#btnFulfill');
+      btn.disabled = true;
+      try{
+        const res = await gsRun('apiAdminApproveAndPost', { token: state.session.token, requestId: req.requestId, fulfilledAmount, receiptUrl, adminNote });
+        if (!res.ok){ showToast(res.error || 'Could not approve.'); return; }
+        closeModal(); showToast('Approved and posted.'); await refreshAdmin();
+      }catch(e){ console.error(e); showToast('Approve error.'); }
+      finally{ btn.disabled = false; }
+    });
+    openModal('Approve / fulfill request', 'Mark it approved and post the ledger transaction.', body);
+  }
+
+  async function denyRequest(req){
+    if (!confirm(`Deny this request?\n\n${req.kidName}: ${req.kind} $${req.amount} — ${req.purpose}`)) return;
+    try{
+      const res = await gsRun('apiAdminDeny', { token: state.session.token, requestId: req.requestId });
+      if (!res.ok){ showToast(res.error || 'Could not deny.'); return; }
+      showToast('Denied.'); await refreshAdmin();
+    }catch(e){ console.error(e); showToast('Deny error.'); }
+  }
+
+  function openAdminNewTxnModal(){
+    const body = document.createElement('div');
+    body.className = 'grid';
+    const kidOptions = (state.users || []).filter(u => u.role === 'kid')
+      .map(u => `<option value="${escapeAttr(u.userId)}">${escapeHtml(u.displayName)}</option>`).join('');
+    body.innerHTML = `
+      <div class="grid two">
+        <div><label>Kid</label><select id="txnKid">${kidOptions}</select></div>
+        <div><label>Type</label>
+          <select id="txnType">
+            <option value="deposit">deposit</option>
+            <option value="withdrawal">withdrawal</option>
+            <option value="adjustment">adjustment</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid two">
+        <div><label>Amount (USD)</label><input id="txnAmount" inputmode="decimal" placeholder="e.g., 10" /></div>
+        <div><label>Memo</label><input id="txnMemo" placeholder="e.g., chores, birthday gift, correction" /></div>
+      </div>
+      <div class="grid two">
+        <div><label>Receipt URL (optional)</label><input id="txnReceipt" placeholder="https://drive.google.com/..." /></div>
+        <div><label>Status</label>
+          <select id="txnStatus">
+            <option value="posted">posted</option>
+            <option value="pending">pending</option>
+          </select>
+        </div>
+      </div>
+      <div class="row wrap">
+        <button id="btnPostTxn" class="btn" type="button">Save transaction</button>
+        <button id="btnCancelTxn" class="btn ghost" type="button">Cancel</button>
+      </div>
+      <div class="muted small">Deposits are +amount. Withdrawals are -amount.</div>
+    `;
+    body.querySelector('#btnCancelTxn').addEventListener('click', closeModal);
+    body.querySelector('#btnPostTxn').addEventListener('click', async () => {
+      const userId = body.querySelector('#txnKid').value;
+      const type = body.querySelector('#txnType').value;
+      const amount = Number(body.querySelector('#txnAmount').value);
+      const memo = body.querySelector('#txnMemo').value?.trim();
+      const receiptUrl = body.querySelector('#txnReceipt').value?.trim();
+      const status = body.querySelector('#txnStatus').value;
+      if (!(amount > 0) || !memo){ showToast('Enter a positive amount and a memo.'); return; }
+
+      const btn = body.querySelector('#btnPostTxn');
+      btn.disabled = true;
+      try{
+        const res = await gsRun('apiAdminPostTransaction', { token: state.session.token, userId, type, amount, memo, receiptUrl, status });
+        if (!res.ok){ showToast(res.error || 'Could not save.'); return; }
+        closeModal(); showToast('Saved.'); await refreshAdmin();
+      }catch(e){ console.error(e); showToast('Save error.'); }
+      finally{ btn.disabled = false; }
+    });
+    openModal('Add a transaction', 'Direct ledger entry (admin only).', body);
+  }
+
+  function openAdminNewUserModal(){
+    const body = document.createElement('div');
+    body.className = 'grid';
+    body.innerHTML = `
+      <div class="grid two">
+        <div><label>Display name</label><input id="newUserName" placeholder="e.g., Henson" /></div>
+        <div><label>Role</label>
+          <select id="newUserRole">
+            <option value="kid">kid</option>
+            <option value="admin">admin</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid two">
+        <div><label>Passphrase</label><input id="newUserPass" placeholder="simple keyword/phrase" /></div>
+        <div><label>Confirm passphrase</label><input id="newUserPass2" placeholder="repeat passphrase" /></div>
+      </div>
+      <div class="row wrap">
+        <button id="btnCreateUser" class="btn" type="button">Create user</button>
+        <button id="btnCancelUser" class="btn ghost" type="button">Cancel</button>
+      </div>
+      <div class="muted small">Creates a user row in the Users sheet using a salted SHA-256 hash.</div>
+    `;
+    body.querySelector('#btnCancelUser').addEventListener('click', closeModal);
+    body.querySelector('#btnCreateUser').addEventListener('click', async () => {
+      const displayName = body.querySelector('#newUserName').value?.trim();
+      const role = body.querySelector('#newUserRole').value;
+      const passphrase = body.querySelector('#newUserPass').value || '';
+      const passphrase2 = body.querySelector('#newUserPass2').value || '';
+      if (!displayName || passphrase.length < 2 || passphrase !== passphrase2){ showToast('Enter name and matching passphrases.'); return; }
+
+      const btn = body.querySelector('#btnCreateUser');
+      btn.disabled = true;
+      try{
+        const res = await gsRun('apiAdminCreateUser', { token: state.session.token, displayName, role, passphrase });
+        if (!res.ok){ showToast(res.error || 'Could not create user.'); return; }
+        closeModal(); showToast('User created.'); await loadUsers(); await refreshAdmin();
+      }catch(e){ console.error(e); showToast('Create user error.'); }
+      finally{ btn.disabled = false; }
+    });
+    openModal('Add a user', 'Create a kid or admin account.', body);
+  }
+
+  function escapeHtml(str){
+    return String(str ?? '').replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+  }
+  function escapeAttr(str){ return escapeHtml(str).replace(/"/g, '&quot;'); }
+  function htmlNode(html){ const d = document.createElement('div'); d.innerHTML = html; return d.firstElementChild; }
+
+  $('btnLogin').addEventListener('click', login);
+  $('loginPass').addEventListener('keydown', (e) => { if (e.key === 'Enter') login(); });
+
+  $('btnLogout').addEventListener('click', logout);
+  $('btnRefresh').addEventListener('click', async () => {
+    if (!state.session) return;
+    if (state.session.role === 'admin') await refreshAdmin();
+    else await refreshKid();
+    showToast('Refreshed.');
+  });
+
+  $('btnKidWithdraw').addEventListener('click', () => openKidRequestModal('withdrawal'));
+  $('btnKidDeposit').addEventListener('click', () => openKidRequestModal('deposit'));
+
+  $('btnAdminRefreshPending').addEventListener('click', refreshAdmin);
+  $('btnAdminNewTxn').addEventListener('click', openAdminNewTxnModal);
+  $('btnAdminNewUser').addEventListener('click', openAdminNewUserModal);
+
+  async function bootstrap(){
+    setView('login');
+    try{
+      await loadUsers();
+    }catch(e){
+      console.error(e);
+      showToast('Could not load users. Make sure the Apps Script web app is deployed.');
+    }
+  }
+  bootstrap();
+</script>
+</body>
+</html>

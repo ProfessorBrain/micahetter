@@ -494,6 +494,11 @@
             <span>Step 1 cases only</span>
           </label>
 
+          <label class="option-row">
+            <input type="checkbox" id="tumorsOnlyCheckbox">
+            <span>Tumors only</span>
+          </label>
+
     <div id="statusBar" class="status-bar">
       <div>
         <span class="status-label">Cases answered:</span>
@@ -620,6 +625,8 @@ function normalizeImageFileName(name) {
     let correctCase = null;
     let hasAnswered = false;
     let step1Only = false;
+    let tumorsOnly = false;
+
 
     let casesAnswered = 0;
     let casesCorrect = 0;
@@ -648,19 +655,28 @@ function normalizeImageFileName(name) {
         casePool = [];
         return;
       }
-      allCases = step1Only
-        ? masterCases.filter(c => c.isStep1)
-        : masterCases.slice();
+      let filtered = masterCases.slice();
+      if (step1Only) filtered = filtered.filter(c => c.isStep1);
+      if (tumorsOnly) filtered = filtered.filter(c => c.isTumor);
+      allCases = filtered;
 
       if (!allCases || allCases.length === 0) {
         casePool = [];
         const errorEl = document.getElementById("errorMessage");
         if (errorEl) {
           errorEl.style.display = "block";
+          const filters = [];
+          if (step1Only) filters.push("STEP1");
+          if (tumorsOnly) filters.push("TUMOR");
+          const filterLabel = filters.length ? filters.join(" + ") : "";
           errorEl.textContent =
-            step1Only
+            filterLabel === "STEP1"
               ? "No cases are tagged as STEP1 in NeuroPathGallery.csv."
-              : "No cases are currently available.";
+              : filterLabel === "TUMOR"
+                ? "No cases are tagged as TUMOR in NeuroPathGallery.csv."
+                : filterLabel === "STEP1 + TUMOR"
+                  ? "No cases match both STEP1 and TUMOR in NeuroPathGallery.csv."
+                  : "No cases are currently available.";
         }
       } else {
         const errorEl = document.getElementById("errorMessage");
@@ -839,6 +855,9 @@ function normalizeImageFileName(name) {
         const rows = parseCSVLoose(csvText);
 
         const parsedCases = [];
+        const tumorTagRegex = /\b(TUMOR|TUMOUR|NEOPLASM|NEOPLASTIC)\b/i;
+        const tumorDxRegex = /(glioblastoma|gbm|astrocytoma|oligodendroglioma|ependymoma|medulloblastoma|meningioma|schwannoma|neurofibroma|lymphoma|metastasis|metastatic|craniopharyngioma|hemangioblastoma|chordoma|germinoma|teratoma|carcinoma|sarcoma|pituitary\s+adenoma)\b/i;
+        const tumorDescRegex = /(glioblastoma|gbm|astrocytoma|oligodendroglioma|ependymoma|medulloblastoma|meningioma|schwannoma|neurofibroma|lymphoma|metastasis|metastatic|craniopharyngioma|hemangioblastoma|chordoma|germinoma|teratoma|carcinoma|sarcoma|pituitary\s+adenoma|neoplasm|neoplastic|tumou?r)\b/i;
         rows.forEach((cols, index) => {
           const diagnosis = (cols[0] || "").trim();
           const imageFile = (cols[1] || "").trim();
@@ -848,7 +867,18 @@ function normalizeImageFileName(name) {
           if (!diagnosis || !imageFile || !stem) return;
 
           const isStep1 = /\bSTEP1\b/i.test(rawDesc);
-          const description = rawDesc.replace(/\bSTEP1\b/gi, "").replace(/,\s*$/, "").trim();
+          const isTumor =
+            tumorTagRegex.test(rawDesc) ||
+            tumorDxRegex.test(diagnosis) ||
+            tumorDescRegex.test(rawDesc);
+
+          const description = rawDesc
+            .replace(/\bSTEP1\b/gi, "")
+            .replace(/\b(TUMOR|TUMOUR|NEOPLASM|NEOPLASTIC)\b/gi, "")
+            .replace(/\s*,\s*,/g, ",")
+            .replace(/,\s*$/, "")
+            .replace(/\s{2,}/g, " ")
+            .trim();
 
           parsedCases.push({
             id: index,
@@ -856,13 +886,16 @@ function normalizeImageFileName(name) {
             imageFile,
             stem,
             description,
-            isStep1
+            isStep1,
+            isTumor
           });
         });
 
         masterCases = parsedCases;
         const step1Checkbox = document.getElementById("step1OnlyCheckbox");
         step1Only = !!(step1Checkbox && step1Checkbox.checked);
+        const tumorsCheckbox = document.getElementById("tumorsOnlyCheckbox");
+        tumorsOnly = !!(tumorsCheckbox && tumorsCheckbox.checked);
         rebuildActiveCasesFromFilter();
 
         loadingEl.style.display = "none";
