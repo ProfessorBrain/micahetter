@@ -1,0 +1,699 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>EtterBank</title>
+  <meta name="theme-color" content="#0b3d2e" />
+  <style>
+    :root{
+      --bg1:#071d16;
+      --bg2:#0b3d2e;
+      --panel1: rgba(15,43,34,.84);
+      --panel2: rgba(10,36,28,.84);
+      --card: rgba(7,29,22,.35);
+      --stroke: rgba(234,246,241,.14);
+      --stroke2: rgba(234,246,241,.12);
+      --text:#eaf6f1;
+      --muted:#b8d0c6;
+      --accent:#53d3a0;
+      --accent2:#f2d36a;
+      --danger:#ff6b6b;
+      --shadow: 0 18px 60px rgba(0,0,0,.45);
+      --radius: 18px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      color:var(--text);
+      background:
+        radial-gradient(1200px 600px at 15% 15%, rgba(83,211,160,.18), transparent 55%),
+        radial-gradient(1000px 500px at 85% 35%, rgba(242,211,106,.14), transparent 55%),
+        linear-gradient(145deg, var(--bg1), var(--bg2));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+    }
+
+    .app{width:min(980px, 100%);}
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px; margin-bottom:16px;
+    }
+    .brand h1{
+      margin:0;
+      font-size: clamp(28px, 4vw, 42px);
+      letter-spacing:.5px;
+    }
+
+    .panel{
+      background: linear-gradient(180deg, var(--panel1), var(--panel2));
+      border:1px solid var(--stroke);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .panel-inner{padding:18px;}
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap:16px;
+    }
+    .stack{
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+    .sectionHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .sectionHead h2{ margin:0; }
+    @media (max-width: 860px){
+      .grid{grid-template-columns:1fr;}
+    }
+
+    .card{
+      background: var(--card);
+      border:1px solid var(--stroke2);
+      border-radius: 16px;
+      padding:16px;
+    }
+    .card h2{
+      margin:0 0 10px 0;
+      font-size:16px;
+      letter-spacing:.2px;
+      color: var(--muted);
+      font-weight:800;
+      text-transform:uppercase;
+    }
+
+    .field{display:flex; flex-direction:column; gap:8px; margin-top:12px;}
+    label{font-size:13px; color:var(--muted)}
+    input{
+      width:100%;
+      padding:12px 12px;
+      border-radius: 12px;
+      border:1px solid rgba(234,246,241,.18);
+      background: rgba(15,43,34,.35);
+      color: var(--text);
+      outline:none;
+      font-size:14px;
+    }
+
+    .row{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
+    .row > *{flex:1;}
+    .right-actions{
+      display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;
+    }
+
+    .btn{
+      appearance:none;
+      border:none;
+      border-radius: 12px;
+      padding:12px 14px;
+      font-weight:800;
+      cursor:pointer;
+      transition: transform .05s ease, opacity .15s ease;
+      background: linear-gradient(90deg, rgba(83,211,160,.92), rgba(242,211,106,.88));
+      color:#062017;
+    }
+    .btn:active{transform: translateY(1px);}
+    .btn.ghost{
+      background: transparent;
+      border:1px solid rgba(234,246,241,.18);
+      color: var(--text);
+      font-weight:750;
+    }
+    .btn.secondary{
+      background: rgba(234,246,241,.12);
+      border:1px solid rgba(234,246,241,.18);
+      color: var(--text);
+      font-weight:750;
+    }
+    .btn:disabled{opacity:.55; cursor:not-allowed;}
+
+    .fineprint{
+      font-family:var(--mono);
+      font-size:11px;
+      color: rgba(184,208,198,.9);
+      margin-top:10px;
+      min-height: 16px;
+    }
+    .divider{height:1px; background: rgba(234,246,241,.12); margin:14px 0;}
+    .hidden{display:none !important;}
+
+    .money{
+      font-size: clamp(28px, 4.6vw, 44px);
+      font-weight:950;
+      letter-spacing:.2px;
+      margin: 6px 0 0 0;
+    }
+    .sub{
+      color: var(--muted);
+      font-size:13px;
+      margin-top:6px;
+      line-height:1.35;
+    }
+
+    /* Progress */
+    .progressWrap{
+      display:grid;
+      grid-template-columns: 140px 1fr;
+      gap:14px;
+      align-items:center;
+    }
+    @media (max-width: 520px){
+      .progressWrap{grid-template-columns:1fr;}
+    }
+    .donut{
+      width:140px; height:140px;
+      display:grid; place-items:center;
+      margin: 2px auto;
+      position:relative;
+    }
+    .donut svg{display:block}
+    .donut .pct{
+      position: absolute;
+      font-family: var(--mono);
+      font-weight: 800;
+      font-size: 14px;
+      color: var(--text);
+    }
+    .bar{
+      height:12px;
+      border-radius:999px;
+      background: rgba(234,246,241,.10);
+      border:1px solid rgba(234,246,241,.14);
+      overflow:hidden;
+      margin-top:10px;
+    }
+    .bar > div{
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, rgba(83,211,160,.92), rgba(242,211,106,.88));
+    }
+    .kv{
+      display:grid;
+      grid-template-columns: 160px 1fr;
+      gap:8px 12px;
+      margin-top:10px;
+    }
+    .k{color:var(--muted); font-size:12px;}
+    .v{font-family:var(--mono); font-size:12px; color:var(--text);}
+
+    /* Modal */
+    .backdrop{
+      position:fixed;
+      inset:0;
+      background: rgba(0,0,0,.55);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      z-index:9999;
+    }
+    .backdrop.show{display:flex;}
+    .modal{
+      width:min(680px, 100%);
+      background: linear-gradient(180deg, rgba(15,43,34,.92), rgba(10,36,28,.92));
+      border:1px solid rgba(234,246,241,.18);
+      border-radius: 18px;
+      box-shadow: 0 30px 100px rgba(0,0,0,.55);
+      overflow:hidden;
+    }
+    .modal header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:14px 16px;
+      border-bottom:1px solid rgba(234,246,241,.12);
+    }
+    .modal header h3{
+      margin:0;
+      font-size:14px;
+      letter-spacing:.2px;
+      text-transform:uppercase;
+      color: var(--muted);
+      font-weight:900;
+    }
+    .modal .body{padding:16px;}
+    .modal .footer{
+      display:flex;
+      justify-content:flex-end;
+      gap:10px;
+      padding:14px 16px;
+      border-top:1px solid rgba(234,246,241,.12);
+    }
+    .choice{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      margin-top:8px;
+    }
+    .chip{
+      display:inline-flex;
+      gap:10px;
+      align-items:center;
+      border:1px solid rgba(234,246,241,.18);
+      background: rgba(234,246,241,.08);
+      padding:10px 12px;
+      border-radius: 999px;
+      cursor:pointer;
+      user-select:none;
+      font-size:13px;
+      color: var(--text);
+    }
+    .chip input{width:auto; margin:0}
+    .hint{
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.35;
+    }
+    .txlist{
+      margin-top:12px;
+      border-top:1px solid rgba(234,246,241,.12);
+      padding-top:12px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      max-height: 220px;
+      overflow:auto;
+    }
+    .tx{
+      font-family: var(--mono);
+      font-size:11px;
+      color: rgba(234,246,241,.92);
+      border:1px solid rgba(234,246,241,.12);
+      background: rgba(7,29,22,.25);
+      border-radius: 12px;
+      padding:10px 12px;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:flex-start;
+    }
+    .tx small{color: rgba(184,208,198,.92); display:block; margin-top:4px;}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="topbar">
+      <div class="brand"><h1>EtterBank</h1></div>
+      <div class="right-actions">
+        <button id="refreshBtnTop" class="btn secondary hidden" type="button">Refresh</button>
+        <button id="logoutBtnTop" class="btn ghost hidden" type="button">Log out</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-inner">
+
+        <!-- LOGIN VIEW -->
+        <div id="loginView" class="grid">
+          <div class="card">
+            <h2>Log in</h2>
+
+            <div class="field">
+              <label for="userInput">Username</label>
+              <input id="userInput" type="text" placeholder="Username" autocomplete="off" />
+            </div>
+
+            <div class="field">
+              <label for="passInput">Passcode</label>
+              <input id="passInput" type="password" placeholder="Passcode" autocomplete="off" />
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="row">
+              <button id="loginBtn" class="btn" type="button">Enter EtterBank</button>
+            </div>
+
+            <div id="loginMsg" class="fineprint"></div>
+          </div>
+
+          <div class="card">
+            <h2>Accounts</h2>
+            <div class="sub"><b>EtterBank account</b> is your primary balance.</div>
+            <div class="sub" style="margin-top:10px;"><b>Goal‑Directed Savings Account</b> is for one targeted purchase.</div>
+            <div class="divider"></div>
+            <div class="hint">Goal‑Directed contributions are matched dollar‑for‑dollar by EtterBank.</div>
+          </div>
+        </div>
+
+        <!-- DASHBOARD VIEW -->
+        <div id="dashView" class="hidden">
+          <div class="stack">
+            <div class="card">
+              <h2 id="greeting">Welcome</h2>
+              <div class="divider"></div>
+              
+              <div class="fineprint" id="dashMsg"></div>
+            </div>
+
+            <div class="card">
+              <h2>EtterBank account (primary)</h2>
+              <div class="money" id="primaryBalance">$0.00</div>
+              <div class="sub">Everyday spending and general savings.</div>
+
+              <div class="divider"></div>
+
+              <div class="sectionHead"><h2>Goal‑Directed Savings Account</h2><button id="manageGoalBtn" class="btn secondary" type="button">Manage</button></div>
+              <div class="money" id="goalBalance">$0.00</div>
+              <div class="sub" id="goalSubtitle">For one targeted purchase.</div>
+
+              <div id="goalDetails" class="hidden">
+                <div class="divider"></div>
+
+                <div class="progressWrap">
+                  <div class="donut" aria-label="Progress">
+                    <div class="pct" id="pctText">0%</div>
+                    <svg width="140" height="140" viewBox="0 0 140 140" role="img" aria-hidden="true">
+                      <circle cx="70" cy="70" r="52" stroke="rgba(234,246,241,.12)" stroke-width="12" fill="none"></circle>
+                      <circle id="donutRing" cx="70" cy="70" r="52"
+                        stroke="rgba(83,211,160,.92)" stroke-width="12" fill="none"
+                        stroke-linecap="round"
+                        transform="rotate(-90 70 70)"
+                        stroke-dasharray="0 999"></circle>
+                    </svg>
+                  </div>
+
+                  <div>
+                    <div class="sub" style="margin-top:0;"><b id="goalItem">Target</b></div>
+                    <div class="kv">
+                      <div class="k">Goal</div><div class="v" id="goalCost">$0.00</div>
+                      <div class="k">Saved</div><div class="v" id="goalSaved">$0.00</div>
+                      <div class="k">Remaining</div><div class="v" id="goalRemaining">$0.00</div>
+                    </div>
+                    <div class="bar" aria-hidden="true"><div id="barFill"></div></div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Manage Goal -->
+  <div id="goalModalBackdrop" class="backdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="goalModalTitle">
+      <header>
+        <h3 id="goalModalTitle">Goal‑Directed Account</h3>
+        <button id="closeGoalModal" class="btn ghost" type="button" style="padding:10px 12px;">Close</button>
+      </header>
+
+      <div class="body">
+        <div class="hint">
+          Any amount you add into the Goal‑Directed account is matched dollar‑for‑dollar by EtterBank and credited immediately.
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="field" style="margin-top:0;">
+          <label>Action</label>
+          <div class="choice" role="radiogroup" aria-label="Action">
+            <label class="chip"><input type="radio" name="goalAction" value="deposit" checked /> Deposit new funds</label>
+            <label class="chip"><input type="radio" name="goalAction" value="transfer" /> Transfer from primary</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="amountInput">Amount</label>
+          <input id="amountInput" type="number" min="0" step="0.01" placeholder="0.00" />
+          <div class="hint" id="amountHint"></div>
+        </div>
+
+        <div id="modalMsg" class="fineprint"></div>
+
+        <div class="txlist" id="txList" aria-label="Recent activity"></div>
+      </div>
+
+      <div class="footer">
+        <button id="applyGoalAction" class="btn" type="button">Apply</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  // --- State ---
+  let session = null;  // { username, pass }
+  let snapshot = null; // latest server snapshot
+
+  // --- DOM ---
+  const el = (id) => document.getElementById(id);
+
+  const loginView = el("loginView");
+  const dashView  = el("dashView");
+
+  const userInput = el("userInput");
+  const passInput = el("passInput");
+  const loginBtn  = el("loginBtn");
+  const loginMsg  = el("loginMsg");
+
+  const greeting  = el("greeting");
+  const primaryBalance = el("primaryBalance");
+  const goalBalance    = el("goalBalance");
+  const dashMsg   = el("dashMsg");
+  const refreshBtnTop = el("refreshBtnTop");
+  const logoutBtnTop  = el("logoutBtnTop");
+
+  const manageGoalBtn = el("manageGoalBtn");
+
+  const goalDetails = el("goalDetails");
+  const goalSubtitle = el("goalSubtitle");
+  const goalItem = el("goalItem");
+  const goalCost = el("goalCost");
+  const goalSaved = el("goalSaved");
+  const goalRemaining = el("goalRemaining");
+  const pctText = el("pctText");
+  const donutRing = el("donutRing");
+  const barFill = el("barFill");
+
+  // Modal
+  const goalModalBackdrop = el("goalModalBackdrop");
+  const closeGoalModal = el("closeGoalModal");
+  const applyGoalAction = el("applyGoalAction");
+  const amountInput = el("amountInput");
+  const amountHint = el("amountHint");
+  const modalMsg = el("modalMsg");
+  const txList = el("txList");
+
+  // --- Helpers ---
+  const money = (n) => (Number.isFinite(n) ? n : 0).toLocaleString(undefined, { style:"currency", currency:"USD" });
+
+  const stamp = () => {
+    const d = new Date();
+    return d.toLocaleString(undefined, { year:"numeric", month:"short", day:"2-digit", hour:"2-digit", minute:"2-digit" });
+  };
+
+  function safePercent(saved, goal) {
+    if (!Number.isFinite(saved) || !Number.isFinite(goal) || goal <= 0) return 0;
+    return Math.max(0, Math.min(100, (saved / goal) * 100));
+  }
+
+  function renderProgress(goalBal, targetAmt) {
+    const pct = safePercent(goalBal, targetAmt);
+    pctText.textContent = `${Math.round(pct)}%`;
+
+    const r = 52;
+    const c = 2 * Math.PI * r;
+    const filled = (pct / 100) * c;
+    donutRing.setAttribute("stroke-dasharray", `${filled} ${Math.max(0, c - filled)}`);
+    barFill.style.width = `${pct}%`;
+  }
+
+  function setView(isLoggedIn) {
+    loginView.classList.toggle("hidden", isLoggedIn);
+    dashView.classList.toggle("hidden", !isLoggedIn);
+    refreshBtnTop.classList.toggle("hidden", !isLoggedIn);
+    logoutBtnTop.classList.toggle("hidden", !isLoggedIn);
+  }
+
+  function renderSnapshot() {
+    if (!snapshot) return;
+
+    greeting.textContent = `Welcome, ${snapshot.username}.`;
+    primaryBalance.textContent = money(snapshot.primary);
+    goalBalance.textContent = money(snapshot.goal);
+
+    const hasGoalInfo = !!(snapshot.target_purchase && snapshot.target_amount > 0);
+    goalDetails.classList.toggle("hidden", !hasGoalInfo);
+
+    if (hasGoalInfo) {
+      goalItem.textContent = snapshot.target_purchase;
+      goalCost.textContent = money(snapshot.target_amount);
+      goalSaved.textContent = money(snapshot.goal);
+      goalRemaining.textContent = money(Math.max(0, snapshot.target_amount - snapshot.goal));
+      renderProgress(snapshot.goal, snapshot.target_amount);
+      goalSubtitle.textContent = snapshot.goal >= snapshot.target_amount ? "Goal reached." : "For one targeted purchase.";
+    } else {
+      goalSubtitle.textContent = "For one targeted purchase.";
+    }
+  }
+
+  function callGetSnapshot() {
+    return new Promise((resolve, reject) => {
+      google.script.run
+        .withSuccessHandler((res) => resolve(res))
+        .withFailureHandler((err) => reject(err))
+        .getSnapshot(session.username, session.pass);
+    });
+  }
+
+  function callApplyGoalAction(action, amount) {
+    return new Promise((resolve, reject) => {
+      google.script.run
+        .withSuccessHandler((res) => resolve(res))
+        .withFailureHandler((err) => reject(err))
+        .applyGoalAction(session.username, session.pass, action, amount);
+    });
+  }
+
+  async function login() {
+    const u = (userInput.value || "").trim();
+    const p = (passInput.value || "").trim();
+
+    if (!u || !p) { loginMsg.textContent = "Enter username and passcode."; return; }
+
+    session = { username: u, pass: p };
+    loginMsg.textContent = "Checking…";
+
+    try {
+      snapshot = await callGetSnapshot();
+      loginMsg.textContent = "";
+      dashMsg.textContent = "";
+      setView(true);
+      renderSnapshot();
+    } catch (e) {
+      session = null;
+      snapshot = null;
+
+      // Show a generic message for auth failure, but surface other errors (missing permissions, missing sheet/tab, etc.)
+      const msg = (e && e.message) ? String(e.message) : "";
+      if (msg.toLowerCase().includes("auth failed")) {
+        loginMsg.textContent = "Incorrect username or passcode.";
+      } else if (msg) {
+        const low = msg.toLowerCase();
+        if (low.includes("permission") || low.includes("not have permission") || low.includes("service spreadsheets failed") || low.includes("authorization")) {
+          loginMsg.textContent = msg + " (If this is the first run, open the web app as the owner once to approve permissions, then try again.)";
+        } else {
+          loginMsg.textContent = msg;
+        }
+      } else {
+        loginMsg.textContent = "Login failed.";
+      }
+
+      setView(false);
+    }
+  }
+
+  async function refresh() {
+    if (!session) return;
+    dashMsg.textContent = "Refreshing…";
+    try {
+      snapshot = await callGetSnapshot();
+      dashMsg.textContent = "";
+      renderSnapshot();
+    } catch (e) {
+      const msg = (e && e.message) ? String(e.message) : "";
+      dashMsg.textContent = msg || "Could not refresh.";
+    }
+  }
+
+  function logout() {
+    session = null;
+    snapshot = null;
+    passInput.value = "";
+    loginMsg.textContent = "";
+    dashMsg.textContent = "";
+    setView(false);
+  }
+
+  // --- Modal / activity (client-side display only) ---
+  function openGoalModal() {
+    if (!session || !snapshot) return;
+    modalMsg.textContent = "";
+    amountInput.value = "";
+    amountHint.textContent = `Primary available: ${money(snapshot.primary)}.`;
+    renderTxList("—");
+    goalModalBackdrop.classList.add("show");
+    goalModalBackdrop.setAttribute("aria-hidden", "false");
+    amountInput.focus();
+  }
+
+  function closeGoalModalFn() {
+    goalModalBackdrop.classList.remove("show");
+    goalModalBackdrop.setAttribute("aria-hidden", "true");
+  }
+
+  function selectedAction() {
+    const checked = document.querySelector("input[name='goalAction']:checked");
+    return checked ? checked.value : "deposit";
+  }
+
+  function renderTxList(text) {
+    txList.innerHTML = "";
+    const div = document.createElement("div");
+    div.className = "hint";
+    div.textContent = `Last action: ${text}`;
+    txList.appendChild(div);
+  }
+
+  async function applyGoal() {
+    if (!session) return;
+
+    const action = selectedAction();
+    const amt = parseFloat(amountInput.value || "0");
+    if (!Number.isFinite(amt) || amt <= 0) { modalMsg.textContent = "Enter a valid amount."; return; }
+
+    modalMsg.textContent = "Applying…";
+    try {
+      snapshot = await callApplyGoalAction(action, amt);
+      modalMsg.textContent = "Applied.";
+      renderSnapshot();
+      renderTxList(`${action} ${money(amt)} on ${stamp()} (credited to goal: ${money(2*amt)})`);
+      amountInput.value = "";
+      amountInput.focus();
+    } catch (e) {
+      modalMsg.textContent = (e && e.message) ? e.message : "Could not apply.";
+    }
+  }
+
+  // --- Events ---
+  loginBtn.addEventListener("click", login);
+  passInput.addEventListener("keydown", (e) => { if (e.key === "Enter") login(); });
+  userInput.addEventListener("keydown", (e) => { if (e.key === "Enter") passInput.focus(); });
+  refreshBtnTop.addEventListener("click", refresh);
+  logoutBtnTop.addEventListener("click", logout);
+
+  manageGoalBtn.addEventListener("click", openGoalModal);
+
+  closeGoalModal.addEventListener("click", closeGoalModalFn);
+  goalModalBackdrop.addEventListener("click", (e) => { if (e.target === goalModalBackdrop) closeGoalModalFn(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && goalModalBackdrop.classList.contains("show")) closeGoalModalFn(); });
+
+  applyGoalAction.addEventListener("click", applyGoal);
+  amountInput.addEventListener("keydown", (e) => { if (e.key === "Enter") applyGoal(); });
+
+  setView(false);
+})();
+</script>
+</body>
+</html>

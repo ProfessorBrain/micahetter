@@ -1,0 +1,999 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>EtterBank</title>
+  <meta name="theme-color" content="#0b3d2e" />
+  <style>
+    :root{
+      --bg1:#071d16;
+      --bg2:#0b3d2e;
+      --panel1: rgba(15,43,34,.84);
+      --panel2: rgba(10,36,28,.84);
+      --card: rgba(7,29,22,.35);
+      --stroke: rgba(234,246,241,.14);
+      --stroke2: rgba(234,246,241,.12);
+      --text:#eaf6f1;
+      --muted:#b8d0c6;
+      --accent:#53d3a0;
+      --accent2:#f2d36a;
+      --danger:#ff6b6b;
+      --shadow: 0 18px 60px rgba(0,0,0,.45);
+      --radius: 18px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      color:var(--text);
+      background:
+        radial-gradient(1200px 600px at 15% 15%, rgba(83,211,160,.18), transparent 55%),
+        radial-gradient(1000px 500px at 85% 35%, rgba(242,211,106,.14), transparent 55%),
+        linear-gradient(145deg, var(--bg1), var(--bg2));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+    }
+
+    .app{width:min(980px, 100%);}
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px; margin-bottom:16px;
+    }
+    .brand h1{
+      margin:0;
+      font-size: clamp(28px, 4vw, 42px);
+      letter-spacing:.5px;
+    }
+
+    .panel{
+      background: linear-gradient(180deg, var(--panel1), var(--panel2));
+      border:1px solid var(--stroke);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .panel-inner{padding:18px;}
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap:16px;
+    }
+    @media (max-width: 860px){
+      .grid{grid-template-columns:1fr;}
+    }
+
+    .card{
+      background: var(--card);
+      border:1px solid var(--stroke2);
+      border-radius: 16px;
+      padding:16px;
+    }
+    .card h2{
+      margin:0 0 10px 0;
+      font-size:16px;
+      letter-spacing:.2px;
+      color: var(--muted);
+      font-weight:800;
+      text-transform:uppercase;
+    }
+
+    .field{display:flex; flex-direction:column; gap:8px; margin-top:12px;}
+    label{font-size:13px; color:var(--muted)}
+    input, select, textarea{
+      width:100%;
+      padding:12px 12px;
+      border-radius: 12px;
+      border:1px solid rgba(234,246,241,.18);
+      background: rgba(15,43,34,.35);
+      color: var(--text);
+      outline:none;
+      font-size:14px;
+    }
+    input::placeholder{color: rgba(184,208,198,.75);}
+
+    .row{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
+    .row > *{flex:1;}
+    .row.tight > *{flex:0 0 auto;}
+    .row.grow > *{flex:1 1 auto;}
+
+    .btn{
+      appearance:none;
+      border:none;
+      border-radius: 12px;
+      padding:12px 14px;
+      font-weight:800;
+      cursor:pointer;
+      transition: transform .05s ease, opacity .15s ease;
+      background: linear-gradient(90deg, rgba(83,211,160,.92), rgba(242,211,106,.88));
+      color:#062017;
+    }
+    .btn:active{transform: translateY(1px);}
+    .btn.ghost{
+      background: transparent;
+      border:1px solid rgba(234,246,241,.18);
+      color: var(--text);
+      font-weight:750;
+    }
+    .btn.secondary{
+      background: rgba(234,246,241,.12);
+      border:1px solid rgba(234,246,241,.18);
+      color: var(--text);
+      font-weight:750;
+    }
+    .btn:disabled{opacity:.55; cursor:not-allowed;}
+
+    .hint{
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.35;
+    }
+    .fineprint{
+      font-family:var(--mono);
+      font-size:11px;
+      color: rgba(184,208,198,.9);
+      margin-top:10px;
+      min-height: 16px;
+    }
+    .divider{height:1px; background: rgba(234,246,241,.12); margin:14px 0;}
+
+    .hidden{display:none !important;}
+    .right-actions{
+      display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;
+    }
+
+    .money{
+      font-size: clamp(28px, 4.6vw, 44px);
+      font-weight:950;
+      letter-spacing:.2px;
+      margin: 6px 0 0 0;
+    }
+    .sub{
+      color: var(--muted);
+      font-size:13px;
+      margin-top:6px;
+      line-height:1.35;
+    }
+
+    .filebox{
+      border:1px dashed rgba(234,246,241,.22);
+      background: rgba(7,29,22,.25);
+      border-radius:14px;
+      padding:12px;
+      margin-top:12px;
+    }
+
+    /* Progress */
+    .progressWrap{
+      display:grid;
+      grid-template-columns: 140px 1fr;
+      gap:14px;
+      align-items:center;
+    }
+    @media (max-width: 520px){
+      .progressWrap{grid-template-columns:1fr;}
+    }
+    .donut{
+      width:140px; height:140px;
+      display:grid; place-items:center;
+      margin: 2px auto;
+    }
+    .donut svg{display:block}
+    .donut .pct{
+      position: absolute;
+      font-family: var(--mono);
+      font-weight: 800;
+      font-size: 14px;
+      color: var(--text);
+    }
+    .bar{
+      height:12px;
+      border-radius:999px;
+      background: rgba(234,246,241,.10);
+      border:1px solid rgba(234,246,241,.14);
+      overflow:hidden;
+      margin-top:10px;
+    }
+    .bar > div{
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, rgba(83,211,160,.92), rgba(242,211,106,.88));
+    }
+    .kv{
+      display:grid;
+      grid-template-columns: 160px 1fr;
+      gap:8px 12px;
+      margin-top:10px;
+    }
+    .k{color:var(--muted); font-size:12px;}
+    .v{font-family:var(--mono); font-size:12px; color:var(--text);}
+
+    /* Modal */
+    .backdrop{
+      position:fixed;
+      inset:0;
+      background: rgba(0,0,0,.55);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      z-index:9999;
+    }
+    .backdrop.show{display:flex;}
+    .modal{
+      width:min(680px, 100%);
+      background: linear-gradient(180deg, rgba(15,43,34,.92), rgba(10,36,28,.92));
+      border:1px solid rgba(234,246,241,.18);
+      border-radius: 18px;
+      box-shadow: 0 30px 100px rgba(0,0,0,.55);
+      overflow:hidden;
+    }
+    .modal header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:14px 16px;
+      border-bottom:1px solid rgba(234,246,241,.12);
+    }
+    .modal header h3{
+      margin:0;
+      font-size:14px;
+      letter-spacing:.2px;
+      text-transform:uppercase;
+      color: var(--muted);
+      font-weight:900;
+    }
+    .modal .body{padding:16px;}
+    .modal .footer{
+      display:flex;
+      justify-content:flex-end;
+      gap:10px;
+      padding:14px 16px;
+      border-top:1px solid rgba(234,246,241,.12);
+    }
+    .choice{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      margin-top:8px;
+    }
+    .chip{
+      display:inline-flex;
+      gap:10px;
+      align-items:center;
+      border:1px solid rgba(234,246,241,.18);
+      background: rgba(234,246,241,.08);
+      padding:10px 12px;
+      border-radius: 999px;
+      cursor:pointer;
+      user-select:none;
+      font-size:13px;
+      color: var(--text);
+    }
+    .chip input{width:auto; margin:0}
+    .warn{color: rgba(255,107,107,.95);}
+    .ok{color: rgba(83,211,160,.95);}
+
+    .txlist{
+      margin-top:12px;
+      border-top:1px solid rgba(234,246,241,.12);
+      padding-top:12px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      max-height: 220px;
+      overflow:auto;
+    }
+    .tx{
+      font-family: var(--mono);
+      font-size:11px;
+      color: rgba(234,246,241,.92);
+      border:1px solid rgba(234,246,241,.12);
+      background: rgba(7,29,22,.25);
+      border-radius: 12px;
+      padding:10px 12px;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:flex-start;
+    }
+    .tx small{color: rgba(184,208,198,.92); display:block; margin-top:4px;}
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <div class="topbar">
+      <div class="brand">
+        <h1>EtterBank</h1>
+      </div>
+      <div class="right-actions">
+        <button id="refreshBtnTop" class="btn secondary hidden" type="button">Refresh</button>
+        <button id="logoutBtnTop" class="btn ghost hidden" type="button">Log out</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-inner">
+
+        <!-- LOGIN VIEW -->
+        <div id="loginView" class="grid">
+          <div class="card">
+            <h2>Log in</h2>
+
+            <div class="field">
+              <label for="userInput">Username</label>
+              <input id="userInput" type="text" placeholder="Username" autocomplete="off" />
+            </div>
+
+            <div class="field">
+              <label for="passInput">Passcode</label>
+              <input id="passInput" type="password" placeholder="Passcode" autocomplete="off" />
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="row">
+              <button id="loginBtn" class="btn" type="button">Enter EtterBank</button>
+            </div>
+
+            <div id="loginMsg" class="fineprint"></div>
+
+            <div class="filebox hidden" id="fileBox">
+              <div class="hint" style="margin-bottom:8px;">
+                Choose your accounts CSV:
+              </div>
+              <input id="fileInput" type="file" accept=".csv,text/csv" />
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Accounts</h2>
+            <div class="sub"><b>EtterBank account</b> is your primary balance.</div>
+            <div class="sub" style="margin-top:10px;">
+              <b>EtterBank Goal-Directed Savings Account</b> is for saving toward one big purchase.
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="hint">
+              Contributions into the Goal‑Directed account are matched dollar‑for‑dollar by EtterBank.
+            </div>
+          </div>
+        </div>
+
+        <!-- DASHBOARD VIEW -->
+        <div id="dashView" class="hidden">
+          <div class="grid">
+            <div class="card">
+              <h2 id="greeting">Welcome</h2>
+
+              <div class="divider"></div>
+
+              <div class="right-actions" style="justify-content:flex-start;">
+                <button id="manageGoalBtn" class="btn secondary" type="button">Manage Goal‑Directed Account</button>
+                <button id="refreshBtn" class="btn secondary" type="button">Refresh</button>
+                <button id="logoutBtn" class="btn ghost" type="button">Log out</button>
+              </div>
+
+              <div class="fineprint" id="dashMsg"></div>
+            </div>
+
+            <div class="card">
+              <h2>EtterBank account (primary)</h2>
+              <div class="money" id="primaryBalance">$0.00</div>
+              <div class="sub">Everyday spending and general savings.</div>
+
+              <div class="divider"></div>
+
+              <h2>EtterBank Goal‑Directed Savings Account</h2>
+              <div class="money" id="goalBalance">$0.00</div>
+              <div class="sub" id="goalSubtitle">For one targeted purchase.</div>
+
+              <div id="goalDetails" class="hidden">
+                <div class="divider"></div>
+
+                <div class="progressWrap">
+                  <div class="donut" aria-label="Progress">
+                    <div class="pct" id="pctText">0%</div>
+                    <svg width="140" height="140" viewBox="0 0 140 140" role="img" aria-hidden="true">
+                      <circle cx="70" cy="70" r="52" stroke="rgba(234,246,241,.12)" stroke-width="12" fill="none"></circle>
+                      <circle id="donutRing" cx="70" cy="70" r="52"
+                        stroke="rgba(83,211,160,.92)" stroke-width="12" fill="none"
+                        stroke-linecap="round"
+                        transform="rotate(-90 70 70)"
+                        stroke-dasharray="0 999"></circle>
+                    </svg>
+                  </div>
+
+                  <div>
+                    <div class="sub" style="margin-top:0;">
+                      <b id="goalItem">Target</b>
+                    </div>
+                    <div class="kv">
+                      <div class="k">Goal</div><div class="v" id="goalCost">$0.00</div>
+                      <div class="k">Saved</div><div class="v" id="goalSaved">$0.00</div>
+                      <div class="k">Remaining</div><div class="v" id="goalRemaining">$0.00</div>
+                    </div>
+                    <div class="bar" aria-hidden="true"><div id="barFill"></div></div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Manage Goal -->
+  <div id="goalModalBackdrop" class="backdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="goalModalTitle">
+      <header>
+        <h3 id="goalModalTitle">Goal‑Directed Account</h3>
+        <button id="closeGoalModal" class="btn ghost" type="button" style="padding:10px 12px;">Close</button>
+      </header>
+
+      <div class="body">
+        <div class="hint">
+          Any amount you add into the Goal‑Directed account is matched dollar‑for‑dollar by EtterBank and credited immediately.
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="field" style="margin-top:0;">
+          <label>Action</label>
+          <div class="choice" role="radiogroup" aria-label="Action">
+            <label class="chip"><input type="radio" name="goalAction" value="deposit" checked /> Deposit new funds</label>
+            <label class="chip"><input type="radio" name="goalAction" value="transfer" /> Transfer from primary</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="amountInput">Amount</label>
+          <input id="amountInput" type="number" min="0" step="0.01" placeholder="0.00" />
+          <div class="hint" id="amountHint"></div>
+        </div>
+
+        <div class="row tight" style="gap:10px; margin-top:6px;">
+          <span class="hint"><span class="ok">Match:</span> your amount is doubled in the Goal‑Directed account.</span>
+        </div>
+
+        <div id="modalMsg" class="fineprint"></div>
+
+        <div class="txlist" id="txList" aria-label="Recent activity"></div>
+      </div>
+
+      <div class="footer">
+        <button id="applyGoalAction" class="btn" type="button">Apply</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  const CSV_URL_DEFAULT = "accounts.csv";
+
+  // Login pairs:
+  // - SecretAgentSid / password
+  // - Hensonbot / password
+  const AUTH = [
+    { username: "SecretAgentSid", pass: "password", displayName: "SecretAgentSid" },
+    { username: "Hensonbot",     pass: "password", displayName: "Hensonbot" },
+  ];
+
+  // CSV expected columns (by position):
+  // 1) user
+  // 2) primary_balance
+  // 3) goal_balance
+  // 4) target_purchase
+  // 5) target_amount
+  //
+  // Header row is supported (recommended).
+  //
+  // Notes:
+  // - This page cannot edit accounts.csv directly (browser security).
+  // - Deposits/transfers are stored locally in this browser (localStorage) as adjustments.
+
+  const STORAGE_KEY = "etterbank_goal_ledger_v1";
+
+  // --- State ---
+  let baseAccounts = {};      // parsed from CSV: { user: {primary, goal, targetItem, targetAmount} }
+  let currentUser = null;     // {username, ...}
+  let ledger = {};            // { username: [tx, tx, ...] }
+
+  // --- DOM ---
+  const el = (id) => document.getElementById(id);
+
+  const loginView = el("loginView");
+  const dashView  = el("dashView");
+
+  const userInput = el("userInput");
+  const passInput = el("passInput");
+  const loginBtn  = el("loginBtn");
+  const loginMsg  = el("loginMsg");
+
+  const fileBox   = el("fileBox");
+  const fileInput = el("fileInput");
+
+  const greeting  = el("greeting");
+  const primaryBalance = el("primaryBalance");
+  const goalBalance    = el("goalBalance");
+  const dashMsg   = el("dashMsg");
+
+  const refreshBtn = el("refreshBtn");
+  const logoutBtn  = el("logoutBtn");
+  const refreshBtnTop = el("refreshBtnTop");
+  const logoutBtnTop  = el("logoutBtnTop");
+
+  const manageGoalBtn = el("manageGoalBtn");
+
+  const goalDetails = el("goalDetails");
+  const goalSubtitle = el("goalSubtitle");
+  const goalItem = el("goalItem");
+  const goalCost = el("goalCost");
+  const goalSaved = el("goalSaved");
+  const goalRemaining = el("goalRemaining");
+  const pctText = el("pctText");
+  const donutRing = el("donutRing");
+  const barFill = el("barFill");
+
+  // Modal
+  const goalModalBackdrop = el("goalModalBackdrop");
+  const closeGoalModal = el("closeGoalModal");
+  const applyGoalAction = el("applyGoalAction");
+  const amountInput = el("amountInput");
+  const amountHint = el("amountHint");
+  const modalMsg = el("modalMsg");
+  const txList = el("txList");
+
+  // --- Helpers ---
+  const money = (n) => {
+    const x = Number.isFinite(n) ? n : 0;
+    return x.toLocaleString(undefined, { style:"currency", currency:"USD" });
+  };
+
+  const parseMoney = (s) => {
+    if (s == null) return 0;
+    const cleaned = String(s).replace(/\uFEFF/g,"").trim()
+      .replace(/\$/g,"")
+      .replace(/,/g,"")
+      .replace(/\s+/g,"");
+    const n = parseFloat(cleaned);
+    return Number.isFinite(n) ? n : 0;
+  };
+
+  const normUserKey = (s) => String(s ?? "").replace(/\uFEFF/g,"").trim();
+
+  const stamp = () => {
+    const d = new Date();
+    return d.toLocaleString(undefined, { year:"numeric", month:"short", day:"2-digit", hour:"2-digit", minute:"2-digit" });
+  };
+
+  function safePercent(saved, goal) {
+    if (!Number.isFinite(saved) || !Number.isFinite(goal) || goal <= 0) return 0;
+    return Math.max(0, Math.min(100, (saved / goal) * 100));
+  }
+
+  function loadLedger() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      ledger = raw ? JSON.parse(raw) : {};
+      if (!ledger || typeof ledger !== "object") ledger = {};
+    } catch {
+      ledger = {};
+    }
+  }
+
+  function saveLedger() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(ledger)); } catch {}
+  }
+
+  function getUserTxs(username) {
+    const arr = ledger[username] || [];
+    return Array.isArray(arr) ? arr : [];
+  }
+
+  function addTx(username, tx) {
+    if (!ledger[username] || !Array.isArray(ledger[username])) ledger[username] = [];
+    ledger[username].unshift(tx);
+    // keep it tidy
+    ledger[username] = ledger[username].slice(0, 50);
+    saveLedger();
+  }
+
+  function computeAdjustments(username) {
+    const txs = getUserTxs(username);
+    let deltaPrimary = 0;
+    let deltaGoal = 0;
+    let userContrib = 0;
+    let bankMatch = 0;
+
+    for (const t of txs) {
+      const amt = Number(t.amount || 0);
+      if (!Number.isFinite(amt) || amt <= 0) continue;
+
+      // credited to goal is 2x (contribution + match)
+      userContrib += amt;
+      bankMatch += amt;
+      deltaGoal += (2 * amt);
+
+      if (t.type === "transfer") deltaPrimary -= amt;
+      // deposits do not affect primary
+    }
+
+    return { deltaPrimary, deltaGoal, userContrib, bankMatch };
+  }
+
+  function parseCSV(text) {
+    const raw = String(text ?? "").replace(/\r\n/g,"\n").replace(/\r/g,"\n");
+    const lines = raw.split("\n").map(l => l.trim()).filter(Boolean);
+    if (!lines.length) return {};
+
+    const rows = lines.map(line => line.split(",").map(x => x.trim()));
+
+    const head = rows[0].map(c => c.toLowerCase());
+    const headerLike = head.includes("user") || head.includes("name") || head.includes("primary") || head.includes("goal") || head.includes("target");
+
+    let startIdx = 0;
+    let idxUser = 0, idxPrimary = 1, idxGoal = 2, idxTargetItem = 3, idxTargetAmt = 4;
+
+    if (headerLike) {
+      startIdx = 1;
+
+      const findAny = (cands, fallback) => {
+        for (const c of cands) {
+          const i = head.indexOf(c);
+          if (i >= 0) return i;
+        }
+        return fallback;
+      };
+
+      idxUser = findAny(["user","name","username"], 0);
+      idxPrimary = findAny(["primary","primary_balance","etterbank","balance"], 1);
+      idxGoal = findAny(["goal","goal_balance","goal_directed","goal-directed","goaldirected"], 2);
+      idxTargetItem = findAny(["target","target_purchase","purchase","item","goal_item","goal_purchase"], 3);
+      idxTargetAmt = findAny(["target_amount","target_cost","cost","price","amount","goal_amount"], 4);
+    }
+
+    const out = {};
+    for (let i = startIdx; i < rows.length; i++) {
+      const r = rows[i];
+      if (!r.length) continue;
+
+      const user = normUserKey(r[idxUser] ?? "");
+      if (!user) continue;
+
+      const primary = parseMoney(r[idxPrimary] ?? 0);
+      const goal = parseMoney(r[idxGoal] ?? 0);
+      const targetItem = String((r.length > idxTargetItem ? (r[idxTargetItem] ?? "") : "")).trim();
+      const targetAmount = parseMoney(r.length > idxTargetAmt ? (r[idxTargetAmt] ?? 0) : 0);
+
+      out[user] = { primary, goal, targetItem, targetAmount };
+    }
+    return out;
+  }
+
+  async function loadAccountsFromFetch(url) {
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const text = await res.text();
+    return parseCSV(text);
+  }
+
+  function loadAccountsFromFile(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = () => reject(new Error("Could not read file"));
+      reader.onload = () => {
+        try { resolve(parseCSV(String(reader.result ?? ""))); }
+        catch (e) { reject(e); }
+      };
+      reader.readAsText(file);
+    });
+  }
+
+  function showFilePicker(show) {
+    fileBox.classList.toggle("hidden", !show);
+  }
+
+  function getUserBaseRow(username) {
+    return baseAccounts[username] || null;
+  }
+
+  function getEffectiveBalances(username) {
+    const base = getUserBaseRow(username);
+    const basePrimary = base?.primary ?? 0;
+    const baseGoal = base?.goal ?? 0;
+
+    const adj = computeAdjustments(username);
+    const primary = basePrimary + adj.deltaPrimary;
+    const goal = baseGoal + adj.deltaGoal;
+
+    return {
+      primary: Number.isFinite(primary) ? primary : 0,
+      goal: Number.isFinite(goal) ? goal : 0,
+      basePrimary,
+      baseGoal,
+      ...adj,
+      targetItem: base?.targetItem ?? "",
+      targetAmount: base?.targetAmount ?? 0,
+      rowFound: !!base
+    };
+  }
+
+  function renderProgress(goalBal, targetAmt) {
+    const pct = safePercent(goalBal, targetAmt);
+    const pctRounded = Math.round(pct);
+    pctText.textContent = `${pctRounded}%`;
+
+    // donut
+    const r = 52;
+    const c = 2 * Math.PI * r;
+    const filled = (pct / 100) * c;
+    donutRing.setAttribute("stroke-dasharray", `${filled} ${Math.max(0, c - filled)}`);
+
+    // bar
+    barFill.style.width = `${pct}%`;
+  }
+
+  function renderDashboard() {
+    if (!currentUser) return;
+
+    greeting.textContent = `Welcome, ${currentUser.displayName}.`;
+
+    const s = getEffectiveBalances(currentUser.username);
+    primaryBalance.textContent = money(s.primary);
+    goalBalance.textContent = money(s.goal);
+
+    dashMsg.textContent = s.rowFound ? "" : "No row found in the CSV for this user.";
+    manageGoalBtn.disabled = !s.rowFound;
+
+    const hasGoalInfo = !!(s.targetItem && s.targetAmount > 0);
+    goalDetails.classList.toggle("hidden", !hasGoalInfo);
+
+    if (hasGoalInfo) {
+      goalItem.textContent = s.targetItem;
+      goalCost.textContent = money(s.targetAmount);
+      goalSaved.textContent = money(s.goal);
+      const remaining = Math.max(0, s.targetAmount - s.goal);
+      goalRemaining.textContent = money(remaining);
+      renderProgress(s.goal, s.targetAmount);
+
+      if (s.goal >= s.targetAmount) {
+        goalSubtitle.textContent = "Goal reached.";
+      } else {
+        goalSubtitle.textContent = "For one targeted purchase.";
+      }
+    } else {
+      goalSubtitle.textContent = "For one targeted purchase.";
+    }
+  }
+
+  function enterDashboard() {
+    loginView.classList.add("hidden");
+    dashView.classList.remove("hidden");
+    refreshBtnTop.classList.remove("hidden");
+    logoutBtnTop.classList.remove("hidden");
+    renderDashboard();
+  }
+
+  function exitDashboard() {
+    dashView.classList.add("hidden");
+    loginView.classList.remove("hidden");
+    refreshBtnTop.classList.add("hidden");
+    logoutBtnTop.classList.add("hidden");
+    passInput.value = "";
+    dashMsg.textContent = "";
+  }
+
+  async function loadCSVQuiet() {
+    try {
+      baseAccounts = await loadAccountsFromFetch(CSV_URL_DEFAULT);
+      showFilePicker(false);
+      // keep loginMsg silent unless failure
+      if (loginMsg.textContent && loginMsg.textContent.toLowerCase().includes("couldn’t auto-load")) {
+        loginMsg.textContent = "";
+      }
+      return true;
+    } catch (e) {
+      baseAccounts = {};
+      showFilePicker(true);
+      if (!currentUser) {
+        loginMsg.textContent = "Couldn’t auto-load the CSV here. Please choose the CSV file below.";
+      }
+      return false;
+    }
+  }
+
+  function attemptLogin() {
+    const u = (userInput.value || "").trim();
+    const p = (passInput.value || "").trim();
+
+    const match = AUTH.find(a =>
+      a.username.toLowerCase() === u.toLowerCase() && a.pass === p
+    );
+
+    if (!match) {
+      loginMsg.textContent = "Incorrect username or passcode.";
+      return;
+    }
+
+    currentUser = match;
+    loginMsg.textContent = "";
+
+    if (!Object.keys(baseAccounts).length) {
+      loadCSVQuiet().finally(() => enterDashboard());
+    } else {
+      enterDashboard();
+    }
+  }
+
+  async function refreshBalances() {
+    dashMsg.textContent = "";
+    const ok = await loadCSVQuiet();
+    if (!ok) {
+      exitDashboard();
+      return;
+    }
+    renderDashboard();
+  }
+
+  // --- Modal ---
+  function openGoalModal() {
+    if (!currentUser) return;
+
+    modalMsg.textContent = "";
+    amountInput.value = "";
+
+    const s = getEffectiveBalances(currentUser.username);
+    amountHint.textContent = `Primary available: ${money(s.primary)}.`;
+
+    renderTxList();
+    goalModalBackdrop.classList.add("show");
+    goalModalBackdrop.setAttribute("aria-hidden", "false");
+    amountInput.focus();
+  }
+
+  function closeGoalModalFn() {
+    goalModalBackdrop.classList.remove("show");
+    goalModalBackdrop.setAttribute("aria-hidden", "true");
+  }
+
+  function selectedAction() {
+    const checked = document.querySelector("input[name='goalAction']:checked");
+    return checked ? checked.value : "deposit";
+  }
+
+  function renderTxList() {
+    if (!currentUser) return;
+    const txs = getUserTxs(currentUser.username).slice(0, 8);
+
+    txList.innerHTML = "";
+    if (!txs.length) {
+      const div = document.createElement("div");
+      div.className = "hint";
+      div.textContent = "No recent activity.";
+      txList.appendChild(div);
+      return;
+    }
+
+    for (const t of txs) {
+      const amt = Number(t.amount || 0);
+      const typeLabel = t.type === "transfer" ? "Transfer" : "Deposit";
+      const item = document.createElement("div");
+      item.className = "tx";
+
+      const left = document.createElement("div");
+      left.innerHTML = `<b>${typeLabel}</b> ${money(amt)}<small>credited to goal: ${money(2*amt)} (includes match)</small>`;
+
+      const right = document.createElement("div");
+      right.style.textAlign = "right";
+      right.innerHTML = `<small>${t.when || ""}</small>`;
+
+      item.appendChild(left);
+      item.appendChild(right);
+      txList.appendChild(item);
+    }
+  }
+
+  function applyGoal() {
+    if (!currentUser) return;
+
+    const action = selectedAction();
+    const amt = parseFloat(amountInput.value || "0");
+    if (!Number.isFinite(amt) || amt <= 0) {
+      modalMsg.textContent = "Enter a valid amount.";
+      return;
+    }
+
+    const s = getEffectiveBalances(currentUser.username);
+    if (!s.rowFound) {
+      modalMsg.textContent = "This user is not in the CSV.";
+      return;
+    }
+
+    if (action === "transfer" && amt > s.primary + 1e-9) {
+      modalMsg.textContent = "Transfer amount exceeds available primary balance.";
+      return;
+    }
+
+    addTx(currentUser.username, {
+      type: action,
+      amount: Math.round(amt * 100) / 100,
+      when: stamp()
+    });
+
+    modalMsg.textContent = "Applied.";
+    renderDashboard();
+    renderTxList();
+    amountInput.value = "";
+    amountInput.focus();
+  }
+
+  // --- Events ---
+  loginBtn.addEventListener("click", attemptLogin);
+  passInput.addEventListener("keydown", (e) => { if (e.key === "Enter") attemptLogin(); });
+  userInput.addEventListener("keydown", (e) => { if (e.key === "Enter") passInput.focus(); });
+
+  refreshBtn.addEventListener("click", refreshBalances);
+  refreshBtnTop.addEventListener("click", refreshBalances);
+
+  logoutBtn.addEventListener("click", exitDashboard);
+  logoutBtnTop.addEventListener("click", exitDashboard);
+
+  manageGoalBtn.addEventListener("click", openGoalModal);
+
+  closeGoalModal.addEventListener("click", closeGoalModalFn);
+  goalModalBackdrop.addEventListener("click", (e) => {
+    if (e.target === goalModalBackdrop) closeGoalModalFn();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && goalModalBackdrop.classList.contains("show")) closeGoalModalFn();
+  });
+
+  applyGoalAction.addEventListener("click", applyGoal);
+  amountInput.addEventListener("keydown", (e) => { if (e.key === "Enter") applyGoal(); });
+
+  document.querySelectorAll("input[name='goalAction']").forEach(r => {
+    r.addEventListener("change", () => {
+      if (!currentUser) return;
+      const s = getEffectiveBalances(currentUser.username);
+      amountHint.textContent = `Primary available: ${money(s.primary)}.`;
+      modalMsg.textContent = "";
+    });
+  });
+
+  fileInput.addEventListener("change", async () => {
+    const file = fileInput.files && fileInput.files[0];
+    if (!file) return;
+    try {
+      baseAccounts = await loadAccountsFromFile(file);
+      loginMsg.textContent = "";
+      showFilePicker(true);
+      if (currentUser && !dashView.classList.contains("hidden")) renderDashboard();
+    } catch {
+      baseAccounts = {};
+      loginMsg.textContent = "Could not read that CSV.";
+      showFilePicker(true);
+    }
+  });
+
+  // --- Init ---
+  loadLedger();
+  loadCSVQuiet();
+})();
+</script>
+</body>
+</html>

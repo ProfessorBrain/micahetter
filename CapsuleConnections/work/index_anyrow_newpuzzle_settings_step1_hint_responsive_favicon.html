@@ -381,9 +381,8 @@ body{
   font-weight:800;
   text-align:center;
   line-height:1.05;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:clip;
+  overflow-wrap:anywhere;
+  hyphens:auto;
   box-shadow:0 6px 16px rgba(0,0,0,.75);
   cursor:pointer;
   position:relative;
@@ -394,13 +393,6 @@ body{
   transform:translateY(-1px);
   box-shadow:0 10px 24px rgba(0,0,0,.85);
 }
-.pill.pill-wrap{
-  white-space:normal;
-  overflow-wrap:normal; /* only break at natural opportunities (spaces/hyphens) */
-  word-break:normal;
-  hyphens:none;
-}
-
 
 .pill::before{
   content:"";
@@ -883,125 +875,6 @@ function lockPillTrayHeight(){
   const h = pillTrayEl.offsetHeight;
   if(h>0){ pillTrayEl.style.minHeight = h + "px"; }
 }
-// --- pill text auto-fit (prevents awkward single-letter wrapping) ---
-function getPillMeasureEl(){
-  if(window.__pillMeasureEl && window.__pillMeasureEl.isConnected) return window.__pillMeasureEl;
-  const el = document.createElement("span");
-  el.id = "__pillMeasure";
-  el.style.position = "fixed";
-  el.style.left = "-9999px";
-  el.style.top = "-9999px";
-  el.style.visibility = "hidden";
-  el.style.whiteSpace = "nowrap";
-  el.style.padding = "0";
-  el.style.margin = "0";
-  el.style.border = "0";
-  el.style.pointerEvents = "none";
-  (document.body || document.documentElement).appendChild(el);
-  window.__pillMeasureEl = el;
-  return el;
-}
-
-function measurePillLabelWidth(cs, label, fontPx){
-  const el = getPillMeasureEl();
-  el.style.fontFamily = cs.fontFamily;
-  el.style.fontWeight = cs.fontWeight;
-  el.style.fontStyle = cs.fontStyle;
-  el.style.letterSpacing = cs.letterSpacing;
-  el.style.textTransform = cs.textTransform;
-  el.style.fontSize = fontPx.toFixed(2) + "px";
-  el.textContent = label;
-  return el.getBoundingClientRect().width || 0;
-}
-
-// --- pill text auto-fit (keeps short labels at normal size; shrinks only when needed) ---
-function fitPillText(pill){
-  if(!pill || !pill.isConnected) return;
-
-  // Reset to default single-line pill style
-  pill.classList.remove("pill-wrap");
-  pill.style.fontSize = "";
-
-  const label = (pill.dataset && pill.dataset.item) ? pill.dataset.item : (pill.textContent || "");
-  const hasBreakOpportunities = /[ \-\/]/.test(label);
-
-  const cs = getComputedStyle(pill);
-  const base = parseFloat(cs.fontSize) || 14;
-
-  // Use rendered width (accounts for responsive scaling/constraints)
-  const rectW = (pill.getBoundingClientRect && pill.getBoundingClientRect().width) ? pill.getBoundingClientRect().width : (pill.clientWidth || 0);
-
-  const padL = parseFloat(cs.paddingLeft) || 0;
-  const padR = parseFloat(cs.paddingRight) || 0;
-  const borderL = parseFloat(cs.borderLeftWidth) || 0;
-  const borderR = parseFloat(cs.borderRightWidth) || 0;
-  const buffer = 2;
-
-  const contentW = Math.max(20, rectW - padL - padR - borderL - borderR - buffer);
-
-  // If it already fits, do nothing (avoid shrinking short labels).
-  const baseW = measurePillLabelWidth(cs, label, base);
-  if(baseW <= contentW + 0.5) return;
-
-  const inBottle = !!pill.closest(".bottle-body, .bottle-body-inner");
-
-  // Keep jar text readable: allow only modest shrinking by default.
-  const minAllowed = Math.max(inBottle ? 9 : 10, base * (inBottle ? 0.70 : 0.78));
-
-  // If even the minimum doesn't fit, wrap only when there are natural breakpoints; otherwise clip.
-  if(measurePillLabelWidth(cs, label, minAllowed) > contentW + 0.5){
-    if(hasBreakOpportunities){
-      pill.classList.add("pill-wrap");
-      pill.style.fontSize = ""; // base
-    }else{
-      pill.style.fontSize = minAllowed.toFixed(2) + "px";
-    }
-    return;
-  }
-
-  // Binary search for the largest font size that fits.
-  let lo = minAllowed;
-  let hi = base;
-  let best = minAllowed;
-
-  for(let i=0; i<12; i++){
-    const mid = (lo + hi) / 2;
-    const w = measurePillLabelWidth(cs, label, mid);
-    if(w <= contentW + 0.5){
-      best = mid;
-      lo = mid;
-    }else{
-      hi = mid;
-    }
-  }
-
-  pill.style.fontSize = best.toFixed(2) + "px";
-
-  // If we had to shrink a lot AND the label has natural breakpoints, prefer wrapping for readability.
-  const ratio = best / Math.max(1, base);
-  if(hasBreakOpportunities && ratio < 0.82){
-    pill.classList.add("pill-wrap");
-    pill.style.fontSize = "";
-  }
-}
-
-
-function fitAllPills(){
-  document.querySelectorAll(".pill").forEach(p => fitPillText(p));
-}
-
-let _fitRAF = null;
-function scheduleFitAllPills(){
-  if(_fitRAF) cancelAnimationFrame(_fitRAF);
-  _fitRAF = requestAnimationFrame(()=>{
-    fitAllPills();
-    lockPillTrayHeight();
-    _fitRAF = null;
-  });
-}
-
-window.addEventListener("resize", ()=>scheduleFitAllPills(), {passive:true});
-
 
 // pill helpers
 function createPill(item, index){
@@ -1021,8 +894,6 @@ function createPill(item, index){
   pill.draggable = true;
   pill.addEventListener("dragstart", onPillDragStart);
   pill.addEventListener("dragend", onPillDragEnd);
-  // Fit text after layout
-  requestAnimationFrame(()=>fitPillText(pill));
   return pill;
 }
 
@@ -1059,8 +930,6 @@ function movePillToTray(pill){
       b.items = b.items.filter(x => x !== pill.dataset.item);
       pill.dataset.location = "tray";
       pillGridEl.appendChild(pill);
-      fitPillText(pill);
-      scheduleFitAllPills();
       updateBottleStatus(idx);
     }
   }
@@ -1173,8 +1042,6 @@ function movePillToBottle(pill, bottleIdx){
   pill.classList.remove("pill-selected");
   b.items.push(item);
   b.pillsEl.appendChild(pill);
-  fitPillText(pill);
-  scheduleFitAllPills();
   selectedPill = null;
   updateBottleStatus(bottleIdx);
   checkBottle(bottleIdx);
@@ -1233,10 +1100,8 @@ function lockBottle(idx, categoryIndex){
   pills.forEach(p=>{
     p.classList.add("pill-locked");
     p.classList.remove("pill-selected");
-    fitPillText(p);
   });
   showToast("Bottle locked: " + cat.name, "ok");
-  scheduleFitAllPills();
   // check overall completion
   const allLocked = bottleState.every(x => x.locked);
   if(allLocked){
@@ -1301,7 +1166,8 @@ function onHint(){
     .filter(i => !isCategorySolved(i));
 
   if(!unsolvedCats.length){
-return;
+    showToast("No groups left to hint.", "warn");
+    return;
   }
 
   // Try a few times to find a valid (bottle, item) pair.
@@ -1320,7 +1186,8 @@ return;
       bottleIdx = emptyBottles[Math.floor(Math.random()*emptyBottles.length)];
       catIdx = unsolvedCats[Math.floor(Math.random()*unsolvedCats.length)];
     } else {
-return;
+      showToast("No available bottles for a hint.", "warn");
+      return;
     }
 
     const b = bottleState[bottleIdx];
@@ -1360,8 +1227,12 @@ return;
     movePillToBottle(pill, bottleIdx);
     pill.classList.add("pill-hint");
     setTimeout(()=>pill.classList.remove("pill-hint"), 900);
-return;
+
+    showToast("Hint placed.", "ok");
+    return;
   }
+
+  showToast("Couldn't place a hint right now.", "warn");
 }
 
 // shuffle tray pills (only those not locked)
@@ -1375,7 +1246,6 @@ function onShuffle(){
   }
   pillGridEl.innerHTML = "";
   pool.forEach(p => pillGridEl.appendChild(p));
-  scheduleFitAllPills();
 }
 
 // reset puzzle to fresh state
@@ -1410,7 +1280,7 @@ function setupBoardForPuzzle(puzzle){
     const pill = createPill(it, idx);
     pillGridEl.appendChild(pill);
   });
-  scheduleFitAllPills();
+  lockPillTrayHeight();
   updatePuzzleMeta();
   renderFooter();
   if (hintBtn) hintBtn.disabled = false;
@@ -1625,6 +1495,7 @@ if (resetBtn) resetBtn.addEventListener("click", onResetPuzzle);
 
 if (pzNewBtn) pzNewBtn.addEventListener("click", ()=>{
   makeAndLoadNewPuzzle();
+  showToast("New puzzle.", "ok");
 });
 
 

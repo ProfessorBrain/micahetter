@@ -396,9 +396,9 @@ body{
 }
 .pill.pill-wrap{
   white-space:normal;
-  overflow-wrap:normal; /* only break at natural opportunities (spaces/hyphens) */
+  overflow-wrap:break-word;
   word-break:normal;
-  hyphens:none;
+  hyphens:auto;
 }
 
 
@@ -884,102 +884,53 @@ function lockPillTrayHeight(){
   if(h>0){ pillTrayEl.style.minHeight = h + "px"; }
 }
 // --- pill text auto-fit (prevents awkward single-letter wrapping) ---
-function getPillMeasureEl(){
-  if(window.__pillMeasureEl && window.__pillMeasureEl.isConnected) return window.__pillMeasureEl;
-  const el = document.createElement("span");
-  el.id = "__pillMeasure";
-  el.style.position = "fixed";
-  el.style.left = "-9999px";
-  el.style.top = "-9999px";
-  el.style.visibility = "hidden";
-  el.style.whiteSpace = "nowrap";
-  el.style.padding = "0";
-  el.style.margin = "0";
-  el.style.border = "0";
-  el.style.pointerEvents = "none";
-  (document.body || document.documentElement).appendChild(el);
-  window.__pillMeasureEl = el;
-  return el;
-}
-
-function measurePillLabelWidth(cs, label, fontPx){
-  const el = getPillMeasureEl();
-  el.style.fontFamily = cs.fontFamily;
-  el.style.fontWeight = cs.fontWeight;
-  el.style.fontStyle = cs.fontStyle;
-  el.style.letterSpacing = cs.letterSpacing;
-  el.style.textTransform = cs.textTransform;
-  el.style.fontSize = fontPx.toFixed(2) + "px";
-  el.textContent = label;
-  return el.getBoundingClientRect().width || 0;
-}
-
-// --- pill text auto-fit (keeps short labels at normal size; shrinks only when needed) ---
 function fitPillText(pill){
-  if(!pill || !pill.isConnected) return;
+  if(!pill) return;
 
   // Reset to default single-line pill style
   pill.classList.remove("pill-wrap");
   pill.style.fontSize = "";
 
-  const label = (pill.dataset && pill.dataset.item) ? pill.dataset.item : (pill.textContent || "");
-  const hasBreakOpportunities = /[ \-\/]/.test(label);
+  if(!pill.isConnected) return;
 
   const cs = getComputedStyle(pill);
   const base = parseFloat(cs.fontSize) || 14;
 
-  // Use rendered width (accounts for responsive scaling/constraints)
-  const rectW = (pill.getBoundingClientRect && pill.getBoundingClientRect().width) ? pill.getBoundingClientRect().width : (pill.clientWidth || 0);
-
-  const padL = parseFloat(cs.paddingLeft) || 0;
-  const padR = parseFloat(cs.paddingRight) || 0;
-  const borderL = parseFloat(cs.borderLeftWidth) || 0;
-  const borderR = parseFloat(cs.borderRightWidth) || 0;
-  const buffer = 2;
-
-  const contentW = Math.max(20, rectW - padL - padR - borderL - borderR - buffer);
-
-  // If it already fits, do nothing (avoid shrinking short labels).
-  const baseW = measurePillLabelWidth(cs, label, base);
-  if(baseW <= contentW + 0.5) return;
-
+  // If this pill is inside a bottle, allow a bit more shrinking (bottles are narrower).
   const inBottle = !!pill.closest(".bottle-body, .bottle-body-inner");
 
-  // Keep jar text readable: allow only modest shrinking by default.
-  const minAllowed = Math.max(inBottle ? 9 : 10, base * (inBottle ? 0.70 : 0.78));
+  // Compute *content* width (exclude padding)
+  const padL = parseFloat(cs.paddingLeft) || 0;
+  const padR = parseFloat(cs.paddingRight) || 0;
 
-  // If even the minimum doesn't fit, wrap only when there are natural breakpoints; otherwise clip.
-  if(measurePillLabelWidth(cs, label, minAllowed) > contentW + 0.5){
-    if(hasBreakOpportunities){
-      pill.classList.add("pill-wrap");
-      pill.style.fontSize = ""; // base
-    }else{
-      pill.style.fontSize = minAllowed.toFixed(2) + "px";
-    }
-    return;
+  const buffer = 2; // tiny safety margin
+  const contentW = Math.max(10, pill.clientWidth - padL - padR - buffer);
+
+  const textW = () => Math.max(0, pill.scrollWidth - padL - padR);
+
+  // If it fits, do nothing (avoid shrinking labels that already look fine)
+  if(textW() <= contentW + 1) return;
+
+  // Try shrinking text (still single-line) down to a reasonable minimum.
+  // In bottles we allow slightly smaller text to prevent awkward single-letter wraps.
+  const minAllowed = Math.max(inBottle ? 8 : 9, base * (inBottle ? 0.60 : 0.72));
+
+  // Estimate a size that should fit, then verify with tiny nudges.
+  let size = base * (contentW / Math.max(1, textW()));
+  size *= 0.97; // small safety factor
+  size = Math.max(minAllowed, Math.min(base, size));
+
+  pill.style.fontSize = size.toFixed(2) + "px";
+
+  let loops = 0;
+  while(loops < 32 && textW() > contentW + 1 && size > minAllowed){
+    size = Math.max(minAllowed, size - 0.2);
+    pill.style.fontSize = size.toFixed(2) + "px";
+    loops++;
   }
 
-  // Binary search for the largest font size that fits.
-  let lo = minAllowed;
-  let hi = base;
-  let best = minAllowed;
-
-  for(let i=0; i<12; i++){
-    const mid = (lo + hi) / 2;
-    const w = measurePillLabelWidth(cs, label, mid);
-    if(w <= contentW + 0.5){
-      best = mid;
-      lo = mid;
-    }else{
-      hi = mid;
-    }
-  }
-
-  pill.style.fontSize = best.toFixed(2) + "px";
-
-  // If we had to shrink a lot AND the label has natural breakpoints, prefer wrapping for readability.
-  const ratio = best / Math.max(1, base);
-  if(hasBreakOpportunities && ratio < 0.82){
+  // If still overflowing at the minimum, allow wrapping.
+  if(textW() > contentW + 1){
     pill.classList.add("pill-wrap");
     pill.style.fontSize = "";
   }

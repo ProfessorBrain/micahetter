@@ -1,0 +1,619 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>EtterBank</title>
+  <meta name="theme-color" content="#0b3d2e" />
+  <style>
+    :root{
+      --bg1:#071d16;
+      --bg2:#0b3d2e;
+      --card:#0f2b22;
+      --card2:#0a241c;
+      --text:#eaf6f1;
+      --muted:#b8d0c6;
+      --accent:#53d3a0;
+      --accent2:#f2d36a;
+      --danger:#ff6b6b;
+      --shadow: 0 18px 60px rgba(0,0,0,.45);
+      --radius: 18px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      color:var(--text);
+      background:
+        radial-gradient(1200px 600px at 15% 15%, rgba(83,211,160,.18), transparent 55%),
+        radial-gradient(1000px 500px at 85% 35%, rgba(242,211,106,.14), transparent 55%),
+        linear-gradient(145deg, var(--bg1), var(--bg2));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+    }
+
+    .app{width:min(920px, 100%);}
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px; margin-bottom:16px;
+    }
+    .brand{
+      display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;
+    }
+    .brand h1{
+      margin:0;
+      font-size: clamp(26px, 4vw, 40px);
+      letter-spacing:.5px;
+    }
+    .tag{
+      font-family:var(--mono);
+      font-size:12px;
+      color:var(--muted);
+      padding:6px 10px;
+      border:1px solid rgba(234,246,241,.18);
+      border-radius:999px;
+      background:rgba(15,43,34,.45);
+    }
+
+    .panel{
+      background: linear-gradient(180deg, rgba(15,43,34,.84), rgba(10,36,28,.84));
+      border:1px solid rgba(234,246,241,.14);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .panel-inner{padding:18px;}
+    .grid{
+      display:grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap:16px;
+    }
+    @media (max-width: 820px){
+      .grid{grid-template-columns:1fr;}
+    }
+
+    .card{
+      background: rgba(7,29,22,.35);
+      border:1px solid rgba(234,246,241,.12);
+      border-radius: 16px;
+      padding:16px;
+    }
+    .card h2{
+      margin:0 0 10px 0;
+      font-size:16px;
+      letter-spacing:.2px;
+      color: var(--muted);
+      font-weight:700;
+      text-transform:uppercase;
+    }
+
+    .field{display:flex; flex-direction:column; gap:8px; margin-top:12px;}
+    label{font-size:13px; color:var(--muted)}
+    select,input{
+      width:100%;
+      padding:12px 12px;
+      border-radius: 12px;
+      border:1px solid rgba(234,246,241,.18);
+      background: rgba(15,43,34,.35);
+      color: var(--text);
+      outline:none;
+      font-size:14px;
+    }
+    input::placeholder{color: rgba(184,208,198,.75);}
+    .row{display:flex; gap:10px; align-items:center;}
+    .row > *{flex:1;}
+    .btn{
+      appearance:none;
+      border:none;
+      border-radius: 12px;
+      padding:12px 14px;
+      font-weight:700;
+      cursor:pointer;
+      transition: transform .05s ease, opacity .15s ease;
+      background: linear-gradient(90deg, rgba(83,211,160,.92), rgba(242,211,106,.88));
+      color:#062017;
+    }
+    .btn:active{transform: translateY(1px);}
+    .btn.secondary{
+      background: rgba(234,246,241,.12);
+      border:1px solid rgba(234,246,241,.18);
+      color: var(--text);
+      font-weight:650;
+    }
+    .btn.ghost{
+      background: transparent;
+      border:1px solid rgba(234,246,241,.18);
+      color: var(--text);
+    }
+    .btn:disabled{opacity:.55; cursor:not-allowed;}
+    .hint{
+      font-size:12px; color:var(--muted); line-height:1.35;
+    }
+    .fineprint{
+      font-family:var(--mono);
+      font-size:11px;
+      color: rgba(184,208,198,.9);
+      margin-top:10px;
+    }
+    .status{
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      border-top:1px solid rgba(234,246,241,.12);
+      padding:12px 18px;
+      background: rgba(7,29,22,.25);
+    }
+    .status b{color: var(--text); font-weight:800;}
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(234,246,241,.18);
+      background: rgba(15,43,34,.35);
+      font-family:var(--mono);
+      font-size:11px;
+      color:var(--muted);
+      white-space:nowrap;
+    }
+    .dot{
+      width:8px;height:8px;border-radius:50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 3px rgba(83,211,160,.16);
+    }
+    .dot.bad{background: var(--danger); box-shadow: 0 0 0 3px rgba(255,107,107,.14);}
+
+    .money{
+      font-size: clamp(28px, 4.6vw, 44px);
+      font-weight:900;
+      letter-spacing:.2px;
+      margin: 8px 0 0 0;
+    }
+    .sub{
+      color: var(--muted);
+      font-size:13px;
+      margin-top:6px;
+      line-height:1.35;
+    }
+
+    .divider{height:1px; background: rgba(234,246,241,.12); margin:14px 0;}
+    .hidden{display:none !important;}
+
+    .right-actions{
+      display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;
+    }
+
+    /* File picker */
+    .filebox{
+      border:1px dashed rgba(234,246,241,.22);
+      background: rgba(7,29,22,.25);
+      border-radius:14px;
+      padding:12px;
+      margin-top:12px;
+    }
+    .filebox input{padding:10px; border-radius:10px;}
+  </style>
+</head>
+
+<body>
+  <!--
+    EtterBank (simple family portal)
+    - Put accounts.csv in the SAME FOLDER as this HTML file for auto-loading.
+    - If you open this as a local file and balances don't load, use the "Choose CSV" option.
+    CSV formats supported:
+      1) No header:
+         Sal,950,200
+         Hal,$500,0
+         (columns: user, primary, goal)
+      2) Header row:
+         user,primary,goal
+         Sal,950,200
+         Hal,500,0
+      3) Two columns (user,primary) -> goal assumed 0
+         Sal,$950
+         Hal,$500
+  -->
+
+  <div class="app">
+    <div class="topbar">
+      <div class="brand">
+        <h1>EtterBank</h1>
+        <span class="tag">family banking portal</span>
+      </div>
+      <div class="right-actions">
+        <button id="refreshBtnTop" class="btn secondary hidden" type="button">Refresh balances</button>
+        <button id="logoutBtnTop" class="btn ghost hidden" type="button">Log out</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-inner">
+
+        <!-- LOGIN VIEW -->
+        <div id="loginView" class="grid">
+          <div class="card">
+            <h2>Log in</h2>
+
+            <div class="field">
+              <label for="userSelect">User</label>
+              <select id="userSelect">
+                <option value="Sal">Sal</option>
+                <option value="Hal">Hal</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="passInput">Passcode</label>
+              <input id="passInput" type="password" placeholder="(default: your name)" autocomplete="off" />
+              <div class="hint">
+                This is a simple family login (not secure). Default passcode is the user's name (sal or hal).
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="row">
+              <button id="loginBtn" class="btn" type="button">Enter EtterBank</button>
+              <button id="loadCsvBtn" class="btn secondary" type="button">Reload CSV</button>
+            </div>
+
+            <div id="loginMsg" class="fineprint"></div>
+
+            <div class="filebox hidden" id="fileBox">
+              <div class="hint" style="margin-bottom:8px;">
+                If auto-loading fails (common with local file opens), choose your accounts CSV:
+              </div>
+              <input id="fileInput" type="file" accept=".csv,text/csv" />
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>About</h2>
+            <div class="sub">
+              <b>EtterBank account</b> is your primary balance.
+            </div>
+            <div class="sub" style="margin-top:10px;">
+              <b>EtterBank Goal-Directed Savings Account</b> is for saving toward one big purchase.
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="sub">
+              Balances are loaded from <span class="pill"><span class="dot" id="csvDot"></span><span id="csvSourceLabel">accounts.csv</span></span>
+            </div>
+            <div class="sub" style="margin-top:8px;">
+              Tip: Keep <b>accounts.csv</b> in the same folder as this HTML file when you host it (or use the file picker).
+            </div>
+          </div>
+        </div>
+
+        <!-- DASHBOARD VIEW -->
+        <div id="dashView" class="hidden">
+          <div class="grid">
+            <div class="card">
+              <h2 id="greeting">Welcome</h2>
+              <div class="sub" id="dashHint">Viewing your balances.</div>
+
+              <div class="divider"></div>
+
+              <div class="right-actions" style="justify-content:flex-start;">
+                <button id="refreshBtn" class="btn secondary" type="button">Refresh balances</button>
+                <button id="logoutBtn" class="btn ghost" type="button">Log out</button>
+              </div>
+
+              <div class="fineprint" id="dashMsg"></div>
+            </div>
+
+            <div class="card">
+              <h2>EtterBank account (primary)</h2>
+              <div class="money" id="primaryBalance">$0.00</div>
+              <div class="sub">Everyday spending and general savings.</div>
+
+              <div class="divider"></div>
+
+              <h2>EtterBank Goal-Directed Savings Account</h2>
+              <div class="money" id="goalBalance">$0.00</div>
+              <div class="sub">For one targeted purchase.</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="status">
+        <div>
+          <span class="pill"><span class="dot" id="loadDot"></span><span id="loadStatus"><b>Loading</b> balances…</span></span>
+        </div>
+        <div class="pill" id="updatedPill">Last updated: <span id="updatedAt">—</span></div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  // --- Configuration ---
+  const CSV_URL_DEFAULT = "accounts.csv"; // place in same folder as this HTML
+  const USERS = ["Sal", "Hal"];
+  const CREDENTIALS = {
+    "Sal": "sal",
+    "Hal": "hal",
+  };
+
+  // --- State ---
+  let accounts = {}; // { Sal: {primary:number, goal:number}, Hal: {...} }
+  let csvSource = CSV_URL_DEFAULT;
+
+  // --- DOM ---
+  const el = (id) => document.getElementById(id);
+
+  const loginView = el("loginView");
+  const dashView  = el("dashView");
+
+  const userSelect = el("userSelect");
+  const passInput  = el("passInput");
+  const loginBtn   = el("loginBtn");
+  const loadCsvBtn = el("loadCsvBtn");
+  const loginMsg   = el("loginMsg");
+
+  const fileBox    = el("fileBox");
+  const fileInput  = el("fileInput");
+
+  const greeting   = el("greeting");
+  const primaryBalance = el("primaryBalance");
+  const goalBalance    = el("goalBalance");
+  const dashMsg    = el("dashMsg");
+
+  const refreshBtn = el("refreshBtn");
+  const logoutBtn  = el("logoutBtn");
+  const refreshBtnTop = el("refreshBtnTop");
+  const logoutBtnTop  = el("logoutBtnTop");
+
+  const loadDot    = el("loadDot");
+  const loadStatus = el("loadStatus");
+  const updatedAt  = el("updatedAt");
+
+  const csvDot     = el("csvDot");
+  const csvSourceLabel = el("csvSourceLabel");
+
+  // --- Helpers ---
+  const nowStamp = () => {
+    const d = new Date();
+    return d.toLocaleString(undefined, {
+      year:"numeric", month:"short", day:"2-digit",
+      hour:"2-digit", minute:"2-digit"
+    });
+  };
+
+  const setStatus = (ok, text) => {
+    loadDot.classList.toggle("bad", !ok);
+    loadStatus.innerHTML = ok ? `<b>Ready</b> ${text}` : `<b>Needs CSV</b> ${text}`;
+  };
+
+  const setCsvIndicator = (ok, label) => {
+    csvDot.classList.toggle("bad", !ok);
+    csvSourceLabel.textContent = label || csvSource;
+  };
+
+  const money = (n) => {
+    const x = Number.isFinite(n) ? n : 0;
+    return x.toLocaleString(undefined, { style:"currency", currency:"USD" });
+  };
+
+  const parseMoney = (s) => {
+    if (s == null) return 0;
+    const cleaned = String(s).replace(/\uFEFF/g,"").trim()
+      .replace(/\$/g,"")
+      .replace(/,/g,"")
+      .replace(/\s+/g,"");
+    const n = parseFloat(cleaned);
+    return Number.isFinite(n) ? n : 0;
+  };
+
+  const normalizeName = (s) => {
+    const t = String(s ?? "").replace(/\uFEFF/g,"").trim();
+    if (!t) return "";
+    // Keep original casing for display, but we normalize to match USERS.
+    const lower = t.toLowerCase();
+    const match = USERS.find(u => u.toLowerCase() === lower);
+    return match || t;
+  };
+
+  function parseCSV(text) {
+    const raw = String(text ?? "").replace(/\r\n/g,"\n").replace(/\r/g,"\n");
+    const lines = raw.split("\n").map(l => l.trim()).filter(Boolean);
+    if (!lines.length) return {};
+
+    // Split by commas. Simple CSV; if you later add quotes/commas in fields, this should be upgraded.
+    const rows = lines.map(line => line.split(",").map(x => x.trim()));
+
+    // Detect header
+    const head = rows[0].map(c => c.toLowerCase());
+    const headerLike = head.includes("user") || head.includes("name") || head.includes("primary") || head.includes("goal");
+    let startIdx = 0;
+    let colUser = 0, colPrimary = 1, colGoal = 2;
+
+    if (headerLike) {
+      startIdx = 1;
+      colUser = head.indexOf("user"); if (colUser < 0) colUser = head.indexOf("name"); if (colUser < 0) colUser = 0;
+      colPrimary = head.indexOf("primary"); if (colPrimary < 0) colPrimary = 1;
+      colGoal = head.indexOf("goal"); if (colGoal < 0) colGoal = head.indexOf("goal-directed"); if (colGoal < 0) colGoal = 2;
+    } else {
+      // If only two columns, we treat it as (user, primary). Goal defaults to 0.
+      // If three+ columns, treat columns as (user, primary, goal)
+      colUser = 0; colPrimary = 1; colGoal = 2;
+    }
+
+    const out = {};
+    for (let i = startIdx; i < rows.length; i++) {
+      const r = rows[i];
+      if (!r.length) continue;
+      const user = normalizeName(r[colUser] ?? "");
+      if (!user) continue;
+
+      const primary = parseMoney(r[colPrimary] ?? 0);
+      // If the CSV doesn't include goal balance, default to 0.
+      const goal = (r.length > colGoal) ? parseMoney(r[colGoal] ?? 0) : 0;
+
+      out[user] = { primary, goal };
+    }
+    return out;
+  }
+
+  async function loadAccountsFromFetch(url) {
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const text = await res.text();
+    return { accounts: parseCSV(text), source: url };
+  }
+
+  function loadAccountsFromFile(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = () => reject(new Error("Could not read file"));
+      reader.onload = () => {
+        try {
+          const text = String(reader.result ?? "");
+          resolve({ accounts: parseCSV(text), source: file.name || "local CSV" });
+        } catch (e) { reject(e); }
+      };
+      reader.readAsText(file);
+    });
+  }
+
+  function applyAccounts(accObj, sourceLabel) {
+    accounts = accObj || {};
+    const ok = Object.keys(accounts).length > 0;
+    setStatus(ok, ok ? "balances loaded." : "no rows found.");
+    setCsvIndicator(ok, sourceLabel || csvSource);
+    updatedAt.textContent = nowStamp();
+  }
+
+  function showFilePickerIfNeeded(show) {
+    fileBox.classList.toggle("hidden", !show);
+  }
+
+  function getUserBalances(user) {
+    const row = accounts[user] || accounts[normalizeName(user)] || null;
+    if (!row) return { primary: 0, goal: 0, found:false };
+    return { primary: row.primary ?? 0, goal: row.goal ?? 0, found:true };
+  }
+
+  function enterDashboard(user) {
+    greeting.textContent = `Welcome, ${user}.`;
+    const { primary, goal, found } = getUserBalances(user);
+
+    primaryBalance.textContent = money(primary);
+    goalBalance.textContent = money(goal);
+
+    dashMsg.textContent = found
+      ? `Loaded balances for ${user} from ${csvSourceLabel.textContent}.`
+      : `No row found for ${user}. Check the CSV name column.`;
+
+    loginView.classList.add("hidden");
+    dashView.classList.remove("hidden");
+    refreshBtnTop.classList.remove("hidden");
+    logoutBtnTop.classList.remove("hidden");
+  }
+
+  function exitDashboard() {
+    dashView.classList.add("hidden");
+    loginView.classList.remove("hidden");
+    refreshBtnTop.classList.add("hidden");
+    logoutBtnTop.classList.add("hidden");
+    passInput.value = "";
+    dashMsg.textContent = "";
+  }
+
+  // --- Actions ---
+  async function loadCSV() {
+    loginMsg.textContent = "Loading balances…";
+    setStatus(true, "loading…");
+    setCsvIndicator(true, csvSource);
+    showFilePickerIfNeeded(false);
+
+    try {
+      const { accounts: acc, source } = await loadAccountsFromFetch(CSV_URL_DEFAULT);
+      csvSource = CSV_URL_DEFAULT;
+      applyAccounts(acc, source);
+      loginMsg.textContent = `Loaded: ${source}`;
+      return true;
+    } catch (e) {
+      // If fetch fails (common on file://), show file picker
+      setStatus(false, "auto-load failed. Choose CSV below.");
+      setCsvIndicator(false, "needs CSV");
+      loginMsg.textContent = "Auto-load failed (often due to local file restrictions). Choose the CSV below.";
+      showFilePickerIfNeeded(true);
+      return false;
+    }
+  }
+
+  function attemptLogin() {
+    const user = userSelect.value;
+    const pass = (passInput.value || "").trim().toLowerCase();
+
+    const expected = (CREDENTIALS[user] || "").toLowerCase();
+    if (!pass || pass !== expected) {
+      loginMsg.textContent = "Incorrect passcode.";
+      return;
+    }
+
+    enterDashboard(user);
+  }
+
+  async function refreshBalances() {
+    dashMsg.textContent = "Refreshing…";
+    const ok = await loadCSV();
+    if (!ok) {
+      dashMsg.textContent = "Could not auto-load CSV. Use the file picker on the login screen.";
+      exitDashboard();
+      return;
+    }
+    const user = greeting.textContent.replace(/^Welcome,\s*/,"").replace(/\.\s*$/,"").trim();
+    const { primary, goal } = getUserBalances(user);
+    primaryBalance.textContent = money(primary);
+    goalBalance.textContent = money(goal);
+    dashMsg.textContent = "Refreshed.";
+  }
+
+  // --- Wire up ---
+  loginBtn.addEventListener("click", attemptLogin);
+  loadCsvBtn.addEventListener("click", loadCSV);
+
+  refreshBtn.addEventListener("click", refreshBalances);
+  refreshBtnTop.addEventListener("click", refreshBalances);
+
+  logoutBtn.addEventListener("click", exitDashboard);
+  logoutBtnTop.addEventListener("click", exitDashboard);
+
+  passInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") attemptLogin();
+  });
+
+  fileInput.addEventListener("change", async () => {
+    const file = fileInput.files && fileInput.files[0];
+    if (!file) return;
+    try {
+      const { accounts: acc, source } = await loadAccountsFromFile(file);
+      csvSource = source;
+      applyAccounts(acc, source);
+      loginMsg.textContent = `Loaded: ${source}`;
+      // Optional: keep file picker visible in case they want to switch
+      showFilePickerIfNeeded(true);
+    } catch (e) {
+      setStatus(false, "could not read CSV.");
+      loginMsg.textContent = "Could not read that CSV.";
+    }
+  });
+
+  // --- Init ---
+  // Preload CSV so it's ready when they log in.
+  loadCSV();
+})();
+</script>
+</body>
+</html>

@@ -6,9 +6,6 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <title>Extraocular Muscle Simulator – Binocular Yoked (Patient View, Bilateral Sliders)</title>
-    <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="shortcut icon" type="image/png" href="favicon.png">
-
 <style>
     :root{
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -38,19 +35,14 @@
       flex-wrap:nowrap;
     }
 
-    /* Wrap side panels on narrower screens to keep the two eyes side-by-side without horizontal scrollbars */
-    @media (max-width: 1200px){
-      .main{ flex-wrap:wrap; align-items:flex-start; }
-    }
-
     .eye-panel{
       background: radial-gradient(circle at 20% 20%, #1f2937, #020617);
       border-radius:18px;
       padding:12px;
       position:relative;
       box-shadow:0 18px 40px rgba(0,0,0,0.7);
-      flex:0 0 560px;
-      min-width:560px;
+      flex:0 1 560px;
+      min-width:460px;
     }
 
     .eyes-row{
@@ -58,38 +50,9 @@
       justify-content:center;
       align-items:flex-start;
       gap:14px;
-      flex-wrap:nowrap;
-      overflow:hidden;
+      flex-wrap:wrap;
+      overflow:visible;
       padding-bottom:0;
-    }
-
-    @media (max-width: 620px){
-      .eye-panel{
-        min-width:0;
-        flex:1 1 100%;
-      }
-      .eyes-row{
-        gap:10px;
-      }
-      .eye-wrapper{
-        width:220px;
-        height:220px;
-      }
-      .eye-circle{
-        inset:18px;
-        width:184px;
-        height:184px;
-      }
-      .iris{
-        width:96px;
-        height:96px;
-        margin:-48px 0 0 -48px;
-      }
-      .pupil{
-        width:36px;
-        height:36px;
-        margin:-18px 0 0 -18px;
-      }
     }
 
     .eye-column{
@@ -178,7 +141,7 @@
     .gaze-readout{font-weight:600;color:#fbbf24;}
 
     .controls{
-      flex:0 1 380px;
+      flex:0 1 420px;
       background: radial-gradient(circle at 80% 0%, #1f2937, #020617);
       border-radius:18px;
       padding:12px;
@@ -188,8 +151,7 @@
       gap:10px;
       max-height: 680px;
       overflow-y:auto;
-      min-width: 280px;
-      max-width: 400px;
+      min-width: 300px;
     }
     .controls h2{margin:0;font-size:1.0rem;}
     .controls p{margin:2px 0 6px;font-size:0.80rem;color:#9ca3af;}
@@ -549,13 +511,66 @@
       .modal-cols{ grid-template-columns: 1fr; }
     }
 
-    /* On very narrow screens, allow the whole layout to wrap (avoids scrollbars) */
-    @media (max-width: 860px){
-      .main{ flex-wrap:wrap; }
-      .eye-panel{ flex:1 1 100%; min-width:0; }
-      .controls{ flex:1 1 100%; max-width:none; }
+    @media (max-width: 1150px){
+      /* Keep everything in one row; scale down instead of wrapping. */
+      .main{flex-wrap:nowrap; align-items:flex-start;}
+      .controls{
+        flex:0 0 280px;
+        min-width:280px;
+        padding:10px;
+        max-height: calc(100vh - 160px);
+      }
+      .controls p{display:none;}          /* reclaim vertical space */
+      .slider-subtext{display:none;}      /* compact mode */
+      .legend{display:none;}              /* compact mode */
+      .buttons-row{margin-top:2px;}
+      .slider-group{padding:6px 8px; margin-bottom:6px;}
+      .slider-header{font-size:0.78rem;}
+      input[type="range"]{height:5px;}
+      input[type="range"]::-webkit-slider-thumb{width:14px;height:14px;}
+      input[type="range"]::-moz-range-thumb{width:14px;height:14px;}
+
+      .eye-panel{
+        flex:0 0 430px;
+        min-width:430px;
+        padding:12px;
+      }
+      .eyes-row{gap:18px;}
+      .eye-wrapper{width:210px;height:210px;}
+      .eye-circle{inset:16px;width:178px;height:178px;}
+      .corneal-highlight{width:60px;height:60px;}
+      .iris{width:92px;height:92px;margin:-46px 0 0 -46px;}
+      .pupil{width:30px;height:30px;margin:-15px 0 0 -15px;}
     }
 
+    @media (max-width: 980px){
+      /* Smaller laptop / narrow desktop: still one row, tighter sizing */
+      .controls{
+        flex:0 0 240px;
+        min-width:240px;
+        padding:9px;
+        max-height: calc(100vh - 150px);
+      }
+      .eye-panel{
+        flex:0 0 360px;
+        min-width:360px;
+        padding:10px;
+      }
+      .eyes-row{gap:14px;}
+      .eye-wrapper{width:170px;height:170px;}
+      .eye-circle{inset:12px;width:146px;height:146px;}
+      .corneal-highlight{width:48px;height:48px;}
+      .iris{width:78px;height:78px;margin:-39px 0 0 -39px;}
+      .pupil{width:26px;height:26px;margin:-13px 0 0 -13px;}
+      .header h1{font-size:1.35rem;}
+      .header p{font-size:0.85rem;}
+    }
+
+    @media (max-width: 860px){
+      /* If it *still* doesn't fit, allow horizontal scrolling rather than stacking. */
+      .main{overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:6px;}
+    }
+  
     /* --- Game mode: Name the Lesion --- */
     .lesion-row{
       gap:10px;
@@ -677,126 +692,6 @@
       font-size:0.9rem;
       min-height:1.2em;
     }
-
-
-    /* Secret Simon mode (Easter egg) */
-    .simon-hud{
-      margin: 8px auto 0;
-      display: none;
-width: fit-content;
-      max-width: 100%;
-      padding: 8px 10px;
-      border-radius: 14px;
-      border: 1px solid rgba(71,85,105,0.55);
-      background: rgba(15,23,42,0.55);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
-      text-align: center;
-    }
-        .simon-hud.active{
-      display: block;
-    }
-.simon-hud-row{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-    }
-    .simon-pill{
-      display:inline-flex;
-      align-items:center;
-      padding: 3px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(147,197,253,0.45);
-      background: rgba(30,41,59,0.45);
-      color: rgba(224,231,255,0.92);
-      font-size: 0.76rem;
-      letter-spacing: 0.02em;
-    }
-    .simon-exit{
-      width: 26px;
-      height: 26px;
-      border-radius: 999px;
-      border: 1px solid rgba(148,163,184,0.45);
-      background: rgba(2,6,23,0.35);
-      color: rgba(226,232,240,0.9);
-      cursor: pointer;
-      line-height: 1;
-      font-size: 1.05rem;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-    }
-    .simon-exit:hover{
-      background: rgba(2,6,23,0.55);
-      border-color: rgba(148,163,184,0.75);
-    }
-    .simon-status{
-      margin-top: 6px;
-      font-size: 0.78rem;
-      color: rgba(226,232,240,0.86);
-      white-space: normal;
-    }
-    .ask-btn.simon-flash, .ask-center.simon-flash{
-      box-shadow: 0 0 0 2px rgba(147,197,253,0.95), 0 0 18px rgba(147,197,253,0.35);
-      transform: translateY(-1px);
-    }
-    .ask-btn.simon-input, .ask-center.simon-input{
-      box-shadow: 0 0 0 2px rgba(34,197,94,0.9), 0 0 18px rgba(34,197,94,0.25);
-      transform: translateY(-1px);
-    }
-    .ask-btn.simon-wrong, .ask-center.simon-wrong{
-      box-shadow: 0 0 0 2px rgba(239,68,68,0.95), 0 0 18px rgba(239,68,68,0.28);
-      transform: translateY(-1px);
-    }
-
-    /* Subtle creator credit */
-    .credit-footer{
-      position:fixed;
-      left:50%;
-      bottom:calc(8px + env(safe-area-inset-bottom));
-      transform:translateX(-50%);
-      font-size:12px;
-      color:#9ca3af;
-      opacity:0.55;
-      letter-spacing:0.06em;
-      user-select:none;
-      pointer-events:none;
-      text-align:center;
-      white-space:nowrap;
-    }
-
-
-    /* --- Responsive priority layout (keep eyes + Ask-to-Look centered; prevent stacking) --- */
-    html, body{ overflow-x:hidden; }
-
-    /* Override earlier wrap behavior: never stack columns; instead shrink, then hide side panels */
-    @media (max-width: 1200px){
-      .main{ flex-wrap:nowrap; align-items:stretch; width:100%; }
-      .controls{ flex:0 1 300px; min-width:220px; max-width:320px; }
-      .eye-panel{ flex:1 1 520px; min-width:520px; max-width: 720px; }
-      .eye-wrapper{ width:200px; height:200px; }
-    }
-
-    @media (max-width: 1000px){
-      .controls{ flex:0 1 260px; min-width:200px; max-width:280px; }
-      .eye-panel{ flex:1 1 460px; min-width:460px; max-width: 680px; }
-      .eye-wrapper{ width:180px; height:180px; }
-      .eyes-row{ gap:12px; }
-    }
-
-    /* If all 3 columns can't reasonably fit, prioritize the center column */
-    @media (max-width: 860px){
-      .controls{ display:none !important; }
-      .main{ justify-content:center; }
-      .eye-panel{ flex:1 1 auto; min-width:0; width:100%; max-width: 760px; }
-      .eye-wrapper{ width:170px; height:170px; }
-    }
-
-    @media (max-width: 520px){
-      .eye-wrapper{ width:150px; height:150px; }
-      .eyes-row{ gap:10px; }
-    }
-
 </style>
 </head>
 <body>
@@ -926,18 +821,9 @@ width: fit-content;
 <button aria-label="Ask eyes to move down-left" class="ask-btn ask-downleft" id="askDownLeft" type="button">↙</button>
 <button aria-label="Ask patient to look down" class="ask-btn ask-down" id="askDown" type="button">↓</button>
 <button aria-label="Ask eyes to move down-right" class="ask-btn ask-downright" id="askDownRight" type="button">↘</button>
-
 </div>
-</div>
-<div id="simonHud" class="simon-hud" hidden>
-  <div class="simon-hud-row">
-    <span class="simon-pill">Simon mode</span>
-    <button id="simonExit" class="simon-exit" type="button" aria-label="Exit Simon mode">×</button>
-  </div>
-  <div id="simonStatus" class="simon-status">Simon mode</div>
 </div>
 <div class="eye-footer">
-
         Conjugate gaze: <span class="gaze-readout" id="gazeReadout">Primary position</span>
 </div>
       <div class="lesion-row">
@@ -1116,7 +1002,6 @@ width: fit-content;
 </div>
     </div>
   </div>
-<div class="credit-footer">created by micah etter, md</div>
 
 <script>
   // Patient-space convention:
@@ -1167,208 +1052,6 @@ width: fit-content;
   const askDownRightBtn = document.getElementById("askDownRight");
   const askCenterBtn = document.getElementById("askCenter");
 
-  // --- Secret Simon mode (Easter egg) ---
-  const simonHud = document.getElementById("simonHud");
-  const simonStatusEl = document.getElementById("simonStatus");
-  const simonExitBtn = document.getElementById("simonExit");
-
-  const SIMON_SECRET = ["up","up","down","down","left","right","left","right"];
-  let simonSecretBuf = [];
-
-  const SIMON_DIRS = ["up","down","left","right","upleft","upright","downleft","downright"];
-
-  const simon = {
-    enabled: false,
-    playing: false,
-    pattern: [],
-    userIndex: 0,
-    best: 0,
-    token: 0
-  };
-
-  const DIR_BTN = {
-    up: askUpBtn,
-    down: askDownBtn,
-    left: askLeftBtn,
-    right: askRightBtn,
-    upleft: askUpLeftBtn,
-    upright: askUpRightBtn,
-    downleft: askDownLeftBtn,
-    downright: askDownRightBtn,
-    center: askCenterBtn
-  };
-
-  function dirToHV(dir){
-    switch(dir){
-      case "up": return [0, 1];
-      case "down": return [0, -1];
-      case "left": return [1, 0];    // patient-left gaze
-      case "right": return [-1, 0];  // patient-right gaze
-      case "upleft": return [1, 1];
-      case "upright": return [-1, 1];
-      case "downleft": return [1, -1];
-      case "downright": return [-1, -1];
-      default: return [0, 0];
-    }
-  }
-
-  function setSimonHud(text){
-    if (!simonHud || !simonStatusEl) return;
-    // Ensure Simon HUD is never visible unless enabled
-    simonHud.classList.toggle("active", !!simon.enabled);
-    simonHud.hidden = !simon.enabled;
-    simonStatusEl.textContent = text || "";
-  }
-
-  function flashSimon(dir, cls, dur){
-    const btn = DIR_BTN[dir];
-    if (!btn) return;
-    btn.classList.remove("simon-flash","simon-input","simon-wrong");
-    btn.classList.add(cls);
-    window.setTimeout(()=>btn.classList.remove(cls), dur);
-  }
-
-  function delay(ms){ return new Promise(res => window.setTimeout(res, ms)); }
-
-  function loadSimonBest(){
-    try { simon.best = parseInt(localStorage.getItem("simonBest") || "0", 10) || 0; }
-    catch(e){ simon.best = 0; }
-  }
-  function saveSimonBest(){
-    try { localStorage.setItem("simonBest", String(simon.best)); } catch(e){}
-  }
-
-  function recordSimonSecret(dir){
-    // Only listens for the activation code while Simon is OFF (prevents accidental toggles mid-game)
-    if (simon.enabled) return;
-    if (!["up","down","left","right"].includes(dir)){
-      simonSecretBuf = [];
-      return;
-    }
-    simonSecretBuf.push(dir);
-    if (simonSecretBuf.length > SIMON_SECRET.length) simonSecretBuf.shift();
-    const hit = SIMON_SECRET.every((d, i) => simonSecretBuf[i] === d);
-    if (hit){
-      simonSecretBuf = [];
-      enableSimonMode();
-    }
-  }
-
-  function enableSimonMode(){
-    if (simon.enabled) return;
-    simon.enabled = true;
-    simon.playing = false;
-    simon.pattern = [];
-    simon.userIndex = 0;
-    simon.token++;
-    loadSimonBest();
-    setSimonHud("Simon mode • Watch…");
-    startSimonRound();
-  }
-
-  function disableSimonMode(){
-    simon.enabled = false;
-    simon.playing = false;
-    simon.pattern = [];
-    simon.userIndex = 0;
-    simon.token++;
-    if (simonHud){
-      simonHud.classList.remove("active");
-      simonHud.hidden = true;
-    }
-  }
-
-  async function startSimonRound(){
-    if (!simon.enabled) return;
-    simon.pattern = [];
-    simon.userIndex = 0;
-    simon.token++;
-    addSimonStep();
-    await playSimonPattern();
-  }
-
-  function addSimonStep(){
-    const dir = SIMON_DIRS[Math.floor(Math.random() * SIMON_DIRS.length)];
-    simon.pattern.push(dir);
-  }
-
-  async function playSimonPattern(){
-    if (!simon.enabled) return;
-    const myToken = ++simon.token;
-    simon.playing = true;
-    setSimonHud(`Simon mode • Level ${simon.pattern.length} • Watch`);
-    await delay(220);
-
-    for (const dir of simon.pattern){
-      if (!simon.enabled || myToken !== simon.token) return;
-      flashSimon(dir, "simon-flash", 260);
-      const [h, v] = dirToHV(dir);
-      animateGazeTo(h, v, 180);
-      await delay(420);
-    }
-
-    if (!simon.enabled || myToken !== simon.token) return;
-    simon.playing = false;
-    simon.userIndex = 0;
-    setSimonHud(`Simon mode • Level ${simon.pattern.length} • Your turn`);
-  }
-
-  function simonGameOver(){
-    simon.playing = false;
-    const level = simon.pattern.length;
-    if (level > simon.best){
-      simon.best = level;
-      saveSimonBest();
-    }
-    setSimonHud(`Wrong • Level ${level} • Best ${simon.best} • Press center to restart`);
-  }
-
-  function handleSimonInput(dir){
-    if (!simon.enabled || simon.playing) return;
-    if (!SIMON_DIRS.includes(dir)) return;
-
-    flashSimon(dir, "simon-input", 180);
-
-    const expected = simon.pattern[simon.userIndex];
-    if (dir !== expected){
-      flashSimon(dir, "simon-wrong", 260);
-      simonGameOver();
-      return;
-    }
-
-    simon.userIndex++;
-    if (simon.userIndex >= simon.pattern.length){
-      // Next level
-      setSimonHud(`Nice • Level ${simon.pattern.length + 1} • Watch`);
-      simon.playing = true;
-      window.setTimeout(async ()=>{
-        if (!simon.enabled) return;
-        addSimonStep();
-        await playSimonPattern();
-      }, 420);
-    }
-  }
-
-  function restartSimonIfEnabled(){
-    if (!simon.enabled) return;
-    startSimonRound();
-  }
-
-  if (simonExitBtn){
-    simonExitBtn.addEventListener("click", disableSimonMode);
-  }
-  document.addEventListener("keydown", (e)=>{
-    if (e.key === "Escape" && simon.enabled){
-      disableSimonMode();
-    }
-  });
-
-  // Ensure Simon HUD starts hidden (even if browser ignores [hidden] for some reason)
-  disableSimonMode();
-  setSimonHud("");
-
-
-
   const GAZE_SCALE = 1.4; // keep in sync with setGazeDirect scaling
 
   function getCurrentNorm(){
@@ -1412,45 +1095,28 @@ width: fit-content;
       __animate(h, v);
     };
 
-    const handleAskPress = (dir, h, v) => {
-      // Secret activation sequence (Simon starts when OFF)
-      recordSimonSecret(dir);
-
-      if (simon.enabled){
-        if (simon.playing) return; // ignore clicks during Simon playback
-        if (dir === "center"){
-          restartSimonIfEnabled();
-          doAsk(0, 0);
-          return;
-        }
-        handleSimonInput(dir);
-      }
-
-      doAsk(h, v);
-    };
-
     // Patient-direction arrows:
     // ↑ up (v=+1)
     // ↓ down (v=-1)
-    // ← patient-left gaze (h=+1 in this app)
-    // → patient-right gaze (h=-1 in this app)
-    askUpBtn.addEventListener("click", () => handleAskPress("up", 0, 1));
-    askDownBtn.addEventListener("click", () => handleAskPress("down", 0, -1));
-    askLeftBtn.addEventListener("click", () => handleAskPress("left", 1, 0));
-    askRightBtn.addEventListener("click", () => handleAskPress("right", -1, 0));
+    // ← patient-left gaze (h=-1)
+    // → patient-right gaze (h=+1)
+    askUpBtn.addEventListener("click", () => doAsk(0, 1));
+    askDownBtn.addEventListener("click", () => doAsk(0, -1));
+    askLeftBtn.addEventListener("click", () => doAsk(1, 0));
+        askRightBtn.addEventListener("click", () => doAsk(-1, 0));
 
     // Diagonals (screen directions):
     // ↖ up-left  = up + patient right (h=+1, v=+1)
     // ↗ up-right = up + patient left  (h=-1, v=+1)
     // ↙ down-left  = down + patient right (h=+1, v=-1)
     // ↘ down-right = down + patient left  (h=-1, v=-1)
-    if (askUpLeftBtn) askUpLeftBtn.addEventListener("click", () => handleAskPress("upleft", 1, 1));
-    if (askUpRightBtn) askUpRightBtn.addEventListener("click", () => handleAskPress("upright", -1, 1));
-    if (askDownLeftBtn) askDownLeftBtn.addEventListener("click", () => handleAskPress("downleft", 1, -1));
-    if (askDownRightBtn) askDownRightBtn.addEventListener("click", () => handleAskPress("downright", -1, -1));
+    if (askUpLeftBtn) askUpLeftBtn.addEventListener("click", () => doAsk(1, 1));
+    if (askUpRightBtn) askUpRightBtn.addEventListener("click", () => doAsk(-1, 1));
+    if (askDownLeftBtn) askDownLeftBtn.addEventListener("click", () => doAsk(1, -1));
+    if (askDownRightBtn) askDownRightBtn.addEventListener("click", () => doAsk(-1, -1));
 
     if (askCenterBtn){
-      askCenterBtn.addEventListener("click", () => handleAskPress("center", 0, 0));
+      askCenterBtn.addEventListener("click", () => doAsk(0, 0));
     }
   }
 

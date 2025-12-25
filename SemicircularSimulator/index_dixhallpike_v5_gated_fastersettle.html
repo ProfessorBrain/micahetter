@@ -1,0 +1,1824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" href="favicon.png">
+  <title>SemiCircular SemiSimulator</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: #111;
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+    }
+
+    canvas:active {
+      cursor: grabbing;
+    }
+
+    #newDotBtn {
+      position: fixed;
+      right: 18px;
+      bottom: 220px;
+      padding: 8px 14px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.7);
+      background: rgba(15,23,42,0.9);
+      color: #e5e7eb;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.45);
+      display: none;
+    }
+
+    #newDotBtn:hover {
+      background: rgba(30,64,175,0.95);
+      border-color: rgba(191,219,254,0.9);
+    }
+
+    #newDotBtn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    #newDotBtn:disabled:hover {
+      background: rgba(15,23,42,0.9);
+      border-color: rgba(148,163,184,0.7);
+    }
+
+    
+    #dixBtn {
+      position: fixed;
+      right: 18px;
+      bottom: 260px;
+      padding: 8px 14px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.7);
+      background: rgba(15,23,42,0.9);
+      color: #e5e7eb;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.45);
+      display: block;
+    }
+
+    #dixBtn:hover {
+      background: rgba(30,64,175,0.95);
+      border-color: rgba(191,219,254,0.9);
+    }
+
+    #dixBtn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    #dixBtn:disabled:hover {
+      background: rgba(15,23,42,0.9);
+      border-color: rgba(148,163,184,0.7);
+    }
+#resetBtn {
+      position: fixed;
+      left: 0px;
+      bottom: 6px;
+      transform: translateX(-50%);
+      padding: 6px 12px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 13px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.7);
+      background: rgba(15,23,42,0.9);
+      color: #e5e7eb;
+      cursor: pointer;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.45);
+    }
+
+    #resetBtn:hover {
+      background: rgba(30,64,175,0.95);
+      border-color: rgba(191,219,254,0.9);
+    }
+
+    #selectorPanel {
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      padding: 10px 12px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: rgba(15,23,42,0.92);
+      border: 1px solid rgba(148,163,184,0.7);
+      border-radius: 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      z-index: 20;
+      user-select: none;
+    }
+
+    #selectorPanel .group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    #selectorPanel .label {
+      font-size: 12px;
+      color: rgba(226,232,240,0.9);
+      letter-spacing: 0.2px;
+      margin-right: 2px;
+    }
+
+    #selectorPanel .segbtn {
+      padding: 6px 10px;
+      font-size: 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.55);
+      background: rgba(2,6,23,0.35);
+      color: rgba(226,232,240,0.92);
+      cursor: pointer;
+      transition: transform 80ms ease, background 120ms ease, border-color 120ms ease;
+    }
+
+    #selectorPanel .segbtn:hover {
+      transform: translateY(-1px);
+      background: rgba(30,64,175,0.35);
+      border-color: rgba(191,219,254,0.85);
+    }
+
+    #selectorPanel .segbtn.active {
+      background: rgba(30,64,175,0.85);
+      border-color: rgba(191,219,254,0.95);
+      color: #ffffff;
+    }
+
+    /* Canal buttons: make selection unmistakable */
+    #selectorPanel [data-canal].active {
+      background: rgba(34,197,94,0.88);
+      border-color: rgba(187,247,208,0.98);
+      color: #ffffff;
+    }
+
+    /* Cupula/ampulla mini widget (display-only) */
+    #cupulaWidget {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      width: 220px;
+      height: 150px;
+      z-index: 18;
+      pointer-events: none;
+    }
+
+    @media (max-width: 520px) {
+      #cupulaWidget {
+        right: 18px;
+        width: 200px;
+        height: 140px;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <canvas id="earCanvas"></canvas>
+  <canvas id="cupulaWidget" aria-label="Cupula deflection widget"></canvas>
+  <button id="newDotBtn">Add Otolith</button>
+  <button id="dixBtn" type="button">Dix-Hallpike</button>
+  <button id="resetBtn">Reset Orientation</button>
+
+  <div id="selectorPanel" aria-label="Canal and side selector">
+    <div class="group" aria-label="Side selector">
+      <span class="label">Side</span>
+      <button class="segbtn" data-side="R" type="button">Right</button>
+      <button class="segbtn" data-side="L" type="button">Left</button>
+    </div>
+    <div class="group" aria-label="Canal selector">
+      <span class="label">Canal</span>
+      <button class="segbtn" data-canal="posterior" type="button">Posterior</button>
+      <button class="segbtn" data-canal="superior" type="button">Superior</button>
+      <button class="segbtn" data-canal="lateral" type="button">Lateral</button>
+    </div>
+  </div>
+
+
+  <script>
+    const canvas = document.getElementById('earCanvas');
+    const ctx = canvas.getContext('2d');
+    const newDotBtn = document.getElementById('newDotBtn');
+    const dixBtn = document.getElementById('dixBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const selectorPanel = document.getElementById('selectorPanel');
+    const cupulaCanvas = document.getElementById('cupulaWidget');
+    const cupulaCtx = cupulaCanvas.getContext('2d');
+    const sideButtons = Array.from(document.querySelectorAll('#selectorPanel [data-side]'));
+    const canalButtons = Array.from(document.querySelectorAll('#selectorPanel [data-canal]'));
+
+    // ---- Right-side HUD layout constants (declared early to avoid TDZ) ----
+    const HUD_RIGHT_MARGIN = 18;
+    const CUPULA_BOTTOM = 18;
+    const HUD_GAP = 12;
+
+    // Movement meter layout (declared early to avoid TDZ)
+    let meterLayout = { x: 0, y: 70, w: 26, h: 240 };
+
+    // Selected ear side + canal
+    let selectedSide = 'R';       // 'R' | 'L'
+    let selectedCanal = 'posterior'; // 'posterior' | 'superior' | 'lateral'
+
+    // Favicon for HUD widgets
+
+    function setActiveButtons() {
+      for (const b of sideButtons) b.classList.toggle('active', b.dataset.side === selectedSide);
+      for (const b of canalButtons) b.classList.toggle('active', b.dataset.canal === selectedCanal);
+    }
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      positionRightHud();
+      computeMovementMeterLayout();
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+
+    // ---- Cupula/ampulla mini widget (current canal only) ----
+    let cupulaDeflection = 0; // smoothed, -1..1
+    let cupulaTarget = 0;     // instantaneous target
+
+    function resizeCupulaWidget() {
+      const dpr = window.devicePixelRatio || 1;
+      const rect = cupulaCanvas.getBoundingClientRect();
+      // Guard: if hidden or zero-sized, bail
+      const w = Math.max(1, rect.width);
+      const h = Math.max(1, rect.height);
+      cupulaCanvas.width = Math.round(w * dpr);
+      cupulaCanvas.height = Math.round(h * dpr);
+      cupulaCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    window.addEventListener('resize', resizeCupulaWidget);
+    // Defer one tick so CSS layout is applied
+    setTimeout(() => { resizeCupulaWidget(); positionRightHud(); computeMovementMeterLayout(); }, 0);
+
+    
+    // ---- Right-side HUD layout (meter + Dix-Hallpike + Add/Remove Otolith + cupula widget) ----
+    function positionRightHud() {
+      // Keep the widget aligned with the right edge
+      cupulaCanvas.style.right = HUD_RIGHT_MARGIN + 'px';
+      cupulaCanvas.style.bottom = CUPULA_BOTTOM + 'px';
+
+      const widgetRect = cupulaCanvas.getBoundingClientRect();
+      const baseBottom = CUPULA_BOTTOM + widgetRect.height + HUD_GAP;
+
+      // Add/Remove button sits just above the widget
+      newDotBtn.style.right = HUD_RIGHT_MARGIN + 'px';
+      newDotBtn.style.bottom = baseBottom + 'px';
+      newDotBtn.style.top = 'auto';
+
+      // Dix-Hallpike button sits above Add/Remove
+      const newDotH = (newDotBtn.getBoundingClientRect().height || 34);
+      dixBtn.style.right = HUD_RIGHT_MARGIN + 'px';
+      dixBtn.style.bottom = (baseBottom + newDotH + HUD_GAP) + 'px';
+      dixBtn.style.top = 'auto';
+    }
+
+    
+    function computeMovementMeterLayout() {
+      const meterWidth = 26;
+      const topY = 70;
+      const labelSpace = 34;  // includes the "Discomfort" label + breathing room
+
+      const widgetRect = cupulaCanvas.getBoundingClientRect();
+      const widgetTop = window.innerHeight - CUPULA_BOTTOM - widgetRect.height;
+
+      const newRect = newDotBtn.getBoundingClientRect();
+      const dixRect = dixBtn.getBoundingClientRect();
+
+      // Top of the HUD stack (whichever is higher on the screen)
+      let stackTop = Math.min(
+        (isFinite(newRect.top) && newRect.height > 0) ? newRect.top : (window.innerHeight - 260),
+        (isFinite(dixRect.top) && dixRect.height > 0) ? dixRect.top : (window.innerHeight - 300)
+      );
+
+      // Reserve a little extra space above the stack for visual breathing room
+      const maxBottom = Math.min(stackTop - 14, widgetTop - 14);
+      const maxHeight = maxBottom - topY - labelSpace;
+
+      const desired = 220; // keep it shorter than full height so it doesn't feel like a wall
+      const h = Math.max(120, Math.min(desired, maxHeight));
+
+      const x = canvas.width - HUD_RIGHT_MARGIN - meterWidth;
+      meterLayout = { x, y: topY, w: meterWidth, h };
+    }
+    function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+    function drawCupulaWidget() {
+      const w = cupulaCanvas.getBoundingClientRect().width;
+      const h = cupulaCanvas.getBoundingClientRect().height;
+      if (w <= 2 || h <= 2) return;
+
+      const pad = 12;
+      const r = 14;
+
+      cupulaCtx.clearRect(0, 0, w, h);
+
+      // Panel background
+      cupulaCtx.save();
+      cupulaCtx.beginPath();
+      cupulaCtx.fillStyle = 'rgba(15,23,42,0.92)';
+      cupulaCtx.strokeStyle = 'rgba(148,163,184,0.75)';
+      cupulaCtx.lineWidth = 1.5;
+      if (cupulaCtx.roundRect) {
+        cupulaCtx.roundRect(0.5, 0.5, w - 1, h - 1, r);
+      } else {
+        cupulaCtx.rect(0.5, 0.5, w - 1, h - 1);
+      }
+      cupulaCtx.fill();
+      cupulaCtx.stroke();
+
+      // Title
+      cupulaCtx.font = '12px system-ui, -apple-system, BlinkMacSystemFont, sans-serif';
+      cupulaCtx.fillStyle = 'rgba(226,232,240,0.92)';
+      cupulaCtx.textAlign = 'left';
+      cupulaCtx.textBaseline = 'top';
+      const title = 'Cupula / Ampulla';
+      cupulaCtx.fillText(title, pad, pad);
+
+      // Subtitle: selection
+      cupulaCtx.font = '12px system-ui, -apple-system, BlinkMacSystemFont, sans-serif';
+      cupulaCtx.fillStyle = 'rgba(203,213,225,0.9)';
+      const sideTxt = selectedSide === 'R' ? 'Right' : 'Left';
+      const canalTxt = selectedCanal ? (selectedCanal[0].toUpperCase() + selectedCanal.slice(1)) : 'None';
+      cupulaCtx.fillText(`${sideTxt} • ${canalTxt} canal`, pad, pad + 16);
+      // Otolith status
+      const hasOtolith = dotState !== 'none';
+      const statusY = pad + 32;
+      cupulaCtx.fillStyle = 'rgba(203,213,225,0.9)';
+      cupulaCtx.fillText(`Otolith: ${hasOtolith ? 'present' : 'none'}`, pad + 16, statusY);
+      // small indicator dot
+      cupulaCtx.beginPath();
+      cupulaCtx.fillStyle = hasOtolith ? 'rgba(239,68,68,0.95)' : 'rgba(148,163,184,0.7)';
+      cupulaCtx.arc(pad + 8, statusY + 6, 4, 0, Math.PI * 2);
+      cupulaCtx.fill();
+
+
+      // If no canal selected, show idle
+      if (!selectedCanal) {
+        cupulaCtx.fillStyle = 'rgba(148,163,184,0.9)';
+        cupulaCtx.fillText('Select a canal to visualize deflection', pad, pad + 52);
+        cupulaCtx.restore();
+        return;
+      }
+
+      // Schematic
+      const cx = pad + 58;
+      const cy = pad + 86;
+      const ampR = 20;
+
+      // Ampulla ring
+      cupulaCtx.beginPath();
+      cupulaCtx.strokeStyle = 'rgba(226,232,240,0.92)';
+      cupulaCtx.lineWidth = 2;
+      cupulaCtx.arc(cx, cy, ampR, 0, Math.PI * 2);
+      cupulaCtx.stroke();
+
+      // Canal "tube" to the right
+      cupulaCtx.beginPath();
+      cupulaCtx.strokeStyle = 'rgba(148,163,184,0.65)';
+      cupulaCtx.lineWidth = 10;
+      cupulaCtx.lineCap = 'round';
+      cupulaCtx.moveTo(cx + ampR, cy);
+      cupulaCtx.lineTo(cx + ampR + 62, cy);
+      cupulaCtx.stroke();
+
+      // Cupula flap at the canal-ampulla junction
+      const flap = clamp(cupulaDeflection, -1, 1);
+      const flapLen = 20;
+      const flapAngle = flap * 0.85; // radians
+      const baseX = cx + ampR;
+      const baseY = cy;
+      const tipX = baseX + Math.cos(flapAngle) * flapLen;
+      const tipY = baseY - Math.sin(flapAngle) * flapLen;
+
+      cupulaCtx.beginPath();
+      cupulaCtx.strokeStyle = 'rgba(34,197,94,0.95)';
+      cupulaCtx.lineWidth = 4;
+      cupulaCtx.lineCap = 'round';
+      cupulaCtx.moveTo(baseX, baseY);
+      cupulaCtx.lineTo(tipX, tipY);
+      cupulaCtx.stroke();
+
+      // Arrowhead
+      const ah = 7;
+      const ang = Math.atan2(baseY - tipY, tipX - baseX);
+      cupulaCtx.beginPath();
+      cupulaCtx.fillStyle = 'rgba(34,197,94,0.95)';
+      cupulaCtx.moveTo(tipX, tipY);
+      cupulaCtx.lineTo(tipX - Math.cos(ang - 0.5) * ah, tipY + Math.sin(ang - 0.5) * ah);
+      cupulaCtx.lineTo(tipX - Math.cos(ang + 0.5) * ah, tipY + Math.sin(ang + 0.5) * ah);
+      cupulaCtx.closePath();
+      cupulaCtx.fill();
+
+      // Magnitude bar
+      const barX = pad;
+      const barY = h - pad - 18;
+      const barW = w - pad * 2;
+      const barH = 10;
+
+      cupulaCtx.beginPath();
+      cupulaCtx.fillStyle = 'rgba(2,6,23,0.55)';
+      cupulaCtx.strokeStyle = 'rgba(148,163,184,0.55)';
+      cupulaCtx.lineWidth = 1;
+      if (cupulaCtx.roundRect) cupulaCtx.roundRect(barX, barY, barW, barH, 999);
+      else cupulaCtx.rect(barX, barY, barW, barH);
+      cupulaCtx.fill();
+      cupulaCtx.stroke();
+
+      const mag = Math.abs(flap);
+      const fillW = barW * mag;
+
+      cupulaCtx.beginPath();
+      cupulaCtx.fillStyle = 'rgba(34,197,94,0.92)';
+      if (cupulaCtx.roundRect) cupulaCtx.roundRect(barX, barY, fillW, barH, 999);
+      else cupulaCtx.rect(barX, barY, fillW, barH);
+      cupulaCtx.fill();
+
+      // Center tick
+      const mid = barX + barW / 2;
+      cupulaCtx.beginPath();
+      cupulaCtx.strokeStyle = 'rgba(226,232,240,0.35)';
+      cupulaCtx.lineWidth = 1;
+      cupulaCtx.moveTo(mid, barY - 3);
+      cupulaCtx.lineTo(mid, barY + barH + 3);
+      cupulaCtx.stroke();
+
+      // Direction label
+      cupulaCtx.font = '11px system-ui, -apple-system, BlinkMacSystemFont, sans-serif';
+      cupulaCtx.fillStyle = 'rgba(226,232,240,0.9)';
+      cupulaCtx.textAlign = 'right';
+      cupulaCtx.textBaseline = 'middle';
+      cupulaCtx.fillText(flap >= 0 ? 'Deflection +' : 'Deflection −', w - pad, cy);
+
+      cupulaCtx.restore();
+    }
+
+
+    // ---- Geometry helpers ----
+    function generateCanal(type) {
+      const pts = [];
+      const r = 1.4;
+      const segments = 260;
+      const full = Math.PI * 2;
+      let center, t0, labelAngle, labelPoint;
+
+      if (type === 'lateral') {
+        center = { x: 0, y: 0, z: r };
+        t0 = -Math.PI / 2;
+        labelAngle = t0 + Math.PI / 2;
+        for (let i = 0; i <= segments; i++) {
+          const t = t0 + (i / segments) * full;
+          const x = center.x + r * Math.cos(t);
+          const y = 0;
+          const z = center.z + r * Math.sin(t);
+          pts.push({ x, y, z });
+        }
+        labelPoint = {
+          x: center.x + r * Math.cos(labelAngle),
+          y: 0,
+          z: center.z + r * Math.sin(labelAngle)
+        };
+      } else if (type === 'superior') {
+        center = { x: 0, y: r, z: 0 };
+        t0 = Math.PI;
+        labelAngle = t0 - Math.PI / 2;
+        for (let i = 0; i <= segments; i++) {
+          const t = t0 + (i / segments) * full;
+          const x = 0;
+          const y = center.y + r * Math.cos(t);
+          const z = center.z + r * Math.sin(t);
+          pts.push({ x, y, z });
+        }
+        labelPoint = {
+          x: 0,
+          y: center.y + r * Math.cos(labelAngle),
+          z: center.z + r * Math.sin(labelAngle)
+        };
+      } else if (type === 'posterior') {
+        center = { x: r, y: 0, z: 0 };
+        t0 = Math.PI;
+        labelAngle = t0 + Math.PI / 2;
+        for (let i = 0; i <= segments; i++) {
+          const t = t0 + (i / segments) * full;
+          const x = center.x + r * Math.cos(t);
+          const y = center.y + r * Math.sin(t);
+          const z = 0;
+          pts.push({ x, y, z });
+        }
+        labelPoint = {
+          x: center.x + r * Math.cos(labelAngle),
+          y: center.y + r * Math.sin(labelAngle),
+          z: 0
+        };
+      }
+
+      return { points: pts, labelPoint };
+    }
+    const lateral = generateCanal('lateral');
+    const superior = generateCanal('superior');
+    const posterior = generateCanal('posterior');
+
+    const baseCanalsByType = {
+      lateral: {
+        key: 'lateral',
+        name: 'L',
+        color: '#7dd3fc',
+        points: lateral.points,
+        labelPoint: lateral.labelPoint
+      },
+      superior: {
+        key: 'superior',
+        name: 'S',
+        color: '#38bdf8',
+        points: superior.points,
+        labelPoint: superior.labelPoint
+      },
+      posterior: {
+        key: 'posterior',
+        name: 'P',
+        color: '#0ea5e9',
+        points: posterior.points,
+        labelPoint: posterior.labelPoint
+      }
+    };
+
+    function mirrorCanal(canal) {
+      return {
+        ...canal,
+        points: canal.points.map(p => ({ x: -p.x, y: p.y, z: p.z })),
+        labelPoint: { x: -canal.labelPoint.x, y: canal.labelPoint.y, z: canal.labelPoint.z }
+      };
+    }
+
+    // Precompute canals for each side by mirroring across the sagittal plane (x -> -x)
+    const canalsBySide = {
+      R: {
+        lateral: baseCanalsByType.lateral,
+        superior: baseCanalsByType.superior,
+        posterior: baseCanalsByType.posterior
+      },
+      L: {
+        lateral: mirrorCanal(baseCanalsByType.lateral),
+        superior: mirrorCanal(baseCanalsByType.superior),
+        posterior: mirrorCanal(baseCanalsByType.posterior)
+      }
+    };
+
+    const orderedCanalTypes = ['lateral', 'superior', 'posterior'];
+
+    function getActiveCanalObj(type) {
+      if (!type) return null;
+      return canalsBySide[selectedSide][type];
+    }
+
+    function getActiveCanalsList() {
+      return orderedCanalTypes.map(getActiveCanalObj);
+    }
+
+
+    // ---- Interaction state ----
+    let rotationX = 0.7;
+    let rotationY = -0.4;
+
+    let isDragging = false;
+    let lastX = 0;
+    let lastY = 0;
+    let hoverControl = null; // 'up' | 'down' | 'left' | 'right' | null
+
+    // Smooth rotation animation (for reset + 90° arrows)
+    let rotAnim = null;
+
+    function easeInOutQuad(t) {
+      return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+    }
+
+    function nearestAngle(target, current) {
+      // Returns an equivalent of `target` that is closest to `current` (wrap-safe interpolation).
+      const diff = normalizeAngle(target - current);
+      return current + diff;
+    }
+
+    function startRotationAnimation(targetX, targetY, duration = 420) {
+      rotAnim = {
+        startX: rotationX,
+        startY: rotationY,
+        targetX: nearestAngle(targetX, rotationX),
+        targetY: nearestAngle(targetY, rotationY),
+        startTime: performance.now(),
+        duration
+      };
+    }
+
+    function updateRotationAnimation() {
+      if (!rotAnim) return;
+      const now = performance.now();
+      const t = Math.min(1, (now - rotAnim.startTime) / rotAnim.duration);
+      const e = easeInOutQuad(t);
+
+      rotationX = rotAnim.startX + (rotAnim.targetX - rotAnim.startX) * e;
+      rotationY = rotAnim.startY + (rotAnim.targetY - rotAnim.startY) * e;
+
+      if (t >= 1) {
+        rotationX = rotAnim.targetX;
+        rotationY = rotAnim.targetY;
+        rotAnim = null;
+      }
+    }
+
+    function positionResetButton() {
+      const { cx } = getOrientationWidgetLayout();
+      resetBtn.style.left = cx + 'px';
+      resetBtn.style.transform = 'translateX(-50%)';
+    }
+
+    // ---- Mini orientation widget (corner) quick-rotate controls ----
+    function getOrientationWidgetLayout() {
+      const boxSize = 90;
+      const btnR = 16;
+      const btnOffset = (boxSize / 2) + 30; // extra padding so cube does not crowd arrows
+      const margin = 14;
+      const minCx = btnOffset + btnR + margin;
+      const maxCx = canvas.width - (btnOffset + btnR + margin);
+      const cx = Math.min(Math.max(80, minCx), Math.max(minCx, maxCx));
+      const cy = canvas.height - 150;
+      const buttons = {
+        up:    { x: cx,           y: cy - btnOffset },
+        down:  { x: cx,           y: cy + btnOffset },
+        left:  { x: cx - btnOffset, y: cy },
+        right: { x: cx + btnOffset, y: cy }
+      };
+      return { cx, cy, boxSize, btnR, buttons };
+    }
+
+    function hitTestRotationControl(px, py) {
+      const { buttons, btnR } = getOrientationWidgetLayout();
+      for (const key of Object.keys(buttons)) {
+        const b = buttons[key];
+        const d = Math.hypot(px - b.x, py - b.y);
+        if (d <= btnR + 2) return key;
+      }
+      return null;
+    }
+
+    function normalizeAngle(a) {
+      const twoPi = Math.PI * 2;
+      a = (a + Math.PI) % twoPi;
+      if (a < 0) a += twoPi;
+      return a - Math.PI;
+    }
+
+    function applyRotationControl(ctrl) {
+      
+      if (maneuver) return;
+const step = Math.PI / 4;
+      let targetX = rotationX;
+      let targetY = rotationY;
+
+      if (ctrl === 'left') targetY -= step;
+      if (ctrl === 'right') targetY += step;
+      if (ctrl === 'up') targetX -= step;
+      if (ctrl === 'down') targetX += step;
+
+      startRotationAnimation(targetX, targetY, 380);
+    }
+
+
+
+    // ---- Maneuvers: Dix-Hallpike (animated) ----
+    // We use a small step-machine so the maneuver can *wait* for otolith migration
+    // (rather than just advancing on a fixed timer).
+    let maneuver = null; // { steps: [...], idx, holdUntil }
+
+    function updateDixBtnVisibilityAndEnabled() {
+      // Dix-Hallpike is only an option when an otolith is present in-canal.
+      const canRun = (dotState === 'canal') && !!selectedCanal && !maneuver;
+      // Hide the button entirely when there is no in-canal otolith.
+      dixBtn.style.display = (dotState === 'canal' || maneuver) ? 'block' : 'none';
+      dixBtn.disabled = !canRun;
+    }
+
+    function setManeuverUI(active) {
+      resetBtn.disabled = active;
+      // Don't fully disable Add/Remove; users may want to remove the otolith mid-maneuver.
+      if (active) {
+        dixBtn.disabled = true;
+        dixBtn.textContent = 'Dix-Hallpike (running...)';
+      } else {
+        dixBtn.textContent = 'Dix-Hallpike';
+        updateDixBtnVisibilityAndEnabled();
+      }
+    }
+
+    function startManeuver(steps) {
+      maneuver = { steps, idx: 0, holdUntil: 0 };
+      rotAnim = null;
+      isDragging = false;
+      hoverControl = null;
+      canvas.style.cursor = 'grab';
+      setManeuverUI(true);
+    }
+
+    function updateManeuver() {
+      if (!maneuver) return;
+
+      const step = maneuver.steps[maneuver.idx];
+      if (!step) {
+        maneuver = null;
+        setManeuverUI(false);
+        return;
+      }
+
+      if (step.type === 'rotate') {
+        if (!step._started) {
+          step._started = true;
+          startRotationAnimation(step.x, step.y, step.duration ?? 420);
+        } else if (!rotAnim) {
+          // rotation completed
+          maneuver.idx += 1;
+        }
+        return;
+      }
+
+      if (step.type === 'hold') {
+        const now = performance.now();
+        if (!step._started) {
+          step._started = true;
+          maneuver.holdUntil = now + (step.ms ?? 1000);
+        }
+        if (now >= maneuver.holdUntil) {
+          maneuver.idx += 1;
+        }
+        return;
+      }
+
+      if (step.type === 'wait') {
+        const now = performance.now();
+
+        // Abort safely if the otolith is removed mid-maneuver.
+        if (dotState === 'none') {
+          maneuver = null;
+          setManeuverUI(false);
+          return;
+        }
+
+        if (!step._started) {
+          step._started = true;
+          step._t0 = now;
+          step._stableMs = 0;
+          step._last = now;
+        }
+
+        const dt = now - step._last;
+        step._last = now;
+
+        let ok = false;
+        if (typeof step.check === 'function') {
+          ok = !!step.check();
+        }
+
+        // If the check requires stability, accumulate stable time; otherwise gate immediately.
+        if (step.requiresStableMs) {
+          if (ok) step._stableMs += dt;
+          else step._stableMs = 0;
+          if (step._stableMs >= step.requiresStableMs) {
+            maneuver.idx += 1;
+            return;
+          }
+        } else {
+          if (ok) {
+            maneuver.idx += 1;
+            return;
+          }
+        }
+
+        // Optional timeout fail-open (prevents hard-locks if physics never settles).
+        if (step.timeoutMs && (now - step._t0) >= step.timeoutMs) {
+          maneuver.idx += 1;
+          return;
+        }
+
+        return;
+      }
+
+      // Unknown step type -> abort safely
+      maneuver = null;
+      setManeuverUI(false);
+    }
+
+    // --- Otolith migration checks used by maneuver steps ---
+    let lastDotSlope = 0; // updated inside updateDotInCanal
+    let dotReachedDependent = false; // latch for maneuver gating
+
+    function isDotSettled() {
+      // "Settled enough" for Dix-Hallpike gating:
+      //   - Either the otolith reaches a dependent segment for the current head orientation (latched), OR
+      //   - It slows sufficiently.
+      if (dotState !== 'canal') return false;
+
+      const canalKey = dotCanal || selectedCanal;
+      if (!canalKey) return false;
+
+      const canalObj = getActiveCanalObj(canalKey);
+      if (!canalObj) return false;
+
+      const pts = canalObj.points;
+      if (!pts || pts.length < 2) return false;
+
+      // Find the most dependent (lowest) point in camera space for the current orientation.
+      let minY = Infinity;
+      for (let k = 0; k < pts.length; k++) {
+        const c = worldToCamera(pts[k]);
+        if (c.y < minY) minY = c.y;
+      }
+
+      const dotW = getDotWorldPosition();
+      const dotC = worldToCamera(dotW);
+
+      // If the dot is near the dependent segment, latch as "settled".
+      const nearDependent = dotC.y <= (minY + 0.012);
+      if (nearDependent) dotReachedDependent = true;
+
+      // Also allow a generous "slow enough" threshold.
+      const velThresh = 0.00047; // ~94% of maxSpeed (very forgiving)
+      const slowEnough = Math.abs(dotVel) < velThresh;
+
+      return dotReachedDependent || slowEnough;
+    }
+
+    function hasDotExitedCanal() {
+      // Exit triggers dotState -> 'falling' (then eventually 'none').
+      return dotState !== 'canal';
+    }
+
+    function startDixHallpike() {
+      if (maneuver) return;
+
+      // Only meaningful if an otolith is present.
+      if (dotState === 'none') return;
+
+      // Reset migration latch for this maneuver.
+      dotReachedDependent = false;
+
+      // Uses current SIDE selection (Right/Left). Canal selection doesn't block the maneuver.
+      const sideYaw = (selectedSide === 'R' ? 1 : -1) * (Math.PI / 4); // 45°
+      const layBackPitch = (Math.PI / 3); // ~60° "back" for a clearly visible maneuver
+
+      // Steps:
+      // 1) Baseline upright
+      // 2) Turn head 45° toward tested side and WAIT until the otolith settles
+      // 3) Lay back into Dix-Hallpike and WAIT until the otolith exits the canal
+      // 4) Return to neutral
+      const steps = [
+        { type: 'rotate', x: 0, y: 0, duration: 380 },
+        { type: 'rotate', x: 0, y: sideYaw, duration: 360 },
+        { type: 'wait', check: isDotSettled, requiresStableMs: 60, timeoutMs: 2500 },
+        { type: 'rotate', x: layBackPitch, y: sideYaw, duration: 520 },
+        { type: 'wait', check: hasDotExitedCanal },
+        { type: 'hold', ms: 500 },
+        { type: 'rotate', x: 0, y: sideYaw, duration: 520 },
+        { type: 'rotate', x: 0, y: 0, duration: 360 }
+      ];
+
+      startManeuver(steps);
+    }
+
+    dixBtn.addEventListener('click', startDixHallpike);
+
+    function drawRotationButtons(layout) {
+      const { buttons, btnR } = layout;
+      const glyph = { up: '▲', down: '▼', left: '◀', right: '▶' };
+
+      for (const key of Object.keys(buttons)) {
+        const b = buttons[key];
+        const isHover = hoverControl === key;
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.fillStyle = isHover ? 'rgba(34,197,94,0.25)' : 'rgba(15,23,42,0.92)';
+        ctx.strokeStyle = isHover ? 'rgba(34,197,94,0.95)' : 'rgba(148,163,184,0.65)';
+        ctx.lineWidth = 2;
+        ctx.arc(b.x, b.y, btnR, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.font = '14px system-ui, -apple-system, BlinkMacSystemFont, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#e5e7eb';
+        ctx.fillText(glyph[key] || '?', b.x, b.y + 0.5);
+        ctx.restore();
+      }
+    }
+
+    canvas.addEventListener('pointerdown', (e) => {
+      if (maneuver) return;
+      // If the user clicks a quick-rotate arrow, rotate 90° and do NOT begin drag rotation.
+      const hit = hitTestRotationControl(e.clientX, e.clientY);
+      if (hit) {
+        applyRotationControl(hit);
+        hoverControl = hit;
+        canvas.style.cursor = 'pointer';
+        return;
+      }
+
+      rotAnim = null;
+      isDragging = true;
+      lastX = e.clientX;
+      lastY = e.clientY;
+      canvas.setPointerCapture(e.pointerId);
+    });
+
+    canvas.addEventListener('pointerup', (e) => {
+      // allow pointerup even during maneuver
+
+      isDragging = false;
+      try { canvas.releasePointerCapture(e.pointerId); } catch {}
+
+      // Refresh hover state so the cursor updates immediately after click/drag ends.
+      hoverControl = hitTestRotationControl(e.clientX, e.clientY);
+      canvas.style.cursor = hoverControl ? 'pointer' : 'grab';
+    });
+
+    canvas.addEventListener('pointerleave', () => {
+      isDragging = false;
+      hoverControl = null;
+      canvas.style.cursor = 'grab';
+    });
+
+    canvas.addEventListener('pointermove', (e) => {
+      if (maneuver) return;
+      if (!isDragging) {
+        hoverControl = hitTestRotationControl(e.clientX, e.clientY);
+        canvas.style.cursor = hoverControl ? 'pointer' : 'grab';
+        return;
+      }
+
+      const dx = e.clientX - lastX;
+      const dy = e.clientY - lastY;
+
+      rotationY += dx * 0.01;
+      rotationX += dy * 0.01;
+
+      lastX = e.clientX;
+      lastY = e.clientY;
+    });
+
+    // ---- Camera / projection ----
+    function worldToCamera(v) {
+      const cosX = Math.cos(rotationX);
+      const sinX = Math.sin(rotationX);
+      const cosY = Math.cos(rotationY);
+      const sinY = Math.sin(rotationY);
+
+      let y = v.y * cosX - v.z * sinX;
+      let z = v.y * sinX + v.z * cosX;
+      let x = v.x;
+
+      let x2 = x * cosY + z * sinY;
+      let z2 = -x * sinY + z * cosY;
+      let y2 = y;
+
+      return { x: x2, y: y2, z: z2 };
+    }
+
+    function projectVertex(v) {
+      const cam = worldToCamera(v);
+      const distance = 4;
+      const fov = 260;
+      const zCamera = cam.z + distance;
+      const factor = fov / zCamera;
+
+      const sx = cam.x * factor + canvas.width / 2;
+      const sy = -cam.y * factor + canvas.height / 2;
+
+      return { x: sx, y: sy, z: cam.z };
+    }
+
+    function drawPolyline(points3D, color, width, outline = true) {
+      const projected = points3D.map(projectVertex);
+      const path = new Path2D();
+      for (let i = 0; i < projected.length; i++) {
+        const p = projected[i];
+        if (i === 0) path.moveTo(p.x, p.y);
+        else path.lineTo(p.x, p.y);
+      }
+
+      ctx.save();
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+
+      if (outline) {
+        ctx.lineWidth = width + 6;
+        ctx.strokeStyle = '#000000';
+        ctx.globalAlpha = 0.9;
+        ctx.stroke(path);
+        ctx.globalAlpha = 1;
+      }
+
+      ctx.lineWidth = width;
+      ctx.strokeStyle = color;
+      ctx.stroke(path);
+
+      ctx.restore();
+    }
+
+    // ---- Viscous endolymph visualization (subtle) ----
+    // We simulate "fluid presence" with a faint inner haze plus a motion-coupled shimmer that lags behind head movement.
+    let rotDX = 0;
+    let rotDY = 0;
+
+    let fluidTime = 0;
+    const fluidFlow = { lateral: 0, superior: 0, posterior: 0 }; // -1..1 (smoothed)
+
+    function hexToRgb(hex) {
+      const h = (hex || '').replace('#','').trim();
+      if (h.length === 3) {
+        const r = parseInt(h[0] + h[0], 16);
+        const g = parseInt(h[1] + h[1], 16);
+        const b = parseInt(h[2] + h[2], 16);
+        return { r, g, b };
+      }
+      if (h.length === 6) {
+        const r = parseInt(h.slice(0,2), 16);
+        const g = parseInt(h.slice(2,4), 16);
+        const b = parseInt(h.slice(4,6), 16);
+        return { r, g, b };
+      }
+      return { r: 248, g: 250, b: 252 };
+    }
+
+    function updateFluidViz(dtMs) {
+      const dt = clamp((dtMs || 16) / 1000, 0, 0.08);
+      fluidTime += dt;
+
+      const sideFlip = (selectedSide === 'L') ? -1 : 1;
+
+      for (const type of orderedCanalTypes) {
+        let rotComponent = 0;
+        if (type === 'lateral') rotComponent = rotDY;
+        else if (type === 'posterior') rotComponent = rotDX;
+        else if (type === 'superior') rotComponent = -rotDX;
+
+        rotComponent *= sideFlip;
+
+        let particleComponent = 0;
+        if (dotState === 'canal' && selectedCanal === type) {
+          particleComponent = clamp(dotVel / (maxSpeed || 1e-9), -1, 1);
+          if (type === 'superior') particleComponent *= -1;
+          particleComponent *= sideFlip;
+        }
+
+        // "Flow" target: mostly driven by angular velocity, with a smaller otolith contribution.
+        const target = clamp(rotComponent * 7.0 + particleComponent * 2.6, -1, 1);
+
+        // Viscosity = lag + slow decay.
+        const tau = 0.45; // seconds (larger = more viscous/laggy)
+        const a = 1 - Math.exp(-dt / tau);
+        fluidFlow[type] = fluidFlow[type] + (target - fluidFlow[type]) * a;
+      }
+    }
+
+    function drawFluidInCanal(canal, flow, baseWidth) {
+      if (!canal || !canal.points || canal.points.length < 2) return;
+
+      const projected = canal.points.map(projectVertex);
+      const path = new Path2D();
+      for (let i = 0; i < projected.length; i++) {
+        const p = projected[i];
+        if (i === 0) path.moveTo(p.x, p.y);
+        else path.lineTo(p.x, p.y);
+      }
+
+      const mag = Math.abs(flow);
+      const rgb = hexToRgb(canal.color);
+
+      ctx.save();
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+
+      // Static "endolymph haze" inside the canal (always present, very subtle)
+      ctx.setLineDash([]);
+      ctx.globalAlpha = 0.09;
+      ctx.lineWidth = Math.max(2, baseWidth - 7);
+      ctx.strokeStyle = `rgba(${rgb.r},${rgb.g},${rgb.b},0.55)`;
+      ctx.stroke(path);
+
+      // Motion-coupled shimmer (only becomes noticeable with movement)
+      const shimmerAlpha = 0.02 + 0.20 * mag;
+      if (shimmerAlpha > 0.02) {
+        const dash = 14;
+        const gap = 26;
+        ctx.setLineDash([dash, gap]);
+
+        const speed = (40 + 220 * mag) * (flow >= 0 ? 1 : -1); // px/sec
+        ctx.lineDashOffset = -(fluidTime * speed);
+
+        ctx.globalAlpha = shimmerAlpha;
+        ctx.lineWidth = Math.max(1.6, baseWidth * 0.22);
+        ctx.strokeStyle = 'rgba(248,250,252,0.95)';
+        ctx.stroke(path);
+      }
+
+      ctx.restore();
+    }
+
+
+
+    // ---- Red dot states ----
+    let dotState = 'none'; // 'canal' | 'falling' | 'none'
+    let dotCanal = null; // remembers which canal currently contains the otolith
+    let dotParam = 0.15;
+    let dotVel = 0.0;
+    const baseGravityStrength = 0.00005;
+    const damping = 0.985;
+    const maxSpeed = 0.0005;
+
+    let fallX = 0;
+    let fallY = 0;
+    let fallVy = 0;
+
+    function resetDotInCanal() {
+      if (!selectedCanal) return;
+      dotState = 'canal';
+      dotCanal = selectedCanal;
+      dotParam = 0.15;
+      dotVel = 0.0;
+    }
+
+
+    function handleSelectionChange() {
+      setActiveButtons();
+
+      // If an otolith is already in play, keep the experience coherent.
+      if (dotState === 'canal') {
+        if (selectedCanal) {
+          resetDotInCanal();
+        } else {
+          // No canal selected -> remove otolith.
+          dotState = 'none';
+        }
+        updateButtonVisibility();
+      } else if (dotState === 'falling') {
+        dotState = 'none';
+        updateButtonVisibility();
+      } else {
+        updateButtonVisibility();
+      }
+    }
+
+    for (const btn of sideButtons) {
+      btn.addEventListener('click', () => {
+        selectedSide = btn.dataset.side;
+        handleSelectionChange();
+      });
+    }
+
+    for (const btn of canalButtons) {
+      btn.addEventListener('click', () => {
+        const clicked = btn.dataset.canal;
+        selectedCanal = (selectedCanal === clicked) ? null : clicked;
+        handleSelectionChange();
+      });
+    }
+
+    setActiveButtons();
+
+    function updateNewDotBtnEnabled() {
+      // Toggle button behavior:
+      // - If an otolith exists, button becomes "Remove Otolith" (always enabled)
+      // - If no otolith, button is enabled only when a canal is selected
+      if (dotState !== 'none') {
+        newDotBtn.disabled = false;
+        newDotBtn.textContent = 'Remove Otolith';
+        return;
+      }
+      const enabled = !!selectedCanal;
+      newDotBtn.disabled = !enabled;
+      newDotBtn.textContent = enabled ? 'Add Otolith' : 'Select a Canal';
+    }
+
+    function updateButtonVisibility() {
+      updateNewDotBtnEnabled();
+      // Always show the button; label/action indicates Add vs Remove.
+      newDotBtn.style.display = 'block';
+
+      // Dix-Hallpike is only shown/enabled when an otolith is present in-canal.
+      updateDixBtnVisibilityAndEnabled();
+
+      // Reflow right-side HUD stack immediately (button visibility affects layout).
+      positionRightHud();
+      computeMovementMeterLayout();
+    }
+
+    newDotBtn.addEventListener('click', () => {
+      // If an otolith is already present, this button removes it.
+      if (dotState !== 'none') {
+        dotState = 'none';
+        dotCanal = null;
+        dotVel = 0.0;
+        dotParam = 0.15;
+        updateButtonVisibility();
+        return;
+      }
+
+      // Otherwise, add only if a canal is selected.
+      if (selectedCanal) {
+        resetDotInCanal();
+        updateButtonVisibility();
+      }
+    });
+
+// ---- Confetti ----
+    const confetti = [];
+    const confettiColors = ['#f97316', '#22c55e', '#3b82f6', '#eab308', '#ec4899', '#a855f7', '#facc15'];
+
+    function spawnConfetti(x, y) {
+      const count = 150;
+      for (let i = 0; i < count; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 1 + Math.random() * 3;
+        confetti.push({
+          x,
+          y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed - 2,
+          life: 60 + Math.random() * 40,
+          size: 2 + Math.random() * 3,
+          color: confettiColors[Math.floor(Math.random() * confettiColors.length)]
+        });
+      }
+    }
+
+    function updateConfetti() {
+      for (let i = confetti.length - 1; i >= 0; i--) {
+        const c = confetti[i];
+        c.vy += 0.08;
+        c.x += c.vx;
+        c.y += c.vy;
+        c.life -= 1;
+        if (c.life <= 0) {
+          confetti.splice(i, 1);
+        }
+      }
+    }
+
+    function drawConfetti() {
+      for (const c of confetti) {
+        ctx.beginPath();
+        ctx.fillStyle = c.color;
+        ctx.arc(c.x, c.y, c.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    // ---- Dot motion in canal ----
+    function updateDotInCanal() {
+      const canalKey = dotCanal || selectedCanal;
+      if (!canalKey) return;
+      const canalObj = getActiveCanalObj(canalKey);
+      if (!canalObj) return;
+      const pts = canalObj.points;
+      const n = pts.length - 1;
+      if (n <= 0) return;
+
+      let t = dotParam * n;
+      let i = Math.floor(t);
+      let frac = t - i;
+      let i2 = (i + 1) % pts.length;
+
+      const p1 = pts[i];
+      const p2 = pts[i2];
+
+      const cam1 = worldToCamera(p1);
+      const cam2 = worldToCamera(p2);
+
+      let tx = cam2.x - cam1.x;
+      let ty = cam2.y - cam1.y;
+      let tz = cam2.z - cam1.z;
+      const len = Math.hypot(tx, ty, tz) || 1.0;
+      tx /= len; ty /= len; tz /= len;
+
+      const gx = 0, gy = -1, gz = 0;
+      const slope = tx * gx + ty * gy + tz * gz;
+
+      // For maneuver gating ("wait until migrated/settled")
+      lastDotSlope = slope;
+
+      dotVel *= damping;
+      const g = baseGravityStrength;
+      dotVel += slope * g;
+
+      if (dotVel > maxSpeed) dotVel = maxSpeed;
+      if (dotVel < -maxSpeed) dotVel = -maxSpeed;
+
+      dotParam = (dotParam + dotVel) % 1;
+      if (dotParam < 0) dotParam += 1;
+
+      const dotWorld = getDotWorldPosition();
+      const distToVest = Math.hypot(dotWorld.x, dotWorld.y, dotWorld.z);
+      if (distToVest < 0.12) {
+        const screen = projectVertex(dotWorld);
+        fallX = screen.x;
+        fallY = screen.y;
+        fallVy = 1.5;
+        dotCanal = null;
+        dotState = 'falling';
+        spawnConfetti(screen.x, screen.y);
+        updateButtonVisibility();
+      }
+    }
+
+    function getDotWorldPosition() {
+      const canalKey = dotCanal || selectedCanal;
+      if (!canalKey) return { x: 0, y: 0, z: 0 };
+      const canalObj = getActiveCanalObj(canalKey);
+      if (!canalObj) return { x: 0, y: 0, z: 0 };
+      const pts = canalObj.points;
+      const n = pts.length - 1;
+      if (n <= 0) return { x: 0, y: 0, z: 0 };
+
+      let t = dotParam * n;
+      let i = Math.floor(t);
+      let frac = t - i;
+      let i2 = (i + 1) % pts.length;
+
+      const p1 = pts[i];
+      const p2 = pts[i2];
+
+      return {
+        x: p1.x + (p2.x - p1.x) * frac,
+        y: p1.y + (p2.y - p1.y) * frac,
+        z: p1.z + (p2.z - p1.z) * frac
+      };
+    }
+
+    // ---- Falling dot ----
+    function updateFallingDot() {
+      fallVy += 0.25;
+      fallY += fallVy;
+      if (fallY - 10 > canvas.height) {
+        dotState = 'none';
+        updateButtonVisibility();
+      }
+    }
+
+    // ---- Orientation cube + cylinder I ----
+    let movementLevel = 0;
+    let prevRotX = rotationX;
+    let prevRotY = rotationY;
+
+    resetBtn.addEventListener('click', () => {
+      if (maneuver) return;
+      startRotationAnimation(0, 0, 520);
+    });
+
+    function drawOrientationCube() {
+      const layout = getOrientationWidgetLayout();
+      const size = 35;
+      const cx = layout.cx;
+      const cy = layout.cy;
+      const boxSize = layout.boxSize;
+
+      function projectMini(p) {
+        const cam = worldToCamera(p);
+        const sx = cx + cam.x * size;
+        const sy = cy - cam.y * size;
+        return { x: sx, y: sy };
+      }
+
+      const verts = [
+        { x: -1, y: -1, z: -1 },
+        { x:  1, y: -1, z: -1 },
+        { x:  1, y:  1, z: -1 },
+        { x: -1, y:  1, z: -1 },
+        { x: -1, y: -1, z:  1 },
+        { x:  1, y: -1, z:  1 },
+        { x:  1, y:  1, z:  1 },
+        { x: -1, y:  1, z:  1 }
+      ];
+
+      const edges = [
+        [0,1],[1,2],[2,3],[3,0],
+        [4,5],[5,6],[6,7],[7,4],
+        [0,4],[1,5],[2,6],[3,7]
+      ];
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.fillStyle = 'rgba(15,23,42,0.9)';
+      ctx.strokeStyle = 'rgba(148,163,184,0.6)';
+      ctx.lineWidth = 1;
+      if (ctx.roundRect) {
+        ctx.roundRect(cx - boxSize/2, cy - boxSize/2, boxSize, boxSize, 8);
+      } else {
+        ctx.rect(cx - boxSize/2, cy - boxSize/2, boxSize, boxSize);
+      }
+      ctx.fill();
+      ctx.stroke();
+
+      const projVerts = verts.map(projectMini);
+      ctx.beginPath();
+      for (const [i1, i2] of edges) {
+        const p1 = projVerts[i1];
+        const p2 = projVerts[i2];
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+      }
+      ctx.strokeStyle = '#e5e7eb';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.font = '14px system-ui, -apple-system, BlinkMacSystemFont, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#ffffff';
+
+      const A = projectMini({ x: 0, y: 0, z:  1.4 });
+      const P = projectMini({ x: 0, y: 0, z: -1.4 });
+      const S = projectMini({ x: 0, y:  1.4, z: 0 });
+      const R = projectMini({ x:  1.4, y: 0, z: 0 });
+      const L = projectMini({ x: -1.4, y: 0, z: 0 });
+
+      ctx.fillText('A', A.x, A.y);
+      ctx.fillText('P', P.x, P.y);
+      ctx.fillText('S', S.x, S.y);
+      ctx.fillText('R', R.x, R.y);
+      ctx.fillText('L', L.x, L.y);
+
+      const Iinner = projectMini({ x: 0, y: -1.1, z: 0 });
+      const Iouter = projectMini({ x: 0, y: -1.6, z: 0 });
+
+      const cylinderDiameter = boxSize * 0.3;
+      const cylinderRadius = cylinderDiameter / 2;
+
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = cylinderDiameter;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(Iinner.x, Iinner.y);
+      ctx.lineTo(Iouter.x, Iouter.y);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.fillStyle = '#ffffff';
+      ctx.arc(Iouter.x, Iouter.y, cylinderRadius, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 90° quick-rotate buttons around the mini orientation widget
+      drawRotationButtons(layout);
+
+      ctx.restore();
+    }
+
+    // ---- Eye inset (nystagmus simulation) ----
+    let eyeOffsetX = 0;
+    let eyePhase = 0;
+    let torsionAngle = 0;
+    const eyeCycleFrames = 80;
+
+    function updateEyes() {
+      const active = (dotState === 'canal' && Math.abs(dotVel) > 0.00001);
+      const torsionMode = active && (selectedCanal === 'posterior' || selectedCanal === 'superior');
+
+      if (active) {
+        eyePhase = (eyePhase + 1) % eyeCycleFrames;
+        const phase = eyePhase / eyeCycleFrames;
+
+        // Horizontal (lateral-canal style) jerk nystagmus in the inset.
+        const slowDir = dotVel > 0 ? -1 : 1;
+        const quickDir = -slowDir;
+        const maxOffset = 7;
+        let offset;
+
+        if (phase < 0.9) {
+          offset = slowDir * maxOffset * (phase / 0.9);
+        } else {
+          const fastFrac = (phase - 0.9) / 0.1;
+          offset = quickDir * maxOffset * 1.3 * fastFrac;
+        }
+        eyeOffsetX = offset;
+
+        // Simple torsion marker for posterior/superior canal patterns.
+        if (torsionMode) {
+          const amp = 0.42; // radians (~24°) so it's visible but not cartoonish
+          const canalSign = (selectedCanal === 'superior') ? -1 : 1;
+          const sideSign = (selectedSide === 'left') ? -1 : 1;
+          const velSign = dotVel > 0 ? 1 : -1;
+          const dir = canalSign * sideSign * velSign;
+
+          let tors;
+          if (phase < 0.9) {
+            tors = dir * amp * (phase / 0.9);
+          } else {
+            const fastFrac = (phase - 0.9) / 0.1;
+            tors = dir * amp * (1 - fastFrac);
+          }
+          torsionAngle = tors;
+        } else {
+          torsionAngle += (0 - torsionAngle) * 0.18;
+        }
+      } else {
+        eyePhase = 0;
+        eyeOffsetX += (0 - eyeOffsetX) * 0.15;
+        torsionAngle += (0 - torsionAngle) * 0.18;
+      }
+    }
+
+    function drawEyesBox() {
+      const boxX = 20;
+      const boxY = 20;
+      const boxW = 140;
+      const boxH = 70;
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.fillStyle = 'rgba(15,23,42,0.9)';
+      ctx.strokeStyle = 'rgba(148,163,184,0.7)';
+      ctx.lineWidth = 1.5;
+      if (ctx.roundRect) {
+        ctx.roundRect(boxX, boxY, boxW, boxH, 10);
+      } else {
+        ctx.rect(boxX, boxY, boxW, boxH);
+      }
+      ctx.fill();
+      ctx.stroke();
+
+      const eyeRadius = 18;
+      const pupilRadius = 7;
+      const leftEyeCx = boxX + boxW * 0.33;
+      const rightEyeCx = boxX + boxW * 0.67;
+      const eyesCy = boxY + boxH * 0.55;
+
+      ctx.beginPath();
+      ctx.fillStyle = '#e5e7eb';
+      ctx.arc(leftEyeCx, eyesCy, eyeRadius, 0, Math.PI * 2);
+      ctx.arc(rightEyeCx, eyesCy, eyeRadius, 0, Math.PI * 2);
+      ctx.fill();
+
+      function clampPupil(cx) {
+        const maxOffset = eyeRadius - pupilRadius - 2;
+        const clampedOffset = Math.max(-maxOffset, Math.min(maxOffset, eyeOffsetX));
+        return cx + clampedOffset;
+      }
+
+      const leftPupilCx = clampPupil(leftEyeCx);
+      const rightPupilCx = clampPupil(rightEyeCx);
+
+      ctx.beginPath();
+      ctx.fillStyle = '#020617';
+      ctx.arc(leftPupilCx, eyesCy, pupilRadius, 0, Math.PI * 2);
+      ctx.arc(rightPupilCx, eyesCy, pupilRadius, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.fillStyle = 'rgba(248,250,252,0.8)';
+      ctx.arc(leftPupilCx - 2, eyesCy - 3, 2, 0, Math.PI * 2);
+      ctx.arc(rightPupilCx - 2, eyesCy - 3, 2, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Torsion visualization: a small rotating tick inside each pupil (posterior/superior patterns).
+      if (Math.abs(torsionAngle) > 0.002) {
+        function drawTorsionTick(px, py) {
+          ctx.save();
+          ctx.translate(px, py);
+          ctx.rotate(torsionAngle);
+          // tick (white) with a subtle dark outline for readability
+          ctx.lineCap = 'round';
+
+          ctx.beginPath();
+          ctx.strokeStyle = 'rgba(2,6,23,0.65)';
+          ctx.lineWidth = 3.4;
+          ctx.moveTo(0, pupilRadius * 0.15);
+          ctx.lineTo(0, -pupilRadius * 0.9);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.strokeStyle = 'rgba(248,250,252,0.92)';
+          ctx.lineWidth = 2.0;
+          ctx.moveTo(0, pupilRadius * 0.15);
+          ctx.lineTo(0, -pupilRadius * 0.9);
+          ctx.stroke();
+
+          ctx.restore();
+        }
+        drawTorsionTick(leftPupilCx, eyesCy);
+        drawTorsionTick(rightPupilCx, eyesCy);
+      }
+
+      ctx.restore();
+    }
+
+    // ---- Movement meter on right ----
+    function updateMovementMetric() {
+      const dRx = rotationX - prevRotX;
+      const dRy = rotationY - prevRotY;
+      rotDX = dRx;
+      rotDY = dRy;
+      const rotationDelta = Math.hypot(dRx, dRy);
+
+      // Cupula deflection (current canal only): combines angular velocity + otolith motion
+      if (selectedCanal) {
+        let rotComponent = 0;
+        if (selectedCanal === 'lateral') rotComponent = dRy;          // yaw-driven
+        else if (selectedCanal === 'posterior') rotComponent = dRx;   // pitch-driven
+        else if (selectedCanal === 'superior') rotComponent = -dRx;   // opposite pitch sign
+
+        // Mirror anatomy: flip sign for left side to keep directions intuitive
+        if (selectedSide === 'L') rotComponent *= -1;
+
+        let particleComponent = 0;
+        if (dotState === 'canal') {
+	        // Normalize to make otolith-driven deflection visible (dotVel is tiny in world units)
+	        particleComponent = clamp(dotVel / (maxSpeed || 1e-9), -1, 1);
+          if (selectedCanal === 'superior') particleComponent *= -1;
+          if (selectedSide === 'L') particleComponent *= -1;
+        }
+
+        // Scale + clamp to -1..1
+	      const ROT_GAIN = 6;
+	      const OTOLITH_GAIN = 2.2;
+	      cupulaTarget = clamp(rotComponent * ROT_GAIN + particleComponent * OTOLITH_GAIN, -1, 1);
+      } else {
+        cupulaTarget = 0;
+      }
+
+      // Smooth the displayed deflection
+      cupulaDeflection = cupulaDeflection * 0.86 + cupulaTarget * 0.14;
+
+      const rotationActivity = Math.min(1, rotationDelta * 8);
+      const dotActivityInstant = dotState === 'canal'
+        ? Math.min(1, Math.abs(dotVel) / maxSpeed)
+        : 0;
+
+      const target = Math.max(rotationActivity, dotActivityInstant);
+      movementLevel = movementLevel * 0.9 + target * 0.1;
+
+      prevRotX = rotationX;
+      prevRotY = rotationY;
+    }
+
+    function drawMovementMeter() {
+      const meterWidth = meterLayout.w;
+      const meterHeight = meterLayout.h;
+      const x = meterLayout.x;
+      const y = meterLayout.y;
+
+      ctx.save();
+
+      ctx.beginPath();
+      ctx.fillStyle = 'rgba(15,23,42,0.95)';
+      ctx.strokeStyle = 'rgba(148,163,184,0.8)';
+      ctx.lineWidth = 2;
+      if (ctx.roundRect) {
+        ctx.roundRect(x, y, meterWidth, meterHeight, 10);
+      } else {
+        ctx.rect(x, y, meterWidth, meterHeight);
+      }
+      ctx.fill();
+      ctx.stroke();
+
+      const padding = 4;
+      const innerX = x + padding;
+      const innerY = y + padding;
+      const innerW = meterWidth - padding * 2;
+      const innerH = meterHeight - padding * 2;
+
+      ctx.fillStyle = '#020617';
+      ctx.fillRect(innerX, innerY, innerW, innerH);
+
+      const filledHeight = innerH * movementLevel;
+      const filledY = innerY + innerH - filledHeight;
+
+      const grad = ctx.createLinearGradient(0, innerY + innerH, 0, innerY);
+      grad.addColorStop(0, '#22c55e');
+      grad.addColorStop(0.5, '#eab308');
+      grad.addColorStop(1, '#ef4444');
+
+      ctx.fillStyle = grad;
+      ctx.fillRect(innerX, filledY, innerW, filledHeight);
+
+      ctx.font = '13px system-ui, -apple-system, BlinkMacSystemFont, sans-serif';
+      ctx.fillStyle = '#e5e7eb';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      ctx.fillText('Discomfort', x + meterWidth / 2, y + meterHeight + 8);
+
+      ctx.restore();
+    }
+
+    // ---- Main draw loop ----
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#020617';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.lineCap = 'round';
+
+      const activeCanals = getActiveCanalsList()
+        .map(c => {
+          // Average depth in camera space so we can draw far-to-near (better overlap cues)
+          let sumZ = 0;
+          for (const p of c.points) sumZ += worldToCamera(p).z;
+          return { ...c, _avgZ: sumZ / c.points.length };
+        })
+        .sort((a, b) => b._avgZ - a._avgZ);
+
+      for (const canal of activeCanals) {
+        const isSelected = canal.key === selectedCanal;
+        const baseW = isSelected ? 18 : 14;
+        drawPolyline(canal.points, isSelected ? '#22c55e' : canal.color, baseW, true);
+        drawFluidInCanal(canal, fluidFlow[canal.key] || 0, baseW);
+      }
+
+      const vestibule = projectVertex({ x: 0, y: 0, z: 0 });
+      ctx.beginPath();
+      ctx.fillStyle = '#f9fafb';
+      ctx.arc(vestibule.x, vestibule.y, 8, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.font = '20px system-ui, -apple-system, BlinkMacSystemFont, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#000000';
+      const activeCanals2 = getActiveCanalsList();
+      for (const canal of activeCanals2) {
+        const lp = projectVertex(canal.labelPoint);
+        ctx.fillText(canal.name, lp.x, lp.y);
+      }
+
+      if (dotState === 'canal') {
+        const dotWorld = getDotWorldPosition();
+        const dotScreen = projectVertex(dotWorld);
+        ctx.beginPath();
+        ctx.fillStyle = '#ef4444';
+        ctx.arc(dotScreen.x, dotScreen.y, 6, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (dotState === 'falling') {
+        ctx.beginPath();
+        ctx.fillStyle = '#ef4444';
+        ctx.arc(fallX, fallY, 6, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      drawConfetti();
+      drawOrientationCube();
+      drawEyesBox();
+      drawMovementMeter();
+    }
+
+    let lastLoopT = performance.now();
+
+    function loop() {
+      const now = performance.now();
+      const dtMs = now - lastLoopT;
+      lastLoopT = now;
+
+      updateRotationAnimation();
+      updateManeuver();
+      positionResetButton();
+      positionRightHud();
+      computeMovementMeterLayout();
+
+      if (dotState === 'canal') {
+        updateDotInCanal();
+      } else if (dotState === 'falling') {
+        updateFallingDot();
+      }
+      updateConfetti();
+      updateMovementMetric();
+      updateFluidViz(dtMs);
+      updateEyes();
+      draw();
+      drawCupulaWidget();
+      requestAnimationFrame(loop);
+    }
+
+    updateButtonVisibility();
+    positionResetButton();
+    loop();
+  </script>
+</body>
+</html>

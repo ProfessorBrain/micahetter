@@ -4,9 +4,6 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>💊 Capsule Connections</title>
-  <link rel="icon" type="image/png" href="favicon.png">
-  <link rel="shortcut icon" type="image/png" href="favicon.png">
-
 <style>
 :root{
   --bg:#0f172a;
@@ -52,11 +49,9 @@ body{
   flex:0 0 auto;
 }
 .logo-img{
-  height:clamp(80px, 38vh, 360px);
+  height:400px;
   width:auto;
   display:block;
-  max-width:min(320px, 32vw);
-  object-fit:contain;
 }
 .puzzle-row{
   margin-top:14px;
@@ -263,7 +258,7 @@ body{
   gap:16px;
 }
 .bottle{
-  width:clamp(130px, 18vw, 180px);
+  width:180px;
   max-width:45vw;
   display:flex;
   flex-direction:column;
@@ -273,6 +268,7 @@ body{
 .bottle-shell{
   position:relative;
   width:100%;
+  max-width:180px;
 }
 .bottle-neck{
   width:34%;
@@ -292,8 +288,8 @@ body{
   border-radius:40px 40px 14px 14px;
   border:2px solid rgba(148,163,184,.45);
   background:radial-gradient(circle at 30% 0,#0f172a 0,#020617 60%,#000 100%);
-  padding:clamp(8px, 1.2vw, 10px) 8px clamp(14px, 2.2vh, 18px);
-  min-height:clamp(150px, 30vh, 230px);
+  padding:10px 8px 18px;
+  min-height:230px;
   display:flex;
   flex-direction:column;
   justify-content:flex-end;
@@ -347,7 +343,7 @@ body{
 /* pills */
 .pill-tray{
   margin-top:20px;
-  padding:12px 10px 12px;
+  padding:12px 10px 4px;
   border-radius:16px;
   border:1px dashed rgba(148,163,184,.55);
   background:radial-gradient(circle at top,#020617 0,#020617 60%,#000 100%);
@@ -363,13 +359,13 @@ body{
 .pill-grid{
   display:grid;
   grid-template-columns:repeat(4, minmax(0, 1fr));
-  gap:clamp(8px, 1.4vw, 10px);
+  gap:10px;
   justify-items:center;
 }
 .pill{
-  min-width:clamp(98px, 18vw, 140px);
-  max-width:240px;
-  padding:clamp(8px, 1.4vw, 10px) clamp(12px, 2vw, 16px);
+  min-width:120px;
+  max-width:210px;
+  padding:10px 16px;
   border-radius:999px;
   background:
     linear-gradient(90deg,rgba(15,23,42,.95) 0,rgba(15,23,42,.93) 50%,rgba(15,23,42,.95) 100%),
@@ -377,13 +373,9 @@ body{
   background-clip:padding-box,border-box;
   border:2px solid transparent;
   color:#e5e7eb;
-  font-size:clamp(12px, 1.6vw, 15px);
+  font-size:15px;
   font-weight:800;
   text-align:center;
-  line-height:1.05;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:clip;
   box-shadow:0 6px 16px rgba(0,0,0,.75);
   cursor:pointer;
   position:relative;
@@ -394,13 +386,6 @@ body{
   transform:translateY(-1px);
   box-shadow:0 10px 24px rgba(0,0,0,.85);
 }
-.pill.pill-wrap{
-  white-space:normal;
-  overflow-wrap:normal; /* only break at natural opportunities (spaces/hyphens) */
-  word-break:normal;
-  hyphens:none;
-}
-
 
 .pill::before{
   content:"";
@@ -476,29 +461,25 @@ footer{
   color:var(--muted-soft);
 }
 
-@media (max-width:940px){
-  .pill-grid{ grid-template-columns:repeat(3, minmax(0, 1fr)); }
-}
-@media (max-width:680px){
-  .pill-grid{ grid-template-columns:repeat(2, minmax(0, 1fr)); }
-}
-
-@media (max-width:820px), (max-height:620px){
-  .logo-bar{ display:none; }
-  .top-row{ justify-content:center; align-items:stretch; }
-}
-
 /* mobile */
 @media (max-width:700px){
-  .wrap{padding-top:18px;}
-  .top-row{flex-direction:column; align-items:stretch; gap:10px;}
-  .workspace{padding:14px 12px 16px;}
-  .bottles-row{gap:12px;}
-  .bottle{width:calc(50% - 8px); max-width:none;}
-  .bottle-body{min-height:clamp(140px, 26vh, 190px);}
+  .wrap{padding-top:22px;}
+  .top-row{
+    flex-direction:column;
+    align-items:center;
+    gap:12px;
+  }
+  .logo-bar{
+    justify-content:center;
+  }
+  .logo-img{
+    max-height:80px;
+  }
+  .bottle{width:45%;}
+  .bottle-body{min-height:130px;}
 }
 @media (max-width:480px){
-  .bottle{width:100%; max-width:none;}
+  .bottle{width:100%;max-width:none;}
 }
 
 /* confetti canvas */
@@ -579,8 +560,6 @@ footer{
   <div class="puzzle-row" id="puzzleNav">
   <button class="puzzle-nav-btn" id="pzNew" title="Generate a new puzzle">New Puzzle</button>
 
-  <button class="puzzle-nav-btn" id="hint" title="Place one pill into the correct bottle">Hint</button>
-
   <button class="puzzle-nav-gear" id="settingsBtn" title="Settings" aria-label="Settings">⚙</button>
 </div>
   <footer id="footerText">created by micah etter, md</footer>
@@ -605,7 +584,8 @@ footer{
         <input type="checkbox" id="step1OnlyCheckbox"/>
         <span>STEP 1 Content Only</span>
       </label>
-</div>
+      <div class="setting-help">When enabled, only CSV rows with <b>STEP1</b> in column G are eligible.</div>
+    </div>
   </div>
 </div>
 
@@ -883,125 +863,6 @@ function lockPillTrayHeight(){
   const h = pillTrayEl.offsetHeight;
   if(h>0){ pillTrayEl.style.minHeight = h + "px"; }
 }
-// --- pill text auto-fit (prevents awkward single-letter wrapping) ---
-function getPillMeasureEl(){
-  if(window.__pillMeasureEl && window.__pillMeasureEl.isConnected) return window.__pillMeasureEl;
-  const el = document.createElement("span");
-  el.id = "__pillMeasure";
-  el.style.position = "fixed";
-  el.style.left = "-9999px";
-  el.style.top = "-9999px";
-  el.style.visibility = "hidden";
-  el.style.whiteSpace = "nowrap";
-  el.style.padding = "0";
-  el.style.margin = "0";
-  el.style.border = "0";
-  el.style.pointerEvents = "none";
-  (document.body || document.documentElement).appendChild(el);
-  window.__pillMeasureEl = el;
-  return el;
-}
-
-function measurePillLabelWidth(cs, label, fontPx){
-  const el = getPillMeasureEl();
-  el.style.fontFamily = cs.fontFamily;
-  el.style.fontWeight = cs.fontWeight;
-  el.style.fontStyle = cs.fontStyle;
-  el.style.letterSpacing = cs.letterSpacing;
-  el.style.textTransform = cs.textTransform;
-  el.style.fontSize = fontPx.toFixed(2) + "px";
-  el.textContent = label;
-  return el.getBoundingClientRect().width || 0;
-}
-
-// --- pill text auto-fit (keeps short labels at normal size; shrinks only when needed) ---
-function fitPillText(pill){
-  if(!pill || !pill.isConnected) return;
-
-  // Reset to default single-line pill style
-  pill.classList.remove("pill-wrap");
-  pill.style.fontSize = "";
-
-  const label = (pill.dataset && pill.dataset.item) ? pill.dataset.item : (pill.textContent || "");
-  const hasBreakOpportunities = /[ \-\/]/.test(label);
-
-  const cs = getComputedStyle(pill);
-  const base = parseFloat(cs.fontSize) || 14;
-
-  // Use rendered width (accounts for responsive scaling/constraints)
-  const rectW = (pill.getBoundingClientRect && pill.getBoundingClientRect().width) ? pill.getBoundingClientRect().width : (pill.clientWidth || 0);
-
-  const padL = parseFloat(cs.paddingLeft) || 0;
-  const padR = parseFloat(cs.paddingRight) || 0;
-  const borderL = parseFloat(cs.borderLeftWidth) || 0;
-  const borderR = parseFloat(cs.borderRightWidth) || 0;
-  const buffer = 2;
-
-  const contentW = Math.max(20, rectW - padL - padR - borderL - borderR - buffer);
-
-  // If it already fits, do nothing (avoid shrinking short labels).
-  const baseW = measurePillLabelWidth(cs, label, base);
-  if(baseW <= contentW + 0.5) return;
-
-  const inBottle = !!pill.closest(".bottle-body, .bottle-body-inner");
-
-  // Keep jar text readable: allow only modest shrinking by default.
-  const minAllowed = Math.max(inBottle ? 9 : 10, base * (inBottle ? 0.70 : 0.78));
-
-  // If even the minimum doesn't fit, wrap only when there are natural breakpoints; otherwise clip.
-  if(measurePillLabelWidth(cs, label, minAllowed) > contentW + 0.5){
-    if(hasBreakOpportunities){
-      pill.classList.add("pill-wrap");
-      pill.style.fontSize = ""; // base
-    }else{
-      pill.style.fontSize = minAllowed.toFixed(2) + "px";
-    }
-    return;
-  }
-
-  // Binary search for the largest font size that fits.
-  let lo = minAllowed;
-  let hi = base;
-  let best = minAllowed;
-
-  for(let i=0; i<12; i++){
-    const mid = (lo + hi) / 2;
-    const w = measurePillLabelWidth(cs, label, mid);
-    if(w <= contentW + 0.5){
-      best = mid;
-      lo = mid;
-    }else{
-      hi = mid;
-    }
-  }
-
-  pill.style.fontSize = best.toFixed(2) + "px";
-
-  // If we had to shrink a lot AND the label has natural breakpoints, prefer wrapping for readability.
-  const ratio = best / Math.max(1, base);
-  if(hasBreakOpportunities && ratio < 0.82){
-    pill.classList.add("pill-wrap");
-    pill.style.fontSize = "";
-  }
-}
-
-
-function fitAllPills(){
-  document.querySelectorAll(".pill").forEach(p => fitPillText(p));
-}
-
-let _fitRAF = null;
-function scheduleFitAllPills(){
-  if(_fitRAF) cancelAnimationFrame(_fitRAF);
-  _fitRAF = requestAnimationFrame(()=>{
-    fitAllPills();
-    lockPillTrayHeight();
-    _fitRAF = null;
-  });
-}
-
-window.addEventListener("resize", ()=>scheduleFitAllPills(), {passive:true});
-
 
 // pill helpers
 function createPill(item, index){
@@ -1021,8 +882,6 @@ function createPill(item, index){
   pill.draggable = true;
   pill.addEventListener("dragstart", onPillDragStart);
   pill.addEventListener("dragend", onPillDragEnd);
-  // Fit text after layout
-  requestAnimationFrame(()=>fitPillText(pill));
   return pill;
 }
 
@@ -1059,8 +918,6 @@ function movePillToTray(pill){
       b.items = b.items.filter(x => x !== pill.dataset.item);
       pill.dataset.location = "tray";
       pillGridEl.appendChild(pill);
-      fitPillText(pill);
-      scheduleFitAllPills();
       updateBottleStatus(idx);
     }
   }
@@ -1173,8 +1030,6 @@ function movePillToBottle(pill, bottleIdx){
   pill.classList.remove("pill-selected");
   b.items.push(item);
   b.pillsEl.appendChild(pill);
-  fitPillText(pill);
-  scheduleFitAllPills();
   selectedPill = null;
   updateBottleStatus(bottleIdx);
   checkBottle(bottleIdx);
@@ -1233,10 +1088,8 @@ function lockBottle(idx, categoryIndex){
   pills.forEach(p=>{
     p.classList.add("pill-locked");
     p.classList.remove("pill-selected");
-    fitPillText(p);
   });
   showToast("Bottle locked: " + cat.name, "ok");
-  scheduleFitAllPills();
   // check overall completion
   const allLocked = bottleState.every(x => x.locked);
   if(allLocked){
@@ -1260,108 +1113,33 @@ function chooseHintCategory(){
   return choice.idx;
 }
 
-function isCategorySolved(catIdx){
-  return bottleState.some(b => b.locked && b.categoryIndex === catIdx);
-}
-
-function getPureBottleCategoryIndex(b){
-  if(!b || !b.items || b.items.length === 0) return null;
-  const first = itemToCategoryIndex.get(b.items[0]);
-  if(first === undefined) return null;
-  for(const it of b.items){
-    const ci = itemToCategoryIndex.get(it);
-    if(ci === undefined || ci !== first) return null;
-  }
-  return first;
-}
-
-// hint: place one pill into the correct bottle
 function onHint(){
   if(!PUZZLE) return;
-
-  // Build lists of candidate bottles
-  const pureNonEmpty = [];
-  const emptyBottles = [];
-  bottleState.forEach((b, idx)=>{
-    if(!b || b.locked) return;
-    if(b.items.length >= 4) return;
-    if(b.items.length === 0){
-      emptyBottles.push(idx);
-      return;
-    }
-    const ci = getPureBottleCategoryIndex(b);
-    if(ci !== null){
-      pureNonEmpty.push({idx, catIdx: ci});
-    }
-  });
-
-  // Unsolved categories
-  const unsolvedCats = PUZZLE.categories
-    .map((c, i)=>i)
-    .filter(i => !isCategorySolved(i));
-
-  if(!unsolvedCats.length){
-return;
+  // pick or maintain hint category
+  const stillValid = hintCategoryIndex >= 0 &&
+    !bottleState.some(b => b.locked && b.categoryIndex === hintCategoryIndex);
+  if(!stillValid){
+    hintCategoryIndex = chooseHintCategory();
+    hintedItems.clear();
   }
-
-  // Try a few times to find a valid (bottle, item) pair.
-  for(let attempt=0; attempt<30; attempt++){
-    let bottleIdx = null;
-    let catIdx = null;
-
-    // Prefer adding to an already-started pure bottle
-    if(pureNonEmpty.length){
-      const usable = pureNonEmpty.filter(x => !isCategorySolved(x.catIdx));
-      const pool = usable.length ? usable : pureNonEmpty;
-      const pick = pool[Math.floor(Math.random()*pool.length)];
-      bottleIdx = pick.idx;
-      catIdx = pick.catIdx;
-    } else if(emptyBottles.length){
-      bottleIdx = emptyBottles[Math.floor(Math.random()*emptyBottles.length)];
-      catIdx = unsolvedCats[Math.floor(Math.random()*unsolvedCats.length)];
-    } else {
-return;
-    }
-
-    const b = bottleState[bottleIdx];
-    if(!b || b.locked || b.items.length >= 4) continue;
-
-    // Ensure bottle is still empty or pure
-    if(b.items.length > 0){
-      const pureIdx = getPureBottleCategoryIndex(b);
-      if(pureIdx === null) continue;
-      catIdx = pureIdx;
-      if(isCategorySolved(catIdx)) continue;
-    }
-
-    const cat = PUZZLE.categories[catIdx];
-    if(!cat || !Array.isArray(cat.items)) continue;
-
-    const already = new Set(b.items);
-    const choices = cat.items.filter(it => !already.has(it));
-    if(!choices.length) continue;
-
-    // Prefer a pill that's currently in the tray (less jarring), else move from elsewhere.
-    let chosenItem = null;
-    const trayChoices = choices.filter(it=>{
-      const el = findPillElement(it);
-      return el && (el.dataset.location === "tray");
-    });
-    if(trayChoices.length){
-      chosenItem = trayChoices[Math.floor(Math.random()*trayChoices.length)];
-    } else {
-      chosenItem = choices[Math.floor(Math.random()*choices.length)];
-    }
-
-    const pill = findPillElement(chosenItem);
-    if(!pill) continue;
-    if(pill.classList.contains("pill-locked")) continue;
-
-    movePillToBottle(pill, bottleIdx);
+  if(hintCategoryIndex < 0){
+    showToast("No categories left to hint.", "warn");
+    return;
+  }
+  const cat = PUZZLE.categories[hintCategoryIndex];
+  const remainingItems = cat.items.filter(it => !hintedItems.has(it));
+  if(!remainingItems.length){
+    showToast("All pills from this group are already hinted.", "warn");
+    return;
+  }
+  const item = remainingItems[Math.floor(Math.random()*remainingItems.length)];
+  hintedItems.add(item);
+  const pill = findPillElement(item);
+  if(pill){
     pill.classList.add("pill-hint");
-    setTimeout(()=>pill.classList.remove("pill-hint"), 900);
-return;
+    pill.scrollIntoView({behavior:"smooth",block:"center"});
   }
+  showToast("Hint: one pill from a hidden group is glowing.", "warn");
 }
 
 // shuffle tray pills (only those not locked)
@@ -1375,7 +1153,6 @@ function onShuffle(){
   }
   pillGridEl.innerHTML = "";
   pool.forEach(p => pillGridEl.appendChild(p));
-  scheduleFitAllPills();
 }
 
 // reset puzzle to fresh state
@@ -1410,7 +1187,7 @@ function setupBoardForPuzzle(puzzle){
     const pill = createPill(it, idx);
     pillGridEl.appendChild(pill);
   });
-  scheduleFitAllPills();
+  lockPillTrayHeight();
   updatePuzzleMeta();
   renderFooter();
   if (hintBtn) hintBtn.disabled = false;
@@ -1486,7 +1263,7 @@ function rowToCategory(r){
   ].map(v => String(v || "").trim());
 
   const colG = String(r.__colG || (r.__cols && r.__cols[6]) || "").trim();
-  const __step1 = /step1/i.test(colG);
+  const __step1 = /step1/i.test(colG);
 
   return { name, items, urls, color: null, __step1 };
 }
@@ -1625,6 +1402,7 @@ if (resetBtn) resetBtn.addEventListener("click", onResetPuzzle);
 
 if (pzNewBtn) pzNewBtn.addEventListener("click", ()=>{
   makeAndLoadNewPuzzle();
+  showToast("New puzzle.", "ok");
 });
 
 
