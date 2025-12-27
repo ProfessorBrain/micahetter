@@ -640,93 +640,6 @@
       background:#0b1220;
       color:#e5e7eb;
     }
-
-    .game-title-wrap{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-    .mode-wrap{
-      display:flex;
-      gap:8px;
-      align-items:center;
-    }
-    .mode-chip{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:4px 10px;
-      border-radius:999px;
-      border:1px solid rgba(148,163,184,0.22);
-      background: rgba(2,6,23,0.45);
-      cursor:pointer;
-      user-select:none;
-    }
-    .mode-chip input{ width:14px; height:14px; accent-color:#60a5fa; }
-    .mode-chip span{ font-size:0.78rem; color:#e5e7eb; letter-spacing:0.02em; }
-    .mode-chip.checked{
-      border-color: rgba(96,165,250,0.75);
-      box-shadow:0 0 0 2px rgba(96,165,250,0.18) inset;
-    }
-    .mode-chip:hover{ border-color: rgba(148,163,184,0.55); }
-
-    .eom-guess-wrap{
-      margin-top:10px;
-      padding-top:10px;
-      border-top:1px dashed rgba(148,163,184,0.22);
-    }
-    .eom-guess-head{
-      display:flex;
-      justify-content:center;
-      gap:10px;
-      align-items:baseline;
-      margin-bottom:8px;
-    }
-    .eom-guess-sub{ font-size:0.78rem; color:#9ca3af; }
-    .eom-guess-grid{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:10px;
-    }
-    .eom-side{
-      padding:8px 10px;
-      border-radius:14px;
-      border:1px solid rgba(75,85,99,0.55);
-      background: rgba(2,6,23,0.35);
-    }
-    .eom-side-title{
-      font-size:0.74rem;
-      color:#9ca3af;
-      text-transform:uppercase;
-      letter-spacing:0.08em;
-      margin-bottom:8px;
-    }
-    .eom-muscles{ display:flex; flex-wrap:wrap; gap:8px; }
-    .eom-chip{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid rgba(75,85,99,0.75);
-      background: rgba(15,23,42,0.45);
-      cursor:pointer;
-      user-select:none;
-    }
-    .eom-chip input{ width:14px; height:14px; accent-color:#60a5fa; }
-    .eom-chip span{ font-size:0.82rem; color:#e5e7eb; min-width:2ch; text-align:center; }
-    .eom-chip.checked{
-      border-color: rgba(96,165,250,0.75);
-      box-shadow:0 0 0 2px rgba(96,165,250,0.18) inset;
-    }
-    .eom-chip:hover{ border-color: rgba(148,163,184,0.75); }
-    .eom-chip.disabled{ opacity:0.55; cursor:not-allowed; }
-
-    @media (max-width: 520px){
-      .eom-guess-grid{ grid-template-columns:1fr; }
-    }
-
     .mini-btn{
       border-radius:999px;
       border:1px solid rgba(75,85,99,0.85);
@@ -1034,19 +947,7 @@ width: fit-content;
 
       <div class="game-panel" id="gamePanel" aria-live="polite" hidden>
         <div class="game-top">
-          <div class="game-title-wrap">
-            <div class="game-title">Name the Lesion</div>
-            <div class="mode-wrap" aria-label="Lesion set" role="group">
-              <label class="mode-chip" title="Cranial nerve patterns (III/IV/VI + INO)">
-                <input type="checkbox" id="modeCN" checked>
-                <span>CN</span>
-              </label>
-              <label class="mode-chip" title="Extraocular muscle patterns (any combination)">
-                <input type="checkbox" id="modeEOM">
-                <span>EOM</span>
-              </label>
-            </div>
-          </div>
+          <div class="game-title">Name the Lesion</div>
           <div class="game-stats">
             <span class="game-stat"><span class="game-label">Time</span> <span id="gameTimer">0.0s</span></span>
             <span class="game-dot">•</span>
@@ -1059,7 +960,7 @@ width: fit-content;
         <div class="game-controls">
           <button class="mini-btn" id="gameNewRound" type="button">New round</button>
 
-          <label class="game-select-wrap" id="cnGuessWrap" aria-label="Select diagnosis to submit">
+          <label class="game-select-wrap" aria-label="Select diagnosis to submit">
             <span class="game-label">Diagnosis</span>
             <select id="diagnosisSelect">
               <option value="" selected disabled>Select…</option>
@@ -1076,38 +977,6 @@ width: fit-content;
 
           <button class="mini-btn mini-btn-primary" id="submitGuess" type="button" disabled>Submit</button>
           <button class="mini-btn" id="revealLesionBtn" type="button" disabled>Reveal lesion</button>
-        </div>
-
-        
-        <div class="eom-guess-wrap" id="eomGuessWrap" hidden>
-          <div class="eom-guess-head">
-            <span class="game-label">EOM</span>
-            <span class="eom-guess-sub">check all lesioned muscles</span>
-          </div>
-          <div class="eom-guess-grid" role="group" aria-label="Select lesioned extraocular muscles">
-            <div class="eom-side">
-              <div class="eom-side-title">Right eye</div>
-              <div class="eom-muscles">
-                <label class="eom-chip"><input type="checkbox" data-eom="od_mr"><span>MR</span></label>
-                <label class="eom-chip"><input type="checkbox" data-eom="od_lr"><span>LR</span></label>
-                <label class="eom-chip"><input type="checkbox" data-eom="od_sr"><span>SR</span></label>
-                <label class="eom-chip"><input type="checkbox" data-eom="od_ir"><span>IR</span></label>
-                <label class="eom-chip"><input type="checkbox" data-eom="od_so"><span>SO</span></label>
-                <label class="eom-chip"><input type="checkbox" data-eom="od_io"><span>IO</span></label>
-              </div>
-            </div>
-            <div class="eom-side">
-              <div class="eom-side-title">Left eye</div>
-              <div class="eom-muscles">
-                <label class="eom-chip"><input type="checkbox" data-eom="os_mr"><span>MR</span></label>
-                <label class="eom-chip"><input type="checkbox" data-eom="os_lr"><span>LR</span></label>
-                <label class="eom-chip"><input type="checkbox" data-eom="os_sr"><span>SR</span></label>
-                <label class="eom-chip"><input type="checkbox" data-eom="os_ir"><span>IR</span></label>
-                <label class="eom-chip"><input type="checkbox" data-eom="os_so"><span>SO</span></label>
-                <label class="eom-chip"><input type="checkbox" data-eom="os_io"><span>IO</span></label>
-              </div>
-            </div>
-          </div>
         </div>
 
         <div class="game-feedback" id="gameFeedback"></div>
@@ -1277,11 +1146,6 @@ width: fit-content;
   const gamePanel = document.getElementById("gamePanel");
   const gameNewRoundBtn = document.getElementById("gameNewRound");
   const diagnosisSelect = document.getElementById("diagnosisSelect");
-  const modeCNCb = document.getElementById("modeCN");
-  const modeEOMCb = document.getElementById("modeEOM");
-  const cnGuessWrap = document.getElementById("cnGuessWrap");
-  const eomGuessWrap = document.getElementById("eomGuessWrap");
-  const eomGuessInputs = Array.from(document.querySelectorAll('#eomGuessWrap input[data-eom]'));
   const submitGuessBtn = document.getElementById("submitGuess");
   const revealLesionBtn = document.getElementById("revealLesionBtn");
   const gameTimerEl = document.getElementById("gameTimer");
@@ -1639,10 +1503,8 @@ const enabled = { od: {}, os: {} };
     startMs: null,
     looks: 0,
     score: 0,
-    guessMode: "CN",
     answerId: null,
     answerLabel: null,
-    answerSet: null,
     raf: null,
     sandboxSnapshot: null
   };
@@ -1661,108 +1523,6 @@ const enabled = { od: {}, os: {} };
     { id:"R_INO",    label:"Right INO (right MLF lesion)", apply: ()=>{ mlf.right = true; } },
     { id:"L_INO",    label:"Left INO (left MLF lesion)",   apply: ()=>{ mlf.left  = true; } }
   ];
-
-
-  const EOM_CHOICES = [
-    { key:"od_mr", eye:"od", muscle:"mr", abbr:"MR" },
-    { key:"od_lr", eye:"od", muscle:"lr", abbr:"LR" },
-    { key:"od_sr", eye:"od", muscle:"sr", abbr:"SR" },
-    { key:"od_ir", eye:"od", muscle:"ir", abbr:"IR" },
-    { key:"od_so", eye:"od", muscle:"so", abbr:"SO" },
-    { key:"od_io", eye:"od", muscle:"io", abbr:"IO" },
-    { key:"os_mr", eye:"os", muscle:"mr", abbr:"MR" },
-    { key:"os_lr", eye:"os", muscle:"lr", abbr:"LR" },
-    { key:"os_sr", eye:"os", muscle:"sr", abbr:"SR" },
-    { key:"os_ir", eye:"os", muscle:"ir", abbr:"IR" },
-    { key:"os_so", eye:"os", muscle:"so", abbr:"SO" },
-    { key:"os_io", eye:"os", muscle:"io", abbr:"IO" }
-  ];
-  const EOM_BY_KEY = Object.fromEntries(EOM_CHOICES.map(x=>[x.key,x]));
-
-  function pickRandomEomKeys(){
-    // Weighted toward fewer muscles to keep rounds doable
-    const weights = [1,1,1,2,2,2,3,3,4];
-    const count = weights[Math.floor(Math.random() * weights.length)];
-    const pool = EOM_CHOICES.slice();
-    for (let i = pool.length - 1; i > 0; i--){
-      const j = Math.floor(Math.random() * (i + 1));
-      [pool[i], pool[j]] = [pool[j], pool[i]];
-    }
-    return pool.slice(0, Math.min(count, pool.length)).map(x=>x.key);
-  }
-
-  function formatEomKeys(keys){
-    const byEye = { od: [], os: [] };
-    keys.forEach(k=>{
-      const item = EOM_BY_KEY[k];
-      if (!item) return;
-      byEye[item.eye].push(item.abbr);
-    });
-    const parts = [];
-    if (byEye.od.length) parts.push(`Right: ${byEye.od.join(", ")}`);
-    if (byEye.os.length) parts.push(`Left: ${byEye.os.join(", ")}`);
-    return parts.join(" • ") || "None";
-  }
-
-  function applyEomKeys(keys){
-    keys.forEach(k=>{
-      const item = EOM_BY_KEY[k];
-      if (!item) return;
-      setMuscleEnabled(item.eye, item.muscle, false);
-    });
-  }
-
-  function setsEqual(a, b){
-    if (a.size !== b.size) return false;
-    for (const v of a){ if (!b.has(v)) return false; }
-    return true;
-  }
-
-  function syncChipClasses(){
-    document.querySelectorAll(".mode-chip").forEach(lbl=>{
-      const inp = lbl.querySelector("input");
-      lbl.classList.toggle("checked", !!(inp && inp.checked));
-    });
-    document.querySelectorAll(".eom-chip").forEach(lbl=>{
-      const inp = lbl.querySelector("input");
-      const checked = !!(inp && inp.checked);
-      const disabled = !!(inp && inp.disabled);
-      lbl.classList.toggle("checked", checked);
-      lbl.classList.toggle("disabled", disabled);
-    });
-  }
-
-  function setGuessMode(mode){
-    const m = (mode === "EOM") ? "EOM" : "CN";
-    game.guessMode = m;
-
-    if (modeCNCb && modeEOMCb){
-      if (m === "CN"){
-        modeCNCb.checked = true;
-        modeEOMCb.checked = false;
-      } else {
-        modeCNCb.checked = false;
-        modeEOMCb.checked = true;
-      }
-    }
-
-    if (cnGuessWrap) cnGuessWrap.hidden = (m !== "CN");
-    if (eomGuessWrap) eomGuessWrap.hidden = (m !== "EOM");
-
-    if (diagnosisSelect){
-      diagnosisSelect.value = "";
-      diagnosisSelect.disabled = (m !== "CN") || !game.roundActive;
-    }
-    if (eomGuessInputs && eomGuessInputs.length){
-      eomGuessInputs.forEach(cb=>{
-        cb.checked = false;
-        cb.disabled = (m !== "EOM") || !game.roundActive;
-      });
-    }
-    if (submitGuessBtn) submitGuessBtn.disabled = true;
-    syncChipClasses();
-  }
-
 
   function deepClone(obj){
     return JSON.parse(JSON.stringify(obj));
@@ -1864,21 +1624,13 @@ const enabled = { od: {}, os: {} };
   function startRound(){
     resetToNormal();
 
-    // Pick answer based on mode
-    if (game.guessMode === "EOM"){
-      const keys = pickRandomEomKeys();
-      game.answerId = "EOM";
-      game.answerSet = new Set(keys);
-      game.answerLabel = formatEomKeys(keys);
-      applyEomKeys(keys);
-    } else {
-      const pick = DIAG_POOL[Math.floor(Math.random() * DIAG_POOL.length)];
-      game.answerId = pick.id;
-      game.answerSet = null;
-      game.answerLabel = pick.label;
-      pick.apply();
-    }
+    // Pick answer
+    const pick = DIAG_POOL[Math.floor(Math.random() * DIAG_POOL.length)];
+    game.answerId = pick.id;
+    game.answerLabel = pick.label;
 
+    // Apply lesion pattern
+    pick.apply();
     refreshLesionCheckboxes();
     renderFromSliders();
 
@@ -1890,25 +1642,11 @@ const enabled = { od: {}, os: {} };
     game.roundActive = true;
     game.startMs = performance.now();
 
-    if (gameFeedbackEl){
-      gameFeedbackEl.textContent = (game.guessMode === "EOM")
-        ? "Round started. Use Ask to Look, then submit the lesioned muscle set."
-        : "Round started. Use Ask to Look, then submit your diagnosis.";
-    }
-
-    // Reset guess UI
+    if (gameFeedbackEl) gameFeedbackEl.textContent = "Round started. Use Ask to Look, then submit your diagnosis.";
     if (diagnosisSelect){
       diagnosisSelect.value = "";
-      diagnosisSelect.disabled = (game.guessMode !== "CN");
+      diagnosisSelect.disabled = false;
     }
-    if (eomGuessInputs && eomGuessInputs.length){
-      eomGuessInputs.forEach(cb=>{
-        cb.checked = false;
-        cb.disabled = (game.guessMode !== "EOM");
-      });
-    }
-    syncChipClasses();
-
     if (submitGuessBtn) submitGuessBtn.disabled = true; // enable once user chooses
     if (revealLesionBtn) revealLesionBtn.disabled = true;
 
@@ -1940,44 +1678,23 @@ const enabled = { od: {}, os: {} };
 
   function submitGuess(){
     if (!game.active || !game.roundActive) return;
+    if (!diagnosisSelect) return;
 
-    let isCorrect = false;
-    let prettyGuess = "";
+    const guess = diagnosisSelect.value;
+    if (!guess) return;
 
-    if (game.guessMode === "EOM"){
-      const selected = (eomGuessInputs || []).filter(cb=>cb.checked).map(cb=>cb.getAttribute("data-eom"));
-      if (!selected.length) return;
-
-      const selSet = new Set(selected);
-      const ansSet = game.answerSet instanceof Set ? game.answerSet : new Set();
-      isCorrect = setsEqual(selSet, ansSet);
-      prettyGuess = formatEomKeys(selected);
-
-      // Lock guess controls
-      (eomGuessInputs || []).forEach(cb=> cb.disabled = true);
-    } else {
-      if (!diagnosisSelect) return;
-      const guess = diagnosisSelect.value;
-      if (!guess) return;
-
-      isCorrect = (guess === game.answerId);
-      prettyGuess = diagnosisSelect.options[diagnosisSelect.selectedIndex]?.textContent?.trim() || "Your guess";
-
-      diagnosisSelect.disabled = true;
-    }
-
+    const isCorrect = (guess === game.answerId);
     const result = endRoundAndScore(isCorrect);
 
     if (submitGuessBtn) submitGuessBtn.disabled = true;
     if (revealLesionBtn) revealLesionBtn.disabled = false;
 
-    syncChipClasses();
-
     if (gameFeedbackEl){
       if (isCorrect){
         gameFeedbackEl.textContent = `Correct: ${game.answerLabel}. ${formatTime(result.secs*1000)} • Looks ${game.looks} • +${result.pts}`;
       } else {
-        gameFeedbackEl.textContent = `Incorrect (${prettyGuess}). Correct was: ${game.answerLabel}. ${formatTime(result.secs*1000)} • Looks ${game.looks}`;
+        const prettyGuess = diagnosisSelect.options[diagnosisSelect.selectedIndex]?.textContent?.trim() || "Your guess";
+        gameFeedbackEl.textContent = `Incorrect (${prettyGuess}). Correct: ${game.answerLabel}. ${formatTime(result.secs*1000)} • Looks ${game.looks}`;
       }
     }
   }
@@ -1993,9 +1710,6 @@ const enabled = { od: {}, os: {} };
 
     if (lesionBtn) lesionBtn.disabled = true;
     if (nameLesionBtn) nameLesionBtn.textContent = "Exit Game";
-
-    if (modeCNCb && modeEOMCb){ modeCNCb.checked = true; modeEOMCb.checked = false; }
-    setGuessMode("CN");
 
     if (gameNewRoundBtn){
       gameNewRoundBtn.disabled = false;
@@ -2018,12 +1732,9 @@ const enabled = { od: {}, os: {} };
     if (nameLesionBtn) nameLesionBtn.textContent = "Name a Lesion";
 
     // Restore sandbox exactly as it was
-    if (typeof setLesionModalEditable === "function") setLesionModalEditable(true);
-
     restoreSandbox(game.sandboxSnapshot);
     game.sandboxSnapshot = null;
 
-    setGuessMode("CN");
     if (gameFeedbackEl) gameFeedbackEl.textContent = "";
   }
 
@@ -2397,19 +2108,8 @@ const enabled = { od: {}, os: {} };
   }
 
 
-  function setLesionModalEditable(editable){
-    if (!lesionModal) return;
-    lesionModal.querySelectorAll('input[type="checkbox"]').forEach(cb=>{
-      cb.disabled = !editable;
-      const lbl = cb.closest('label');
-      if (lbl) lbl.classList.toggle("disabled", !editable);
-    });
-  }
-
   function openLesionModal(){
     if (!lesionModal) return;
-    // In game mode, lesion modal is "reveal" only to prevent altering the round.
-    setLesionModalEditable(!game.active);
     lesionModal.classList.add("show");
     lesionModal.setAttribute("aria-hidden","false");
   }
@@ -2563,40 +2263,9 @@ if (mlfRightCb){
   if (diagnosisSelect){
     diagnosisSelect.addEventListener("change", ()=>{
       if (!submitGuessBtn) return;
-      if (game.guessMode !== "CN") return;
       submitGuessBtn.disabled = !(game.active && game.roundActive && !!diagnosisSelect.value);
     });
   }
-
-  if (eomGuessInputs && eomGuessInputs.length){
-    eomGuessInputs.forEach(cb=>{
-      cb.addEventListener("change", ()=>{
-        if (!submitGuessBtn) return;
-        if (game.guessMode !== "EOM") return;
-        const any = eomGuessInputs.some(x=>x.checked);
-        submitGuessBtn.disabled = !(game.active && game.roundActive && any);
-        syncChipClasses();
-      });
-    });
-  }
-
-  if (modeCNCb && modeEOMCb){
-    modeCNCb.addEventListener("change", ()=>{
-      // treat as radio behavior
-      if (!modeCNCb.checked){ modeCNCb.checked = true; return; }
-      modeEOMCb.checked = false;
-      setGuessMode("CN");
-      if (game.active) startRound();
-    });
-    modeEOMCb.addEventListener("change", ()=>{
-      if (!modeEOMCb.checked){ modeEOMCb.checked = true; return; }
-      modeCNCb.checked = false;
-      setGuessMode("EOM");
-      if (game.active) startRound();
-    });
-  }
-
-  syncChipClasses();
 
   if (submitGuessBtn){
     submitGuessBtn.addEventListener("click", submitGuess);
