@@ -1,0 +1,1202 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NeuroRaddle — The Neurology Word Transformation Game</title>
+  <meta name="description" content="A neurology-themed daily word transformation ladder game inspired by Raddle." />
+  <style>
+    :root{
+      --bg: #0b0d12;
+      --panel: #111526;
+      --panel2:#0f1321;
+      --text:#eef2ff;
+      --muted:#a7b0d6;
+      --accent:#7c5cff;
+      --accent2:#22c55e;
+      --warn:#f59e0b;
+      --danger:#ef4444;
+      --border: rgba(255,255,255,.10);
+      --shadow: 0 10px 30px rgba(0,0,0,.40);
+      --radius: 18px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+    @media (prefers-color-scheme: light) {
+      :root{
+        --bg:#f7f8ff;
+        --panel:#ffffff;
+        --panel2:#f3f5ff;
+        --text:#0b1020;
+        --muted:#556089;
+        --border: rgba(10,16,32,.12);
+        --shadow: 0 10px 26px rgba(10,16,32,.10);
+      }
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: var(--sans);
+      background: radial-gradient(1000px 600px at 25% 10%, rgba(124,92,255,.20), transparent 55%),
+                  radial-gradient(900px 500px at 85% 20%, rgba(34,197,94,.12), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+    }
+    a{color:inherit}
+    .wrap{
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 18px 16px 28px;
+    }
+    header{
+      display:flex;
+      gap:14px;
+      align-items:flex-start;
+      justify-content:space-between;
+      margin-bottom: 12px;
+    }
+    .brand{
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .logo{
+      width:42px;height:42px;border-radius:14px;
+      background: linear-gradient(135deg, rgba(124,92,255,.9), rgba(34,197,94,.7));
+      box-shadow: var(--shadow);
+      display:grid; place-items:center;
+      flex:0 0 auto;
+    }
+    .logo span{
+      font-family: var(--mono);
+      font-weight: 800;
+      letter-spacing: .5px;
+      color: rgba(255,255,255,.95);
+    }
+    .title h1{
+      margin:0;
+      font-size: 20px;
+      line-height: 1.15;
+      letter-spacing: .2px;
+    }
+    .title .sub{
+      margin-top:4px;
+      font-size: 13px;
+      color: var(--muted);
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: rgba(255,255,255,.04);
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .btnrow{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    button{
+      cursor:pointer;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.04);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-family: var(--mono);
+      font-weight: 700;
+      letter-spacing: .2px;
+      box-shadow: 0 6px 18px rgba(0,0,0,.10);
+      transition: transform .06s ease, background .12s ease, border-color .12s ease;
+    }
+    button:hover{transform: translateY(-1px); background: rgba(255,255,255,.07)}
+    button:active{transform: translateY(0px)}
+    button.primary{
+      background: linear-gradient(135deg, rgba(124,92,255,.95), rgba(124,92,255,.65));
+      border-color: rgba(124,92,255,.55);
+    }
+    button.good{
+      background: linear-gradient(135deg, rgba(34,197,94,.95), rgba(34,197,94,.65));
+      border-color: rgba(34,197,94,.55);
+    }
+    button.danger{
+      background: linear-gradient(135deg, rgba(239,68,68,.92), rgba(239,68,68,.65));
+      border-color: rgba(239,68,68,.45);
+    }
+    button:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+      transform:none !important;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 12px;
+      margin-top: 10px;
+    }
+    @media (max-width: 940px){
+      .grid{grid-template-columns:1fr}
+      .btnrow{justify-content:flex-start}
+      header{flex-direction:column}
+    }
+
+    .card{
+      background: rgba(255,255,255,.03);
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card .cardhead{
+      padding: 14px 16px;
+      display:flex;
+      justify-content:space-between;
+      align-items:baseline;
+      gap: 10px;
+      background: linear-gradient(180deg, rgba(255,255,255,.05), transparent);
+      border-bottom:1px solid var(--border);
+    }
+    .card .cardhead h2{
+      margin:0;
+      font-size: 14px;
+      font-family: var(--mono);
+      letter-spacing:.2px;
+    }
+    .card .cardhead .meta{
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 12px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .card .body{padding: 14px 16px}
+
+    .ladder{
+      display:grid;
+      gap: 8px;
+    }
+    .row{
+      display:grid;
+      grid-template-columns: 52px 1fr 68px;
+      gap: 8px;
+      align-items:center;
+    }
+    .idx{
+      font-family: var(--mono);
+      color: var(--muted);
+      font-size: 12px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .len{
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      text-align:right;
+    }
+    .wordbox{
+      position:relative;
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.04);
+      overflow:hidden;
+    }
+    .wordbox.active{
+      border-color: rgba(124,92,255,.65);
+      box-shadow: 0 0 0 3px rgba(124,92,255,.15);
+      background: rgba(124,92,255,.08);
+    }
+    .wordbox.done{
+      border-color: rgba(34,197,94,.45);
+      background: rgba(34,197,94,.08);
+    }
+    .wordbox.locked{
+      background: rgba(255,255,255,.03);
+      opacity: .95;
+    }
+    .wordbox .badge{
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      border:1px solid var(--border);
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.04);
+      flex:0 0 auto;
+    }
+    .wordbox input{
+      width:100%;
+      background:transparent;
+      border:none;
+      outline:none;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: .6px;
+      text-transform: uppercase;
+    }
+    .wordbox input:disabled{color: var(--text)}
+    .wordtext{
+      width:100%;
+      font-family: var(--mono);
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: .6px;
+      text-transform: uppercase;
+    }
+    .status{
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      text-align:right;
+    }
+    .stars{
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .clues{
+      display:grid;
+      gap: 8px;
+    }
+    .clue{
+      border:1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(255,255,255,.04);
+      padding: 10px 12px;
+      font-size: 13px;
+      line-height: 1.25;
+      display:flex;
+      gap: 10px;
+      align-items:flex-start;
+    }
+    .clue .cidx{
+      font-family: var(--mono);
+      font-weight: 900;
+      color: var(--muted);
+      width: 18px;
+      text-align:right;
+      flex:0 0 auto;
+      margin-top:1px;
+    }
+    .clue .ctext{
+      color: var(--text);
+    }
+    .clue.revealed{
+      border-color: rgba(124,92,255,.65);
+      box-shadow: 0 0 0 3px rgba(124,92,255,.14);
+      background: rgba(124,92,255,.10);
+    }
+
+    .howto{
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+    details{
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 10px 12px;
+      background: rgba(255,255,255,.03);
+    }
+    summary{
+      cursor:pointer;
+      font-family: var(--mono);
+      font-weight: 800;
+      color: var(--text);
+      list-style:none;
+    }
+    summary::-webkit-details-marker{display:none}
+    summary:after{
+      content:"▾";
+      float:right;
+      color: var(--muted);
+    }
+    details[open] summary:after{content:"▴"}
+
+    .toast{
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 16px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,.65);
+      color: #fff;
+      font-family: var(--mono);
+      font-size: 12px;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      pointer-events:none;
+      transition: opacity .18s ease, transform .18s ease;
+      z-index: 50;
+    }
+    .toast.show{
+      opacity: 1;
+      transform: translateX(-50%) translateY(-2px);
+    }
+
+    .modalback{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.45);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+      z-index: 60;
+    }
+    .modalback.show{display:flex}
+    .modal{
+      width: min(640px, 100%);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .modal .mhead{
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap: 10px;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), transparent);
+    }
+    .modal .mhead h3{
+      margin:0;
+      font-family: var(--mono);
+      font-size: 14px;
+    }
+    .modal .mbody{padding: 14px 16px}
+    .modal .mfoot{
+      padding: 14px 16px;
+      border-top: 1px solid var(--border);
+      display:flex;
+      gap: 10px;
+      justify-content:flex-end;
+    }
+    .select{
+      width:100%;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.04);
+      color: var(--text);
+      font-family: var(--mono);
+      font-weight: 800;
+      outline:none;
+    }
+    .smallprint{
+      margin-top:10px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height:1.35;
+    }
+    footer{
+      margin-top: 14px;
+      text-align:center;
+      color: var(--muted);
+      font-size: 12px;
+      font-family: var(--mono);
+    }
+    .shake{
+      animation: shake .24s linear;
+    }
+    @keyframes shake{
+      0%{transform:translateX(0)}
+      25%{transform:translateX(-5px)}
+      50%{transform:translateX(5px)}
+      75%{transform:translateX(-4px)}
+      100%{transform:translateX(0)}
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="logo" aria-hidden="true"><span>NR</span></div>
+      <div class="title">
+        <h1>NeuroRaddle</h1>
+        <div class="sub">
+          <span class="pill" id="modePill">Daily Puzzle</span>
+          <span class="pill" id="puzzlePill">Loading…</span>
+          <span class="pill" id="scorePill">Score: 0</span>
+        </div>
+      </div>
+    </div>
+    <div class="btnrow">
+      <button id="btnHint" class="primary" title="Hint (1st: reveal clue, 2nd: reveal answer)">Hint</button>
+      <button id="btnCheck" class="good" title="Check your entry (Enter also works)">Check</button>
+      <button id="btnNew" title="Pick a different puzzle">New</button>
+      <button id="btnShare" title="Copy a shareable result">Share</button>
+      <button id="btnHow" title="How to play">How</button>
+    </div>
+  </header>
+
+  <div class="grid">
+    <section class="card">
+      <div class="cardhead">
+        <h2>Word ladder</h2>
+        <div class="meta" id="metaRight"></div>
+      </div>
+      <div class="body">
+        <details id="howToDetails" class="howto">
+          <summary>How to play</summary>
+          <div style="margin-top:10px">
+            Build the ladder from the start word to the finish word. Each step has exactly <b>one</b> correct clue in the clue bank.
+            Type the next neurology-related word, then hit <b>Enter</b> (or “Check”) to climb.
+            <ul style="margin:10px 0 0 18px; padding:0;">
+              <li>The clue bank updates after each correct rung because the clues reference your current word.</li>
+              <li><b>Hint</b> once to reveal which clue applies. Hint again to reveal the answer (0 points for that rung).</li>
+              <li>No penalty for wrong guesses. Keep swinging.</li>
+            </ul>
+          </div>
+        </details>
+
+        <div class="ladder" id="ladder"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="cardhead">
+        <h2>Clue bank</h2>
+        <div class="meta">
+          <span id="stepMeta">Step 1 / 11</span>
+          <span class="stars" id="stepStars">★★★★★</span>
+        </div>
+      </div>
+      <div class="body">
+        <div class="clues" id="clues"></div>
+        <div class="smallprint" id="smallprint"></div>
+      </div>
+    </section>
+  </div>
+
+  <footer></footer>
+</div>
+
+<div class="toast" id="toast">Toast</div>
+
+<div class="modalback" id="modalBack" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <div class="mhead">
+      <h3 id="modalTitle">Choose a puzzle</h3>
+      <button id="btnCloseModal" aria-label="Close">Close</button>
+    </div>
+    <div class="mbody">
+      <label style="display:block; font-family:var(--mono); font-weight:800; margin-bottom:8px;">Mode</label>
+      <select class="select" id="modeSelect">
+        <option value="daily">Daily puzzle</option>
+        <option value="practice">Practice (random)</option>
+      </select>
+
+      <div style="height:12px"></div>
+
+      <label style="display:block; font-family:var(--mono); font-weight:800; margin-bottom:8px;">Puzzle</label>
+      <select class="select" id="puzzleSelect"></select>
+
+      <div class="smallprint">
+        Daily picks a deterministic puzzle based on your local date. Practice lets you pick any puzzle (or choose “Random”).
+      </div>
+    </div>
+    <div class="mfoot">
+      <button id="btnResetProgress" class="danger" title="Clear saved progress for this puzzle">Reset Progress</button>
+      <button id="btnStart" class="primary">Start</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===========================
+   NeuroRaddle (single-file)
+   =========================== */
+
+const PUZZLES = [
+  {
+    id: "nr-vascular-001",
+    title: "Stroke ladder",
+    words: ["STROKE","ISCHEMIA","MCA","APHASIA","BROCA","FRONTAL","MOTOR","CORTEX","HOMUNCULUS","PARESIS","WEAKNESS","RECOVERY"],
+    stepClues: [
+      "Most {W} are this rather than bleeding.",
+      "Most common large-vessel territory for acute {W}.",
+      "Dominant-hemisphere {W} can cause this language deficit.",
+      "Nonfluent {W} often localizes here.",
+      "{W} lives in this lobe.",
+      "The primary {W} strip is best known for this function.",
+      "The primary {W} area is a region of this.",
+      "The somatotopic map on {W} has this cartoonish name.",
+      "A lesion hitting the arm region of the {W} can cause this.",
+      "Plain-English synonym for {W}.",
+      "Rehab goal after {W}: functional ______."
+    ]
+  },
+  {
+    id: "nr-seizure-001",
+    title: "Seizure ladder",
+    words: ["AURA","SEIZURE","TONIC","CLONIC","POSTICTAL","EEG","SPIKE","FOCUS","TEMPORAL","HIPPOCAMPUS","SCLEROSIS","SURGERY"],
+    stepClues: [
+      "{W} can be the warning before this event.",
+      "One phase of a generalized {W}: stiffening.",
+      "After {W}, this phase is rhythmic jerking.",
+      "After a {W} phase, many patients are this.",
+      "A common test ordered for spells with {W} confusion.",
+      "Classic interictal {W} finding.",
+      "A unilateral {W} often points to a seizure ______.",
+      "Most common lobe for focal {W} seizures.",
+      "Medial {W} structure often implicated.",
+      "Classic pathology in mesial temporal {W}.",
+      "Drug-resistant mesial temporal {W} may lead to this."
+    ]
+  },
+  {
+    id: "nr-sah-001",
+    title: "Thunderclap & SAH ladder",
+    words: ["ANEURYSM","RUPTURE","THUNDERCLAP","CTSCAN","LUMBAR","PUNCTURE","XANTHOCHROMIA","SUBARACHNOID","VASOSPASM","NIMODIPINE","ISCHEMIA","INFARCT"],
+    stepClues: [
+      "Catastrophic event when an {W} breaks.",
+      "Classic presentation: sudden severe ______ headache.",
+      "First test ordered for {W} headache.",
+      "If {W} is negative but suspicion remains, consider this.",
+      "The procedure name that follows {W}.",
+      "A CSF finding that supports prior bleeding after {W}.",
+      "Suggests blood in the {W} space.",
+      "Delayed complication after {W}.",
+      "Medication used routinely after aneurysmal {W}.",
+      "Goal: reduce delayed cerebral {W}.",
+      "If {W} persists, tissue becomes this."
+    ]
+  },
+  {
+    id: "nr-vision-001",
+    title: "Visual pathway ladder",
+    words: ["RETINA","OPTIC","CHIASM","TRACT","THALAMUS","GENICULATE","RADIATION","CALCARINE","CORTEX","VISION","FIELD","HEMIANOPIA"],
+    stepClues: [
+      "The {W} sends signals via the ______ nerve.",
+      "Where {W} fibers partially cross.",
+      "After the {W}, fibers form this.",
+      "{W} synapses in this relay station.",
+      "The lateral ______ nucleus lives in the {W}.",
+      "Fibers leaving {W} are called optic ______.",
+      "Termination of {W} in the ______ sulcus region.",
+      "The {W} region is part of primary visual ______.",
+      "Function of visual {W}.",
+      "Testing {W} includes assessing the visual ______.",
+      "Loss of half the visual {W} is called this."
+    ]
+  },
+  {
+    id: "nr-movement-001",
+    title: "Parkinsonism ladder",
+    words: ["DOPAMINE","NIGRA","STRIATUM","PUTAMEN","PARKINSON","TREMOR","RIGIDITY","BRADYKINESIA","GAIT","FREEZE","FALLS","REHAB"],
+    stepClues: [
+      "{W} neurons are lost in substantia ______.",
+      "{W} projects to this basal ganglia structure.",
+      "Part of the {W} involved in motor circuits.",
+      "Degeneration affecting {W} circuits contributes to this.",
+      "Classic rest {W}.",
+      "Another motor sign often paired with {W}.",
+      "Core feature: slowness plus {W}.",
+      "{W} shows up as shuffling ______.",
+      "Sudden inability to step during {W}.",
+      "{W} increases risk of these.",
+      "After {W}, big focus is balance and ______."
+    ]
+  },
+  {
+    id: "nr-meningitis-001",
+    title: "Meningitis ladder",
+    words: ["MENINGES","DURA","ARACHNOID","PIA","CSF","PLEOCYTOSIS","FEVER","STIFF","NECK","KERNIG","PHOTOPHOBIA","ANTIBIOTIC"],
+    stepClues: [
+      "Outer layer of the {W}.",
+      "Under the {W} lies this layer.",
+      "Under the {W} lies this delicate layer.",
+      "Fluid that bathes the {W} and brain.",
+      "Elevated WBCs in {W} is called this.",
+      "Infectious meningitis often includes {W} plus this.",
+      "Classic triad includes {W} and neck ______.",
+      "The body part that's {W} in meningitis.",
+      "A meningeal sign involving extension of the {W}.",
+      "Another symptom often reported with {W}.",
+      "For bacterial meningitis with {W}, start this now."
+    ]
+  },
+  {
+    id: "nr-cord-001",
+    title: "Spinal cord signs ladder",
+    words: ["CORD","TRACT","CORTICOSPINAL","MOTOR","SPASTIC","HYPERREFLEXIA","CLONUS","BABINSKI","PLANTAR","REFLEX","LESION","LOCALIZE"],
+    stepClues: [
+      "Bundles within the {W}.",
+      "The major descending {W} pathway for voluntary movement.",
+      "Function of the {W} pathway.",
+      "Upper motor {W} lesions can cause this tone.",
+      "Along with {W} tone you often see this.",
+      "Sustained ankle {W} finding.",
+      "Another upper motor neuron sign besides {W}.",
+      "The {W} is elicited by stroking this surface.",
+      "The {W} response is a type of this.",
+      "Abnormal {W} suggests this in the CNS.",
+      "Neurology superpower: ______ the {W}."
+    ]
+  },
+  {
+    id: "nr-cerebellum-001",
+    title: "Cerebellar exam ladder",
+    words: ["ATAXIA","CEREBELLUM","VERMIS","TRUNCAL","GAIT","STANCE","WIDEBASED","NYSTAGMUS","DYSARTHRIA","INTENTION","TREMOR","DYSMETRIA"],
+    stepClues: [
+      "Classic localization for {W}.",
+      "Midline structure of the {W}.",
+      "Lesions here cause {W} ataxia.",
+      "{W} instability shows up when walking: ______.",
+      "Another way to assess {W} is standing ______.",
+      "A {W} can be this in cerebellar disease.",
+      "Cerebellar signs include {W} plus this eye finding.",
+      "Speech finding sometimes paired with {W}.",
+      "______ tremor often accompanies {W} syndromes.",
+      "{W} what? It's a type of this.",
+      "Beyond {W}, finger-to-nose testing can show this."
+    ]
+  }
+];
+
+const EPOCH = new Date(1970,0,1,0,0,0,0).getTime();
+
+function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
+function byId(id){ return document.getElementById(id); }
+
+function showToast(msg){
+  const t = byId("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  window.clearTimeout(showToast._to);
+  showToast._to = window.setTimeout(()=>t.classList.remove("show"), 1400);
+}
+
+function norm(s){
+  return (s||"")
+    .toUpperCase()
+    .normalize("NFKD")
+    .replace(/[^A-Z0-9]/g,"");
+}
+
+function lettersCount(s){
+  return norm(s).length;
+}
+
+function hashString(str){
+  // cyrb53-ish, small & stable
+  let h1 = 0xdeadbeef ^ str.length, h2 = 0x41c6ce57 ^ str.length;
+  for (let i = 0, ch; i < str.length; i++){
+    ch = str.charCodeAt(i);
+    h1 = Math.imul(h1 ^ ch, 2654435761);
+    h2 = Math.imul(h2 ^ ch, 1597334677);
+  }
+  h1 = Math.imul(h1 ^ (h1>>>16), 2246822507) ^ Math.imul(h2 ^ (h2>>>13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2>>>16), 2246822507) ^ Math.imul(h1 ^ (h1>>>13), 3266489909);
+  return (4294967296 * (2097151 & h2) + (h1>>>0)) >>> 0;
+}
+function mulberry32(seed){
+  let a = seed >>> 0;
+  return function(){
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+function seededShuffle(arr, seed){
+  const a = arr.slice();
+  const rnd = mulberry32(seed);
+  for (let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(rnd() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function dailyPuzzleIndex(){
+  const now = new Date();
+  const localMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0,0,0,0).getTime();
+  const days = Math.floor((localMidnight - EPOCH) / 86400000);
+  return ((days % PUZZLES.length) + PUZZLES.length) % PUZZLES.length;
+}
+
+function buildClues(puzzle){
+  // puzzle.stepClues is in step order (0..10). We'll shuffle the clue bank, like Raddle.
+  const seed = hashString(puzzle.id + "|clues");
+  const order = seededShuffle([...Array(11).keys()], seed); // bank index -> step idx
+  const clueBank = order.map(stepIdx => puzzle.stepClues[stepIdx]);
+  const stepToClueIdx = new Array(11);
+  order.forEach((stepIdx, clueIdx) => { stepToClueIdx[stepIdx] = clueIdx; });
+  return {clueBank, stepToClueIdx};
+}
+
+function storageKey(puzzleId){ return `neuroraddle_state__${puzzleId}`; }
+function loadState(puzzleId){
+  try{
+    const raw = localStorage.getItem(storageKey(puzzleId));
+    if (!raw) return null;
+    const obj = JSON.parse(raw);
+    if (!obj || obj.puzzleId !== puzzleId) return null;
+    return obj;
+  }catch(_){ return null; }
+}
+function saveState(state){
+  try{ localStorage.setItem(storageKey(state.puzzleId), JSON.stringify(state)); }catch(_){}
+}
+function freshState(puzzle){
+  const words = puzzle.words;
+  return {
+    version: 1,
+    puzzleId: puzzle.id,
+    guesses: words.map((w, idx) => (idx===0 || idx===words.length-1) ? w : ""),
+    stepHint: Array(11).fill(0), // 0 none, 1 clue, 2 answer revealed
+    currentStep: 0,
+    startedAt: Date.now(),
+    completedAt: null
+  };
+}
+
+const UI = {
+  mode: "daily",       // daily | practice
+  puzzleIndex: 0,
+  puzzle: null,
+  clueBank: [],
+  stepToClueIdx: [],
+  state: null
+};
+
+function setHeader(){
+  const p = UI.puzzle;
+  const title = `${p.title}`;
+  byId("puzzlePill").textContent = title;
+  byId("modePill").textContent = UI.mode === "daily" ? "Daily Puzzle" : "Practice";
+  updateScorePill();
+}
+
+function getScore(){
+  const st = UI.state;
+  let score = 0;
+  for (let i=0;i<11;i++){
+    if (st.guesses[i+1]){ // solved
+      const h = st.stepHint[i] || 0;
+      score += (h === 0) ? 5 : (h === 1) ? 2 : 0;
+    }
+  }
+  return score;
+}
+
+function updateScorePill(){
+  byId("scorePill").textContent = `Score: ${getScore()}`;
+}
+
+function stepStars(step){
+  const h = UI.state.stepHint[step] || 0;
+  if (h === 0) return "★★★★★";
+  if (h === 1) return "★★☆☆☆";
+  return "☆☆☆☆☆";
+}
+
+function canCheck(){
+  return UI.state.currentStep < 11 && UI.state.completedAt === null;
+}
+
+function renderMeta(){
+  const st = UI.state;
+  const step = st.currentStep;
+  const meta = [];
+  meta.push(`<span class="pill">Rungs: 12</span>`);
+  meta.push(`<span class="pill">Steps: 11</span>`);
+  meta.push(`<span class="pill">Hints used: ${st.stepHint.filter(x=>x>0).length}</span>`);
+  byId("metaRight").innerHTML = meta.join("");
+  byId("stepMeta").textContent = `Step ${Math.min(step+1, 11)} / 11`;
+  byId("stepStars").textContent = step < 11 ? stepStars(step) : "★★★★★";
+  byId("smallprint").textContent =
+    (st.completedAt
+      ? `Completed. Score ${getScore()} / 55.`
+      : `Tip: use “Hint” to reveal the correct clue, then try the answer.`);
+
+  byId("btnHint").disabled = !canCheck();
+  byId("btnCheck").disabled = !canCheck();
+}
+
+function renderLadder(){
+  const p = UI.puzzle;
+  const st = UI.state;
+  const ladder = byId("ladder");
+  ladder.innerHTML = "";
+
+  const words = p.words;
+  const activeWordIdx = st.currentStep + 1; // the rung being filled
+  for (let i=0; i<words.length; i++){
+    const isGiven = (i===0 || i===words.length-1);
+    const guess = st.guesses[i] || "";
+    const solved = !!guess;
+    const isActive = (i === activeWordIdx) && !st.completedAt;
+    const len = lettersCount(words[i]);
+
+    const row = document.createElement("div");
+    row.className = "row";
+
+    const idx = document.createElement("div");
+    idx.className = "idx";
+    idx.innerHTML = `<span>${String(i+1).padStart(2,"0")}</span>`;
+
+    const box = document.createElement("div");
+    box.className = "wordbox";
+    if (solved) box.classList.add("done");
+    if (isGiven || (i < activeWordIdx) || st.completedAt) box.classList.add("locked");
+    if (isActive) box.classList.add("active");
+
+    // badge shows how you did on the prior step (for solved rungs beyond first)
+    let badge = "";
+    if (i > 0 && st.guesses[i]){
+      const stepIdx = i-1;
+      const h = st.stepHint[stepIdx] || 0;
+      badge = (h===0) ? "★5" : (h===1) ? "★2" : "★0";
+    } else if (i===0) {
+      badge = "START";
+    } else if (i===words.length-1) {
+      badge = "END";
+    } else {
+      badge = `${len}`;
+    }
+
+    const badgeEl = document.createElement("div");
+    badgeEl.className = "badge";
+    badgeEl.textContent = badge;
+
+    box.appendChild(badgeEl);
+
+    if (isGiven || (i < activeWordIdx) || st.completedAt){
+      const t = document.createElement("div");
+      t.className = "wordtext";
+      t.textContent = (guess || words[i]).toUpperCase();
+      box.appendChild(t);
+    } else {
+      const inp = document.createElement("input");
+      inp.type = "text";
+      inp.autocomplete = "off";
+      inp.spellcheck = false;
+      inp.inputMode = "latin";
+      inp.placeholder = "TYPE…";
+      inp.value = guess;
+      inp.maxLength = Math.max(18, len + 4);
+
+      inp.addEventListener("input", ()=>{
+        // Keep in sync (without locking progress).
+        st.guesses[i] = inp.value.toUpperCase();
+        saveState(st);
+      });
+      inp.addEventListener("keydown", (e)=>{
+        if (e.key === "Enter"){
+          e.preventDefault();
+          checkCurrent();
+        }
+      });
+
+      box.appendChild(inp);
+      window.setTimeout(()=>{ if (isActive) inp.focus(); }, 0);
+    }
+
+    const lenEl = document.createElement("div");
+    lenEl.className = "len";
+    lenEl.textContent = `(${len})`;
+
+    row.appendChild(idx);
+    row.appendChild(box);
+    row.appendChild(lenEl);
+    ladder.appendChild(row);
+  }
+}
+
+function renderClues(){
+  const p = UI.puzzle;
+  const st = UI.state;
+  const clues = byId("clues");
+  clues.innerHTML = "";
+
+  const step = st.currentStep;
+  const currentWord = p.words[step] || "";
+  const showReveal = (st.stepHint[step] || 0) >= 1 && step < 11;
+  const revealClueIdx = (step < 11) ? UI.stepToClueIdx[step] : -1;
+
+  UI.clueBank.forEach((tmpl, idx) => {
+    const div = document.createElement("div");
+    div.className = "clue";
+    if (showReveal && idx === revealClueIdx) div.classList.add("revealed");
+
+    const cidx = document.createElement("div");
+    cidx.className = "cidx";
+    cidx.textContent = String(idx+1).padStart(2,"0");
+
+    const ctext = document.createElement("div");
+    ctext.className = "ctext";
+    ctext.textContent = tmpl.replaceAll("{W}", currentWord);
+
+    div.appendChild(cidx);
+    div.appendChild(ctext);
+    clues.appendChild(div);
+  });
+}
+
+function rerender(){
+  setHeader();
+  renderMeta();
+  renderLadder();
+  renderClues();
+  updateScorePill();
+}
+
+function currentInputEl(){
+  const st = UI.state;
+  const idx = st.currentStep + 1;
+  const ladder = byId("ladder");
+  const row = ladder.children[idx];
+  if (!row) return null;
+  const input = row.querySelector("input");
+  return input || null;
+}
+
+function checkCurrent(){
+  const p = UI.puzzle;
+  const st = UI.state;
+  if (!canCheck()) return;
+
+  const step = st.currentStep;
+  const expected = p.words[step+1];
+  const inp = currentInputEl();
+  const typed = inp ? inp.value : (st.guesses[step+1] || "");
+  const ok = norm(typed) === norm(expected);
+
+  if (!ok){
+    if (inp){
+      inp.parentElement.classList.add("shake");
+      setTimeout(()=>inp.parentElement.classList.remove("shake"), 250);
+    }
+    showToast("Nope — try another clue.");
+    return;
+  }
+
+  st.guesses[step+1] = expected;
+  // If user solved after revealing clue but before revealing answer, keep hint=1
+  // If no hints were used, hint remains 0.
+  st.currentStep = step + 1;
+  if (st.currentStep >= 11){
+    st.completedAt = Date.now();
+    showToast("Solved! 🧠");
+  } else {
+    showToast("Nice.");
+  }
+
+  saveState(st);
+  rerender();
+}
+
+function hint(){
+  const p = UI.puzzle;
+  const st = UI.state;
+  if (!canCheck()) return;
+
+  const step = st.currentStep;
+  const expected = p.words[step+1];
+  const h = st.stepHint[step] || 0;
+
+  if (h === 0){
+    st.stepHint[step] = 1;
+    showToast("Clue revealed.");
+    saveState(st);
+    rerender();
+    return;
+  }
+  if (h === 1){
+    st.stepHint[step] = 2;
+    st.guesses[step+1] = expected;
+    st.currentStep = step + 1;
+    if (st.currentStep >= 11){
+      st.completedAt = Date.now();
+      showToast("Finished (answers revealed).");
+    } else {
+      showToast("Answer revealed.");
+    }
+    saveState(st);
+    rerender();
+    return;
+  }
+  showToast("No more hints for this step.");
+}
+
+function share(){
+  const p = UI.puzzle;
+  const st = UI.state;
+
+  const lines = [];
+  const modeLabel = UI.mode === "daily" ? "Daily" : "Practice";
+  const done = !!st.completedAt;
+
+  lines.push(`NeuroRaddle — ${p.title} (${modeLabel})`);
+  lines.push(done ? `Score: ${getScore()} / 55` : `In progress — Score: ${getScore()} / 55`);
+
+  const row = [];
+  for (let i=0;i<11;i++){
+    if (!st.guesses[i+1]) { row.push("⬛"); continue; }
+    const h = st.stepHint[i] || 0;
+    row.push(h===0 ? "🟩" : h===1 ? "🟨" : "🟥");
+  }
+  lines.push(row.join(""));
+  lines.push(`Start: ${p.words[0]} → End: ${p.words[p.words.length-1]}`);
+  const txt = lines.join("\n");
+
+  navigator.clipboard?.writeText(txt)
+    .then(()=>showToast("Copied to clipboard."))
+    .catch(()=>{ showToast("Could not copy (browser restriction)."); });
+}
+
+function openModal(){
+  const modalBack = byId("modalBack");
+  modalBack.classList.add("show");
+  byId("btnCloseModal").focus();
+}
+function closeModal(){
+  byId("modalBack").classList.remove("show");
+}
+
+function populateModal(){
+  const puzzleSelect = byId("puzzleSelect");
+  puzzleSelect.innerHTML = "";
+  if (UI.mode === "practice"){
+    const optRand = document.createElement("option");
+    optRand.value = "random";
+    optRand.textContent = "Random";
+    puzzleSelect.appendChild(optRand);
+  }
+
+  PUZZLES.forEach((p, idx)=>{
+    const opt = document.createElement("option");
+    opt.value = String(idx);
+    opt.textContent = `${p.title}`;
+    puzzleSelect.appendChild(opt);
+  });
+
+  // preselect current
+  if (UI.mode === "practice"){
+    puzzleSelect.value = String(UI.puzzleIndex);
+  } else {
+    puzzleSelect.value = String(UI.puzzleIndex);
+  }
+}
+
+function startWithSelection(){
+  const mode = byId("modeSelect").value;
+  const puzzleSel = byId("puzzleSelect").value;
+
+  UI.mode = mode;
+
+  if (mode === "practice" && puzzleSel === "random"){
+    UI.puzzleIndex = Math.floor(Math.random() * PUZZLES.length);
+  } else {
+    UI.puzzleIndex = clamp(parseInt(puzzleSel, 10) || 0, 0, PUZZLES.length-1);
+  }
+
+  initPuzzle();
+  closeModal();
+}
+
+function resetProgress(){
+  try{
+    localStorage.removeItem(storageKey(UI.puzzle.id));
+    showToast("Progress reset.");
+  }catch(_){}
+  UI.state = freshState(UI.puzzle);
+  saveState(UI.state);
+  rerender();
+}
+
+function initPuzzle(){
+  UI.puzzle = PUZZLES[UI.puzzleIndex];
+  const built = buildClues(UI.puzzle);
+  UI.clueBank = built.clueBank;
+  UI.stepToClueIdx = built.stepToClueIdx;
+
+  const saved = loadState(UI.puzzle.id);
+  UI.state = saved || freshState(UI.puzzle);
+
+  // If the puzzle definition changed, reconcile minimal safely:
+  if (!UI.state.guesses || UI.state.guesses.length !== UI.puzzle.words.length){
+    UI.state = freshState(UI.puzzle);
+  }
+
+  // Ensure start/end are populated:
+  UI.state.guesses[0] = UI.puzzle.words[0];
+  UI.state.guesses[UI.puzzle.words.length-1] = UI.puzzle.words[UI.puzzle.words.length-1];
+
+  // Compute current step if user's guesses already progressed:
+  if (UI.state.completedAt){
+    UI.state.currentStep = 11;
+  } else {
+    let s = 0;
+    while (s < 11 && norm(UI.state.guesses[s+1]) === norm(UI.puzzle.words[s+1])) s++;
+    UI.state.currentStep = s;
+  }
+
+  saveState(UI.state);
+  rerender();
+}
+
+// Wire up events
+byId("btnHint").addEventListener("click", hint);
+byId("btnCheck").addEventListener("click", checkCurrent);
+byId("btnShare").addEventListener("click", share);
+byId("btnNew").addEventListener("click", ()=>{
+  populateModal();
+  openModal();
+});
+byId("btnHow").addEventListener("click", ()=>{
+  const d = byId("howToDetails");
+  d.open = !d.open;
+});
+
+byId("btnCloseModal").addEventListener("click", closeModal);
+byId("modalBack").addEventListener("click", (e)=>{ if (e.target === byId("modalBack")) closeModal(); });
+byId("btnStart").addEventListener("click", startWithSelection);
+byId("btnResetProgress").addEventListener("click", resetProgress);
+byId("modeSelect").addEventListener("change", ()=>{
+  UI.mode = byId("modeSelect").value;
+  populateModal();
+});
+
+// Init: daily by default
+(function boot(){
+  UI.mode = "daily";
+  UI.puzzleIndex = dailyPuzzleIndex();
+  byId("modeSelect").value = UI.mode;
+  populateModal();
+  initPuzzle();
+})();
+</script>
+</body>
+</html>
