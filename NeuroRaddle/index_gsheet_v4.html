@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>NeuroRaddle — The Neurology Word Transformation Game</title>
+  <title>NeuRaddle — The Neurology Word Transformation Game</title>
   <meta name="description" content="A neurology-themed daily word transformation ladder game inspired by Raddle." />
   <style>
   :root{
@@ -727,7 +727,7 @@
     <div class="brand">
       <div class="logo" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M23 14c-5 0-9 4-9 9v2c-3 1-5 4-5 7 0 4 3 7 7 7h1v4c0 5 4 9 9 9h6V14h-9Z" fill="rgba(241,243,255,0.92)"/><path d="M41 14c5 0 9 4 9 9v2c3 1 5 4 5 7 0 4-3 7-7 7h-1v4c0 5-4 9-9 9h-6V14h9Z" fill="rgba(241,243,255,0.82)"/><path d="M24 22c3-3 6-3 8 0M24 32c3-3 6-3 8 0M32 24c3-3 6-3 8 0M32 34c3-3 6-3 8 0" stroke="rgba(5,6,17,0.45)" stroke-width="2" stroke-linecap="round"/></svg></div>
       <div class="title">
-        <h1>NeuroRaddle</h1>
+        <h1>NeuRaddle</h1>
 </div>
     </div>
     
@@ -834,7 +834,7 @@
 
 <script>
 /* ===========================
-   NeuroRaddle (single-file)
+   NeuRaddle (single-file)
    =========================== */
 
 const BUILTIN_PUZZLES = [
@@ -1008,63 +1008,6 @@ function dateKey(d=new Date()){
   return `${mm}-${dd}`;
 }
 
-function monthDayKeyFromValue(v){
-  const s = safeTrim(v);
-  if (!s) return "";
-  // Numeric serial dates (e.g., Google Sheets / Excel)
-  if (/^\d+(?:\.\d+)?$/.test(s)){
-    const n = Number(s);
-    if (Number.isFinite(n) && n > 59){ // ignore very small numbers
-      const base = new Date(Date.UTC(1899, 11, 30)); // Excel epoch
-      const d = new Date(base.getTime() + Math.round(n) * 86400000);
-      const mm = String(d.getUTCMonth()+1).padStart(2,"0");
-      const dd = String(d.getUTCDate()).padStart(2,"0");
-      return `${mm}-${dd}`;
-    }
-  }
-  // Common US format: M/D/YYYY or MM/DD/YYYY (ignore year)
-  if (s.includes("/")){
-    const parts = s.split("/").map(x => safeTrim(x)).filter(Boolean);
-    if (parts.length >= 2){
-      const m = parseInt(parts[0], 10);
-      const d = parseInt(parts[1], 10);
-      if (Number.isFinite(m) && Number.isFinite(d) && m>=1 && m<=12 && d>=1 && d<=31){
-        return `${String(m).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
-      }
-    }
-  }
-  // ISO-ish: YYYY-MM-DD or MM-DD-YYYY
-  if (s.includes("-") || s.includes("–") || s.includes("—")){
-    const norm = s.replace(/[–—]/g, "-");
-    const parts = norm.split("-").map(x => safeTrim(x)).filter(Boolean);
-    if (parts.length >= 2){
-      // YYYY-MM-DD
-      if (/^\d{4}$/.test(parts[0]) && parts.length >= 3){
-        const m = parseInt(parts[1], 10);
-        const d = parseInt(parts[2], 10);
-        if (Number.isFinite(m) && Number.isFinite(d) && m>=1 && m<=12 && d>=1 && d<=31){
-          return `${String(m).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
-        }
-      }
-      // MM-DD or MM-DD-YYYY
-      const m = parseInt(parts[0], 10);
-      const d = parseInt(parts[1], 10);
-      if (Number.isFinite(m) && Number.isFinite(d) && m>=1 && m<=12 && d>=1 && d<=31){
-        return `${String(m).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
-      }
-    }
-  }
-  // Try Date.parse for text dates ("Jan 2, 2026", etc.)
-  const d = new Date(s);
-  if (!isNaN(d.getTime())){
-    const mm = String(d.getMonth()+1).padStart(2,"0");
-    const dd = String(d.getDate()).padStart(2,"0");
-    return `${mm}-${dd}`;
-  }
-  return "";
-}
-
-
 function safeTrim(x){ return (x ?? "").toString().trim(); }
 
 function parseCSV(text){
@@ -1113,25 +1056,14 @@ function parseCSV(text){
 }
 
 function puzzleFromCSVRow(r){
-  // Normalize headers so columns like "Word 1", "word_1", "Clue 3", etc. still work.
-  const norm = {};
-  try{
-    for (const k in r){
-      const nk = (k ?? "").toString().toLowerCase().replace(/[^a-z0-9]/g,"");
-      if (nk && norm[nk] === undefined) norm[nk] = r[k];
-    }
-  }catch(_){}
-
-  // The Sheet’s date column may be like "1/2/2026" — we intentionally ignore the year.
-    const rawDate = safeTrim(r.date || r.Date || r.DATE || r.mmdd || r.MMDD || r.date_key || r.dateKey || norm.date || norm.mmdd || norm.datekey || norm.datekey || norm.date_key);
-  const mdKey = monthDayKeyFromValue(rawDate);
-    const title = safeTrim(r.title || r.puzzle_title || r.Puzzle || r.Name || r.TITLE || norm.title || norm.puzzletitle || norm.puzzle || norm.name);
-    const pid  = safeTrim(r.puzzle_id || r.id || r.puzzleId || r.PuzzleId || r.PUZZLE_ID || norm.puzzleid || norm.puzzle_id || norm.id) || (mdKey ? `nr-${mdKey}` : "");
-  if (!mdKey || !pid || !title) return null;
+  const mmdd = safeTrim(r.date || r.mmdd || r.date_key || r.Date || r.MMDD);
+  const pid  = safeTrim(r.puzzle_id || r.id || r.puzzleId || r.PuzzleId) || (mmdd ? `nr-${mmdd}` : "");
+  const title = safeTrim(r.title || r.puzzle_title || r.Puzzle || r.Name);
+  if (!mmdd || !pid || !title) return null;
 
   const words = [];
   for (let i=1;i<=8;i++){
-    const w = safeTrim(r[`word${i}`] ?? r[`Word${i}`] ?? r[`w${i}`] ?? norm[`word${i}`] ?? norm[`w${i}`]);
+    const w = safeTrim(r[`word${i}`] ?? r[`Word${i}`] ?? r[`w${i}`]);
     words.push(w);
   }
   // require at least word1 + word8 to treat as a real puzzle
@@ -1139,7 +1071,7 @@ function puzzleFromCSVRow(r){
 
   const stepClues = [];
   for (let i=1;i<=7;i++){
-    const c = safeTrim(r[`clue${i}`] ?? r[`Clue${i}`] ?? r[`c${i}`] ?? norm[`clue${i}`] ?? norm[`c${i}`]);
+    const c = safeTrim(r[`clue${i}`] ?? r[`Clue${i}`] ?? r[`c${i}`]);
     if (c) stepClues.push(c);
   }
 
@@ -1148,10 +1080,9 @@ function puzzleFromCSVRow(r){
     title,
     words,
     stepClues,
-    dateKey: mdKey,
-    rawDate,
-    author: safeTrim(r.author || r.Author || norm.author),
-    authorBlurb: safeTrim(r.author_blurb || r.authorBlurb || r.AuthorBlurb || norm.authorblurb)
+    dateKey: mmdd,
+    author: safeTrim(r.author || r.Author),
+    authorBlurb: safeTrim(r.author_blurb || r.authorBlurb || r.AuthorBlurb)
   };
 }
 
@@ -1202,7 +1133,8 @@ async function loadPuzzlesFromCSV(){
     lines.push("• A row counts as a puzzle only if date, title, word1, and word8 are present.");
     return {
       summary: "Puzzle data failed to load.",
-      details: lines.join("\n")
+      details: lines.join("
+")
     };
   }
 
@@ -1332,12 +1264,13 @@ function showNoPuzzleForToday(){
     `No puzzle is available for today (${key}).`,
     "",
     "Why this happens:",
-    "• The CSV loaded, but there is no fully-authored row whose *date* matches today’s month/day (year is ignored).",
+    "• The CSV loaded, but there is no fully-authored row for today’s MM-DD.",
     "",
     "What to do:",
-    "• Add a row whose first-column date matches today (e.g., \"1/2/2026\"). The app ignores the year and matches only month/day. Fill at least: title, word1..word8 (word1 and word8 required), and any clue1..clue7.",
+    "• Add a row with this date and fill at least: title, word1..word8 (word1 and word8 required), and any clue1..clue7.",
     "• Ensure the Sheet stays public/published so the CSV endpoint returns CSV (not HTML)."
-  ].join("\n");
+  ].join("
+");
   byId("dataErrorTitle").textContent = "No puzzle for today";
   byId("dataErrorSummary").textContent = "The puzzle bank loaded, but today’s date isn’t authored yet.";
   byId("dataErrorDetails").textContent = lines;
@@ -1475,7 +1408,7 @@ const UI = {
 
 function setHeader(){
   const p = UI.puzzle;
-  document.title = `NeuroRaddle — ${p.title}`;
+  document.title = `NeuRaddle — ${p.title}`;
 
   const st = byId("statusLine");
   if (st){
@@ -1775,7 +1708,7 @@ function completionLabel(pct){
     {min: 60, label: "🧠 Brainstem Whisperer"},
     {min: 70, label: "🫀 Neuro ICU Operator"},
     {min: 80, label: "🏥 Stroke Code Commander"},
-    {min: 90, label: "👑 NeuroRaddle Attending"}
+    {min: 90, label: "👑 NeuRaddle Attending"}
   ];
   let best = ranks[0].label;
   for (const r of ranks){
@@ -1850,7 +1783,7 @@ function completionText(){
   const max = steps * 5;
   const s = getScore();
   return [
-    `NeuroRaddle — ${p.title} (${modeLabel})`,
+    `NeuRaddle — ${p.title} (${modeLabel})`,
     `Classified as a ${label} (${pct}%)`,
     `${p.words[0]} ${tokens} ${p.words[p.words.length-1]}`,
     `Score: ${s} / ${max}`

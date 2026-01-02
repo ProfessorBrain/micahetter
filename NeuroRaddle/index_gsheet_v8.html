@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>NeuroRaddle — The Neurology Word Transformation Game</title>
+  <title>NeuRaddle — The Neurology Word Transformation Game</title>
   <meta name="description" content="A neurology-themed daily word transformation ladder game inspired by Raddle." />
   <style>
   :root{
@@ -727,7 +727,7 @@
     <div class="brand">
       <div class="logo" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M23 14c-5 0-9 4-9 9v2c-3 1-5 4-5 7 0 4 3 7 7 7h1v4c0 5 4 9 9 9h6V14h-9Z" fill="rgba(241,243,255,0.92)"/><path d="M41 14c5 0 9 4 9 9v2c3 1 5 4 5 7 0 4-3 7-7 7h-1v4c0 5-4 9-9 9h-6V14h9Z" fill="rgba(241,243,255,0.82)"/><path d="M24 22c3-3 6-3 8 0M24 32c3-3 6-3 8 0M32 24c3-3 6-3 8 0M32 34c3-3 6-3 8 0" stroke="rgba(5,6,17,0.45)" stroke-width="2" stroke-linecap="round"/></svg></div>
       <div class="title">
-        <h1>NeuroRaddle</h1>
+        <h1>NeuRaddle</h1>
 </div>
     </div>
     
@@ -834,7 +834,7 @@
 
 <script>
 /* ===========================
-   NeuroRaddle (single-file)
+   NeuRaddle (single-file)
    =========================== */
 
 const BUILTIN_PUZZLES = [
@@ -1475,7 +1475,7 @@ const UI = {
 
 function setHeader(){
   const p = UI.puzzle;
-  document.title = `NeuroRaddle — ${p.title}`;
+  document.title = `NeuRaddle — ${p.title}`;
 
   const st = byId("statusLine");
   if (st){
@@ -1775,7 +1775,7 @@ function completionLabel(pct){
     {min: 60, label: "🧠 Brainstem Whisperer"},
     {min: 70, label: "🫀 Neuro ICU Operator"},
     {min: 80, label: "🏥 Stroke Code Commander"},
-    {min: 90, label: "👑 NeuroRaddle Attending"}
+    {min: 90, label: "👑 NeuRaddle Attending"}
   ];
   let best = ranks[0].label;
   for (const r of ranks){
@@ -1850,7 +1850,7 @@ function completionText(){
   const max = steps * 5;
   const s = getScore();
   return [
-    `NeuroRaddle — ${p.title} (${modeLabel})`,
+    `NeuRaddle — ${p.title} (${modeLabel})`,
     `Classified as a ${label} (${pct}%)`,
     `${p.words[0]} ${tokens} ${p.words[p.words.length-1]}`,
     `Score: ${s} / ${max}`
