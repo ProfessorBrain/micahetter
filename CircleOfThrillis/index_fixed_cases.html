@@ -4,7 +4,6 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
 <title>Circle of Thrillis: Clot Busters</title>
-<link rel="icon" type="image/png" href="favicon.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -51,9 +50,6 @@
     margin-top:10px;
     display:flex;
     justify-content:flex-start;
-    align-items:center;
-    gap:10px;
-    flex-wrap:wrap;
   }
   .rightCol{
     flex:1 1 520px;
@@ -305,24 +301,9 @@
   .okBtn:hover{background:rgba(93,240,255,.16);}
   .okBtn:active{transform:translateY(1px);}
 
-
-  /* Music */
-  #musicCtl{
-    display:none;
-    opacity:0.92;
-    margin-left:2px;
-  }
-  #musicCtl .iconBtn{
-    padding:8px 12px;
-    font-size:12px;
-    backdrop-filter: blur(6px);
-  }
 </style>
 </head>
 <body>
-
-<audio id="bgMusic" src="goodthemeedit.mp3" loop preload="auto"></audio>
-
 <div class="wrap">
 <div class="layout">
     <div class="leftCol">
@@ -337,10 +318,6 @@
           <path d="M19.4 15a7.8 7.8 0 0 0 .1-1l2-1.5-2-3.5-2.4.6a8 8 0 0 0-1.7-1l-.3-2.5h-4l-.3 2.5a8 8 0 0 0-1.7 1L6.7 9l-2 3.5 2 1.5a7.8 7.8 0 0 0 .1 1l-2 1.5 2 3.5 2.4-.6c.5.4 1.1.8 1.7 1l.3 2.5h4l.3-2.5c.6-.2 1.2-.6 1.7-1l2.4.6 2-3.5-2-1.5Z"/>
         </svg>
       </button>
-<div id="musicCtl" aria-live="polite">
-  <button id="musicBtn" class="iconBtn" type="button" aria-label="Toggle background music">♫ Music</button>
-</div>
-
       </div>
     </div>
 
@@ -455,71 +432,6 @@
   if (_logoImg){
     _logoImg.addEventListener("error", () => { _logoImg.style.display = "none"; });
   }
-
-  // =============================
-  // Background music (goodthemeedit.mp3 in same directory)
-  // =============================
-  const bgMusic = document.getElementById("bgMusic");
-  const musicCtl = document.getElementById("musicCtl");
-  const musicBtn = document.getElementById("musicBtn");
-
-  const setMusicButtonLabel = () => {
-    if (!musicBtn || !bgMusic) return;
-    musicBtn.textContent = bgMusic.paused ? "♫ Music: Off" : "♫ Music: On";
-  };
-
-  const showMusicCtl = () => {
-    if (!musicCtl) return;
-    musicCtl.style.display = "block";
-    setMusicButtonLabel();
-  };
-
-  const hideMusicCtl = () => {
-    if (!musicCtl) return;
-    musicCtl.style.display = "none";
-  };
-
-  const tryPlayMusic = async () => {
-    if (!bgMusic) return true;
-    bgMusic.loop = true;
-    if (typeof bgMusic.volume === "number") bgMusic.volume = 0.35;
-    try{
-      await bgMusic.play();
-      showMusicCtl(); // keep a small on-screen toggle so users can pause if desired
-      return true;
-    } catch (e){
-      // Autoplay is commonly blocked until user interaction.
-      showMusicCtl();
-      if (musicBtn) musicBtn.textContent = "♫ Enable music";
-      return false;
-    }
-  };
-
-  const toggleMusic = async (ev) => {
-    if (ev) ev.stopPropagation();
-    if (!bgMusic) return;
-    if (bgMusic.paused){
-      await tryPlayMusic();
-      setMusicButtonLabel();
-    } else {
-      bgMusic.pause();
-      showMusicCtl();
-    }
-  };
-
-  if (musicBtn){
-    musicBtn.addEventListener("click", toggleMusic);
-  }
-
-  // Attempt autoplay immediately; if blocked, retry once on the first user gesture.
-  (async () => {
-    const ok = await tryPlayMusic();
-    if (!ok){
-      const once = () => { tryPlayMusic(); };
-      window.addEventListener("pointerdown", once, { once:true, passive:true });
-      window.addEventListener("keydown",    once, { once:true });
-    }
-  })();
 
   // =============================
   // Maze geometry (vector, PNG-free)
