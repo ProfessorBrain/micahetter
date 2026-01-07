@@ -4,7 +4,6 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
 <title>Circle of Thrillis: Clot Busters</title>
-<link rel="icon" type="image/png" href="favicon.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -51,9 +50,6 @@
     margin-top:10px;
     display:flex;
     justify-content:flex-start;
-    align-items:center;
-    gap:10px;
-    flex-wrap:wrap;
   }
   .rightCol{
     flex:1 1 520px;
@@ -305,24 +301,9 @@
   .okBtn:hover{background:rgba(93,240,255,.16);}
   .okBtn:active{transform:translateY(1px);}
 
-
-  /* Music */
-  #musicCtl{
-    display:none;
-    opacity:0.92;
-    margin-left:2px;
-  }
-  #musicCtl .iconBtn{
-    padding:8px 12px;
-    font-size:12px;
-    backdrop-filter: blur(6px);
-  }
 </style>
 </head>
 <body>
-
-<audio id="bgMusic" src="goodthemeedit.mp3" loop preload="auto"></audio>
-
 <div class="wrap">
 <div class="layout">
     <div class="leftCol">
@@ -337,10 +318,6 @@
           <path d="M19.4 15a7.8 7.8 0 0 0 .1-1l2-1.5-2-3.5-2.4.6a8 8 0 0 0-1.7-1l-.3-2.5h-4l-.3 2.5a8 8 0 0 0-1.7 1L6.7 9l-2 3.5 2 1.5a7.8 7.8 0 0 0 .1 1l-2 1.5 2 3.5 2.4-.6c.5.4 1.1.8 1.7 1l.3 2.5h4l.3-2.5c.6-.2 1.2-.6 1.7-1l2.4.6 2-3.5-2-1.5Z"/>
         </svg>
       </button>
-<div id="musicCtl" aria-live="polite">
-  <button id="musicBtn" class="iconBtn" type="button" aria-label="Toggle background music">♫ Music</button>
-</div>
-
       </div>
     </div>
 
@@ -455,71 +432,6 @@
   if (_logoImg){
     _logoImg.addEventListener("error", () => { _logoImg.style.display = "none"; });
   }
-
-  // =============================
-  // Background music (goodthemeedit.mp3 in same directory)
-  // =============================
-  const bgMusic = document.getElementById("bgMusic");
-  const musicCtl = document.getElementById("musicCtl");
-  const musicBtn = document.getElementById("musicBtn");
-
-  const setMusicButtonLabel = () => {
-    if (!musicBtn || !bgMusic) return;
-    musicBtn.textContent = bgMusic.paused ? "♫ Music: Off" : "♫ Music: On";
-  };
-
-  const showMusicCtl = () => {
-    if (!musicCtl) return;
-    musicCtl.style.display = "block";
-    setMusicButtonLabel();
-  };
-
-  const hideMusicCtl = () => {
-    if (!musicCtl) return;
-    musicCtl.style.display = "none";
-  };
-
-  const tryPlayMusic = async () => {
-    if (!bgMusic) return true;
-    bgMusic.loop = true;
-    if (typeof bgMusic.volume === "number") bgMusic.volume = 0.35;
-    try{
-      await bgMusic.play();
-      showMusicCtl(); // keep a small on-screen toggle so users can pause if desired
-      return true;
-    } catch (e){
-      // Autoplay is commonly blocked until user interaction.
-      showMusicCtl();
-      if (musicBtn) musicBtn.textContent = "♫ Enable music";
-      return false;
-    }
-  };
-
-  const toggleMusic = async (ev) => {
-    if (ev) ev.stopPropagation();
-    if (!bgMusic) return;
-    if (bgMusic.paused){
-      await tryPlayMusic();
-      setMusicButtonLabel();
-    } else {
-      bgMusic.pause();
-      showMusicCtl();
-    }
-  };
-
-  if (musicBtn){
-    musicBtn.addEventListener("click", toggleMusic);
-  }
-
-  // Attempt autoplay immediately; if blocked, retry once on the first user gesture.
-  (async () => {
-    const ok = await tryPlayMusic();
-    if (!ok){
-      const once = () => { tryPlayMusic(); };
-      window.addEventListener("pointerdown", once, { once:true, passive:true });
-      window.addEventListener("keydown",    once, { once:true });
-    }
-  })();
 
   // =============================
   // Maze geometry (vector, PNG-free)
@@ -764,68 +676,68 @@ const pellets = [
   // Subtle, non-telegraphy-ish stems (still localize)
   const stems = {
     L_ACA: [
-      "A 68-year-old right-handed man suddenly becomes unusually apathetic and struggles to initiate movement. He has marked right leg weakness with only mild right arm weakness; a right grasp reflex is present and he has new urinary urgency.",
-      "A 59-year-old woman develops abrupt right leg-predominant weakness with mild sensory loss. Family notes new abulia and she has urinary incontinence. Face and right arm strength are relatively preserved.",
-      "A 73-year-old man is brought in for sudden gait freezing and right leg buckling. He is slow to respond, has frontal release signs, and develops new urinary incontinence. Right face and arm strength are near normal."
+      "A 69-year-old right-handed man has sudden difficulty initiating actions and seems unusually apathetic. He has weakness that is much worse in the right leg than the right arm, with a new grasp reflex and urinary urgency.",
+      "A 58-year-old woman develops abrupt right leg-predominant weakness with impaired heel-to-shin testing from weakness rather than ataxia. Family reports new abulia and urinary incontinence. Face and right arm strength are relatively preserved.",
+      "A 74-year-old man suddenly drags his right leg and cannot keep it from buckling. He is slow to respond and requires repeated prompting. Right arm and face strength are near normal, but he has urinary incontinence."
     ],
     R_ACA: [
-      "A 71-year-old man suddenly becomes apathetic and slow to speak. He has marked left leg weakness with only mild left arm weakness; a left grasp reflex is present and he has new urinary urgency.",
-      "A 62-year-old woman develops abrupt left leg-predominant weakness with mild sensory loss. Family reports new abulia and she has urinary incontinence. Face and left arm strength are relatively preserved.",
-      "A 67-year-old man has sudden difficulty initiating gait with left leg buckling. He appears indifferent to the deficit and has new urinary incontinence. The left arm and face are minimally affected."
+      "A 72-year-old man suddenly becomes apathetic and slow to speak. Exam shows weakness that is much worse in the left leg than the left arm, with frontal release signs and new urinary incontinence.",
+      "A 61-year-old woman develops acute left leg heaviness with difficulty rising from a chair and impaired foot dorsiflexion. The left face and arm are only mildly weak. She is markedly abulic and has new urinary urgency.",
+      "A 67-year-old man has sudden left leg weakness and trouble initiating movement. He appears indifferent to the deficit and has new urinary incontinence. The left arm and face are minimally affected."
     ],
 
     L_MCA: [
-      "A 66-year-old right-handed woman has sudden right facial droop and right arm weakness. Her speech is nonfluent with impaired repetition and naming, but she can follow simple commands. Right leg weakness is mild.",
-      "A 58-year-old right-handed man develops abrupt right face/arm weakness and a leftward gaze preference. He speaks fluently but the content is nonsensical and he cannot follow commands. He reports bumping into objects on his right.",
-      "A 72-year-old right-handed woman has dense right face/arm weakness with right hemisensory loss. She is mute, cannot follow commands, and cannot repeat. The right leg is less affected."
+      "A 64-year-old right-handed woman has sudden right face and right arm weakness with a right facial droop. She struggles to produce fluent language and naming is impaired. Right leg strength is relatively preserved.",
+      "A 55-year-old man develops abrupt right arm and face weakness and cannot repeat phrases or follow complex commands. He has word-finding difficulty. Right leg involvement is mild.",
+      "A 71-year-old right-handed woman has acute right face/arm weakness and gaze preference toward the left. She has expressive aphasia and impaired repetition. The right leg is only mildly weak."
     ],
     R_MCA: [
-      "A 69-year-old woman has acute left face and left arm weakness. She leaves food on the left side of the plate, fails to attend to her left arm, and insists nothing is wrong. Left leg weakness is mild.",
-      "A 61-year-old man develops sudden left arm/face weakness with left visual inattention. He draws only the right half of a clock and keeps turning his head to the right. Speech and comprehension are intact.",
-      "A 74-year-old woman has abrupt left facial droop and left arm weakness with rightward gaze deviation. She denies ownership of her left arm and bumps into objects on the left. Left leg involvement is mild."
+      "A 70-year-old woman has acute left face and left arm weakness. She ignores stimuli on the left side, bumps into objects on the left, and is unaware of the deficit. Left leg involvement is mild.",
+      "A 60-year-old man develops sudden left arm/face weakness and left visual inattention. He has marked left-sided neglect and spatial disorientation. Speech is fluent and comprehension is intact.",
+      "A 68-year-old woman has abrupt left facial droop and left arm weakness with gaze preference to the right. She repeatedly denies that her left arm belongs to her and fails to attend to the left side of the room."
     ],
 
     L_PCA: [
-      "A 65-year-old right-handed man suddenly begins missing objects in the right visual field. Motor and primary sensation are intact. He notices the deficit and compensates by turning his head.",
-      "A 70-year-old right-handed man presents with acute right homonymous hemianopia. He can write a sentence but cannot read it back. Speech and motor exam are otherwise normal.",
-      "A 57-year-old woman develops abrupt difficulty recognizing familiar objects despite normal visual acuity. She also has a right visual field cut. Strength, language, and primary sensation are intact."
+      "A 66-year-old right-handed man suddenly reports missing objects on the right side of his visual field. He has intact strength and sensation. He reads poorly, but writing remains intact, and he can describe the deficit.",
+      "A 59-year-old woman develops abrupt right homonymous hemianopia with preserved motor strength. She has difficulty recognizing familiar objects visually. Language and primary sensation are intact.",
+      "A 73-year-old right-handed man presents with acute right homonymous hemianopia. He can write a sentence but cannot read it back. Motor exam is normal."
     ],
     R_PCA: [
-      "A 62-year-old man suddenly cannot see objects on the left side of his visual field. Motor exam is normal and pupils are symmetric. He repeatedly turns his head left to compensate.",
-      "A 56-year-old woman develops acute left homonymous hemianopia and reports difficulty recognizing faces. Speech and strength are intact.",
-      "A 71-year-old man has sudden left visual field loss and becomes disoriented in familiar places. Motor exam is normal."
+      "A 63-year-old man suddenly cannot see items on the left side of his visual field. Motor exam is normal. He is startled when approached from the left and keeps turning his head to scan.",
+      "A 57-year-old woman develops acute left homonymous hemianopia with intact strength and sensation. She reports difficulty recognizing faces. Speech is normal.",
+      "A 70-year-old man presents with sudden left visual field loss. Pupils are symmetric and motor exam is normal. He repeatedly turns his head left to compensate."
     ],
 
     L_SCA: [
-      "A 54-year-old man develops sudden left limb and gait ataxia with dysarthria. He has gaze-evoked nystagmus and leftward saccadic hypermetria. Hearing and facial strength are normal and there is no dysphagia.",
-      "A 60-year-old woman has abrupt left arm dysmetria and intention tremor with truncal ataxia. Exam shows ocular dysmetria and impaired smooth pursuit to the left. Facial sensation and strength are intact.",
-      "A 63-year-old man presents with acute left-sided cerebellar signs and severe gait instability. He has no facial weakness, no hoarseness, and no hearing loss."
+      "A 54-year-old man has sudden severe left limb ataxia and dysmetria with slurred speech. He has gaze-evoked nystagmus when looking to the left and overshoots on leftward saccades. There is no hearing loss, facial weakness, or dysphagia.",
+      "A 60-year-old woman develops abrupt left-sided limb ataxia (past-pointing and intention tremor) with gait instability. Exam shows impaired smooth pursuit to the left and ocular dysmetria. Facial strength and sensation are normal, and hearing is intact.",
+      "A 62-year-old man has sudden left truncal ataxia and cannot tandem walk. He has left arm dysmetria and dysarthria. He also has gaze-evoked nystagmus without hoarseness, dysphagia, or facial paralysis."
     ],
     R_SCA: [
-      "A 56-year-old woman develops sudden right limb and gait ataxia with dysarthria. She has gaze-evoked nystagmus and rightward saccadic hypermetria. Hearing and facial strength are normal and there is no dysphagia.",
-      "A 62-year-old man has abrupt right arm dysmetria and intention tremor with truncal ataxia. Exam shows ocular dysmetria and impaired smooth pursuit to the right. Facial sensation and strength are intact.",
-      "A 58-year-old woman presents with acute right-sided cerebellar signs and marked gait instability. She has no facial weakness, no hoarseness, and no hearing loss."
+      "A 56-year-old woman develops acute right limb ataxia and dysarthria with marked gait instability. She has gaze-evoked nystagmus when looking to the right and saccadic hypermetria to the right. Hearing is intact and facial strength is normal.",
+      "A 63-year-old man has sudden right-sided dysmetria and intention tremor with truncal ataxia. He has impaired smooth pursuit to the right and ocular dysmetria. There is no hoarseness, dysphagia, or facial weakness.",
+      "A 58-year-old woman presents with abrupt right limb ataxia and slurred speech. Exam shows gaze-evoked nystagmus and difficulty with rightward saccades. Motor strength and facial movement are otherwise preserved."
     ],
 
     L_AICA: [
-      "A 61-year-old man develops sudden vertigo and vomiting with left-sided tinnitus and hearing loss. Exam shows left facial weakness with decreased corneal reflex and left limb ataxia.",
-      "A 52-year-old woman presents with abrupt vertigo and horizontal nystagmus. She has left facial paralysis, reduced taste on the left anterior tongue, and new left hearing loss. Gait is markedly ataxic.",
-      "A 66-year-old man has acute vertigo with new left hearing loss and left facial numbness. He has decreased pain/temperature on the left face with decreased pain/temperature on the right body and left-sided limb ataxia."
+      "A 61-year-old man develops sudden vertigo and nausea with left-sided hearing loss. Exam shows left facial weakness and left limb ataxia. He has nystagmus and cannot stand without support.",
+      "A 52-year-old woman presents with abrupt vertigo and left facial paralysis. She notes left-sided hearing loss and tinnitus. She has left limb ataxia and horizontal nystagmus.",
+      "A 66-year-old man develops acute vertigo with left facial weakness and decreased tearing on the left. He also reports new left hearing loss and has gait ataxia."
     ],
     R_AICA: [
-      "A 61-year-old man develops sudden vertigo and vomiting with right-sided tinnitus and hearing loss. Exam shows right facial weakness with decreased corneal reflex and right limb ataxia.",
-      "A 52-year-old woman presents with abrupt vertigo and horizontal nystagmus. She has right facial paralysis, reduced taste on the right anterior tongue, and new right hearing loss. Gait is markedly ataxic.",
-      "A 65-year-old man has acute vertigo with new right hearing loss and right facial numbness. He has decreased pain/temperature on the right face with decreased pain/temperature on the left body and right-sided limb ataxia."
+      "A 61-year-old man presents with abrupt vertigo and nystagmus. He notes right-sided hearing loss and has right facial weakness with right limb ataxia.",
+      "A 52-year-old woman develops sudden vertigo with right facial paralysis and right-sided hearing loss. Gait is markedly ataxic and she has horizontal nystagmus.",
+      "A 64-year-old man has acute vertigo and vomiting with right facial weakness and decreased taste on the right anterior tongue. He reports new right hearing loss and has right-sided limb ataxia."
     ],
 
     L_PICA: [
-      "A 49-year-old man has abrupt vertigo with hoarseness and dysphagia. Exam shows loss of pain/temperature on the left face with loss on the right body, left Horner syndrome, and left limb ataxia.",
-      "A 73-year-old woman develops sudden nausea, vomiting, and gait instability with severe hiccups. She is hoarse and has dysphagia. Exam shows left Horner syndrome with crossed pain/temperature deficits (left face, right body).",
-      "A 58-year-old man presents with acute vertigo and difficulty swallowing. He has hoarseness, left facial pain/temperature loss, right body pain/temperature loss, and left miosis/ptosis."
+      "A 49-year-old man has abrupt vertigo with hoarseness and dysphagia. Exam shows loss of pain and temperature on the left face with loss of pain and temperature on the right body, and left Horner syndrome.",
+      "A 73-year-old woman develops sudden nausea and gait instability with severe hiccups. She is hoarse and has dysphagia. Exam shows left Horner syndrome with crossed pain and temperature deficits (left face, right body).",
+      "A 58-year-old man presents with acute vertigo, vomiting, and difficulty swallowing. He has hoarseness, left facial pain/temperature loss, right body pain/temperature loss, and left miosis/ptosis."
     ],
     R_PICA: [
-      "A 51-year-old woman presents with acute vertigo, dysphagia, and hoarseness. Exam shows loss of pain/temperature on the right face with loss on the left body, right Horner syndrome, and right limb ataxia.",
-      "A 65-year-old man develops sudden nausea and vomiting with gait instability and severe hiccups. He is hoarse and has dysphagia. Exam shows right Horner syndrome with crossed pain/temperature deficits (right face, left body).",
+      "A 51-year-old woman presents with acute vertigo, dysphagia, and hoarseness. Exam shows loss of pain and temperature on the right face with loss on the left body, and right Horner syndrome.",
+      "A 65-year-old man develops sudden vomiting and imbalance. He is hoarse and cannot swallow liquids. Exam shows right Horner syndrome with crossed pain and temperature deficits (right face, left body).",
       "A 62-year-old woman has abrupt vertigo with dysphagia and hoarseness. She has right facial pain/temperature loss, left body pain/temperature loss, and right miosis/ptosis."
     ],
     // (Anterior spinal artery intentionally omitted)

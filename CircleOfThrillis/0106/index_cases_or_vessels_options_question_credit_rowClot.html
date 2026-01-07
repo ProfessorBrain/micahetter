@@ -44,7 +44,7 @@
     justify-content:center;
   }
   .leftCol{
-    width:min(340px, 92vw);
+    width:min(420px, 92vw);
     flex:0 0 auto;
   }
   .leftActions{
@@ -52,10 +52,25 @@
     display:flex;
     justify-content:flex-start;
     align-items:center;
-    gap:10px;
-    flex-wrap:wrap;
+    gap: 8px;
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    overflow-y:hidden;
+    -webkit-overflow-scrolling:touch;
+    padding-bottom:2px;
   }
-  .rightCol{
+  
+  .creditBlurb{
+    margin-top:8px;
+    font-size:12px;
+    opacity:0.65;
+    text-align:center;
+    width:100%;
+    letter-spacing:0.2px;
+    user-select:none;
+    pointer-events:none;
+  }
+.rightCol{
     flex:1 1 520px;
     display:flex;
     justify-content:center;
@@ -174,6 +189,10 @@
   }
   .toggleRow span{color:var(--ink); font-size:14px;}
   .toggleRow input{width:20px; height:20px;}
+  .modeRadios{display:flex; gap:12px; align-items:center; flex-wrap:wrap;}
+  .modeRadio{display:flex; gap:6px; align-items:center;}
+  .modeRadio input{margin:0;}
+
   .modalHint{
     margin-top:10px;
     color:var(--muted);
@@ -242,10 +261,10 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    pointer-events:none;
+    pointer-events:auto;
   }
   .gameOverBox{
-    pointer-events:none;
+    pointer-events:auto;
     padding:34px 42px;
     border-radius:22px;
     background: #000000;
@@ -266,6 +285,22 @@
     font-size: 16px;
     color: rgba(234,246,255,.9);
     line-height: 1.4;
+
+  .playAgainBtn{
+    margin-top:10px;
+    padding:10px 18px;
+    border-radius:14px;
+    border:2px solid #00b4ff;
+    background: transparent;
+    color:#eaf6ff;
+    font-weight:900;
+    font-size:16px;
+    cursor:pointer;
+    box-shadow: 0 0 12px rgba(0,180,255,.35);
+    transition: transform .08s ease, box-shadow .12s ease;
+  }
+  .playAgainBtn:hover{ transform: translateY(-1px); box-shadow: 0 0 18px rgba(0,180,255,.45); }
+  .playAgainBtn:active{ transform: translateY(0px); }
   }
 
   button{font-family:var(--font-ui); letter-spacing:.6px;}
@@ -311,6 +346,10 @@
     display:none;
     opacity:0.92;
     margin-left:2px;
+    align-items:center;
+    gap:6px;
+    flex-wrap:nowrap;
+    white-space:nowrap;
   }
   #musicCtl .iconBtn{
     padding:8px 12px;
@@ -322,7 +361,12 @@
 <body>
 
 <audio id="bgMusic" src="goodthemeedit.mp3" loop preload="auto"></audio>
+<audio id="sfxExplosion" src="explosionQ.mp3" preload="auto"></audio>
+<audio id="sfxEnemyExplosion" src="explosion.mp3" preload="auto"></audio>
+<audio id="sfxLaser" src="laserQ.mp3" preload="auto"></audio>
 
+<audio id="sfxGameOver" src="gameover.mp3" preload="auto"></audio>
+<audio id="sfxHit" src="gothit.mp3" preload="auto"></audio>
 <div class="wrap">
 <div class="layout">
     <div class="leftCol">
@@ -331,17 +375,15 @@
     <p id="stem"></p>
   </div>
       <div class="leftActions">
-        <button id="btnSettings" class="iconBtn" type="button" aria-label="Settings">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/>
-          <path d="M19.4 15a7.8 7.8 0 0 0 .1-1l2-1.5-2-3.5-2.4.6a8 8 0 0 0-1.7-1l-.3-2.5h-4l-.3 2.5a8 8 0 0 0-1.7 1L6.7 9l-2 3.5 2 1.5a7.8 7.8 0 0 0 .1 1l-2 1.5 2 3.5 2.4-.6c.5.4 1.1.8 1.7 1l.3 2.5h4l.3-2.5c.6-.2 1.2-.6 1.7-1l2.4.6 2-3.5-2-1.5Z"/>
-        </svg>
-      </button>
+        <button id="btnSettings" class="iconBtn" type="button" aria-label="Options">Options</button>
+        <button id="btnHow" class="iconBtn" type="button" aria-label="How to play">?</button>
 <div id="musicCtl" aria-live="polite">
   <button id="musicBtn" class="iconBtn" type="button" aria-label="Toggle background music">♫ Music</button>
+  <button id="sfxBtn" class="iconBtn" type="button" aria-label="Toggle sound effects">🔊 SFX: On</button>
 </div>
 
       </div>
+      <div class="creditBlurb">created by micah etter, md</div>
     </div>
 
     <div class="rightCol">
@@ -350,7 +392,7 @@
     <div id="gameOver" class="gameOver hidden" aria-live="polite">
       <div class="gameOverBox">
         <div class="goTitle">GAME OVER</div>
-        <div class="goSub">Press N for a new game</div>
+        <div class="goSub"><button id="playAgainBtn" class="playAgainBtn" type="button">Play Again</button></div>
       </div>
     </div>
   </div>
@@ -362,7 +404,7 @@
   <div id="settingsBackdrop" class="modalBackdrop hidden" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
     <div class="modalBox">
       <div class="modalHead">
-        <div class="h" id="settingsTitle">Settings</div>
+        <div class="h" id="settingsTitle">Options</div>
         <button id="btnCloseSettings" class="iconBtn" type="button" aria-label="Close settings">✕</button>
       </div>
       <label class="toggleRow">
@@ -373,7 +415,22 @@
         <span>Enemies</span>
         <input id="toggleEnemies" type="checkbox" />
       </label>
-      <div class="modalHint">Toggle labels and enemies.</div>
+
+      <div class="toggleRow" style="margin-top:10px; align-items:flex-start;">
+        <span>Prompt mode</span>
+        <div class="modeRadios" role="radiogroup" aria-label="Prompt mode">
+          <label class="modeRadio">
+            <input id="modeCases" type="radio" name="promptMode" value="cases" />
+            <span>Cases</span>
+          </label>
+          <label class="modeRadio">
+            <input id="modeVessels" type="radio" name="promptMode" value="vessels" />
+            <span>Vessels</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="modalHint">Toggle labels, enemies, and the prompt mode.</div>
     </div>
   </div>
 
@@ -425,7 +482,7 @@
       </div>
       <div class="helpBody">
         <div style="color:rgba(234,246,255,.92);">
-          Navigate the Circle of Willis and blast the correct distal vessel target for the clinical stem.
+          Navigate the Circle of Willis and blast the correct distal vessel target for the prompt.
         </div>
         <ul>
           <li><b>Move:</b> Arrow keys or WASD (swipe on touch devices).</li>
@@ -435,9 +492,9 @@
           <li><b>Lives:</b> Bombing the wrong target costs a heart. Three mistakes ends the run.</li>
           <li><b>Currency:</b> Collect the small pills (drive into them or destroy them) to buy upgrades.</li>
           <li><b>Shop icon:</b> Appears about every 30 seconds. Touch or destroy it to open the shop.</li>
-          <li><b>Settings:</b> Use the gear to toggle enemies and vessel labels.</li>
+          <li><b>Options:</b> Use Options to toggle enemies, vessel labels, and prompt mode.</li>
         </ul>
-        <div class="modalHint">Press <b>Esc</b> any time to view these instructions again.</div>
+        <div class="modalHint">Press <b>Esc</b> (or click <b>How</b>) any time to view these instructions again.</div>
       </div>
       <div class="helpFooter">
         <button id="btnHelpOk" class="okBtn" type="button">Okay</button>
@@ -470,7 +527,7 @@
 
   const showMusicCtl = () => {
     if (!musicCtl) return;
-    musicCtl.style.display = "block";
+    musicCtl.style.display = "flex";
     setMusicButtonLabel();
   };
 
@@ -511,6 +568,40 @@
     musicBtn.addEventListener("click", toggleMusic);
   }
 
+  // Sound effects toggle (persisted)
+  const sfxBtn = document.getElementById("sfxBtn");
+  const SFX_KEY = "cot_sfx_enabled";
+  let sfxEnabled = true;
+  try{
+    const v = localStorage.getItem(SFX_KEY);
+    if (v !== null) sfxEnabled = (v === "1" || v === "true");
+  } catch(_e){}
+  const setSfxButtonLabel = () => {
+    if (!sfxBtn) return;
+    sfxBtn.textContent = sfxEnabled ? "🔊 SFX: On" : "🔇 SFX: Off";
+  };
+  const stopAllSfx = () => {
+    try{
+      if (typeof sfx !== "object" || !sfx) return;
+      Object.values(sfx).forEach(p => {
+        if (!p || !p.pool) return;
+        p.pool.forEach(a => { try{ a.pause(); a.currentTime = 0; } catch(_e){} });
+      });
+    } catch(_e){}
+  };
+  const toggleSfx = (ev) => {
+    if (ev) ev.stopPropagation();
+    sfxEnabled = !sfxEnabled;
+    try{ localStorage.setItem(SFX_KEY, sfxEnabled ? "1" : "0"); } catch(_e){}
+    if (!sfxEnabled) stopAllSfx();
+    setSfxButtonLabel();
+  };
+  if (sfxBtn){
+    sfxBtn.addEventListener("click", toggleSfx);
+    setSfxButtonLabel();
+  }
+
+
   // Attempt autoplay immediately; if blocked, retry once on the first user gesture.
   (async () => {
     const ok = await tryPlayMusic();
@@ -520,6 +611,89 @@
       window.addEventListener("keydown",    once, { once:true });
     }
   })();
+
+
+  // =============================
+  // Sound effects (explosionQ.mp3, explosion.mp3, laserQ.mp3, gameover.mp3, gothit.mp3 in same directory)
+  // =============================
+  // sfxExplosion -> grenade detonation (explosionQ.mp3)
+  // sfxEnemyExplosion -> enemy destroyed (explosion.mp3)
+  const _sfxExplosionQBase    = document.getElementById("sfxExplosion");
+  const _sfxEnemyExplosionBase = document.getElementById("sfxEnemyExplosion");
+  const _sfxLaserBase         = document.getElementById("sfxLaser");
+  const _sfxGameOverBase      = document.getElementById("sfxGameOver");
+  const _sfxHitBase           = document.getElementById("sfxHit");
+
+  const buildSfxPool = (baseEl, poolSize, volume) => {
+    if (!baseEl) return { pool: [], idx: 0, volume };
+    const pool = [baseEl];
+    baseEl.volume = volume;
+    baseEl.preload = "auto";
+    for (let i = 1; i < poolSize; i++){
+      const a = baseEl.cloneNode(true);
+      // Keep clones out of the DOM; remove id to avoid accidental collisions.
+      a.removeAttribute("id");
+      a.volume = volume;
+      a.preload = "auto";
+      pool.push(a);
+    }
+    return { pool, idx: 0, volume };
+  };
+
+  const sfx = {
+    explosionQ: buildSfxPool(_sfxExplosionQBase,        6, 0.70),
+    explosion:  buildSfxPool(_sfxEnemyExplosionBase,   6, 0.70),
+    laser:      buildSfxPool(_sfxLaserBase,        8, 0.45),
+    gameover:   buildSfxPool(_sfxGameOverBase,     2, 0.75),
+    hit:        buildSfxPool(_sfxHitBase,          6, 0.60),
+  };
+
+  let sfxUnlocked = false;
+  const unlockSfxOnce = () => {
+    if (sfxUnlocked) return;
+    sfxUnlocked = true;
+
+    // Prime audio on first user gesture to reduce "play() failed" on mobile browsers.
+    for (const key of Object.keys(sfx)){
+      const a = sfx[key]?.pool?.[0];
+      if (!a) continue;
+      const prevMuted = a.muted;
+      a.muted = true;
+      try{
+        const pr = a.play();
+        if (pr && typeof pr.then === "function"){
+          pr.then(() => {
+            a.pause();
+            a.currentTime = 0;
+            a.muted = prevMuted;
+          }).catch(() => { a.muted = prevMuted; });
+        } else {
+          a.pause();
+          a.currentTime = 0;
+          a.muted = prevMuted;
+        }
+      } catch (_e){
+        a.muted = prevMuted;
+      }
+    }
+  };
+
+  window.addEventListener("pointerdown", unlockSfxOnce, { once:true, passive:true });
+  window.addEventListener("keydown",     unlockSfxOnce, { once:true });
+
+  const playSfx = (name) => {
+        if (!sfxEnabled) return;
+    const p = sfx[name];
+    if (!p || !p.pool || p.pool.length === 0) return;
+    const a = p.pool[p.idx];
+    p.idx = (p.idx + 1) % p.pool.length;
+    try{
+      a.currentTime = 0;
+      const pr = a.play();
+      if (pr && typeof pr.catch === "function") pr.catch(() => {});
+    } catch (_e){}
+  };
+
 
   // =============================
   // Maze geometry (vector, PNG-free)
@@ -760,6 +934,130 @@ const pellets = [
 // (Anterior spinal artery pellet intentionally omitted)
 ];
 
+  // Make distal "power pellets" look more like small blood clots (deterministic blobs)
+  function _hash32(str){
+    // FNV-1a
+    let h = 2166136261;
+    for (let i = 0; i < str.length; i++){
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return h >>> 0;
+  }
+  function _mulberry32(a){
+    return function(){
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function _buildClotShape(seedStr){
+    const rng = _mulberry32(_hash32(seedStr));
+    const n = 14;
+    const TAU = Math.PI * 2;
+
+    const radii = [];
+    for (let i = 0; i < n; i++){
+      // jagged-ish silhouette
+      const wobble = 0.70 + rng() * 0.55;          // 0.70–1.25
+      const bump   = (rng() < 0.22) ? (0.20 + rng()*0.25) : 0; // occasional lobe
+      radii.push((11.2 * wobble) * (1 + bump));
+    }
+
+    return {
+      n,
+      radii,
+      // where the highlight sits (deterministic per pellet)
+      hiAng: rng() * TAU,
+      // small internal "fibrin" line angles
+      fibrin: [rng()*TAU, rng()*TAU, rng()*TAU]
+    };
+  }
+
+  // precompute shapes (stable across frames)
+  for (const p of pellets){
+    p._clot = _buildClotShape(`${p.key}:${Math.round(p.x)},${Math.round(p.y)}`);
+  }
+
+  function drawClotPellet(p){
+    const s = p._clot || (p._clot = _buildClotShape(`${p.key}:${Math.round(p.x)},${Math.round(p.y)}`));
+    const TAU = Math.PI * 2;
+
+    ctx.save();
+    ctx.translate(p.x, p.y);
+
+    // main clot blob
+    ctx.shadowColor = "rgba(180, 25, 45, 0.40)";
+    ctx.shadowBlur = 10;
+
+    const ptsX = new Array(s.n);
+    const ptsY = new Array(s.n);
+    for (let i=0; i<s.n; i++){
+      const a = (i / s.n) * TAU;
+      const r = s.radii[i];
+      ptsX[i] = Math.cos(a) * r;
+      ptsY[i] = Math.sin(a) * r;
+    }
+
+    ctx.beginPath();
+    // smooth closed path using quadratic segments
+    const xStart = (ptsX[0] + ptsX[s.n-1]) / 2;
+    const yStart = (ptsY[0] + ptsY[s.n-1]) / 2;
+    ctx.moveTo(xStart, yStart);
+    for (let i=0; i<s.n; i++){
+      const x1 = ptsX[i], y1 = ptsY[i];
+      const x2 = ptsX[(i+1)%s.n], y2 = ptsY[(i+1)%s.n];
+      const xc = (x1 + x2) / 2;
+      const yc = (y1 + y2) / 2;
+      ctx.quadraticCurveTo(x1, y1, xc, yc);
+    }
+    ctx.closePath();
+
+    ctx.fillStyle = "#6b0f1a";
+    ctx.fill();
+    ctx.lineWidth = 1.6;
+    ctx.strokeStyle = "rgba(255, 170, 190, 0.22)";
+    ctx.stroke();
+
+    // subtle highlight lobe
+    ctx.save();
+    ctx.globalAlpha = 0.65;
+    const hx = Math.cos(s.hiAng) * 3.2;
+    const hy = Math.sin(s.hiAng) * 3.2;
+    ctx.translate(hx, hy);
+    ctx.scale(0.62, 0.62);
+
+    ctx.beginPath();
+    ctx.moveTo((ptsX[0] + ptsX[s.n-1]) / 2, (ptsY[0] + ptsY[s.n-1]) / 2);
+    for (let i=0; i<s.n; i++){
+      const x1 = ptsX[i], y1 = ptsY[i];
+      const x2 = ptsX[(i+1)%s.n], y2 = ptsY[(i+1)%s.n];
+      const xc = (x1 + x2) / 2;
+      const yc = (y1 + y2) / 2;
+      ctx.quadraticCurveTo(x1, y1, xc, yc);
+    }
+    ctx.closePath();
+    ctx.fillStyle = "rgba(210, 55, 85, 0.55)";
+    ctx.fill();
+    ctx.restore();
+
+    // fibrin-ish internal strands (very subtle)
+    ctx.save();
+    ctx.globalAlpha = 0.28;
+    ctx.lineWidth = 1.1;
+    ctx.strokeStyle = "rgba(255, 210, 220, 0.45)";
+    for (const a of s.fibrin){
+      const r1 = 3.0, r2 = 9.6;
+      ctx.beginPath();
+      ctx.moveTo(Math.cos(a)*r1, Math.sin(a)*r1);
+      ctx.lineTo(Math.cos(a)*r2, Math.sin(a)*r2);
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    ctx.restore();
+  }
 
   // Subtle, non-telegraphy-ish stems (still localize)
   const stems = {
@@ -848,13 +1146,21 @@ const pellets = [
   let enemiesEnabled = true;
   try { enemiesEnabled = JSON.parse(localStorage.getItem("plaqueMan_enemiesEnabled") || "true"); } catch(e){ enemiesEnabled = true; }
 
-  const btnSettings = document.getElementById("btnSettings");
+  
+
+  let promptMode = "cases";
+  try { promptMode = (localStorage.getItem("plaqueMan_promptMode") || "cases"); } catch(e){ promptMode = "cases"; }
+  if (promptMode !== "cases" && promptMode !== "vessels") promptMode = "cases";
+const btnSettings = document.getElementById("btnSettings");
+  const btnHow = document.getElementById("btnHow");
   const settingsBackdrop = document.getElementById("settingsBackdrop");
   const helpBackdrop = document.getElementById("helpBackdrop");
   const btnHelpOk = document.getElementById("btnHelpOk");
   const btnCloseSettings = document.getElementById("btnCloseSettings");
   const toggleLabels = document.getElementById("toggleLabels");
   const toggleEnemies = document.getElementById("toggleEnemies");
+  const modeCases = document.getElementById("modeCases");
+  const modeVessels = document.getElementById("modeVessels");
 
   // Shop UI
   const shopBackdrop = document.getElementById("shopBackdrop");
@@ -877,6 +1183,8 @@ const pellets = [
     settingsBackdrop.classList.remove("hidden");
     if (toggleLabels) toggleLabels.checked = !!showLabels;
     if (toggleEnemies) toggleEnemies.checked = !!enemiesEnabled;
+    if (modeCases) modeCases.checked = (promptMode === "cases");
+    if (modeVessels) modeVessels.checked = (promptMode === "vessels");
     setShopMsg("");
   };
   const closeSettings = ()=>{
@@ -919,6 +1227,12 @@ const pellets = [
   };
 
   btnSettings?.addEventListener("click", openSettings);
+  btnHow?.addEventListener("click", ()=>{
+    if (shopBackdrop && !shopBackdrop.classList.contains("hidden")) closeShop();
+    if (settingsBackdrop && !settingsBackdrop.classList.contains("hidden")) closeSettings();
+    openHelp();
+  });
+
   btnCloseSettings?.addEventListener("click", closeSettings);
   settingsBackdrop?.addEventListener("click", (e)=>{ if (e.target === settingsBackdrop) closeSettings(); });
   window.addEventListener("keydown", (e)=>{
@@ -944,6 +1258,17 @@ const pellets = [
       if (typeof enemies !== "undefined" && enemies && enemies.length !== undefined) enemies.length = 0;
     }
   });
+
+
+  const setPromptMode = (mode)=>{
+    promptMode = (mode === "vessels") ? "vessels" : "cases";
+    try { localStorage.setItem("plaqueMan_promptMode", promptMode); } catch(e){}
+    // Update the on-screen prompt without changing the active answer key
+    try { if (typeof renderPrompt === "function") renderPrompt(); } catch(e){}
+  };
+
+  modeCases?.addEventListener("change", ()=>{ if (modeCases && modeCases.checked) setPromptMode("cases"); });
+  modeVessels?.addEventListener("change", ()=>{ if (modeVessels && modeVessels.checked) setPromptMode("vessels"); });
 
   btnCloseShop?.addEventListener("click", closeShop);
   shopBackdrop?.addEventListener("click", (e)=>{ if (e.target === shopBackdrop) closeShop(); });
@@ -1074,14 +1399,7 @@ function drawShipWrapped(x,y,dir,phase){
 
   // pellets (activation requires a grenade explosion)
   for (const p of pellets){
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, 11, 0, Math.PI*2);
-    ctx.fillStyle = "#111";
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, 7, 0, Math.PI*2);
-    ctx.fillStyle = "#f2f2f2";
-    ctx.fill();
+    drawClotPellet(p);
   }
 
 
@@ -1546,6 +1864,7 @@ function drawShipWrapped(x,y,dir,phase){
       if (!e.alive) continue;
       if (dist2Wrap(player.x, player.y, e.x, e.y) <= rr2){
         lives = Math.max(0, lives - 1);
+        playSfx("hit");
         flash = {t: 1.0, kind:"bad"};
         invulnUntil = now + 1100;
 
@@ -1582,6 +1901,7 @@ function drawShipWrapped(x,y,dir,phase){
       }
     }
     if (killed > 0){
+      playSfx("explosion");
       score += 10 * killed;
       updateHUD();
     }
@@ -1881,10 +2201,13 @@ function fireShot(){
   ammo = Math.max(0, ammo - 1);
   if (typeof refreshShopHUD === "function") refreshShopHUD();
 
+  playSfx("laser");
+
   shots.push({x: sx, y: sy, dir, t0: now});
 }
 
 function explodeAt(x,y,now){
+  playSfx("explosionQ");
   explosions.push({x, y, t0: now});
   // collect currency pills (no wrap)
   collectLootInRadius(x,y,EXPLOSION_R);
@@ -2036,6 +2359,7 @@ if (!canMove(s.dir, nx, ny, SHOT_R)){
           e.alive = false;
           e.respawnAt = now + ENEMY_RESPAWN_BASE + Math.random()*ENEMY_RESPAWN_JITTER;
           spawnEnemyBurst(e.x, e.y, now);
+          playSfx("explosion");
           score += 10;
           updateHUD();
           shots.splice(i, 1);
@@ -2077,8 +2401,8 @@ if (!canMove(s.dir, nx, ny, SHOT_R)){
   let score = 0;
   let lives = 3;
   let cash = 0; // currency collected from small pills
-  let hasBlaster = false;
-  let ammo = 0;
+  let hasBlaster = true;
+  let ammo = 10;
   let gameOver = false;
   let current = null; // { key, stem }
   let locked = false;
@@ -2086,6 +2410,8 @@ if (!canMove(s.dir, nx, ny, SHOT_R)){
 
   const stemEl = document.getElementById("stem");
   const gameOverEl = document.getElementById("gameOver");
+  const playAgainBtn = document.getElementById("playAgainBtn");
+  playAgainBtn?.addEventListener("click", ()=>{ if (gameOver) restartGame(); });
 
   function pick(arr){ return arr[(Math.random()*arr.length)|0]; }
 
@@ -2132,8 +2458,10 @@ if (!canMove(s.dir, nx, ny, SHOT_R)){
   }
 
   function setGameOver(on){
+    const wasOver = gameOver;
     gameOver = on;
     if (on){
+      if (!wasOver) playSfx("gameover");
       gameOverEl.classList.remove("hidden");
       locked = true;
       grenades.length = 0;
@@ -2147,8 +2475,8 @@ if (!canMove(s.dir, nx, ny, SHOT_R)){
     score = 0;
     lives = 3;
     cash = 0;
-    hasBlaster = false;
-    ammo = 0;
+    hasBlaster = true;
+    ammo = 10;
     shots.length = 0;
     shopIcon.active = false;
     nextShopSpawnAt = performance.now() + SHOP_SPAWN_MS;
@@ -2162,7 +2490,17 @@ if (!canMove(s.dir, nx, ny, SHOT_R)){
     newCase();
   }
 
-function newCase(){
+  function renderPrompt(){
+    if (!stemEl || !current) return;
+    if (promptMode === "vessels"){
+      const vesselName = (typeof V !== "undefined" && V && V[current.key]) ? V[current.key] : current.key;
+      stemEl.textContent = vesselName;
+    } else {
+      stemEl.textContent = current.stem;
+    }
+  }
+
+  function newCase(){
     locked = false;
     current = null;
     // keep player position between rounds
@@ -2171,7 +2509,7 @@ function newCase(){
     const stem = pick(stems[key] || ["A patient presents with acute neurologic deficits."]);
     current = {key, stem};
 
-    stemEl.textContent = stem;
+    renderPrompt();
     updateHUD();
     fitCanvasCSS();
   }
