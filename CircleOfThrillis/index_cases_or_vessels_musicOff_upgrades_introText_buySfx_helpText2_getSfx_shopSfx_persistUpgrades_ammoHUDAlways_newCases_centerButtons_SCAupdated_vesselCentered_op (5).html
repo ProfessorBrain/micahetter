@@ -898,7 +898,7 @@ addRect(sqX + sqOuterW - O, picaY, picaLen + O, rungH);                // right 
   vg.fillRect(0,0,CW,CH);
 
   // corridors (near-black)
-  vg.fillStyle = "#020203";
+  vg.fillStyle = "#050607";
   for (const r of rects) vg.fillRect(r.x, r.y, r.w, r.h);
 
     // corridor interior shading (tube-like, subtle black/red)
@@ -954,9 +954,9 @@ addRect(sqX + sqOuterW - O, picaY, picaLen + O, rungH);                // right 
 
       // darker edges, warmer center
       g.addColorStop(0.0, "rgb(0,0,0)");
-      g.addColorStop(0.18,"rgb(14,0,0)");
-      g.addColorStop(0.50,"rgb(28,3,3)");
-      g.addColorStop(0.82,"rgb(14,0,0)");
+      g.addColorStop(0.18,"rgb(26,0,0)");
+      g.addColorStop(0.50,"rgb(58,6,6)");
+      g.addColorStop(0.82,"rgb(26,0,0)");
       g.addColorStop(1.0, "rgb(0,0,0)");
 
       tg.fillStyle = g;
@@ -964,8 +964,8 @@ addRect(sqX + sqOuterW - O, picaY, picaLen + O, rungH);                // right 
 
       // faint inner highlight line (gives a "tube" feel)
       tg.save();
-      tg.globalAlpha = 0.05;
-      tg.strokeStyle = "rgba(180,40,40,0.10)";
+      tg.globalAlpha = 0.08;
+      tg.strokeStyle = "rgba(255,70,70,0.12)";
       tg.lineWidth = 1.5;
       if (horiz){
         const yy = r.y + r.h*0.42;
@@ -996,8 +996,8 @@ addRect(sqX + sqOuterW - O, picaY, picaLen + O, rungH);                // right 
 
         const g = tg.createLinearGradient(q.sx, q.sy, cx, cy);
         g.addColorStop(0.00, "rgb(0,0,0)");
-        g.addColorStop(0.38, "rgb(10,0,0)");
-        g.addColorStop(1.00, "rgb(24,3,3)");
+        g.addColorStop(0.38, "rgb(18,0,0)");
+        g.addColorStop(1.00, "rgb(50,5,5)");
         tg.fillStyle = g;
         tg.fillRect(q.qx, q.qy, q.qw, q.qh);
 
@@ -1006,9 +1006,9 @@ addRect(sqX + sqOuterW - O, picaY, picaLen + O, rungH);                // right 
 
       // Tiny center bloom so the intersection doesn't look "quartered"
       tg.save();
-      tg.globalAlpha = 0.03;
+      tg.globalAlpha = 0.06;
       const rg = tg.createRadialGradient(cx, cy, 0, cx, cy, Math.max(w,h)*0.55);
-      rg.addColorStop(0.0, "rgba(80,10,10,0.35)");
+      rg.addColorStop(0.0, "rgba(120,18,18,0.55)");
       rg.addColorStop(1.0, "rgba(0,0,0,0)");
       tg.fillStyle = rg;
       tg.fillRect(x, y, w, h);
@@ -1023,8 +1023,8 @@ addRect(sqX + sqOuterW - O, picaY, picaLen + O, rungH);                // right 
     for (let i=0;i<n;i++){
       const x = (rand()*CW)|0;
       const y = (rand()*CH)|0;
-      const a = 0.01 + rand()*0.015;
-      tg.fillStyle = `rgba(120,20,20,${a})`;
+      const a = 0.02 + rand()*0.03;
+      tg.fillStyle = `rgba(180,35,35,${a})`;
       tg.fillRect(x, y, 1, 1);
     }
 
@@ -1033,7 +1033,7 @@ addRect(sqX + sqOuterW - O, picaY, picaLen + O, rungH);                // right 
     tg.drawImage(corrMask, 0, 0);
 
     vg.save();
-    vg.globalAlpha = 0.22;
+    vg.globalAlpha = 0.32;
     vg.drawImage(corrShade, 0, 0);
     vg.restore();
   })();;
