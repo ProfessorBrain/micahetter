@@ -85,8 +85,6 @@
   #stem{font-family:var(--font-body); font-size:clamp(18px, 2.2vw, 22px); line-height:1.5; margin:0; color:var(--ink);
   text-shadow: 0 0 10px rgba(0, 190, 255, 0.12);
 }
-#stem.isVesselPrompt{ text-align:center; }
-
   #logoImg{
     width:100%;
     max-width:320px;
@@ -326,7 +324,7 @@
   }
   .helpFooter{
     display:flex;
-    justify-content:center;
+    justify-content:flex-end;
     margin-top:14px;
   }
   .okBtn{
@@ -438,10 +436,11 @@
         </div>
       </div>
 
-      <div style="margin-top:14px; display:flex; justify-content:center;">
+      <div style="margin-top:14px; display:flex; justify-content:flex-end;">
   <button id="btnResetProgress" class="iconBtn" type="button" style="border-color: rgba(255,92,122,.55); background: rgba(255,92,122,.10);">Reset progress</button>
 </div>
 
+<div class="modalHint">Toggle labels, enemies, and the prompt mode.</div>
     </div>
   </div>
 
@@ -481,7 +480,7 @@
         <div class="shopItem">
           <div class="left">
             <div class="name">Speed Booster</div>
-            <div class="desc">Increase ship speed by 25%.</div>
+            <div class="desc">Increase ship speed by 25% for this run.</div>
           </div>
           <div class="buy">
             <button id="buyBooster" type="button">Buy (💊 12)</button>
@@ -501,7 +500,7 @@
         <div class="shopItem">
           <div class="left">
             <div class="name">Plasma Cannon</div>
-            <div class="desc">Unlimited ammo.</div>
+            <div class="desc">Unlimited ammo for this run.</div>
           </div>
           <div class="buy">
             <button id="buyPlasma" type="button">Buy (💊 50)</button>
@@ -1177,13 +1176,13 @@ const stems = {
   L_SCA: [
     "A 64-year-old man develops sudden left ptosis and a “down-and-out” left eye with a dilated left pupil. He has prominent right limb ataxia and dysmetria but full strength.",
     "A 57-year-old woman has abrupt left oculomotor palsy (ptosis, impaired adduction/elevation) and a right-sided coarse tremor that worsens with action, plus right limb ataxia. Strength is largely preserved.",
-    "A 71-year-old man has acute diplopia and left-sided ptosis, plus marked left-sided limb and gait ataxia and dysarthria, without sensory loss."
+    "A 71-year-old man has acute left CN III palsy with diplopia and ptosis, plus marked left-sided limb and gait ataxia and dysarthria, without sensory loss."
   ],
 
   R_SCA: [
     "A 64-year-old woman develops sudden right ptosis and a “down-and-out” right eye with a dilated right pupil. She has severe left limb ataxia and dysmetria with intact strength.",
     "A 55-year-old man has abrupt right oculomotor palsy and a prominent left-sided action tremor with left limb ataxia; speech is slurred but there is no aphasia.",
-    "A 69-year-old woman develops acute diplopia and right-sided ptosis plus pronounced right-sided gait and limb ataxia, without primary weakness."
+    "A 69-year-old woman develops acute right CN III palsy with diplopia and ptosis plus pronounced right-sided gait and limb ataxia, without primary weakness."
   ],
 
   L_AICA: [
@@ -1211,7 +1210,6 @@ const stems = {
   ]
   // (Anterior spinal artery intentionally omitted)
 };
-
 
     // Only include territories that have a corresponding distal pellet on the maze
   const vesselKeys = Array.from(new Set(pellets.map(p=>p.key)));
@@ -2818,10 +2816,8 @@ function setGameOver(on){
     if (!stemEl || !current) return;
     if (promptMode === "vessels"){
       const vesselName = (typeof V !== "undefined" && V && V[current.key]) ? V[current.key] : current.key;
-      stemEl.classList.add("isVesselPrompt");
       stemEl.textContent = vesselName;
     } else {
-      stemEl.classList.remove("isVesselPrompt");
       stemEl.textContent = current.stem;
     }
   }

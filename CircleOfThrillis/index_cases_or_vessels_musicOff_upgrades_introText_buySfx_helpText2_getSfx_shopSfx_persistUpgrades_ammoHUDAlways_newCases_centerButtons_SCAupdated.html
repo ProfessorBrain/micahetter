@@ -85,8 +85,6 @@
   #stem{font-family:var(--font-body); font-size:clamp(18px, 2.2vw, 22px); line-height:1.5; margin:0; color:var(--ink);
   text-shadow: 0 0 10px rgba(0, 190, 255, 0.12);
 }
-#stem.isVesselPrompt{ text-align:center; }
-
   #logoImg{
     width:100%;
     max-width:320px;
@@ -326,7 +324,7 @@
   }
   .helpFooter{
     display:flex;
-    justify-content:center;
+    justify-content:flex-end;
     margin-top:14px;
   }
   .okBtn{
@@ -438,10 +436,11 @@
         </div>
       </div>
 
-      <div style="margin-top:14px; display:flex; justify-content:center;">
+      <div style="margin-top:14px; display:flex; justify-content:flex-end;">
   <button id="btnResetProgress" class="iconBtn" type="button" style="border-color: rgba(255,92,122,.55); background: rgba(255,92,122,.10);">Reset progress</button>
 </div>
 
+<div class="modalHint">Toggle labels, enemies, and the prompt mode.</div>
     </div>
   </div>
 
@@ -481,7 +480,7 @@
         <div class="shopItem">
           <div class="left">
             <div class="name">Speed Booster</div>
-            <div class="desc">Increase ship speed by 25%.</div>
+            <div class="desc">Increase ship speed by 25% for this run.</div>
           </div>
           <div class="buy">
             <button id="buyBooster" type="button">Buy (💊 12)</button>
@@ -501,7 +500,7 @@
         <div class="shopItem">
           <div class="left">
             <div class="name">Plasma Cannon</div>
-            <div class="desc">Unlimited ammo.</div>
+            <div class="desc">Unlimited ammo for this run.</div>
           </div>
           <div class="buy">
             <button id="buyPlasma" type="button">Buy (💊 50)</button>
@@ -2818,10 +2817,8 @@ function setGameOver(on){
     if (!stemEl || !current) return;
     if (promptMode === "vessels"){
       const vesselName = (typeof V !== "undefined" && V && V[current.key]) ? V[current.key] : current.key;
-      stemEl.classList.add("isVesselPrompt");
       stemEl.textContent = vesselName;
     } else {
-      stemEl.classList.remove("isVesselPrompt");
       stemEl.textContent = current.stem;
     }
   }
