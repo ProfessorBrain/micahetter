@@ -50,8 +50,7 @@
   .leftActions{
     margin-top:10px;
     display:flex;
-    width:100%;
-    justify-content:center;
+    justify-content:flex-start;
     align-items:center;
     gap: 8px;
     flex-wrap:nowrap;
@@ -79,7 +78,7 @@
   @media (max-width: 860px){
     .layout{flex-direction:column; align-items:stretch;}
     .leftCol{width:100%;}
-    .leftActions{justify-content:center;}
+    .leftActions{justify-content:flex-start;}
     .rightCol{justify-content:center;}
   }
   #stem{font-family:var(--font-body); font-size:clamp(18px, 2.2vw, 22px); line-height:1.5; margin:0; color:var(--ink);
@@ -346,7 +345,7 @@
   #musicCtl{
     display:none;
     opacity:0.92;
-    margin-left:0;
+    margin-left:2px;
     align-items:center;
     gap:6px;
     flex-wrap:nowrap;
@@ -366,10 +365,6 @@
 <audio id="sfxEnemyExplosion" src="explosion.mp3" preload="auto"></audio>
 <audio id="sfxLaser" src="laserQ.mp3" preload="auto"></audio>
 <audio id="sfxWarp" src="warp.mp3" preload="auto"></audio>
-<audio id="sfxBuy" src="buy.mp3" preload="auto"></audio>
-
-<audio id="sfxGet" src="get.mp3" preload="auto"></audio>
-<audio id="sfxShop" src="shop.mp3" preload="auto"></audio>
 
 <audio id="sfxGameOver" src="gameover.mp3" preload="auto"></audio>
 <audio id="sfxHit" src="gothit.mp3" preload="auto"></audio>
@@ -436,11 +431,7 @@
         </div>
       </div>
 
-      <div style="margin-top:14px; display:flex; justify-content:flex-end;">
-  <button id="btnResetProgress" class="iconBtn" type="button" style="border-color: rgba(255,92,122,.55); background: rgba(255,92,122,.10);">Reset progress</button>
-</div>
-
-<div class="modalHint">Toggle labels, enemies, and the prompt mode.</div>
+      <div class="modalHint">Toggle labels, enemies, and the prompt mode.</div>
     </div>
   </div>
 
@@ -477,46 +468,6 @@
             <button id="buyHeart" type="button">Buy (💊 4)</button>
           </div>
         </div>
-        <div class="shopItem">
-          <div class="left">
-            <div class="name">Speed Booster</div>
-            <div class="desc">Increase ship speed by 25% for this run.</div>
-          </div>
-          <div class="buy">
-            <button id="buyBooster" type="button">Buy (💊 12)</button>
-          </div>
-        </div>
-
-        <div class="shopItem">
-          <div class="left">
-            <div class="name">Shield Armor</div>
-            <div class="desc">Adds 1 armor charge that absorbs an enemy hit (max 3).</div>
-          </div>
-          <div class="buy">
-            <button id="buyArmor" type="button">Buy (💊 10)</button>
-          </div>
-        </div>
-
-        <div class="shopItem">
-          <div class="left">
-            <div class="name">Plasma Cannon</div>
-            <div class="desc">Unlimited ammo for this run.</div>
-          </div>
-          <div class="buy">
-            <button id="buyPlasma" type="button">Buy (💊 50)</button>
-          </div>
-        </div>
-
-        <div class="shopItem">
-          <div class="left">
-            <div class="name">Chrome Hull</div>
-            <div class="desc">Invincible to enemy contact; ramming destroys ships.</div>
-          </div>
-          <div class="buy">
-            <button id="buyChrome" type="button">Buy (💊 100)</button>
-          </div>
-        </div>
-
       </div>
 
       <div id="shopMsg" class="shopMsg"></div>
@@ -532,18 +483,19 @@
       </div>
       <div class="helpBody">
         <div style="color:rgba(234,246,255,.92);">
-          Navigate the Circle of Willis and bomb the correct clotted vessel!
+          Navigate the Circle of Willis and blast the correct distal vessel target for the prompt.
         </div>
         <ul>
           <li><b>Move:</b> Arrow keys or WASD (swipe on touch devices).</li>
-          <li><b>Bust:</b> Press <b>Space</b> to drop a <b>Buster Bomb</b> to bust the clot in the correct vessel!</li>
-                    <li><b>Blaster:</b> Press <b>Ctrl</b> to fire. Buy more ammo in the shop.</li>
-          <li><b>Health:</b> Bombing the wrong target costs a heart.</li>
-          <li><b>Pills:</b> Collect the pills to buy upgrades.</li>
-          <li><b>Shop:</b> Appears intermittently. Buy upgrades here!</li>
+          <li><b>Grenade:</b> Press <b>Space</b> to drop a grenade. It explodes about 1 second later.</li>
+          <li><b>Answer:</b> The distal “power pellet” only counts if it is <b>hit by an explosion</b>.</li>
+          <li><b>Blaster:</b> Buy in the shop. Press <b>Ctrl</b> to fire (ammo is limited).</li>
+          <li><b>Lives:</b> Bombing the wrong target costs a heart. Three mistakes ends the run.</li>
+          <li><b>Currency:</b> Collect the small pills (drive into them or destroy them) to buy upgrades.</li>
+          <li><b>Shop icon:</b> Appears about every 30 seconds. Touch or destroy it to open the shop.</li>
           <li><b>Options:</b> Use Options to toggle enemies, vessel labels, and prompt mode.</li>
         </ul>
-        <div class="modalHint">Press <b>Esc</b> (or click <b>?</b>) any time to view these instructions again.</div>
+        <div class="modalHint">Press <b>Esc</b> (or click <b>How</b>) any time to view these instructions again.</div>
       </div>
       <div class="helpFooter">
         <button id="btnHelpOk" class="okBtn" type="button">Okay</button>
@@ -568,15 +520,6 @@
   const bgMusic = document.getElementById("bgMusic");
   const musicCtl = document.getElementById("musicCtl");
   const musicBtn = document.getElementById("musicBtn");
-
-  // Music toggle (persisted; default OFF)
-  const MUSIC_KEY = "cot_music_enabled";
-  let musicEnabled = false;
-  try{
-    const v = localStorage.getItem(MUSIC_KEY);
-    if (v !== null) musicEnabled = (v === "1" || v === "true");
-  } catch(_e){}
-
 
   const setMusicButtonLabel = () => {
     if (!musicBtn || !bgMusic) return;
@@ -613,18 +556,11 @@
   const toggleMusic = async (ev) => {
     if (ev) ev.stopPropagation();
     if (!bgMusic) return;
-
     if (bgMusic.paused){
-      const ok = await tryPlayMusic();
-      if (ok){
-        musicEnabled = true;
-        try { localStorage.setItem(MUSIC_KEY, "1"); } catch(_e){}
-      }
+      await tryPlayMusic();
       setMusicButtonLabel();
     } else {
       bgMusic.pause();
-      musicEnabled = false;
-      try { localStorage.setItem(MUSIC_KEY, "0"); } catch(_e){}
       showMusicCtl();
     }
   };
@@ -667,13 +603,8 @@
   }
 
 
-  // Show the music/SFX controls, but default music to OFF unless the user enabled it previously.
-  showMusicCtl();
-  setMusicButtonLabel();
-
-  // Only auto-start if the user previously enabled music.
+  // Attempt autoplay immediately; if blocked, retry once on the first user gesture.
   (async () => {
-    if (!musicEnabled) return;
     const ok = await tryPlayMusic();
     if (!ok){
       const once = () => { tryPlayMusic(); };
@@ -681,7 +612,9 @@
       window.addEventListener("keydown",    once, { once:true });
     }
   })();
-// =============================
+
+
+  // =============================
   // Sound effects (explosionQ.mp3, explosion.mp3, laserQ.mp3, warp.mp3, gameover.mp3, gothit.mp3 in same directory)
   // =============================
   // sfxExplosion -> grenade detonation (explosionQ.mp3)
@@ -692,9 +625,6 @@
   const _sfxGameOverBase      = document.getElementById("sfxGameOver");
   const _sfxHitBase           = document.getElementById("sfxHit");
   const _sfxWarpBase          = document.getElementById("sfxWarp");
-  const _sfxBuyBase           = document.getElementById("sfxBuy");
-  const _sfxShopBase          = document.getElementById("sfxShop");
-  const _sfxGetBase           = document.getElementById("sfxGet");
 
   const buildSfxPool = (baseEl, poolSize, volume) => {
     if (!baseEl) return { pool: [], idx: 0, volume };
@@ -717,9 +647,6 @@
     explosion:  buildSfxPool(_sfxEnemyExplosionBase,   6, 0.70),
     laser:      buildSfxPool(_sfxLaserBase,        8, 0.45),
     warp:       buildSfxPool(_sfxWarpBase,         4, 0.55),
-    buy:        buildSfxPool(_sfxBuyBase,          4, 0.65),
-    shop:       buildSfxPool(_sfxShopBase,         2, 0.65),
-    get:        buildSfxPool(_sfxGetBase,          6, 0.55),
     gameover:   buildSfxPool(_sfxGameOverBase,     2, 0.75),
     hit:        buildSfxPool(_sfxHitBase,          6, 0.60),
   };
@@ -1135,81 +1062,75 @@ const pellets = [
     ctx.restore();
   }
 
-  // Case stems (territory-localizing)
-const stems = {
-  L_ACA: [
-    "A 62-year-old man has sudden right leg weakness and numbness. He becomes very quiet and slow to respond, gives one- or two-word answers, and has new urinary incontinence.",
-    "A 54-year-old woman develops acute right leg weakness. She cannot start walking even though she can move her legs in bed, and she repeatedly grasps the examiner’s hand and cannot easily release.",
-    "A 71-year-old man has sudden right leg weakness and veers to the right when trying to walk. He seems indifferent to the deficit, initiates very little on his own, and needs repeated prompting to participate."
-  ],
+  // Subtle, non-telegraphy-ish stems (still localize)
+  const stems = {
+    L_ACA: [
+      "A 68-year-old right-handed man suddenly becomes unusually apathetic and struggles to initiate movement. He has marked right leg weakness with only mild right arm weakness; a right grasp reflex is present and he has new urinary urgency.",
+      "A 59-year-old woman develops abrupt right leg-predominant weakness with mild sensory loss. Family notes new abulia and she has urinary incontinence. Face and right arm strength are relatively preserved.",
+      "A 73-year-old man is brought in for sudden gait freezing and right leg buckling. He is slow to respond, has frontal release signs, and develops new urinary incontinence. Right face and arm strength are near normal."
+    ],
+    R_ACA: [
+      "A 71-year-old man suddenly becomes apathetic and slow to speak. He has marked left leg weakness with only mild left arm weakness; a left grasp reflex is present and he has new urinary urgency.",
+      "A 62-year-old woman develops abrupt left leg-predominant weakness with mild sensory loss. Family reports new abulia and she has urinary incontinence. Face and left arm strength are relatively preserved.",
+      "A 67-year-old man has sudden difficulty initiating gait with left leg buckling. He appears indifferent to the deficit and has new urinary incontinence. The left arm and face are minimally affected."
+    ],
 
-  R_ACA: [
-    "A 62-year-old woman has sudden left leg weakness and numbness. She becomes apathetic, responds slowly, initiates little on her own, and develops new urinary incontinence.",
-    "A 48-year-old man develops acute left leg weakness. During tasks with both hands, his left hand grabs objects on its own and interferes with his intended actions, and he cannot stop it promptly.",
-    "A 70-year-old woman has abrupt left leg weakness and falls toward the left. She sits quietly, rarely initiates movement, and appears unconcerned about the deficit despite repeated coaching."
-  ],
+    L_MCA: [
+      "A 66-year-old right-handed woman has sudden right facial droop and right arm weakness. Her speech is nonfluent with impaired repetition and naming, but she can follow simple commands. Right leg weakness is mild.",
+      "A 58-year-old right-handed man develops abrupt right face/arm weakness and a leftward gaze preference. He speaks fluently but the content is nonsensical and he cannot follow commands. He reports bumping into objects on his right.",
+      "A 72-year-old right-handed woman has dense right face/arm weakness with right hemisensory loss. She is mute, cannot follow commands, and cannot repeat. The right leg is less affected."
+    ],
+    R_MCA: [
+      "A 69-year-old woman has acute left face and left arm weakness. She leaves food on the left side of the plate, fails to attend to her left arm, and insists nothing is wrong. Left leg weakness is mild.",
+      "A 61-year-old man develops sudden left arm/face weakness with left visual inattention. He draws only the right half of a clock and keeps turning his head to the right. Speech and comprehension are intact.",
+      "A 74-year-old woman has abrupt left facial droop and left arm weakness with rightward gaze deviation. She denies ownership of her left arm and bumps into objects on the left. Left leg involvement is mild."
+    ],
 
-  L_MCA: [
-    "A 68-year-old man has sudden right facial droop and right arm weakness with right-sided numbness. He struggles to get words out and cannot repeat a simple phrase.",
-    "A 59-year-old woman develops acute right arm weakness and right facial droop. She can speak fluently, but she cannot understand questions and follows commands poorly.",
-    "A 72-year-old man has sudden right-sided weakness and numbness affecting the face and arm more than the leg. He also develops right-sided visual deficits and keeps turning his head to the left."
-  ],
+    L_PCA: [
+      "A 65-year-old right-handed man suddenly begins missing objects in the right visual field. Motor and primary sensation are intact. He notices the deficit and compensates by turning his head.",
+      "A 70-year-old right-handed man presents with acute right homonymous hemianopia. He can write a sentence but cannot read it back. Speech and motor exam are otherwise normal.",
+      "A 57-year-old woman develops abrupt difficulty recognizing familiar objects despite normal visual acuity. She also has a right visual field cut. Strength, language, and primary sensation are intact."
+    ],
+    R_PCA: [
+      "A 62-year-old man suddenly cannot see objects on the left side of his visual field. Motor exam is normal and pupils are symmetric. He repeatedly turns his head left to compensate.",
+      "A 56-year-old woman develops acute left homonymous hemianopia and reports difficulty recognizing faces. Speech and strength are intact.",
+      "A 71-year-old man has sudden left visual field loss and becomes disoriented in familiar places. Motor exam is normal."
+    ],
 
-  R_MCA: [
-    "A 69-year-old woman has acute left face and left arm weakness. She leaves food on the left side of the plate, fails to attend to her left arm, and insists nothing is wrong. Left leg weakness is mild.",
-    "A 61-year-old man develops sudden left facial droop and left arm weakness with left-sided numbness. He ignores people standing on his left and bumps into objects on that side.",
-    "A 74-year-old woman has abrupt left arm weakness and left-sided sensory loss. She cannot copy a simple drawing, cannot dress herself correctly, and denies that her left arm belongs to her."
-  ],
+    L_SCA: [
+      "A 54-year-old man develops sudden left limb and gait ataxia with dysarthria. He has gaze-evoked nystagmus and leftward saccadic hypermetria. Hearing and facial strength are normal and there is no dysphagia.",
+      "A 60-year-old woman has abrupt left arm dysmetria and intention tremor with truncal ataxia. Exam shows ocular dysmetria and impaired smooth pursuit to the left. Facial sensation and strength are intact.",
+      "A 63-year-old man presents with acute left-sided cerebellar signs and severe gait instability. He has no facial weakness, no hoarseness, and no hearing loss."
+    ],
+    R_SCA: [
+      "A 56-year-old woman develops sudden right limb and gait ataxia with dysarthria. She has gaze-evoked nystagmus and rightward saccadic hypermetria. Hearing and facial strength are normal and there is no dysphagia.",
+      "A 62-year-old man has abrupt right arm dysmetria and intention tremor with truncal ataxia. Exam shows ocular dysmetria and impaired smooth pursuit to the right. Facial sensation and strength are intact.",
+      "A 58-year-old woman presents with acute right-sided cerebellar signs and marked gait instability. She has no facial weakness, no hoarseness, and no hearing loss."
+    ],
 
-  L_PCA: [
-    "A 66-year-old man suddenly develops loss of vision on the right side of space in both eyes. He keeps turning his head to the right and is surprised when people approach from that side.",
-    "A 58-year-old woman has abrupt right-sided numbness affecting the face, arm, and leg without clear weakness. Over the next week she develops severe burning pain on the right with light touch.",
-    "A 71-year-old man develops sudden loss of vision on the right side of space in both eyes. He also cannot form new memories and repeatedly asks why he is in the hospital."
-  ],
+    L_AICA: [
+      "A 61-year-old man develops sudden vertigo and vomiting with left-sided tinnitus and hearing loss. Exam shows left facial weakness with decreased corneal reflex and left limb ataxia.",
+      "A 52-year-old woman presents with abrupt vertigo and horizontal nystagmus. She has left facial paralysis, reduced taste on the left anterior tongue, and new left hearing loss. Gait is markedly ataxic.",
+      "A 66-year-old man has acute vertigo with new left hearing loss and left facial numbness. He has decreased pain/temperature on the left face with decreased pain/temperature on the right body and left-sided limb ataxia."
+    ],
+    R_AICA: [
+      "A 61-year-old man develops sudden vertigo and vomiting with right-sided tinnitus and hearing loss. Exam shows right facial weakness with decreased corneal reflex and right limb ataxia.",
+      "A 52-year-old woman presents with abrupt vertigo and horizontal nystagmus. She has right facial paralysis, reduced taste on the right anterior tongue, and new right hearing loss. Gait is markedly ataxic.",
+      "A 65-year-old man has acute vertigo with new right hearing loss and right facial numbness. He has decreased pain/temperature on the right face with decreased pain/temperature on the left body and right-sided limb ataxia."
+    ],
 
-  R_PCA: [
-    "A 64-year-old woman suddenly develops loss of vision on the left side of space in both eyes. She startles when people appear from her left and keeps scanning to that side.",
-    "A 60-year-old man has abrupt loss of vision on the left side of space in both eyes. He recognizes objects but cannot recognize familiar faces, including close family members.",
-    "A 69-year-old woman develops sudden left-sided numbness involving the face, arm, and leg without major weakness. Days later she reports constant painful tingling and burning on the left."
-  ],
-
-  L_SCA: [
-    "A 64-year-old man develops sudden left ptosis and a “down-and-out” left eye with a dilated left pupil. He has prominent right limb ataxia and dysmetria but full strength.",
-    "A 57-year-old woman has abrupt left oculomotor palsy (ptosis, impaired adduction/elevation) and a right-sided coarse tremor that worsens with action, plus right limb ataxia. Strength is largely preserved.",
-    "A 71-year-old man has acute left CN III palsy with diplopia and ptosis, plus marked left-sided limb and gait ataxia and dysarthria, without sensory loss."
-  ],
-
-  R_SCA: [
-    "A 64-year-old woman develops sudden right ptosis and a “down-and-out” right eye with a dilated right pupil. She has severe left limb ataxia and dysmetria with intact strength.",
-    "A 55-year-old man has abrupt right oculomotor palsy and a prominent left-sided action tremor with left limb ataxia; speech is slurred but there is no aphasia.",
-    "A 69-year-old woman develops acute right CN III palsy with diplopia and ptosis plus pronounced right-sided gait and limb ataxia, without primary weakness."
-  ],
-
-  L_AICA: [
-    "A 67-year-old man develops sudden vertigo with vomiting and cannot stand without falling to the left. He has new left hearing loss and left facial weakness.",
-    "A 58-year-old woman has abrupt severe vertigo and nystagmus. She reports decreased hearing in the left ear, has numbness of the left face, and has difficulty with balance when walking.",
-    "A 72-year-old man develops sudden vertigo and left-sided ataxia. He has left upper and lower facial weakness, decreased tearing on the left, and new hearing loss in the left ear."
-  ],
-
-  R_AICA: [
-    "A 67-year-old woman develops sudden vertigo with vomiting and cannot stand without falling to the right. She has new right hearing loss and right facial weakness.",
-    "A 56-year-old man has abrupt severe vertigo and nystagmus. He reports decreased hearing in the right ear, has numbness of the right face, and has difficulty with balance when walking.",
-    "A 74-year-old woman develops sudden vertigo and right-sided ataxia. She has right upper and lower facial weakness, decreased tearing on the right, and new hearing loss in the right ear."
-  ],
-
-  L_PICA: [
-    "A 62-year-old man develops sudden vertigo with vomiting and cannot stand without falling to the left. He becomes hoarse, chokes on water, and has decreased pain and temperature on the left face.",
-    "A 55-year-old woman has abrupt vertigo and relentless hiccups. She has difficulty swallowing, her voice is raspy, and she falls toward the left when trying to walk.",
-    "A 73-year-old man develops sudden dizziness and nausea with a left-sided gait and limb ataxia. He has left eyelid droop with a small pupil, and he reports numbness and altered temperature sensation on the left face."
-  ],
-
-  R_PICA: [
-    "A 62-year-old woman develops sudden vertigo with vomiting and cannot stand without falling to the right. She becomes hoarse, chokes on water, and has decreased pain and temperature on the right face.",
-    "A 57-year-old man has abrupt vertigo and persistent hiccups. He has difficulty swallowing, his voice becomes gravelly, and he falls toward the right when attempting to walk.",
-    "A 74-year-old woman develops sudden dizziness and nausea with right-sided gait and limb ataxia. She has right eyelid droop with a small pupil, and she reports numbness and altered temperature sensation on the right face."
-  ]
-  // (Anterior spinal artery intentionally omitted)
-};
+    L_PICA: [
+      "A 49-year-old man has abrupt vertigo with hoarseness and dysphagia. Exam shows loss of pain/temperature on the left face with loss on the right body, left Horner syndrome, and left limb ataxia.",
+      "A 73-year-old woman develops sudden nausea, vomiting, and gait instability with severe hiccups. She is hoarse and has dysphagia. Exam shows left Horner syndrome with crossed pain/temperature deficits (left face, right body).",
+      "A 58-year-old man presents with acute vertigo and difficulty swallowing. He has hoarseness, left facial pain/temperature loss, right body pain/temperature loss, and left miosis/ptosis."
+    ],
+    R_PICA: [
+      "A 51-year-old woman presents with acute vertigo, dysphagia, and hoarseness. Exam shows loss of pain/temperature on the right face with loss on the left body, right Horner syndrome, and right limb ataxia.",
+      "A 65-year-old man develops sudden nausea and vomiting with gait instability and severe hiccups. He is hoarse and has dysphagia. Exam shows right Horner syndrome with crossed pain/temperature deficits (right face, left body).",
+      "A 62-year-old woman has abrupt vertigo with dysphagia and hoarseness. She has right facial pain/temperature loss, left body pain/temperature loss, and right miosis/ptosis."
+    ],
+    // (Anterior spinal artery intentionally omitted)
+  };
 
     // Only include territories that have a corresponding distal pellet on the maze
   const vesselKeys = Array.from(new Set(pellets.map(p=>p.key)));
@@ -1243,7 +1164,6 @@ const btnSettings = document.getElementById("btnSettings");
   const toggleEnemies = document.getElementById("toggleEnemies");
   const modeCases = document.getElementById("modeCases");
   const modeVessels = document.getElementById("modeVessels");
-  const btnResetProgress = document.getElementById("btnResetProgress");
 
   // Shop UI
   const shopBackdrop = document.getElementById("shopBackdrop");
@@ -1252,10 +1172,6 @@ const btnSettings = document.getElementById("btnSettings");
   const shopAmmoEl = document.getElementById("shopAmmo");
   const buyBlasterBtn = document.getElementById("buyBlaster");
   const buyHeartBtn = document.getElementById("buyHeart");
-  const buyBoosterBtn = document.getElementById("buyBooster");
-  const buyArmorBtn = document.getElementById("buyArmor");
-  const buyPlasmaBtn = document.getElementById("buyPlasma");
-  const buyChromeBtn = document.getElementById("buyChrome");
   const shopMsgEl = document.getElementById("shopMsg");
 
   const setShopMsg = (msg, kind="")=>{
@@ -1304,7 +1220,6 @@ const btnSettings = document.getElementById("btnSettings");
   const openShop = ()=>{
     if (!shopBackdrop) return;
     shopBackdrop.classList.remove("hidden");
-    playSfx("shop");
     setShopMsg("");
     if (typeof refreshShopHUD === "function") refreshShopHUD();
   };
@@ -1323,12 +1238,6 @@ const btnSettings = document.getElementById("btnSettings");
 
   btnCloseSettings?.addEventListener("click", closeSettings);
   settingsBackdrop?.addEventListener("click", (e)=>{ if (e.target === settingsBackdrop) closeSettings(); });
-
-  btnResetProgress?.addEventListener("click", ()=>{
-    const ok = confirm("Reset permanent upgrades and progress? This cannot be undone.");
-    if (!ok) return;
-    if (typeof resetProgress === "function") resetProgress();
-  });
   window.addEventListener("keydown", (e)=>{
     if (e.key !== "Escape") return;
     e.preventDefault();
@@ -1369,11 +1278,6 @@ const btnSettings = document.getElementById("btnSettings");
 
   buyBlasterBtn?.addEventListener("click", ()=>{ if (typeof buyBlasterPack === "function") buyBlasterPack(); });
   buyHeartBtn?.addEventListener("click", ()=>{ if (typeof buyHeart === "function") buyHeart(); });
-
-  buyBoosterBtn?.addEventListener("click", ()=>{ if (typeof buyBooster === "function") buyBooster(); });
-  buyArmorBtn?.addEventListener("click", ()=>{ if (typeof buyArmor === "function") buyArmor(); });
-  buyPlasmaBtn?.addEventListener("click", ()=>{ if (typeof buyPlasma === "function") buyPlasma(); });
-  buyChromeBtn?.addEventListener("click", ()=>{ if (typeof buyChromeHull === "function") buyChromeHull(); });
 
   const ctx = canvas.getContext("2d", { alpha: false });
 const fitCanvasCSS = () => {
@@ -1423,13 +1327,8 @@ function drawShip(x,y,dir,phase=0.0){
   ctx.lineTo(-r*0.55, 0);
   ctx.lineTo(-r*0.85, r*0.65);
   ctx.closePath();
-  ctx.fillStyle = chromeHull ? "#d8dde7" : "#a7d9ff";
+  ctx.fillStyle = "#a7d9ff";
   ctx.fill();
-  if (chromeHull){
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = "rgba(255,255,255,0.65)";
-    ctx.stroke();
-  }
 
   // cockpit
   ctx.beginPath();
@@ -1643,22 +1542,13 @@ function drawShipWrapped(x,y,dir,phase){
   ctx.font = '16px "Orbitron", "Share Tech Mono", ui-monospace, monospace';
   ctx.fillStyle = "#e9fbff";
   ctx.fillText("💊 " + String(cash), 22, 44);
-  // ammo HUD (under currency). Always shown (0 is still informative).
-  ctx.shadowColor = "rgba(0, 255, 210, 0.90)";
-  ctx.shadowBlur = 18;
-  ctx.font = '14px "Orbitron", "Share Tech Mono", ui-monospace, monospace';
-  ctx.fillStyle = "#ddfff7";
-  const ammoLabel = unlimitedAmmo ? "∞" : String(ammo);
-  ctx.fillText("🔫 " + ammoLabel, 22, 66);
-
-
-  // armor HUD (under ammo)
-  if (armor > 0){
-    ctx.shadowColor = "rgba(160, 210, 255, 0.85)";
-    ctx.shadowBlur = 14;
+  // ammo HUD (under currency). Hidden entirely at 0.
+  if (ammo > 0){
+    ctx.shadowColor = "rgba(0, 255, 210, 0.90)";
+    ctx.shadowBlur = 18;
     ctx.font = '14px "Orbitron", "Share Tech Mono", ui-monospace, monospace';
-    ctx.fillStyle = "#eef9ff";
-    ctx.fillText("🛡️ " + String(armor), 22, 88);
+    ctx.fillStyle = "#ddfff7";
+    ctx.fillText("🔫 " + String(ammo), 22, 66);
   }
   // score HUD (top-right, inside the playfield)
   ctx.textAlign = "right";
@@ -1976,28 +1866,7 @@ function drawShipWrapped(x,y,dir,phase){
     for (const e of enemies){
       if (!e.alive) continue;
       if (dist2Wrap(player.x, player.y, e.x, e.y) <= rr2){
-
-        // Chrome Hull: invincible ramming — destroy the enemy, take no damage.
-        if (chromeHull){
-          e.alive = false;
-          e.respawnAt = now + ENEMY_RESPAWN_BASE + Math.random()*ENEMY_RESPAWN_JITTER;
-          spawnEnemyBurst(e.x, e.y, now);
-          playSfx("explosion");
-          score += 10;
-          flash = {t: 0.7, kind:"good"};
-          invulnUntil = now + 220; // short grace to avoid multi-trigger
-          updateHUD();
-          break;
-        }
-
-        // Shield Armor: consume an armor charge instead of a life.
-        const usedArmor = (armor > 0);
-        if (usedArmor){
-          armor = Math.max(0, armor - 1);
-        } else {
-          lives = Math.max(0, lives - 1);
-        }
-
+        lives = Math.max(0, lives - 1);
         playSfx("hit");
         flash = {t: 1.0, kind:"bad"};
         invulnUntil = now + 1100;
@@ -2008,7 +1877,7 @@ function drawShipWrapped(x,y,dir,phase){
           ee.respawnAt = now + ENEMY_HIT_RESPAWN_BASE + Math.random()*ENEMY_HIT_RESPAWN_JITTER;
         }
 
-        if (!usedArmor && lives <= 0){
+        if (lives <= 0){
           setGameOver(true);
         } else {
           locked = true;
@@ -2189,7 +2058,6 @@ function drawShipWrapped(x,y,dir,phase){
   function collectLootAtIndex(i){
     const it = loot[i];
     cash += (it?.val || 1);
-    playSfx("get");
     loot.splice(i, 1);
     ensureLootCount();
     if (typeof refreshShopHUD === "function") refreshShopHUD();
@@ -2312,8 +2180,7 @@ function dropGrenade(){
 
 function fireShot(){
   if (locked || gameOver) return;
-  if (!hasBlaster) return;
-  if (!unlimitedAmmo && ammo <= 0) return;
+  if (!hasBlaster || ammo <= 0) return;
 
   const now = performance.now();
   if (now - lastShotMs < 120) return;
@@ -2334,7 +2201,7 @@ function fireShot(){
 // if immediately blocked, don't fire
   if (!canMove(dir, sx, sy, SHOT_R+1)) return;
 
-  if (!unlimitedAmmo){ ammo = Math.max(0, ammo - 1); }
+  ammo = Math.max(0, ammo - 1);
   if (typeof refreshShopHUD === "function") refreshShopHUD();
 
   playSfx("laser");
@@ -2472,7 +2339,9 @@ if (!canMove(s.dir, nx, ny, SHOT_R)){
     for (let j = loot.length - 1; j >= 0; j--){
       const c = loot[j];
       if (dist2Plain(s.x,s.y,c.x,c.y) <= (SHOT_R+7)*(SHOT_R+7)){
-        collectLootAtIndex(j);
+        loot.splice(j,1);
+        cash += 1;
+        if (typeof refreshShopHUD === "function") refreshShopHUD();
       }
     }
 
@@ -2537,70 +2406,7 @@ if (!canMove(s.dir, nx, ny, SHOT_R)){
   let cash = 0; // currency collected from small pills
   let hasBlaster = true;
   let ammo = 10;
-  // Upgrades (shop)
-  const ARMOR_MAX = 3;
-  let speedBoost = false;      // Speed Booster
-  let armor = 0;              // Shield Armor charges
-  let unlimitedAmmo = false;  // Plasma Cannon
-let chromeHull = false;     // Invincibility
-let gameOver = false;
-
-// =============================
-// Permanent progress (saved upgrades)
-// =============================
-const PROGRESS_KEY = "circleOfThrillis_progress_v1";
-const defaultProgress = ()=>({
-  upgrades: {
-    speedBooster: false,
-    armorLevel: 0,
-    plasmaCannon: false,
-    chromeHull: false
-  }
-});
-
-function loadProgress(){
-  try{
-    const raw = localStorage.getItem(PROGRESS_KEY);
-    if (!raw) return defaultProgress();
-    const p = JSON.parse(raw);
-    const u = (p && typeof p === "object" && p.upgrades && typeof p.upgrades === "object") ? p.upgrades : {};
-    const armorLevel = Math.max(0, Math.min(ARMOR_MAX, Number(u.armorLevel) || 0));
-    return {
-      upgrades: {
-        speedBooster: !!u.speedBooster,
-        armorLevel,
-        plasmaCannon: !!u.plasmaCannon,
-        chromeHull: !!u.chromeHull
-      }
-    };
-  } catch(e){
-    return defaultProgress();
-  }
-}
-
-function saveProgress(){
-  try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress)); } catch(e){}
-}
-
-function applyProgressUpgrades(){
-  speedBoost = !!progress.upgrades.speedBooster;
-  unlimitedAmmo = !!progress.upgrades.plasmaCannon;
-  chromeHull = !!progress.upgrades.chromeHull;
-  armor = Math.max(0, Math.min(ARMOR_MAX, Number(progress.upgrades.armorLevel) || 0));
-  if (unlimitedAmmo) hasBlaster = true;
-}
-
-function resetProgress(){
-  progress = defaultProgress();
-  try { localStorage.removeItem(PROGRESS_KEY); } catch(e){}
-  // Apply immediately (no restart required)
-  applyProgressUpgrades();
-  if (typeof syncShopButtons === "function") syncShopButtons();
-  if (typeof refreshShopHUD === "function") refreshShopHUD();
-}
-
-let progress = loadProgress();
-applyProgressUpgrades();
+  let gameOver = false;
   let current = null; // { key, stem }
   let locked = false;
   let flash = {t:0, kind:""};
@@ -2621,49 +2427,8 @@ applyProgressUpgrades();
 
   function refreshShopHUD(){
     if (shopCashEl) shopCashEl.textContent = String(cash);
-    if (shopAmmoEl) shopAmmoEl.textContent = unlimitedAmmo ? "∞" : String(ammo);
-    if (typeof syncShopButtons === "function") syncShopButtons();
+    if (shopAmmoEl) shopAmmoEl.textContent = String(ammo);
   }
-
-  function syncShopButtons(){
-    if (buyBoosterBtn){
-      if (speedBoost){
-        buyBoosterBtn.disabled = true;
-        buyBoosterBtn.textContent = "Owned";
-      } else {
-        buyBoosterBtn.disabled = false;
-        buyBoosterBtn.textContent = "Buy (💊 12)";
-      }
-    }
-    if (buyArmorBtn){
-      if (armor >= ARMOR_MAX){
-        buyArmorBtn.disabled = true;
-        buyArmorBtn.textContent = "Maxed";
-      } else {
-        buyArmorBtn.disabled = false;
-        buyArmorBtn.textContent = "Buy (💊 10)";
-      }
-    }
-    if (buyPlasmaBtn){
-      if (unlimitedAmmo){
-        buyPlasmaBtn.disabled = true;
-        buyPlasmaBtn.textContent = "Installed";
-      } else {
-        buyPlasmaBtn.disabled = false;
-        buyPlasmaBtn.textContent = "Buy (💊 50)";
-      }
-    }
-    if (buyChromeBtn){
-      if (chromeHull){
-        buyChromeBtn.disabled = true;
-        buyChromeBtn.textContent = "Installed";
-      } else {
-        buyChromeBtn.disabled = false;
-        buyChromeBtn.textContent = "Buy (💊 100)";
-      }
-    }
-  }
-
 
   function buyBlasterPack(){
     const cost = 6;
@@ -2672,7 +2437,6 @@ applyProgressUpgrades();
       return;
     }
     cash -= cost;
-    playSfx("buy");
     hasBlaster = true;
     ammo += 15;
     setShopMsg("Blaster loaded (+15).", "good");
@@ -2691,91 +2455,12 @@ applyProgressUpgrades();
       return;
     }
     cash -= cost;
-    playSfx("buy");
     lives += 1;
     setShopMsg("+1 heart.", "good");
     refreshShopHUD();
   }
 
-  
-  function buyBooster(){
-    const cost = 12;
-    if (speedBoost){
-      setShopMsg("Booster already installed.", "bad");
-      return;
-    }
-    if (cash < cost){
-      setShopMsg("Not enough 💊.", "bad");
-      return;
-    }
-    cash -= cost;
-    playSfx("buy");
-    speedBoost = true;
-    progress.upgrades.speedBooster = true;
-    saveProgress();
-    setShopMsg("Booster installed (+25% speed).", "good");
-    refreshShopHUD();
-  }
-
-  function buyArmor(){
-    const cost = 10;
-    if (armor >= ARMOR_MAX){
-      setShopMsg("Armor already maxed.", "bad");
-      return;
-    }
-    if (cash < cost){
-      setShopMsg("Not enough 💊.", "bad");
-      return;
-    }
-    cash -= cost;
-    playSfx("buy");
-    armor = Math.min(ARMOR_MAX, armor + 1);
-    progress.upgrades.armorLevel = Math.max(Number(progress.upgrades.armorLevel)||0, armor);
-    saveProgress();
-    setShopMsg("Armor charged (+1).", "good");
-    refreshShopHUD();
-  }
-
-  function buyPlasma(){
-    const cost = 50;
-    if (unlimitedAmmo){
-      setShopMsg("Plasma Cannon already installed.", "bad");
-      return;
-    }
-    if (cash < cost){
-      setShopMsg("Not enough 💊.", "bad");
-      return;
-    }
-    cash -= cost;
-    playSfx("buy");
-    unlimitedAmmo = true;
-    progress.upgrades.plasmaCannon = true;
-    saveProgress();
-    hasBlaster = true;
-    setShopMsg("Plasma Cannon online (∞ ammo).", "good");
-    refreshShopHUD();
-  }
-
-  function buyChromeHull(){
-    const cost = 100;
-    if (chromeHull){
-      setShopMsg("Chrome Hull already installed.", "bad");
-      return;
-    }
-    if (cash < cost){
-      setShopMsg("Not enough 💊.", "bad");
-      return;
-    }
-    cash -= cost;
-    playSfx("buy");
-    chromeHull = true;
-    progress.upgrades.chromeHull = true;
-    saveProgress();
-    setShopMsg("Chrome Hull engaged (invincible).", "good");
-    refreshShopHUD();
-  }
-
-function setGameOver(on){
+  function setGameOver(on){
     const wasOver = gameOver;
     gameOver = on;
     if (on){
@@ -2795,9 +2480,6 @@ function setGameOver(on){
     cash = 0;
     hasBlaster = true;
     ammo = 10;
-    // Re-apply permanent upgrades
-    applyProgressUpgrades();
-    if (typeof syncShopButtons === "function") syncShopButtons();
     shots.length = 0;
     shopIcon.active = false;
     nextShopSpawnAt = performance.now() + SHOP_SPAWN_MS;
@@ -2930,7 +2612,7 @@ function setGameOver(on){
     updateShopIcon(now);
 
     // movement
-    const speed = 220 * (speedBoost ? 1.25 : 1.0); // px/sec
+    const speed = 220; // px/sec
     // attempt to turn into wanted direction first (feels responsive)
     const dirOrder = [player.want, player.dir].filter((v,i,a)=>a.indexOf(v)===i);
 

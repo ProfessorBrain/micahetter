@@ -50,8 +50,7 @@
   .leftActions{
     margin-top:10px;
     display:flex;
-    width:100%;
-    justify-content:center;
+    justify-content:flex-start;
     align-items:center;
     gap: 8px;
     flex-wrap:nowrap;
@@ -79,7 +78,7 @@
   @media (max-width: 860px){
     .layout{flex-direction:column; align-items:stretch;}
     .leftCol{width:100%;}
-    .leftActions{justify-content:center;}
+    .leftActions{justify-content:flex-start;}
     .rightCol{justify-content:center;}
   }
   #stem{font-family:var(--font-body); font-size:clamp(18px, 2.2vw, 22px); line-height:1.5; margin:0; color:var(--ink);
@@ -346,7 +345,7 @@
   #musicCtl{
     display:none;
     opacity:0.92;
-    margin-left:0;
+    margin-left:2px;
     align-items:center;
     gap:6px;
     flex-wrap:nowrap;
@@ -1135,81 +1134,75 @@ const pellets = [
     ctx.restore();
   }
 
-  // Case stems (territory-localizing)
-const stems = {
-  L_ACA: [
-    "A 62-year-old man has sudden right leg weakness and numbness. He becomes very quiet and slow to respond, gives one- or two-word answers, and has new urinary incontinence.",
-    "A 54-year-old woman develops acute right leg weakness. She cannot start walking even though she can move her legs in bed, and she repeatedly grasps the examiner’s hand and cannot easily release.",
-    "A 71-year-old man has sudden right leg weakness and veers to the right when trying to walk. He seems indifferent to the deficit, initiates very little on his own, and needs repeated prompting to participate."
-  ],
+  // Subtle, non-telegraphy-ish stems (still localize)
+  const stems = {
+    L_ACA: [
+      "A 68-year-old right-handed man suddenly becomes unusually apathetic and struggles to initiate movement. He has marked right leg weakness with only mild right arm weakness; a right grasp reflex is present and he has new urinary urgency.",
+      "A 59-year-old woman develops abrupt right leg-predominant weakness with mild sensory loss. Family notes new abulia and she has urinary incontinence. Face and right arm strength are relatively preserved.",
+      "A 73-year-old man is brought in for sudden gait freezing and right leg buckling. He is slow to respond, has frontal release signs, and develops new urinary incontinence. Right face and arm strength are near normal."
+    ],
+    R_ACA: [
+      "A 71-year-old man suddenly becomes apathetic and slow to speak. He has marked left leg weakness with only mild left arm weakness; a left grasp reflex is present and he has new urinary urgency.",
+      "A 62-year-old woman develops abrupt left leg-predominant weakness with mild sensory loss. Family reports new abulia and she has urinary incontinence. Face and left arm strength are relatively preserved.",
+      "A 67-year-old man has sudden difficulty initiating gait with left leg buckling. He appears indifferent to the deficit and has new urinary incontinence. The left arm and face are minimally affected."
+    ],
 
-  R_ACA: [
-    "A 62-year-old woman has sudden left leg weakness and numbness. She becomes apathetic, responds slowly, initiates little on her own, and develops new urinary incontinence.",
-    "A 48-year-old man develops acute left leg weakness. During tasks with both hands, his left hand grabs objects on its own and interferes with his intended actions, and he cannot stop it promptly.",
-    "A 70-year-old woman has abrupt left leg weakness and falls toward the left. She sits quietly, rarely initiates movement, and appears unconcerned about the deficit despite repeated coaching."
-  ],
+    L_MCA: [
+      "A 66-year-old right-handed woman has sudden right facial droop and right arm weakness. Her speech is nonfluent with impaired repetition and naming, but she can follow simple commands. Right leg weakness is mild.",
+      "A 58-year-old right-handed man develops abrupt right face/arm weakness and a leftward gaze preference. He speaks fluently but the content is nonsensical and he cannot follow commands. He reports bumping into objects on his right.",
+      "A 72-year-old right-handed woman has dense right face/arm weakness with right hemisensory loss. She is mute, cannot follow commands, and cannot repeat. The right leg is less affected."
+    ],
+    R_MCA: [
+      "A 69-year-old woman has acute left face and left arm weakness. She leaves food on the left side of the plate, fails to attend to her left arm, and insists nothing is wrong. Left leg weakness is mild.",
+      "A 61-year-old man develops sudden left arm/face weakness with left visual inattention. He draws only the right half of a clock and keeps turning his head to the right. Speech and comprehension are intact.",
+      "A 74-year-old woman has abrupt left facial droop and left arm weakness with rightward gaze deviation. She denies ownership of her left arm and bumps into objects on the left. Left leg involvement is mild."
+    ],
 
-  L_MCA: [
-    "A 68-year-old man has sudden right facial droop and right arm weakness with right-sided numbness. He struggles to get words out and cannot repeat a simple phrase.",
-    "A 59-year-old woman develops acute right arm weakness and right facial droop. She can speak fluently, but she cannot understand questions and follows commands poorly.",
-    "A 72-year-old man has sudden right-sided weakness and numbness affecting the face and arm more than the leg. He also develops right-sided visual deficits and keeps turning his head to the left."
-  ],
+    L_PCA: [
+      "A 65-year-old right-handed man suddenly begins missing objects in the right visual field. Motor and primary sensation are intact. He notices the deficit and compensates by turning his head.",
+      "A 70-year-old right-handed man presents with acute right homonymous hemianopia. He can write a sentence but cannot read it back. Speech and motor exam are otherwise normal.",
+      "A 57-year-old woman develops abrupt difficulty recognizing familiar objects despite normal visual acuity. She also has a right visual field cut. Strength, language, and primary sensation are intact."
+    ],
+    R_PCA: [
+      "A 62-year-old man suddenly cannot see objects on the left side of his visual field. Motor exam is normal and pupils are symmetric. He repeatedly turns his head left to compensate.",
+      "A 56-year-old woman develops acute left homonymous hemianopia and reports difficulty recognizing faces. Speech and strength are intact.",
+      "A 71-year-old man has sudden left visual field loss and becomes disoriented in familiar places. Motor exam is normal."
+    ],
 
-  R_MCA: [
-    "A 69-year-old woman has acute left face and left arm weakness. She leaves food on the left side of the plate, fails to attend to her left arm, and insists nothing is wrong. Left leg weakness is mild.",
-    "A 61-year-old man develops sudden left facial droop and left arm weakness with left-sided numbness. He ignores people standing on his left and bumps into objects on that side.",
-    "A 74-year-old woman has abrupt left arm weakness and left-sided sensory loss. She cannot copy a simple drawing, cannot dress herself correctly, and denies that her left arm belongs to her."
-  ],
+    L_SCA: [
+      "A 54-year-old man develops sudden left limb and gait ataxia with dysarthria. He has gaze-evoked nystagmus and leftward saccadic hypermetria. Hearing and facial strength are normal and there is no dysphagia.",
+      "A 60-year-old woman has abrupt left arm dysmetria and intention tremor with truncal ataxia. Exam shows ocular dysmetria and impaired smooth pursuit to the left. Facial sensation and strength are intact.",
+      "A 63-year-old man presents with acute left-sided cerebellar signs and severe gait instability. He has no facial weakness, no hoarseness, and no hearing loss."
+    ],
+    R_SCA: [
+      "A 56-year-old woman develops sudden right limb and gait ataxia with dysarthria. She has gaze-evoked nystagmus and rightward saccadic hypermetria. Hearing and facial strength are normal and there is no dysphagia.",
+      "A 62-year-old man has abrupt right arm dysmetria and intention tremor with truncal ataxia. Exam shows ocular dysmetria and impaired smooth pursuit to the right. Facial sensation and strength are intact.",
+      "A 58-year-old woman presents with acute right-sided cerebellar signs and marked gait instability. She has no facial weakness, no hoarseness, and no hearing loss."
+    ],
 
-  L_PCA: [
-    "A 66-year-old man suddenly develops loss of vision on the right side of space in both eyes. He keeps turning his head to the right and is surprised when people approach from that side.",
-    "A 58-year-old woman has abrupt right-sided numbness affecting the face, arm, and leg without clear weakness. Over the next week she develops severe burning pain on the right with light touch.",
-    "A 71-year-old man develops sudden loss of vision on the right side of space in both eyes. He also cannot form new memories and repeatedly asks why he is in the hospital."
-  ],
+    L_AICA: [
+      "A 61-year-old man develops sudden vertigo and vomiting with left-sided tinnitus and hearing loss. Exam shows left facial weakness with decreased corneal reflex and left limb ataxia.",
+      "A 52-year-old woman presents with abrupt vertigo and horizontal nystagmus. She has left facial paralysis, reduced taste on the left anterior tongue, and new left hearing loss. Gait is markedly ataxic.",
+      "A 66-year-old man has acute vertigo with new left hearing loss and left facial numbness. He has decreased pain/temperature on the left face with decreased pain/temperature on the right body and left-sided limb ataxia."
+    ],
+    R_AICA: [
+      "A 61-year-old man develops sudden vertigo and vomiting with right-sided tinnitus and hearing loss. Exam shows right facial weakness with decreased corneal reflex and right limb ataxia.",
+      "A 52-year-old woman presents with abrupt vertigo and horizontal nystagmus. She has right facial paralysis, reduced taste on the right anterior tongue, and new right hearing loss. Gait is markedly ataxic.",
+      "A 65-year-old man has acute vertigo with new right hearing loss and right facial numbness. He has decreased pain/temperature on the right face with decreased pain/temperature on the left body and right-sided limb ataxia."
+    ],
 
-  R_PCA: [
-    "A 64-year-old woman suddenly develops loss of vision on the left side of space in both eyes. She startles when people appear from her left and keeps scanning to that side.",
-    "A 60-year-old man has abrupt loss of vision on the left side of space in both eyes. He recognizes objects but cannot recognize familiar faces, including close family members.",
-    "A 69-year-old woman develops sudden left-sided numbness involving the face, arm, and leg without major weakness. Days later she reports constant painful tingling and burning on the left."
-  ],
-
-  L_SCA: [
-    "A 64-year-old man develops sudden left ptosis and a “down-and-out” left eye with a dilated left pupil. He has prominent right limb ataxia and dysmetria but full strength.",
-    "A 57-year-old woman has abrupt left oculomotor palsy (ptosis, impaired adduction/elevation) and a right-sided coarse tremor that worsens with action, plus right limb ataxia. Strength is largely preserved.",
-    "A 71-year-old man has acute left CN III palsy with diplopia and ptosis, plus marked left-sided limb and gait ataxia and dysarthria, without sensory loss."
-  ],
-
-  R_SCA: [
-    "A 64-year-old woman develops sudden right ptosis and a “down-and-out” right eye with a dilated right pupil. She has severe left limb ataxia and dysmetria with intact strength.",
-    "A 55-year-old man has abrupt right oculomotor palsy and a prominent left-sided action tremor with left limb ataxia; speech is slurred but there is no aphasia.",
-    "A 69-year-old woman develops acute right CN III palsy with diplopia and ptosis plus pronounced right-sided gait and limb ataxia, without primary weakness."
-  ],
-
-  L_AICA: [
-    "A 67-year-old man develops sudden vertigo with vomiting and cannot stand without falling to the left. He has new left hearing loss and left facial weakness.",
-    "A 58-year-old woman has abrupt severe vertigo and nystagmus. She reports decreased hearing in the left ear, has numbness of the left face, and has difficulty with balance when walking.",
-    "A 72-year-old man develops sudden vertigo and left-sided ataxia. He has left upper and lower facial weakness, decreased tearing on the left, and new hearing loss in the left ear."
-  ],
-
-  R_AICA: [
-    "A 67-year-old woman develops sudden vertigo with vomiting and cannot stand without falling to the right. She has new right hearing loss and right facial weakness.",
-    "A 56-year-old man has abrupt severe vertigo and nystagmus. He reports decreased hearing in the right ear, has numbness of the right face, and has difficulty with balance when walking.",
-    "A 74-year-old woman develops sudden vertigo and right-sided ataxia. She has right upper and lower facial weakness, decreased tearing on the right, and new hearing loss in the right ear."
-  ],
-
-  L_PICA: [
-    "A 62-year-old man develops sudden vertigo with vomiting and cannot stand without falling to the left. He becomes hoarse, chokes on water, and has decreased pain and temperature on the left face.",
-    "A 55-year-old woman has abrupt vertigo and relentless hiccups. She has difficulty swallowing, her voice is raspy, and she falls toward the left when trying to walk.",
-    "A 73-year-old man develops sudden dizziness and nausea with a left-sided gait and limb ataxia. He has left eyelid droop with a small pupil, and he reports numbness and altered temperature sensation on the left face."
-  ],
-
-  R_PICA: [
-    "A 62-year-old woman develops sudden vertigo with vomiting and cannot stand without falling to the right. She becomes hoarse, chokes on water, and has decreased pain and temperature on the right face.",
-    "A 57-year-old man has abrupt vertigo and persistent hiccups. He has difficulty swallowing, his voice becomes gravelly, and he falls toward the right when attempting to walk.",
-    "A 74-year-old woman develops sudden dizziness and nausea with right-sided gait and limb ataxia. She has right eyelid droop with a small pupil, and she reports numbness and altered temperature sensation on the right face."
-  ]
-  // (Anterior spinal artery intentionally omitted)
-};
+    L_PICA: [
+      "A 49-year-old man has abrupt vertigo with hoarseness and dysphagia. Exam shows loss of pain/temperature on the left face with loss on the right body, left Horner syndrome, and left limb ataxia.",
+      "A 73-year-old woman develops sudden nausea, vomiting, and gait instability with severe hiccups. She is hoarse and has dysphagia. Exam shows left Horner syndrome with crossed pain/temperature deficits (left face, right body).",
+      "A 58-year-old man presents with acute vertigo and difficulty swallowing. He has hoarseness, left facial pain/temperature loss, right body pain/temperature loss, and left miosis/ptosis."
+    ],
+    R_PICA: [
+      "A 51-year-old woman presents with acute vertigo, dysphagia, and hoarseness. Exam shows loss of pain/temperature on the right face with loss on the left body, right Horner syndrome, and right limb ataxia.",
+      "A 65-year-old man develops sudden nausea and vomiting with gait instability and severe hiccups. He is hoarse and has dysphagia. Exam shows right Horner syndrome with crossed pain/temperature deficits (right face, left body).",
+      "A 62-year-old woman has abrupt vertigo with dysphagia and hoarseness. She has right facial pain/temperature loss, left body pain/temperature loss, and right miosis/ptosis."
+    ],
+    // (Anterior spinal artery intentionally omitted)
+  };
 
     // Only include territories that have a corresponding distal pellet on the maze
   const vesselKeys = Array.from(new Set(pellets.map(p=>p.key)));
@@ -1643,14 +1636,15 @@ function drawShipWrapped(x,y,dir,phase){
   ctx.font = '16px "Orbitron", "Share Tech Mono", ui-monospace, monospace';
   ctx.fillStyle = "#e9fbff";
   ctx.fillText("💊 " + String(cash), 22, 44);
-  // ammo HUD (under currency). Always shown (0 is still informative).
-  ctx.shadowColor = "rgba(0, 255, 210, 0.90)";
-  ctx.shadowBlur = 18;
-  ctx.font = '14px "Orbitron", "Share Tech Mono", ui-monospace, monospace';
-  ctx.fillStyle = "#ddfff7";
-  const ammoLabel = unlimitedAmmo ? "∞" : String(ammo);
-  ctx.fillText("🔫 " + ammoLabel, 22, 66);
-
+  // ammo HUD (under currency). Hidden entirely at 0 unless Plasma Cannon is installed.
+  if (unlimitedAmmo || ammo > 0){
+    ctx.shadowColor = "rgba(0, 255, 210, 0.90)";
+    ctx.shadowBlur = 18;
+    ctx.font = '14px "Orbitron", "Share Tech Mono", ui-monospace, monospace';
+    ctx.fillStyle = "#ddfff7";
+    const ammoLabel = unlimitedAmmo ? "∞" : String(ammo);
+    ctx.fillText("🔫 " + ammoLabel, 22, 66);
+  }
 
   // armor HUD (under ammo)
   if (armor > 0){
