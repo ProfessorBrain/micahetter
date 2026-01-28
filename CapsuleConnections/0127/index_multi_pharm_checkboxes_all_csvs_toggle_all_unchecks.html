@@ -192,10 +192,6 @@ body{
 .dataset-grid .setting-row{
   font-weight:700;
   gap:10px;
-  min-height:44px; /* keep rows evenly spaced even when labels wrap */
-}
-.dataset-grid .setting-row label{
-  line-height:1.15;
 }
 @media (max-width:420px){
   .dataset-grid{ grid-template-columns:1fr; }
@@ -648,6 +644,7 @@ const DATASETS = [
   { key:"immunotherapy",              label:"Immunotherapy",              csv:"./immunotherapy-pharm.csv" },
   { key:"infectious_disease",         label:"Infectious Disease",         csv:"./infectious-disease-pharm.csv" },
   { key:"neurology",                  label:"Neurology",                  csv:"./neurology-pharm.csv" },
+  { key:"neuropharm_puzzles",         label:"Neuropharm puzzles",         csv:"./neuropharm-puzzles.csv" },
   { key:"oncology",                   label:"Oncology",                   csv:"./oncology-pharm.csv" },
   { key:"pediatrics",                 label:"Pediatrics",                 csv:"./pediatrics-pharm.csv" },
   { key:"psychiatry",                 label:"Psychiatry",                 csv:"./psychiatry-pharm.csv" },
@@ -904,21 +901,6 @@ function initBottleState(){
     // no default text like "Empty bottle"; keep status hidden until locked
     statusEl.textContent = "";
   });
-}
-
-function clearBoardUI(){
-  // Clear the board when no puzzle is active (e.g., no domains selected)
-  PUZZLE = null;
-  selectedPill = null;
-  dragSourcePill = null;
-  resetHintState();
-  initBottleState();
-  if (pillGridEl) pillGridEl.innerHTML = "";
-  if (hintBtn) hintBtn.disabled = true;
-  if (shuffleBtn) shuffleBtn.disabled = true;
-  if (resetBtn) resetBtn.disabled = true;
-  updatePuzzleMeta();
-  renderFooter();
 }
 
 function updateBottleStatus(idx){
@@ -1811,7 +1793,7 @@ async function loadSelectedDatasets({silent=false} = {}){
     HISTORY = []; historyIndex = -1;
     PUZZLE = null;
     PUZZLES = [];
-    clearBoardUI();
+    renderPuzzle();
     updatePuzzleMeta();
     if(!silent) showToast("No domains selected.", "warn");
     return;

@@ -173,33 +173,6 @@ body{
   line-height:1.4;
   color:var(--muted);
 }
-
-.setting-section-title{
-  margin-top:14px;
-  margin-bottom:6px;
-  font-size:11px;
-  text-transform:uppercase;
-  letter-spacing:.10em;
-  font-weight:900;
-  color:var(--muted-soft);
-}
-.dataset-grid{
-  display:grid;
-  grid-template-columns:repeat(2, minmax(0, 1fr));
-  gap:8px 10px;
-  margin-top:8px;
-}
-.dataset-grid .setting-row{
-  font-weight:700;
-  gap:10px;
-  min-height:44px; /* keep rows evenly spaced even when labels wrap */
-}
-.dataset-grid .setting-row label{
-  line-height:1.15;
-}
-@media (max-width:420px){
-  .dataset-grid{ grid-template-columns:1fr; }
-}
 .puzzle-nav-label{
   min-width:190px;
   text-align:center;
@@ -604,6 +577,8 @@ footer{
   
 <div class="picker-area">
   <div class="puzzle-row" id="puzzleNav">
+    <label for="domainSelect">Pharm</label>
+  <select id="domainSelect" title="Choose pharmacology domain"></select>
 
   <button class="puzzle-nav-btn" id="pzNew" title="Generate a new puzzle">New Puzzle</button>
 
@@ -629,41 +604,36 @@ footer{
       <button class="modal-close" id="settingsCloseBtn" aria-label="Close settings">✕</button>
     </div>
     <div class="modal-body">
-<div class="setting-section-title">Pharm domains</div>
-      <div id="datasetCheckboxList" class="dataset-grid"></div>
+      <label class="setting-row" for="step1OnlyCheckbox">
+        <input type="checkbox" id="step1OnlyCheckbox"/>
+        <span>STEP 1 Content Only</span>
+      </label>
 </div>
   </div>
 </div>
 
 <script>
 const DATASETS = [
-  { key:"anesthesia",                 label:"Anesthesia",                 csv:"./anesthesia-pharm.csv" },
-  { key:"antibiotics",                label:"Antibiotics",                csv:"./antibiotics-pharm.csv" },
-  { key:"cardiovascular",             label:"Cardiovascular",             csv:"./cardiovascular-pharm.csv" },
-  { key:"dermatologic",               label:"Dermatologic",               csv:"./dermatologic-pharm.csv" },
-  { key:"emergency_toxicology",       label:"Emergency / Toxicology",     csv:"./emergency-toxicology-pharm.csv" },
-  { key:"endocrinology",              label:"Endocrinology",              csv:"./endocrinology-pharm.csv" },
-  { key:"gastrointestinal",           label:"Gastrointestinal",           csv:"./gastrointestinal-pharm.csv" },
-  { key:"hematology_anticoagulation", label:"Hematology / Anticoagulation",csv:"./hematology-anticoagulation-pharm.csv" },
-  { key:"immunotherapy",              label:"Immunotherapy",              csv:"./immunotherapy-pharm.csv" },
-  { key:"infectious_disease",         label:"Infectious Disease",         csv:"./infectious-disease-pharm.csv" },
-  { key:"neurology",                  label:"Neurology",                  csv:"./neurology-pharm.csv" },
-  { key:"oncology",                   label:"Oncology",                   csv:"./oncology-pharm.csv" },
-  { key:"pediatrics",                 label:"Pediatrics",                 csv:"./pediatrics-pharm.csv" },
-  { key:"psychiatry",                 label:"Psychiatry",                 csv:"./psychiatry-pharm.csv" },
-  { key:"pulmonology",                label:"Pulmonology",                csv:"./pulmonology-pharm.csv" },
-  { key:"renal",                      label:"Renal",                      csv:"./renal-pharm.csv" },
-  { key:"reproductive",               label:"Reproductive",               csv:"./reproductive-pharm.csv" },
-  { key:"rheumatology",               label:"Rheumatology",               csv:"./rheumatology-pharm.csv" },
+  { key:"neurology",       label:"Neurology",       csv:"./neurology-pharm.csv" },
+  { key:"psychiatry",      label:"Psychiatry",      csv:"./psychiatry-pharm.csv" },
+  { key:"cardiovascular",  label:"Cardiovascular",  csv:"./cardiovascular-pharm.csv" },
+  { key:"pulmonology",     label:"Pulmonology",     csv:"./pulmonology-pharm.csv" },
+  { key:"renal",           label:"Renal",           csv:"./renal-pharm.csv" },
+  { key:"gastrointestinal",label:"Gastrointestinal",csv:"./gastrointestinal-pharm.csv" },
+  { key:"dermatologic",    label:"Dermatologic",    csv:"./dermatologic-pharm.csv" },
+  { key:"rheumatology",    label:"Rheumatology",    csv:"./rheumatology-pharm.csv" },
+  { key:"oncology",        label:"Oncology",        csv:"./oncology-pharm.csv" },
+  { key:"antibiotics",     label:"Antibiotics",     csv:"./antibiotics-pharm.csv" },
 ];
-const LS_DATASETS_KEY = "capsule_connections_datasets_v1";
+const LS_DATASET_KEY = "capsule_connections_dataset";
 
 const toastEl = document.getElementById("toast");
-const datasetCheckboxList = document.getElementById("datasetCheckboxList");
+const domainSelect = document.getElementById("domainSelect");
 const pzNewBtn = document.getElementById("pzNew");
 const settingsBtn = document.getElementById("settingsBtn");
 const settingsOverlay = document.getElementById("settingsOverlay");
 const settingsCloseBtn = document.getElementById("settingsCloseBtn");
+const step1OnlyCheckbox = document.getElementById("step1OnlyCheckbox");
 const puzzleMetaEl = document.getElementById("puzzleMeta"); // (optional/legacy; may be absent)
 
 const footerEl = document.getElementById("footerText");
@@ -783,6 +753,10 @@ function wireSettings(){
     if(e.key === "Escape" && settingsOverlay && settingsOverlay.classList.contains("show")){
       closeSettings();
     }
+  });
+  if(step1OnlyCheckbox) step1OnlyCheckbox.addEventListener("change", ()=>{
+    setStep1Only(!!step1OnlyCheckbox.checked);
+    closeSettings();
   });
 }
 
@@ -904,21 +878,6 @@ function initBottleState(){
     // no default text like "Empty bottle"; keep status hidden until locked
     statusEl.textContent = "";
   });
-}
-
-function clearBoardUI(){
-  // Clear the board when no puzzle is active (e.g., no domains selected)
-  PUZZLE = null;
-  selectedPill = null;
-  dragSourcePill = null;
-  resetHintState();
-  initBottleState();
-  if (pillGridEl) pillGridEl.innerHTML = "";
-  if (hintBtn) hintBtn.disabled = true;
-  if (shuffleBtn) shuffleBtn.disabled = true;
-  if (resetBtn) resetBtn.disabled = true;
-  updatePuzzleMeta();
-  renderFooter();
 }
 
 function updateBottleStatus(idx){
@@ -1479,14 +1438,42 @@ function setupBoardForPuzzle(puzzle){
 let ALL_CATEGORIES_ALL = [];
 let ALL_CATEGORIES = [];
 let RAW_ROWS = [];
+let STEP1_ONLY = false;
+const LS_STEP1_KEY = "capsule_connections_step1_only";
 
 let HISTORY = [];
 let historyIndex = -1;
 
 function applyCategoryPool(){
-  ALL_CATEGORIES = ALL_CATEGORIES_ALL.slice();
+  ALL_CATEGORIES = STEP1_ONLY ? ALL_CATEGORIES_ALL.filter(c => c && c.__step1) : ALL_CATEGORIES_ALL.slice();
 }
 
+function initSettingsFromStorage(){
+  try{
+    const v = localStorage.getItem(LS_STEP1_KEY);
+    STEP1_ONLY = (v === "1" || v === "true");
+  }catch(e){
+    STEP1_ONLY = false;
+  }
+  const cb = document.getElementById("step1OnlyCheckbox");
+  if(cb) cb.checked = STEP1_ONLY;
+}
+
+function setStep1Only(val){
+  STEP1_ONLY = !!val;
+  try{ localStorage.setItem(LS_STEP1_KEY, STEP1_ONLY ? "1" : "0"); }catch(e){}
+  applyCategoryPool();
+  HISTORY = []; historyIndex = -1;
+
+  // If CSV hasn't loaded yet, just store the preference.
+  if(ALL_CATEGORIES_ALL.length === 0) return;
+
+  if(ALL_CATEGORIES.length < 4){
+    showToast(STEP1_ONLY ? "Not enough STEP1 rows to build a puzzle." : "Not enough valid rows to build a puzzle.", "err");
+    return;
+  }
+  makeAndLoadNewPuzzle();
+}
 
 function shuffleArray(arr){
   for(let i = arr.length - 1; i > 0; i--){
@@ -1614,12 +1601,6 @@ function goNextPuzzle(){
 }
 
 function makeAndLoadNewPuzzle(){
-  const activeKeys = resolveSelectedDatasetKeys(CURRENT_SELECTION);
-  if(activeKeys.length === 0){
-    showToast("No domains selected. Open ⚙️ and choose at least one.", "warn");
-    return;
-  }
-
   const p = generateNewPuzzle();
   if(!p){
     showToast("Not enough valid rows in CSV to build a puzzle.", "err");
@@ -1664,204 +1645,94 @@ if (pzNewBtn) pzNewBtn.addEventListener("click", ()=>{
 
 
 
-// --- dataset (multi-select) selection ---
+// --- dataset (domain) selection ---
 function getDatasetByKey(key){
   return DATASETS.find(d => d.key === key) || DATASETS[0];
 }
 
-function normalizeSelection(sel){
-  const all = !!(sel && sel.all);
-  let keys = Array.isArray(sel && sel.keys) ? sel.keys.slice() : [];
-  keys = keys.filter(k => DATASETS.some(d => d.key === k));
-
-  if(all){
-    return { all:true, keys:[] };
-  }
-
-  return { all:false, keys };
-}
-
-function getStoredDatasetSelection(){
+function getStoredDatasetKey(){
   try{
-    const raw = localStorage.getItem(LS_DATASETS_KEY);
-    if(raw){
-      return normalizeSelection(JSON.parse(raw));
-    }
+    const k = (localStorage.getItem(LS_DATASET_KEY) || "").trim();
+    if(k && DATASETS.some(d => d.key === k)) return k;
   }catch(e){}
-  return { all:true, keys:[] };
+  return DATASETS[0].key;
 }
 
-let CURRENT_SELECTION = getStoredDatasetSelection();
+let CURRENT_DATASET_KEY = getStoredDatasetKey();
+let CURRENT_DATASET = getDatasetByKey(CURRENT_DATASET_KEY);
 let _loadToken = 0;
 
-function storeSelection(sel){
-  CURRENT_SELECTION = normalizeSelection(sel);
-  try{ localStorage.setItem(LS_DATASETS_KEY, JSON.stringify(CURRENT_SELECTION)); }catch(e){}
-}
-
-function resolveSelectedDatasetKeys(sel = CURRENT_SELECTION){
-  if(sel && sel.all) return DATASETS.map(d => d.key);
-  return (sel && Array.isArray(sel.keys) ? sel.keys : []).filter(k => DATASETS.some(d => d.key === k));
-}
-
-function buildDatasetCheckboxes(){
-  if(!datasetCheckboxList) return;
-
-  datasetCheckboxList.innerHTML = "";
-
-  const makeRow = ({id, label, key=null})=>{
-    const wrap = document.createElement("label");
-    wrap.className = "setting-row";
-    wrap.setAttribute("for", id);
-
-    const input = document.createElement("input");
-    input.type = "checkbox";
-    input.id = id;
-    if(key) input.dataset.key = key;
-
-    const span = document.createElement("span");
-    span.textContent = label;
-
-    wrap.appendChild(input);
-    wrap.appendChild(span);
-    return {wrap, input};
-  };
-
-  const allRow = makeRow({id:"ds_all", label:"ALL"});
-  datasetCheckboxList.appendChild(allRow.wrap);
-
-  const rows = DATASETS.map(d=>{
-    const r = makeRow({id:"ds_" + d.key, label:d.label, key:d.key});
-    datasetCheckboxList.appendChild(r.wrap);
-    return r;
+function populateDatasetSelect(){
+  if(!domainSelect) return;
+  domainSelect.innerHTML = "";
+  DATASETS.forEach(d=>{
+    const opt = document.createElement("option");
+    opt.value = d.key;
+    opt.textContent = d.label;
+    domainSelect.appendChild(opt);
   });
-
-  function syncUIFromSelection(){
-    const sel = normalizeSelection(CURRENT_SELECTION);
-    const keys = resolveSelectedDatasetKeys(sel);
-    allRow.input.checked = !!sel.all || keys.length === DATASETS.length;
-    rows.forEach(r=>{
-      const k = r.input.dataset.key;
-      r.input.checked = keys.includes(k);
-    });
-  }
-
-  function getCheckedKeysFromUI(){
-    return rows.filter(r => r.input.checked).map(r => r.input.dataset.key);
-  }
-
-  function applyChange(origin){
-    if(origin === "all"){
-      if(allRow.input.checked){
-        // ALL toggled on -> include everything
-        storeSelection({all:true, keys:[]});
-        syncUIFromSelection();
-        loadSelectedDatasets();
-      }else{
-        // ALL toggled off while everything was selected -> uncheck everything
-        rows.forEach(r=>{ r.input.checked = false; });
-        storeSelection({all:false, keys:[]});
-        syncUIFromSelection();
-        loadSelectedDatasets();
-      }
-      return;
-    }
-
-    const keys = getCheckedKeysFromUI();
-
-    if(keys.length === DATASETS.length){
-      storeSelection({all:true, keys:[]});
-    }else{
-      storeSelection({all:false, keys});
-    }
-
-    syncUIFromSelection();
-    loadSelectedDatasets();
-  }
-
-  allRow.input.addEventListener("change", ()=>applyChange("all"));
-  rows.forEach(r=> r.input.addEventListener("change", ()=>applyChange("individual")));
-
-  syncUIFromSelection();
+  domainSelect.value = CURRENT_DATASET_KEY;
 }
 
-async function fetchCategoriesForDatasetKey(key){
+function setDatasetKey(key){
   const d = getDatasetByKey(key);
-  const res = await fetch(d.csv, {cache:"no-store"});
-  if(!res.ok) throw new Error("HTTP " + res.status);
-  const text = await res.text();
-  const rows = parseCSV(text);
-  const cats = buildCategoriesFromRows(rows).map(c => ({
-    ...c,
-    __datasetKey: d.key,
-    __datasetLabel: d.label,
-    __sourceCsv: d.csv
-  }));
-  return { dataset:d, categories:cats };
+  CURRENT_DATASET_KEY = d.key;
+  CURRENT_DATASET = d;
+  try{ localStorage.setItem(LS_DATASET_KEY, CURRENT_DATASET_KEY); }catch(e){}
+  if(domainSelect) domainSelect.value = CURRENT_DATASET_KEY;
 }
 
-async function loadSelectedDatasets({silent=false} = {}){
+async function loadDataset(key, {silent=false} = {}){
+  const d = getDatasetByKey(key);
   const token = ++_loadToken;
-  const sel = normalizeSelection(CURRENT_SELECTION);
-  const keys = resolveSelectedDatasetKeys(sel);
+  setDatasetKey(d.key);
 
-  if(keys.length === 0){
-    ALL_CATEGORIES_ALL = [];
+  if(!silent) showToast("Loading " + d.label + "…", "warn");
+
+  try{
+    const res = await fetch(d.csv, {cache:"no-store"});
+    if(!res.ok) throw new Error("HTTP " + res.status);
+    const text = await res.text();
+    if(token !== _loadToken) return; // ignore out-of-order loads
+    const rows = parseCSV(text);
+
+    RAW_ROWS = rows;
+    ALL_CATEGORIES_ALL = buildCategoriesFromRows(rows);
     applyCategoryPool();
+
+    if(ALL_CATEGORIES_ALL.length < 4){
+      throw new Error("Need at least 4 valid rows (category + 4 items) in " + d.csv);
+    }
+    if(STEP1_ONLY && ALL_CATEGORIES.length < 4){
+      throw new Error("STEP 1 Content Only is enabled, but fewer than 4 rows have STEP1 in column G in " + d.csv);
+    }
+
     HISTORY = []; historyIndex = -1;
-    PUZZLE = null;
-    PUZZLES = [];
-    clearBoardUI();
-    updatePuzzleMeta();
-    if(!silent) showToast("No domains selected.", "warn");
-    return;
+    makeAndLoadNewPuzzle();
+    if(!silent) showToast(d.label + " loaded.", "ok");
+  }catch(err){
+    console.warn("Dataset load failed for", d.csv, err);
+    showToast("Could not load " + d.label + " CSV.", "err");
   }
+}
 
-  if(!silent) showToast("Loading selected domains…", "warn");
-
-  const failures = [];
-  const allCats = [];
-
-  for(const k of keys){
-    try{
-      const out = await fetchCategoriesForDatasetKey(k);
-      if(token !== _loadToken) return;
-      allCats.push(...out.categories);
-    }catch(err){
-      console.warn("Dataset load failed:", k, err);
-      failures.push(getDatasetByKey(k).label);
-    }
-  }
-
-  if(token !== _loadToken) return;
-
-  ALL_CATEGORIES_ALL = allCats;
-  applyCategoryPool();
-  HISTORY = []; historyIndex = -1;
-
-  if(ALL_CATEGORIES_ALL.length < 4){
-    showToast("Could not load enough categories from the selected CSVs.", "err");
-    return;
-  }
-
-  makeAndLoadNewPuzzle();
-
-  if(!silent){
-    if(failures.length){
-      showToast("Loaded, but missing: " + failures.join(", "), "warn");
-    }else{
-      showToast("Domains loaded.", "ok");
-    }
+function wireDatasetSelect(){
+  populateDatasetSelect();
+  if(domainSelect){
+    domainSelect.addEventListener("change", ()=>{
+      loadDataset(domainSelect.value);
+    });
   }
 }
 
 
 // boot
 wireSettings();
-buildDatasetCheckboxes();
+initSettingsFromStorage();
+wireDatasetSelect();
 
-// Load selected domains (default: ALL). Silent on initial load.
-loadSelectedDatasets({silent:true});
+// Load the stored dataset (default: Neurology). Silent on initial load.
+loadDataset(CURRENT_DATASET_KEY, {silent:true});
 
 </script>
 </body>

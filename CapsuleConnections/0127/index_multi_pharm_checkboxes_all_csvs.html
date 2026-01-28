@@ -192,10 +192,6 @@ body{
 .dataset-grid .setting-row{
   font-weight:700;
   gap:10px;
-  min-height:44px; /* keep rows evenly spaced even when labels wrap */
-}
-.dataset-grid .setting-row label{
-  line-height:1.15;
 }
 @media (max-width:420px){
   .dataset-grid{ grid-template-columns:1fr; }
@@ -648,6 +644,7 @@ const DATASETS = [
   { key:"immunotherapy",              label:"Immunotherapy",              csv:"./immunotherapy-pharm.csv" },
   { key:"infectious_disease",         label:"Infectious Disease",         csv:"./infectious-disease-pharm.csv" },
   { key:"neurology",                  label:"Neurology",                  csv:"./neurology-pharm.csv" },
+  { key:"neuropharm_puzzles",         label:"Neuropharm puzzles",         csv:"./neuropharm-puzzles.csv" },
   { key:"oncology",                   label:"Oncology",                   csv:"./oncology-pharm.csv" },
   { key:"pediatrics",                 label:"Pediatrics",                 csv:"./pediatrics-pharm.csv" },
   { key:"psychiatry",                 label:"Psychiatry",                 csv:"./psychiatry-pharm.csv" },
@@ -904,21 +901,6 @@ function initBottleState(){
     // no default text like "Empty bottle"; keep status hidden until locked
     statusEl.textContent = "";
   });
-}
-
-function clearBoardUI(){
-  // Clear the board when no puzzle is active (e.g., no domains selected)
-  PUZZLE = null;
-  selectedPill = null;
-  dragSourcePill = null;
-  resetHintState();
-  initBottleState();
-  if (pillGridEl) pillGridEl.innerHTML = "";
-  if (hintBtn) hintBtn.disabled = true;
-  if (shuffleBtn) shuffleBtn.disabled = true;
-  if (resetBtn) resetBtn.disabled = true;
-  updatePuzzleMeta();
-  renderFooter();
 }
 
 function updateBottleStatus(idx){
@@ -1614,12 +1596,6 @@ function goNextPuzzle(){
 }
 
 function makeAndLoadNewPuzzle(){
-  const activeKeys = resolveSelectedDatasetKeys(CURRENT_SELECTION);
-  if(activeKeys.length === 0){
-    showToast("No domains selected. Open ⚙️ and choose at least one.", "warn");
-    return;
-  }
-
   const p = generateNewPuzzle();
   if(!p){
     showToast("Not enough valid rows in CSV to build a puzzle.", "err");
@@ -1674,7 +1650,16 @@ function normalizeSelection(sel){
   let keys = Array.isArray(sel && sel.keys) ? sel.keys.slice() : [];
   keys = keys.filter(k => DATASETS.some(d => d.key === k));
 
-  if(all){
+  // If ALL is enabled, ignore explicit keys.
+  if(all) keys = [];
+
+  // If keys cover all datasets, treat as ALL.
+  if(!all && keys.length === DATASETS.length){
+    return { all:true, keys:[] };
+  }
+
+  // If nothing selected, default to ALL.
+  if(!all && keys.length === 0){
     return { all:true, keys:[] };
   }
 
@@ -1701,7 +1686,8 @@ function storeSelection(sel){
 
 function resolveSelectedDatasetKeys(sel = CURRENT_SELECTION){
   if(sel && sel.all) return DATASETS.map(d => d.key);
-  return (sel && Array.isArray(sel.keys) ? sel.keys : []).filter(k => DATASETS.some(d => d.key === k));
+  const keys = (sel && sel.keys ? sel.keys : []).filter(k => DATASETS.some(d => d.key === k));
+  return keys.length ? keys : DATASETS.map(d => d.key);
 }
 
 function buildDatasetCheckboxes(){
@@ -1753,21 +1739,28 @@ function buildDatasetCheckboxes(){
   function applyChange(origin){
     if(origin === "all"){
       if(allRow.input.checked){
-        // ALL toggled on -> include everything
         storeSelection({all:true, keys:[]});
         syncUIFromSelection();
         loadSelectedDatasets();
       }else{
-        // ALL toggled off while everything was selected -> uncheck everything
-        rows.forEach(r=>{ r.input.checked = false; });
-        storeSelection({all:false, keys:[]});
+        // Prevent ALL from being turned off without making a selection.
+        allRow.input.checked = true;
+        storeSelection({all:true, keys:[]});
         syncUIFromSelection();
-        loadSelectedDatasets();
+        showToast("Uncheck specific domains to narrow selection.", "warn");
       }
       return;
     }
 
     const keys = getCheckedKeysFromUI();
+
+    if(keys.length === 0){
+      storeSelection({all:true, keys:[]});
+      syncUIFromSelection();
+      showToast("No domains selected — defaulting to ALL.", "warn");
+      loadSelectedDatasets();
+      return;
+    }
 
     if(keys.length === DATASETS.length){
       storeSelection({all:true, keys:[]});
@@ -1804,18 +1797,6 @@ async function loadSelectedDatasets({silent=false} = {}){
   const token = ++_loadToken;
   const sel = normalizeSelection(CURRENT_SELECTION);
   const keys = resolveSelectedDatasetKeys(sel);
-
-  if(keys.length === 0){
-    ALL_CATEGORIES_ALL = [];
-    applyCategoryPool();
-    HISTORY = []; historyIndex = -1;
-    PUZZLE = null;
-    PUZZLES = [];
-    clearBoardUI();
-    updatePuzzleMeta();
-    if(!silent) showToast("No domains selected.", "warn");
-    return;
-  }
 
   if(!silent) showToast("Loading selected domains…", "warn");
 
