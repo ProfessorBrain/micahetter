@@ -1,0 +1,1904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>💊 Capsule Connections</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="shortcut icon" type="image/png" href="favicon.png">
+
+<style>
+:root{
+  --bg:#0f172a;
+  --card:#020617;
+  --accent:#22c55e;
+  --accent-soft:#064e3b;
+  --pill-red:#fb7185;
+  --pill-yellow:#facc15;
+  --pill-blue:#38bdf8;
+  --pill-purple:#a855f7;
+  --muted:#e2e8f0;
+  --muted-soft:#64748b;
+  --bottle-glass:#020617;
+  --bottle-outline:#38bdf8;
+  --bottle-locked:#16a34a;
+  --error:#f97373;
+  --warn:#f59e0b;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background:radial-gradient(circle at top,#1e293b 0,#020617 45%,#000 100%);
+  color:var(--muted);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;
+}
+.wrap{
+  width:min(1150px,98vw);
+  margin:0 auto;
+  padding:18px 12px 18px;
+}
+.top-row{
+  display:flex;
+  align-items:flex-start;
+  justify-content:flex-start;
+  gap:24px;
+  margin-top:8px;
+}
+.logo-bar{
+  display:flex;
+  align-items:flex-start;
+  justify-content:flex-start;
+  flex:0 0 auto;
+}
+.logo-img{
+  height:clamp(80px, 38vh, 360px);
+  width:auto;
+  display:block;
+  max-width:min(320px, 32vw);
+  object-fit:contain;
+}
+.puzzle-row{
+  margin-top:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  flex-wrap:wrap;
+  font-size:13px;
+}
+.puzzle-row label{
+  text-transform:uppercase;
+  font-weight:700;
+  letter-spacing:.08em;
+  font-size:10px;
+  color:var(--muted-soft);
+}
+.puzzle-row select{
+  border-radius:999px;
+  padding:7px 16px;
+  border:1px solid #1f2937;
+  background:#020617;
+  color:var(--muted);
+  font-weight:600;
+  font-size:13px;
+  cursor:pointer;
+}
+
+.puzzle-nav-btn{
+  border-radius:999px;
+  padding:7px 14px;
+  border:1px solid #1f2937;
+  background:#020617;
+  color:var(--muted);
+  font-weight:700;
+  font-size:13px;
+  cursor:pointer;
+}
+.puzzle-nav-btn:hover{ border-color:#334155; }
+.puzzle-nav-btn:active{ transform:translateY(1px); }
+.puzzle-nav-gear{
+  width:34px;
+  height:34px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  border:1px solid #1f2937;
+  background:#020617;
+  color:var(--muted);
+  cursor:pointer;
+  margin-left:10px;
+}
+.puzzle-nav-gear:hover{ border-color:#334155; }
+.puzzle-nav-gear:active{ transform:translateY(1px); }
+.puzzle-nav-gear{ font-size:16px; }
+/* (uses a unicode gear) */
+
+.modal-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+  padding:16px;
+}
+.modal-overlay.show{ display:flex; }
+.modal{
+  width:min(460px, 92vw);
+  border-radius:16px;
+  border:1px solid rgba(148,163,184,.25);
+  background:rgba(2,6,23,.96);
+  box-shadow:0 20px 70px rgba(0,0,0,.55);
+  overflow:hidden;
+}
+.modal-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px 14px;
+  border-bottom:1px solid rgba(148,163,184,.18);
+}
+.modal-title{
+  font-weight:800;
+  letter-spacing:.02em;
+  color:var(--fg);
+}
+.modal-close{
+  width:34px;
+  height:34px;
+  border-radius:999px;
+  border:1px solid rgba(148,163,184,.25);
+  background:#020617;
+  color:var(--muted);
+  cursor:pointer;
+  font-weight:900;
+  line-height:1;
+}
+.modal-close:hover{ border-color:#334155; color:var(--fg); }
+.modal-body{ padding:14px; }
+.setting-row{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  color:var(--fg);
+  font-weight:700;
+}
+.setting-row input{ transform:translateY(1px); }
+.setting-help{
+  margin-top:10px;
+  font-size:12px;
+  line-height:1.4;
+  color:var(--muted);
+}
+
+.setting-section-title{
+  margin-top:14px;
+  margin-bottom:6px;
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.10em;
+  font-weight:900;
+  color:var(--muted-soft);
+}
+.dataset-grid{
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap:8px 10px;
+  margin-top:8px;
+}
+.dataset-grid .setting-row{
+  font-weight:700;
+  gap:10px;
+  min-height:44px; /* keep rows evenly spaced even when labels wrap */
+}
+.dataset-grid .setting-row label{
+  line-height:1.15;
+}
+@media (max-width:420px){
+  .dataset-grid{ grid-template-columns:1fr; }
+}
+.puzzle-nav-label{
+  min-width:190px;
+  text-align:center;
+  font-weight:700;
+  letter-spacing:.02em;
+  color:var(--muted);
+}
+.picker-area{
+  width:100%;
+  margin-top:14px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+.picker-area .puzzle-row{ margin-top:0; }
+.picker-area footer{ margin-top:8px; }
+
+@media (max-width:520px){
+  .puzzle-nav-label{ min-width:150px; font-size:12px; }
+  .puzzle-nav-btn{ padding:7px 12px; }
+}
+#puzzleMeta{
+  font-size:11px;
+  color:var(--muted-soft);
+}
+
+
+/* toast */
+.toast-slot{
+  height:0;
+  margin:0;
+}
+.toast{
+  position:fixed;
+  top:16px;
+  right:16px;
+  z-index:40;
+  padding:8px 14px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:600;
+  border:1px solid transparent;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  pointer-events:none;
+  opacity:0;
+  transform:translateY(-8px);
+  transition:opacity .18s ease-out, transform .18s ease-out;
+}
+.toast.show{
+  opacity:1;
+  transform:translateY(0);
+}
+.toast.ok{
+  background:rgba(34,197,94,.12);
+  border-color:rgba(34,197,94,.55);
+  color:#bbf7d0;
+}
+.toast.warn{
+  background:rgba(245,158,11,.1);
+  border-color:rgba(245,158,11,.55);
+  color:#fed7aa;
+}
+.toast.err{
+  background:rgba(248,113,113,.1);
+  border-color:rgba(248,113,113,.55);
+  color:#fecaca;
+}
+
+/* workspace */
+.workspace{
+  margin-top:0;
+  padding:16px 16px 18px;
+  border-radius:20px;
+  background:radial-gradient(circle at top,#020617 0,#020617 55%,#000 100%);
+  border:1px solid #1f2937;
+  box-shadow:0 22px 55px rgba(15,23,42,.75);
+  flex:1 1 auto;
+  min-width:0;
+}
+
+/* bottles row */
+.bottles-row{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:16px;
+}
+.bottle{
+  width:clamp(130px, 18vw, 180px);
+  max-width:45vw;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  cursor:pointer;
+}
+.bottle-shell{
+  position:relative;
+  width:100%;
+}
+.bottle-neck{
+  width:34%;
+  height:16px;
+  margin:0 auto;
+  border-radius:999px 999px 8px 8px;
+  background:linear-gradient(to right,#0b1120,#020617,#0b1120);
+  border:1px solid #1f2937;
+}
+.bottle-cap-line{
+  width:60%;
+  margin:0 auto;
+  border-bottom:2px solid rgba(148,163,184,.8);
+}
+.bottle-body{
+  margin-top:4px;
+  border-radius:40px 40px 14px 14px;
+  border:2px solid rgba(148,163,184,.45);
+  background:radial-gradient(circle at 30% 0,#0f172a 0,#020617 60%,#000 100%);
+  padding:clamp(8px, 1.2vw, 10px) 8px clamp(14px, 2.2vh, 18px);
+  min-height:clamp(150px, 30vh, 230px);
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  position:relative;
+  overflow:hidden;
+}
+.bottle-body::before{
+  content:"";
+  position:absolute;
+  inset:6px 10px auto auto;
+  width:40%;
+  height:40%;
+  border-radius:999px;
+  background:radial-gradient(circle at 0 0,rgba(148,163,184,.18) 0,transparent 70%);
+  opacity:.85;
+  pointer-events:none;
+}
+.bottle-body-inner{
+  position:relative;
+  display:flex;
+  flex-direction:column-reverse;
+  gap:4px;
+  z-index:1;
+}
+.bottle-status{
+  margin-top:4px;
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--muted-soft);
+}
+.bottle-label{
+  margin-top:2px;
+  font-size:12px;
+  font-weight:700;
+  text-align:center;
+  min-height:16px;
+  color:var(--muted);
+}
+.bottle-locked .bottle-body{
+  border-color:rgba(34,197,94,.75);
+  box-shadow:0 0 0 1px rgba(74,222,128,.25),0 0 22px rgba(22,163,74,.75);
+}
+.bottle-locked .bottle-label{
+  color:#bbf7d0;
+}
+.bottle-locked .bottle-status{
+  color:#86efac;
+}
+
+/* pills */
+.pill-tray{
+  margin-top:20px;
+  padding:12px 10px 12px;
+  border-radius:16px;
+  border:1px dashed rgba(148,163,184,.55);
+  background:radial-gradient(circle at top,#020617 0,#020617 60%,#000 100%);
+}
+.pill-tray-label{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--muted-soft);
+  margin-bottom:8px;
+  text-align:center;
+}
+.pill-grid{
+  display:grid;
+  grid-template-columns:repeat(4, minmax(0, 1fr));
+  gap:clamp(8px, 1.4vw, 10px);
+  justify-items:center;
+}
+.pill{
+  min-width:clamp(98px, 18vw, 140px);
+  max-width:240px;
+  padding:clamp(8px, 1.4vw, 10px) clamp(12px, 2vw, 16px);
+  border-radius:999px;
+  background:
+    linear-gradient(90deg,rgba(15,23,42,.95) 0,rgba(15,23,42,.93) 50%,rgba(15,23,42,.95) 100%),
+    linear-gradient(90deg,var(--pill-red) 0,var(--pill-yellow) 50%,var(--pill-blue) 100%);
+  background-clip:padding-box,border-box;
+  border:2px solid transparent;
+  color:#e5e7eb;
+  font-size:clamp(12px, 1.6vw, 15px);
+  font-weight:800;
+  text-align:center;
+  line-height:1.05;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:clip;
+  box-shadow:0 6px 16px rgba(0,0,0,.75);
+  cursor:pointer;
+  position:relative;
+  user-select:none;
+  transition:transform .09s ease-out, box-shadow .09s ease-out;
+}
+.pill:hover{
+  transform:translateY(-1px);
+  box-shadow:0 10px 24px rgba(0,0,0,.85);
+}
+.pill.pill-wrap{
+  white-space:normal;
+  overflow-wrap:normal; /* only break at natural opportunities (spaces/hyphens) */
+  word-break:normal;
+  hyphens:none;
+}
+
+
+.pill::before{
+  content:"";
+  position:absolute;
+  inset:1px 30% auto 8px;
+  height:40%;
+  border-radius:999px;
+  background:radial-gradient(circle at 0 0,rgba(248,250,252,.24) 0,transparent 70%);
+  opacity:.9;
+  pointer-events:none;
+}
+.pill-selected{
+  box-shadow:0 0 0 2px rgba(59,130,246,.5),0 0 18px rgba(59,130,246,.75);
+}
+.pill-hint{
+  box-shadow:0 0 0 2px rgba(234,179,8,.7),0 0 14px rgba(234,179,8,.9);
+}
+.pill-locked{
+  opacity:.98;
+  cursor:default;
+  box-shadow:0 0 0 2px rgba(34,197,94,.8),0 0 18px rgba(22,163,74,.9);
+}
+.pill-dragging{
+  opacity:.75;
+}
+.bottle-drop-hover .bottle-body{
+  box-shadow:0 0 0 2px rgba(59,130,246,.7),0 0 18px rgba(59,130,246,.85);
+}
+
+/* controls */
+.controls{
+  margin-top:16px;
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:10px;
+}
+.btn{
+  border-radius:999px;
+  padding:10px 18px;
+  border:1px solid rgba(148,163,184,.6);
+  background:rgba(15,23,42,.9);
+  color:var(--muted);
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  cursor:pointer;
+}
+.btn:hover{
+  background:#0b1120;
+}
+.btn:disabled{
+  opacity:.4;
+  cursor:default;
+}
+#hint.btn{
+  border-color:rgba(234,179,8,.8);
+  background:rgba(23,23,23,.95);
+}
+#reset.btn{
+  border-color:rgba(248,113,113,.7);
+}
+#shuffle.btn{
+  border-color:rgba(56,189,248,.7);
+}
+
+/* footer */
+footer{
+  margin-top:14px;
+  text-align:center;
+  font-size:11px;
+  color:var(--muted-soft);
+}
+
+@media (max-width:940px){
+  .pill-grid{ grid-template-columns:repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width:680px){
+  .pill-grid{ grid-template-columns:repeat(2, minmax(0, 1fr)); }
+}
+
+/* Logo handling: hide ONLY on phones / small touch screens */
+@media (max-width:700px), (hover:none) and (pointer:coarse) and (max-height:500px){
+  .logo-bar{ display:none; }
+  .top-row{ justify-content:center; align-items:stretch; }
+}
+
+/* mobile */
+@media (max-width:700px){
+  .wrap{ padding-top:14px; padding-bottom:18px; }
+  .top-row{ flex-direction:column; align-items:stretch; gap:10px; }
+  .workspace{ padding:14px 12px 14px; }
+  .bottles-row{ gap:12px; }
+  /* Keep a 2×2 bottle grid on most phones to reduce scrolling */
+  .bottle{ width:calc(50% - 8px); max-width:none; }
+  .bottle-body{ min-height:clamp(128px, 22vh, 175px); }
+
+  /* Reduce vertical scroll: 3 columns of pills on most phones */
+  .pill-grid{ grid-template-columns:repeat(3, minmax(0, 1fr)); }
+  .pill{ min-width:0; width:100%; max-width:none; }
+
+  /* Make the control row easier to reach without covering content */
+  #puzzleNav{
+    position:sticky;
+    bottom:0;
+    z-index:30;
+    background:rgba(2,6,23,.92);
+    border:1px solid rgba(148,163,184,.18);
+    border-radius:16px;
+    padding:10px 10px calc(10px + env(safe-area-inset-bottom));
+    margin-top:12px;
+    backdrop-filter:blur(10px);
+  }
+  .puzzle-nav-btn{ padding:10px 14px; font-size:13px; }
+  .puzzle-nav-gear{ width:40px; height:40px; font-size:18px; margin-left:6px; }
+
+  /* Center toast for narrow screens */
+  .toast{
+    left:50%;
+    right:auto;
+    top:calc(12px + env(safe-area-inset-top));
+    transform:translateX(-50%) translateY(-8px);
+  }
+  .toast.show{ transform:translateX(-50%) translateY(0); }
+}
+
+@media (max-width:420px){
+  .pill-grid{ grid-template-columns:repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width:360px){
+  /* Very narrow devices: stack bottles if needed */
+  .bottle{ width:100%; max-width:none; }
+}
+
+/* confetti canvas */
+#confetti-canvas{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+  z-index:999;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top-row">
+  <div class="logo-bar">
+    <img src="capsuleconnectionlogo.png" alt="Capsule Connections logo" class="logo-img" />
+  </div>
+
+    <div class="toast-slot">
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </div>
+
+  <div class="workspace">
+    <div class="bottles-row" id="bottlesRow">
+      <div class="bottle" data-bottle-index="0">
+        <div class="bottle-shell">
+          <div class="bottle-neck"></div>
+          <div class="bottle-cap-line"></div>
+          <div class="bottle-body">
+            <div class="bottle-body-inner" data-bottle-pills></div>
+          </div>
+        </div>
+        <div class="bottle-label" data-bottle-label></div>
+        <div class="bottle-status" data-bottle-status>Empty bottle</div>
+      </div>
+      <div class="bottle" data-bottle-index="1">
+        <div class="bottle-shell">
+          <div class="bottle-neck"></div>
+          <div class="bottle-cap-line"></div>
+          <div class="bottle-body">
+            <div class="bottle-body-inner" data-bottle-pills></div>
+          </div>
+        </div>
+        <div class="bottle-label" data-bottle-label></div>
+        <div class="bottle-status" data-bottle-status>Empty bottle</div>
+      </div>
+      <div class="bottle" data-bottle-index="2">
+        <div class="bottle-shell">
+          <div class="bottle-neck"></div>
+          <div class="bottle-cap-line"></div>
+          <div class="bottle-body">
+            <div class="bottle-body-inner" data-bottle-pills></div>
+          </div>
+        </div>
+        <div class="bottle-label" data-bottle-label></div>
+        <div class="bottle-status" data-bottle-status>Empty bottle</div>
+      </div>
+      <div class="bottle" data-bottle-index="3">
+        <div class="bottle-shell">
+          <div class="bottle-neck"></div>
+          <div class="bottle-cap-line"></div>
+          <div class="bottle-body">
+            <div class="bottle-body-inner" data-bottle-pills></div>
+          </div>
+        </div>
+        <div class="bottle-label" data-bottle-label></div>
+        <div class="bottle-status" data-bottle-status>Empty bottle</div>
+      </div>
+    </div>
+
+    <div class="pill-tray" id="pillTray">
+      <div class="pill-grid" id="pillGrid"></div>
+    </div>
+  
+<div class="picker-area">
+  <div class="puzzle-row" id="puzzleNav">
+
+  <button class="puzzle-nav-btn" id="pzNew" title="Generate a new puzzle">New Puzzle</button>
+
+  <button class="puzzle-nav-btn" id="hint" title="Place one pill into the correct bottle">Hint</button>
+
+  <button class="puzzle-nav-gear" id="settingsBtn" title="Settings" aria-label="Settings">⚙</button>
+</div>
+  <footer id="footerText">created by micah etter, md</footer>
+</div>
+
+  </div>
+
+  
+
+  
+  </div>
+</div>
+
+<div id="settingsOverlay" class="modal-overlay" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <div class="modal-header">
+      <div class="modal-title" id="settingsTitle">Settings</div>
+      <button class="modal-close" id="settingsCloseBtn" aria-label="Close settings">✕</button>
+    </div>
+    <div class="modal-body">
+<div class="setting-section-title">Pharm domains</div>
+      <div id="datasetCheckboxList" class="dataset-grid"></div>
+</div>
+  </div>
+</div>
+
+<script>
+const DATASETS = [
+  { key:"anesthesia",                 label:"Anesthesia",                 csv:"./anesthesia-pharm.csv" },
+  { key:"antibiotics",                label:"Antibiotics",                csv:"./antibiotics-pharm.csv" },
+  { key:"cardiovascular",             label:"Cardiovascular",             csv:"./cardiovascular-pharm.csv" },
+  { key:"dermatologic",               label:"Dermatologic",               csv:"./dermatologic-pharm.csv" },
+  { key:"emergency_toxicology",       label:"Emergency / Toxicology",     csv:"./emergency-toxicology-pharm.csv" },
+  { key:"endocrinology",              label:"Endocrinology",              csv:"./endocrinology-pharm.csv" },
+  { key:"gastrointestinal",           label:"Gastrointestinal",           csv:"./gastrointestinal-pharm.csv" },
+  { key:"hematology_anticoagulation", label:"Hematology / Anticoagulation",csv:"./hematology-anticoagulation-pharm.csv" },
+  { key:"immunotherapy",              label:"Immunotherapy",              csv:"./immunotherapy-pharm.csv" },
+  { key:"infectious_disease",         label:"Infectious Disease",         csv:"./infectious-disease-pharm.csv" },
+  { key:"neurology",                  label:"Neurology",                  csv:"./neurology-pharm.csv" },
+  { key:"oncology",                   label:"Oncology",                   csv:"./oncology-pharm.csv" },
+  { key:"pediatrics",                 label:"Pediatrics",                 csv:"./pediatrics-pharm.csv" },
+  { key:"psychiatry",                 label:"Psychiatry",                 csv:"./psychiatry-pharm.csv" },
+  { key:"pulmonology",                label:"Pulmonology",                csv:"./pulmonology-pharm.csv" },
+  { key:"renal",                      label:"Renal",                      csv:"./renal-pharm.csv" },
+  { key:"reproductive",               label:"Reproductive",               csv:"./reproductive-pharm.csv" },
+  { key:"rheumatology",               label:"Rheumatology",               csv:"./rheumatology-pharm.csv" },
+];
+const LS_DATASETS_KEY = "capsule_connections_datasets_v1";
+
+const toastEl = document.getElementById("toast");
+const datasetCheckboxList = document.getElementById("datasetCheckboxList");
+const pzNewBtn = document.getElementById("pzNew");
+const settingsBtn = document.getElementById("settingsBtn");
+const settingsOverlay = document.getElementById("settingsOverlay");
+const settingsCloseBtn = document.getElementById("settingsCloseBtn");
+const puzzleMetaEl = document.getElementById("puzzleMeta"); // (optional/legacy; may be absent)
+
+const footerEl = document.getElementById("footerText");
+const bottlesRowEl = document.getElementById("bottlesRow");
+const pillGridEl = document.getElementById("pillGrid");
+const pillTrayEl = document.getElementById("pillTray");
+const hintBtn = document.getElementById("hint");
+const shuffleBtn = document.getElementById("shuffle");
+const resetBtn = document.getElementById("reset");
+
+const BASE_FOOTER_TEXT = "created by micah etter, md";
+
+// simple CSV parser for this specific file format (no embedded commas)
+function parseCSV(text){
+  const lines = text.trim().split(/\r?\n/);
+  if(lines.length < 2) return [];
+  const headers = lines[0].split(",").map(h => h.trim());
+  const rows = [];
+  for(let i=1;i<lines.length;i++){
+    const line = lines[i].trim();
+    if(!line) continue;
+    const cols = line.split(",");
+    const obj = {};
+    headers.forEach((h, idx)=>{
+      obj[h] = (cols[idx] !== undefined ? cols[idx] : "").trim();
+    });
+    // Keep raw columns so we can reliably reference "column G" (7th column) regardless of header names.
+    obj.__cols = cols.map(c => (c !== undefined ? c : "").trim());
+    obj.__colG = (obj.__cols[6] !== undefined ? obj.__cols[6] : "").trim();
+    rows.push(obj);
+  }
+  return rows;
+}
+
+// convert CSV rows to puzzle objects
+function rowsToPuzzles(rows){
+  const map = new Map();
+  for(const r of rows){
+    const key = (r.date || r.Date || "").trim();
+    const category = (r.category || r.Category || "").trim();
+    if(!key || !category) continue;
+    const items = [
+      r.item1 || r.Item1 || "",
+      r.item2 || r.Item2 || "",
+      r.item3 || r.Item3 || "",
+      r.item4 || r.Item4 || ""
+    ].map(s => (s || "").trim()).filter(Boolean);
+    if(items.length !== 4) continue;
+    let puzzle = map.get(key);
+    if(!puzzle){
+      puzzle = {
+        id:key,
+        label:key,
+        author:(r.author || r.Author || "").trim(),
+        categories:[]
+      };
+      map.set(key, puzzle);
+    }else if(!puzzle.author && (r.author || r.Author)){
+      puzzle.author = (r.author || r.Author || "").trim();
+    }
+    const urls = [
+      r.url1 || r.URL1 || "",
+      r.url2 || r.URL2 || "",
+      r.url3 || r.URL3 || "",
+      r.url4 || r.URL4 || ""
+    ].map(s => (s || "").trim());
+    puzzle.categories.push({
+      name:category,
+      items,
+      color:null,
+      urls
+    });
+  }
+
+  const palette = ["#f97373","#facc15","#38bdf8","#a855f7"];
+  const puzzles = [];
+  for(const p of map.values()){
+    if(p.categories.length < 4) continue;
+    p.categories = p.categories.slice(0,4).map((cat, idx)=>({
+      ...cat,
+      color: palette[idx % palette.length]
+    }));
+    puzzles.push(p);
+  }
+  return puzzles;
+}
+
+// toast helper
+function showToast(msg, kind){
+  toastEl.textContent = msg;
+  toastEl.className = "toast show " + (kind || "");
+  if(kind !== "err"){
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(()=>{ toastEl.className = "toast"; }, 1800);
+  }
+}
+
+// settings modal helpers
+function openSettings(){
+  if(!settingsOverlay) return;
+  settingsOverlay.classList.add("show");
+  settingsOverlay.setAttribute("aria-hidden","false");
+}
+function closeSettings(){
+  if(!settingsOverlay) return;
+  settingsOverlay.classList.remove("show");
+  settingsOverlay.setAttribute("aria-hidden","true");
+}
+
+function wireSettings(){
+  if(settingsBtn) settingsBtn.addEventListener("click", openSettings);
+  if(settingsCloseBtn) settingsCloseBtn.addEventListener("click", closeSettings);
+  if(settingsOverlay) settingsOverlay.addEventListener("click", (e)=>{
+    if(e.target === settingsOverlay) closeSettings();
+  });
+  document.addEventListener("keydown", (e)=>{
+    if(e.key === "Escape" && settingsOverlay && settingsOverlay.classList.contains("show")){
+      closeSettings();
+    }
+  });
+}
+
+// confetti
+function getConfettiCanvas(){
+  let c = document.getElementById("confetti-canvas");
+  if(!c){
+    c = document.createElement("canvas");
+    c.id = "confetti-canvas";
+    document.body.appendChild(c);
+  }
+  const resize = ()=>{
+    c.width = window.innerWidth;
+    c.height = window.innerHeight;
+  };
+  resize();
+  const onResize = ()=>{
+    if(document.body.contains(c)){
+      resize();
+    }else{
+      window.removeEventListener("resize", onResize);
+    }
+  };
+  window.addEventListener("resize", onResize, {passive:true});
+  return c;
+}
+function fireConfetti(durationMs = 1300, count = 200){
+  const canvas = getConfettiCanvas();
+  const ctx = canvas.getContext("2d");
+  const palette = ["#f97373","#facc15","#38bdf8","#a855f7","#22c55e","#eab308"];
+  const w = canvas.width, h = canvas.height;
+  const cx = w / 2, cy = Math.max(120, h * 0.35);
+  const GRAVITY = 0.15, DRAG = 0.985, SPIN = 0.22;
+  const parts = [];
+  for(let i=0;i<count;i++){
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 6 + Math.random() * 7;
+    const vx = Math.cos(angle) * speed;
+    const vy = Math.sin(angle) * speed - 6;
+    const size = 4 + Math.random() * 6;
+    parts.push({
+      x:cx,y:cy,vx,vy,
+      w:size,h:size*0.6,
+      rot:Math.random()*Math.PI*2,
+      vr:(Math.random()-0.5)*SPIN,
+      color:palette[i % palette.length],
+      alpha:1
+    });
+  }
+  let start = performance.now();
+  function frame(now){
+    const t = now - start;
+    ctx.clearRect(0,0,w,h);
+    for(const p of parts){
+      p.vx *= DRAG;
+      p.vy = p.vy * DRAG + GRAVITY;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.rot += p.vr;
+      if(t > durationMs * 0.66){
+        p.alpha = Math.max(0, 1 - (t - durationMs*0.66)/(durationMs*0.34));
+      }
+      ctx.save();
+      ctx.globalAlpha = p.alpha;
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+      ctx.restore();
+    }
+    if(t < durationMs && parts.some(p => p.alpha > 0 && p.y < h + 30)){
+      requestAnimationFrame(frame);
+    }else{
+      if(canvas && canvas.parentNode) canvas.parentNode.removeChild(canvas);
+    }
+  }
+  requestAnimationFrame(frame);
+}
+
+// state
+let PUZZLES = [];
+let PUZZLE = null;
+let currentPuzzleIndex = 0;
+let itemToCategoryIndex = new Map();
+let bottleState = [];
+let selectedPill = null;
+let dragSourcePill = null;
+let hintedItems = new Set();
+let hintCategoryIndex = -1;
+
+function resetHintState(){
+  hintedItems.clear();
+  hintCategoryIndex = -1;
+  const pills = document.querySelectorAll(".pill");
+  pills.forEach(p => p.classList.remove("pill-hint"));
+}
+
+// bottles init
+function initBottleState(){
+  const bottleEls = bottlesRowEl.querySelectorAll(".bottle");
+  bottleState = [];
+  bottleEls.forEach((bottleEl, idx)=>{
+    const pillsEl = bottleEl.querySelector("[data-bottle-pills]");
+    const labelEl = bottleEl.querySelector("[data-bottle-label]");
+    const statusEl = bottleEl.querySelector("[data-bottle-status]");
+    // clear any existing DOM pills when resetting state
+    if (pillsEl) pillsEl.innerHTML = "";
+    bottleState.push({
+      el:bottleEl,
+      pillsEl,
+      labelEl,
+      statusEl,
+      items:[],
+      locked:false,
+      categoryIndex:null
+    });
+    bottleEl.classList.remove("bottle-locked");
+    labelEl.textContent = "";
+    // no default text like "Empty bottle"; keep status hidden until locked
+    statusEl.textContent = "";
+  });
+}
+
+function clearBoardUI(){
+  // Clear the board when no puzzle is active (e.g., no domains selected)
+  PUZZLE = null;
+  selectedPill = null;
+  dragSourcePill = null;
+  resetHintState();
+  initBottleState();
+  if (pillGridEl) pillGridEl.innerHTML = "";
+  if (hintBtn) hintBtn.disabled = true;
+  if (shuffleBtn) shuffleBtn.disabled = true;
+  if (resetBtn) resetBtn.disabled = true;
+  updatePuzzleMeta();
+  renderFooter();
+}
+
+function updateBottleStatus(idx){
+  const b = bottleState[idx];
+  if (!b.statusEl) return;
+  if (b.locked){
+    b.statusEl.textContent = "Locked in";
+    return;
+  }
+  // Hide status text for non-locked bottles (no "empty" or count text)
+  b.statusEl.textContent = "";
+}
+
+function renderFooter(){ footerEl.textContent = BASE_FOOTER_TEXT; }
+
+function lockPillTrayHeight(){
+  if(!pillTrayEl) return;
+  pillTrayEl.style.minHeight = "";
+  const h = pillTrayEl.offsetHeight;
+  if(h>0){ pillTrayEl.style.minHeight = h + "px"; }
+}
+// --- pill text auto-fit (prevents awkward single-letter wrapping) ---
+function getPillMeasureEl(){
+  if(window.__pillMeasureEl && window.__pillMeasureEl.isConnected) return window.__pillMeasureEl;
+  const el = document.createElement("span");
+  el.id = "__pillMeasure";
+  el.style.position = "fixed";
+  el.style.left = "-9999px";
+  el.style.top = "-9999px";
+  el.style.visibility = "hidden";
+  el.style.whiteSpace = "nowrap";
+  el.style.padding = "0";
+  el.style.margin = "0";
+  el.style.border = "0";
+  el.style.pointerEvents = "none";
+  (document.body || document.documentElement).appendChild(el);
+  window.__pillMeasureEl = el;
+  return el;
+}
+
+function measurePillLabelWidth(cs, label, fontPx){
+  const el = getPillMeasureEl();
+  el.style.fontFamily = cs.fontFamily;
+  el.style.fontWeight = cs.fontWeight;
+  el.style.fontStyle = cs.fontStyle;
+  el.style.letterSpacing = cs.letterSpacing;
+  el.style.textTransform = cs.textTransform;
+  el.style.fontSize = fontPx.toFixed(2) + "px";
+  el.textContent = label;
+  return el.getBoundingClientRect().width || 0;
+}
+
+// --- pill text auto-fit (keeps short labels at normal size; shrinks only when needed) ---
+function fitPillText(pill){
+  if(!pill || !pill.isConnected) return;
+
+  // Reset to default single-line pill style
+  pill.classList.remove("pill-wrap");
+  pill.style.fontSize = "";
+
+  const label = (pill.dataset && pill.dataset.item) ? pill.dataset.item : (pill.textContent || "");
+  const hasBreakOpportunities = /[ \-\/]/.test(label);
+
+  const cs = getComputedStyle(pill);
+  const base = parseFloat(cs.fontSize) || 14;
+
+  // Use rendered width (accounts for responsive scaling/constraints)
+  const rectW = (pill.getBoundingClientRect && pill.getBoundingClientRect().width) ? pill.getBoundingClientRect().width : (pill.clientWidth || 0);
+
+  const padL = parseFloat(cs.paddingLeft) || 0;
+  const padR = parseFloat(cs.paddingRight) || 0;
+  const borderL = parseFloat(cs.borderLeftWidth) || 0;
+  const borderR = parseFloat(cs.borderRightWidth) || 0;
+  const buffer = 2;
+
+  const contentW = Math.max(20, rectW - padL - padR - borderL - borderR - buffer);
+
+  // If it already fits, do nothing (avoid shrinking short labels).
+  const baseW = measurePillLabelWidth(cs, label, base);
+  if(baseW <= contentW + 0.5) return;
+
+  const inBottle = !!pill.closest(".bottle-body, .bottle-body-inner");
+
+  // Keep jar text readable: allow only modest shrinking by default.
+  const minAllowed = Math.max(inBottle ? 9 : 10, base * (inBottle ? 0.70 : 0.78));
+
+  // If even the minimum doesn't fit, wrap only when there are natural breakpoints; otherwise clip.
+  if(measurePillLabelWidth(cs, label, minAllowed) > contentW + 0.5){
+    if(hasBreakOpportunities){
+      pill.classList.add("pill-wrap");
+      pill.style.fontSize = ""; // base
+    }else{
+      pill.style.fontSize = minAllowed.toFixed(2) + "px";
+    }
+    return;
+  }
+
+  // Binary search for the largest font size that fits.
+  let lo = minAllowed;
+  let hi = base;
+  let best = minAllowed;
+
+  for(let i=0; i<12; i++){
+    const mid = (lo + hi) / 2;
+    const w = measurePillLabelWidth(cs, label, mid);
+    if(w <= contentW + 0.5){
+      best = mid;
+      lo = mid;
+    }else{
+      hi = mid;
+    }
+  }
+
+  pill.style.fontSize = best.toFixed(2) + "px";
+
+  // If we had to shrink a lot AND the label has natural breakpoints, prefer wrapping for readability.
+  const ratio = best / Math.max(1, base);
+  if(hasBreakOpportunities && ratio < 0.82){
+    pill.classList.add("pill-wrap");
+    pill.style.fontSize = "";
+  }
+}
+
+
+function fitAllPills(){
+  document.querySelectorAll(".pill").forEach(p => fitPillText(p));
+}
+
+let _fitRAF = null;
+function scheduleFitAllPills(){
+  if(_fitRAF) cancelAnimationFrame(_fitRAF);
+  _fitRAF = requestAnimationFrame(()=>{
+    fitAllPills();
+    lockPillTrayHeight();
+    _fitRAF = null;
+  });
+}
+
+window.addEventListener("resize", ()=>scheduleFitAllPills(), {passive:true});
+
+
+// pill helpers
+function createPill(item, index){
+  const pill = document.createElement("button");
+  pill.type = "button";
+  pill.className = "pill";
+  pill.textContent = item;
+  pill.dataset.item = item;
+  pill.dataset.location = "tray";
+  // remember original tray slot so position stays stable
+  pill.dataset.slotIndex = String(index);
+  const row = Math.floor(index / 4) + 1;
+  const col = (index % 4) + 1;
+  pill.style.gridRow = String(row);
+  pill.style.gridColumn = String(col);
+  pill.addEventListener("click", onPillClick);
+  pill.draggable = true;
+  pill.addEventListener("dragstart", onPillDragStart);
+  pill.addEventListener("dragend", onPillDragEnd);
+  // Fit text after layout
+  requestAnimationFrame(()=>fitPillText(pill));
+  return pill;
+}
+
+function onPillClick(e){
+  const pill = e.currentTarget;
+  const loc = pill.dataset.location || "tray";
+  const isLocked = pill.classList.contains("pill-locked");
+  if(isLocked) return;
+
+  // if pill is inside a bottle, clicking returns it to tray
+  if(loc.startsWith("bottle")){
+    movePillToTray(pill);
+    return;
+  }
+
+  // in tray: treat as selection toggle
+  if(selectedPill === pill){
+    pill.classList.remove("pill-selected");
+    selectedPill = null;
+  }else{
+    if(selectedPill) selectedPill.classList.remove("pill-selected");
+    selectedPill = pill;
+    pill.classList.add("pill-selected");
+  }
+}
+
+function movePillToTray(pill){
+  const loc = pill.dataset.location || "tray";
+  if(loc.startsWith("bottle")){
+    const idx = parseInt(loc.replace("bottle",""),10);
+    if(!Number.isNaN(idx)){
+      const b = bottleState[idx];
+      if(b.locked) return false;
+      b.items = b.items.filter(x => x !== pill.dataset.item);
+      pill.dataset.location = "tray";
+      pillGridEl.appendChild(pill);
+      fitPillText(pill);
+      scheduleFitAllPills();
+      updateBottleStatus(idx);
+    }
+  }
+  pill.classList.remove("pill-selected");
+  if(selectedPill === pill){
+    selectedPill = null;
+  }
+  return true;
+}
+
+function onPillDragStart(e){
+  const pill = e.currentTarget;
+  if(pill.classList.contains("pill-locked")){
+    e.preventDefault();
+    return;
+  }
+  dragSourcePill = pill;
+  if(e.dataTransfer){
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", pill.dataset.item || "");
+  }
+  pill.classList.add("pill-dragging");
+}
+
+function onPillDragEnd(e){
+  const pill = e.currentTarget;
+  pill.classList.remove("pill-dragging");
+  dragSourcePill = null;
+  document.querySelectorAll(".bottle-drop-hover").forEach(el=>{
+    el.classList.remove("bottle-drop-hover");
+  });
+}
+
+function getDraggedPill(e){
+  if(dragSourcePill) return dragSourcePill;
+  if(e && e.dataTransfer){
+    const item = e.dataTransfer.getData("text/plain");
+    if(item){
+      return findPillElement(item);
+    }
+  }
+  return null;
+}
+
+function onBottleDragOver(e, idx){
+  const pill = getDraggedPill(e);
+  if(!PUZZLE || !pill) return;
+  e.preventDefault();
+  if(e.dataTransfer) e.dataTransfer.dropEffect = "move";
+}
+
+function onBottleDrop(e, idx){
+  e.preventDefault();
+  const pill = getDraggedPill(e);
+  if(!pill) return;
+  movePillToBottle(pill, idx);
+}
+
+function onBottleDragEnter(e, idx){
+  const pill = getDraggedPill(e);
+  if(!pill) return;
+  const b = bottleState[idx];
+  if(b && !b.locked){
+    b.el.classList.add("bottle-drop-hover");
+  }
+}
+
+function onBottleDragLeave(e, idx){
+  const b = bottleState[idx];
+  if(b){
+    b.el.classList.remove("bottle-drop-hover");
+  }
+}
+
+function onTrayDragOver(e){
+  if(!getDraggedPill(e)) return;
+  e.preventDefault();
+  if(e.dataTransfer) e.dataTransfer.dropEffect = "move";
+}
+
+function onTrayDrop(e){
+  e.preventDefault();
+  const pill = getDraggedPill(e);
+  if(!pill) return;
+  movePillToTray(pill);
+}
+
+function movePillToBottle(pill, bottleIdx){
+  const b = bottleState[bottleIdx];
+  if(b.locked){
+    showToast("That bottle is already locked in.", "warn");
+    return;
+  }
+  if(b.items.length >= 4){
+    showToast("That bottle is already full.", "warn");
+    return;
+  }
+  const item = pill.dataset.item;
+  // if currently in another bottle, remove from that bottle
+  const loc = pill.dataset.location || "tray";
+  if(loc.startsWith("bottle")){
+    const oldIdx = parseInt(loc.replace("bottle",""),10);
+    if(!Number.isNaN(oldIdx) && bottleState[oldIdx]){
+      const oldB = bottleState[oldIdx];
+      oldB.items = oldB.items.filter(x => x !== item);
+      updateBottleStatus(oldIdx);
+    }
+  }
+  pill.dataset.location = "bottle" + bottleIdx;
+  pill.classList.remove("pill-selected");
+  b.items.push(item);
+  b.pillsEl.appendChild(pill);
+  fitPillText(pill);
+  scheduleFitAllPills();
+  selectedPill = null;
+  updateBottleStatus(bottleIdx);
+  checkBottle(bottleIdx);
+}
+
+function onBottleClick(idx){
+  const b = bottleState[idx];
+  if(b.locked){
+    showToast("Bottle already solved.", "warn");
+    return;
+  }
+  if(!selectedPill){
+    // nothing selected; nothing to do
+    return;
+  }
+  movePillToBottle(selectedPill, idx);
+}
+
+// bottle correctness check
+function checkBottle(idx){
+  const b = bottleState[idx];
+  if(b.locked || b.items.length !== 4) return;
+  const firstCatIdx = itemToCategoryIndex.get(b.items[0]);
+  if(firstCatIdx === undefined){
+    wrongBottle(idx);
+    return;
+  }
+  for(const it of b.items){
+    const catIdx = itemToCategoryIndex.get(it);
+    if(catIdx !== firstCatIdx){
+      wrongBottle(idx);
+      return;
+    }
+  }
+  // correct group
+  lockBottle(idx, firstCatIdx);
+}
+
+function wrongBottle(idx){
+  const b = bottleState[idx];
+  // keep pills in the bottle; just inform the user
+  showToast("Those pills do not all belong together.", "err");
+  updateBottleStatus(idx);
+}
+
+function lockBottle(idx, categoryIndex){
+  const b = bottleState[idx];
+  const cat = PUZZLE.categories[categoryIndex];
+  b.locked = true;
+  b.categoryIndex = categoryIndex;
+  b.el.classList.add("bottle-locked");
+  b.labelEl.textContent = cat.name;
+  b.labelEl.style.color = "#bbf7d0";
+  b.statusEl.textContent = "Locked in";
+  const pills = b.pillsEl.querySelectorAll(".pill");
+  pills.forEach(p=>{
+    p.classList.add("pill-locked");
+    p.classList.remove("pill-selected");
+    fitPillText(p);
+  });
+  showToast("Bottle locked: " + cat.name, "ok");
+  scheduleFitAllPills();
+  // check overall completion
+  const allLocked = bottleState.every(x => x.locked);
+  if(allLocked){
+    showToast("Puzzle complete!", "ok");
+    fireConfetti();
+  }
+}
+
+function findPillElement(item){
+  return document.querySelector('.pill[data-item="' + CSS.escape(item) + '"]');
+}
+
+// hint: highlight one new pill from a not-yet-solved group
+function chooseHintCategory(){
+  if(!PUZZLE) return -1;
+  const unsolved = PUZZLE.categories
+    .map((cat, idx)=>({cat, idx}))
+    .filter(entry => !bottleState.some(b => b.locked && b.categoryIndex === entry.idx));
+  if(!unsolved.length) return -1;
+  const choice = unsolved[Math.floor(Math.random()*unsolved.length)];
+  return choice.idx;
+}
+
+function isCategorySolved(catIdx){
+  return bottleState.some(b => b.locked && b.categoryIndex === catIdx);
+}
+
+function getPureBottleCategoryIndex(b){
+  if(!b || !b.items || b.items.length === 0) return null;
+  const first = itemToCategoryIndex.get(b.items[0]);
+  if(first === undefined) return null;
+  for(const it of b.items){
+    const ci = itemToCategoryIndex.get(it);
+    if(ci === undefined || ci !== first) return null;
+  }
+  return first;
+}
+
+// hint: place one pill into the correct bottle
+function onHint(){
+  if(!PUZZLE) return;
+
+  // Build lists of candidate bottles
+  const pureNonEmpty = [];
+  const emptyBottles = [];
+  bottleState.forEach((b, idx)=>{
+    if(!b || b.locked) return;
+    if(b.items.length >= 4) return;
+    if(b.items.length === 0){
+      emptyBottles.push(idx);
+      return;
+    }
+    const ci = getPureBottleCategoryIndex(b);
+    if(ci !== null){
+      pureNonEmpty.push({idx, catIdx: ci});
+    }
+  });
+
+  // Unsolved categories
+  const unsolvedCats = PUZZLE.categories
+    .map((c, i)=>i)
+    .filter(i => !isCategorySolved(i));
+
+  if(!unsolvedCats.length){
+return;
+  }
+
+  // Try a few times to find a valid (bottle, item) pair.
+  for(let attempt=0; attempt<30; attempt++){
+    let bottleIdx = null;
+    let catIdx = null;
+
+    // Prefer adding to an already-started pure bottle
+    if(pureNonEmpty.length){
+      const usable = pureNonEmpty.filter(x => !isCategorySolved(x.catIdx));
+      const pool = usable.length ? usable : pureNonEmpty;
+      const pick = pool[Math.floor(Math.random()*pool.length)];
+      bottleIdx = pick.idx;
+      catIdx = pick.catIdx;
+    } else if(emptyBottles.length){
+      bottleIdx = emptyBottles[Math.floor(Math.random()*emptyBottles.length)];
+      catIdx = unsolvedCats[Math.floor(Math.random()*unsolvedCats.length)];
+    } else {
+return;
+    }
+
+    const b = bottleState[bottleIdx];
+    if(!b || b.locked || b.items.length >= 4) continue;
+
+    // Ensure bottle is still empty or pure
+    if(b.items.length > 0){
+      const pureIdx = getPureBottleCategoryIndex(b);
+      if(pureIdx === null) continue;
+      catIdx = pureIdx;
+      if(isCategorySolved(catIdx)) continue;
+    }
+
+    const cat = PUZZLE.categories[catIdx];
+    if(!cat || !Array.isArray(cat.items)) continue;
+
+    const already = new Set(b.items);
+    const choices = cat.items.filter(it => !already.has(it));
+    if(!choices.length) continue;
+
+    // Prefer a pill that's currently in the tray (less jarring), else move from elsewhere.
+    let chosenItem = null;
+    const trayChoices = choices.filter(it=>{
+      const el = findPillElement(it);
+      return el && (el.dataset.location === "tray");
+    });
+    if(trayChoices.length){
+      chosenItem = trayChoices[Math.floor(Math.random()*trayChoices.length)];
+    } else {
+      chosenItem = choices[Math.floor(Math.random()*choices.length)];
+    }
+
+    const pill = findPillElement(chosenItem);
+    if(!pill) continue;
+    if(pill.classList.contains("pill-locked")) continue;
+
+    movePillToBottle(pill, bottleIdx);
+    pill.classList.add("pill-hint");
+    setTimeout(()=>pill.classList.remove("pill-hint"), 900);
+return;
+  }
+}
+
+// shuffle tray pills (only those not locked)
+function onShuffle(){
+  const pills = Array.from(pillGridEl.querySelectorAll(".pill"));
+  if(pills.length <= 1) return;
+  const pool = pills.slice();
+  for(let i=pool.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [pool[i],pool[j]]=[pool[j],pool[i]];
+  }
+  pillGridEl.innerHTML = "";
+  pool.forEach(p => pillGridEl.appendChild(p));
+  scheduleFitAllPills();
+}
+
+// reset puzzle to fresh state
+function onResetPuzzle(){
+  if(!PUZZLE) return;
+  setupBoardForPuzzle(PUZZLE);
+  showToast("Puzzle reset.", "ok");
+}
+
+// initial board setup
+function setupBoardForPuzzle(puzzle){
+  PUZZLE = puzzle;
+  selectedPill = null;
+  resetHintState();
+  initBottleState();
+  // map items to category indices
+  itemToCategoryIndex = new Map();
+  const allItems = [];
+  puzzle.categories.forEach((cat, catIdx)=>{
+    cat.items.forEach(it=>{
+      allItems.push(it);
+      itemToCategoryIndex.set(it, catIdx);
+    });
+  });
+  // random pill order
+  for(let i=allItems.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [allItems[i],allItems[j]]=[allItems[j],allItems[i]];
+  }
+  pillGridEl.innerHTML = "";
+  allItems.forEach((it, idx)=>{
+    const pill = createPill(it, idx);
+    pillGridEl.appendChild(pill);
+  });
+  scheduleFitAllPills();
+  updatePuzzleMeta();
+  renderFooter();
+  if (hintBtn) hintBtn.disabled = false;
+  if (shuffleBtn) shuffleBtn.disabled = false;
+  if (resetBtn) resetBtn.disabled = false;
+}
+
+// --- Simple puzzle navigation: generate puzzles from ANY CSV rows ---
+let ALL_CATEGORIES_ALL = [];
+let ALL_CATEGORIES = [];
+let RAW_ROWS = [];
+
+let HISTORY = [];
+let historyIndex = -1;
+
+function applyCategoryPool(){
+  ALL_CATEGORIES = ALL_CATEGORIES_ALL.slice();
+}
+
+
+function shuffleArray(arr){
+  for(let i = arr.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function rowToCategory(r){
+  const name = String(r.category || r.Category || r.CATEGORY || "").trim();
+  const items = [
+    r.item1 || r.Item1 || r.ITEM1 || "",
+    r.item2 || r.Item2 || r.ITEM2 || "",
+    r.item3 || r.Item3 || r.ITEM3 || "",
+    r.item4 || r.Item4 || r.ITEM4 || ""
+  ].map(v => String(v || "").trim()).filter(Boolean);
+
+  if(!name || items.length !== 4) return null;
+
+  const urls = [
+    r.url1 || r.URL1 || r.Url1 || "",
+    r.url2 || r.URL2 || r.Url2 || "",
+    r.url3 || r.URL3 || r.Url3 || "",
+    r.url4 || r.URL4 || r.Url4 || ""
+  ].map(v => String(v || "").trim());
+
+  const colG = String(r.__colG || (r.__cols && r.__cols[6]) || "").trim();
+  const __step1 = /step1/i.test(colG);
+
+  return { name, items, urls, color: null, __step1 };
+}
+
+function buildCategoriesFromRows(rows){
+  const cats = [];
+  for(const r of rows){
+    const c = rowToCategory(r);
+    if(c) cats.push(c);
+  }
+  return cats;
+}
+
+function buildPuzzleFromCategories(categories){
+  const palette = ["#f97373","#facc15","#38bdf8","#a855f7"];
+  const cats = shuffleArray(categories.slice());
+  return {
+    id: "rand-" + Date.now() + "-" + Math.floor(Math.random()*1e6),
+    label: "",
+    author: "",
+    categories: cats.slice(0,4).map((c, idx)=>({
+      ...c,
+      color: palette[idx % palette.length]
+    }))
+  };
+}
+
+function generateNewPuzzle(){
+  if(ALL_CATEGORIES.length < 4) return null;
+
+  const MAX_ATTEMPTS = 1200;
+  for(let attempt = 0; attempt < MAX_ATTEMPTS; attempt++){
+    const poolIdx = shuffleArray([...Array(ALL_CATEGORIES.length).keys()]);
+    const chosen = [];
+    const usedItems = new Set();
+    const usedNames = new Set();
+
+    for(const i of poolIdx){
+      const c = ALL_CATEGORIES[i];
+      const nameKey = c.name.toLowerCase();
+      if(usedNames.has(nameKey)) continue;
+
+      let ok = true;
+      for(const it of c.items){
+        const k = it.toLowerCase();
+        if(usedItems.has(k)){ ok = false; break; }
+      }
+      if(!ok) continue;
+
+      chosen.push(c);
+      usedNames.add(nameKey);
+      c.items.forEach(it => usedItems.add(it.toLowerCase()));
+
+      if(chosen.length === 4) break;
+    }
+
+    if(chosen.length === 4){
+      return buildPuzzleFromCategories(chosen);
+    }
+  }
+
+  // Fallback: just take 4 random rows if we couldn't satisfy uniqueness constraints.
+  const fallback = shuffleArray(ALL_CATEGORIES.slice()).slice(0,4);
+  return buildPuzzleFromCategories(fallback);
+}
+
+function pushPuzzleToHistory(puzzle){
+  if(!puzzle) return;
+  // If user went "back" then generated a new puzzle, drop the forward history.
+  HISTORY = HISTORY.slice(0, historyIndex + 1);
+  HISTORY.push(puzzle);
+  historyIndex = HISTORY.length - 1;
+  setupBoardForPuzzle(puzzle);
+}
+
+function loadHistoryIndex(i){
+  if(!HISTORY.length) return;
+  historyIndex = (i % HISTORY.length + HISTORY.length) % HISTORY.length;
+  setupBoardForPuzzle(HISTORY[historyIndex]);
+}
+
+function goPrevPuzzle(){
+  if(!HISTORY.length) return;
+  loadHistoryIndex(historyIndex - 1);
+}
+
+function goNextPuzzle(){
+  if(!HISTORY.length) return;
+  if(historyIndex < HISTORY.length - 1){
+    loadHistoryIndex(historyIndex + 1);
+  } else {
+    // At the end of history: generate a new one.
+    const p = generateNewPuzzle();
+    pushPuzzleToHistory(p);
+  }
+}
+
+function makeAndLoadNewPuzzle(){
+  const activeKeys = resolveSelectedDatasetKeys(CURRENT_SELECTION);
+  if(activeKeys.length === 0){
+    showToast("No domains selected. Open ⚙️ and choose at least one.", "warn");
+    return;
+  }
+
+  const p = generateNewPuzzle();
+  if(!p){
+    showToast("Not enough valid rows in CSV to build a puzzle.", "err");
+    return;
+  }
+  pushPuzzleToHistory(p);
+}
+
+
+function updatePuzzleMeta(){
+  if(!PUZZLE || !PUZZLES.length){
+    if (puzzleMetaEl) puzzleMetaEl.textContent = "";
+    return;
+  }
+  if (puzzleMetaEl) puzzleMetaEl.textContent = "";
+}
+
+
+// events
+bottlesRowEl.querySelectorAll(".bottle").forEach(bottle=>{
+  const idx = parseInt(bottle.getAttribute("data-bottle-index"),10);
+  bottle.addEventListener("click", ()=>{
+    onBottleClick(idx);
+  });
+  bottle.addEventListener("dragover", (e)=>onBottleDragOver(e, idx));
+  bottle.addEventListener("drop", (e)=>onBottleDrop(e, idx));
+  bottle.addEventListener("dragenter", (e)=>onBottleDragEnter(e, idx));
+  bottle.addEventListener("dragleave", (e)=>onBottleDragLeave(e, idx));
+});
+
+pillGridEl.addEventListener("dragover", onTrayDragOver);
+pillGridEl.addEventListener("drop", onTrayDrop);
+
+if (hintBtn) hintBtn.addEventListener("click", onHint);
+if (shuffleBtn) shuffleBtn.addEventListener("click", onShuffle);
+if (resetBtn) resetBtn.addEventListener("click", onResetPuzzle);
+
+
+if (pzNewBtn) pzNewBtn.addEventListener("click", ()=>{
+  makeAndLoadNewPuzzle();
+});
+
+
+
+// --- dataset (multi-select) selection ---
+function getDatasetByKey(key){
+  return DATASETS.find(d => d.key === key) || DATASETS[0];
+}
+
+function normalizeSelection(sel){
+  const all = !!(sel && sel.all);
+  let keys = Array.isArray(sel && sel.keys) ? sel.keys.slice() : [];
+  keys = keys.filter(k => DATASETS.some(d => d.key === k));
+
+  if(all){
+    return { all:true, keys:[] };
+  }
+
+  return { all:false, keys };
+}
+
+function getStoredDatasetSelection(){
+  try{
+    const raw = localStorage.getItem(LS_DATASETS_KEY);
+    if(raw){
+      return normalizeSelection(JSON.parse(raw));
+    }
+  }catch(e){}
+  return { all:true, keys:[] };
+}
+
+let CURRENT_SELECTION = getStoredDatasetSelection();
+let _loadToken = 0;
+
+function storeSelection(sel){
+  CURRENT_SELECTION = normalizeSelection(sel);
+  try{ localStorage.setItem(LS_DATASETS_KEY, JSON.stringify(CURRENT_SELECTION)); }catch(e){}
+}
+
+function resolveSelectedDatasetKeys(sel = CURRENT_SELECTION){
+  if(sel && sel.all) return DATASETS.map(d => d.key);
+  return (sel && Array.isArray(sel.keys) ? sel.keys : []).filter(k => DATASETS.some(d => d.key === k));
+}
+
+function buildDatasetCheckboxes(){
+  if(!datasetCheckboxList) return;
+
+  datasetCheckboxList.innerHTML = "";
+
+  const makeRow = ({id, label, key=null})=>{
+    const wrap = document.createElement("label");
+    wrap.className = "setting-row";
+    wrap.setAttribute("for", id);
+
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.id = id;
+    if(key) input.dataset.key = key;
+
+    const span = document.createElement("span");
+    span.textContent = label;
+
+    wrap.appendChild(input);
+    wrap.appendChild(span);
+    return {wrap, input};
+  };
+
+  const allRow = makeRow({id:"ds_all", label:"ALL"});
+  datasetCheckboxList.appendChild(allRow.wrap);
+
+  const rows = DATASETS.map(d=>{
+    const r = makeRow({id:"ds_" + d.key, label:d.label, key:d.key});
+    datasetCheckboxList.appendChild(r.wrap);
+    return r;
+  });
+
+  function syncUIFromSelection(){
+    const sel = normalizeSelection(CURRENT_SELECTION);
+    const keys = resolveSelectedDatasetKeys(sel);
+    allRow.input.checked = !!sel.all || keys.length === DATASETS.length;
+    rows.forEach(r=>{
+      const k = r.input.dataset.key;
+      r.input.checked = keys.includes(k);
+    });
+  }
+
+  function getCheckedKeysFromUI(){
+    return rows.filter(r => r.input.checked).map(r => r.input.dataset.key);
+  }
+
+  function applyChange(origin){
+    if(origin === "all"){
+      if(allRow.input.checked){
+        // ALL toggled on -> include everything
+        storeSelection({all:true, keys:[]});
+        syncUIFromSelection();
+        loadSelectedDatasets();
+      }else{
+        // ALL toggled off while everything was selected -> uncheck everything
+        rows.forEach(r=>{ r.input.checked = false; });
+        storeSelection({all:false, keys:[]});
+        syncUIFromSelection();
+        loadSelectedDatasets();
+      }
+      return;
+    }
+
+    const keys = getCheckedKeysFromUI();
+
+    if(keys.length === DATASETS.length){
+      storeSelection({all:true, keys:[]});
+    }else{
+      storeSelection({all:false, keys});
+    }
+
+    syncUIFromSelection();
+    loadSelectedDatasets();
+  }
+
+  allRow.input.addEventListener("change", ()=>applyChange("all"));
+  rows.forEach(r=> r.input.addEventListener("change", ()=>applyChange("individual")));
+
+  syncUIFromSelection();
+}
+
+async function fetchCategoriesForDatasetKey(key){
+  const d = getDatasetByKey(key);
+  const res = await fetch(d.csv, {cache:"no-store"});
+  if(!res.ok) throw new Error("HTTP " + res.status);
+  const text = await res.text();
+  const rows = parseCSV(text);
+  const cats = buildCategoriesFromRows(rows).map(c => ({
+    ...c,
+    __datasetKey: d.key,
+    __datasetLabel: d.label,
+    __sourceCsv: d.csv
+  }));
+  return { dataset:d, categories:cats };
+}
+
+async function loadSelectedDatasets({silent=false} = {}){
+  const token = ++_loadToken;
+  const sel = normalizeSelection(CURRENT_SELECTION);
+  const keys = resolveSelectedDatasetKeys(sel);
+
+  if(keys.length === 0){
+    ALL_CATEGORIES_ALL = [];
+    applyCategoryPool();
+    HISTORY = []; historyIndex = -1;
+    PUZZLE = null;
+    PUZZLES = [];
+    clearBoardUI();
+    updatePuzzleMeta();
+    if(!silent) showToast("No domains selected.", "warn");
+    return;
+  }
+
+  if(!silent) showToast("Loading selected domains…", "warn");
+
+  const failures = [];
+  const allCats = [];
+
+  for(const k of keys){
+    try{
+      const out = await fetchCategoriesForDatasetKey(k);
+      if(token !== _loadToken) return;
+      allCats.push(...out.categories);
+    }catch(err){
+      console.warn("Dataset load failed:", k, err);
+      failures.push(getDatasetByKey(k).label);
+    }
+  }
+
+  if(token !== _loadToken) return;
+
+  ALL_CATEGORIES_ALL = allCats;
+  applyCategoryPool();
+  HISTORY = []; historyIndex = -1;
+
+  if(ALL_CATEGORIES_ALL.length < 4){
+    showToast("Could not load enough categories from the selected CSVs.", "err");
+    return;
+  }
+
+  makeAndLoadNewPuzzle();
+
+  if(!silent){
+    if(failures.length){
+      showToast("Loaded, but missing: " + failures.join(", "), "warn");
+    }else{
+      showToast("Domains loaded.", "ok");
+    }
+  }
+}
+
+
+// boot
+wireSettings();
+buildDatasetCheckboxes();
+
+// Load selected domains (default: ALL). Silent on initial load.
+loadSelectedDatasets({silent:true});
+
+</script>
+</body>
+</html>
