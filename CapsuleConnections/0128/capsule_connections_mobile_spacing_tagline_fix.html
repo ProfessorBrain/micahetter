@@ -1016,22 +1016,11 @@ function rowsToPuzzles(rows){
 function showToast(msg, kind){
   toastEl.textContent = msg;
   toastEl.className = "toast show " + (kind || "");
-
-  // Auto-hide toasts. On desktop, error toasts can remain until the next action.
-  // On mobile, even error toasts should fade so they don't obscure the header/UI.
-  clearTimeout(showToast._t);
-  const onMobile = (typeof isMobileLayout === "function") ? isMobileLayout() : false;
-
-  let dur = 1800; // default
-  if(kind === "err"){
-    dur = onMobile ? 2600 : 0; // keep desktop errors sticky; mobile errors auto-hide
-  }
-
-  if(dur > 0){
-    showToast._t = setTimeout(()=>{ toastEl.className = "toast"; }, dur);
+  if(kind !== "err"){
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(()=>{ toastEl.className = "toast"; }, 1800);
   }
 }
-
 
 // settings modal helpers
 function openSettings(){

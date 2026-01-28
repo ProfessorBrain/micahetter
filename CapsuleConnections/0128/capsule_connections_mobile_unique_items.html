@@ -46,91 +46,17 @@ body{
   margin-top:8px;
 }
 .logo-bar{
-display:flex;
+  display:flex;
   align-items:flex-start;
   justify-content:flex-start;
   flex:0 0 auto;
-  flex-direction:column;
-
 }
-
 .logo-img{
   height:clamp(80px, 38vh, 360px);
   width:auto;
   display:block;
   max-width:min(320px, 32vw);
   object-fit:contain;
-  
-  margin-bottom:6px;
-}
-
-.tagline{
-  margin-top:10px;
-  width:100%;
-  text-align:center;
-  font-weight:600;
-  letter-spacing:.03em;
-  font-size:13px;
-  color:var(--muted);
-  opacity:.78;
-  text-shadow: 0 6px 18px rgba(0,0,0,.35);
-  user-select:none;
-}
-
-
-
-.mobile-title{
-  display:none;
-  width:100%;
-  text-align:center;
-  margin-top:6px;
-  margin-bottom:4px;
-  user-select:none;
-}
-.mobile-title .mobile-logo2{
-  display:inline-block;
-  transform: rotate(-8deg) skew(-10deg);
-  transform-origin:center;
-  filter: drop-shadow(0 12px 18px rgba(0,0,0,.55));
-}
-.mobile-title .cc-line{
-  position:relative;
-  display:block;
-  font-family: Impact, "Arial Black", "Trebuchet MS", system-ui, -apple-system, Segoe UI, Roboto, Inter, Helvetica, Arial, sans-serif;
-  font-weight: 900;
-  letter-spacing: .03em;
-  text-transform: uppercase;
-  line-height: 1.02;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-  -webkit-background-clip: text;
-  background-clip: text;
-  text-shadow: 0 4px 0 rgba(0,0,0,.35), 0 10px 22px rgba(0,0,0,.35);
-}
-.mobile-title .cc-line::before{
-  content: attr(data-text);
-  position:absolute;
-  inset:0;
-  z-index:-1;
-  -webkit-text-stroke: 9px rgba(0,0,0,.88);
-  color: transparent;
-  filter: drop-shadow(0 10px 14px rgba(0,0,0,.58));
-}
-.mobile-title .cc-capsule{
-  font-size: clamp(34px, 10vw, 46px);
-  background: linear-gradient(180deg, #fff2b0 0%, #ffd95e 40%, #f59e0b 100%);
-}
-.mobile-title .cc-connections{
-  font-size: clamp(26px, 8vw, 38px);
-  margin-top: clamp(10px, 2.6vw, 16px);
-  background: linear-gradient(180deg, #ffcf9c 0%, #ff4a3d 35%, #ef4444 100%);
-}
-
-@media (max-width:420px){
-  .mobile-title{ margin-top:4px; margin-bottom:3px; }
-  .mobile-title .mobile-logo2{ transform: rotate(-8deg) skew(-10deg) scale(.98); }
-  .mobile-title .cc-capsule{ font-size: clamp(32px, 11vw, 44px); }
-  .mobile-title .cc-connections{ font-size: clamp(24px, 9vw, 36px); margin-top: clamp(10px, 3.2vw, 18px); }
 }
 .puzzle-row{
   margin-top:14px;
@@ -501,13 +427,6 @@ display:flex;
   word-break:normal;
   hyphens:none;
 }
-.pill.pill-anywhere{
-  white-space:normal;
-  overflow-wrap:anywhere; /* allow mid-word breaks when needed (mobile) */
-  word-break:break-word;
-  hyphens:auto;
-}
-
 
 
 .pill::before{
@@ -585,132 +504,33 @@ footer{
 }
 
 @media (max-width:940px){
-  .pill-grid{ grid-template-columns:repeat(4, minmax(0, 1fr)); }
+  .pill-grid{ grid-template-columns:repeat(3, minmax(0, 1fr)); }
 }
 @media (max-width:680px){
-  .pill-grid{ grid-template-columns:repeat(4, minmax(0, 1fr)); }
+  .pill-grid{ grid-template-columns:repeat(2, minmax(0, 1fr)); }
 }
 
-/* Logo handling: omit the image on phones / small touch screens (show title instead) */
+/* Logo handling: hide ONLY on phones / small touch screens */
 @media (max-width:700px), (hover:none) and (pointer:coarse) and (max-height:500px){
-  .logo-img{ display:none; }
-  .mobile-title{ display:block; }
-  .logo-bar{ width:100%; justify-content:center; }
+  .logo-bar{ display:none; }
   .top-row{ justify-content:center; align-items:stretch; }
 }
+
 /* mobile */
 @media (max-width:700px){
-  /* overall spacing */
-  .wrap{ padding-top:12px; padding-bottom:18px; }
+  .wrap{ padding-top:14px; padding-bottom:18px; }
   .top-row{ flex-direction:column; align-items:stretch; gap:10px; }
+  .workspace{ padding:14px 12px 14px; }
+  .bottles-row{ gap:12px; }
+  /* Keep a 2×2 bottle grid on most phones to reduce scrolling */
+  .bottle{ width:calc(50% - 8px); max-width:none; }
+  .bottle-body{ min-height:clamp(128px, 22vh, 175px); }
 
-  /* make the header feel like the sketch: title above four small "boxes" (bottles) */
-  .logo-bar{ align-items:center; justify-content:center; }
+  /* Reduce vertical scroll: 3 columns of pills on most phones */
+  .pill-grid{ grid-template-columns:repeat(3, minmax(0, 1fr)); }
+  .pill{ min-width:0; width:100%; max-width:none; }
 
-  /* prevent the angled pseudo-logo from visually overlapping the jars */
-  .mobile-title{ margin-bottom:8px; }
-  .tagline{ margin-top:4px; margin-bottom:8px; font-size:13px; }
-
-  .workspace{ padding:12px 10px 14px; border-radius:18px; }
-
-  /* 4 bottles as two rows of two "jars" */
-  .bottles-row{
-    display:grid;
-    grid-template-columns:repeat(2, minmax(0, 1fr));
-    gap:10px 10px;
-    justify-content:center;
-    margin-top:10px;
-  }
-  .bottle{
-    width:100%;
-    max-width:none;
-    cursor:pointer;
-  }
-/* simplify bottle visuals into compact "jars" (subtle lid + glass highlight) */
-  .bottle-shell{ width:100%; }
-  .bottle-neck, .bottle-cap-line{ display:none; }
-  .bottle-body{
-    position:relative;
-    margin-top:0;
-    border-radius:16px;
-    min-height:70px;
-    padding:10px 8px 10px;
-    border:2px solid rgba(148,163,184,.55);
-    background:
-      radial-gradient(circle at 30% 22%, rgba(255,255,255,.14), rgba(255,255,255,0) 55%),
-      linear-gradient(180deg, rgba(15,23,42,.78) 0%, rgba(2,6,23,.70) 62%, rgba(0,0,0,.74) 100%);
-    box-shadow:
-      0 10px 22px rgba(0,0,0,.28),
-      inset 0 10px 20px rgba(0,0,0,.38);
-    overflow:hidden;
-  }
-  /* lid */
-  .bottle-body::before{
-    content:"";
-    position:absolute;
-    left:10%;
-    right:10%;
-    top:7px;
-    height:10px;
-    border-radius:999px;
-    background:linear-gradient(90deg, rgba(148,163,184,.55), rgba(226,232,240,.22), rgba(148,163,184,.55));
-    border:1px solid rgba(148,163,184,.30);
-    opacity:.90;
-  }
-  /* glass highlight */
-  .bottle-body::after{
-    content:"";
-    position:absolute;
-    top:-10px;
-    bottom:-10px;
-    left:10px;
-    width:18px;
-    background:linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,0));
-    transform:skewX(-10deg);
-    opacity:.25;
-    pointer-events:none;
-  }
-  .bottle-body-inner{ position:relative; z-index:1; gap:3px; }
-  .bottle-status{ display:none; }
-.bottle-label{
-    margin-top:10px;
-    font-size:10px;
-    line-height:1.15;
-    text-align:center;
-    letter-spacing:.02em;
-    max-width:100%;
-    word-break:break-word;
-  }
-
-  /* playboard (items) – 4×4 like the sketch */
-  .pill-tray{
-    margin-top:12px;
-    padding:10px 8px 10px;
-    border-radius:16px;
-  }
-  .pill-grid{ grid-template-columns:repeat(4, minmax(0, 1fr)); gap:8px; }
-
-  /* switch pills from "capsules" to compact tiles for mobile readability */
-  .pill{
-    min-width:0;
-    width:100%;
-    max-width:none;
-    border-radius:14px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:10px 6px;
-    font-size:11px;
-    line-height:1.08;
-    white-space:normal;
-    overflow:hidden;
-    text-overflow:clip;
-  }
-  /* allow wrapping when needed */
-  .pill.pill-wrap{ white-space:normal; }
-  .pill.pill-anywhere{ white-space:normal; }
-
-  /* Controls: keep reachable but less visually dominant */
+  /* Make the control row easier to reach without covering content */
   #puzzleNav{
     position:sticky;
     bottom:0;
@@ -721,11 +541,9 @@ footer{
     padding:10px 10px calc(10px + env(safe-area-inset-bottom));
     margin-top:12px;
     backdrop-filter:blur(10px);
-    justify-content:center;
-    gap:10px;
   }
   .puzzle-nav-btn{ padding:10px 14px; font-size:13px; }
-  .puzzle-nav-gear{ width:40px; height:40px; font-size:18px; margin-left:2px; }
+  .puzzle-nav-gear{ width:40px; height:40px; font-size:18px; margin-left:6px; }
 
   /* Center toast for narrow screens */
   .toast{
@@ -735,57 +553,16 @@ footer{
     transform:translateX(-50%) translateY(-8px);
   }
   .toast.show{ transform:translateX(-50%) translateY(0); }
-
-  /* Make toast feedback much more visible on mobile (especially incorrect bottle) */
-  .toast{
-    left:50%;
-    right:auto;
-    top:calc(env(safe-area-inset-top, 0px) + 10px);
-    width:calc(100% - 24px);
-    max-width:460px;
-    justify-content:center;
-    border-radius:14px;
-    padding:10px 14px;
-    font-size:14px;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    box-shadow: 0 16px 44px rgba(0,0,0,.60);
-  }
-  .toast{ transform:translate(-50%, -8px); }
-  .toast.show{ transform:translate(-50%, 0); }
-  .toast.ok{
-    background:rgba(2,6,23,.86);
-    border-color:rgba(34,197,94,.85);
-    color:#bbf7d0;
-  }
-  .toast.warn{
-    background:rgba(2,6,23,.86);
-    border-color:rgba(245,158,11,.90);
-    color:#fed7aa;
-  }
-  .toast.err{
-    background:rgba(2,6,23,.90);
-    border-color:rgba(239,68,68,.95);
-    color:#fecaca;
-    box-shadow: 0 18px 54px rgba(239,68,68,.18), 0 16px 44px rgba(0,0,0,.62);
-  }
-
 }
-
 
 @media (max-width:420px){
-  .pill-grid{ grid-template-columns:repeat(4, minmax(0, 1fr)); }
-  .pill{ font-size:10.8px; padding:9px 7px; }
+  .pill-grid{ grid-template-columns:repeat(2, minmax(0, 1fr)); }
 }
-
 
 @media (max-width:360px){
-  /* Very narrow devices: keep the 4-bottle row (horizontal scroll if needed) */
-  .bottles-row{ gap:8px; }
-  .bottle{ width:clamp(66px, 23vw, 84px); }
-  .pill{ font-size:10.5px; padding:9px 7px; }
+  /* Very narrow devices: stack bottles if needed */
+  .bottle{ width:100%; max-width:none; }
 }
-
 
 /* confetti canvas */
 #confetti-canvas{
@@ -803,8 +580,6 @@ footer{
   <div class="top-row">
   <div class="logo-bar">
     <img src="capsuleconnectionlogo.png" alt="Capsule Connections logo" class="logo-img" />
-    <div class="mobile-title" aria-hidden="true"><div class="mobile-logo2" aria-hidden="true"><div class="cc-line cc-capsule" data-text="CAPSULE">CAPSULE</div><div class="cc-line cc-connections" data-text="CONNECTIONS">CONNECTIONS</div></div></div>
-    <div class="tagline" id="tagline">Make four groups of four!</div>
   </div>
 
     <div class="toast-slot">
@@ -1016,22 +791,11 @@ function rowsToPuzzles(rows){
 function showToast(msg, kind){
   toastEl.textContent = msg;
   toastEl.className = "toast show " + (kind || "");
-
-  // Auto-hide toasts. On desktop, error toasts can remain until the next action.
-  // On mobile, even error toasts should fade so they don't obscure the header/UI.
-  clearTimeout(showToast._t);
-  const onMobile = (typeof isMobileLayout === "function") ? isMobileLayout() : false;
-
-  let dur = 1800; // default
-  if(kind === "err"){
-    dur = onMobile ? 2600 : 0; // keep desktop errors sticky; mobile errors auto-hide
-  }
-
-  if(dur > 0){
-    showToast._t = setTimeout(()=>{ toastEl.className = "toast"; }, dur);
+  if(kind !== "err"){
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(()=>{ toastEl.className = "toast"; }, 1800);
   }
 }
-
 
 // settings modal helpers
 function openSettings(){
@@ -1243,17 +1007,12 @@ function measurePillLabelWidth(cs, label, fontPx){
   return el.getBoundingClientRect().width || 0;
 }
 
-// --- responsive helpers ---
-function isMobileLayout(){
-  return window.matchMedia && (window.matchMedia("(max-width:700px)").matches || window.matchMedia("(hover:none) and (pointer:coarse)").matches);
-}
-
 // --- pill text auto-fit (keeps short labels at normal size; shrinks only when needed) ---
 function fitPillText(pill){
   if(!pill || !pill.isConnected) return;
 
   // Reset to default single-line pill style
-  pill.classList.remove("pill-wrap","pill-anywhere");
+  pill.classList.remove("pill-wrap");
   pill.style.fontSize = "";
 
   const label = (pill.dataset && pill.dataset.item) ? pill.dataset.item : (pill.textContent || "");
@@ -1288,16 +1047,7 @@ function fitPillText(pill){
       pill.classList.add("pill-wrap");
       pill.style.fontSize = ""; // base
     }else{
-      const onMobile = isMobileLayout();
-      const inGrid = !!pill.closest(".pill-grid");
-      if(onMobile && inGrid){
-        // Mobile: prefer wrapping anywhere over truncation for long single-token names.
-        pill.classList.add("pill-anywhere");
-        pill.style.fontSize = ""; // keep base; height can expand to fit
-      }else{
-        // Desktop: modest shrink, otherwise clip.
-        pill.style.fontSize = minAllowed.toFixed(2) + "px";
-      }
+      pill.style.fontSize = minAllowed.toFixed(2) + "px";
     }
     return;
   }
@@ -1375,18 +1125,8 @@ function onPillClick(e){
   const isLocked = pill.classList.contains("pill-locked");
   if(isLocked) return;
 
-  // if pill is inside a bottle:
-  // - Desktop: clicking returns it to the tray.
-  // - Mobile: if a tray pill is selected, treat the tap as "add selected pill to this bottle"
-  //   so you don't accidentally remove the existing pill when aiming for the bottle.
+  // if pill is inside a bottle, clicking returns it to tray
   if(loc.startsWith("bottle")){
-    if(isMobileLayout && isMobileLayout() && selectedPill){
-      const bottleIdx = parseInt(loc.replace("bottle",""),10);
-      if(!Number.isNaN(bottleIdx)){
-        movePillToBottle(selectedPill, bottleIdx);
-      }
-      return;
-    }
     movePillToTray(pill);
     return;
   }

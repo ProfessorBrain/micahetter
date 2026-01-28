@@ -68,15 +68,14 @@ display:flex;
   margin-top:10px;
   width:100%;
   text-align:center;
-  font-weight:600;
-  letter-spacing:.03em;
-  font-size:13px;
+  font-weight:900;
+  letter-spacing:.04em;
+  font-size:14px;
   color:var(--muted);
-  opacity:.78;
-  text-shadow: 0 6px 18px rgba(0,0,0,.35);
+  opacity:.92;
+  text-shadow: 0 6px 18px rgba(0,0,0,.45);
   user-select:none;
 }
-
 
 
 .mobile-title{
@@ -100,7 +99,7 @@ display:flex;
   font-weight: 900;
   letter-spacing: .03em;
   text-transform: uppercase;
-  line-height: 1.02;
+  line-height: .88;
   color: transparent;
   -webkit-text-fill-color: transparent;
   -webkit-background-clip: text;
@@ -122,7 +121,7 @@ display:flex;
 }
 .mobile-title .cc-connections{
   font-size: clamp(26px, 8vw, 38px);
-  margin-top: clamp(10px, 2.6vw, 16px);
+  margin-top: -6px;
   background: linear-gradient(180deg, #ffcf9c 0%, #ff4a3d 35%, #ef4444 100%);
 }
 
@@ -130,7 +129,7 @@ display:flex;
   .mobile-title{ margin-top:4px; margin-bottom:3px; }
   .mobile-title .mobile-logo2{ transform: rotate(-8deg) skew(-10deg) scale(.98); }
   .mobile-title .cc-capsule{ font-size: clamp(32px, 11vw, 44px); }
-  .mobile-title .cc-connections{ font-size: clamp(24px, 9vw, 36px); margin-top: clamp(10px, 3.2vw, 18px); }
+  .mobile-title .cc-connections{ font-size: clamp(24px, 9vw, 36px); margin-top:-7px; }
 }
 .puzzle-row{
   margin-top:14px;
@@ -1016,22 +1015,11 @@ function rowsToPuzzles(rows){
 function showToast(msg, kind){
   toastEl.textContent = msg;
   toastEl.className = "toast show " + (kind || "");
-
-  // Auto-hide toasts. On desktop, error toasts can remain until the next action.
-  // On mobile, even error toasts should fade so they don't obscure the header/UI.
-  clearTimeout(showToast._t);
-  const onMobile = (typeof isMobileLayout === "function") ? isMobileLayout() : false;
-
-  let dur = 1800; // default
-  if(kind === "err"){
-    dur = onMobile ? 2600 : 0; // keep desktop errors sticky; mobile errors auto-hide
-  }
-
-  if(dur > 0){
-    showToast._t = setTimeout(()=>{ toastEl.className = "toast"; }, dur);
+  if(kind !== "err"){
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(()=>{ toastEl.className = "toast"; }, 1800);
   }
 }
-
 
 // settings modal helpers
 function openSettings(){
