@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Wheel of Neurology</title>
 <style>
 :root{
@@ -173,85 +173,8 @@ footer{color:var(--muted);text-align:center;padding:6px 0 12px 0}
 .credit{position:absolute;left:50%;top:100%;transform:translate(-50%,8px);text-align:center;font-size:11px;color:#0e5539;opacity:.96;white-space:nowrap}
 
 .panel{position:relative}
-
-
-/* ---------- Mobile autoscale (auto-applied via html.is-mobile) ---------- */
-html.is-mobile .wrap{padding:12px;gap:12px}
-html.is-mobile header{justify-content:center;text-align:center}
-html.is-mobile header h1{font-size:20px}
-html.is-mobile .brand img{height:30px}
-html.is-mobile .grid{gap:12px}
-html.is-mobile .panel{padding:12px;border-radius:14px}
-html.is-mobile .peek{height:62px}
-html.is-mobile .peek canvas{width:min(92vw,340px);height:46px}
-html.is-mobile .controls{gap:10px}
-html.is-mobile .controls .row{gap:8px}
-html.is-mobile .controls button{padding:9px 12px;font-size:14px;border-radius:12px}
-html.is-mobile .players{gap:6px}
-html.is-mobile .player{padding:7px}
-html.is-mobile .player b{font-size:11px}
-html.is-mobile .player span{font-size:14px}
-html.is-mobile .status{font-size:14px}
-html.is-mobile .secondary{margin-top:6px}
-html.is-mobile .credit{
-  position:static;left:auto;top:auto;transform:none;margin-top:10px;
-  text-align:center;font-size:11px;color:rgba(207,230,219,.75);
-  opacity:1;white-space:normal
-}
-
-/* Make the board self-fit horizontally by using square tiles on mobile */
-html.is-mobile .board{
-  --gap:4px;
-  --pad:10px;
-  gap:var(--gap);
-  padding:var(--pad);
-  border-radius:16px;
-}
-html.is-mobile .cell{
-  height:auto;
-  aspect-ratio:1/1;
-  font-size:clamp(11px,3.8vw,18px);
-  border-width:1.5px;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.12), inset 0 -3px 0 rgba(0,0,0,.30);
-}
-html.is-mobile .cell:not(.revealed):not(.space)::before{
-  font-size:clamp(12px,3.8vw,18px);
-}
-
-/* Keyboard: fewer columns so keys stay tappable */
-html.is-mobile .keyboard{grid-template-columns:repeat(10,1fr);gap:6px}
-html.is-mobile .keyboard button{padding:10px 0;font-size:14px;border-radius:10px}
-
-/* Wheel overlay sizing */
-html.is-mobile #wheelCanvas{max-width:min(92vw,520px)}
-html.is-mobile .wheelWrap.spin{transform:scale(1.0)}
-html.is-mobile .wheelWrap.fullscreen{max-height:100vh}
-
-/* Modal breathing room */
-html.is-mobile .dialog{width:min(680px,94vw)}
-
-@media (hover:none) and (pointer:coarse){
-  button{touch-action:manipulation}
-}
 </style>
   <link rel="icon" type="image/png" href="favicon.png">
-
-<script>
-  // Mobile detection -> toggles html.is-mobile for an autoscaled layout
-  (function(){
-    const mq = window.matchMedia('(max-width: 760px), (pointer: coarse)');
-    function apply(){
-      document.documentElement.classList.toggle('is-mobile', !!mq.matches);
-    }
-    apply();
-    try{
-      if(mq.addEventListener) mq.addEventListener('change', apply);
-      else if(mq.addListener) mq.addListener(apply);
-    }catch(e){}
-    window.addEventListener('orientationchange', apply);
-  })();
-</script>
-
 </head>
 <body>
 <div class="wrap">
