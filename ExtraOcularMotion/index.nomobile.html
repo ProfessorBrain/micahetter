@@ -4,32 +4,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
-<script>
-  // Mobile autodetect: adds "is-mobile" class to <html> very early to avoid layout flicker.
-  (function(){
-    try{
-      var params = new URLSearchParams(location.search);
-      var forceMobile = params.get("mobile") === "1";
-      var forceDesktop = params.get("desktop") === "1";
-      if (forceDesktop) return;
-
-      var ua = navigator.userAgent || "";
-      var uaMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
-      var touch = ("ontouchstart" in window) || (navigator.maxTouchPoints || 0) > 0;
-      var w = Math.min(window.innerWidth || 9999, window.innerHeight || 9999);
-      var smallScreen = w <= 900;
-
-      var uad = navigator.userAgentData;
-      var uadMobile = !!(uad && uad.mobile);
-
-      var isMobile = !!(forceMobile || uadMobile || (uaMobile && smallScreen) || (touch && smallScreen));
-      if (isMobile){
-        document.documentElement.classList.add("is-mobile");
-      }
-    }catch(e){}
-  })();
-</script>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
 <title>Extraocular Muscle Simulator – Binocular Yoked (Patient View, Bilateral Sliders)</title>
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="shortcut icon" type="image/png" href="favicon.png">
@@ -909,134 +884,13 @@ width: fit-content;
       .eyes-row{ gap:10px; }
     }
 
-
-    /* ============================================================
-       Mobile autodetect mode (html.is-mobile)
-       - Stacks panels vertically
-       - Keeps sliders available (no hidden side panels)
-       - Scales eye graphics + Ask-to-Look grid via CSS clamps
-       ============================================================ */
-    html.is-mobile{
-      --eyeWrap: clamp(132px, 42vw, 190px);
-      --eyeInset: clamp(10px, 3vw, 14px);
-      --irisSize: calc(var(--eyeWrap) * 0.44);
-      --pupilSize: calc(var(--eyeWrap) * 0.16);
-      --askBtn: clamp(36px, 12vw, 44px);
-      --askGapY: 8px;
-      --askGapX: 6px;
-    }
-
-    html.is-mobile body{
-      overflow-x:hidden;
-    }
-
-    html.is-mobile .app{
-      justify-content:flex-start;
-      padding:10px 10px calc(14px + env(safe-area-inset-bottom));
-    }
-
-    /* Stack: eyes first, then controls (OD then OS) */
-    html.is-mobile .main{
-      flex-wrap:wrap !important;
-      align-items:stretch !important;
-      width:100% !important;
-      gap:12px !important;
-    }
-
-    html.is-mobile .eye-panel{
-      order:1;
-      flex:1 1 100% !important;
-      min-width:0 !important;
-      width:100% !important;
-      max-width:760px !important;
-      margin:0 auto !important;
-      padding:12px;
-    }
-
-    html.is-mobile .controls{
-      display:flex !important; /* overrides desktop narrow-width rules that hide panels */
-      flex:1 1 100% !important;
-      min-width:0 !important;
-      width:100% !important;
-      max-width:760px !important;
-      margin:0 auto !important;
-      max-height:none !important;
-      overflow:visible !important;
-      padding:12px;
-    }
-    html.is-mobile .controls.controls-od{ order:2; }
-    html.is-mobile .controls.controls-os{ order:3; }
-
-    /* Scale eye SVG + elements */
-    html.is-mobile .eyes-row{
-      gap:10px !important;
-    }
-    html.is-mobile .eye-wrapper{
-      width: var(--eyeWrap) !important;
-      height: var(--eyeWrap) !important;
-    }
-    html.is-mobile svg.vectorCanvas{
-      width:100%;
-      height:100%;
-    }
-    html.is-mobile .eye-circle{
-      inset: var(--eyeInset) !important;
-      width: calc(var(--eyeWrap) - (2 * var(--eyeInset))) !important;
-      height: calc(var(--eyeWrap) - (2 * var(--eyeInset))) !important;
-    }
-    html.is-mobile .iris{
-      width: var(--irisSize) !important;
-      height: var(--irisSize) !important;
-      margin: calc(-0.5 * var(--irisSize)) 0 0 calc(-0.5 * var(--irisSize)) !important;
-    }
-    html.is-mobile .pupil{
-      width: var(--pupilSize) !important;
-      height: var(--pupilSize) !important;
-      margin: calc(-0.5 * var(--pupilSize)) 0 0 calc(-0.5 * var(--pupilSize)) !important;
-    }
-
-    /* Ask-to-Look controls: keep tappable + compact */
-    html.is-mobile .ask-look-grid{
-      grid-template-columns: var(--askBtn) auto var(--askBtn) !important;
-      grid-template-rows: var(--askBtn) var(--askBtn) var(--askBtn) !important;
-      row-gap: var(--askGapY) !important;
-      column-gap: var(--askGapX) !important;
-    }
-    html.is-mobile .ask-btn{
-      width: var(--askBtn) !important;
-      height: var(--askBtn) !important;
-      font-size: 1.05rem;
-    }
-    html.is-mobile .ask-center{
-      min-width: 0 !important;
-      width: min(320px, calc(var(--eyeWrap) * 1.35)) !important;
-      padding: 10px 12px !important;
-      font-size: 0.9rem;
-    }
-
-    /* Reduce nested scrolling annoyances */
-    html.is-mobile .controls{
-      box-shadow:0 14px 34px rgba(0,0,0,0.65);
-    }
-
-    /* Put creator credit into flow on mobile (no fixed overlap) */
-    html.is-mobile .credit-footer{
-      position:static !important;
-      left:auto !important;
-      bottom:auto !important;
-      transform:none !important;
-      margin: 12px auto 0;
-      padding-bottom: env(safe-area-inset-bottom);
-      white-space:normal !important;
-    }
-
 </style>
 </head>
 <body>
 <div class="app">
 <div class="main">
 <!-- OD sliders (left side of screen) -->
-<section aria-label="Right eye muscle controls" class="controls controls-od">
+<section aria-label="Right eye muscle controls" class="controls">
 <h2>Right eye muscle meters</h2>
 
 <div class="slider-group">
@@ -1261,7 +1115,7 @@ width: fit-content;
 
 </section>
 <!-- OS sliders (right side of screen, to the right of the left eye) -->
-<section aria-label="Left eye muscle controls" class="controls controls-os">
+<section aria-label="Left eye muscle controls" class="controls">
 <h2>Left eye muscle meters</h2>
 
 <div class="slider-group">
