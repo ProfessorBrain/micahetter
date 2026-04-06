@@ -538,76 +538,6 @@
       max-height: none;
     }
 
-    body[data-device="mobile"] .shell,
-    body[data-device="mobile"] .canvas-wrap {
-      overflow: visible;
-    }
-
-    body[data-device="mobile"] .hud {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 5px;
-    }
-
-    body[data-device="mobile"] .hud-chip {
-      min-height: 48px;
-      padding: 6px 7px;
-    }
-
-    body[data-device="mobile"] .hud-chip span {
-      font-size: 0.52rem;
-      letter-spacing: 0.1em;
-    }
-
-    body[data-device="mobile"] .hud-chip strong {
-      font-size: 0.82rem;
-    }
-
-    body[data-device="mobile"] .hud-chip.effects {
-      display: none;
-    }
-
-    body[data-device="mobile"] #questionOverlay {
-      position: fixed;
-      inset: var(--mobile-question-top, 152px) 6px calc(env(safe-area-inset-bottom, 0px) + 8px) 6px;
-      padding: 8px;
-      align-items: stretch;
-      border-radius: 24px;
-      z-index: 40;
-    }
-
-    body[data-device="mobile"] .question-card {
-      width: 100%;
-      max-height: none;
-      height: 100%;
-      padding: 12px 14px;
-      gap: 8px;
-    }
-
-    body[data-device="mobile"] .question-card .question-meta {
-      margin-bottom: 0;
-    }
-
-    body[data-device="mobile"] #questionStem {
-      font-size: 0.9rem;
-      line-height: 1.34;
-    }
-
-    body[data-device="mobile"] .question-card .answers {
-      gap: 8px;
-      margin-top: 0;
-    }
-
-    body[data-device="mobile"] .question-card .answers button {
-      min-height: 58px;
-      padding: 0.72rem 0.82rem;
-      font-size: 0.9rem;
-      line-height: 1.28;
-    }
-
-    body[data-device="mobile"] .question-card .explanation-box {
-      max-height: 96px;
-    }
-
     .toast {
       position: absolute;
       top: 24px;
@@ -958,7 +888,7 @@
     }
 
     body[data-device="mobile"] .mobile-controls {
-      display: none;
+      display: flex;
     }
 
     .mobile-controls button {
@@ -1031,41 +961,7 @@
       }
 
       .hud {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 6px;
-      }
-
-      .hud-chip {
-        min-height: 52px;
-        padding: 7px 9px;
-        border-radius: 14px;
-      }
-
-      .hud-chip::before {
-        border-radius: 13px;
-      }
-
-      .hud-chip::after {
-        left: 10px;
-        right: 10px;
-        height: 10px;
-      }
-
-      .hud-chip span {
-        font-size: 0.56rem;
-        letter-spacing: 0.11em;
-      }
-
-      .hud-chip strong {
-        font-size: 0.88rem;
-      }
-
-      .hud-chip.effects {
-        grid-column: span 2;
-      }
-
-      .hud-chip.effects strong {
-        font-size: 0.74rem;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
       .settings-atlas-row {
@@ -2211,134 +2107,8 @@
         choices: ["Inclusion body myositis", "Myasthenia gravis", "Acute inflammatory demyelinating neuropathy", "Pure dystonia"],
         answer: 0,
         explanation: "Inclusion body myositis often targets finger flexors and quadriceps in an asymmetric pattern.",
-      },
-      { id: "s29", difficulty: "student", topic: "stroke", prompt: "Broca localization", stem: "Nonfluent aphasia with relatively preserved comprehension most strongly localizes to the dominant:", choices: ["Inferior frontal gyrus", "Occipital pole", "Cerebellar vermis", "Midline medulla"], answer: 0, explanation: "Broca aphasia classically localizes to the dominant inferior frontal language region." },
-      { id: "s30", difficulty: "student", topic: "neuroanatomy", prompt: "Light reflex afferent", stem: "The afferent limb of the pupillary light reflex travels in which cranial nerve?", choices: ["Optic nerve", "Oculomotor nerve", "Trochlear nerve", "Abducens nerve"], answer: 0, explanation: "Light information enters through CN II before the reflex output is carried by CN III." },
-      { id: "s31", difficulty: "student", topic: "movement", prompt: "Target tremor", stem: "A tremor that worsens as the finger approaches the target most strongly suggests dysfunction of the:", choices: ["Cerebellum", "Basal ganglia only", "Neuromuscular junction", "Anterior horn cell"], answer: 0, explanation: "Intention tremor is a classic cerebellar sign." },
-      { id: "s32", difficulty: "student", topic: "epilepsy", prompt: "Focal aware definition", stem: "During a focal aware seizure, consciousness is typically:", choices: ["Preserved", "Completely absent", "Always followed by coma", "Replaced by quadriplegia"], answer: 0, explanation: "Focal aware seizures are focal seizures in which awareness is retained." },
-      { id: "s33", difficulty: "student", topic: "localization", prompt: "Sensory level clue", stem: "A clearly defined sensory level on the trunk usually localizes to the:", choices: ["Spinal cord", "Peripheral nerve at the wrist", "Occipital lobe", "Cerebellar hemisphere"], answer: 0, explanation: "A truncal sensory level is a classic clue to spinal cord pathology." },
-      { id: "s34", difficulty: "student", topic: "neurocritical", prompt: "Papilledema meaning", stem: "Papilledema on funduscopic exam is a clue to:", choices: ["Raised intracranial pressure", "Peripheral vestibulopathy", "Radial neuropathy", "Bell palsy"], answer: 0, explanation: "Papilledema reflects optic disc swelling from elevated intracranial pressure." },
-      { id: "s35", difficulty: "student", topic: "neuromuscular", prompt: "Fatigable ptosis", stem: "Ptosis and diplopia that worsen late in the day are classic for:", choices: ["Myasthenia gravis", "Parkinson disease", "Essential tremor", "Cauda equina syndrome"], answer: 0, explanation: "Fluctuating ocular weakness is a classic presentation of myasthenia gravis." },
-      { id: "s36", difficulty: "student", topic: "imaging", prompt: "Midline shift", stem: "Midline shift on head imaging usually reflects:", choices: ["Mass effect", "Normal aging only", "Pure peripheral neuropathy", "Benign tremor"], answer: 0, explanation: "Midline shift is a major clue that a lesion or edema is exerting mass effect." },
-      { id: "s37", difficulty: "student", topic: "stroke", prompt: "Curtain vision loss", stem: "Transient monocular vision loss described as a curtain coming down most strongly suggests ischemia in the:", choices: ["Ipsilateral carotid circulation", "Contralateral cerebellar hemisphere", "Thoracic spinal cord only", "Basal ganglia bilaterally"], answer: 0, explanation: "Amaurosis fugax is classically linked to retinal ischemia from ipsilateral carotid disease." },
-      { id: "s38", difficulty: "student", topic: "neuroanatomy", prompt: "Facial sensation nerve", stem: "Light touch sensation from the face is carried primarily by which cranial nerve?", choices: ["Trigeminal nerve", "Facial nerve", "Glossopharyngeal nerve", "Hypoglossal nerve"], answer: 0, explanation: "CN V is the major sensory nerve of the face." },
-      { id: "s39", difficulty: "student", topic: "movement", prompt: "Dystonia pattern", stem: "Dystonia is best described as:", choices: ["Sustained twisting postures or abnormal muscle contractions", "A pure sensory syndrome", "A fixed complete paralysis", "Loss of consciousness with convulsions"], answer: 0, explanation: "Dystonia causes sustained or intermittent abnormal postures from muscle contractions." },
-      { id: "s40", difficulty: "student", topic: "epilepsy", prompt: "Automatisms term", stem: "Lip smacking and repetitive picking movements during a seizure are called:", choices: ["Automatisms", "Asterixis", "Fasciculations", "Myokymia"], answer: 0, explanation: "Automatisms are repetitive semipurposeful movements often seen in focal seizures." },
-      { id: "s41", difficulty: "student", topic: "localization", prompt: "Lower motor neuron sign", stem: "Which finding most strongly points to a lower motor neuron lesion?", choices: ["Atrophy with fasciculations", "Spasticity with clonus", "Pronator drift", "Hyperreflexia alone"], answer: 0, explanation: "Atrophy and fasciculations are classic lower motor neuron findings." },
-      { id: "s42", difficulty: "student", topic: "neurocritical", prompt: "Meningeal irritation", stem: "Neck stiffness in meningitis or subarachnoid hemorrhage reflects:", choices: ["Meningeal irritation", "Basal ganglia failure", "Peripheral nerve entrapment", "Isolated cerebellar injury"], answer: 0, explanation: "Meningismus reflects irritation of the meninges." },
-      { id: "s43", difficulty: "student", topic: "neuromuscular", prompt: "High CK clue", stem: "A very high serum creatine kinase level is most suggestive of:", choices: ["Muscle injury or myopathy", "Pure neuromuscular junction disease only", "Occipital stroke", "Trigeminal neuralgia"], answer: 0, explanation: "Marked CK elevation generally points toward muscle breakdown or muscle disease." },
-      { id: "s44", difficulty: "student", topic: "imaging", prompt: "Restricted diffusion meaning", stem: "Restricted diffusion on brain MRI most classically suggests:", choices: ["Acute ischemia", "Chronic peripheral neuropathy", "Essential tremor", "Bell palsy"], answer: 0, explanation: "Restricted diffusion is a classic early imaging feature of acute ischemic stroke." },
-      { id: "s45", difficulty: "student", topic: "stroke", prompt: "Lacunar mechanism", stem: "Lacunar infarcts are usually caused by disease of the:", choices: ["Small penetrating arteries", "Dural venous sinuses", "External carotid branches", "Cerebellar cortex only"], answer: 0, explanation: "Lacunar strokes are classically due to small-vessel disease affecting penetrating arteries." },
-      { id: "s46", difficulty: "student", topic: "neuroanatomy", prompt: "Spinothalamic modality", stem: "The spinothalamic tract primarily carries:", choices: ["Pain and temperature", "Fine smell only", "Motor output to the eye", "Hearing from the cochlea"], answer: 0, explanation: "The spinothalamic tract carries pain and temperature sensation." },
-      { id: "s47", difficulty: "student", topic: "movement", prompt: "Lead-pipe rigidity", stem: "Lead-pipe rigidity is classically associated with:", choices: ["Parkinsonism", "Myasthenia gravis", "Guillain-Barre syndrome", "Migraine aura"], answer: 0, explanation: "Rigidity is a classic extrapyramidal sign in parkinsonian syndromes." },
-      { id: "s48", difficulty: "student", topic: "epilepsy", prompt: "Generalized onset", stem: "A generalized onset seizure by definition involves:", choices: ["Both hemispheres from the beginning", "Only one temporal lobe", "Only the spinal cord", "Only the peripheral nerves"], answer: 0, explanation: "Generalized seizures involve bilateral networks from onset." },
-      { id: "s49", difficulty: "student", topic: "localization", prompt: "Pronator drift meaning", stem: "A pronator drift most strongly suggests subtle:", choices: ["Corticospinal weakness", "Vestibular hearing loss", "Occipital visual loss", "Pure autonomic failure"], answer: 0, explanation: "Pronator drift is a sensitive sign of mild corticospinal tract weakness." },
-      { id: "s50", difficulty: "student", topic: "neurocritical", prompt: "Blown pupil emergency", stem: "An acute unilateral fixed dilated pupil after head trauma may indicate:", choices: ["Uncal herniation", "Essential tremor", "Pure radial neuropathy", "Benign fasciculation syndrome"], answer: 0, explanation: "A blown pupil in that setting is a classic herniation warning sign." },
-      { id: "s51", difficulty: "student", topic: "neuromuscular", prompt: "Stocking-glove pattern", stem: "Symmetric distal numbness in a stocking-glove distribution most strongly suggests:", choices: ["Peripheral neuropathy", "Pure frontal lobe stroke", "Cerebellar degeneration", "Third nerve palsy"], answer: 0, explanation: "A stocking-glove sensory pattern is classic for peripheral neuropathy." },
-      { id: "s52", difficulty: "student", topic: "imaging", prompt: "CTA use", stem: "CT angiography is especially useful for evaluating:", choices: ["Arterial anatomy and occlusion", "Only scalp swelling", "Only skeletal muscle injury", "The neuromuscular junction directly"], answer: 0, explanation: "CTA is a rapid way to evaluate cerebral and cervical arteries for stenosis or occlusion." },
-      { id: "s53", difficulty: "student", topic: "stroke", prompt: "Posterior circulation clue", stem: "Vertigo with diplopia and dysarthria should raise concern for a process in the:", choices: ["Posterior circulation or brainstem", "Isolated median nerve", "Lumbar plexus only", "Distal ulnar nerve"], answer: 0, explanation: "Those crossed cranial and balance symptoms are classic posterior circulation red flags." },
-      { id: "s54", difficulty: "student", topic: "neuroanatomy", prompt: "Abducens action", stem: "Cranial nerve VI primarily performs which eye movement?", choices: ["Abduction", "Adduction", "Depression in adduction", "Pupillary constriction"], answer: 0, explanation: "The abducens nerve innervates the lateral rectus muscle, which abducts the eye." },
-      { id: "s55", difficulty: "student", topic: "movement", prompt: "Asterixis clue", stem: "Asterixis most commonly suggests:", choices: ["Metabolic encephalopathy", "Pure cerebellar stroke", "Isolated radial neuropathy", "Migraine without aura"], answer: 0, explanation: "Asterixis is a negative myoclonus often seen in metabolic encephalopathy." },
-      { id: "s56", difficulty: "student", topic: "epilepsy", prompt: "Epigastric aura", stem: "An epigastric rising sensation before a seizure most strongly suggests onset in the:", choices: ["Temporal lobe", "Occipital lobe", "Cervical cord", "Peripheral nerve"], answer: 0, explanation: "An epigastric rising aura is classic for mesial temporal seizures." },
-      { id: "r29", difficulty: "resident", topic: "stroke", prompt: "MCA gaze preference", stem: "In an acute right MCA stroke affecting the frontal eye field, the eyes tend to deviate:", choices: ["Toward the right", "Toward the left", "Upward only", "Downward only"], answer: 0, explanation: "Frontal eye field lesions cause gaze preference toward the side of the lesion." },
-      { id: "r30", difficulty: "resident", topic: "neurocritical", prompt: "EVD purpose", stem: "An external ventricular drain can both monitor and directly treat:", choices: ["Hydrocephalus with elevated intracranial pressure", "Peripheral neuropathy", "Essential tremor", "Myasthenia gravis"], answer: 0, explanation: "An EVD allows CSF drainage while monitoring ventricular pressure." },
-      { id: "r31", difficulty: "resident", topic: "neuromuscular", prompt: "Lambert-Eaton physiology", stem: "A transient increase in strength after brief exercise most strongly supports:", choices: ["Lambert-Eaton myasthenic syndrome", "Duchenne muscular dystrophy", "Peripheral sensory neuropathy", "Isolated occipital infarct"], answer: 0, explanation: "Facilitation after exertion is a classic bedside clue in Lambert-Eaton syndrome." },
-      { id: "r32", difficulty: "resident", topic: "imaging", prompt: "ADC map", stem: "True acute ischemic restriction on MRI is supported by diffusion brightness with:", choices: ["Low ADC signal", "High ADC signal only", "Normal bone windows", "Absent FLAIR lesions in every case"], answer: 0, explanation: "Low ADC supports true restricted diffusion rather than T2 shine-through." },
-      { id: "r33", difficulty: "resident", topic: "localization", prompt: "Crossed sensory signs", stem: "Ipsilateral facial pain loss with contralateral body pain loss most strongly localizes to the:", choices: ["Brainstem", "Peripheral nerve at the elbow", "Frontal eye field", "Neuromuscular junction"], answer: 0, explanation: "Crossed face-body findings are classic for brainstem localization." },
-      { id: "r34", difficulty: "resident", topic: "epilepsy", prompt: "Mesial temporal aura", stem: "A rising epigastric sensation with fear before impaired awareness most strongly suggests:", choices: ["Mesial temporal lobe epilepsy", "Primary generalized epilepsy", "Pure occipital migraine only", "Functional tremor"], answer: 0, explanation: "That aura pattern is a classic mesial temporal seizure clue." },
-      { id: "r35", difficulty: "resident", topic: "stroke", prompt: "Cortical vs lacunar", stem: "Which feature makes a lacunar syndrome less likely and a cortical stroke more likely?", choices: ["Aphasia", "Pure motor weakness", "Pure sensory symptoms", "Ataxic hemiparesis"], answer: 0, explanation: "Aphasia is a cortical sign and argues against a pure lacunar syndrome." },
-      { id: "r36", difficulty: "resident", topic: "movement", prompt: "Tardive cause", stem: "Tardive dyskinesia is classically associated with chronic exposure to:", choices: ["Dopamine receptor blocking agents", "Acetylcholinesterase inhibitors", "Beta blockers", "Magnesium infusions"], answer: 0, explanation: "Chronic dopamine blockade is the classic risk factor for tardive dyskinesia." },
-      { id: "r37", difficulty: "resident", topic: "neuroanatomy", prompt: "PPRF role", stem: "The paramedian pontine reticular formation is crucial for generating:", choices: ["Ipsilateral horizontal saccades", "Pupillary constriction only", "Lower facial sensation", "Smell perception"], answer: 0, explanation: "The PPRF is part of the horizontal gaze center in the pons." },
-      { id: "r38", difficulty: "resident", topic: "neuromuscular", prompt: "ALS exam mix", stem: "Which exam combination best fits amyotrophic lateral sclerosis?", choices: ["Upper and lower motor neuron findings together", "Pure sensory loss with a level", "Fluctuating diplopia only", "Pure cerebellar ataxia"], answer: 0, explanation: "ALS classically combines UMN and LMN signs in the same disorder." },
-      { id: "r39", difficulty: "resident", topic: "imaging", prompt: "Rapid LVO study", stem: "When a large vessel occlusion is suspected in acute stroke, the rapid vascular study is usually:", choices: ["CT angiography", "Routine skull x-ray", "EEG", "EMG and nerve conduction studies"], answer: 0, explanation: "CTA is commonly used to identify emergent large vessel occlusion." },
-      { id: "r40", difficulty: "resident", topic: "neurocritical", prompt: "Hyperventilation effect", stem: "Brief hyperventilation lowers intracranial pressure mainly by causing:", choices: ["Cerebral vasoconstriction", "Immediate CSF production", "Spinal cord vasodilation", "Neuromuscular blockade"], answer: 0, explanation: "Lowering PaCO2 causes cerebral vasoconstriction and can transiently reduce ICP." },
-      { id: "r41", difficulty: "resident", topic: "localization", prompt: "Right INO", stem: "A right internuclear ophthalmoplegia most strongly localizes to the right:", choices: ["Medial longitudinal fasciculus", "Optic nerve", "Facial nerve", "Posterior column nucleus only"], answer: 0, explanation: "INO is the signature deficit of a medial longitudinal fasciculus lesion." },
-      { id: "r42", difficulty: "resident", topic: "epilepsy", prompt: "Lateral tongue bite", stem: "A lateral tongue bite after a transient loss of consciousness favors:", choices: ["Generalized tonic-clonic seizure", "Simple vasovagal syncope", "Benign positional vertigo", "Transient peripheral neuropathy"], answer: 0, explanation: "Lateral tongue biting is a classic supportive clue for generalized seizure." },
-      { id: "r43", difficulty: "resident", topic: "stroke", prompt: "Vertebral dissection clue", stem: "Posterior circulation symptoms with neck pain after manipulation should raise concern for:", choices: ["Vertebral artery dissection", "Essential tremor", "Normal pressure hydrocephalus", "Peripheral vestibulopathy"], answer: 0, explanation: "Neck pain with posterior circulation ischemic symptoms is a classic vertebral dissection clue." },
-      { id: "r44", difficulty: "resident", topic: "movement", prompt: "Torticollis syndrome", stem: "Cervical dystonia most commonly presents as:", choices: ["Abnormal involuntary neck turning or tilting", "Pure distal sensory loss", "Bilateral ophthalmoplegia", "Persistent homonymous hemianopia"], answer: 0, explanation: "Cervical dystonia produces involuntary neck posturing, often called torticollis." },
-      { id: "r45", difficulty: "resident", topic: "neuroanatomy", prompt: "Nucleus ambiguus deficit", stem: "A lesion of the nucleus ambiguus classically causes:", choices: ["Dysphagia and hoarseness", "Monocular blindness", "Isolated hand tremor", "Loss of smell"], answer: 0, explanation: "The nucleus ambiguus contributes to palatal, pharyngeal, and laryngeal motor function." },
-      { id: "r46", difficulty: "resident", topic: "neuromuscular", prompt: "Repetitive stimulation decrement", stem: "A decremental response on repetitive nerve stimulation most strongly supports:", choices: ["Myasthenia gravis", "Pure myopathy", "Cerebellar stroke", "Frontal lobe seizure"], answer: 0, explanation: "A decrement on repetitive stimulation is a classic electrodiagnostic clue in myasthenia gravis." },
-      { id: "r47", difficulty: "resident", topic: "imaging", prompt: "Blood product MRI", stem: "MRI detection of small hemorrhagic blood products is especially sensitive with:", choices: ["Susceptibility-sensitive sequences", "Routine T1 alone", "Only diffusion-weighted imaging", "Only MR spectroscopy"], answer: 0, explanation: "Susceptibility-sensitive sequences are particularly good for detecting blood products." },
-      { id: "r48", difficulty: "resident", topic: "neurocritical", prompt: "CPP formula", stem: "Cerebral perfusion pressure is approximated by:", choices: ["Mean arterial pressure minus intracranial pressure", "Intracranial pressure minus mean arterial pressure", "Heart rate plus PaCO2", "PaO2 minus temperature"], answer: 0, explanation: "CPP is typically approximated as MAP minus ICP." },
-      { id: "r49", difficulty: "resident", topic: "localization", prompt: "Sensory ataxia clue", stem: "Pseudoathetosis and worsening imbalance with eye closure most strongly suggest dysfunction of the:", choices: ["Dorsal columns", "Basal ganglia only", "Frontal eye fields", "Neuromuscular junction"], answer: 0, explanation: "Loss of proprioceptive input from dorsal column disease causes sensory ataxia and pseudoathetosis." },
-      { id: "r50", difficulty: "resident", topic: "epilepsy", prompt: "Focal to bilateral term", stem: "The modern term for a seizure that begins focally and then generalizes is:", choices: ["Focal to bilateral tonic-clonic seizure", "Absence status", "Psychogenic nonepileptic spell", "Isolated aura only"], answer: 0, explanation: "The current preferred term is focal to bilateral tonic-clonic seizure." },
-      { id: "r51", difficulty: "resident", topic: "stroke", prompt: "Wernicke territory", stem: "Fluent aphasia with poor comprehension most strongly suggests infarction in the dominant:", choices: ["Inferior division MCA territory", "Anterior spinal artery territory", "Cerebellar hemisphere only", "Thoracic cord"], answer: 0, explanation: "Wernicke aphasia classically localizes to the dominant posterior temporal region supplied by the inferior MCA division." },
-      { id: "r52", difficulty: "resident", topic: "movement", prompt: "Levodopa response", stem: "Clear improvement of bradykinesia and rigidity with levodopa most strongly supports:", choices: ["Idiopathic Parkinson disease", "Essential tremor", "Myasthenia gravis", "Peripheral neuropathy"], answer: 0, explanation: "A robust levodopa response is a classic clue toward idiopathic Parkinson disease." },
-      { id: "r53", difficulty: "resident", topic: "neuroanatomy", prompt: "Facial colliculus lesion", stem: "A lesion at the facial colliculus can affect which nearby structure most directly?", choices: ["Abducens nucleus", "Optic chiasm", "Subthalamic nucleus", "Dorsal root ganglion"], answer: 0, explanation: "The facial colliculus overlies the abducens nucleus and facial nerve fibers in the dorsal pons." },
-      { id: "r54", difficulty: "resident", topic: "neuromuscular", prompt: "Myasthenic crisis trigger", stem: "A common precipitant of myasthenic crisis is:", choices: ["Infection", "Occipital infarct", "Benign positional vertigo", "Isolated radial neuropathy"], answer: 0, explanation: "Infection is a classic trigger for myasthenic crisis." },
-      { id: "r55", difficulty: "resident", topic: "imaging", prompt: "Abscess MRI clue", stem: "Which imaging feature favors a brain abscess over a necrotic tumor?", choices: ["Central diffusion restriction", "Absence of edema", "No mass effect ever", "Pure extra-axial location"], answer: 0, explanation: "Central restricted diffusion is a classic clue favoring abscess." },
-      { id: "r56", difficulty: "resident", topic: "neurocritical", prompt: "Basal cistern effacement", stem: "Effaced basal cisterns on head CT usually suggest:", choices: ["Significant cerebral edema or mass effect", "Pure peripheral neuropathy", "Essential tremor", "Benign fasciculation syndrome"], answer: 0, explanation: "Basal cistern effacement is a concerning imaging sign of increased intracranial pressure and mass effect." },
-      { id: "p25", difficulty: "attending", topic: "stroke", prompt: "Alexia without agraphia", stem: "Alexia without agraphia classically follows infarction involving the dominant PCA territory plus the:", choices: ["Splenium of the corpus callosum", "Cerebellar vermis", "Internal auditory canal", "Cauda equina"], answer: 0, explanation: "Disconnection of visual input from language areas via splenial involvement is the classic mechanism." },
-      { id: "p26", difficulty: "attending", topic: "localization", prompt: "Benedikt syndrome", stem: "Ipsilateral third nerve palsy with contralateral tremor or ataxia most strongly suggests a lesion in the:", choices: ["Midbrain tegmentum", "Lateral medulla", "Occipital pole", "Conus medullaris"], answer: 0, explanation: "Benedikt syndrome reflects a tegmental midbrain lesion affecting CN III fascicles and cerebellothalamic pathways." },
-      { id: "p27", difficulty: "attending", topic: "imaging", prompt: "PRES pattern", stem: "Posterior reversible encephalopathy syndrome most classically shows which MRI pattern?", choices: ["Posterior-predominant vasogenic edema", "Pure restricted diffusion in the internal capsule", "Isolated skull base enhancement", "Diffuse peripheral nerve enlargement"], answer: 0, explanation: "PRES classically causes posterior-predominant vasogenic edema, often in parieto-occipital regions." },
-      { id: "p28", difficulty: "attending", topic: "neurocritical", prompt: "MG crisis monitoring", stem: "In myasthenic crisis, a key respiratory bedside metric to trend is the:", choices: ["Vital capacity", "Ankle-brachial index", "Intraocular pressure", "QT interval only"], answer: 0, explanation: "Vital capacity is commonly followed to gauge impending respiratory failure in myasthenic crisis." },
-      { id: "p29", difficulty: "attending", topic: "neuromuscular", prompt: "MuSK phenotype", stem: "Compared with typical acetylcholine receptor myasthenia, MuSK-associated disease more often features prominent:", choices: ["Bulbar and neck weakness", "Stocking-glove sensory loss", "Upper motor neuron signs", "Cerebellar eye movement findings"], answer: 0, explanation: "MuSK myasthenia often has marked bulbar, facial, and neck weakness." },
-      { id: "p30", difficulty: "attending", topic: "epilepsy", prompt: "LPD significance", stem: "Lateralized periodic discharges on EEG most strongly imply:", choices: ["Acute focal cerebral dysfunction with increased seizure risk", "A benign normal variant", "Pure peripheral nerve disease", "Definite psychogenic nonepileptic events"], answer: 0, explanation: "LPDs often occur with acute focal brain injury and are associated with heightened seizure risk." },
-      { id: "p31", difficulty: "attending", topic: "stroke", prompt: "Watershed syndrome", stem: "Bilateral border-zone ischemia can produce the classic 'man-in-the-barrel' pattern of:", choices: ["Proximal arm-predominant weakness", "Isolated lower facial paralysis", "Pure sensory ataxia", "Hemichorea only"], answer: 0, explanation: "Watershed infarction can selectively impair proximal upper limb strength." },
-      { id: "p32", difficulty: "attending", topic: "movement", prompt: "Corticobasal clue", stem: "Which feature strongly favors corticobasal syndrome over idiopathic Parkinson disease?", choices: ["Marked asymmetry with apraxia", "Symmetric resting tremor alone", "Pure sensory neuropathy", "Fluctuating diplopia"], answer: 0, explanation: "Corticobasal syndrome often shows striking asymmetry and cortical signs such as apraxia." },
-      { id: "p33", difficulty: "attending", topic: "neuroanatomy", prompt: "Dorsal midbrain syndrome", stem: "Upgaze palsy with light-near dissociation most strongly localizes to the:", choices: ["Dorsal midbrain", "Lateral medulla", "Internal capsule", "Cauda equina"], answer: 0, explanation: "This pattern is classic for dorsal midbrain or Parinaud syndrome." },
-      { id: "p34", difficulty: "attending", topic: "imaging", prompt: "True restriction check", stem: "Diffusion brightness without corresponding low ADC is most likely due to:", choices: ["T2 shine-through", "Proven hyperacute infarction", "Definite abscess every time", "Acute subdural blood"], answer: 0, explanation: "Low ADC helps confirm true restricted diffusion rather than T2 shine-through." },
-      { id: "p35", difficulty: "attending", topic: "neurocritical", prompt: "Refractory status step", stem: "Convulsive status epilepticus persisting despite benzodiazepine and second-line therapy may require:", choices: ["Continuous anesthetic infusion with intensive monitoring", "Only reassurance", "Outpatient Holter monitoring", "Immediate EMG"], answer: 0, explanation: "Refractory status epilepticus often requires continuous anesthetic therapy and ICU-level monitoring." },
-      { id: "p36", difficulty: "attending", topic: "localization", prompt: "Cheiro-oral syndrome", stem: "Numbness limited to the hand and corner of the mouth most classically localizes to the:", choices: ["Thalamus", "Cervical sympathetic chain", "Neuromuscular junction", "Cerebellar vermis"], answer: 0, explanation: "Cheiro-oral sensory syndromes classically localize to thalamic small-vessel lesions." },
-      { id: "p37", difficulty: "attending", topic: "stroke", prompt: "Pseudobulbar source", stem: "Pseudobulbar affect most strongly suggests disruption of:", choices: ["Bilateral corticobulbar pathways", "Only the optic radiations", "Only the dorsal columns", "The common peroneal nerve"], answer: 0, explanation: "Pseudobulbar affect is classically associated with bilateral corticobulbar pathway injury." },
-      { id: "p38", difficulty: "attending", topic: "movement", prompt: "MSA red flag", stem: "Which additional feature most strongly favors multiple system atrophy over idiopathic Parkinson disease?", choices: ["Early severe autonomic failure", "Isolated action tremor improved by alcohol", "Pure stocking sensory loss", "Monocular vision loss"], answer: 0, explanation: "Early marked dysautonomia is a major red flag for multiple system atrophy." },
-      { id: "p39", difficulty: "attending", topic: "neuromuscular", prompt: "Conduction block syndrome", stem: "Motor conduction block on nerve conduction studies strongly supports:", choices: ["Multifocal motor neuropathy", "Pure myotonic dystrophy", "Primary generalized epilepsy", "Basilar migraine"], answer: 0, explanation: "Conduction block is a classic electrodiagnostic clue for multifocal motor neuropathy." },
-      { id: "p40", difficulty: "attending", topic: "imaging", prompt: "Epidural abscess imaging", stem: "The best initial imaging study for suspected spinal epidural abscess is typically:", choices: ["MRI with contrast", "Plain radiography alone", "Routine EEG", "Head CT without contrast only"], answer: 0, explanation: "MRI with contrast is the preferred imaging study for suspected spinal epidural abscess." },
-      { id: "p41", difficulty: "attending", topic: "localization", prompt: "Pseudoathetosis source", stem: "Pseudoathetosis of the fingers is most strongly linked to loss of:", choices: ["Proprioceptive dorsal column input", "Basal ganglia dopamine", "Neuromuscular transmission", "Vestibular end-organ function"], answer: 0, explanation: "Pseudoathetosis reflects impaired position sense, often from dorsal column dysfunction." },
-      { id: "p42", difficulty: "attending", topic: "stroke", prompt: "Thalamic pain syndrome", stem: "Delayed severe burning pain after a pure sensory stroke most strongly suggests injury to the:", choices: ["Thalamus", "Cerebellar flocculus", "Peripheral facial nerve", "Lumbosacral plexus"], answer: 0, explanation: "Central post-stroke pain classically follows thalamic sensory pathway injury." },
-      { id: "p43", difficulty: "attending", topic: "movement", prompt: "Holmes tremor", stem: "A low-frequency tremor present at rest, posture, and action after brainstem injury is most consistent with:", choices: ["Holmes tremor", "Primary orthostatic tremor", "Physiologic tremor", "Asterixis"], answer: 0, explanation: "Holmes tremor classically follows lesions involving midbrain or cerebellothalamic pathways." },
-      { id: "p44", difficulty: "attending", topic: "neurocritical", prompt: "Persistent coma after convulsions", stem: "Unexplained persistent altered mental status after convulsive seizures should prompt urgent evaluation for:", choices: ["Nonconvulsive status epilepticus", "Essential tremor", "Pure radiculopathy", "Benign fasciculations"], answer: 0, explanation: "Persistent unresponsiveness after convulsions should raise concern for ongoing nonconvulsive status." },
-      { id: "p45", difficulty: "attending", topic: "localization", prompt: "Balint syndrome", stem: "Optic ataxia with simultanagnosia and ocular apraxia most strongly suggests lesions in the:", choices: ["Bilateral parieto-occipital regions", "Pontomedullary junction", "Cauda equina", "Neuromuscular junction"], answer: 0, explanation: "Balint syndrome classically follows bilateral parieto-occipital dysfunction." },
-      { id: "p46", difficulty: "attending", topic: "epilepsy", prompt: "Faciobrachial dystonic seizures", stem: "Very brief frequent faciobrachial dystonic seizures should raise concern for autoimmune encephalitis associated with:", choices: ["LGI1 antibodies", "Aquaporin-4 antibodies", "Acetylcholine receptor antibodies", "Voltage-gated calcium channel antibodies only in Lambert-Eaton"], answer: 0, explanation: "Faciobrachial dystonic seizures are classically associated with LGI1 autoimmunity." },
-      { id: "p47", difficulty: "attending", topic: "stroke", prompt: "Border-zone mechanism", stem: "Internal border-zone infarcts are most often associated with:", choices: ["Hypoperfusion or severe proximal stenosis", "Primary demyelination", "Pure neuromuscular junction failure", "Temporal lobe epilepsy"], answer: 0, explanation: "Watershed infarcts classically arise in low-flow states or with severe proximal stenosis." },
-      { id: "p48", difficulty: "attending", topic: "neuromuscular", prompt: "Autonomic clue in weakness", stem: "Prominent dry mouth and other autonomic symptoms with proximal weakness most strongly suggest:", choices: ["Lambert-Eaton myasthenic syndrome", "Typical ocular myasthenia gravis", "Inclusion body myositis", "Primary lateral sclerosis"], answer: 0, explanation: "Autonomic symptoms are a classic clue favoring Lambert-Eaton over typical myasthenia gravis." }
-    ];
-
-    const QUESTION_DIFFICULTY_OVERRIDES = {
-      s14: "resident",
-      s16: "resident",
-      s21: "resident",
-      s37: "resident",
-      s44: "resident",
-      s52: "resident",
-      s53: "resident",
-      s56: "resident",
-      r3: "student",
-      r5: "student",
-      r10: "student",
-      r11: "student",
-      r14: "student",
-      r29: "student",
-      r36: "student",
-      r52: "student",
-      p1: "resident",
-      p5: "resident",
-      p6: "resident",
-      p8: "resident",
-      p10: "resident",
-      p11: "resident",
-      p12: "resident",
-      p16: "resident",
-      p18: "resident",
-      p21: "resident",
-      p23: "resident",
-      p24: "resident",
-      p28: "resident",
-      p37: "resident",
-      p40: "resident",
-      p41: "resident",
-      p44: "resident",
-      r15: "attending",
-      r23: "attending",
-      r32: "attending",
-      r53: "attending",
-    };
-
-    QUESTION_BANK.forEach((question) => {
-      if (QUESTION_DIFFICULTY_OVERRIDES[question.id]) {
-        question.difficulty = QUESTION_DIFFICULTY_OVERRIDES[question.id];
       }
-    });
+    ];
 
     const state = {
       running: false,
@@ -2460,21 +2230,10 @@
       return coarsePointer || narrowViewport ? "mobile" : "desktop";
     }
 
-    function detectPlatformMode() {
-      const ua = navigator.userAgent || "";
-      const platform = navigator.platform || "";
-      const touchPoints = navigator.maxTouchPoints || 0;
-      const isIOS = /iPad|iPhone|iPod/.test(ua)
-        || (/Mac/.test(platform) && touchPoints > 1);
-      return isIOS ? "ios" : "default";
-    }
-
     function applyResponsiveLayout() {
       responsiveLayoutRaf = 0;
       const mode = detectDeviceMode();
-      const platformMode = detectPlatformMode();
       document.body.dataset.device = mode;
-      document.body.dataset.platform = platformMode;
 
       const app = document.querySelector(".app");
       const hero = document.querySelector(".hero");
@@ -2492,12 +2251,10 @@
       const aspectRatio = CANVAS.width / CANVAS.height;
       const heroHeight = hero ? hero.offsetHeight : 0;
       const hudHeight = hud ? hud.offsetHeight : 0;
-      const hudBottom = hud ? hud.getBoundingClientRect().bottom : 0;
       const shellHeadHeight = shellHead ? shellHead.offsetHeight : 0;
       const footerHeight = footer ? footer.offsetHeight : 0;
       const mobileControlsHeight = mode === "mobile" && mobileControls ? mobileControls.offsetHeight : 0;
       const buffer = mode === "desktop" ? 44 : 72;
-      document.documentElement.style.setProperty("--mobile-question-top", `${Math.max(92, Math.round(hudBottom + 6))}px`);
       const availableHeight = clamp(
         window.innerHeight - heroHeight - hudHeight - shellHeadHeight - footerHeight - mobileControlsHeight - paddingTop - paddingBottom - buffer,
         mode === "desktop" ? 300 : 240,
