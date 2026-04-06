@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NDEC Hub — Open Neuro Education Library</title>
+  <meta name="description" content="A searchable directory of neurology education resources from around the web." />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+
+  <!-- Mobile top bar -->
+  <div class="mobileTop">
+    <button class="iconBtn" id="btnMenu" aria-label="Open menu">
+      <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+    <div class="mTitle">NDEC Hub</div>
+    <div style="width:36px;height:36px;"></div>
+  </div>
+
+  <!-- Mobile drawer -->
+  <div class="drawerOverlay" id="drawerOverlay" aria-hidden="true"></div>
+  <div class="drawer" id="drawer" aria-hidden="true">
+    <div class="sidebar">
+      <div class="brand">
+        <div class="brandLeft">
+          <div class="logo" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 3c3.9 0 7 3.1 7 7 0 2.3-1.1 4.3-2.8 5.6-.7.6-1.2 1.3-1.5 2.1H9.3c-.3-.8-.8-1.5-1.5-2.1C6.1 14.3 5 12.3 5 10c0-3.9 3.1-7 7-7z"/></svg>
+          </div>
+          <div class="brandTitle">
+            <div class="t">NDEC Hub</div>
+            <div class="s">Open Neuro Education Library</div>
+          </div>
+        </div>
+        <button class="iconBtn" id="btnMenuClose" aria-label="Close menu">
+          <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6l-12 12"/></svg>
+        </button>
+      </div>
+
+      <nav class="nav" aria-label="Navigation">
+        <a href="./" class="active">Library</a>
+        <a href="about.html">About</a>
+        <a href="contribute.html">Contribute</a>
+      </nav>
+
+      <div class="searchWrap">
+        <input id="q_m" class="search" type="text" placeholder="Search resources…" autocomplete="off" />
+        <div class="controlsRow">
+          <select class="select" id="sort_m" aria-label="Sort">
+            <option value="relevance">Sort: relevance</option>
+            <option value="title_az">Sort: title A–Z</option>
+            <option value="title_za">Sort: title Z–A</option>
+            <option value="newest">Sort: newest</option>
+            <option value="verified">Sort: verified</option>
+          </select>
+          <button class="smallBtn" id="btnReset_m">Reset</button>
+        </div>
+        <div class="chips" id="activeChips_m"></div>
+      </div>
+
+      <div class="facets" aria-label="Filters">
+        <details class="facet" open>
+          <summary><span class="label">Format</span><span class="count" id="formatCount_m">0</span></summary>
+          <div class="facetBody" id="facetFormat_m"></div>
+        </details>
+
+        <details class="facet">
+          <summary><span class="label">Topics</span><span class="count" id="topicsCount_m">0</span></summary>
+          <div class="facetBody" id="facetTopics_m"></div>
+        </details>
+
+        <details class="facet">
+          <summary><span class="label">Level</span><span class="count" id="levelCount_m">0</span></summary>
+          <div class="facetBody" id="facetLevel_m"></div>
+        </details>
+
+        <details class="facet">
+          <summary><span class="label">Time</span><span class="count" id="timeCount_m">0</span></summary>
+          <div class="facetBody" id="facetTime_m"></div>
+        </details>
+
+        <details class="facet">
+          <summary><span class="label">Access</span><span class="count" id="accessCount_m">0</span></summary>
+          <div class="facetBody" id="facetAccess_m"></div>
+        </details>
+
+        <details class="facet">
+          <summary><span class="label">Language</span><span class="count" id="langCount_m">0</span></summary>
+          <div class="facetBody" id="facetLang_m"></div>
+        </details>
+
+        <details class="facet">
+          <summary><span class="label">Badges</span><span class="count" id="badgesCount_m">0</span></summary>
+          <div class="facetBody" id="facetBadges_m"></div>
+        </details>
+      </div>
+
+      <div class="controlsRow">
+        <button class="smallBtn" id="btnReload_m" style="flex:1;">Reload</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="app">
+    <!-- Desktop sidebar -->
+    <aside class="sidebar" aria-label="NDEC Hub sidebar">
+      <div class="brand">
+        <div class="brandLeft">
+          <div class="logo" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 3c3.9 0 7 3.1 7 7 0 2.3-1.1 4.3-2.8 5.6-.7.6-1.2 1.3-1.5 2.1H9.3c-.3-.8-.8-1.5-1.5-2.1C6.1 14.3 5 12.3 5 10c0-3.9 3.1-7 7-7z"/></svg>
+          </div>
+          <div class="brandTitle">
+            <div class="t">NDEC Hub</div>
+            <div class="s">Open Neuro Education Library</div>
+          </div>
+        </div>
+        <button class="iconBtn" id="btnReload" title="Reload" aria-label="Reload">
+          <svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7M21 3v7h-7"/></svg>
+        </button>
+      </div>
+
+      <nav class="nav" aria-label="Navigation">
+        <a href="./" class="active">Library</a>
+        <a href="about.html">About</a>
+        <a href="contribute.html">Contribute</a>
+      </nav>
+
+      <div class="searchWrap">
+        <input id="q" class="search" type="text" placeholder="Search resources…" autocomplete="off" />
+        <div class="controlsRow">
+          <select class="select" id="sort" aria-label="Sort">
+            <option value="relevance">Sort: relevance</option>
+            <option value="title_az">Sort: title A–Z</option>
+            <option value="title_za">Sort: title Z–A</option>
+            <option value="newest">Sort: newest</option>
+            <option value="verified">Sort: verified</option>
+          </select>
+          <button class="smallBtn" id="btnReset">Reset</button>
+        </div>
+        <div class="chips" id="activeChips"></div>
+      </div>
+
+      <div class="facets" aria-label="Filters">
+        <details class="facet" open>
+          <summary><span class="label">Format</span><span class="count" id="formatCount">0</span></summary>
+          <div class="facetBody" id="facetFormat"></div>
+        </details>
+
+        <details class="facet">
+          <summary><span class="label">Topics</span><span class="count" id="topicsCount">0</span></summary>
+          <div class="facetBody" id="facetTopics"></div>
+        </details>
+
+        <details class="facet">
+          <summary><span class="label">Level</span><span class="count" id="levelCount">0</span></summary>
+          <div class="facetBody" id="facetLevel"></div>
+        </details>
+
+        <details class="facet">
+          <summary><span class="label">Time</span><span class="count" id="timeCount">0</span></summary>
+          <div class="facetBody" id="facetTime"></div>
+        </details>
+
+        <details class="facet">
+          <summary><span class="label">Access</span><span class="count" id="accessCount">0</span></summary>
+          <div class="facetBody" id="facetAccess"></div>
+        </details>
+
+        <details class="facet">
+          <summary><span class="label">Language</span><span class="count" id="langCount">0</span></summary>
+          <div class="facetBody" id="facetLang"></div>
+        </details>
+
+        <details class="facet">
+          <summary><span class="label">Badges</span><span class="count" id="badgesCount">0</span></summary>
+          <div class="facetBody" id="facetBadges"></div>
+        </details>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main" aria-label="Resource library">
+      <div class="mainInner">
+        <div class="topBar">
+          <div>
+            <h1 class="h1">Library</h1>
+            <div class="sub">Search and filter neurology education resources across formats, topics, and audiences.</div>
+          </div>
+          <div class="status">
+            <span id="countHint">—</span> • <span id="status">loading…</span>
+          </div>
+        </div>
+
+        <div class="countLine" id="resultCount">—</div>
+        <div class="cards" id="cards"></div>
+        <div class="panelMsg" id="panelMsg" style="display:none;"></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Mobile bridge (mirrors desktop state) -->
+  <script>
+    function forwardInput(fromId, toId){
+      const a=document.getElementById(fromId), b=document.getElementById(toId);
+      if(!a||!b) return;
+      a.addEventListener("input", ()=>{ b.value=a.value; b.dispatchEvent(new Event("input",{bubbles:true})); });
+      a.addEventListener("change", ()=>{ b.value=a.value; b.dispatchEvent(new Event("change",{bubbles:true})); });
+    }
+    function forwardClick(fromId, toId){
+      const a=document.getElementById(fromId), b=document.getElementById(toId);
+      if(!a||!b) return;
+      a.addEventListener("click", (e)=>{ e.preventDefault(); b.click(); });
+    }
+    function cloneFacet(desktopId, mobileId){
+      const d=document.getElementById(desktopId), m=document.getElementById(mobileId);
+      if(!d||!m) return;
+      m.innerHTML = d.innerHTML;
+      const dInputs = Array.from(d.querySelectorAll("input[type=checkbox]"));
+      const map = new Map(dInputs.map(x=>[x.id, x]));
+      Array.from(m.querySelectorAll("input[type=checkbox]")).forEach(x=>{
+        const target = map.get(x.id);
+        if(!target) return;
+        x.checked = target.checked;
+        x.addEventListener("change", ()=>{ target.checked = x.checked; target.dispatchEvent(new Event("change",{bubbles:true})); });
+      });
+    }
+
+    forwardInput("q_m","q");
+    forwardInput("sort_m","sort");
+    forwardClick("btnReset_m","btnReset");
+    forwardClick("btnReload_m","btnReload");
+
+    window.__NDEC_CLONE_FACETS__ = function(){
+      cloneFacet("facetFormat","facetFormat_m");
+      cloneFacet("facetTopics","facetTopics_m");
+      cloneFacet("facetLevel","facetLevel_m");
+      cloneFacet("facetTime","facetTime_m");
+      cloneFacet("facetAccess","facetAccess_m");
+      cloneFacet("facetLang","facetLang_m");
+      cloneFacet("facetBadges","facetBadges_m");
+
+      const q=document.getElementById("q"), qm=document.getElementById("q_m");
+      const s=document.getElementById("sort"), sm=document.getElementById("sort_m");
+      if(q&&qm) qm.value=q.value;
+      if(s&&sm) sm.value=s.value;
+
+      const c=document.getElementById("activeChips"), cm=document.getElementById("activeChips_m");
+      if(c&&cm){ cm.innerHTML = c.innerHTML; }
+    };
+    window.__NDEC_SYNC_CHIPS__ = function(){
+      const c=document.getElementById("activeChips"), cm=document.getElementById("activeChips_m");
+      if(!c||!cm) return;
+      cm.innerHTML = c.innerHTML;
+      const dChips = Array.from(c.querySelectorAll(".chip"));
+      const mChips = Array.from(cm.querySelectorAll(".chip"));
+      mChips.forEach((chip, i)=>{
+        const tgt = dChips[i];
+        if(!tgt) return;
+        chip.addEventListener("click", (e)=>{ e.preventDefault(); tgt.click(); });
+      });
+    };
+  </script>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>

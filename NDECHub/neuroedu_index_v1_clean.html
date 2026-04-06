@@ -1,0 +1,1018 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Open Neuro Education Library</title>
+  <meta name="description" content="A searchable directory of neurology education resources from around the web." />
+
+  <!-- Clean, minimal styling (v1) -->
+  <style>
+    :root{
+      --bg: #ffffff;
+      --bg2:#f7f7f8;
+      --card:#ffffff;
+      --text:#111827;
+      --muted:#6b7280;
+      --muted2:#9ca3af;
+      --border:#e5e7eb;
+      --shadow: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow2: 0 10px 24px rgba(0,0,0,0.08);
+      --radius: 16px;
+      --radius2: 12px;
+      --focus: 0 0 0 4px rgba(17,24,39,0.10);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+
+    *{ box-sizing:border-box; }
+    html, body{ height:100%; }
+    body{
+      margin:0;
+      font-family: var(--sans);
+      background: linear-gradient(180deg, var(--bg), var(--bg2));
+      color: var(--text);
+      overflow-x:hidden;
+    }
+
+    .wrap{ max-width: 1100px; margin: 0 auto; padding: 26px 18px 46px; }
+
+    header{
+      display:flex; align-items:flex-end; justify-content:space-between; gap:16px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 18px;
+      margin-bottom: 18px;
+      flex-wrap:wrap;
+    }
+    .brand{ min-width: 280px; }
+    .title{
+      font-size: 22px;
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+      margin:0;
+      font-weight: 650;
+    }
+    .subtitle{
+      margin-top:6px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.35;
+      max-width: 66ch;
+    }
+    .actions{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+
+    button, select, input{
+      font-family: var(--sans);
+      font-size: 14px;
+    }
+    button{
+      appearance:none;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 999px;
+      cursor:pointer;
+      box-shadow: var(--shadow);
+      transition: transform .08s ease, box-shadow .15s ease, background .15s ease;
+      user-select:none;
+    }
+    button:hover{ box-shadow: var(--shadow2); transform: translateY(-1px); }
+    button:active{ transform: translateY(0); }
+    button[disabled]{ opacity:0.5; cursor:not-allowed; box-shadow:none; transform:none; }
+    button.ghost{ background: transparent; }
+    button.danger{ border-color: rgba(239,68,68,0.25); }
+    button.small{ padding: 8px 10px; font-size: 13px; }
+
+    .controls{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      margin-bottom: 14px;
+    }
+
+    .row{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    .search{
+      width:100%;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      padding: 12px 14px;
+      border-radius: 999px;
+      outline:none;
+      box-shadow: var(--shadow);
+    }
+    .search:focus{ box-shadow: var(--focus); }
+
+    .select{
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 999px;
+      outline:none;
+      box-shadow: var(--shadow);
+    }
+    .select:focus{ box-shadow: var(--focus); }
+
+    .status{
+      margin-left:auto;
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .chips{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+    }
+    .chip{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      border: 1px solid var(--border);
+      background: var(--card);
+      padding: 8px 10px;
+      border-radius: 999px;
+      box-shadow: var(--shadow);
+      cursor:pointer;
+      color: var(--text);
+      font-size: 13px;
+    }
+    .chip span.k{
+      font-family: var(--mono);
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .chip:hover{ box-shadow: var(--shadow2); }
+
+    details.filters{
+      border: 1px solid var(--border);
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    details.filters summary{
+      padding: 12px 14px;
+      cursor:pointer;
+      user-select:none;
+      list-style:none;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      font-weight: 600;
+    }
+    details.filters summary::-webkit-details-marker{ display:none; }
+    .filterBody{
+      border-top: 1px solid var(--border);
+      padding: 14px;
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+    @media (max-width: 960px){
+      .filterBody{ grid-template-columns: 1fr; }
+      .status{ margin-left:0; }
+    }
+    .facet{
+      border: 1px solid var(--border);
+      border-radius: var(--radius2);
+      background: #fbfbfb;
+      overflow:hidden;
+    }
+    .facetHead{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      padding: 10px 12px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      background: #fafafa;
+    }
+    .facetList{
+      padding: 10px 12px 12px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      max-height: 220px;
+      overflow:auto;
+    }
+    .facetList::-webkit-scrollbar{ width: 10px; }
+    .facetList::-webkit-scrollbar-thumb{ background: rgba(17,24,39,0.12); border-radius: 999px; border: 2px solid rgba(255,255,255,0.9); }
+    .facetList::-webkit-scrollbar-track{ background: rgba(17,24,39,0.04); border-radius: 999px; }
+
+    label.chk{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      cursor:pointer;
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.25;
+    }
+    label.chk input{ margin-top: 2px; }
+
+    .main{
+      display:flex;
+      flex-direction:column;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .countLine{
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 6px;
+      margin-bottom: 2px;
+    }
+
+    .cards{ display:flex; flex-direction:column; gap: 10px; }
+    .card{
+      border: 1px solid var(--border);
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 14px;
+      box-shadow: var(--shadow);
+      transition: box-shadow .15s ease, transform .08s ease;
+    }
+    .card:hover{ box-shadow: var(--shadow2); transform: translateY(-1px); }
+
+    .cardTop{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      justify-content:space-between;
+      flex-wrap:wrap;
+    }
+    .cardTitle{
+      font-size: 16px;
+      margin:0;
+      line-height: 1.25;
+      font-weight: 650;
+      letter-spacing: -0.01em;
+      min-width: 0;
+    }
+    .cardTitle a{
+      color: var(--text);
+      text-decoration: none;
+    }
+    .cardTitle a:hover{ text-decoration: underline; }
+
+    .meta{
+      margin-top: 6px;
+      display:flex;
+      gap: 8px;
+      flex-wrap:wrap;
+      align-items:center;
+      color: var(--muted);
+      font-size: 12px;
+      font-family: var(--mono);
+    }
+    .badge{
+      border: 1px solid var(--border);
+      background: #fafafa;
+      padding: 4px 8px;
+      border-radius: 999px;
+    }
+
+    .desc{
+      margin-top: 8px;
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+    .desc.muted{ color: var(--muted); }
+
+    .tags{
+      margin-top: 10px;
+      display:flex;
+      gap: 8px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .tag{
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      color: var(--muted);
+      font-family: var(--mono);
+    }
+
+    .empty{
+      border: 1px dashed var(--border);
+      background: rgba(255,255,255,0.65);
+      border-radius: var(--radius);
+      padding: 20px;
+      color: var(--muted);
+      text-align:center;
+    }
+
+    .banner{
+      display:none;
+      border: 1px solid rgba(239,68,68,0.25);
+      background: rgba(239,68,68,0.06);
+      color: #991b1b;
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      line-height: 1.35;
+      font-size: 13px;
+      box-shadow: var(--shadow);
+    }
+    .banner strong{ font-weight: 700; }
+    .banner pre{
+      margin: 10px 0 0;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.7);
+      border: 1px solid rgba(0,0,0,0.06);
+      white-space: pre-wrap;
+      color: #7f1d1d;
+      font-family: var(--mono);
+      font-size: 12px;
+    }
+
+    footer{
+      margin-top: 22px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      color: var(--muted2);
+      font-size: 12px;
+      font-family: var(--mono);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="title">Open Neuro Education Library</div>
+        <div class="subtitle">A curated, searchable directory of neurology education resources from around the web.</div>
+      </div>
+      <div class="actions">
+        <button class="small" id="btnReload">Reload</button>
+        <button class="small danger" id="btnClear">Reset</button>
+      </div>
+    </header>
+
+    <div class="banner" id="banner"></div>
+
+    <section class="controls" aria-label="Search and filters">
+      <input id="q" class="search" type="text" placeholder="Search resources…" autocomplete="off" />
+
+      <div class="row">
+        <select class="select" id="sort" aria-label="Sort">
+          <option value="relevance">Sort: relevance</option>
+          <option value="title_az">Sort: title A–Z</option>
+          <option value="title_za">Sort: title Z–A</option>
+          <option value="newest">Sort: newest (if available)</option>
+          <option value="verified">Sort: recently verified</option>
+        </select>
+
+        <div class="status" id="status">Loading…</div>
+      </div>
+
+      <div class="chips" id="activeChips"></div>
+
+      <details class="filters" id="filters">
+        <summary>
+          <span>Filters</span>
+          <span style="color:var(--muted); font-family:var(--mono); font-size:12px;" id="filterSummary">—</span>
+        </summary>
+        <div class="filterBody">
+          <div class="facet">
+            <div class="facetHead"><span>Format</span><span id="countFormat">0</span></div>
+            <div class="facetList" id="facetFormat"></div>
+          </div>
+
+          <div class="facet">
+            <div class="facetHead"><span>Topics</span><span id="countTopics">0</span></div>
+            <div class="facetList" id="facetTopics"></div>
+          </div>
+
+          <div class="facet">
+            <div class="facetHead"><span>Level</span><span id="countLevel">0</span></div>
+            <div class="facetList" id="facetLevel"></div>
+          </div>
+
+          <div class="facet">
+            <div class="facetHead"><span>Time</span><span id="countTime">0</span></div>
+            <div class="facetList" id="facetTime"></div>
+          </div>
+
+          <div class="facet">
+            <div class="facetHead"><span>Access</span><span id="countAccess">0</span></div>
+            <div class="facetList" id="facetAccess"></div>
+          </div>
+
+          <div class="facet">
+            <div class="facetHead"><span>Language</span><span id="countLang">0</span></div>
+            <div class="facetList" id="facetLang"></div>
+          </div>
+
+          <div class="facet" style="grid-column: 1 / -1;">
+            <div class="facetHead"><span>Badges</span><span id="countBadges">0</span></div>
+            <div class="facetList" id="facetBadges" style="max-height:140px;"></div>
+          </div>
+        </div>
+      </details>
+    </section>
+
+    <section class="main" aria-label="Results">
+      <div class="countLine" id="resultCount">—</div>
+      <div class="cards" id="cards"></div>
+      <div class="empty" id="empty" style="display:none;">No matches.</div>
+    </section>
+
+    <footer id="footer"></footer>
+  </div>
+
+<script>
+/* =========================================
+   Open Neuro Education Library — v1 clean
+   Data source: public Google Sheet (CSV)
+   ========================================= */
+
+/* --- Google Sheet config --- */
+const GOOGLE_SHEET_ID = "1c-L3Q0rqXFuh95zThfcocbB-65qsWbdSOn2eTTOmuyo";
+const SHEET_NAME = ""; // optional: set to exact tab name
+
+const CSV_URLS = [
+  SHEET_NAME
+    ? `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`
+    : `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/gviz/tq?tqx=out:csv`,
+  `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/export?format=csv`
+];
+
+/* --- Utilities --- */
+function byId(id){ return document.getElementById(id); }
+function safeTrim(x){ return (x ?? "").toString().trim(); }
+function escapeHtml(s){
+  return (s ?? "").toString()
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+}
+function normalizeHeaderKey(k){ return (k ?? "").toString().toLowerCase().replace(/[^a-z0-9]/g,""); }
+function normRow(row){
+  const n = {};
+  for (const k in row){
+    const nk = normalizeHeaderKey(k);
+    if (nk && n[nk] === undefined) n[nk] = row[k];
+  }
+  return n;
+}
+function firstNonEmpty(...vals){
+  for (const v of vals){
+    const s = safeTrim(v);
+    if (s) return s;
+  }
+  return "";
+}
+function splitMulti(s){
+  const raw = safeTrim(s);
+  if (!raw) return [];
+  return raw
+    .split(/[;,|]/g)
+    .map(x => safeTrim(x))
+    .filter(Boolean)
+    .map(x => x.replace(/\s+/g," "));
+}
+function asLowerKey(s){ return safeTrim(s).toLowerCase(); }
+function uniqSorted(arr){
+  const seen = new Map();
+  arr.forEach(v => {
+    const k = asLowerKey(v);
+    if (!k) return;
+    if (!seen.has(k)) seen.set(k, v);
+  });
+  return Array.from(seen.values()).sort((a,b)=>a.localeCompare(b));
+}
+function parseTimeMinutes(val){
+  const s = safeTrim(val);
+  if (!s) return null;
+  if (/^\d+(\.\d+)?$/.test(s)) return Math.round(Number(s));
+  const m = s.match(/(\d+)\s*[-–—]\s*(\d+)/);
+  if (m) return Math.round((Number(m[1]) + Number(m[2]))/2);
+  const m2 = s.match(/(\d+)\s*(min|mins|minutes|m)\b/i);
+  if (m2) return Number(m2[1]);
+  return null;
+}
+function timeBucket(mins){
+  if (mins === null || mins === undefined) return "unknown";
+  if (mins < 10) return "<10";
+  if (mins < 30) return "10–30";
+  if (mins < 60) return "30–60";
+  return "60+";
+}
+function safeUrl(u){
+  const s = safeTrim(u);
+  if (!s) return "";
+  if (/^(https?:\/\/|mailto:)/i.test(s)) return s;
+  if (/^[a-z0-9.-]+\.[a-z]{2,}\/?.*/i.test(s)) return "https://" + s;
+  return s;
+}
+function parseCSV(text){
+  // RFC4180-ish CSV parser
+  const rows = [];
+  let row = [];
+  let field = "";
+  let i = 0;
+  let inQuotes = false;
+
+  while (i < text.length){
+    const c = text[i];
+
+    if (inQuotes){
+      if (c === '"'){
+        if (text[i+1] === '"'){ field += '"'; i += 2; continue; }
+        inQuotes = false; i++; continue;
+      } else {
+        field += c; i++; continue;
+      }
+    } else {
+      if (c === '"'){ inQuotes = true; i++; continue; }
+      if (c === ","){ row.push(field); field=""; i++; continue; }
+      if (c === "\r"){ i++; continue; }
+      if (c === "\n"){ row.push(field); rows.push(row); row=[]; field=""; i++; continue; }
+      field += c; i++; continue;
+    }
+  }
+  row.push(field);
+  rows.push(row);
+
+  if (!rows.length) return [];
+  const headers = rows[0].map(h => safeTrim(h));
+  const out = [];
+  for (let r=1;r<rows.length;r++){
+    const vals = rows[r];
+    if (vals.length===1 && safeTrim(vals[0])==="") continue;
+    const obj = {};
+    for (let c=0;c<headers.length;c++){
+      obj[headers[c]] = (vals[c] ?? "");
+    }
+    out.push(obj);
+  }
+  return out;
+}
+
+/* --- State --- */
+const STATE = {
+  all: [],
+  filtered: [],
+  facets: { format: [], topics: [], level: [], time: [], access: [], lang: [], badges: [] },
+  selected: { format: new Set(), topics: new Set(), level: new Set(), time: new Set(), access: new Set(), lang: new Set(), badges: new Set() },
+  q: "",
+  sort: "relevance",
+  loadedAt: null,
+  lastErrorReport: null
+};
+
+/* --- Row -> resource model (robust to column naming) --- */
+function resourceFromRow(row){
+  const n = normRow(row);
+
+  const title = firstNonEmpty(row.Title, row.title, row.Name, row.name, n.title, n.name, n.resourcename);
+  const url = safeUrl(firstNonEmpty(row.URL, row.Url, row.url, row.Link, row.link, n.url, n.link, n.resourceurl));
+  if (!title || !url) return null;
+
+  const desc = firstNonEmpty(row.Description, row.description, row.Summary, row.summary, row.Blurb, row.blurb, n.description, n.summary, n.blurb);
+  const format = firstNonEmpty(row.Format, row.format, row.Type, row.type, row.Medium, row.medium, n.format, n.type, n.medium) || "unknown";
+
+  const topics = splitMulti(firstNonEmpty(row.Topics, row.topics, row.Topic, row.topic, row.Subspecialty, row.subspecialty, n.topics, n.topic, n.subspecialty));
+  const tags = splitMulti(firstNonEmpty(row.Tags, row.tags, row.Keywords, row.keywords, n.tags, n.keywords));
+  const level = splitMulti(firstNonEmpty(row.Level, row.level, row.LearnerLevel, row.learner_level, row.Audience, row.audience, n.level, n.learnerlevel, n.audience));
+
+  const timeRaw = firstNonEmpty(row.Time, row.time, row.Duration, row.duration, row.Length, row.length, row.Minutes, row.minutes, n.time, n.duration, n.length, n.minutes);
+  const mins = parseTimeMinutes(timeRaw);
+  const tBucket = timeBucket(mins);
+
+  const access = firstNonEmpty(row.Access, row.access, row.Paywall, row.paywall, n.access, n.paywall) || "unknown";
+  const language = firstNonEmpty(row.Language, row.language, row.Lang, row.lang, n.language, n.lang) || "en";
+  const creator = firstNonEmpty(row.Creator, row.creator, row.Author, row.author, row.Speaker, row.speaker, row.Host, row.host, n.creator, n.author, n.speaker, n.host);
+  const source = firstNonEmpty(row.Source, row.source, row.Organization, row.organization, row.Org, row.org, n.source, n.organization, n.org);
+
+  const badges = splitMulti(firstNonEmpty(row.Badges, row.badges, row.Badge, row.badge, row.Status, row.status, n.badges, n.badge, n.status));
+  const lastVerified = firstNonEmpty(row.LastVerified, row.last_verified, row.lastVerified, row.Verified, row.verified, n.lastverified, n.lastverifieddate, n.verified);
+  const dateAdded = firstNonEmpty(row.DateAdded, row.date_added, row.dateAdded, row.Added, row.added, n.dateadded, n.added);
+
+  return {
+    title: safeTrim(title),
+    url: safeTrim(url),
+    desc: safeTrim(desc),
+    format: safeTrim(format),
+    topics, tags, level,
+    time_minutes: mins, time_bucket: tBucket,
+    access: safeTrim(access),
+    language: safeTrim(language),
+    creator: safeTrim(creator),
+    source: safeTrim(source),
+    badges,
+    last_verified: safeTrim(lastVerified),
+    date_added: safeTrim(dateAdded)
+  };
+}
+
+/* --- Filtering --- */
+function matchesFacetSet(valOrArray, set){
+  if (!set || set.size === 0) return true;
+  if (Array.isArray(valOrArray)) return valOrArray.some(v => set.has(asLowerKey(v)));
+  return set.has(asLowerKey(valOrArray));
+}
+function searchScore(r, qTokens){
+  if (!qTokens.length) return 0;
+  const hay = {
+    title: safeTrim(r.title).toLowerCase(),
+    desc: safeTrim(r.desc).toLowerCase(),
+    creator: safeTrim(r.creator).toLowerCase(),
+    source: safeTrim(r.source).toLowerCase(),
+    format: safeTrim(r.format).toLowerCase(),
+    tags: (r.tags||[]).join(" ").toLowerCase(),
+    topics: (r.topics||[]).join(" ").toLowerCase(),
+    level: (r.level||[]).join(" ").toLowerCase()
+  };
+  let score = 0;
+  qTokens.forEach(t => {
+    if (!t) return;
+    if (hay.title.includes(t)) score += 6;
+    if (hay.tags.includes(t) || hay.topics.includes(t)) score += 4;
+    if (hay.creator.includes(t) || hay.source.includes(t)) score += 2;
+    if (hay.desc.includes(t)) score += 1;
+    if (hay.format.includes(t)) score += 1;
+  });
+  return score;
+}
+
+function applyFilters(){
+  const q = safeTrim(STATE.q).toLowerCase();
+  const qTokens = q ? q.split(/\s+/g).map(s=>s.trim()).filter(Boolean) : [];
+  const out = [];
+  for (const r of STATE.all){
+    if (!matchesFacetSet(r.format, STATE.selected.format)) continue;
+    if (!matchesFacetSet(r.topics, STATE.selected.topics)) continue;
+    if (!matchesFacetSet(r.level, STATE.selected.level)) continue;
+    if (!matchesFacetSet(r.time_bucket, STATE.selected.time)) continue;
+    if (!matchesFacetSet(r.access, STATE.selected.access)) continue;
+    if (!matchesFacetSet(r.language, STATE.selected.lang)) continue;
+    if (!matchesFacetSet(r.badges, STATE.selected.badges)) continue;
+
+    const s = searchScore(r, qTokens);
+    if (qTokens.length && s === 0) continue;
+    out.push({ r, score: s });
+  }
+
+  const sort = STATE.sort;
+  out.sort((a,b)=>{
+    if (sort === "title_az") return a.r.title.localeCompare(b.r.title);
+    if (sort === "title_za") return b.r.title.localeCompare(a.r.title);
+    if (sort === "verified") return safeTrim(b.r.last_verified).localeCompare(safeTrim(a.r.last_verified));
+    if (sort === "newest"){
+      const ad = Date.parse(a.r.date_added || "");
+      const bd = Date.parse(b.r.date_added || "");
+      if (!isNaN(ad) && !isNaN(bd)) return bd - ad;
+      return safeTrim(b.r.date_added).localeCompare(safeTrim(a.r.date_added));
+    }
+    if (b.score !== a.score) return b.score - a.score;
+    return a.r.title.localeCompare(b.r.title);
+  });
+
+  STATE.filtered = out.map(x => x.r);
+}
+
+/* --- Facets render --- */
+function rebuildFacets(){
+  const formats=[], topics=[], levels=[], times=[], access=[], lang=[], badges=[];
+  STATE.all.forEach(r => {
+    formats.push(r.format || "unknown");
+    (r.topics||[]).forEach(t => topics.push(t));
+    (r.level||[]).forEach(l => levels.push(l));
+    times.push(r.time_bucket || "unknown");
+    access.push(r.access || "unknown");
+    lang.push(r.language || "en");
+    (r.badges||[]).forEach(b => badges.push(b));
+  });
+  STATE.facets.format = uniqSorted(formats);
+  STATE.facets.topics = uniqSorted(topics);
+  STATE.facets.level  = uniqSorted(levels);
+  STATE.facets.time   = uniqSorted(times);
+  STATE.facets.access = uniqSorted(access);
+  STATE.facets.lang   = uniqSorted(lang);
+  STATE.facets.badges = uniqSorted(badges);
+
+  renderFacet("facetFormat", "format", STATE.facets.format, "countFormat");
+  renderFacet("facetTopics", "topics", STATE.facets.topics, "countTopics");
+  renderFacet("facetLevel",  "level",  STATE.facets.level,  "countLevel");
+  renderFacet("facetTime",   "time",   STATE.facets.time,   "countTime");
+  renderFacet("facetAccess", "access", STATE.facets.access, "countAccess");
+  renderFacet("facetLang",   "lang",   STATE.facets.lang,   "countLang");
+  renderFacet("facetBadges", "badges", STATE.facets.badges, "countBadges");
+
+  const active = activeChipCount();
+  byId("filterSummary").textContent = active ? `${active} active` : "none";
+}
+
+function renderFacet(containerId, key, values, countId){
+  const el = byId(containerId);
+  const countEl = byId(countId);
+  if (!el) return;
+  el.innerHTML = "";
+  values.forEach(v => {
+    const id = `chk_${key}_${normalizeHeaderKey(v)}`;
+    const lab = document.createElement("label");
+    lab.className = "chk";
+    lab.innerHTML = `<input type="checkbox" id="${id}" /><div>${escapeHtml(v)}</div>`;
+    const input = lab.querySelector("input");
+    input.checked = STATE.selected[key].has(asLowerKey(v));
+    input.addEventListener("change", ()=>{
+      if (input.checked) STATE.selected[key].add(asLowerKey(v));
+      else STATE.selected[key].delete(asLowerKey(v));
+      syncUrlFromState();
+      applyAndRender();
+      rebuildFacets();
+    });
+    el.appendChild(lab);
+  });
+  if (countEl) countEl.textContent = String(values.length);
+}
+
+/* --- Chips --- */
+function activeChips(){
+  const chips = [];
+  function pushSet(label, set){ set.forEach(v => chips.push({ label, value: v })); }
+  pushSet("format", STATE.selected.format);
+  pushSet("topic",  STATE.selected.topics);
+  pushSet("level",  STATE.selected.level);
+  pushSet("time",   STATE.selected.time);
+  pushSet("access", STATE.selected.access);
+  pushSet("lang",   STATE.selected.lang);
+  pushSet("badge",  STATE.selected.badges);
+  if (safeTrim(STATE.q)) chips.unshift({ label:"q", value: STATE.q });
+  return chips;
+}
+function activeChipCount(){
+  return activeChips().filter(c => c.label !== "q").length;
+}
+function renderChips(){
+  const el = byId("activeChips");
+  if (!el) return;
+  el.innerHTML = "";
+  const chips = activeChips();
+  chips.forEach(ch => {
+    const b = document.createElement("div");
+    b.className = "chip";
+    b.innerHTML = `<span class="k">${escapeHtml(ch.label)}</span><span>${escapeHtml(ch.value)}</span><span style="color:var(--muted); font-family:var(--mono);">×</span>`;
+    b.title = "Remove";
+    b.addEventListener("click", ()=>{
+      if (ch.label === "q"){ STATE.q=""; byId("q").value=""; }
+      else{
+        const map = { format:"format", topic:"topics", level:"level", time:"time", access:"access", lang:"lang", badge:"badges" };
+        const k = map[ch.label];
+        if (k) STATE.selected[k].delete(asLowerKey(ch.value));
+      }
+      syncUrlFromState();
+      applyAndRender();
+      rebuildFacets();
+    });
+    el.appendChild(b);
+  });
+}
+
+/* --- Results render --- */
+function pill(label){
+  return `<span class="badge">${escapeHtml(label)}</span>`;
+}
+function renderResults(){
+  const cards = byId("cards");
+  const empty = byId("empty");
+  const rc = byId("resultCount");
+  cards.innerHTML = "";
+  rc.textContent = `${STATE.filtered.length.toLocaleString()} resource(s)`;
+
+  if (!STATE.filtered.length){
+    empty.style.display = "block";
+    return;
+  }
+  empty.style.display = "none";
+
+  STATE.filtered.forEach(r => {
+    const div = document.createElement("div");
+    div.className = "card";
+
+    const creator = safeTrim(r.creator);
+    const source = safeTrim(r.source);
+    const who = [creator, source].filter(Boolean).join(" • ");
+
+    const metaBits = [];
+    if (r.format) metaBits.push(pill(r.format));
+    if (r.time_bucket && r.time_bucket !== "unknown") metaBits.push(pill(r.time_bucket));
+    if (r.access && r.access !== "unknown") metaBits.push(pill(r.access));
+    if (r.language && r.language !== "en") metaBits.push(pill(r.language));
+    (r.badges||[]).slice(0,3).forEach(b => metaBits.push(pill(b)));
+
+    const tags = [...(r.topics||[]), ...(r.tags||[])].slice(0, 10);
+
+    div.innerHTML = `
+      <div class="cardTop">
+        <h3 class="cardTitle"><a href="${escapeHtml(r.url)}" target="_blank" rel="noopener">${escapeHtml(r.title)}</a></h3>
+        <a href="${escapeHtml(r.url)}" target="_blank" rel="noopener" style="color:var(--muted); text-decoration:none; font-family:var(--mono); font-size:12px;">open ↗</a>
+      </div>
+      <div class="meta">
+        ${metaBits.join("")}
+        ${who ? `<span style="color:var(--muted);">•</span><span>${escapeHtml(who)}</span>` : ""}
+        ${r.last_verified ? `<span style="color:var(--muted);">•</span><span>verified: ${escapeHtml(r.last_verified)}</span>` : ""}
+      </div>
+      ${r.desc ? `<div class="desc">${escapeHtml(r.desc)}</div>` : ``}
+      ${tags.length ? `<div class="tags">${tags.map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join("")}</div>` : ``}
+    `;
+
+    cards.appendChild(div);
+  });
+}
+
+/* --- URL sync --- */
+function getParamList(params, key){
+  const v = params.get(key);
+  if (!v) return [];
+  return v.split(",").map(x=>safeTrim(x)).filter(Boolean);
+}
+function setFromUrl(){
+  const u = new URL(window.location.href);
+  const p = u.searchParams;
+  STATE.q = safeTrim(p.get("q") || "");
+  STATE.sort = safeTrim(p.get("sort") || "relevance");
+  byId("q").value = STATE.q;
+  byId("sort").value = STATE.sort;
+
+  function setSet(key, paramKey){
+    const arr = getParamList(p, paramKey);
+    STATE.selected[key] = new Set(arr.map(asLowerKey));
+  }
+  setSet("format","format");
+  setSet("topics","topics");
+  setSet("level","level");
+  setSet("time","time");
+  setSet("access","access");
+  setSet("lang","lang");
+  setSet("badges","badges");
+}
+function syncUrlFromState(){
+  const u = new URL(window.location.href);
+  const p = u.searchParams;
+
+  function setList(key, paramKey){
+    const arr = Array.from(STATE.selected[key].values()).filter(Boolean);
+    if (arr.length) p.set(paramKey, arr.join(","));
+    else p.delete(paramKey);
+  }
+
+  if (safeTrim(STATE.q)) p.set("q", STATE.q); else p.delete("q");
+  if (STATE.sort && STATE.sort !== "relevance") p.set("sort", STATE.sort); else p.delete("sort");
+
+  setList("format","format");
+  setList("topics","topics");
+  setList("level","level");
+  setList("time","time");
+  setList("access","access");
+  setList("lang","lang");
+  setList("badges","badges");
+
+  window.history.replaceState({}, "", u.toString());
+}
+
+/* --- Error banner --- */
+function showBanner(report){
+  const b = byId("banner");
+  b.style.display = "block";
+  b.innerHTML = `<strong>Could not load the Google Sheet.</strong><div style="margin-top:6px; color:#7f1d1d;">Make sure the sheet is public (Viewer) or published as CSV.</div><pre>${escapeHtml(report || "")}</pre>`;
+}
+function hideBanner(){
+  const b = byId("banner");
+  b.style.display = "none";
+  b.innerHTML = "";
+}
+
+/* --- Loading --- */
+async function fetchSheetCsv(){
+  const attempts = [];
+  for (const url of CSV_URLS){
+    const a = { url, ok:false, error:"" };
+    attempts.push(a);
+    try{
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok){ a.error = `HTTP ${res.status} ${res.statusText || ""}`.trim(); continue; }
+      const text = await res.text();
+      const sample = (text || "").slice(0, 600).trim().toLowerCase();
+      const looksHtml = sample.startsWith("<!doctype") || sample.startsWith("<html") || sample.includes("<head") || sample.includes("<body");
+      if (looksHtml){ a.error = "Received HTML instead of CSV (likely permissions page)."; continue; }
+      a.ok = true;
+      return { csv: text, attempts };
+    }catch(e){
+      a.error = (e && e.message) ? e.message : String(e);
+      continue;
+    }
+  }
+  const report = buildLoadErrorReport(attempts);
+  const err = new Error("Could not load Google Sheet CSV.");
+  err.report = report;
+  throw err;
+}
+function buildLoadErrorReport(attempts){
+  const lines = [];
+  lines.push("Endpoints tried:");
+  attempts.forEach((a, i)=>{
+    const status = a.ok ? "OK" : `FAIL — ${a.error || "unknown error"}`;
+    lines.push(`${i+1}. ${a.url}`);
+    lines.push(`   ${status}`);
+  });
+  lines.push("");
+  if (location.protocol === "file:"){
+    lines.push("Note: file:// often breaks fetch (CORS). Serve over http(s).");
+  }
+  return lines.join("\n");
+}
+
+function applyAndRender(){
+  applyFilters();
+  renderChips();
+  renderResults();
+  const dt = STATE.loadedAt ? new Date(STATE.loadedAt) : null;
+  byId("footer").textContent = dt ? `Loaded ${dt.toLocaleString()}` : "";
+}
+
+async function loadAndRender(){
+  byId("status").textContent = "Loading…";
+  hideBanner();
+  try{
+    const resp = await fetchSheetCsv();
+    const rows = parseCSV(resp.csv);
+    const resources = [];
+    rows.forEach(row => {
+      const r = resourceFromRow(row);
+      if (r) resources.push(r);
+    });
+    STATE.all = resources;
+    STATE.loadedAt = Date.now();
+
+    setFromUrl();
+    rebuildFacets();
+    applyAndRender();
+
+    byId("status").textContent = `${resources.length.toLocaleString()} resources`;
+  }catch(e){
+    STATE.all = [];
+    STATE.filtered = [];
+    applyAndRender();
+    byId("status").textContent = "Load failed";
+    showBanner(e && e.report ? e.report : (e && e.message ? e.message : String(e)));
+  }
+}
+
+/* --- UI wiring --- */
+function clearAll(){
+  STATE.q = ""; byId("q").value = "";
+  Object.keys(STATE.selected).forEach(k => STATE.selected[k] = new Set());
+  STATE.sort = "relevance"; byId("sort").value = "relevance";
+  syncUrlFromState();
+  rebuildFacets();
+  applyAndRender();
+}
+function wireUI(){
+  byId("q").addEventListener("input", ()=>{
+    STATE.q = byId("q").value;
+    syncUrlFromState();
+    applyAndRender();
+  });
+  byId("sort").addEventListener("change", ()=>{
+    STATE.sort = byId("sort").value;
+    syncUrlFromState();
+    applyAndRender();
+  });
+  byId("btnClear").addEventListener("click", clearAll);
+  byId("btnReload").addEventListener("click", loadAndRender);
+
+  window.addEventListener("popstate", ()=>{
+    setFromUrl();
+    rebuildFacets();
+    applyAndRender();
+  });
+}
+
+wireUI();
+loadAndRender();
+</script>
+</body>
+</html>

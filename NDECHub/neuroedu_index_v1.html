@@ -1,0 +1,1058 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Open Neuro Education Library</title>
+  <meta name="description" content="A searchable, filterable repository of neurology education resources from around the web." />
+  <style>
+    :root{
+      --bg0:#050611;
+      --bg1:#0a1030;
+      --bg2:#1a0f3f;
+      --card:rgba(255,255,255,0.06);
+      --stroke:rgba(255,255,255,0.16);
+      --text:#f1f3ff;
+      --muted2:rgba(241,243,255,0.52);
+      --accent:#7c5cff;
+      --accent2:#2ee6d6;
+      --good:#2ee6d6;
+      --warn:#ffd36b;
+      --bad:#ff6aa2;
+      --shadow: 0 18px 60px rgba(0,0,0,0.52);
+      --shadow2: 0 10px 24px rgba(0,0,0,0.34);
+      --r: 18px;
+      --r2: 14px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+    *{ box-sizing:border-box; }
+    html, body{ height:100%; }
+    body{
+      margin:0;
+      font-family: var(--sans);
+      color: var(--text);
+      background:
+        radial-gradient(1200px 700px at 18% 10%, rgba(124,92,255,0.26), transparent 52%),
+        radial-gradient(900px 600px at 78% 18%, rgba(46,230,214,0.18), transparent 56%),
+        radial-gradient(1000px 700px at 60% 85%, rgba(255,106,162,0.14), transparent 55%),
+        linear-gradient(135deg, var(--bg0), var(--bg1) 45%, var(--bg2));
+      overflow-x:hidden;
+    }
+    .bg-layer{
+      position:fixed; inset:0; pointer-events:none;
+      background:
+        radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.55) 0 1px, transparent 2px),
+        radial-gradient(1px 1px at 70% 20%, rgba(255,255,255,0.35) 0 1px, transparent 2px),
+        radial-gradient(1px 1px at 40% 75%, rgba(255,255,255,0.40) 0 1px, transparent 2px),
+        radial-gradient(2px 2px at 85% 60%, rgba(255,255,255,0.25) 0 2px, transparent 3px);
+      opacity:0.28;
+      z-index:0;
+    }
+    .wrap{ position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:18px 14px 44px; }
+    header{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      margin-bottom:14px; position:relative; flex-wrap:wrap;
+    }
+    header:after{
+      content:""; position:absolute; left:0; right:0; bottom:-10px; height:2px; border-radius:999px;
+      background: linear-gradient(90deg, rgba(124,92,255,0.0), rgba(124,92,255,0.65), rgba(46,230,214,0.65), rgba(255,106,162,0.45), rgba(124,92,255,0.0));
+      opacity:0.70;
+    }
+    .brand{ display:flex; align-items:center; gap:12px; min-width:280px; }
+    .logo{
+      width:44px; height:44px; border-radius:14px;
+      background: linear-gradient(135deg, rgba(124,92,255,0.8), rgba(46,230,214,0.55));
+      box-shadow: 0 10px 26px rgba(0,0,0,0.35);
+      display:grid; place-items:center; border:1px solid rgba(255,255,255,0.18);
+      position:relative; overflow:hidden; flex:0 0 auto;
+    }
+    .logo:before{ content:""; position:absolute; inset:-40%; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.50), transparent 55%); transform: rotate(20deg); }
+    .logo svg{ width:26px; height:26px; position:relative; opacity:0.92; }
+    h1{ margin:0; font-size:22px; letter-spacing:0.2px; line-height:1.1; }
+    .tagline{ margin-top:4px; font-family: var(--mono); color: var(--muted2); font-size:12px; }
+    .top-actions{ display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; align-items:center; }
+
+    a.linkbtn, button{
+      appearance:none; border:1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.06);
+      color: var(--text); border-radius:14px; padding:10px 12px; font-family: var(--mono); font-size:13px;
+      cursor:pointer; box-shadow: var(--shadow2); transition: transform .08s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
+      user-select:none; text-decoration:none; display:inline-flex; gap:8px; align-items:center;
+    }
+    a.linkbtn:hover, button:hover{
+      background: rgba(255,255,255,0.09); border-color: rgba(180,190,255,0.30);
+      box-shadow: 0 14px 34px rgba(0,0,0,0.40); transform: translateY(-1px);
+    }
+    button:active, a.linkbtn:active{ transform: translateY(0px) scale(0.99); }
+    button[disabled]{ opacity:0.45; cursor:not-allowed; transform:none; box-shadow:none; }
+    button.primary{ border-color: rgba(124,92,255,0.40); background: rgba(124,92,255,0.14); }
+    button.good{ border-color: rgba(46,230,214,0.40); background: rgba(46,230,214,0.12); }
+    button.danger{ border-color: rgba(255,106,162,0.42); background: rgba(255,106,162,0.10); }
+
+    .grid{ display:grid; grid-template-columns:360px 1fr; gap:14px; align-items:start; margin-top:16px; }
+    @media (max-width: 960px){ .grid{ grid-template-columns: 1fr; } }
+
+    .card{
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.16);
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      backdrop-filter: blur(10px);
+    }
+    .cardhead{
+      padding:14px 14px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.10);
+      display:flex; justify-content:space-between; align-items:center; gap:10px;
+    }
+    .cardhead h2{ margin:0; font-size:14px; font-family: var(--mono); letter-spacing:0.2px; }
+    .body{ padding:14px; }
+
+    .filters{ position: sticky; top: 14px; }
+    @media (max-width: 960px){ .filters{ position: static; } }
+
+    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .search{
+      width:100%;
+      background: rgba(0,0,0,0.20);
+      border: 1px solid rgba(180,190,255,0.20);
+      color: var(--text);
+      border-radius:14px;
+      padding:10px 12px;
+      font-family: var(--mono);
+      font-size:14px;
+      outline:none;
+    }
+    .search:focus{ border-color: rgba(124,92,255,0.55); box-shadow: 0 0 0 4px rgba(124,92,255,0.18); }
+
+    .pill{
+      display:inline-flex; gap:8px; align-items:center; border-radius:999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.06);
+      padding:6px 10px;
+      font-family: var(--mono);
+      font-size:12px;
+      color: rgba(241,243,255,0.78);
+    }
+    .pill .dot{ width:8px; height:8px; border-radius:999px; background: rgba(255,255,255,0.20); }
+    .pill.good .dot{ background: rgba(46,230,214,0.90); box-shadow: 0 0 0 4px rgba(46,230,214,0.14); }
+    .pill.warn .dot{ background: rgba(255,211,107,0.95); box-shadow: 0 0 0 4px rgba(255,211,107,0.12); }
+    .pill.bad .dot{ background: rgba(255,106,162,0.95); box-shadow: 0 0 0 4px rgba(255,106,162,0.12); }
+
+    .facet{
+      margin-top: 12px;
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: var(--r2);
+      background: rgba(255,255,255,0.04);
+      overflow:hidden;
+    }
+    details.facet summary{
+      padding:10px 12px;
+      font-family: var(--mono);
+      cursor:pointer; user-select:none; list-style:none;
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+    }
+    details.facet summary::-webkit-details-marker{ display:none; }
+    details.facet summary span{ color: rgba(241,243,255,0.86); font-size:12px; letter-spacing:0.2px; }
+    details.facet summary .count{ color: rgba(241,243,255,0.52); font-size:12px; }
+    .facet .facetbody{ padding: 8px 12px 12px; border-top: 1px solid rgba(255,255,255,0.10); }
+    .facet .facetlist{ display:flex; flex-direction:column; gap:8px; max-height: 260px; overflow:auto; padding-right: 8px; }
+    .facet .facetlist::-webkit-scrollbar{ width: 10px; }
+    .facet .facetlist::-webkit-scrollbar-thumb{ background: rgba(255,255,255,0.12); border-radius: 999px; border: 2px solid rgba(0,0,0,0.18); }
+    .facet .facetlist::-webkit-scrollbar-track{ background: rgba(0,0,0,0.14); border-radius: 999px; }
+
+    label.chk{ display:flex; gap:10px; align-items:flex-start; font-family: var(--mono); font-size:12px; color: rgba(241,243,255,0.82); cursor:pointer; }
+    label.chk input{ margin-top: 2px; }
+
+    .hint{ margin-top:10px; font-family: var(--mono); font-size:12px; color: rgba(241,243,255,0.58); line-height:1.35; }
+
+    .results-top{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px; }
+    .select{
+      background: rgba(0,0,0,0.20);
+      border: 1px solid rgba(180,190,255,0.20);
+      color: rgba(241,243,255,0.92);
+      border-radius:14px;
+      padding:10px 12px;
+      font-family: var(--mono);
+      font-size:13px;
+      outline:none;
+    }
+    .select:focus{ border-color: rgba(124,92,255,0.55); box-shadow: 0 0 0 4px rgba(124,92,255,0.18); }
+
+    .cards{ display:flex; flex-direction:column; gap:10px; }
+    .rcard{
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.045);
+      border-radius:16px;
+      padding:12px 12px;
+      box-shadow: 0 10px 18px rgba(0,0,0,0.22);
+      position:relative;
+      overflow:hidden;
+    }
+    .rcard:before{
+      content:""; position:absolute; inset:0; pointer-events:none; opacity:0.0; transition: opacity .18s ease;
+      background:
+        radial-gradient(600px 140px at 15% 50%, rgba(124,92,255,0.22), transparent 55%),
+        radial-gradient(600px 140px at 85% 50%, rgba(46,230,214,0.16), transparent 55%);
+    }
+    .rcard:hover:before{ opacity:1; }
+    .rtitle{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+    .rtitle a{ color: rgba(241,243,255,0.96); text-decoration:none; font-weight:700; letter-spacing:0.15px; line-height:1.25; }
+    .rtitle a:hover{ text-decoration:underline; }
+    .rmeta{ margin-top:6px; display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+    .rdesc{ margin-top:8px; color: rgba(241,243,255,0.78); line-height:1.35; font-size:13px; }
+    .rfoot{ margin-top:10px; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
+    .tags{ display:flex; gap:6px; flex-wrap:wrap; align-items:center; font-family: var(--mono); font-size:11px; color: rgba(241,243,255,0.62); }
+    .tagchip{ border: 1px solid rgba(255,255,255,0.14); background: rgba(0,0,0,0.20); border-radius:999px; padding:4px 8px; }
+
+    .mini{ font-family: var(--mono); font-size:12px; color: rgba(241,243,255,0.62); line-height:1.35; }
+
+    .toast{
+      position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%);
+      background: rgba(0,0,0,0.55);
+      border: 1px solid rgba(255,255,255,0.16);
+      border-radius:16px;
+      padding:10px 12px;
+      font-family: var(--mono);
+      font-size:13px;
+      color: rgba(241,243,255,0.92);
+      z-index:10;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.45);
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .22s ease, transform .22s ease;
+    }
+    .toast.show{ opacity:1; transform: translateX(-50%) translateY(-4px); }
+
+    .overlay{
+      position: fixed; inset:0; display:none; place-items:center; padding:18px 14px;
+      background: rgba(0,0,0,0.58);
+      backdrop-filter: blur(10px);
+      z-index:50;
+    }
+    .overlay.show{ display:grid; }
+    .overlaycard{
+      width: min(920px, 96vw);
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background:
+        radial-gradient(1000px 600px at 50% 0%, rgba(255,255,255,0.10), transparent 60%),
+        rgba(10,16,48,0.82);
+      box-shadow: 0 28px 80px rgba(0,0,0,0.60);
+      padding: 18px 16px 14px;
+    }
+    .overlaytitle{ font-family: var(--mono); font-size:18px; letter-spacing:0.25px; margin: 0 0 10px; }
+    pre.err{
+      margin:0;
+      border-radius:16px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(0,0,0,0.26);
+      padding:12px 12px;
+      font-family: var(--mono);
+      font-size:12px;
+      line-height:1.35;
+      white-space: pre-wrap;
+      color: rgba(241,243,255,0.88);
+      box-shadow: 0 12px 26px rgba(0,0,0,0.28);
+    }
+    footer{ margin-top:16px; text-align:center; color: rgba(241,243,255,0.38); font-family: var(--mono); font-size:11px; min-height: 12px; }
+  </style>
+</head>
+<body>
+  <div class="bg-layer" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true">
+          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M23 14c-5 0-9 4-9 9v2c-3 1-5 4-5 7 0 4 3 7 7 7h1v4c0 5 4 9 9 9h6V14h-9Z" fill="rgba(241,243,255,0.92)"/>
+            <path d="M41 14c5 0 9 4 9 9v2c3 1 5 4 5 7 0 4-3 7-7 7h-1v4c0 5-4 9-9 9h-6V14h9Z" fill="rgba(241,243,255,0.82)"/>
+            <path d="M24 22c3-3 6-3 8 0M24 32c3-3 6-3 8 0M32 24c3-3 6-3 8 0M32 34c3-3 6-3 8 0" stroke="rgba(5,6,17,0.45)" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <h1>Open Neuro Education Library</h1>
+          <div class="tagline">Searchable neurology learning resources • sourced from the community • one place</div>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <a class="linkbtn" id="openSheet" target="_blank" rel="noopener">📄 Open source sheet</a>
+        <a class="linkbtn" id="contribute" target="_blank" rel="noopener">➕ Contribute</a>
+        <button class="good" id="btnReload">↻ Reload</button>
+      </div>
+    </header>
+
+    <div class="grid">
+      <section class="card filters" aria-label="Filters">
+        <div class="cardhead">
+          <h2>Search + filters</h2>
+          <button class="danger" id="btnClear">Clear</button>
+        </div>
+        <div class="body">
+          <input id="q" class="search" type="text" placeholder="Search: status epilepticus, localization, cranial nerves…" autocomplete="off" />
+
+          <div class="row" style="margin-top:10px; justify-content:space-between;">
+            <span class="pill good" id="pillLoaded"><span class="dot"></span><span id="loadedText">Loading…</span></span>
+            <span class="pill" id="pillUpdated"><span class="dot"></span><span id="updatedText">—</span></span>
+          </div>
+
+          <div class="hint" id="hintText">
+            Tip: shareable URLs are supported. Filters stay in the address bar.
+          </div>
+
+          <details class="facet" open>
+            <summary><span>Format</span><span class="count" id="countFormat">0</span></summary>
+            <div class="facetbody"><div class="facetlist" id="facetFormat"></div></div>
+          </details>
+
+          <details class="facet" open>
+            <summary><span>Topics</span><span class="count" id="countTopics">0</span></summary>
+            <div class="facetbody"><div class="facetlist" id="facetTopics"></div></div>
+          </details>
+
+          <details class="facet">
+            <summary><span>Level</span><span class="count" id="countLevel">0</span></summary>
+            <div class="facetbody"><div class="facetlist" id="facetLevel"></div></div>
+          </details>
+
+          <details class="facet">
+            <summary><span>Time</span><span class="count" id="countTime">0</span></summary>
+            <div class="facetbody"><div class="facetlist" id="facetTime"></div></div>
+          </details>
+
+          <details class="facet">
+            <summary><span>Access</span><span class="count" id="countAccess">0</span></summary>
+            <div class="facetbody"><div class="facetlist" id="facetAccess"></div></div>
+          </details>
+
+          <details class="facet">
+            <summary><span>Language</span><span class="count" id="countLang">0</span></summary>
+            <div class="facetbody"><div class="facetlist" id="facetLang"></div></div>
+          </details>
+
+          <details class="facet">
+            <summary><span>Badges</span><span class="count" id="countBadges">0</span></summary>
+            <div class="facetbody"><div class="facetlist" id="facetBadges"></div></div>
+          </details>
+
+          <div class="hint" style="margin-top:12px">
+            If load fails: make sure you’re serving this over http(s) (not file://), and that the Google Sheet is publicly viewable or published as CSV.
+          </div>
+        </div>
+      </section>
+
+      <section class="card" aria-label="Results">
+        <div class="cardhead">
+          <h2>Browse</h2>
+          <div class="row">
+            <select class="select" id="sort">
+              <option value="relevance">Sort: relevance</option>
+              <option value="title_az">Sort: title A–Z</option>
+              <option value="title_za">Sort: title Z–A</option>
+              <option value="newest">Sort: newest (if available)</option>
+              <option value="verified">Sort: recently verified</option>
+            </select>
+          </div>
+        </div>
+        <div class="body">
+          <div class="results-top">
+            <div class="mini" id="resultCount">—</div>
+            <div class="row" id="activeChips"></div>
+          </div>
+          <div class="cards" id="cards"></div>
+          <div class="mini" id="empty" style="display:none; margin-top:12px;">
+            No matches. Try clearing filters or broadening your search.
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer id="footer"></footer>
+  </div>
+
+  <div class="toast" id="toast">Toast</div>
+
+  <div class="overlay" id="errOverlay" role="dialog" aria-modal="true" aria-label="Data load error">
+    <div class="overlaycard">
+      <div class="overlaytitle" id="errTitle">Could not load the resource sheet</div>
+      <div class="row" style="justify-content:flex-end; margin-bottom:10px;">
+        <button class="primary" id="btnRetry">Retry</button>
+        <button id="btnCloseErr">Close</button>
+      </div>
+      <pre class="err" id="errDetails"></pre>
+    </div>
+  </div>
+
+<script>
+/* =========================================
+   Open Neuro Education Library — v1 (single-file)
+   Data source: public Google Sheet (CSV)
+   ========================================= */
+
+/* --- Google Sheet config --- */
+const GOOGLE_SHEET_ID = "1c-L3Q0rqXFuh95zThfcocbB-65qsWbdSOn2eTTOmuyo";
+const SHEET_NAME = ""; // optional: set to exact tab name
+
+// Optional: if you "Publish to the web" and have a pubhtml URL, paste it here (best reliability).
+const PUBLISHED_PUBHTML_URL = ""; // e.g., "https://docs.google.com/spreadsheets/d/e/.../pubhtml"
+
+function publishedCsvFromPubhtml(urlStr){
+  try{
+    if (!urlStr) return null;
+    const u = new URL(urlStr);
+    u.pathname = u.pathname.replace(/\/pubhtml\/?$/, "/pub");
+    if (!u.pathname.endsWith("/pub")){
+      u.pathname = u.pathname.replace(/\/pubhtml.*$/, "/pub");
+    }
+    u.searchParams.set("output","csv");
+    return u.toString();
+  }catch(e){
+    return null;
+  }
+}
+const PUBLISHED_CSV_URL = publishedCsvFromPubhtml(PUBLISHED_PUBHTML_URL);
+
+const CSV_URLS = [
+  SHEET_NAME
+    ? `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`
+    : `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/gviz/tq?tqx=out:csv`,
+  `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/export?format=csv`,
+  PUBLISHED_CSV_URL
+].filter(Boolean);
+
+const SOURCE_SHEET_URL = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/edit?usp=sharing`;
+
+/* --- Utilities --- */
+function byId(id){ return document.getElementById(id); }
+function safeTrim(x){ return (x ?? "").toString().trim(); }
+function showToast(msg){
+  const t = byId("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  window.clearTimeout(showToast._to);
+  showToast._to = window.setTimeout(()=>t.classList.remove("show"), 1400);
+}
+
+function parseCSV(text){
+  // RFC4180-ish CSV parser (handles quotes, commas, newlines)
+  const rows = [];
+  let row = [];
+  let field = "";
+  let i = 0;
+  let inQuotes = false;
+
+  while (i < text.length){
+    const c = text[i];
+
+    if (inQuotes){
+      if (c === '"'){
+        if (text[i+1] === '"'){ field += '"'; i += 2; continue; }
+        inQuotes = false; i++; continue;
+      } else {
+        field += c; i++; continue;
+      }
+    } else {
+      if (c === '"'){ inQuotes = true; i++; continue; }
+      if (c === ","){ row.push(field); field=""; i++; continue; }
+      if (c === "\r"){ i++; continue; }
+      if (c === "\n"){ row.push(field); rows.push(row); row=[]; field=""; i++; continue; }
+      field += c; i++; continue;
+    }
+  }
+  row.push(field);
+  rows.push(row);
+
+  if (!rows.length) return [];
+  const headers = rows[0].map(h => safeTrim(h));
+  const out = [];
+  for (let r=1;r<rows.length;r++){
+    const vals = rows[r];
+    if (vals.length===1 && safeTrim(vals[0])==="") continue;
+    const obj = {};
+    for (let c=0;c<headers.length;c++){
+      obj[headers[c]] = (vals[c] ?? "");
+    }
+    out.push(obj);
+  }
+  return out;
+}
+
+function normalizeHeaderKey(k){ return (k ?? "").toString().toLowerCase().replace(/[^a-z0-9]/g,""); }
+function normRow(row){
+  const n = {};
+  for (const k in row){
+    const nk = normalizeHeaderKey(k);
+    if (nk && n[nk] === undefined) n[nk] = row[k];
+  }
+  return n;
+}
+function firstNonEmpty(...vals){
+  for (const v of vals){
+    const s = safeTrim(v);
+    if (s) return s;
+  }
+  return "";
+}
+function splitMulti(s){
+  const raw = safeTrim(s);
+  if (!raw) return [];
+  return raw
+    .split(/[;,|]/g)
+    .map(x => safeTrim(x))
+    .filter(Boolean)
+    .map(x => x.replace(/\s+/g," "));
+}
+function asLowerKey(s){ return safeTrim(s).toLowerCase(); }
+function uniqSorted(arr){
+  const seen = new Map();
+  arr.forEach(v => {
+    const k = asLowerKey(v);
+    if (!k) return;
+    if (!seen.has(k)) seen.set(k, v);
+  });
+  return Array.from(seen.values()).sort((a,b)=>a.localeCompare(b));
+}
+function parseTimeMinutes(val){
+  const s = safeTrim(val);
+  if (!s) return null;
+  if (/^\d+(\.\d+)?$/.test(s)) return Math.round(Number(s));
+  const m = s.match(/(\d+)\s*[-–—]\s*(\d+)/);
+  if (m) return Math.round((Number(m[1]) + Number(m[2]))/2);
+  const m2 = s.match(/(\d+)\s*(min|mins|minutes|m)\b/i);
+  if (m2) return Number(m2[1]);
+  return null;
+}
+function timeBucket(mins){
+  if (mins === null || mins === undefined) return "unknown";
+  if (mins < 10) return "<10";
+  if (mins < 30) return "10–30";
+  if (mins < 60) return "30–60";
+  return "60+";
+}
+function safeUrl(u){
+  const s = safeTrim(u);
+  if (!s) return "";
+  if (/^(https?:\/\/|mailto:)/i.test(s)) return s;
+  if (/^[a-z0-9.-]+\.[a-z]{2,}\/?.*/i.test(s)) return "https://" + s;
+  return s;
+}
+function formatBadgeClass(b){
+  const k = asLowerKey(b);
+  if (k.includes("verified") || k.includes("reviewed")) return "good";
+  if (k.includes("community")) return "warn";
+  if (k.includes("broken") || k.includes("dead")) return "bad";
+  return "";
+}
+
+/* --- State --- */
+const STATE = {
+  all: [],
+  filtered: [],
+  facets: { format: [], topics: [], level: [], time: [], access: [], lang: [], badges: [] },
+  selected: { format: new Set(), topics: new Set(), level: new Set(), time: new Set(), access: new Set(), lang: new Set(), badges: new Set() },
+  q: "",
+  sort: "relevance",
+  loadedAt: null
+};
+const CACHE_KEY = "open_neuroedu__sheet_csv_cache_v1";
+
+/* --- Simple hash for stable IDs --- */
+function hash32(str){
+  let h = 2166136261;
+  for (let i=0;i<str.length;i++){
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return (h>>>0).toString(16);
+}
+
+/* --- Row -> resource model (robust to column naming) --- */
+function resourceFromRow(row){
+  const n = normRow(row);
+
+  const title = firstNonEmpty(row.Title, row.title, row.Name, row.name, n.title, n.name, n.resourcename);
+  const url = safeUrl(firstNonEmpty(row.URL, row.Url, row.url, row.Link, row.link, n.url, n.link, n.resourceurl));
+  if (!title || !url) return null;
+
+  const desc = firstNonEmpty(row.Description, row.description, row.Summary, row.summary, row.Blurb, row.blurb, n.description, n.summary, n.blurb);
+  const format = firstNonEmpty(row.Format, row.format, row.Type, row.type, row.Medium, row.medium, n.format, n.type, n.medium) || "unknown";
+
+  const topics = splitMulti(firstNonEmpty(row.Topics, row.topics, row.Topic, row.topic, row.Subspecialty, row.subspecialty, n.topics, n.topic, n.subspecialty));
+  const tags = splitMulti(firstNonEmpty(row.Tags, row.tags, row.Keywords, row.keywords, n.tags, n.keywords));
+  const level = splitMulti(firstNonEmpty(row.Level, row.level, row.LearnerLevel, row.learner_level, row.Audience, row.audience, n.level, n.learnerlevel, n.audience));
+
+  const timeRaw = firstNonEmpty(row.Time, row.time, row.Duration, row.duration, row.Length, row.length, row.Minutes, row.minutes, n.time, n.duration, n.length, n.minutes);
+  const mins = parseTimeMinutes(timeRaw);
+  const tBucket = timeBucket(mins);
+
+  const access = firstNonEmpty(row.Access, row.access, row.Paywall, row.paywall, n.access, n.paywall) || "unknown";
+  const language = firstNonEmpty(row.Language, row.language, row.Lang, row.lang, n.language, n.lang) || "en";
+  const creator = firstNonEmpty(row.Creator, row.creator, row.Author, row.author, row.Speaker, row.speaker, row.Host, row.host, n.creator, n.author, n.speaker, n.host);
+  const source = firstNonEmpty(row.Source, row.source, row.Organization, row.organization, row.Org, row.org, n.source, n.organization, n.org);
+
+  const badges = splitMulti(firstNonEmpty(row.Badges, row.badges, row.Badge, row.badge, row.Status, row.status, n.badges, n.badge, n.status));
+  const lastVerified = firstNonEmpty(row.LastVerified, row.last_verified, row.lastVerified, row.Verified, row.verified, n.lastverified, n.lastverifieddate, n.verified);
+  const dateAdded = firstNonEmpty(row.DateAdded, row.date_added, row.dateAdded, row.Added, row.added, n.dateadded, n.added);
+
+  const id = safeTrim(firstNonEmpty(row.ID, row.id, n.id)) || ("res_" + hash32(title + "|" + url));
+
+  return {
+    id, title, url, desc,
+    format, topics, tags, level,
+    time_minutes: mins, time_bucket: tBucket,
+    access, language, creator, source, badges,
+    last_verified: lastVerified, date_added: dateAdded
+  };
+}
+
+/* --- Data loading with multi-endpoint attempts + caching --- */
+async function fetchSheetCsv(){
+  const attempts = [];
+  for (const url of CSV_URLS){
+    const a = { url, ok:false, error:"", bytes:0 };
+    attempts.push(a);
+    try{
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok){ a.error = `HTTP ${res.status} ${res.statusText || ""}`.trim(); continue; }
+      const text = await res.text();
+      a.bytes = text.length;
+      const sample = (text || "").slice(0, 600).trim().toLowerCase();
+      const looksHtml = sample.startsWith("<!doctype") || sample.startsWith("<html") || sample.includes("<head") || sample.includes("<body");
+      if (looksHtml){ a.error = "Received HTML instead of CSV (likely a sign-in/permissions page)."; continue; }
+      a.ok = true;
+      try{ localStorage.setItem(CACHE_KEY, JSON.stringify({ fetchedAt: Date.now(), csv: text })); }catch(_){}
+      return { csv: text, attempts };
+    }catch(e){
+      a.error = (e && e.message) ? e.message : String(e);
+      continue;
+    }
+  }
+  // fallback to cache
+  try{
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (raw){
+      const obj = JSON.parse(raw);
+      if (obj && obj.csv) return { csv: obj.csv, attempts, fromCache:true, cachedAt: obj.fetchedAt || null };
+    }
+  }catch(_){}
+  const err = new Error("Could not load Google Sheet CSV.");
+  err.report = buildLoadErrorReport(attempts);
+  throw err;
+}
+
+function buildLoadErrorReport(attempts){
+  function inferLikelyCauses(){
+    const msgs = attempts.map(a => (a.error||"").toLowerCase());
+    const has403 = msgs.some(m => m.includes("http 403") || m.includes("http 401"));
+    const has404 = msgs.some(m => m.includes("http 404"));
+    const hasHtml = msgs.some(m => m.includes("received html"));
+    const failedFetch = msgs.some(m => m.includes("failed to fetch") || m.includes("networkerror"));
+    const out = [];
+    if (has403) out.push("The Sheet likely isn’t public (permission denied). Set sharing to “Anyone with the link → Viewer” or use “Publish to web”.");
+    if (has404) out.push("The URL may be wrong (spreadsheet ID or tab name). Double-check the ID and (if set) the tab name.");
+    if (hasHtml) out.push("Google returned an HTML page (sign-in/permissions) instead of CSV. Ensure the sheet is public or published, and use a CSV endpoint (e.g., /pub?output=csv).");
+    if (failedFetch) out.push("Your browser likely blocked the request (CORS) or you’re offline. This is common when opening the HTML via file:// or when Google doesn’t send CORS headers.");
+    if (location.protocol === "file:") out.push("You’re opening this file directly (file://). Serve it over http(s) (e.g., GitHub Pages, Netlify, Cloudflare Pages, or a local server) so fetch works reliably.");
+    if (!out.length) out.push("Could not fetch/parse the CSV. See endpoint errors below.");
+    return out;
+  }
+  const lines = [];
+  lines.push("Resource sheet failed to load from Google Sheets.");
+  lines.push("");
+  lines.push("Endpoints tried:");
+  attempts.forEach((a, i)=>{
+    const status = a.ok ? "OK" : `FAIL — ${a.error || "unknown error"}`;
+    lines.push(`${i+1}. ${a.url}`);
+    lines.push(`   ${status}`);
+  });
+  lines.push("");
+  lines.push("Why this usually happens:");
+  inferLikelyCauses().forEach(c => lines.push(`• ${c}`));
+  lines.push("");
+  lines.push("What this app expects:");
+  lines.push("• A public CSV (not HTML) with at least: Title and URL.");
+  lines.push("• Optional columns: Description, Format, Topics, Tags, Level, Time/Minutes, Access, Language, Creator, Source, Badges, Last Verified.");
+  return lines.join("\n");
+}
+
+/* --- Facets + filtering --- */
+function rebuildFacets(){
+  const formats=[], topics=[], levels=[], times=[], access=[], lang=[], badges=[];
+  STATE.all.forEach(r => {
+    formats.push(r.format || "unknown");
+    (r.topics||[]).forEach(t => topics.push(t));
+    (r.level||[]).forEach(l => levels.push(l));
+    times.push(r.time_bucket || "unknown");
+    access.push(r.access || "unknown");
+    lang.push(r.language || "en");
+    (r.badges||[]).forEach(b => badges.push(b));
+  });
+  STATE.facets.format = uniqSorted(formats);
+  STATE.facets.topics = uniqSorted(topics);
+  STATE.facets.level  = uniqSorted(levels);
+  STATE.facets.time   = uniqSorted(times);
+  STATE.facets.access = uniqSorted(access);
+  STATE.facets.lang   = uniqSorted(lang);
+  STATE.facets.badges = uniqSorted(badges);
+
+  renderFacet("facetFormat", "format", STATE.facets.format, "countFormat");
+  renderFacet("facetTopics", "topics", STATE.facets.topics, "countTopics");
+  renderFacet("facetLevel",  "level",  STATE.facets.level,  "countLevel");
+  renderFacet("facetTime",   "time",   STATE.facets.time,   "countTime");
+  renderFacet("facetAccess", "access", STATE.facets.access, "countAccess");
+  renderFacet("facetLang",   "lang",   STATE.facets.lang,   "countLang");
+  renderFacet("facetBadges", "badges", STATE.facets.badges, "countBadges");
+}
+
+function renderFacet(containerId, key, values, countId){
+  const el = byId(containerId);
+  const countEl = byId(countId);
+  if (!el) return;
+  el.innerHTML = "";
+  values.forEach(v => {
+    const id = `chk_${key}_${normalizeHeaderKey(v)}_${hash32(v)}`;
+    const lab = document.createElement("label");
+    lab.className = "chk";
+    lab.innerHTML = `<input type="checkbox" id="${id}" /><div style="display:flex; gap:8px; align-items:center;"><span>${escapeHtml(v)}</span></div>`;
+    const input = lab.querySelector("input");
+    input.checked = STATE.selected[key].has(asLowerKey(v));
+    input.addEventListener("change", ()=>{
+      if (input.checked) STATE.selected[key].add(asLowerKey(v));
+      else STATE.selected[key].delete(asLowerKey(v));
+      syncUrlFromState();
+      applyAndRender();
+    });
+    el.appendChild(lab);
+  });
+  if (countEl) countEl.textContent = String(values.length);
+}
+
+function escapeHtml(s){
+  return (s ?? "").toString()
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+}
+function matchesFacetSet(valOrArray, set){
+  if (!set || set.size === 0) return true;
+  if (Array.isArray(valOrArray)) return valOrArray.some(v => set.has(asLowerKey(v)));
+  return set.has(asLowerKey(valOrArray));
+}
+function searchScore(r, qTokens){
+  if (!qTokens.length) return 0;
+  const hay = {
+    title: safeTrim(r.title).toLowerCase(),
+    desc: safeTrim(r.desc).toLowerCase(),
+    creator: safeTrim(r.creator).toLowerCase(),
+    source: safeTrim(r.source).toLowerCase(),
+    format: safeTrim(r.format).toLowerCase(),
+    tags: (r.tags||[]).join(" ").toLowerCase(),
+    topics: (r.topics||[]).join(" ").toLowerCase(),
+    level: (r.level||[]).join(" ").toLowerCase()
+  };
+  let score = 0;
+  qTokens.forEach(t => {
+    if (!t) return;
+    if (hay.title.includes(t)) score += 6;
+    if (hay.tags.includes(t) || hay.topics.includes(t)) score += 4;
+    if (hay.creator.includes(t) || hay.source.includes(t)) score += 2;
+    if (hay.desc.includes(t)) score += 1;
+    if (hay.format.includes(t)) score += 1;
+  });
+  return score;
+}
+
+function applyFilters(){
+  const q = safeTrim(STATE.q).toLowerCase();
+  const qTokens = q ? q.split(/\s+/g).map(s=>s.trim()).filter(Boolean) : [];
+  const out = [];
+  for (const r of STATE.all){
+    if (!matchesFacetSet(r.format, STATE.selected.format)) continue;
+    if (!matchesFacetSet(r.topics, STATE.selected.topics)) continue;
+    if (!matchesFacetSet(r.level, STATE.selected.level)) continue;
+    if (!matchesFacetSet(r.time_bucket, STATE.selected.time)) continue;
+    if (!matchesFacetSet(r.access, STATE.selected.access)) continue;
+    if (!matchesFacetSet(r.language, STATE.selected.lang)) continue;
+    if (!matchesFacetSet(r.badges, STATE.selected.badges)) continue;
+
+    const s = searchScore(r, qTokens);
+    if (qTokens.length && s === 0) continue;
+    out.push({ r, score: s });
+  }
+
+  const sort = STATE.sort;
+  out.sort((a,b)=>{
+    if (sort === "title_az") return a.r.title.localeCompare(b.r.title);
+    if (sort === "title_za") return b.r.title.localeCompare(a.r.title);
+    if (sort === "verified") return safeTrim(b.r.last_verified).localeCompare(safeTrim(a.r.last_verified));
+    if (sort === "newest"){
+      const ad = Date.parse(a.r.date_added || "");
+      const bd = Date.parse(b.r.date_added || "");
+      if (!isNaN(ad) && !isNaN(bd)) return bd - ad;
+      return safeTrim(b.r.date_added).localeCompare(safeTrim(a.r.date_added));
+    }
+    if (b.score !== a.score) return b.score - a.score;
+    return a.r.title.localeCompare(b.r.title);
+  });
+
+  STATE.filtered = out.map(x => x.r);
+}
+
+function activeChips(){
+  const chips = [];
+  function pushSet(label, set){ set.forEach(v => chips.push({ label, value: v })); }
+  pushSet("format", STATE.selected.format);
+  pushSet("topic",  STATE.selected.topics);
+  pushSet("level",  STATE.selected.level);
+  pushSet("time",   STATE.selected.time);
+  pushSet("access", STATE.selected.access);
+  pushSet("lang",   STATE.selected.lang);
+  pushSet("badge",  STATE.selected.badges);
+  if (safeTrim(STATE.q)) chips.unshift({ label:"q", value: STATE.q });
+  return chips;
+}
+
+function renderChips(){
+  const el = byId("activeChips");
+  if (!el) return;
+  el.innerHTML = "";
+  const chips = activeChips();
+  chips.forEach(ch => {
+    const b = document.createElement("button");
+    b.style.padding = "8px 10px";
+    b.style.borderRadius = "999px";
+    b.style.fontSize = "12px";
+    b.textContent = `${ch.label}: ${ch.value} ✕`;
+    b.addEventListener("click", ()=>{
+      if (ch.label === "q"){ STATE.q=""; byId("q").value=""; }
+      else{
+        const map = { format:"format", topic:"topics", level:"level", time:"time", access:"access", lang:"lang", badge:"badges" };
+        const k = map[ch.label];
+        if (k) STATE.selected[k].delete(asLowerKey(ch.value));
+        rebuildFacets();
+      }
+      syncUrlFromState();
+      applyAndRender();
+    });
+    el.appendChild(b);
+  });
+}
+
+function renderResults(){
+  const cards = byId("cards");
+  const empty = byId("empty");
+  const rc = byId("resultCount");
+  if (!cards) return;
+  cards.innerHTML = "";
+  rc.textContent = `${STATE.filtered.length.toLocaleString()} resource(s)`;
+  if (!STATE.filtered.length){ empty.style.display = "block"; return; }
+  empty.style.display = "none";
+
+  STATE.filtered.forEach(r => {
+    const div = document.createElement("div");
+    div.className = "rcard";
+
+    const title = escapeHtml(r.title);
+    const url = escapeHtml(r.url);
+    const desc = escapeHtml(r.desc || "");
+
+    const creator = safeTrim(r.creator);
+    const source = safeTrim(r.source);
+    const who = [creator, source].filter(Boolean).join(" • ");
+    const whoLine = who ? `<span class="pill"><span class="dot"></span><span>${escapeHtml(who)}</span></span>` : "";
+
+    const fmt = safeTrim(r.format || "unknown");
+    const fmtPill = `<span class="pill"><span class="dot"></span><span>${escapeHtml(fmt)}</span></span>`;
+
+    const tmins = (r.time_minutes !== null && r.time_minutes !== undefined) ? `${r.time_minutes} min` : "";
+    const tPill = `<span class="pill"><span class="dot"></span><span>${escapeHtml(tmins || r.time_bucket || "unknown")}</span></span>`;
+
+    const access = safeTrim(r.access || "unknown");
+    const accessPill = `<span class="pill"><span class="dot"></span><span>${escapeHtml(access)}</span></span>`;
+
+    const lang = safeTrim(r.language || "en");
+    const langPill = `<span class="pill"><span class="dot"></span><span>${escapeHtml(lang)}</span></span>`;
+
+    const badgePills = (r.badges||[]).slice(0,3).map(b=>{
+      const cls = formatBadgeClass(b);
+      return `<span class="pill ${cls}"><span class="dot"></span><span>${escapeHtml(b)}</span></span>`;
+    }).join("");
+
+    const showTags = [...(r.topics||[]), ...(r.tags||[])].slice(0, 8);
+    const tagsHtml = showTags.map(t => `<span class="tagchip">${escapeHtml(t)}</span>`).join("");
+
+    const lastv = safeTrim(r.last_verified);
+    const lastLine = lastv ? `<span class="mini">Last verified: ${escapeHtml(lastv)}</span>` : `<span class="mini"></span>`;
+
+    div.innerHTML = `
+      <div class="rtitle">
+        <div style="min-width:0;"><a href="${url}" target="_blank" rel="noopener">${title}</a></div>
+        <a class="linkbtn" href="${url}" target="_blank" rel="noopener" title="Open resource">↗</a>
+      </div>
+      <div class="rmeta">
+        ${fmtPill}
+        ${tPill}
+        ${accessPill}
+        ${langPill}
+        ${whoLine}
+        ${badgePills}
+      </div>
+      ${desc ? `<div class="rdesc">${desc}</div>` : ""}
+      <div class="rfoot">
+        <div class="tags">${tagsHtml}</div>
+        ${lastLine}
+      </div>
+    `;
+    cards.appendChild(div);
+  });
+}
+
+/* --- URL sync --- */
+function getParamList(params, key){
+  const v = params.get(key);
+  if (!v) return [];
+  return v.split(",").map(x=>safeTrim(x)).filter(Boolean);
+}
+function setFromUrl(){
+  const u = new URL(window.location.href);
+  const p = u.searchParams;
+  STATE.q = safeTrim(p.get("q") || "");
+  STATE.sort = safeTrim(p.get("sort") || "relevance");
+  byId("q").value = STATE.q;
+  byId("sort").value = STATE.sort;
+
+  function setSet(key, paramKey){
+    const arr = getParamList(p, paramKey);
+    STATE.selected[key] = new Set(arr.map(asLowerKey));
+  }
+  setSet("format","format");
+  setSet("topics","topics");
+  setSet("level","level");
+  setSet("time","time");
+  setSet("access","access");
+  setSet("lang","lang");
+  setSet("badges","badges");
+}
+
+function syncUrlFromState(){
+  const u = new URL(window.location.href);
+  const p = u.searchParams;
+
+  function setList(key, paramKey){
+    const arr = Array.from(STATE.selected[key].values()).filter(Boolean);
+    if (arr.length) p.set(paramKey, arr.join(","));
+    else p.delete(paramKey);
+  }
+
+  if (safeTrim(STATE.q)) p.set("q", STATE.q); else p.delete("q");
+  if (STATE.sort && STATE.sort !== "relevance") p.set("sort", STATE.sort); else p.delete("sort");
+
+  setList("format","format");
+  setList("topics","topics");
+  setList("level","level");
+  setList("time","time");
+  setList("access","access");
+  setList("lang","lang");
+  setList("badges","badges");
+
+  window.history.replaceState({}, "", u.toString());
+}
+
+/* --- Error overlay --- */
+function showError(title, details){
+  byId("errTitle").textContent = title || "Error";
+  byId("errDetails").textContent = details || "Unknown error.";
+  byId("errOverlay").classList.add("show");
+}
+function hideError(){ byId("errOverlay").classList.remove("show"); }
+
+function clearAll(){
+  STATE.q = ""; byId("q").value = "";
+  Object.keys(STATE.selected).forEach(k => STATE.selected[k] = new Set());
+  STATE.sort = "relevance"; byId("sort").value = "relevance";
+  syncUrlFromState();
+  rebuildFacets();
+  applyAndRender();
+  showToast("Cleared.");
+}
+
+function applyAndRender(){
+  applyFilters();
+  renderChips();
+  renderResults();
+}
+
+/* --- Main init --- */
+async function loadAndRender(){
+  byId("loadedText").textContent = "Loading…";
+  byId("updatedText").textContent = "—";
+  try{
+    const resp = await fetchSheetCsv();
+    const rows = parseCSV(resp.csv);
+    const resources = [];
+    rows.forEach(row => {
+      const r = resourceFromRow(row);
+      if (r) resources.push(r);
+    });
+    STATE.all = resources;
+    STATE.loadedAt = Date.now();
+
+    byId("loadedText").textContent = `${resources.length.toLocaleString()} loaded`;
+    const dt = new Date(STATE.loadedAt);
+    byId("updatedText").textContent = resp.fromCache ? `cached • ${dt.toLocaleString()}` : `live • ${dt.toLocaleString()}`;
+    byId("footer").textContent = `Open Neuro Education Library • data from public Google Sheet • loaded ${dt.toLocaleString()}`;
+
+    rebuildFacets();
+    setFromUrl();
+    rebuildFacets();
+    applyAndRender();
+
+    if (resp.fromCache) showToast("Loaded cached data (sheet fetch failed).");
+  }catch(e){
+    const report = e && e.report ? e.report : (e && e.message ? e.message : String(e));
+    showError("Could not load the resource sheet", report);
+    byId("loadedText").textContent = "Load failed";
+    byId("updatedText").textContent = "—";
+  }
+}
+
+/* --- Wire UI --- */
+function wireUI(){
+  byId("openSheet").href = SOURCE_SHEET_URL;
+  byId("contribute").href = SOURCE_SHEET_URL;
+
+  byId("q").addEventListener("input", ()=>{
+    STATE.q = byId("q").value;
+    syncUrlFromState();
+    applyAndRender();
+  });
+  byId("sort").addEventListener("change", ()=>{
+    STATE.sort = byId("sort").value;
+    syncUrlFromState();
+    applyAndRender();
+  });
+  byId("btnClear").addEventListener("click", clearAll);
+  byId("btnReload").addEventListener("click", async ()=>{
+    hideError();
+    await loadAndRender();
+    showToast("Reloaded.");
+  });
+  byId("btnRetry").addEventListener("click", async ()=>{
+    hideError();
+    await loadAndRender();
+  });
+  byId("btnCloseErr").addEventListener("click", hideError);
+
+  window.addEventListener("popstate", ()=>{
+    setFromUrl();
+    rebuildFacets();
+    applyAndRender();
+  });
+}
+
+wireUI();
+loadAndRender();
+</script>
+</body>
+</html>
