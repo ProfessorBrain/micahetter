@@ -99,13 +99,11 @@ button.options-strong:active{
 .quiz-step{ margin:6px 10px; }
 .quiz-step > div:first-child{ font-weight:600; margin-bottom:4px; font-size:13px; }
 .quiz-pills{ display:flex; flex-wrap:wrap; gap:8px; }
-.quiz-subrow{ display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; align-items:flex-start; }
-.quiz-subrow-label{ min-width:5.5rem; font-size:12px; font-weight:600; opacity:.72; padding-top:4px; }
+.quiz-subrow{ display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
 .quiz-pill{ padding:2px 10px; border-radius:16px; border:1px solid rgba(0,0,0,.15); background:#f6f7f8; font-size:var(--ui-label-size); }
 .quiz-pill.active{ box-shadow:0 0 0 2px rgba(0,0,0,.08) inset; }
 .quiz-pill.correct{ font-weight:700; color:#0a0; }
 .quiz-pill.wrong{ color:#b00; text-decoration:line-through; }
-.quiz-pill.neutral{ color:#4e5a67; border-color:rgba(0,0,0,.28); background:#f0f2f4; }
 </style>
 
 
@@ -149,7 +147,6 @@ button.options-strong:active{
 
 <style id="pathology-align-fix">
 #pathologyModal fieldset label, #artifactsModal fieldset label{ margin-left:0 !important; }
-#pathologyModal .modal-card, #artifactsModal .modal-card{width:fit-content;max-width:min(94vw, 29rem)}
 #pathologyModal .pathology-actions{display:flex;flex-direction:column;align-items:flex-start;gap:.35rem;margin-top:.35rem}
 #pathologyModal .pathology-action-row{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap}
 #pathologyModal .pathology-action{width:auto;min-width:12.75rem;max-width:100%;text-align:left;padding:.55rem .75rem;font:inherit}
@@ -158,8 +155,6 @@ button.options-strong:active{
 #pathologyModal .pathology-duration span{opacity:.8}
 #pathologyModal .pathology-action:disabled{cursor:default;opacity:.65}
 #pathologyModal .pathology-action:disabled:hover{filter:none}
-#artifactsModal fieldset{margin:0}
-#artifactsModal .modal-card fieldset > div{min-width:max-content}
 </style>
 
 </head>
@@ -296,13 +291,6 @@ button.options-strong:active{
               <button id="genSz" type="button" class="pathology-action">Generalized seizure</button>
               <label class="pathology-duration" for="genSzDur">
                 <input id="genSzDur" type="number" min="10" max="99" step="1" value="20" inputmode="numeric">
-                <span>s</span>
-              </label>
-            </div>
-            <div class="pathology-action-row">
-              <button id="absenceSz" type="button" class="pathology-action">Absence seizure</button>
-              <label class="pathology-duration" for="absenceSzDur">
-                <input id="absenceSzDur" type="number" min="10" max="99" step="1" value="10" inputmode="numeric">
                 <span>s</span>
               </label>
             </div>
@@ -513,44 +501,41 @@ function currentChewArtifact(clock){
   };
 }
 function sweatLeadWeights(e){
-  // Strong frontal predominance with steep anterior-posterior falloff helps the slow drift remain
-  // visible after bipolar subtraction instead of cancelling as a purely common-mode shift.
-  if (/^Fp1$/.test(e)) return {common:1.00, left:0.48, right:0.02};
-  if (/^Fp2$/.test(e)) return {common:1.00, left:0.02, right:0.48};
-  if (/^F7$/.test(e)) return {common:0.56, left:0.34, right:0.03};
-  if (/^F8$/.test(e)) return {common:0.56, left:0.03, right:0.34};
-  if (/^F3$/.test(e)) return {common:0.38, left:0.18, right:0.04};
-  if (/^F4$/.test(e)) return {common:0.38, left:0.04, right:0.18};
-  if (/^Fz$/.test(e)) return {common:0.30, left:0.07, right:0.07};
-  if (/^T3$/.test(e)) return {common:0.16, left:0.12, right:0.02};
-  if (/^T4$/.test(e)) return {common:0.16, left:0.02, right:0.12};
-  if (/^C3$/.test(e)) return {common:0.08, left:0.05, right:0.01};
-  if (/^C4$/.test(e)) return {common:0.08, left:0.01, right:0.05};
-  if (/^Cz$/.test(e)) return {common:0.04, left:0.02, right:0.02};
+  if (/^Fp1$/.test(e)) return {common:1.00, left:0.34, right:0.02};
+  if (/^Fp2$/.test(e)) return {common:1.00, left:0.02, right:0.34};
+  if (/^F7$/.test(e)) return {common:0.80, left:0.30, right:0.03};
+  if (/^F8$/.test(e)) return {common:0.80, left:0.03, right:0.30};
+  if (/^F3$/.test(e)) return {common:0.68, left:0.18, right:0.04};
+  if (/^F4$/.test(e)) return {common:0.68, left:0.04, right:0.18};
+  if (/^Fz$/.test(e)) return {common:0.62, left:0.08, right:0.08};
+  if (/^T3$/.test(e)) return {common:0.28, left:0.12, right:0.02};
+  if (/^T4$/.test(e)) return {common:0.28, left:0.02, right:0.12};
+  if (/^C3$/.test(e)) return {common:0.24, left:0.08, right:0.02};
+  if (/^C4$/.test(e)) return {common:0.24, left:0.02, right:0.08};
+  if (/^Cz$/.test(e)) return {common:0.18, left:0.03, right:0.03};
   return {common:0, left:0, right:0};
 }
 function scheduleSweat(now, immediate=false){
   state.sweat = state.sweat || {};
   const rng = state.rng || Math.random;
-  const startDelay = immediate ? 0 : (0.05 + 0.12*rng());
+  const startDelay = immediate ? (0.02 + 0.06*rng()) : (0.10 + 0.25*rng());
   state.sweat.active = true;
   state.sweat.t0 = now + startDelay;
-  state.sweat.commonAmp = 1.30 + 0.42*rng();
-  state.sweat.leftAmp = 1.04 + 0.34*rng();
-  state.sweat.rightAmp = 1.04 + 0.34*rng();
-  state.sweat.f1 = 0.060 + 0.038*rng();
-  state.sweat.f2 = 0.11 + 0.065*rng();
-  state.sweat.f3 = 0.20 + 0.09*rng();
-  state.sweat.leftFreq = 0.045 + 0.028*rng();
-  state.sweat.rightFreq = 0.045 + 0.028*rng();
-  state.sweat.envelopeFreq = 0.020 + 0.014*rng();
-  // Bias phases away from a zero crossing so enabling sweat shows a visible drift immediately at the live edge.
-  state.sweat.phase1 = (rng()-0.5)*0.8;
-  state.sweat.phase2 = 0.55 + (rng()-0.5)*0.8;
-  state.sweat.phase3 = 1.05 + (rng()-0.5)*0.9;
-  state.sweat.leftPhase = (rng()-0.5)*0.7;
-  state.sweat.rightPhase = (rng()-0.5)*0.7;
-  state.sweat.envelopePhase = -0.35 + (rng()-0.5)*0.5;
+  state.sweat.commonAmp = 0.92 + 0.28*rng();
+  state.sweat.leftAmp = 0.78 + 0.30*rng();
+  state.sweat.rightAmp = 0.78 + 0.30*rng();
+  state.sweat.f1 = 0.045 + 0.040*rng();
+  state.sweat.f2 = 0.085 + 0.055*rng();
+  state.sweat.f3 = 0.16 + 0.07*rng();
+  state.sweat.leftFreq = 0.030 + 0.028*rng();
+  state.sweat.rightFreq = 0.030 + 0.028*rng();
+  state.sweat.envelopeFreq = 0.018 + 0.016*rng();
+  state.sweat.phase1 = rng()*2*Math.PI;
+  state.sweat.phase2 = rng()*2*Math.PI;
+  state.sweat.phase3 = rng()*2*Math.PI;
+  state.sweat.leftPhase = rng()*2*Math.PI;
+  state.sweat.rightPhase = rng()*2*Math.PI;
+  state.sweat.envelopePhase = rng()*2*Math.PI;
 }
 function syncSweatGenerator(forceRestart=false){
   state.sweat = state.sweat || {active:false, t0:0, commonAmp:1, leftAmp:1, rightAmp:1, f1:0.06, f2:0.11, f3:0.18, leftFreq:0.04, rightFreq:0.04, envelopeFreq:0.025, phase1:0, phase2:0, phase3:0, leftPhase:0, rightPhase:0, envelopePhase:0};
@@ -570,17 +555,17 @@ function currentSweatArtifact(clock){
   const env = 0.65 + 0.35*Math.sin(2*Math.PI*sweat.envelopeFreq*t + sweat.envelopePhase);
   const common =
     sweat.commonAmp * env * (
-      0.92*Math.cos(2*Math.PI*sweat.f1*t + sweat.phase1) +
-      0.56*Math.cos(2*Math.PI*sweat.f2*t + sweat.phase2) +
-      0.24*Math.cos(2*Math.PI*sweat.f3*t + sweat.phase3)
+      0.82*Math.sin(2*Math.PI*sweat.f1*t + sweat.phase1) +
+      0.48*Math.sin(2*Math.PI*sweat.f2*t + sweat.phase2) +
+      0.20*Math.sin(2*Math.PI*sweat.f3*t + sweat.phase3)
     );
   const left = sweat.leftAmp * (
-    0.82*Math.cos(2*Math.PI*sweat.leftFreq*t + sweat.leftPhase) +
-    0.30*Math.cos(2*Math.PI*(sweat.leftFreq*2.15)*t + 0.6*sweat.leftPhase)
+    0.70*Math.sin(2*Math.PI*sweat.leftFreq*t + sweat.leftPhase) +
+    0.24*Math.sin(2*Math.PI*(sweat.leftFreq*2.2)*t + 0.6*sweat.leftPhase)
   );
   const right = sweat.rightAmp * (
-    0.82*Math.cos(2*Math.PI*sweat.rightFreq*t + sweat.rightPhase) +
-    0.30*Math.cos(2*Math.PI*(sweat.rightFreq*2.1)*t + 0.6*sweat.rightPhase)
+    0.70*Math.sin(2*Math.PI*sweat.rightFreq*t + sweat.rightPhase) +
+    0.24*Math.sin(2*Math.PI*(sweat.rightFreq*2.1)*t + 0.6*sweat.rightPhase)
   );
   return {common, left, right};
 }
@@ -962,97 +947,6 @@ function generalizedSeizure_uV(tAbs, e, ev){
 
   return w*y;
 }
-function absenceSzScale(e){
-  if (EAR_REFERENCE_ELECTRODES.has(e)) return 0;
-  if (/^Fz$/.test(e)) return 1.16;
-  if (/^(Fp1|Fp2)$/.test(e)) return 1.10;
-  if (/^(F3|F4)$/.test(e)) return 1.00;
-  if (/^(F7|F8)$/.test(e)) return 0.84;
-  if (/^Cz$/.test(e)) return 0.90;
-  if (/^(C3|C4)$/.test(e)) return 0.74;
-  if (/^(T3|T4)$/.test(e)) return 0.62;
-  if (/^Pz$/.test(e)) return 0.52;
-  if (/^(P3|P4)$/.test(e)) return 0.44;
-  if (/^(T5|T6)$/.test(e)) return 0.34;
-  if (/^(O1|O2)$/.test(e)) return 0.24;
-  return 0.42;
-}
-function absenceSzLag(e){
-  let d = 0.0;
-  if (/^(Cz|C3|C4)$/.test(e)) d += 0.0015;
-  if (/^(T3|T4|F7|F8)$/.test(e)) d += 0.0025;
-  if (/^(P|O|T5|T6)/.test(e)) d += 0.004;
-  if (/[2468]$/.test(e)) d += 0.0012;
-  if (/z$/.test(e)) d -= 0.001;
-  return d;
-}
-function makeAbsenceSeizureEvent(t0, durSec=DEFAULT_SEIZURE_DURATIONS.absence){
-  const rng = state.rng;
-  const duration = clampSeizureDuration(durSec, DEFAULT_SEIZURE_DURATIONS.absence);
-  const leadMeta = {};
-  for (const e of ELECTRODES){
-    let regionalLag = 0;
-    if (/^(P|O)/.test(e)) regionalLag += 0.004;
-    else if (/^(T|F7|F8)/.test(e)) regionalLag += 0.002;
-    leadMeta[e] = {
-      gain: 0.985 + 0.050*rng(),
-      lag: regionalLag + (rng()-0.5)*0.0025,
-      phase: (rng()-0.5)*0.08,
-      cycleShift: rng()*0.004
-    };
-  }
-  return {
-    type:'absence',
-    t0,
-    dur:duration,
-    done:false,
-    baseHz: 2.98 + 0.08*rng(),
-    phaseOffset: rng() * Math.PI * 2,
-    leadMeta
-  };
-}
-function absenceSpikeWaveCycle_uV(tCh, period, ampSpike=220, ampSlow=180){
-  if (tCh < 0) return 0;
-  const cyc = (((tCh % period) + period) % period);
-  const spikeCluster = ampSpike * (
-    1.12*spike_uV(cyc) +
-    0.44*spike_uV(cyc - 0.010) -
-    0.10*spike_uV(cyc - 0.020)
-  );
-  const slowStart = 0.022;
-  const slowDur = Math.min(period*0.86, 0.295);
-  let slow = 0;
-  if (cyc >= slowStart && cyc <= slowStart + slowDur){
-    const phase = (cyc - slowStart) / Math.max(0.001, slowDur);
-    const broad = Math.sin(Math.PI * phase);
-    slow = -ampSlow * Math.pow(Math.max(0, broad), 0.92);
-    slow += -0.16*ampSlow * Math.sin(2*Math.PI*phase) * broad;
-  }
-  const reboundT = Math.max(0, cyc - (slowStart + 0.80*slowDur));
-  const rebound = 0.12*ampSlow*Math.sin(2*Math.PI*3.2*reboundT)*Math.exp(-reboundT/0.08);
-  return spikeCluster + slow + rebound;
-}
-function absenceSeizureSample(tAbs, e, ev){
-  const t = tAbs - ev.t0;
-  if (t < 0 || t > ev.dur) return null;
-  const meta = (ev.leadMeta && ev.leadMeta[e]) || {gain:1, lag:0, phase:0, cycleShift:0};
-  const w = absenceSzScale(e) * meta.gain;
-  const localT = t + absenceSzLag(e) + meta.lag;
-  if (localT < 0 || localT > ev.dur) return null;
-  const hz = Math.max(2.9, Math.min(3.15, ev.baseHz + 0.025*Math.sin(2*Math.PI*0.06*localT + ev.phaseOffset) + 0.012*Math.sin(2*Math.PI*0.12*localT + meta.phase)));
-  const period = 1 / hz;
-  const spikeAmp = 212 + 18*Math.sin(2*Math.PI*0.04*localT + ev.phaseOffset + meta.phase);
-  const slowAmp = 172 + 14*Math.sin(2*Math.PI*0.03*localT + 0.6*ev.phaseOffset);
-  const onsetDur = Math.min(0.10, Math.max(0.045, ev.dur*0.008));
-  const offsetDur = Math.min(0.12, Math.max(0.050, ev.dur*0.010));
-  const onset = smoothstep01(localT / Math.max(0.001, onsetDur));
-  const offset = smoothstep01((ev.dur - localT) / Math.max(0.001, offsetDur));
-  const env = Math.min(onset, offset);
-  // Invert the absence complex so it presents with the expected visual polarity in this renderer.
-  const overlay = -w * env * absenceSpikeWaveCycle_uV(localT + meta.cycleShift, period, spikeAmp, slowAmp);
-  const preserve = Math.max(0.14, 1 - env*(0.22 + 0.58*w));
-  return {overlay, preserve};
-}
 
 // Default focus: LEFT temporal-predominant (F7/T3/T5) with spread to ipsilateral frontal/parietal.
 function lpdWave(clock, rng){
@@ -1122,14 +1016,12 @@ function lpdLagRight(e){
 
 function region(e){
   if (/^O/.test(e)) return 'occipital';
-  if (/^P/.test(e)) return 'parietal';
-  if (/^(C3|C4|Cz)$/.test(e)) return 'central';
-  if (/^(Fp1|Fp2|F3|F4|Fz)$/.test(e)) return 'frontal';
-  if (/^(F7|F8|T3|T4|T5|T6)$/.test(e)) return 'temporal';
+  if (/^Fp/.test(e)) return 'frontal';
+  if (/^(F7|F8|T3|T4|T5|T6)/.test(e)) return 'temporal';
+  if (/^(P|C|Fz|Cz|Pz)/.test(e)) return 'central';
   return 'other';
 }
 function lowpass(prev, x, a){ return prev + a*(x - prev); }
-function clampFreq(v, min, max){ return Math.max(min, Math.min(max, v)); }
 
 class Channel {
   constructor(name, rng){
@@ -1141,195 +1033,71 @@ class Channel {
     this.envA=0; this.envB=0; this.envT=0; this.envD=0;
     this.brown=0;
     this.alphaJitterBase=(this.rng()-0.5)*0.2;
-    this.alphaOffset=(this.rng()-0.5)*0.8;
-    this.betaOffset=(this.rng()-0.5)*5.0;
-    this.thetaOffset=(this.rng()-0.5)*1.0;
-    this.deltaOffset=(this.rng()-0.5)*0.45;
-    this.alphaPosteriorLag=(this.rng()-0.5)*0.45;
-    this.fmAlpha=this.rng()*Math.PI*2;
-    this.fmBeta=this.rng()*Math.PI*2;
-    this.fmTheta=this.rng()*Math.PI*2;
-    this.fmDelta=this.rng()*Math.PI*2;
   }
   sample(t, opts){
     const r = region(this.name);
-    const posterior = (r==='occipital' || r==='parietal');
     const R = (opts && typeof opts.realism==='number') ? opts.realism : 1;
     // Non-linear mapping: bottom half linear, top half quadratic for extra punch
     const Rnl = (R <= 0.5) ? R : (0.5 + 2*Math.pow(R-0.5, 2));
     const S3 = Math.max(0, Math.min(3*Rnl, 3));
-    let A=6,B=5,T=5,D=3, noiseGain=0.78;
+    let A=8,B=6,T=6,D=3;
     switch(opts.mode){
       case 'alpha': case 'awake':
-        if (r==='occipital') A = (opts.eyesOpen ? 4 : 46);
-        else if (r==='parietal') A = (opts.eyesOpen ? 3 : 22);
-        else if (r==='central') A = 7;
-        else if (r==='frontal') A = 4;
-        else A = 6;
-        B = (r==='frontal') ? 10 : (r==='central' ? 8 : (r==='temporal' ? 7 : 5));
-        T = (r==='temporal') ? 4.5 : (posterior ? 3.5 : 3.0);
-        D = posterior ? 2.4 : 2.0;
-        noiseGain = opts.eyesOpen ? 0.78 : 0.68;
-        break;
+        if (r==='occipital') A = (opts.eyesOpen? 6: 40); else if (r==='central') A = 10; else if (r==='frontal') A = 6; else A = 8;
+        B = (r==='frontal') ? 8 : 6; T = (r==='temporal') ? 7 : 5; D = 3; break;
       case 'beta':
-        A = posterior ? (opts.eyesOpen ? 2.5 : 5.5) : 2.5;
-        B = (r==='frontal') ? 22 : (r==='central' ? 16 : (r==='temporal' ? 13 : (r==='parietal' ? 9 : 7)));
-        T = (r==='temporal') ? 3.8 : 2.8;
-        D = 1.8;
-        noiseGain = 0.82;
-        break;
-      case 'theta':
-        A = posterior ? (opts.eyesOpen ? 2.2 : 4.2) : 2.6;
-        B = (r==='frontal') ? 4.2 : 3.2;
-        T = (r==='temporal') ? 23 : (r==='central' ? 19 : (r==='parietal' ? 16 : (r==='frontal' ? 13.5 : 11.5)));
-        D = (r==='frontal') ? 5.0 : 4.2;
-        noiseGain = 0.74;
-        break;
-      case 'drowsy':
-        A = posterior ? (opts.eyesOpen ? 2.0 : 8.0) : 3.2;
-        B = (r==='frontal') ? 4.0 : 3.0;
-        T = (r==='temporal') ? 20 : (r==='central' ? 17 : (r==='parietal' ? 13.5 : (r==='frontal' ? 12 : 10)));
-        D = (r==='frontal') ? 5.5 : 4.2;
-        noiseGain = 0.72;
-        break;
+        B = (r==='frontal')? 14 : 10; A = (r==='occipital') ? (opts.eyesOpen?5:12) : 6; T=6; D=3; break;
+      case 'theta': case 'drowsy':
+        T = (r==='temporal'||r==='central'||opts.mode==='theta') ? 15 : 10; 
+        A = (r==='occipital') ? (opts.eyesOpen?4:12) : 6; B=6; D=4; break;
       case 'delta':
-        A = 2.5; B = 2.0; T = (r==='temporal') ? 4.5 : 3.0;
-        D = (r==='frontal') ? 30 : (r==='central' ? 24 : (r==='parietal' ? 19 : (r==='temporal' ? 16 : 14)));
-        noiseGain = 0.58;
-        break;
+        D = (r==='frontal'||r==='central') ? 20 : 12; T=8; A=6; B=4; break;
       case 'n1':
-        A = posterior ? 3.8 : 2.6;
-        B = (r==='frontal') ? 3.8 : 3.2;
-        T = (r==='central') ? 16.5 : (r==='temporal' ? 15.5 : (r==='frontal' ? 12.5 : 11.5));
-        D = (r==='frontal') ? 6.2 : (r==='central' ? 5.4 : 4.5);
-        noiseGain = 0.70;
-        break;
+        T = (r==='central') ? 16 : 12; A=6; B=6; D=5; break;
       case 'n2':
-        A = posterior ? 2.8 : 2.0;
-        B = (r==='frontal') ? 4.8 : (r==='central' ? 4.2 : 3.6);
-        T = (r==='central') ? 12.5 : (r==='temporal' ? 11.5 : 9.5);
-        D = (r==='frontal') ? 9.8 : (r==='central' ? 8.0 : (r==='parietal' ? 6.6 : 5.8));
-        noiseGain = 0.66;
-        break;
+        T = (r==='central') ? 14 : 10; A=6; B=7; D=6; break;
       case 'rem':
-        A = posterior ? 2.4 : 2.0;
-        B = (r==='frontal') ? 10.5 : (r==='central' ? 8.5 : 6.8);
-        T = (r==='temporal') ? 11.8 : (r==='central' ? 10.6 : 9.0);
-        D = 1.8;
-        noiseGain = 0.74;
-        break;
+        T = 12; B = 8; A = 5; D = 4; break;
       case 'sws':
-        A = 1.4; B = 1.2; T = 2.2;
-        D = (r==='frontal') ? 44 : (r==='central' ? 37 : (r==='parietal' ? 28 : (r==='temporal' ? 23 : 20)));
-        noiseGain = 0.44;
-        break;
+        D = 35; T=6; A=4; B=3; break;
     }
     this.envA = lowpass(this.envA, (this.rng()-0.5)*2*S3, 0.002);
     this.envB = lowpass(this.envB, (this.rng()-0.5)*2*S3, 0.004);
     this.envT = lowpass(this.envT, (this.rng()-0.5)*2*S3, 0.003);
     this.envD = lowpass(this.envD, (this.rng()-0.5)*2*S3, 0.0015);
-    const alphaBase = clampFreq((((opts.mode==='alpha' || opts.mode==='awake') ? opts.pdrHz : 9.2) + this.alphaOffset + 0.18*Math.sin(2*Math.PI*0.08*opts.clock + this.fmAlpha)), 7.5, 12.5);
-    const betaBase = (opts.mode==='beta') ? 21.5 : (opts.mode==='rem' ? 17.2 : 19.0);
-    const thetaBase =
-      (opts.mode==='drowsy') ? 5.8 :
-      (opts.mode==='n1') ? 5.3 :
-      (opts.mode==='n2') ? 5.0 :
-      (opts.mode==='theta') ? 5.5 : 4.9;
-    const deltaBase =
-      (opts.mode==='delta') ? 1.8 :
-      (opts.mode==='sws') ? 1.05 :
-      (opts.mode==='n2') ? 1.45 : 1.3;
-    const fAlpha = posterior ? alphaBase : clampFreq(9.0 + 0.55*this.alphaOffset + 0.22*Math.sin(2*Math.PI*0.09*opts.clock + this.fmAlpha), 7.5, 11.5);
-    const fBeta  = clampFreq(betaBase + this.betaOffset + 0.9*Math.sin(2*Math.PI*0.10*opts.clock + this.fmBeta), 15, 30);
-    const fTheta = clampFreq(thetaBase + this.thetaOffset + 0.28*Math.sin(2*Math.PI*0.07*opts.clock + this.fmTheta), 3.5, 7.0);
-    const fDelta = clampFreq(deltaBase + this.deltaOffset + 0.10*Math.sin(2*Math.PI*0.05*opts.clock + this.fmDelta), 0.5, opts.mode==='sws' ? 2.1 : 3.2);
+    const fAlpha = ((opts.mode==='alpha' || opts.mode==='awake') && r==='occipital') ? opts.pdrHz : 8 + this.rng()*4;
+    const fBeta  = 18 + (this.rng()*10*S3);
+    const fTheta = 4.5 + (this.rng()*2.5*S3);
+    const fDelta = 1.0 + (this.rng()*1.5*S3);
     this.phAlpha += 2*Math.PI*fAlpha/Fs;
     this.phBeta  += 2*Math.PI*fBeta /Fs;
     this.phTheta += 2*Math.PI*fTheta/Fs;
     this.phDelta += 2*Math.PI*fDelta/Fs;
     let y = 0;
-    let alphaMix = 0.14;
-    if (opts.mode==='alpha' || opts.mode==='awake'){
-      if (r==='occipital') alphaMix = opts.eyesOpen ? 0.42 : 0.94;
-      else if (r==='parietal') alphaMix = opts.eyesOpen ? 0.24 : 0.68;
-      else if (r==='central') alphaMix = 0.22;
-      else alphaMix = 0.10;
-    } else if (opts.mode==='beta' && posterior){
-      alphaMix = 0.10;
-    }
-    const alphaDriver = Math.sin(opts.pdrPhase + this.alphaPosteriorLag + this.alphaJitterBase*(0.35 + 0.65*S3));
-    const alphaLocal = Math.sin(this.phAlpha);
-    const alphaTerm = alphaMix*alphaDriver + (1-alphaMix)*alphaLocal;
-    const betaTerm = 0.82*Math.sin(this.phBeta) + 0.18*Math.sin(2*this.phBeta + 0.4*this.fmBeta);
-    const thetaTerm = 0.88*Math.sin(this.phTheta) + 0.20*Math.sin(2*this.phTheta - 0.35);
-    const deltaTerm = 0.90*Math.sin(this.phDelta) + 0.28*Math.sin(2*this.phDelta - 0.85);
+    const alphaTerm = ((opts.mode==='alpha' || opts.mode==='awake') && r==='occipital')
+      ? Math.sin(opts.pdrPhase + this.alphaJitterBase*S3)
+      : Math.sin(this.phAlpha);
     y += (A*(1+0.6*this.envA)) * alphaTerm;
-    y += (B*(1+0.6*this.envB)) * betaTerm;
-    y += (T*(1+0.6*this.envT)) * thetaTerm;
-    y += (D*(1+0.6*this.envD)) * deltaTerm;
-    if (opts.mode==='drowsy'){
-      const eyeScale = drowsyEyeScale(this.name);
-      if (eyeScale){
-        const sidePhase =
-          /^(Fp1|F7|F3)$/.test(this.name) ? 0.42 :
-          /^(Fp2|F8|F4)$/.test(this.name) ? -0.42 : 0;
-        const slowRoll =
-          0.76*Math.sin(2*Math.PI*0.23*opts.clock + sidePhase) +
-          0.34*Math.sin(2*Math.PI*0.11*opts.clock - 0.6*sidePhase);
-        const eyeEnv = 0.72 + 0.28*Math.sin(2*Math.PI*0.03*opts.clock + this.fmTheta);
-        y += 42*eyeScale*eyeEnv*slowRoll;
-      }
+    y += (B*(1+0.6*this.envB)) * Math.sin(this.phBeta);
+    y += (T*(1+0.6*this.envT)) * Math.sin(this.phTheta);
+    y += (D*(1+0.6*this.envD)) * Math.sin(this.phDelta);
+    if (opts.mode==='drowsy' && /^Fp|^F/.test(this.name)) y += 40*Math.sin(2*Math.PI*0.25*opts.clock);
+    if (opts.mode==='rem' && /^Fp|^F/.test(this.name)) {
+      const fREM = 0.8 + 0.4*Math.sin(0.2*opts.clock);
+      const burst = (Math.sin(2*Math.PI*0.12*opts.clock)>0.7) ? 1 : 0;
+      const saw = 2*(opts.clock*fREM - Math.floor(0.5 + opts.clock*fREM));
+      y += burst * 35 * (saw);
     }
-    if (opts.mode==='rem') {
-      const eyeScale = remEyeScale(this.name);
-      if (eyeScale){
-        const sidePhase =
-          /^(Fp1|F7|F3)$/.test(this.name) ? 0.78 :
-          /^(Fp2|F8|F4)$/.test(this.name) ? -0.78 : 0;
-        const burstEnv = Math.pow(Math.max(0, Math.sin(2*Math.PI*0.085*opts.clock + 0.8)), 2);
-        const eyeHz = 0.55 + 0.08*Math.sin(2*Math.PI*0.03*opts.clock + this.fmTheta);
-        const remMove =
-          0.86*Math.sin(2*Math.PI*eyeHz*opts.clock + sidePhase) +
-          0.30*Math.sin(2*Math.PI*1.05*opts.clock - 0.4*sidePhase);
-        y += 24*eyeScale*burstEnv*remMove;
-      }
-      const sawScale = remSawScale(this.name);
-      if (sawScale){
-        const sawEnv = Math.pow(Math.max(0, Math.sin(2*Math.PI*0.075*opts.clock - 0.45)), 3);
-        const sawHz = 2.4 + 0.35*Math.sin(2*Math.PI*0.028*opts.clock + this.fmBeta);
-        y += 22*sawScale*sawEnv*sleepSawWave(opts.clock, sawHz, 0.35*this.fmTheta);
-      }
+    if (opts.vertex && (this.name==='Cz' || this.name==='Fz')) y += opts.vertexShape * (this.name==='Cz' ? 120 : 60);
+    if (opts.spindleEnv && /^(C3|C4|Cz)$/.test(this.name)) {
+      const fSigma = 12 + 2*Math.sin(0.1*opts.clock);
+      y += 25*opts.spindleEnv*Math.sin(2*Math.PI*fSigma*opts.clock);
     }
-    if (opts.vertex){
-      const vertexScale =
-        this.name==='Cz' ? 1.00 :
-        /^(C3|C4)$/.test(this.name) ? 0.58 :
-        this.name==='Fz' ? 0.52 :
-        /^(F3|F4)$/.test(this.name) ? 0.26 : 0;
-      if (vertexScale) y += 140*vertexScale*opts.vertexShape;
-    }
-    if (opts.spindleEnv) {
-      const spindleScale =
-        this.name==='Cz' ? 1.00 :
-        /^(C3|C4)$/.test(this.name) ? 0.84 :
-        this.name==='Fz' ? 0.46 :
-        /^(F3|F4)$/.test(this.name) ? 0.28 : 0;
-      if (spindleScale){
-        const fSigma = 12.6 + 0.8*Math.sin(2*Math.PI*0.06*opts.clock + this.fmBeta);
-        const sigma = Math.sin(2*Math.PI*fSigma*opts.clock + 0.12*this.fmAlpha) + 0.22*Math.sin(2*Math.PI*(2*fSigma)*opts.clock - 0.3);
-        y += 34*spindleScale*opts.spindleEnv*sigma;
-      }
-    }
-    if (opts.kcShape){
-      const kcScale =
-        /^(Fz|F3|F4)$/.test(this.name) ? 1.00 :
-        /^(Cz|C3|C4)$/.test(this.name) ? 0.82 : 0;
-      if (kcScale) y += 138*kcScale*opts.kcShape;
-    }
+    if (opts.kcShape && /^(F3|F4|C3|C4|Cz|Fz)$/.test(this.name)) y += 120*opts.kcShape * (/(F|Fz)/.test(this.name)?1.0:0.8);
     const w = (this.rng()-0.5)*4.0*S3;
     this.brown = 0.98*this.brown + w;
     const pinkish = 0.9*this.brown + 0.1*w;
-    y += noiseGain * pinkish;
+    y += pinkish;
     if (opts.blinkShape){
       const frontalBlinkScale = blinkScale(this.name);
       if (frontalBlinkScale > 0) y += frontalBlinkScale * (105 + 135*R) * opts.blinkShape;
@@ -1351,7 +1119,7 @@ class Channel {
       const sweatW = sweatLeadWeights(this.name);
       if (sweatW.common || sweatW.left || sweatW.right){
         const drift = sweatW.common*opts.sweatArtifact.common + sweatW.left*opts.sweatArtifact.left + sweatW.right*opts.sweatArtifact.right;
-        y += (42 + 160*R) * drift;
+        y += (18 + 88*R) * drift;
       }
     }
     if (opts.popArtifact && opts.popArtifact.electrode === this.name) y += opts.popArtifact.value;
@@ -1395,7 +1163,7 @@ const state = {
   speed: 1,
   opts: {blink:false, chew:false, sweat:false, pop:false, emg:false},
   pathology: {gpd:false, lpd:false, bipds:false, focalSeizure:false},
-  seizureDurations: {generalized:20, absence:10, focal:10},
+  seizureDurations: {generalized:20, focal:10},
   seizureEvents: [],
   montage: 'bipolar_longitudinal',
   mode: 'awake',
@@ -1422,7 +1190,7 @@ const SLEEP_STATE_MODES = new Set(['awake','drowsy','n1','n2','sws','rem']);
 const SENSITIVITY_VALUES = [3,5,7,10,15];
 const MIN_SEIZURE_DURATION = 10;
 const MAX_SEIZURE_DURATION = 99;
-const DEFAULT_SEIZURE_DURATIONS = { generalized:20, absence:10, focal:10 };
+const DEFAULT_SEIZURE_DURATIONS = { generalized:20, focal:10 };
 function reconcileModeControls(){
   if (RHYTHM_MODES.has(state.mode)) {
     state.rhythmOverride = state.mode;
@@ -1692,47 +1460,8 @@ function secondsFromTimebase(mmps){
  * Sleep event helpers
  ***********************/
 function spindleEnvelope(t, t0, dur){ const x=(t-t0)/dur; if(x<0||x>1) return 0; return Math.sin(Math.PI*x)**2; }
-function kComplexShape(t, t0){
-  const x=t-t0;
-  if(x<-0.06||x>1.05) return 0;
-  const prePos=(x>=0&&x<=0.12)?0.28*Math.sin(Math.PI*(x/0.12)):0;
-  const neg=(x>0.10&&x<=0.42)?-Math.sin(Math.PI*((x-0.10)/0.32)):0;
-  const latePos=(x>0.38&&x<=0.96)?0.62*Math.sin(Math.PI*((x-0.38)/0.58)):0;
-  return prePos + neg + latePos;
-}
-function vertexShape(t, t0){
-  const x=t-t0;
-  if(x<0||x>0.18) return 0;
-  const peak=(x<=0.08)?-Math.sin(Math.PI*(x/0.08)):0;
-  const rebound=(x>0.08&&x<=0.18)?0.28*Math.sin(Math.PI*((x-0.08)/0.10)):0;
-  return peak + rebound;
-}
-function drowsyEyeScale(e){
-  if (/^Fp[12]$/.test(e)) return 1.00;
-  if (/^(F7|F8)$/.test(e)) return 0.54;
-  if (/^(F3|F4)$/.test(e)) return 0.36;
-  if (/^Fz$/.test(e)) return 0.40;
-  if (/^Cz$/.test(e)) return 0.08;
-  return 0;
-}
-function remEyeScale(e){
-  if (/^Fp[12]$/.test(e)) return 0.72;
-  if (/^(F7|F8)$/.test(e)) return 0.36;
-  if (/^(F3|F4|Fz)$/.test(e)) return 0.24;
-  return 0;
-}
-function remSawScale(e){
-  if (/^Cz$/.test(e)) return 1.00;
-  if (/^(C3|C4)$/.test(e)) return 0.76;
-  if (/^Fz$/.test(e)) return 0.58;
-  if (/^(F3|F4|Pz)$/.test(e)) return 0.28;
-  return 0;
-}
-function sleepSawWave(t, freq, phase=0){
-  const cyc = (((t*freq) + phase/(2*Math.PI)) % 1 + 1) % 1;
-  const saw = 2*cyc - 1;
-  return 0.72*saw + 0.28*Math.sin(2*Math.PI*cyc);
-}
+function kComplexShape(t, t0){ const x=t-t0; if(x<-0.1||x>1.0) return 0; const neg=x>=0&&x<=0.2?-Math.sin(Math.PI*(x/0.2)):0; const pos=(x>0.2&&x<=0.8)?Math.sin(Math.PI*((x-0.2)/0.6)):0; return neg+0.6*pos; }
+function vertexShape(t, t0){ const x=t-t0; if(x<0||x>0.15) return 0; return -Math.sin(Math.PI*(x/0.15)); }
 function clearQuizBannerTimer(){
   if (state.quizBannerTimer){
     clearTimeout(state.quizBannerTimer);
@@ -1959,24 +1688,9 @@ function step(){
       const rng = state.rng;
       for(let n=0;n<samples;n++){
         state.pdrPhase += 2*Math.PI*state.pdrHz/Fs;
-        if(state.mode==='n2' && !state.spindle.active && rng()<0.0010){
-          state.spindle.active=true;
-          state.spindle.t0=state.artClock+rng()*0.7;
-          state.spindle.dur=0.55+rng()*0.85;
-        }
-        if(state.mode==='n2' && !state.kcomplex.active && rng()<0.00022){
-          state.kcomplex.active=true;
-          state.kcomplex.t0=state.artClock+rng()*0.45;
-          if(!state.spindle.active && rng()<0.68){
-            state.spindle.active=true;
-            state.spindle.t0=state.kcomplex.t0+0.22+rng()*0.28;
-            state.spindle.dur=0.60+rng()*0.90;
-          }
-        }
-        if(state.mode==='n1' && !state.vertex.active && rng()<0.00055){
-          state.vertex.active=true;
-          state.vertex.t0=state.artClock+rng()*0.25;
-        }
+        if(state.mode==='n2' && !state.spindle.active && rng()<0.02){ state.spindle.active=true; state.spindle.t0=state.artClock+rng()*0.5; state.spindle.dur=0.5+rng()*1.2; }
+        if(state.mode==='n2' && !state.kcomplex.active && rng()<0.005){ state.kcomplex.active=true; state.kcomplex.t0=state.artClock+rng()*0.3; }
+        if(state.mode==='n1' && !state.vertex.active && rng()<0.01){ state.vertex.active=true; state.vertex.t0=state.artClock+rng()*0.2; }
         if(state.spindle.active && state.artClock>state.spindle.t0+state.spindle.dur) state.spindle.active=false;
         if(state.kcomplex.active && state.artClock>state.kcomplex.t0+1.0) state.kcomplex.active=false;
         if(state.vertex.active && state.artClock>state.vertex.t0+0.15) state.vertex.active=false;
@@ -2004,21 +1718,19 @@ function step(){
           if (state.pathology && state.pathology.gpd) {
             y += gpdWave(sampleClock + gpdLag(e), rng) * gpdScale(e);
           }
+          if (state.pathology && state.pathology.lpd) {
+            y += lpdWave(sampleClock + lpdLagLeft(e), rng) * lpdScaleLeft(e);
+          }
+
           if (state.pathology && state.pathology.bipds) {
-            // Bilateral independent periodic discharges: render both hemispheres as independent generators.
-            y += lpdWave(sampleClock + lpdLagLeft(e), rng) * lpdScaleLeft(e);
+            // Add independent right-sided LPD as well
             y += lpdWave(sampleClock + 0.31 + lpdLagRight(e), rng) * lpdScaleRight(e);
-          } else if (state.pathology && state.pathology.lpd) {
-            y += lpdWave(sampleClock + lpdLagLeft(e), rng) * lpdScaleLeft(e);
           }
           // Inject active generalized seizure events (additive, no redraw)
           if (state.seizureEvents && state.seizureEvents.length){
             for (const ev of state.seizureEvents){
               if (!ev.done && ev.type==='generalized'){
                 y += generalizedSeizure_uV(sampleClock, e, ev);
-              } else if (!ev.done && ev.type==='absence'){
-                const absence = absenceSeizureSample(sampleClock, e, ev);
-                if (absence) y = y*absence.preserve + absence.overlay;
               }
             }
           }
@@ -2127,7 +1839,7 @@ function regen(){
   state.seconds=secondsFromUI(); const sensEl=$('sensitivity'); if(sensEl) applySensitivityValue(sensEl.value);
   state.opts={ blink:$('blink')?.checked||false, chew:$('chew')?.checked||false, sweat:$('sweat')?.checked||false, pop:$('pop')?.checked||false, emg:$('emg')?.checked||false };
   state.montage=$('montageSel')?$('montageSel').value:state.montage;
-  state.pdrHz=9.0 + 1.8*state.rng(); state.pdrPhase=0; state.artClock=0; state.sampleCarry=0; lastT=performance.now()/1000; initChannels();
+  state.pdrHz=10+state.rng(); state.pdrPhase=0; state.artClock=0; state.sampleCarry=0; lastT=performance.now()/1000; initChannels();
   syncBlinkGenerator(true);
   syncChewGenerator(true);
   syncSweatGenerator(true);
@@ -2144,7 +1856,6 @@ function syncControlsFromState(){
   if ($('sleepSel')) $('sleepSel').value = state.rhythmOverride ? '' : (state.sleepState || 'awake');
   if ($('sensitivity')) $('sensitivity').value = sensitivityValueFromUvPerDiv(state.uvPerDiv);
   syncSeizureDurationInput('genSzDur', 'generalized');
-  syncSeizureDurationInput('absenceSzDur', 'absence');
   syncSeizureDurationInput('focalSzDur', 'focal');
   if ($('eyesOpen')) $('eyesOpen').checked = !!state.eyesOpen;
   if ($('blink')) $('blink').checked = !!state.opts.blink;
@@ -2266,10 +1977,8 @@ const lpdBox = $('lpd');
 const quizBtnTop = $('quizBtnTop');
 function updateSeizureActionButtons(){
   const genSzBtn = $('genSz');
-  const absenceBtn = $('absenceSz');
   const focalBtn = $('focalSz');
   const genSzDurInput = $('genSzDur');
-  const absenceSzDurInput = $('absenceSzDur');
   const focalSzDurInput = $('focalSzDur');
   const generalizedActive = !!((state.seizureEvents||[]).some(ev => !ev.done && ev.type==='generalized'));
   if (genSzBtn){
@@ -2277,12 +1986,6 @@ function updateSeizureActionButtons(){
     genSzBtn.textContent = generalizedActive ? 'Generalized seizure running...' : 'Generalized seizure';
   }
   if (genSzDurInput) genSzDurInput.disabled = generalizedActive;
-  const absenceActive = !!((state.seizureEvents||[]).some(ev => !ev.done && ev.type==='absence'));
-  if (absenceBtn){
-    absenceBtn.disabled = absenceActive;
-    absenceBtn.textContent = absenceActive ? 'Absence seizure running...' : 'Absence seizure';
-  }
-  if (absenceSzDurInput) absenceSzDurInput.disabled = absenceActive;
   const focalActive = !!(state.focalSz && state.focalSz.active);
   if (focalBtn){
     focalBtn.disabled = focalActive;
@@ -2315,14 +2018,9 @@ if (lpdBox) {
 }
 const genSzBtn = $('genSz');
 const genSzDurInput = $('genSzDur');
-const absenceSzBtn = $('absenceSz');
-const absenceSzDurInput = $('absenceSzDur');
 const focalSzDurInput = $('focalSzDur');
 if (genSzDurInput) {
   ['change','blur'].forEach(evt => genSzDurInput.addEventListener(evt, ()=>{ syncSeizureDurationInput('genSzDur', 'generalized'); updateSeizureActionButtons(); }));
-}
-if (absenceSzDurInput) {
-  ['change','blur'].forEach(evt => absenceSzDurInput.addEventListener(evt, ()=>{ syncSeizureDurationInput('absenceSzDur', 'absence'); updateSeizureActionButtons(); }));
 }
 if (focalSzDurInput) {
   ['change','blur'].forEach(evt => focalSzDurInput.addEventListener(evt, ()=>{ syncSeizureDurationInput('focalSzDur', 'focal'); updateSeizureActionButtons(); }));
@@ -2338,22 +2036,14 @@ if (genSzBtn){
     if (pathologyModal) pathologyModal.hidden = true;
   });
 }
-if (absenceSzBtn){
-  absenceSzBtn.addEventListener('click', ()=>{
-    const active = (state.seizureEvents||[]).some(ev => !ev.done && ev.type==='absence');
-    if (!active){
-      const duration = syncSeizureDurationInput('absenceSzDur', 'absence');
-      state.seizureEvents.push(makeAbsenceSeizureEvent(state.artClock, duration));
-    }
-    updateSeizureActionButtons();
-    if (pathologyModal) pathologyModal.hidden = true;
-  });
-}
 updateSeizureActionButtons();
 if (quizBtnTop){
   quizBtnTop.addEventListener('click', ()=>{
     if (state.quiz && state.quiz.active){
-      endQuiz();
+      const panel = $('quizPanel');
+      if (panel) panel.style.display='block';
+      const rhythmFieldset = $('rhythmFieldset');
+      if (rhythmFieldset) rhythmFieldset.style.display='none';
     } else {
       startQuiz();
     }
@@ -2396,11 +2086,11 @@ const QUIZ_SPEC_BASE = [
   {key:'symmetry',     label:'Symmetry',                 options:['symmetric','asymmetric']},
   {key:'amplitude',    label:'Amplitude pattern',        options:['Normal','diffuse attenuation','focal attenuation']},
   {group:'Slowing',    parts:[
-      {key:'slowingDist',  label:'Distribution', options:['None','Generalized','Focal - Left','Focal - Right']},
-      {key:'slowingTempo', label:'Tempo', options:['Intermittent','Continuous']}
+      {key:'slowingDist',  label:'', options:['None','Generalized','Focal - Left','Focal - Right']},
+      {key:'slowingTempo', label:'', options:['Intermittent','Continuous']}
   ]},
-  {key:'periodic',     label:'Periodic / Rhythmic',      options:['None','GPDs','LPDs']},
-  {key:'sleep',        label:'Sleep',                    options:['Awake','Drowsy','Stage 1','Stage 2','SWS','REM','Unable to determine']},
+  {key:'periodic',     label:'Periodic / Rhythmic',      options:['None','GPDs','LPDs','BIPDs']},
+  {key:'sleep',        label:'Sleep',                    options:['Awake','Drowsy','Stage 1','Stage 2','SWS','REM']},
   {key:'epileptiform', label:'Epileptiform discharges',  options:['none','generalized','focal']}
 ];
 
@@ -2427,7 +2117,7 @@ function startQuiz(){
   const amplitude  = randChoice(rng, ['Normal','diffuse attenuation','focal attenuation']);
   const slowingDist = (rng()<0.34) ? 'None' : randChoice(rng, ['Generalized','Focal - Left','Focal - Right']);
   const slowingTempo = slowingDist === 'None' ? '' : randChoice(rng, ['Intermittent','Continuous']);
-  const periodic   = (rng()<0.30) ? randChoice(rng, ['GPDs','LPDs']) : 'None';
+  const periodic   = (rng()<0.30) ? randChoice(rng, ['GPDs','LPDs','BIPDs']) : 'None';
   let epileptiform = randChoice(rng, ['none','generalized','focal']);
   if (periodic !== 'None' && rng() < 0.70) epileptiform = 'none';
 
@@ -2448,8 +2138,8 @@ function startQuiz(){
   applyQuizModeFromTruth(sleep, background);
 
   state.pathology.gpd   = (periodic==='GPDs');
-  state.pathology.lpd   = (periodic==='LPDs');
-  state.pathology.bipds = false;
+  state.pathology.lpd   = (periodic==='LPDs' || periodic==='BIPDs');
+  state.pathology.bipds = (periodic==='BIPDs');
   state.pathology.focalSeizure = false;
   state.seizureEvents = [];
   if (state.focalSz){
@@ -2527,15 +2217,9 @@ function buildQuizUI(){
       header.textContent = step.group;
       container.appendChild(header);
 
-      step.parts.forEach((row, rIndex)=>{ 
+      step.parts.forEach((row, rIndex)=>{
         const rowWrap = document.createElement('div');
         rowWrap.className = 'quiz-subrow';
-        if (row.label){
-          const rowLabel = document.createElement('div');
-          rowLabel.className = 'quiz-subrow-label';
-          rowLabel.textContent = row.label;
-          rowWrap.appendChild(rowLabel);
-        }
         row.options.forEach(opt=>{
           const b = document.createElement('button');
           b.type = 'button';
@@ -2579,16 +2263,8 @@ function buildQuizUI(){
 
 function onAnswer(key, val, btn){
   // toggle active visual
-  Array.from(btn.parentElement.children).forEach(el=>el.classList.remove('active', 'correct', 'wrong', 'neutral'));
+  Array.from(btn.parentElement.children).forEach(el=>el.classList.remove('active', 'correct', 'wrong'));
   btn.classList.add('active');
-
-  const isNeutral = (key === 'sleep' && val === 'Unable to determine');
-  if (isNeutral){
-    btn.classList.add('neutral');
-    state.quiz.answered[key] = null;
-    checkWin();
-    return;
-  }
 
   // grade
   const truth = (state.quiz.truth[key] ?? '').toString();
@@ -2610,8 +2286,7 @@ function checkWin(){
   const allAnswered = keys.length > 0 && keys.every((key) => key in state.quiz.answered);
   if (!allAnswered) return;
 
-  const scoredKeys = keys.filter((key) => state.quiz.answered[key] !== null);
-  const allCorrect  = scoredKeys.every((key) => state.quiz.answered[key] === true);
+  const allCorrect  = keys.every((key) => state.quiz.answered[key] === true);
   const banner = document.getElementById('quizBanner');
 
   if (banner){
