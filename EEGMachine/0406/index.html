@@ -14,25 +14,6 @@
 /* Quiz panel styles */
 #quizPanel{position:fixed;top:64px;right:8px;width:320px;max-width:38vw;background:rgba(255,255,255,.95);border:1px solid rgba(0,0,0,.12);border-radius:12px;padding:12px;box-shadow:0 6px 18px rgba(0,0,0,.14);display:none; z-index:9999;}
 #quizPanel h2{font-size:1.05rem;margin:.2rem 0 .4rem;font-weight:700}
-.tutorial-panel{position:fixed;top:64px;right:8px;width:min(36rem, calc(100vw - 1rem));max-width:42vw;background:rgba(255,255,255,.97);border:1px solid rgba(0,0,0,.12);border-radius:12px;padding:12px;box-shadow:0 6px 18px rgba(0,0,0,.14);display:none;z-index:9999;max-height:min(80dvh, calc(100dvh - 5rem));overflow:auto}
-.tutorial-panel h2{font-size:1.05rem;margin:.2rem 0 .3rem;font-weight:700}
-.tutorial-meta{display:flex;flex-wrap:wrap;gap:.35rem;margin:.3rem 0 .55rem}
-.tutorial-chip{display:inline-flex;align-items:center;padding:.18rem .5rem;border-radius:999px;border:1px solid rgba(0,0,0,.12);background:#f3f5f6;font-size:12px;color:#31414d}
-.tutorial-progress{font-size:12px;opacity:.72;margin-bottom:.55rem}
-.tutorial-step-card{border-top:1px dashed rgba(0,0,0,.15);padding-top:.65rem}
-.tutorial-step-title{font-size:14px;font-weight:700;margin-bottom:.25rem}
-.tutorial-prompt{font-size:13px;line-height:1.4;margin-bottom:.45rem}
-.tutorial-answer{font-size:13px;line-height:1.4;padding:.45rem .55rem;border-radius:8px;background:#eef6ff;border:1px solid #c9dcfb;margin:.35rem 0 .55rem}
-.tutorial-explanation{font-size:13px;line-height:1.45;color:#22313b}
-.tutorial-note{font-size:12px;line-height:1.35;color:#576673;margin-top:.45rem}
-.tutorial-controls{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.75rem}
-.tutorial-aux{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.55rem}
-.tutorial-choice-row{display:flex;flex-wrap:wrap;gap:.45rem;margin:.45rem 0 .6rem}
-.tutorial-choice{padding:.3rem .65rem;border-radius:999px;border:1px solid rgba(0,0,0,.18);background:#fff;cursor:pointer;font-size:12px}
-.tutorial-choice.active{background:#eef5ff;border-color:#6aa1ff}
-.tutorial-choice.correct{background:#e7f8ea;border-color:#4db569}
-.tutorial-choice.wrong{background:#fde7ea;border-color:#e05757}
-.tutorial-choice.neutral{background:#f0f2f4;border-color:#97a6b3;color:#465562}
 .quiz-step{margin:.6rem 0;border-top:1px dashed rgba(0,0,0,.15);padding-top:.5rem}
 .quiz-pills{display:flex;flex-wrap:wrap;gap:.4rem}
 .quiz-pill{padding:.28rem .6rem;border-radius:999px;border:1px solid rgba(0,0,0,.2);background:#fff;cursor:pointer;font-size:.9rem}
@@ -81,7 +62,6 @@ button.options-strong:active{
     html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font:var(--ui-font-size)/1.25 system-ui,Segoe UI,Roboto,Arial}
     body{display:flex;flex-direction:column}
     #topbar{display:flex;flex-direction:row;flex-wrap:wrap;gap:var(--topbar-gap);align-items:flex-end;padding:var(--topbar-pad-y) var(--topbar-pad-x);border-bottom:1px solid var(--panel-border);background:var(--panel);position:sticky;top:0;z-index:2}
-    #topbarToggle{display:none;font-weight:600}
     .ctrl{display:flex;flex-direction:column;gap:.25rem;min-width:clamp(8.5rem, 12vw, 11rem);flex:0 1 auto}
     .ctrl label{font-size:var(--ui-label-size);opacity:.8;display:block}
     select{background:#fff;color:var(--text);border:1px solid var(--panel-border);border-radius:6px;padding:.4rem .55rem;max-width:100%;min-height:2.2rem;font:inherit}
@@ -142,7 +122,7 @@ button.options-strong:active{
 #rhythmFieldset .ctrl select{ width:auto; }
 #rhythmFieldset .pill{ margin:0; white-space:nowrap; }
 .topbar-actions{ margin-left:auto; display:flex; gap:.4rem; align-items:center; flex-wrap:wrap; justify-content:flex-end; }
-#play, #artifactsBtn, #pathologyBtn, #quizBtnTop, #tutorialBtnTop{ white-space:nowrap; flex:0 0 auto; }
+#play, #artifactsBtn, #optionsBtn, #pathologyBtn, #quizBtnTop{ white-space:nowrap; flex:0 0 auto; }
 #topbar select, #topbar label, #topbar button{ font-size:var(--ui-label-size); }
 #topbar button{ padding:.45rem .7rem; line-height:1.1; min-height:2.2rem; font:inherit; }
 #rhythmFieldset .pill{ align-self:center; }
@@ -154,24 +134,6 @@ button.options-strong:active{
 }
 @media (max-width: 760px){
   #topbar{ align-items:stretch; }
-  #topbarToggle{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    min-height:2.2rem;
-    padding:.45rem .75rem;
-    flex:0 0 auto;
-  }
-  #topbar.topbar-mobile-collapsed{
-    gap:0;
-    align-items:center;
-  }
-  #topbar.topbar-mobile-collapsed > :not(#topbarToggle){
-    display:none;
-  }
-  #topbar.topbar-mobile-expanded > #topbarToggle{
-    margin-bottom:.2rem;
-  }
   .ctrl{ min-width:0; flex:1 1 100%; }
   .ctrl select{ width:100%; }
   #rhythmFieldset{ min-width:0; }
@@ -179,7 +141,6 @@ button.options-strong:active{
   #rhythmFieldset .ctrl{ width:100%; flex-basis:100%; }
   #rhythmFieldset .ctrl select{ width:100%; }
   #quizPanel{ left:.5rem; right:.5rem; width:auto; max-width:none; top:auto; bottom:.5rem; max-height:min(60dvh, 28rem); }
-  .tutorial-panel{ left:.5rem; right:.5rem; width:auto; max-width:none; top:auto; bottom:.5rem; max-height:min(64dvh, 32rem); }
   #quizBanner{ left:50%; right:auto; width:min(calc(100vw - 1rem), 28rem); text-align:center; transform:translateX(-50%); top:auto; bottom:.75rem; }
   .modal-card{ width:min(96vw, 36rem); max-height:min(88dvh, 36rem); }
 }
@@ -189,15 +150,6 @@ button.options-strong:active{
 <style id="pathology-align-fix">
 #pathologyModal fieldset label, #artifactsModal fieldset label{ margin-left:0 !important; }
 #pathologyModal .modal-card, #artifactsModal .modal-card{width:fit-content;max-width:min(94vw, 29rem)}
-#artifactsModal{background:transparent;align-items:flex-start;justify-content:flex-start}
-#artifactsModal .modal-card{
-  position:fixed;
-  top:var(--artifacts-top, 4.5rem);
-  left:var(--artifacts-left, auto);
-  margin:0;
-  max-height:min(72dvh, 26rem);
-  box-shadow:0 10px 24px rgba(0,0,0,.14);
-}
 #pathologyModal .pathology-actions{display:flex;flex-direction:column;align-items:flex-start;gap:.35rem;margin-top:.35rem}
 #pathologyModal .pathology-action-row{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap}
 #pathologyModal .pathology-action{width:auto;min-width:12.75rem;max-width:100%;text-align:left;padding:.55rem .75rem;font:inherit}
@@ -208,23 +160,11 @@ button.options-strong:active{
 #pathologyModal .pathology-action:disabled:hover{filter:none}
 #artifactsModal fieldset{margin:0}
 #artifactsModal .modal-card fieldset > div{min-width:max-content}
-@media (max-width: 760px){
-  #artifactsModal .modal-card{
-    left:.5rem !important;
-    right:.5rem;
-    top:auto;
-    bottom:.5rem;
-    width:auto;
-    max-width:none;
-    max-height:min(60dvh, 24rem);
-  }
-}
 </style>
 
 </head>
 <body>
   <div id="topbar">
-    <button id="topbarToggle" type="button" aria-controls="topbar" aria-expanded="false">Show Controls</button>
     <div class="ctrl"><label>Montage</label>
       <select id="montageSel">
         <option value="bipolar_longitudinal" selected>Longitudinal (Double Banana)</option>
@@ -280,8 +220,8 @@ button.options-strong:active{
       <button id="play">Pause</button>
       <button id="pathologyBtn" class="options-strong">PATHOLOGY</button>
       <button id="artifactsBtn" class="options-strong">Artifacts</button>
+      <button id="optionsBtn" class="options-strong">Options</button>
       <button id="quizBtnTop" class="options-strong">Quiz</button>
-      <button id="tutorialBtnTop" class="options-strong">Tutorial</button>
     </div>
   </div>
 
@@ -382,38 +322,6 @@ button.options-strong:active{
     </div>
   </div>
 
-  <!-- Tutorial setup modal -->
-  <div id="tutorialSetupModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="tutorialSetupTitle" hidden>
-    <div class="modal-card">
-      <h1 id="tutorialSetupTitle">Tutorial Setup</h1>
-      <fieldset>
-        <legend>Mode</legend>
-        <div class="ctrl" style="min-width:0">
-          <label for="tutorialModeSel">How to learn</label>
-          <select id="tutorialModeSel">
-            <option value="guided" selected>Guided walkthrough</option>
-            <option value="interactive">Interactive questions</option>
-          </select>
-        </div>
-      </fieldset>
-      <fieldset>
-        <legend>Scaffolding</legend>
-        <div class="ctrl" style="min-width:0">
-          <label for="tutorialLevelSel">Teaching depth</label>
-          <select id="tutorialLevelSel">
-            <option value="beginner" selected>Beginner</option>
-            <option value="intermediate">Intermediate</option>
-            <option value="advanced">Advanced</option>
-          </select>
-        </div>
-      </fieldset>
-      <div class="modal-actions">
-        <button id="tutorialSetupClose">Close</button>
-        <button id="tutorialStartBtn">Start Tutorial</button>
-      </div>
-    </div>
-  </div>
-
 
   <div id="quizBanner">Correct! New quiz ready.</div>
   <aside id="quizPanel" aria-live="polite">
@@ -422,20 +330,6 @@ button.options-strong:active{
     <div id="quizControls">
       <button id="quizNew">New Case</button>
       <button id="quizEnd">End Quiz</button>
-    </div>
-  </aside>
-
-  <aside id="tutorialPanel" class="tutorial-panel" aria-live="polite">
-    <h2>Tutorial Mode</h2>
-    <div id="tutorialMeta" class="tutorial-meta"></div>
-    <div id="tutorialProgress" class="tutorial-progress"></div>
-    <div id="tutorialBody"></div>
-    <div class="tutorial-controls">
-      <button id="tutorialBack">Back</button>
-      <button id="tutorialNext">Next</button>
-      <button id="tutorialPlay">Pause Trace</button>
-      <button id="tutorialNewCase">New Case</button>
-      <button id="tutorialEnd">End Tutorial</button>
     </div>
   </aside>
 
@@ -1850,7 +1744,6 @@ function createQuizSnapshot(){
     mode: state.mode,
     sleepState: state.sleepState,
     rhythmOverride: state.rhythmOverride,
-    running: !!state.running,
     eyesOpen: !!state.eyesOpen,
     opts: {...(state.opts || {})},
     pathology: {...(state.pathology || {})}
@@ -1861,8 +1754,6 @@ function restoreQuizSnapshot(snapshot){
   state.mode = snapshot.mode || 'awake';
   state.sleepState = snapshot.sleepState || 'awake';
   state.rhythmOverride = snapshot.rhythmOverride || '';
-  if (typeof setPlaybackRunning === 'function') setPlaybackRunning(snapshot.running !== false);
-  else state.running = snapshot.running !== false;
   state.eyesOpen = !!snapshot.eyesOpen;
   state.opts = {...(state.opts || {}), ...(snapshot.opts || {})};
   state.pathology = {...(state.pathology || {}), ...(snapshot.pathology || {})};
@@ -1964,9 +1855,7 @@ function quizSlowingEnvelope(clock, cfg){
   return Math.min(1, 0.06 + g(0.18, 0.11, 1.0) + g(0.70, 0.10, 0.82));
 }
 function applyQuizSlowing(y, clock, e){
-  const cfg =
-    (state.tutorial && state.tutorial.active ? state.tutorial.slowing : null) ||
-    (state.quiz && state.quiz.active ? state.quiz.slowing : null);
+  const cfg = state.quiz && state.quiz.active ? state.quiz.slowing : null;
   if (!cfg || cfg.dist === 'None') return y;
   const w = quizSlowingLeadWeight(e, cfg);
   if (w <= 0) return y;
@@ -2032,9 +1921,7 @@ function quizSpikeLeadWeight(e, cfg){
   return 0;
 }
 function quizEpileptiformValue(clock, e){
-  const cfg =
-    (state.tutorial && state.tutorial.active ? state.tutorial.spikes : null) ||
-    (state.quiz && state.quiz.active ? state.quiz.spikes : null);
+  const cfg = state.quiz && state.quiz.active ? state.quiz.spikes : null;
   if (!cfg || cfg.type === 'none') return 0;
   const w = quizSpikeLeadWeight(e, cfg);
   if (w <= 0) return 0;
@@ -2055,21 +1942,6 @@ function quizEpileptiformValue(clock, e){
   const slow = -cfg.slowAmp * slow_uV(Math.max(0, pos - 0.018));
   return w * (spike + slow);
 }
-function currentEducationalBias(){
-  if (state.tutorial && state.tutorial.active) return state.tutorial.bias || null;
-  if (state.quiz && state.quiz.active) return state.quiz.bias || null;
-  return null;
-}
-function currentSleepFeatureConstraints(){
-  if (state.tutorial && state.tutorial.active) return state.tutorial.sleepFeatures || null;
-  if (state.quiz && state.quiz.active){
-    return {
-      spindles: state.quiz.truth && state.quiz.truth.sleep === 'Stage 2' ? state.quiz.truth.spindles : 'absent',
-      kcomplexes: state.quiz.truth && state.quiz.truth.sleep === 'Stage 2' ? state.quiz.truth.kcomplexes : 'absent'
-    };
-  }
-  return null;
-}
 
 /***********************
  * Main loop
@@ -2087,20 +1959,15 @@ function step(){
       const rng = state.rng;
       for(let n=0;n<samples;n++){
         state.pdrPhase += 2*Math.PI*state.pdrHz/Fs;
-        const sleepFeatures = currentSleepFeatureConstraints();
-        const spindleMode = sleepFeatures ? (sleepFeatures.spindles || 'absent') : null;
-        const kcomplexMode = sleepFeatures ? (sleepFeatures.kcomplexes || 'absent') : null;
-        const spindleRate = spindleMode === 'present' ? 0.00165 : (spindleMode === 'absent' ? 0 : 0.0010);
-        const kcomplexRate = kcomplexMode === 'present' ? 0.00040 : (kcomplexMode === 'absent' ? 0 : 0.00022);
-        if(state.mode==='n2' && !state.spindle.active && spindleRate > 0 && rng()<spindleRate){
+        if(state.mode==='n2' && !state.spindle.active && rng()<0.0010){
           state.spindle.active=true;
           state.spindle.t0=state.artClock+rng()*0.7;
           state.spindle.dur=0.55+rng()*0.85;
         }
-        if(state.mode==='n2' && !state.kcomplex.active && kcomplexRate > 0 && rng()<kcomplexRate){
+        if(state.mode==='n2' && !state.kcomplex.active && rng()<0.00022){
           state.kcomplex.active=true;
           state.kcomplex.t0=state.artClock+rng()*0.45;
-          if(!state.spindle.active && spindleRate > 0 && rng()<0.68){
+          if(!state.spindle.active && rng()<0.68){
             state.spindle.active=true;
             state.spindle.t0=state.kcomplex.t0+0.22+rng()*0.28;
             state.spindle.dur=0.60+rng()*0.90;
@@ -2155,21 +2022,20 @@ function step(){
               }
             }
           }
-          if ((state.quiz && state.quiz.active) || (state.tutorial && state.tutorial.active)){
+          if (state.quiz && state.quiz.active){
             y = applyQuizSlowing(y, sampleClock, e);
             y += quizEpileptiformValue(sampleClock, e);
           }
 
-          // Apply quiz/tutorial amplitude biases
-          const educationalBias = currentEducationalBias();
-          if (educationalBias){
+          // Apply quiz amplitude biases
+          if (state.quiz && state.quiz.active && state.quiz.bias){
             const isDisplayScalp = AVG_ELECTRODE_SET.has(e);
             const L = /^(Fp1|F3|C3|P3|O1|F7|T3|T5|Fz|Cz|Pz)$/.test(e);
             let hemiScale = 1;
-            if (isDisplayScalp && educationalBias.leftScale!==1 && L) hemiScale = educationalBias.leftScale;
-            if (isDisplayScalp && educationalBias.rightScale!==1 && !L) hemiScale = educationalBias.rightScale;
-            const diffuseScale = isDisplayScalp ? (educationalBias.diffuseScale ?? 1) : 1;
-            const focalScale = (isDisplayScalp && educationalBias.focal && educationalBias.focal[e]!==undefined) ? educationalBias.focal[e] : 1;
+            if (isDisplayScalp && state.quiz.bias.leftScale!==1 && L) hemiScale = state.quiz.bias.leftScale;
+            if (isDisplayScalp && state.quiz.bias.rightScale!==1 && !L) hemiScale = state.quiz.bias.rightScale;
+            const diffuseScale = isDisplayScalp ? (state.quiz.bias.diffuseScale ?? 1) : 1;
+            const focalScale = (isDisplayScalp && state.quiz.bias.focal[e]!==undefined) ? state.quiz.bias.focal[e] : 1;
             y *= diffuseScale * hemiScale * focalScale;
           }
           const buf=state.buffer.get(e);
@@ -2211,7 +2077,6 @@ function step(){
       for(let x=0;x<w;x++){ const idx=state.idx-sampleOffsets[x]; const len=ra.length; const j=((idx%len)+len)%len; const uv=ra[j]-rb[j]; const y=yMid-(uv*traceScale); if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); }
       ctx.stroke();
     }
-    renderTutorialHighlights(pairs, yMids, rowH, w);
     renderLabels(pairs, yMids, strokeColors); errBox.style.display='none';
   }catch(e){ console.error(e); errBox.textContent='Render error: '+e.message; errBox.style.display='block'; }
   requestAnimationFrame(step);
@@ -2221,46 +2086,6 @@ function step(){
  * UI wiring
  ***********************/
 const $=id=>document.getElementById(id);
-const topbar = $('topbar');
-const topbarToggle = $('topbarToggle');
-const mobileTopbarQuery = window.matchMedia ? window.matchMedia('(max-width: 760px)') : null;
-function syncMobileTopbar(){
-  if (!topbar || !topbarToggle) return;
-  const mobile = !!(mobileTopbarQuery && mobileTopbarQuery.matches);
-  const expanded = topbar.dataset.mobileExpanded === 'true';
-  topbar.classList.toggle('topbar-mobile-collapsed', mobile && !expanded);
-  topbar.classList.toggle('topbar-mobile-expanded', mobile && expanded);
-  topbarToggle.hidden = !mobile;
-  topbarToggle.setAttribute('aria-expanded', mobile ? String(expanded) : 'true');
-  topbarToggle.textContent = mobile && expanded ? 'Hide Controls' : 'Show Controls';
-}
-function setMobileTopbarExpanded(expanded){
-  if (!topbar) return;
-  topbar.dataset.mobileExpanded = expanded ? 'true' : 'false';
-  syncMobileTopbar();
-}
-if (topbar && !topbar.dataset.mobileExpanded) topbar.dataset.mobileExpanded = 'false';
-if (topbarToggle){
-  topbarToggle.addEventListener('click', ()=> setMobileTopbarExpanded(topbar.dataset.mobileExpanded !== 'true'));
-}
-if (mobileTopbarQuery){
-  if (typeof mobileTopbarQuery.addEventListener === 'function') mobileTopbarQuery.addEventListener('change', syncMobileTopbar);
-  else if (typeof mobileTopbarQuery.addListener === 'function') mobileTopbarQuery.addListener(syncMobileTopbar);
-}
-syncMobileTopbar();
-function syncPlaybackButtons(){
-  const playBtn = $('play');
-  if (playBtn) playBtn.textContent = state.running ? 'Pause' : 'Play';
-  const tutorialPlayBtn = $('tutorialPlay');
-  if (tutorialPlayBtn) tutorialPlayBtn.textContent = state.running ? 'Pause Trace' : 'Resume Trace';
-}
-function setPlaybackRunning(running){
-  state.running = !!running;
-  syncPlaybackButtons();
-}
-function togglePlayback(){
-  setPlaybackRunning(!state.running);
-}
 function uvPerDivFromSensitivity(uVperMM){
   const v = Number(uVperMM);
   if (!Number.isFinite(v) || v <= 0) return 70;
@@ -2302,11 +2127,7 @@ function regen(){
   state.seconds=secondsFromUI(); const sensEl=$('sensitivity'); if(sensEl) applySensitivityValue(sensEl.value);
   state.opts={ blink:$('blink')?.checked||false, chew:$('chew')?.checked||false, sweat:$('sweat')?.checked||false, pop:$('pop')?.checked||false, emg:$('emg')?.checked||false };
   state.montage=$('montageSel')?$('montageSel').value:state.montage;
-  state.pdrHz=9.0 + 1.8*state.rng(); state.pdrPhase=0; state.artClock=0; state.sampleCarry=0;
-  state.spindle.active = false; state.spindle.t0 = 0; state.spindle.dur = 0;
-  state.kcomplex.active = false; state.kcomplex.t0 = 0;
-  state.vertex.active = false; state.vertex.t0 = 0;
-  lastT=performance.now()/1000; initChannels();
+  state.pdrHz=9.0 + 1.8*state.rng(); state.pdrPhase=0; state.artClock=0; state.sampleCarry=0; lastT=performance.now()/1000; initChannels();
   syncBlinkGenerator(true);
   syncChewGenerator(true);
   syncSweatGenerator(true);
@@ -2335,7 +2156,7 @@ function syncControlsFromState(){
   if ($('lpd')) $('lpd').checked = !!state.pathology.lpd;
   if (typeof updateSeizureActionButtons === 'function') updateSeizureActionButtons();
 }
-if($('play')) $('play').addEventListener('click', togglePlayback);
+if($('play')) $('play').addEventListener('click',()=>{ state.running=!state.running; $('play').textContent=state.running?'Pause':'Play'; });
 if($('montageSel')) $('montageSel').addEventListener('change',()=>{ state.montage=$('montageSel').value; });
 if($('rhythmSel')) $('rhythmSel').addEventListener('change',()=>{
   applyRhythmOverride($('rhythmSel').value);
@@ -2351,20 +2172,6 @@ if($('eyesOpen')) $('eyesOpen').addEventListener('change',()=>{ state.eyesOpen=$
 const artifactsBtn = $('artifactsBtn');
 const artifactsModal = document.getElementById('artifactsModal');
 const artifactsClose = document.getElementById('artifactsClose');
-function positionArtifactsPopup(){
-  if (!artifactsBtn || !artifactsModal || artifactsModal.hidden) return;
-  const card = artifactsModal.querySelector('.modal-card');
-  if (!card) return;
-  const btnRect = artifactsBtn.getBoundingClientRect();
-  const gap = 8;
-  const pad = 8;
-  const cardWidth = Math.min(card.offsetWidth || 0, window.innerWidth - pad*2);
-  const cardHeight = card.offsetHeight || 0;
-  const left = Math.max(pad, Math.min(btnRect.right - cardWidth, window.innerWidth - cardWidth - pad));
-  const top = Math.max(pad, Math.min(btnRect.bottom + gap, window.innerHeight - cardHeight - pad));
-  artifactsModal.style.setProperty('--artifacts-left', `${left}px`);
-  artifactsModal.style.setProperty('--artifacts-top', `${top}px`);
-}
 function bindArtifactToggle(id, key){
   const el = $(id);
   if (!el) return;
@@ -2379,16 +2186,12 @@ function bindArtifactToggle(id, key){
   });
 }
 if (artifactsBtn && artifactsModal) {
-  const openArtifacts = () => {
-    artifactsModal.hidden = false;
-    requestAnimationFrame(positionArtifactsPopup);
-  };
+  const openArtifacts = () => { artifactsModal.hidden = false; };
   const closeArtifacts = () => { artifactsModal.hidden = true; };
   artifactsBtn.addEventListener('click', (e) => { e.stopPropagation(); openArtifacts(); });
   artifactsClose?.addEventListener('click', closeArtifacts);
   artifactsModal.addEventListener('click', (e) => { if (e.target === artifactsModal) closeArtifacts(); });
   document.addEventListener('keydown', (e) => { if (!artifactsModal.hidden && e.key === 'Escape') closeArtifacts(); });
-  window.addEventListener('resize', positionArtifactsPopup);
 }
 bindArtifactToggle('blink', 'blink');
 bindArtifactToggle('chew', 'chew');
@@ -2461,7 +2264,6 @@ const pathologyClose = document.getElementById('pathologyClose');
 const gpdBox = $('gpd');
 const lpdBox = $('lpd');
 const quizBtnTop = $('quizBtnTop');
-const tutorialBtnTop = $('tutorialBtnTop');
 function updateSeizureActionButtons(){
   const genSzBtn = $('genSz');
   const absenceBtn = $('absenceSz');
@@ -2550,24 +2352,10 @@ if (absenceSzBtn){
 updateSeizureActionButtons();
 if (quizBtnTop){
   quizBtnTop.addEventListener('click', ()=>{
-    if (state.tutorial && state.tutorial.active){
-      endTutorial();
-      startQuiz();
-    } else if (state.quiz && state.quiz.active){
+    if (state.quiz && state.quiz.active){
       endQuiz();
     } else {
       startQuiz();
-    }
-    if (pathologyModal) pathologyModal.hidden = true;
-  });
-}
-if (tutorialBtnTop){
-  tutorialBtnTop.addEventListener('click', ()=>{
-    if (state.tutorial && state.tutorial.active){
-      endTutorial();
-    } else {
-      if (state.quiz && state.quiz.active) endQuiz();
-      openTutorialSetup();
     }
     if (pathologyModal) pathologyModal.hidden = true;
   });
@@ -2722,7 +2510,6 @@ function startQuiz(){
   const pm = document.getElementById('pathologyModal');
   if (pm) pm.hidden = true;
   regen();
-  if (typeof updateModeButtons === 'function') updateModeButtons();
 }
 
 function buildQuizUI(){
@@ -2863,7 +2650,6 @@ function endQuiz(){
   updateEyesOpenEnabled();
   updateSeizureActionButtons();
   regen();
-  if (typeof updateModeButtons === 'function') updateModeButtons();
 }
 const _qn = document.getElementById('quizNew'); 
 if (_qn){ 
@@ -2874,940 +2660,6 @@ const _qe = document.getElementById('quizEnd');
 if (_qe) _qe.addEventListener('click', endQuiz);
 
 // Pathology modal buttons are already wired above
-
-// ---------------- Tutorial Mode ----------------
-function createNeutralEducationalBias(){
-  return {leftScale:1, rightScale:1, diffuseScale:1, focal:{}};
-}
-function createTutorialState(){
-  const rng = state.rng || Math.random;
-  return {
-    active:false,
-    mode:'guided',
-    level:'beginner',
-    stepIndex:0,
-    currentCase:null,
-    responses:{},
-    snapshot:null,
-    caseCursor:{beginner:0, intermediate:0, advanced:0},
-    slowing:buildQuizSlowingConfig(rng, 'None', 'Continuous'),
-    spikes:buildQuizSpikeConfig(rng, 'none'),
-    bias:createNeutralEducationalBias(),
-    sleepFeatures:null
-  };
-}
-state.tutorial = state.tutorial || createTutorialState();
-
-const TUTORIAL_SETUP_MODAL = document.getElementById('tutorialSetupModal');
-const tutorialModeSel = document.getElementById('tutorialModeSel');
-const tutorialLevelSel = document.getElementById('tutorialLevelSel');
-const tutorialSetupClose = document.getElementById('tutorialSetupClose');
-const tutorialStartBtn = document.getElementById('tutorialStartBtn');
-const tutorialPanel = document.getElementById('tutorialPanel');
-const tutorialMeta = document.getElementById('tutorialMeta');
-const tutorialProgress = document.getElementById('tutorialProgress');
-const tutorialBody = document.getElementById('tutorialBody');
-const tutorialBackBtn = document.getElementById('tutorialBack');
-const tutorialNextBtn = document.getElementById('tutorialNext');
-const tutorialPlayBtn = document.getElementById('tutorialPlay');
-const tutorialNewCaseBtn = document.getElementById('tutorialNewCase');
-const tutorialEndBtn = document.getElementById('tutorialEnd');
-
-const TUTORIAL_OPTIONS = {
-  background:['delta','theta','alpha','beta','Unable to determine'],
-  symmetry:['symmetric','asymmetric','Unable to determine'],
-  pdr:['Present and normal','Present but slowed','Absent / not identifiable','Unable to determine'],
-  reactivity:['present','absent','unable to determine'],
-  sleep:['Awake','Drowsy','Stage 1','Stage 2','SWS','REM','No clear sleep architecture'],
-  artifact:['None','Eye blinks','Chewing','Sweat','EMG'],
-  epileptiform:['None','Generalized discharges','Focal discharges','GPDs','LPDs'],
-  seizure:['None','Absence seizure','Generalized seizure','Focal seizure']
-};
-const TUTORIAL_STEPS = [
-  {key:'background', title:'Background', prompt:'Start with the dominant background rhythm. What best describes the background activity?', options:TUTORIAL_OPTIONS.background},
-  {key:'symmetry', title:'Symmetry', prompt:'Compare homologous left and right chains. Is the tracing symmetric overall?', options:TUTORIAL_OPTIONS.symmetry},
-  {key:'pdr', title:'Posterior Dominant Rhythm', prompt:'Now focus posteriorly. Is there a posterior dominant rhythm, and if so, how does it look?', options:TUTORIAL_OPTIONS.pdr},
-  {key:'reactivity', title:'Reactivity', prompt:'Assess reactivity. Does the posterior background attenuate with eye opening, or is reactivity absent / not assessable here?', options:TUTORIAL_OPTIONS.reactivity},
-  {key:'sleep', title:'Sleep Architecture', prompt:'Decide whether this is wakefulness, drowsiness, a defined sleep stage, or no clear sleep architecture.', options:TUTORIAL_OPTIONS.sleep},
-  {key:'artifact', title:'Artifacts', prompt:'Do you see a recognizable artifact pattern that explains part of the tracing?', options:TUTORIAL_OPTIONS.artifact},
-  {key:'epileptiform', title:'Epileptiform Activity', prompt:'Look for spikes, sharp waves, or periodic epileptiform activity. What best fits?', options:TUTORIAL_OPTIONS.epileptiform},
-  {key:'seizure', title:'Seizures', prompt:'Is there an electrographic seizure in this case?', options:TUTORIAL_OPTIONS.seizure},
-  {key:'finalImpression', title:'Final Impression', prompt:'Put the findings together into a final impression.'}
-];
-const TUTORIAL_SCAFFOLD = {
-  background:{
-    beginner:'Start by naming the dominant background before you chase shorter transients or focal abnormalities.',
-    intermediate:'Lead with the dominant background rhythm and organization.',
-    advanced:'Anchor the read in the dominant background.'
-  },
-  symmetry:{
-    beginner:'Use matched left-right chains rather than a single flashy channel when you judge symmetry.',
-    intermediate:'Judge symmetry by comparing homologous chains, not isolated deflections.',
-    advanced:'Compare homologous derivations first.'
-  },
-  pdr:{
-    beginner:'A posterior dominant rhythm is best judged in posterior chains such as P3-O1 and P4-O2.',
-    intermediate:'Check whether an organized posterior rhythm is sustained and appropriately placed.',
-    advanced:'Confirm whether a true posterior dominant rhythm is present.'
-  },
-  reactivity:{
-    beginner:'For awake studies, reactivity usually means posterior alpha attenuates when the eyes open.',
-    intermediate:'Tie reactivity to a reproducible change in posterior background with eye opening.',
-    advanced:'Reactivity should reflect a reproducible posterior change, not random fluctuation.'
-  },
-  sleep:{
-    beginner:'Sleep staging depends on the right features: slow eye movements for drowsiness, vertex waves for N1, and spindles/K-complexes for N2.',
-    intermediate:'Use actual sleep features rather than generalized slowing alone to stage sleep.',
-    advanced:'Stage sleep only when the defining features are really present.'
-  },
-  artifact:{
-    beginner:'Ask whether the pattern tracks a known artifact distribution before you call it abnormal cerebral activity.',
-    intermediate:'Artifact is best recognized by its anatomy and behavior across channels.',
-    advanced:'Use spatial distribution and morphology to separate artifact from brain signal.'
-  },
-  epileptiform:{
-    beginner:'Spikes, sharp waves, and periodic discharges should be called only when the morphology and field fit.',
-    intermediate:'Distinguish true epileptiform / periodic patterns from background variation or artifact.',
-    advanced:'Call epileptiform activity only when morphology and field are convincing.'
-  },
-  seizure:{
-    beginner:'A seizure should show an evolving rhythmic or spike-wave pattern, not just repeated isolated discharges.',
-    intermediate:'Reserve seizure for evolving electrographic activity.',
-    advanced:'Require evolution, field, and sustained ictal organization.'
-  }
-};
-const TUTORIAL_CASE_LIBRARY = {};
-const TUTORIAL_CASE_ORDER = {
-  beginner:['normal_awake_alpha','blink_awake_alpha','drowsy_transition','stage2_sleep'],
-  intermediate:['normal_awake_alpha','blink_awake_alpha','drowsy_transition','stage2_sleep','generalized_slowing','focal_slowing_left','chewing_artifact','gpd_case'],
-  advanced:['normal_awake_alpha','blink_awake_alpha','drowsy_transition','stage2_sleep','generalized_slowing','focal_slowing_left','chewing_artifact','gpd_case','lpd_left','absence_seizure','generalized_seizure','focal_seizure']
-};
-function tutorialModeLabel(mode){
-  return mode === 'interactive' ? 'Interactive' : 'Guided';
-}
-function tutorialLevelLabel(level){
-  if (level === 'advanced') return 'Advanced';
-  if (level === 'intermediate') return 'Intermediate';
-  return 'Beginner';
-}
-function updateModeButtons(){
-  if (quizBtnTop) quizBtnTop.textContent = (state.quiz && state.quiz.active) ? 'End Quiz' : 'Quiz';
-  if (tutorialBtnTop) tutorialBtnTop.textContent = (state.tutorial && state.tutorial.active) ? 'End Tutorial' : 'Tutorial';
-}
-function tutorialPoolForLevel(level){
-  return TUTORIAL_CASE_ORDER[level] || TUTORIAL_CASE_ORDER.beginner;
-}
-function tutorialCloneCase(caseId){
-  const source = TUTORIAL_CASE_LIBRARY[caseId];
-  return source ? JSON.parse(JSON.stringify(source)) : null;
-}
-function resetTutorialEducationalState(){
-  const rng = state.rng || Math.random;
-  state.tutorial.slowing = buildQuizSlowingConfig(rng, 'None', 'Continuous');
-  state.tutorial.spikes = buildQuizSpikeConfig(rng, 'none');
-  state.tutorial.bias = createNeutralEducationalBias();
-  state.tutorial.sleepFeatures = null;
-}
-function clearActiveTutorialSeizures(){
-  state.seizureEvents = [];
-  if (state.focalSz){
-    state.focalSz.active = false;
-    delete state.focalSz;
-  }
-  state.pathology.focalSeizure = false;
-}
-function tutorialStepByKey(key){
-  return TUTORIAL_STEPS.find((step)=> step.key === key) || null;
-}
-function currentTutorialStep(){
-  if (!(state.tutorial && state.tutorial.active)) return null;
-  return TUTORIAL_STEPS[state.tutorial.stepIndex] || null;
-}
-function tutorialCurrentResponse(stepKey){
-  return state.tutorial && state.tutorial.responses ? state.tutorial.responses[stepKey] : null;
-}
-function tutorialStepRevealed(step){
-  if (!step) return false;
-  if (step.key === 'finalImpression') return true;
-  if (!(state.tutorial && state.tutorial.active)) return false;
-  if (state.tutorial.mode === 'guided') return true;
-  const response = tutorialCurrentResponse(step.key);
-  return !!(response && response.revealed);
-}
-function tutorialHighlightPalette(stepKey){
-  if (stepKey === 'artifact') return {fill:'rgba(214, 82, 82, 0.12)', stroke:'rgba(176, 34, 34, 0.72)'};
-  if (stepKey === 'epileptiform' || stepKey === 'seizure') return {fill:'rgba(241, 148, 24, 0.15)', stroke:'rgba(184, 104, 0, 0.82)'};
-  if (stepKey === 'sleep') return {fill:'rgba(72, 170, 120, 0.14)', stroke:'rgba(30, 125, 78, 0.76)'};
-  return {fill:'rgba(59, 126, 255, 0.12)', stroke:'rgba(34, 98, 220, 0.70)'};
-}
-function tutorialCurrentHighlight(){
-  const step = currentTutorialStep();
-  const caseData = state.tutorial && state.tutorial.currentCase;
-  if (!step || !caseData || !caseData.highlights) return null;
-  const raw = caseData.highlights[step.key];
-  if (!raw) return null;
-  const palette = tutorialHighlightPalette(step.key);
-  return {
-    ...palette,
-    ...raw
-  };
-}
-function resolveTutorialHighlightWindow(canvasWidth, desiredWidthPx, desiredRightX){
-  const widthPx = Math.max(24, Math.min(canvasWidth, desiredWidthPx));
-  const desiredLeftX = desiredRightX - widthPx;
-  const clampRange = (minX, maxX, preferredLeft)=>{
-    const span = Math.max(0, maxX - minX);
-    const actualWidth = Math.min(widthPx, span);
-    if (actualWidth <= 0) return null;
-    const x1 = Math.min(Math.max(minX, preferredLeft), maxX - actualWidth);
-    return {x1, x2:x1 + actualWidth};
-  };
-  const baseRange = clampRange(0, canvasWidth, desiredLeftX);
-  if (!tutorialPanel || tutorialPanel.style.display === 'none') return baseRange;
-
-  const canvasRect = canvas.getBoundingClientRect();
-  const panelRect = tutorialPanel.getBoundingClientRect();
-  const overlapLeft = Math.max(0, panelRect.left - canvasRect.left);
-  const overlapRight = Math.min(canvasWidth, panelRect.right - canvasRect.left);
-  const overlapTop = Math.max(0, panelRect.top - canvasRect.top);
-  const overlapBottom = Math.min(canvas.clientHeight, panelRect.bottom - canvasRect.top);
-  const overlapsCanvas = overlapRight > 0 && overlapLeft < canvasWidth && overlapBottom > 0 && overlapTop < canvas.clientHeight;
-  if (!overlapsCanvas) return baseRange;
-
-  const gutter = 18;
-  const visibleRanges = [];
-  if (overlapLeft - gutter > 0) visibleRanges.push([0, overlapLeft - gutter]);
-  if (overlapRight + gutter < canvasWidth) visibleRanges.push([overlapRight + gutter, canvasWidth]);
-  if (!visibleRanges.length) return baseRange;
-
-  const desiredCenter = (desiredLeftX + desiredRightX) * 0.5;
-  let best = null;
-  for (const [minX, maxX] of visibleRanges){
-    const candidate = clampRange(minX, maxX, desiredLeftX);
-    if (!candidate) continue;
-    const center = (candidate.x1 + candidate.x2) * 0.5;
-    const distance = Math.abs(center - desiredCenter);
-    const width = candidate.x2 - candidate.x1;
-    if (!best || distance < best.distance - 0.001 || (Math.abs(distance - best.distance) < 0.001 && width > best.width)){
-      best = {...candidate, distance, width};
-    }
-  }
-  return best || baseRange;
-}
-function pairMatchesTutorialHighlight(pair, spec){
-  if (!pair || !spec) return false;
-  if (spec.allRows) return true;
-  if (Array.isArray(spec.labels) && spec.labels.includes(pair.label)) return true;
-  if (spec.regex){
-    const re = spec.regex instanceof RegExp ? spec.regex : new RegExp(spec.regex);
-    if (re.test(pair.label)) return true;
-  }
-  if (Array.isArray(spec.electrodes) && spec.electrodes.length){
-    return spec.electrodes.includes(pair.a) || spec.electrodes.includes(pair.b);
-  }
-  return false;
-}
-function renderTutorialHighlights(pairs, yMids, rowH, canvasWidth){
-  if (!(state.tutorial && state.tutorial.active)) return;
-  const spec = tutorialCurrentHighlight();
-  if (!spec || !pairs || !pairs.length) return;
-  const pxPerSec = canvasWidth / Math.max(0.001, state.seconds);
-  const windowSec = Math.max(0.5, Math.min(state.seconds, Number(spec.windowSec) || 2.5));
-  const offsetSec = Math.max(0, Math.min(Math.max(0, state.seconds - windowSec), Number(spec.offsetSecFromRight) || 0));
-  const desiredWidthPx = windowSec * pxPerSec;
-  const desiredRightX = Math.min(canvasWidth, canvasWidth - offsetSec * pxPerSec);
-  const xRange = resolveTutorialHighlightWindow(canvasWidth, desiredWidthPx, desiredRightX);
-  if (!xRange || xRange.x2 <= xRange.x1) return;
-  const {x1, x2} = xRange;
-  ctx.save();
-  ctx.fillStyle = spec.fill || 'rgba(59, 126, 255, 0.12)';
-  ctx.strokeStyle = spec.stroke || 'rgba(34, 98, 220, 0.70)';
-  ctx.lineWidth = 1.25;
-  ctx.shadowColor = spec.stroke || 'rgba(34, 98, 220, 0.70)';
-  ctx.shadowBlur = 5;
-  for (let i=0; i<pairs.length; i++){
-    if (!pairMatchesTutorialHighlight(pairs[i], spec)) continue;
-    const prevMid = i > 0 ? yMids[i-1] : null;
-    const nextMid = i < yMids.length-1 ? yMids[i+1] : null;
-    const fallbackGap = rowH || (canvas.clientHeight / Math.max(1, pairs.length));
-    const top = prevMid == null
-      ? Math.max(0, yMids[i] - (nextMid != null ? (nextMid - yMids[i]) * 0.55 : fallbackGap * 0.55))
-      : (prevMid + yMids[i]) * 0.5;
-    const bottom = nextMid == null
-      ? Math.min(canvas.clientHeight, yMids[i] + (prevMid != null ? (yMids[i] - prevMid) * 0.55 : fallbackGap * 0.55))
-      : (yMids[i] + nextMid) * 0.5;
-    const bandH = Math.max(10, bottom - top);
-    const inset = Math.min(8, Math.max(2, bandH * 0.10));
-    const yTop = top + inset;
-    const h = Math.max(6, bandH - inset*2);
-    ctx.fillRect(x1, yTop, x2-x1, h);
-    ctx.strokeRect(x1 + 0.5, yTop + 0.5, Math.max(0, x2-x1-1), Math.max(0, h-1));
-  }
-  ctx.restore();
-}
-function tutorialScaffoldText(stepKey, level){
-  const entry = TUTORIAL_SCAFFOLD[stepKey];
-  return entry ? (entry[level] || entry.beginner || '') : '';
-}
-function tutorialExplanation(step, caseData){
-  if (!step || !caseData) return '';
-  if (step.key === 'finalImpression') return caseData.modelRead || '';
-  const answer = caseData.truth ? caseData.truth[step.key] : '';
-  const core = caseData.stepNotes ? caseData.stepNotes[step.key] : '';
-  const scaffold = tutorialScaffoldText(step.key, state.tutorial.level);
-  return [`The best answer here is ${answer}.`, core, scaffold].filter(Boolean).join(' ');
-}
-function tutorialAnswerBanner(step, caseData){
-  if (!step || !caseData) return '';
-  if (step.key === 'finalImpression') return 'Reference read';
-  const truth = caseData.truth ? caseData.truth[step.key] : '';
-  if (state.tutorial.mode === 'guided') return `Best answer: ${truth}`;
-  const response = tutorialCurrentResponse(step.key);
-  if (!response) return `Best answer: ${truth}`;
-  if (response.correct) return `Correct: ${truth}`;
-  return `You chose ${response.selected}. Best answer: ${truth}`;
-}
-function tutorialCanAdvance(){
-  const step = currentTutorialStep();
-  if (!step) return false;
-  if (step.key === 'finalImpression') return true;
-  if (state.tutorial.mode === 'guided') return true;
-  return tutorialStepRevealed(step);
-}
-function tutorialAuxCanToggleEyes(step, caseData){
-  return !!(step && caseData && step.key === 'reactivity' && caseData.truth && caseData.truth.reactivity === 'present' && caseData.signal && caseData.signal.sleepDrive === 'Awake');
-}
-function renderTutorialUI(){
-  if (!tutorialPanel) return;
-  const active = !!(state.tutorial && state.tutorial.active && state.tutorial.currentCase);
-  tutorialPanel.style.display = active ? 'block' : 'none';
-  if (!active){
-    if (tutorialMeta) tutorialMeta.replaceChildren();
-    if (tutorialProgress) tutorialProgress.textContent = '';
-    if (tutorialBody) tutorialBody.replaceChildren();
-    updateModeButtons();
-    return;
-  }
-
-  const caseData = state.tutorial.currentCase;
-  const step = currentTutorialStep();
-  const highlight = tutorialCurrentHighlight();
-  const stepNumber = state.tutorial.stepIndex + 1;
-
-  if (tutorialMeta){
-    const frag = document.createDocumentFragment();
-    [caseData.title, tutorialModeLabel(state.tutorial.mode), tutorialLevelLabel(state.tutorial.level)].forEach((label)=>{
-      const chip = document.createElement('span');
-      chip.className = 'tutorial-chip';
-      chip.textContent = label;
-      frag.appendChild(chip);
-    });
-    tutorialMeta.replaceChildren(frag);
-  }
-  if (tutorialProgress){
-    tutorialProgress.textContent = `Step ${stepNumber} of ${TUTORIAL_STEPS.length}: ${step ? step.title : ''}`;
-  }
-
-  if (tutorialBody){
-    const frag = document.createDocumentFragment();
-    const card = document.createElement('div');
-    card.className = 'tutorial-step-card';
-    const title = document.createElement('div');
-    title.className = 'tutorial-step-title';
-    title.textContent = step ? step.title : '';
-    card.appendChild(title);
-    const prompt = document.createElement('div');
-    prompt.className = 'tutorial-prompt';
-    prompt.textContent = step ? step.prompt : '';
-    card.appendChild(prompt);
-    if (caseData.summary){
-      const summary = document.createElement('div');
-      summary.className = 'tutorial-note';
-      summary.textContent = `Case focus: ${caseData.summary}`;
-      card.appendChild(summary);
-    }
-    if (step && step.options && state.tutorial.mode === 'interactive'){
-      const row = document.createElement('div');
-      row.className = 'tutorial-choice-row';
-      const response = tutorialCurrentResponse(step.key);
-      const truth = caseData.truth ? caseData.truth[step.key] : '';
-      step.options.forEach((opt)=>{
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'tutorial-choice';
-        btn.textContent = opt;
-        if (response && response.selected === opt) btn.classList.add('active');
-        if (response && response.revealed){
-          if (opt === truth) btn.classList.add('correct');
-          if (response.selected === opt && !response.correct) btn.classList.add('wrong');
-        }
-        btn.addEventListener('click', ()=> onTutorialAnswer(step.key, opt));
-        row.appendChild(btn);
-      });
-      card.appendChild(row);
-    }
-    if (step && (state.tutorial.mode === 'guided' || tutorialStepRevealed(step))){
-      const answer = document.createElement('div');
-      answer.className = 'tutorial-answer';
-      answer.textContent = tutorialAnswerBanner(step, caseData);
-      card.appendChild(answer);
-      const explanation = document.createElement('div');
-      explanation.className = 'tutorial-explanation';
-      explanation.textContent = tutorialExplanation(step, caseData);
-      card.appendChild(explanation);
-    }
-    if (tutorialAuxCanToggleEyes(step, caseData)){
-      const aux = document.createElement('div');
-      aux.className = 'tutorial-aux';
-      const toggle = document.createElement('button');
-      toggle.type = 'button';
-      toggle.textContent = state.eyesOpen ? 'Show Eyes Closed' : 'Show Eyes Open';
-      toggle.addEventListener('click', ()=>{
-        if (!state.running) setPlaybackRunning(true);
-        state.eyesOpen = !state.eyesOpen;
-        renderTutorialUI();
-      });
-      aux.appendChild(toggle);
-      card.appendChild(aux);
-    }
-    if (highlight && highlight.note){
-      const note = document.createElement('div');
-      note.className = 'tutorial-note';
-      note.textContent = `Highlight guide: ${highlight.note}`;
-      card.appendChild(note);
-    }
-    frag.appendChild(card);
-    tutorialBody.replaceChildren(frag);
-  }
-
-  if (tutorialBackBtn) tutorialBackBtn.disabled = state.tutorial.stepIndex <= 0;
-  if (tutorialNextBtn) tutorialNextBtn.disabled = state.tutorial.stepIndex >= TUTORIAL_STEPS.length-1 || !tutorialCanAdvance();
-  syncPlaybackButtons();
-  updateModeButtons();
-}
-function tutorialSetCommonSimulatorState(caseData){
-  const signal = caseData.signal || {};
-  const rng = state.rng || Math.random;
-  state.pathology.gpd = false;
-  state.pathology.lpd = false;
-  state.pathology.bipds = false;
-  state.pathology.focalSeizure = false;
-  state.opts = {blink:false, chew:false, sweat:false, pop:false, emg:false};
-  clearActiveTutorialSeizures();
-  resetTutorialEducationalState();
-
-  applyQuizModeFromTruth(signal.sleepDrive || 'Awake', signal.backgroundDrive || 'alpha');
-  if (signal.initialEyesOpen !== undefined) state.eyesOpen = !!signal.initialEyesOpen;
-
-  if (signal.artifact === 'Eye blinks') state.opts.blink = true;
-  if (signal.artifact === 'Chewing') state.opts.chew = true;
-  if (signal.artifact === 'Sweat') state.opts.sweat = true;
-  if (signal.artifact === 'EMG') state.opts.emg = true;
-
-  if (signal.periodic === 'GPDs') state.pathology.gpd = true;
-  if (signal.periodic === 'LPDs') state.pathology.lpd = true;
-  if (signal.periodic === 'BIPDs') state.pathology.bipds = true;
-
-  state.tutorial.slowing = buildQuizSlowingConfig(rng, signal.slowingDist || 'None', signal.slowingTempo || 'Continuous');
-  state.tutorial.spikes = buildQuizSpikeConfig(rng, signal.epileptiformOverlay || 'none');
-  state.tutorial.bias = createNeutralEducationalBias();
-  if (signal.bias){
-    state.tutorial.bias = {
-      ...createNeutralEducationalBias(),
-      ...signal.bias,
-      focal:{...(signal.bias.focal || {})}
-    };
-  }
-  state.tutorial.sleepFeatures = (signal.sleepDrive === 'Stage 2')
-    ? {spindles: signal.spindles || 'present', kcomplexes: signal.kcomplexes || 'present'}
-    : null;
-}
-function primeTutorialSleepFeatures(caseData){
-  const signal = caseData.signal || {};
-  if (signal.sleepDrive !== 'Stage 2') return;
-  if (signal.kcomplexes === 'present'){
-    state.kcomplex.active = true;
-    state.kcomplex.t0 = 0.55;
-  }
-  if (signal.spindles === 'present'){
-    state.spindle.active = true;
-    state.spindle.t0 = signal.kcomplexes === 'present' ? 0.82 : 0.45;
-    state.spindle.dur = 0.92;
-  }
-}
-function armTutorialSeizure(caseData){
-  const signal = caseData.signal || {};
-  const duration = clampSeizureDuration(signal.seizureDuration || DEFAULT_SEIZURE_DURATIONS.generalized, signal.seizureDuration || DEFAULT_SEIZURE_DURATIONS.generalized);
-  if (signal.seizure === 'Generalized seizure'){
-    state.seizureEvents.push(makeGeneralizedSeizureEvent(state.artClock, duration));
-  } else if (signal.seizure === 'Absence seizure'){
-    state.seizureEvents.push(makeAbsenceSeizureEvent(state.artClock, duration));
-  } else if (signal.seizure === 'Focal seizure' && typeof window.armFocalSeizure === 'function'){
-    state.pathology.focalSeizure = true;
-    window.armFocalSeizure(duration);
-  }
-}
-function applyTutorialCase(caseData){
-  if (tutorialPanel) tutorialPanel.style.display = 'block';
-  const rf = document.getElementById('rhythmFieldset');
-  if (rf) rf.style.display = 'none';
-  state.tutorial.currentCase = caseData;
-  state.tutorial.stepIndex = 0;
-  state.tutorial.responses = {};
-  tutorialSetCommonSimulatorState(caseData);
-  setPlaybackRunning(true);
-  syncControlsFromState();
-  regen();
-  primeTutorialSleepFeatures(caseData);
-  armTutorialSeizure(caseData);
-  syncControlsFromState();
-  updateEyesOpenEnabled();
-  updateSeizureActionButtons();
-  if (pathologyModal) pathologyModal.hidden = true;
-  if (artifactsModal) artifactsModal.hidden = true;
-  const optionsModal = document.getElementById('optionsModal');
-  if (optionsModal) optionsModal.hidden = true;
-  if (TUTORIAL_SETUP_MODAL) TUTORIAL_SETUP_MODAL.hidden = true;
-  renderTutorialUI();
-}
-function startNextTutorialCase(){
-  const pool = tutorialPoolForLevel(state.tutorial.level);
-  if (!pool.length) return;
-  const cursor = state.tutorial.caseCursor[state.tutorial.level] || 0;
-  const caseId = pool[cursor % pool.length];
-  state.tutorial.caseCursor[state.tutorial.level] = (cursor + 1) % pool.length;
-  const caseData = tutorialCloneCase(caseId);
-  if (!caseData) return;
-  applyTutorialCase(caseData);
-}
-function openTutorialSetup(){
-  if (!TUTORIAL_SETUP_MODAL) return;
-  if (pathologyModal) pathologyModal.hidden = true;
-  if (artifactsModal) artifactsModal.hidden = true;
-  const optionsModal = document.getElementById('optionsModal');
-  if (optionsModal) optionsModal.hidden = true;
-  if (tutorialModeSel) tutorialModeSel.value = (state.tutorial && state.tutorial.mode) || 'guided';
-  if (tutorialLevelSel) tutorialLevelSel.value = (state.tutorial && state.tutorial.level) || 'beginner';
-  TUTORIAL_SETUP_MODAL.hidden = false;
-}
-function startTutorial(mode, level){
-  if (state.quiz && state.quiz.active) endQuiz();
-  if (!(state.tutorial && state.tutorial.active)){
-    state.tutorial.snapshot = createQuizSnapshot();
-  }
-  state.tutorial.active = true;
-  state.tutorial.mode = mode || (tutorialModeSel ? tutorialModeSel.value : 'guided') || 'guided';
-  state.tutorial.level = level || (tutorialLevelSel ? tutorialLevelSel.value : 'beginner') || 'beginner';
-  state.tutorial.responses = {};
-  clearQuizBannerTimer();
-  const banner = document.getElementById('quizBanner');
-  if (banner) banner.style.display = 'none';
-  const quizPanel = document.getElementById('quizPanel');
-  if (quizPanel) quizPanel.style.display = 'none';
-  startNextTutorialCase();
-  updateModeButtons();
-}
-function endTutorial(){
-  if (!(state.tutorial && state.tutorial.active)){
-    if (TUTORIAL_SETUP_MODAL) TUTORIAL_SETUP_MODAL.hidden = true;
-    updateModeButtons();
-    return;
-  }
-  state.tutorial.active = false;
-  state.tutorial.currentCase = null;
-  state.tutorial.stepIndex = 0;
-  state.tutorial.responses = {};
-  resetTutorialEducationalState();
-  clearActiveTutorialSeizures();
-  if (tutorialPanel) tutorialPanel.style.display = 'none';
-  if (TUTORIAL_SETUP_MODAL) TUTORIAL_SETUP_MODAL.hidden = true;
-  const rf = document.getElementById('rhythmFieldset');
-  if (rf) rf.style.display = 'block';
-  restoreQuizSnapshot(state.tutorial.snapshot);
-  state.tutorial.snapshot = null;
-  syncControlsFromState();
-  updateEyesOpenEnabled();
-  updateSeizureActionButtons();
-  regen();
-  renderTutorialUI();
-  updateModeButtons();
-}
-function onTutorialAnswer(stepKey, value){
-  const caseData = state.tutorial.currentCase;
-  const step = tutorialStepByKey(stepKey);
-  if (!caseData || !step || !caseData.truth) return;
-  const truth = caseData.truth[stepKey];
-  state.tutorial.responses[stepKey] = {
-    selected:value,
-    correct:value === truth,
-    revealed:true
-  };
-  renderTutorialUI();
-}
-function tutorialGoBack(){
-  if (!(state.tutorial && state.tutorial.active)) return;
-  state.tutorial.stepIndex = Math.max(0, state.tutorial.stepIndex - 1);
-  renderTutorialUI();
-}
-function tutorialGoNext(){
-  if (!(state.tutorial && state.tutorial.active)) return;
-  if (!tutorialCanAdvance()) return;
-  state.tutorial.stepIndex = Math.min(TUTORIAL_STEPS.length - 1, state.tutorial.stepIndex + 1);
-  renderTutorialUI();
-}
-TUTORIAL_CASE_LIBRARY.normal_awake_alpha = {
-  title:'Normal Awake Reactive Background',
-  summary:'Normal awake study with a well-formed posterior dominant rhythm.',
-  signal:{sleepDrive:'Awake', backgroundDrive:'alpha', artifact:'None', slowingDist:'None', slowingTempo:'Continuous', periodic:'None', epileptiformOverlay:'none', seizure:'None', spindles:'absent', kcomplexes:'absent'},
-  truth:{background:'alpha', symmetry:'symmetric', pdr:'Present and normal', reactivity:'present', sleep:'Awake', artifact:'None', epileptiform:'None', seizure:'None'},
-  stepNotes:{
-    background:'The dominant organized activity is posterior alpha, with the cleanest expression in the posterior chains.',
-    symmetry:'Homologous left and right channels have similar amplitude and frequency without a persistent lateralized abnormality.',
-    pdr:'A clear posterior dominant rhythm is visible over the posterior head regions rather than frontally.',
-    reactivity:'If you toggle the eyes open in the tutorial panel, the posterior alpha should attenuate promptly.',
-    sleep:'There are no sleep transients or sleep-stage features here; this is an awake tracing.',
-    artifact:'No artifactual pattern is driving the morphology in this case.',
-    epileptiform:'There are no spikes, sharp waves, or periodic discharges.',
-    seizure:'There is no evolving ictal pattern.'
-  },
-  modelRead:'Symmetric awake background with a well-formed posterior dominant alpha rhythm that attenuates with eye opening. No focal slowing, epileptiform discharges, or seizures.',
-  highlights:{
-    background:{electrodes:['P3','O1','P4','O2'], windowSec:2.8, note:'Focus on the posterior chains, especially the live right edge, where the organized alpha background is easiest to appreciate.'},
-    symmetry:{electrodes:['F3','C3','P3','O1','F4','C4','P4','O2'], windowSec:2.8, note:'Compare homologous left and right parasagittal chains rather than a single derivation.'},
-    pdr:{electrodes:['P3','O1','P4','O2'], windowSec:2.8, note:'This is where the posterior dominant rhythm should be most obvious.'},
-    reactivity:{electrodes:['P3','O1','P4','O2'], windowSec:2.8, note:'Use the eye toggle in the tutorial panel and watch the posterior alpha attenuate.'},
-    sleep:{allRows:true, windowSec:2.4, note:'There are no sleep transients or defined sleep features.'},
-    artifact:{allRows:true, windowSec:2.4, note:'Nothing here behaves like a recognizable artifact.'},
-    epileptiform:{allRows:true, windowSec:2.4, note:'No spikes, sharp waves, or periodic discharges are present.'},
-    seizure:{allRows:true, windowSec:2.4, note:'There is no sustained evolving ictal pattern.'},
-    finalImpression:{allRows:true, windowSec:3.0, note:'Now combine the background, symmetry, PDR, reactivity, and absence of abnormal features into one impression.'}
-  }
-};
-TUTORIAL_CASE_LIBRARY.blink_awake_alpha = {
-  title:'Awake Tracing With Eye Blink Artifact',
-  summary:'Normal awake background with prominent frontal blink artifact.',
-  signal:{sleepDrive:'Awake', backgroundDrive:'alpha', artifact:'Eye blinks', slowingDist:'None', slowingTempo:'Continuous', periodic:'None', epileptiformOverlay:'none', seizure:'None', spindles:'absent', kcomplexes:'absent'},
-  truth:{background:'alpha', symmetry:'symmetric', pdr:'Present and normal', reactivity:'present', sleep:'Awake', artifact:'Eye blinks', epileptiform:'None', seizure:'None'},
-  stepNotes:{
-    background:'Behind the frontal transients, the ongoing background is still an organized awake alpha rhythm.',
-    symmetry:'The underlying cerebral activity is symmetric; the frontal transients are bilateral artifact rather than lateralized brain dysfunction.',
-    pdr:'A posterior dominant rhythm is still present and can be appreciated between blinks.',
-    reactivity:'Posterior alpha should still attenuate when you toggle the eyes open.',
-    sleep:'There are no sleep-stage features here; this is still an awake tracing.',
-    artifact:'The prominent frontal, blink-shaped transients are maximal frontally and match eye blink artifact.',
-    epileptiform:'These frontal deflections are artifact, not epileptiform spikes.',
-    seizure:'There is no evolving ictal rhythm.'
-  },
-  modelRead:'Symmetric awake background with preserved posterior dominant alpha rhythm. Frequent frontal blink artifact is present. No epileptiform discharges or seizures.',
-  highlights:{
-    background:{electrodes:['P3','O1','P4','O2'], windowSec:2.8, note:'Look posteriorly between blinks to recover the true background.'},
-    symmetry:{electrodes:['Fp1','F7','Fp2','F8','F3','C3','F4','C4'], windowSec:2.8, note:'The frontal artifact is bilateral rather than lateralized to one hemisphere.'},
-    pdr:{electrodes:['P3','O1','P4','O2'], windowSec:2.8, note:'The posterior dominant rhythm is still there underneath the frontal artifact.'},
-    reactivity:{electrodes:['P3','O1','P4','O2'], windowSec:2.8, note:'Use the eye toggle and watch the posterior rhythm attenuate despite the blink artifact.'},
-    sleep:{allRows:true, windowSec:2.4, note:'This remains an awake tracing.'},
-    artifact:{electrodes:['Fp1','F7','F3','Fp2','F8','F4'], windowSec:2.2, note:'The artifact is frontal-predominant and blink-shaped, which is the clue here.'},
-    epileptiform:{electrodes:['Fp1','F7','F3','Fp2','F8','F4'], windowSec:2.2, note:'Do not overcall the frontal transients as spikes; their field and shape fit blink artifact.'},
-    seizure:{allRows:true, windowSec:2.4, note:'There is no evolving ictal organization.'},
-    finalImpression:{allRows:true, windowSec:3.0, note:'The correct summary includes the normal awake background plus frontal blink artifact.'}
-  }
-};
-TUTORIAL_CASE_LIBRARY.drowsy_transition = {
-  title:'Drowsy Transition',
-  summary:'Transition from wakefulness into drowsiness with slow rolling eye movements.',
-  signal:{sleepDrive:'Drowsy', backgroundDrive:'theta', artifact:'None', slowingDist:'None', slowingTempo:'Continuous', periodic:'None', epileptiformOverlay:'none', seizure:'None', spindles:'absent', kcomplexes:'absent'},
-  truth:{background:'theta', symmetry:'symmetric', pdr:'Present but slowed', reactivity:'unable to determine', sleep:'Drowsy', artifact:'None', epileptiform:'None', seizure:'None'},
-  stepNotes:{
-    background:'Theta now dominates much of the tracing as wakefulness gives way to drowsiness.',
-    symmetry:'The slowing is symmetric rather than clearly focal or lateralized.',
-    pdr:'There are residual posterior rhythmic elements, but the awake posterior alpha is no longer crisp and sustained.',
-    reactivity:'This is not the cleanest setting for formal reactivity assessment because the patient is drifting into sleep.',
-    sleep:'Slow rolling frontal eye movements and mixed theta support drowsiness rather than a fully awake background.',
-    artifact:'No artifactual contaminant is explaining the pattern.',
-    epileptiform:'There are no convincing spikes, sharp waves, or periodic discharges.',
-    seizure:'There is no evolving seizure pattern.'
-  },
-  modelRead:'Symmetric drowsy tracing with attenuation of awake posterior alpha, emergence of diffuse theta activity, and slow rolling eye movements. No epileptiform discharges or seizures.',
-  highlights:{
-    background:{allRows:true, windowSec:2.8, note:'The dominant background has shifted toward diffuse theta rather than a clean awake alpha pattern.'},
-    symmetry:{electrodes:['F3','C3','P3','O1','F4','C4','P4','O2'], windowSec:2.8, note:'The slowing is symmetric across homologous chains.'},
-    pdr:{electrodes:['P3','O1','P4','O2'], windowSec:2.6, note:'Posterior organization is fading; this is no longer a crisp awake posterior dominant rhythm.'},
-    reactivity:{electrodes:['P3','O1','P4','O2'], windowSec:2.6, note:'Because the patient is drifting into sleep, reactivity is not the teaching focus here.'},
-    sleep:{electrodes:['Fp1','F7','F3','Fp2','F8','F4'], windowSec:2.8, note:'The slow rolling frontal eye movements help identify drowsiness.'},
-    artifact:{allRows:true, windowSec:2.4, note:'The frontal slow eye movements are physiologic drowsy features, not artifact.'},
-    epileptiform:{allRows:true, windowSec:2.4, note:'No epileptiform activity is present.'},
-    seizure:{allRows:true, windowSec:2.4, note:'No evolving ictal pattern is present.'},
-    finalImpression:{allRows:true, windowSec:3.0, note:'Summarize this as a symmetric drowsy tracing rather than pathologic slowing.'}
-  }
-};
-TUTORIAL_CASE_LIBRARY.stage2_sleep = {
-  title:'Stage 2 Sleep',
-  summary:'Defined N2 sleep with spindles and K-complexes.',
-  signal:{sleepDrive:'Stage 2', backgroundDrive:'theta', artifact:'None', slowingDist:'None', slowingTempo:'Continuous', periodic:'None', epileptiformOverlay:'none', seizure:'None', spindles:'present', kcomplexes:'present'},
-  truth:{background:'theta', symmetry:'symmetric', pdr:'Absent / not identifiable', reactivity:'unable to determine', sleep:'Stage 2', artifact:'None', epileptiform:'None', seizure:'None'},
-  stepNotes:{
-    background:'The background is lower-frequency mixed theta rather than an awake posterior alpha pattern.',
-    symmetry:'The background and sleep features are symmetric overall.',
-    pdr:'There is no meaningful awake posterior dominant rhythm in this N2 sleep tracing.',
-    reactivity:'Reactivity is not the relevant question once the tracing is clearly in N2 sleep.',
-    sleep:'Sleep spindles and K-complexes define Stage 2 sleep in this case.',
-    artifact:'No artifact explains the central transients; they are physiologic sleep features.',
-    epileptiform:'The transients here are normal sleep features rather than epileptiform discharges.',
-    seizure:'There is no electrographic seizure.'
-  },
-  modelRead:'Symmetric Stage 2 sleep with expected mixed theta background, central sleep spindles, and K-complexes. No epileptiform discharges or seizures.',
-  highlights:{
-    background:{allRows:true, windowSec:3.0, note:'This background is sleep-related mixed theta rather than awake posterior alpha.'},
-    symmetry:{electrodes:['C3','Cz','C4','F3','Fz','F4'], windowSec:3.0, note:'The central sleep features are symmetric.'},
-    pdr:{electrodes:['P3','O1','P4','O2'], windowSec:2.6, note:'You should not expect a true awake posterior dominant rhythm here.'},
-    reactivity:{allRows:true, windowSec:2.4, note:'Sleep architecture, not eye-opening reactivity, is the key teaching point here.'},
-    sleep:{electrodes:['F3','Fz','F4','C3','Cz','C4'], windowSec:3.4, note:'Watch the frontal-central chains for the spindle and K-complex morphology that defines N2 sleep.'},
-    artifact:{electrodes:['F3','Fz','F4','C3','Cz','C4'], windowSec:3.0, note:'Do not mistake the sleep transients for artifact.'},
-    epileptiform:{electrodes:['F3','Fz','F4','C3','Cz','C4'], windowSec:3.0, note:'The morphology fits normal N2 sleep features, not spikes or periodic discharges.'},
-    seizure:{allRows:true, windowSec:2.4, note:'There is no ictal evolution here.'},
-    finalImpression:{allRows:true, windowSec:3.2, note:'The right read is normal Stage 2 sleep with defining N2 features.'}
-  }
-};
-TUTORIAL_CASE_LIBRARY.generalized_slowing = {
-  title:'Generalized Slowing',
-  summary:'Diffuse slow background without organized sleep architecture.',
-  signal:{sleepDrive:'Awake', backgroundDrive:'delta', artifact:'None', slowingDist:'Generalized', slowingTempo:'Continuous', periodic:'None', epileptiformOverlay:'none', seizure:'None', spindles:'absent', kcomplexes:'absent'},
-  truth:{background:'delta', symmetry:'symmetric', pdr:'Absent / not identifiable', reactivity:'absent', sleep:'No clear sleep architecture', artifact:'None', epileptiform:'None', seizure:'None'},
-  stepNotes:{
-    background:'Diffuse theta-delta activity dominates most chains and overwhelms any normal awake background organization.',
-    symmetry:'The slowing is diffuse and broadly symmetric rather than lateralized.',
-    pdr:'There is no sustained organized posterior dominant rhythm here.',
-    reactivity:'There is no convincing posterior alpha to attenuate, so reactivity is effectively absent.',
-    sleep:'This is not organized physiologic sleep; it is diffuse slowing without defining sleep architecture.',
-    artifact:'No artifact accounts for the generalized slow activity.',
-    epileptiform:'The pattern is slow but not epileptiform or periodic.',
-    seizure:'There is no evolving ictal rhythm.'
-  },
-  modelRead:'Abnormal tracing with symmetric diffuse theta-delta slowing and loss of organized posterior dominant rhythm, without clear sleep architecture. No epileptiform discharges or seizures.',
-  highlights:{
-    background:{allRows:true, windowSec:2.8, note:'The slow activity is generalized across the page rather than confined to a small region.'},
-    symmetry:{electrodes:['Fp1','F3','C3','P3','O1','Fp2','F4','C4','P4','O2'], windowSec:2.8, note:'Both hemispheres are slowed to a similar degree.'},
-    pdr:{electrodes:['P3','O1','P4','O2'], windowSec:2.8, note:'The posterior chains lack a sustained organized posterior dominant rhythm.'},
-    reactivity:{electrodes:['P3','O1','P4','O2'], windowSec:2.6, note:'There is no meaningful posterior alpha here to attenuate.'},
-    sleep:{allRows:true, windowSec:2.8, note:'This is diffuse slowing, not physiologic sleep staging.'},
-    artifact:{allRows:true, windowSec:2.4, note:'No recognizable artifact explains the generalized slow activity.'},
-    epileptiform:{allRows:true, windowSec:2.4, note:'The slowing is non-epileptiform.'},
-    seizure:{allRows:true, windowSec:2.4, note:'There is no electrographic seizure.'},
-    finalImpression:{allRows:true, windowSec:3.0, note:'Call this diffuse slowing and loss of organized awake background, not sleep.'}
-  }
-};
-TUTORIAL_CASE_LIBRARY.focal_slowing_left = {
-  title:'Left Focal Slowing',
-  summary:'Awake background with superimposed left-sided focal slowing.',
-  signal:{sleepDrive:'Awake', backgroundDrive:'alpha', artifact:'None', slowingDist:'Focal - Left', slowingTempo:'Continuous', periodic:'None', epileptiformOverlay:'none', seizure:'None', spindles:'absent', kcomplexes:'absent'},
-  truth:{background:'alpha', symmetry:'asymmetric', pdr:'Present and normal', reactivity:'present', sleep:'Awake', artifact:'None', epileptiform:'None', seizure:'None'},
-  stepNotes:{
-    background:'An awake alpha background is still present, especially posteriorly.',
-    symmetry:'The tracing is asymmetric because the left hemisphere, especially the left temporal region, carries extra slow activity.',
-    pdr:'A posterior dominant rhythm is still present despite the focal abnormality.',
-    reactivity:'Posterior alpha should still attenuate with the eye toggle because the patient is awake.',
-    sleep:'There are no sleep-stage features; this is an awake tracing with a focal abnormality.',
-    artifact:'No artifact explains the unilateral slowing.',
-    epileptiform:'This case shows focal slowing, not focal epileptiform discharges.',
-    seizure:'There is no ictal evolution.'
-  },
-  modelRead:'Awake tracing with preserved posterior dominant alpha rhythm and superimposed left focal slowing, producing interhemispheric asymmetry. No epileptiform discharges or seizures.',
-  highlights:{
-    background:{electrodes:['P3','O1','P4','O2'], windowSec:2.8, note:'Even with focal slowing, the posterior awake background is still identifiable.'},
-    symmetry:{electrodes:['Fp1','F7','T3','T5','F3','C3','P3','O1'], windowSec:2.8, note:'Compare the left-sided chains to the matching right-sided chains and note the extra slow activity on the left.'},
-    pdr:{electrodes:['P3','O1','P4','O2'], windowSec:2.8, note:'The posterior dominant rhythm is still present and helps you avoid overcalling diffuse encephalopathy.'},
-    reactivity:{electrodes:['P3','O1','P4','O2'], windowSec:2.8, note:'The eye toggle should still attenuate posterior alpha because the patient is awake.'},
-    sleep:{allRows:true, windowSec:2.4, note:'This is not sleep; it is awake background with a focal disturbance.'},
-    artifact:{electrodes:['F7','T3','T5'], windowSec:2.4, note:'The left-sided slowing has a cerebral field rather than an artifact distribution.'},
-    epileptiform:{electrodes:['F7','T3','T5'], windowSec:2.4, note:'There are no sharp spikes or periodic discharges, just focal slowing.'},
-    seizure:{electrodes:['F7','T3','T5'], windowSec:2.4, note:'There is no evolving seizure pattern in the slowed region.'},
-    finalImpression:{allRows:true, windowSec:3.0, note:'Combine preserved awake background with left focal slowing in the impression.'}
-  }
-};
-TUTORIAL_CASE_LIBRARY.chewing_artifact = {
-  title:'Chewing Artifact',
-  summary:'Bilateral frontotemporal chewing artifact over an awake background.',
-  signal:{sleepDrive:'Awake', backgroundDrive:'alpha', artifact:'Chewing', slowingDist:'None', slowingTempo:'Continuous', periodic:'None', epileptiformOverlay:'none', seizure:'None', spindles:'absent', kcomplexes:'absent'},
-  truth:{background:'alpha', symmetry:'symmetric', pdr:'Present and normal', reactivity:'present', sleep:'Awake', artifact:'Chewing', epileptiform:'None', seizure:'None'},
-  stepNotes:{
-    background:'The underlying cerebral background is still an awake alpha rhythm.',
-    symmetry:'The underlying cerebral activity remains broadly symmetric.',
-    pdr:'Posterior alpha is still present beneath the frontotemporal artifact.',
-    reactivity:'Posterior alpha should still attenuate with eye opening.',
-    sleep:'This remains an awake tracing rather than sleep.',
-    artifact:'The frontotemporal rhythmic contamination matches chewing artifact rather than cerebral rhythmic activity.',
-    epileptiform:'The chewing pattern is artifact, not epileptiform discharges.',
-    seizure:'There is no evolving ictal pattern.'
-  },
-  modelRead:'Awake tracing with preserved posterior dominant alpha rhythm and superimposed bilateral frontotemporal chewing artifact. No epileptiform discharges or seizures.',
-  highlights:{
-    background:{electrodes:['P3','O1','P4','O2'], windowSec:2.8, note:'Use the posterior channels to recover the true background behind the artifact.'},
-    symmetry:{electrodes:['F7','T3','T5','F8','T4','T6'], windowSec:2.6, note:'The artifact is bilateral rather than a true unilateral cerebral abnormality.'},
-    pdr:{electrodes:['P3','O1','P4','O2'], windowSec:2.8, note:'The posterior dominant rhythm is still preserved.'},
-    reactivity:{electrodes:['P3','O1','P4','O2'], windowSec:2.8, note:'The eye toggle should still affect the posterior rhythm.'},
-    sleep:{allRows:true, windowSec:2.4, note:'There are no sleep-stage features; this is awake plus artifact.'},
-    artifact:{electrodes:['F7','T3','T5','F8','T4','T6'], windowSec:2.4, note:'Chewing artifact is strongest over the temporal chains and rides on top of the underlying background.'},
-    epileptiform:{electrodes:['F7','T3','T5','F8','T4','T6'], windowSec:2.4, note:'Do not misread the rhythmic frontotemporal artifact as seizure or spikes.'},
-    seizure:{allRows:true, windowSec:2.4, note:'There is no organized evolving ictal pattern.'},
-    finalImpression:{allRows:true, windowSec:3.0, note:'The correct read is a normal awake background contaminated by chewing artifact.'}
-  }
-};
-TUTORIAL_CASE_LIBRARY.gpd_case = {
-  title:'Generalized Periodic Discharges',
-  summary:'Frontally predominant generalized periodic discharges on a slowed background.',
-  signal:{sleepDrive:'Awake', backgroundDrive:'theta', artifact:'None', slowingDist:'None', slowingTempo:'Continuous', periodic:'GPDs', epileptiformOverlay:'none', seizure:'None', spindles:'absent', kcomplexes:'absent'},
-  truth:{background:'theta', symmetry:'symmetric', pdr:'Absent / not identifiable', reactivity:'unable to determine', sleep:'No clear sleep architecture', artifact:'None', epileptiform:'GPDs', seizure:'None'},
-  stepNotes:{
-    background:'The underlying background is slowed and no organized awake posterior alpha is sustained.',
-    symmetry:'The periodic discharges are generalized and bilaterally represented.',
-    pdr:'A meaningful posterior dominant rhythm is not identifiable because the background is slowed and interrupted by generalized discharges.',
-    reactivity:'Formal reactivity is not the main teaching point here and is not reliably assessable from this case.',
-    sleep:'These are pathologic generalized discharges on a slowed background, not physiologic sleep features.',
-    artifact:'No artifactual source explains the periodic generalized complexes.',
-    epileptiform:'The defining abnormality is generalized periodic discharges with a broad bilateral field.',
-    seizure:'There is no sustained evolving seizure pattern here.'
-  },
-  modelRead:'Abnormal tracing with frontally predominant generalized periodic discharges on a slowed background, without clear sleep architecture. No electrographic seizure is seen in this case.',
-  highlights:{
-    background:{allRows:true, windowSec:2.8, note:'The background is already slowed even before you focus on the periodic discharges.'},
-    symmetry:{allRows:true, windowSec:2.4, note:'The periodic discharges are generalized rather than confined to one hemisphere.'},
-    pdr:{electrodes:['P3','O1','P4','O2'], windowSec:2.6, note:'The posterior background is not organized enough to support a true posterior dominant rhythm call.'},
-    reactivity:{allRows:true, windowSec:2.4, note:'This case is about recognizing the pathologic generalized discharges rather than formal eye-opening reactivity.'},
-    sleep:{allRows:true, windowSec:2.4, note:'These are not sleep transients; they are periodic pathologic discharges.'},
-    artifact:{allRows:true, windowSec:2.4, note:'The bilateral synchronous field and morphology argue against artifact.'},
-    epileptiform:{electrodes:['Fp1','F3','Fz','F4','Fp2','C3','Cz','C4'], windowSec:2.4, note:'The generalized periodic complexes are most conspicuous frontally and centrally.'},
-    seizure:{allRows:true, windowSec:2.4, note:'They are periodic, but not evolving into a seizure.'},
-    finalImpression:{allRows:true, windowSec:3.0, note:'Summarize the slowed background and generalized periodic discharges together.'}
-  }
-};
-TUTORIAL_CASE_LIBRARY.lpd_left = {
-  title:'Left Lateralized Periodic Discharges',
-  summary:'Left-sided periodic discharges on an awake background.',
-  signal:{sleepDrive:'Awake', backgroundDrive:'alpha', artifact:'None', slowingDist:'None', slowingTempo:'Continuous', periodic:'LPDs', epileptiformOverlay:'none', seizure:'None', spindles:'absent', kcomplexes:'absent'},
-  truth:{background:'alpha', symmetry:'asymmetric', pdr:'Present and normal', reactivity:'present', sleep:'Awake', artifact:'None', epileptiform:'LPDs', seizure:'None'},
-  stepNotes:{
-    background:'An awake alpha background is still present in the unaffected posterior channels.',
-    symmetry:'The tracing is asymmetric because the periodic discharges are lateralized to the left hemisphere.',
-    pdr:'A posterior dominant rhythm is still preserved posteriorly.',
-    reactivity:'Posterior alpha should still attenuate with eye opening.',
-    sleep:'This is not sleep; it is an awake tracing with a focal pathologic abnormality.',
-    artifact:'No artifact explains the unilateral recurring complexes.',
-    epileptiform:'The key abnormality is left lateralized periodic discharges.',
-    seizure:'There is no sustained ictal evolution in this case.'
-  },
-  modelRead:'Awake tracing with preserved posterior dominant alpha rhythm and superimposed left lateralized periodic discharges, producing left-right asymmetry. No electrographic seizure is seen in this case.',
-  highlights:{
-    background:{electrodes:['P3','O1','P4','O2'], windowSec:2.8, note:'The underlying awake posterior background is still present.'},
-    symmetry:{electrodes:['Fp1','F7','T3','T5','F3','C3','P3','O1'], windowSec:2.6, note:'The recurring pathologic complexes are confined mainly to the left hemisphere.'},
-    pdr:{electrodes:['P3','O1','P4','O2'], windowSec:2.8, note:'Posterior alpha helps you separate the focal abnormality from the underlying awake background.'},
-    reactivity:{electrodes:['P3','O1','P4','O2'], windowSec:2.8, note:'The eye toggle should still affect the posterior background.'},
-    sleep:{allRows:true, windowSec:2.4, note:'There are no physiologic sleep features here.'},
-    artifact:{electrodes:['F7','T3','T5','F3','C3'], windowSec:2.4, note:'The recurring left-sided field is cerebral, not artifactual.'},
-    epileptiform:{electrodes:['F7','T3','T5','F3','C3'], windowSec:2.4, note:'These are lateralized periodic discharges, not merely focal slowing.'},
-    seizure:{electrodes:['F7','T3','T5','F3','C3'], windowSec:2.4, note:'There is no clear evolution into seizure.'},
-    finalImpression:{allRows:true, windowSec:3.0, note:'Call the awake background and the left lateralized periodic discharges together.'}
-  }
-};
-TUTORIAL_CASE_LIBRARY.absence_seizure = {
-  title:'Absence Seizure',
-  summary:'Generalized 3 Hz spike-wave seizure with bilateral involvement.',
-  signal:{sleepDrive:'Awake', backgroundDrive:'alpha', artifact:'None', slowingDist:'None', slowingTempo:'Continuous', periodic:'None', epileptiformOverlay:'none', seizure:'Absence seizure', seizureDuration:10, spindles:'absent', kcomplexes:'absent'},
-  truth:{background:'Unable to determine', symmetry:'symmetric', pdr:'Absent / not identifiable', reactivity:'unable to determine', sleep:'No clear sleep architecture', artifact:'None', epileptiform:'Generalized discharges', seizure:'Absence seizure'},
-  stepNotes:{
-    background:'Once the generalized 3 Hz spike-wave discharge takes over, the baseline background is not meaningfully assessable.',
-    symmetry:'The ictal pattern is generalized and bilaterally expressed across the tracing.',
-    pdr:'A posterior dominant rhythm is not identifiable during the generalized spike-wave seizure.',
-    reactivity:'Formal eye-opening reactivity is not assessable during the ictal pattern.',
-    sleep:'This is an ictal generalized spike-wave pattern, not physiologic sleep architecture.',
-    artifact:'The pattern is cerebral and generalized, not artifactual.',
-    epileptiform:'The seizure is built from generalized spike-wave discharges.',
-    seizure:'This is an absence seizure, with regular generalized spike-wave activity around 3 Hz.'
-  },
-  modelRead:'Generalized absence seizure with bilateral 3 Hz spike-wave activity, most prominent anteriorly and at the midline. Background, posterior dominant rhythm, and reactivity are not meaningfully assessable during the ictal pattern.',
-  highlights:{
-    background:{allRows:true, windowSec:2.8, note:'During the spike-wave seizure, the background itself is not separately readable.'},
-    symmetry:{allRows:true, windowSec:2.4, note:'The discharge is generalized across both hemispheres.'},
-    pdr:{electrodes:['P3','O1','P4','O2'], windowSec:2.4, note:'There is no meaningful posterior dominant rhythm during the seizure.'},
-    reactivity:{allRows:true, windowSec:2.4, note:'Reactivity is not the right question during ongoing generalized spike-wave seizure activity.'},
-    sleep:{allRows:true, windowSec:2.4, note:'This is ictal generalized spike-wave activity, not sleep.'},
-    artifact:{allRows:true, windowSec:2.4, note:'The full bilateral field and spike-wave morphology argue strongly for cerebral activity rather than artifact.'},
-    epileptiform:{allRows:true, windowSec:2.4, note:'The seizure waveform itself is generalized spike-wave epileptiform activity.'},
-    seizure:{allRows:true, windowSec:2.4, note:'The regular generalized 3 Hz spike-wave pattern defines the absence seizure.'},
-    finalImpression:{allRows:true, windowSec:3.0, note:'Summarize this as an absence seizure with generalized 3 Hz spike-wave activity.'}
-  }
-};
-TUTORIAL_CASE_LIBRARY.generalized_seizure = {
-  title:'Generalized Seizure',
-  summary:'Generalized electrographic seizure with diffuse bilateral involvement.',
-  signal:{sleepDrive:'Awake', backgroundDrive:'alpha', artifact:'None', slowingDist:'None', slowingTempo:'Continuous', periodic:'None', epileptiformOverlay:'none', seizure:'Generalized seizure', seizureDuration:20, spindles:'absent', kcomplexes:'absent'},
-  truth:{background:'Unable to determine', symmetry:'symmetric', pdr:'Absent / not identifiable', reactivity:'unable to determine', sleep:'No clear sleep architecture', artifact:'None', epileptiform:'Generalized discharges', seizure:'Generalized seizure'},
-  stepNotes:{
-    background:'The seizure obscures the underlying background enough that it is not meaningfully characterized during the ictal run.',
-    symmetry:'The ictal pattern is generalized across both hemispheres rather than focal.',
-    pdr:'A posterior dominant rhythm is not identifiable during the generalized seizure.',
-    reactivity:'Formal reactivity is not assessable during ongoing seizure activity.',
-    sleep:'This is ictal generalized activity, not sleep architecture.',
-    artifact:'The pattern reflects generalized cerebral seizure activity rather than artifact.',
-    epileptiform:'The seizure contains generalized epileptiform spike-wave / polyspike-wave activity.',
-    seizure:'There is clear electrographic evolution consistent with a generalized seizure.'
-  },
-  modelRead:'Generalized electrographic seizure with bilateral diffuse involvement and evolving generalized spike-wave / polyspike-wave activity. Background, posterior dominant rhythm, and reactivity are not meaningfully assessable during the ictal event.',
-  highlights:{
-    background:{allRows:true, windowSec:2.8, note:'The ongoing seizure obscures the underlying background.'},
-    symmetry:{allRows:true, windowSec:2.4, note:'The seizure involves all regions rather than a unilateral onset zone.'},
-    pdr:{electrodes:['P3','O1','P4','O2'], windowSec:2.4, note:'A posterior dominant rhythm is not separately readable during the seizure.'},
-    reactivity:{allRows:true, windowSec:2.4, note:'Do not try to stage reactivity during a generalized seizure.'},
-    sleep:{allRows:true, windowSec:2.4, note:'This is ictal activity, not sleep architecture.'},
-    artifact:{allRows:true, windowSec:2.4, note:'The evolving widespread field argues for true seizure activity.'},
-    epileptiform:{allRows:true, windowSec:2.4, note:'Generalized spike-wave and polyspike-wave activity makes the epileptiform nature clear.'},
-    seizure:{allRows:true, windowSec:2.4, note:'Evolution and widespread bilateral involvement support a generalized seizure call.'},
-    finalImpression:{allRows:true, windowSec:3.0, note:'The correct impression is generalized electrographic seizure.'}
-  }
-};
-TUTORIAL_CASE_LIBRARY.focal_seizure = {
-  title:'Focal Seizure',
-  summary:'Lateralized electrographic seizure with temporal predominance.',
-  signal:{sleepDrive:'Awake', backgroundDrive:'alpha', artifact:'None', slowingDist:'None', slowingTempo:'Continuous', periodic:'None', epileptiformOverlay:'none', seizure:'Focal seizure', seizureDuration:10, spindles:'absent', kcomplexes:'absent'},
-  truth:{background:'Unable to determine', symmetry:'asymmetric', pdr:'Absent / not identifiable', reactivity:'unable to determine', sleep:'No clear sleep architecture', artifact:'None', epileptiform:'Focal discharges', seizure:'Focal seizure'},
-  stepNotes:{
-    background:'During the focal ictal run, the underlying background is not separately meaningful in the involved region.',
-    symmetry:'The ictal activity is clearly more prominent on one side, producing asymmetry.',
-    pdr:'A reliable posterior dominant rhythm is not the relevant feature during the focal seizure.',
-    reactivity:'Formal eye-opening reactivity is not assessable during the ictal pattern.',
-    sleep:'This is seizure activity rather than a physiologic sleep stage.',
-    artifact:'The lateralized evolving field argues for true cerebral seizure activity rather than artifact.',
-    epileptiform:'The seizure contains focal evolving epileptiform activity, strongest over the temporal region.',
-    seizure:'This is a focal seizure, with lateralized onset and evolution.'
-  },
-  modelRead:'Focal electrographic seizure with lateralized temporal-predominant ictal activity and clear asymmetry. Background, posterior dominant rhythm, and reactivity are not meaningfully assessable during the seizure.',
-  highlights:{
-    background:{electrodes:['F7','T3','T5','F8','T4','T6'], windowSec:2.8, note:'During the seizure, the focal ictal pattern dominates the tracing.'},
-    symmetry:{electrodes:['F7','T3','T5','F8','T4','T6'], windowSec:2.4, note:'Compare the temporal chains and identify the clearly dominant side.'},
-    pdr:{electrodes:['P3','O1','P4','O2'], windowSec:2.4, note:'A posterior dominant rhythm is not the key finding during this ictal pattern.'},
-    reactivity:{allRows:true, windowSec:2.4, note:'Reactivity is not assessable during ongoing focal seizure activity.'},
-    sleep:{allRows:true, windowSec:2.4, note:'This is ictal activity, not sleep architecture.'},
-    artifact:{electrodes:['F7','T3','T5','F8','T4','T6'], windowSec:2.4, note:'The evolving lateralized field argues against artifact.'},
-    epileptiform:{electrodes:['F7','T3','T5','F8','T4','T6'], windowSec:2.4, note:'The epileptiform / rhythmic activity is focal rather than generalized.'},
-    seizure:{electrodes:['F7','T3','T5','F8','T4','T6'], windowSec:2.4, note:'Lateralized evolution and temporal predominance support a focal seizure.'},
-    finalImpression:{allRows:true, windowSec:3.0, note:'The correct impression is focal electrographic seizure with temporal predominance.'}
-  }
-};
-if (tutorialSetupClose && TUTORIAL_SETUP_MODAL){
-  tutorialSetupClose.addEventListener('click', ()=>{ TUTORIAL_SETUP_MODAL.hidden = true; });
-}
-if (tutorialStartBtn){
-  tutorialStartBtn.addEventListener('click', ()=> startTutorial());
-}
-if (TUTORIAL_SETUP_MODAL){
-  TUTORIAL_SETUP_MODAL.addEventListener('click', (e)=>{ if (e.target === TUTORIAL_SETUP_MODAL) TUTORIAL_SETUP_MODAL.hidden = true; });
-  window.addEventListener('keydown', (e)=>{ if (e.key === 'Escape' && !TUTORIAL_SETUP_MODAL.hidden) TUTORIAL_SETUP_MODAL.hidden = true; });
-}
-if (tutorialBackBtn) tutorialBackBtn.addEventListener('click', tutorialGoBack);
-if (tutorialNextBtn) tutorialNextBtn.addEventListener('click', tutorialGoNext);
-if (tutorialPlayBtn) tutorialPlayBtn.addEventListener('click', togglePlayback);
-if (tutorialNewCaseBtn) tutorialNewCaseBtn.addEventListener('click', ()=> startNextTutorialCase());
-if (tutorialEndBtn) tutorialEndBtn.addEventListener('click', endTutorial);
-syncPlaybackButtons();
-updateModeButtons();
 </script>
 
 <script id="focal-seizure-sim">
@@ -4062,7 +2914,6 @@ updateModeButtons();
     };
     if (typeof window.updateSeizureActionButtons === 'function') window.updateSeizureActionButtons();
   }
-  window.armFocalSeizure = armFocalSeizure;
 
   function avgXY(list){
     let sx=0, sy=0, n=0;
