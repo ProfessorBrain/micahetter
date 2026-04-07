@@ -1,0 +1,4335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BRAIN-out!</title>
+  <link rel="icon" type="image/png" href="graphics/favicon.png">
+  <link rel="apple-touch-icon" href="graphics/favicon.png">
+  <style>
+    :root {
+      --bg: #061019;
+      --panel: linear-gradient(180deg, rgba(11, 20, 35, 0.92), rgba(7, 15, 25, 0.88));
+      --panel-2: rgba(8, 15, 26, 0.96);
+      --canvas-max-height: 600px;
+      --desktop-playfield-width: 960px;
+      --line: #79ddff;
+      --line-soft: rgba(121, 221, 255, 0.14);
+      --accent: #ff8469;
+      --accent-2: #f5cb73;
+      --mint: #8af4c1;
+      --text: #f4fbff;
+      --muted: #9db0bf;
+      --muted-2: #6f8294;
+      --shadow: 0 28px 60px rgba(0, 0, 0, 0.34);
+      --radius: 22px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top, rgba(93, 167, 255, 0.18), transparent 32%),
+        radial-gradient(circle at 82% 18%, rgba(255, 138, 107, 0.12), transparent 24%),
+        linear-gradient(180deg, #06111b 0%, #07111a 54%, #04080f 100%);
+      font-family: "Aptos", "Segoe UI", "Trebuchet MS", sans-serif;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.1;
+      background-image:
+        linear-gradient(rgba(134, 195, 255, 0.14) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(134, 195, 255, 0.14) 1px, transparent 1px);
+      background-size: 26px 26px;
+      mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.9), transparent);
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.07;
+      background-image: url("graphics/bg-blurred-small.png");
+      background-size: 320px 320px;
+      background-repeat: repeat;
+      mix-blend-mode: screen;
+    }
+
+    button,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      border: 0;
+      border-radius: 14px;
+      padding: 0.85rem 1rem;
+      color: var(--text);
+      background: linear-gradient(180deg, rgba(27, 55, 80, 0.95), rgba(17, 37, 57, 0.95));
+      box-shadow:
+        0 10px 24px rgba(0, 0, 0, 0.18),
+        inset 0 0 0 1px rgba(136, 220, 255, 0.14);
+      transition: transform 0.12s ease, filter 0.12s ease;
+    }
+
+    button:hover,
+    button:focus-visible {
+      transform: translateY(-1px);
+      filter: brightness(1.08);
+      outline: none;
+    }
+
+    button.primary {
+      background: linear-gradient(180deg, #ff886c, #ff6666);
+      box-shadow:
+        0 14px 28px rgba(255, 120, 102, 0.26),
+        inset 0 0 0 1px rgba(255, 238, 222, 0.18);
+    }
+
+    button.secondary {
+      background: linear-gradient(180deg, #1f8f79, #126d5f);
+    }
+
+    button.ghost {
+      background: rgba(15, 31, 49, 0.82);
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.52;
+      transform: none;
+      filter: none;
+    }
+
+    select {
+      width: 100%;
+      border: 1px solid rgba(124, 214, 255, 0.2);
+      border-radius: 14px;
+      padding: 0.82rem 0.9rem;
+      color: var(--text);
+      background: rgba(8, 17, 28, 0.96);
+    }
+
+    .app {
+      width: min(1280px, calc(100% - 24px));
+      margin: 0 auto;
+      padding: 18px 0 32px;
+    }
+
+    body[data-device="desktop"] {
+      overflow: hidden;
+    }
+
+    body[data-device="desktop"] .app {
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      padding: 10px 0 12px;
+    }
+
+    body[data-device="desktop"] .layout {
+      flex: 1;
+    }
+
+    body[data-device="desktop"] .hero {
+      width: min(100%, var(--desktop-playfield-width));
+      margin-left: auto;
+      margin-right: auto;
+      margin-bottom: 8px;
+    }
+
+    body[data-device="desktop"] .brand-logo {
+      max-width: min(34vw, 420px);
+      max-height: 88px;
+    }
+
+    body[data-device="desktop"] .game-column {
+      width: min(100%, var(--desktop-playfield-width));
+      margin: 0 auto;
+      gap: 8px;
+    }
+
+    .hero {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: center;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .title-wrap {
+      display: flex;
+      align-items: center;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .hero-actions button {
+      min-width: 108px;
+    }
+
+    #startButton,
+    #pauseButton,
+    #settingsButton {
+      min-width: clamp(148px, 14vw, 178px);
+      min-width: 0;
+      width: clamp(148px, 14vw, 178px);
+      aspect-ratio: 1086 / 335;
+      padding: 0;
+      border-radius: 0;
+      box-shadow: none;
+      color: transparent;
+    }
+
+    #startButton {
+      background: transparent url("graphics/play.png") center / 100% 100% no-repeat;
+      filter: drop-shadow(0 10px 18px rgba(24, 185, 104, 0.2));
+    }
+
+    #pauseButton {
+      background: transparent url("graphics/pause.png") center / 100% 100% no-repeat;
+      box-shadow: none;
+      filter: drop-shadow(0 10px 18px rgba(24, 185, 104, 0.2));
+    }
+
+    #settingsButton {
+      background: transparent url("graphics/settings.png") center / 100% 100% no-repeat;
+      box-shadow: none;
+      filter: drop-shadow(0 10px 18px rgba(190, 205, 214, 0.18));
+    }
+
+    #startButton:hover,
+    #startButton:focus-visible,
+    #settingsButton:hover,
+    #settingsButton:focus-visible,
+    #pauseButton:hover,
+    #pauseButton:focus-visible {
+      filter: brightness(1.05) drop-shadow(0 12px 20px rgba(32, 209, 124, 0.3));
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      gap: 8px;
+      padding: 0.38rem 0.62rem;
+      border-radius: 999px;
+      background: rgba(10, 25, 43, 0.8);
+      border: 1px solid rgba(121, 221, 255, 0.14);
+      color: #bfe9fb;
+      font-size: 0.74rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .brand-logo-wrap {
+      margin: 0;
+      line-height: 0;
+    }
+
+    .brand-logo {
+      display: block;
+      width: auto;
+      height: auto;
+      max-width: min(100%, 360px);
+      max-height: 72px;
+      min-width: 0;
+      filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.28));
+    }
+
+    .title-wrap p {
+      margin: 0;
+      max-width: 34ch;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.35;
+    }
+
+    .layout {
+      display: block;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid rgba(111, 196, 255, 0.1);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+
+    .sidebar {
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+      position: sticky;
+      top: 14px;
+    }
+
+    .sidebar section {
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(6, 14, 25, 0.48);
+      border: 1px solid rgba(121, 221, 255, 0.08);
+    }
+
+    .sidebar h2,
+    .shell-head h2,
+    .overlay-card h2 {
+      margin: 0 0 0.85rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.88rem;
+      color: #d4efff;
+    }
+
+    .setup-grid,
+    .tips,
+    .scores-list,
+    .stats-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 0.42rem;
+      color: var(--muted);
+      font-size: 0.74rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .sidebar .button-row button {
+      flex: 1 1 110px;
+    }
+
+    .shell-head .button-row button {
+      min-width: 90px;
+    }
+
+    .mini-note {
+      color: var(--muted-2);
+      line-height: 1.35;
+      font-size: 0.82rem;
+      margin: 2px 0 0;
+    }
+
+    .tips div,
+    .score-row,
+    .stat-row {
+      padding: 0.78rem 0.82rem;
+      background: rgba(8, 18, 31, 0.72);
+      border-radius: 14px;
+      border: 1px solid rgba(126, 214, 255, 0.08);
+    }
+
+    .tips {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .tips div {
+      display: grid;
+      gap: 5px;
+      min-height: 70px;
+    }
+
+    .tips strong {
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #d6f2ff;
+    }
+
+    .tips code {
+      width: fit-content;
+      padding: 0.14rem 0.4rem;
+      border-radius: 999px;
+      background: rgba(121, 221, 255, 0.08);
+      color: #f7fcff;
+      font-size: 0.84rem;
+    }
+
+    .tips span {
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    .score-row,
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .score-row strong,
+    .stat-row strong {
+      color: #ffdc81;
+    }
+
+    .game-column {
+      display: grid;
+      gap: 10px;
+    }
+
+    .hud {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .hud-chip {
+      position: relative;
+      overflow: hidden;
+      min-height: 66px;
+      padding: 10px 12px;
+      background:
+        linear-gradient(180deg, rgba(18, 35, 58, 0.92) 0%, rgba(8, 18, 31, 0.9) 100%);
+      border: 1px solid rgba(125, 214, 255, 0.24);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 3px;
+      box-shadow:
+        inset 0 0 0 1px rgba(169, 233, 255, 0.08),
+        inset 0 -10px 20px rgba(0, 0, 0, 0.18),
+        0 0 0 1px rgba(37, 112, 171, 0.22),
+        0 10px 24px rgba(2, 9, 18, 0.22),
+        0 0 28px rgba(72, 169, 255, 0.08);
+    }
+
+    .hud-chip::before {
+      content: "";
+      position: absolute;
+      inset: 1px;
+      border-radius: 15px;
+      border: 1px solid rgba(192, 239, 255, 0.08);
+      pointer-events: none;
+    }
+
+    .hud-chip::after {
+      content: "";
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      top: 1px;
+      height: 16px;
+      border-radius: 0 0 12px 12px;
+      background: linear-gradient(180deg, rgba(214, 245, 255, 0.18), rgba(214, 245, 255, 0));
+      opacity: 0.95;
+      pointer-events: none;
+    }
+
+    .hud-chip span {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: rgba(184, 221, 240, 0.88);
+      text-shadow: 0 0 10px rgba(111, 203, 255, 0.16);
+    }
+
+    .hud-chip strong {
+      font-size: 1rem;
+      color: #f7fcff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-shadow: 0 0 18px rgba(114, 210, 255, 0.18);
+    }
+
+    .hud-chip.effects {
+      border-color: rgba(108, 244, 196, 0.28);
+      box-shadow:
+        inset 0 0 0 1px rgba(192, 255, 225, 0.08),
+        inset 0 -10px 20px rgba(0, 0, 0, 0.18),
+        0 0 0 1px rgba(44, 128, 109, 0.22),
+        0 10px 24px rgba(2, 9, 18, 0.22),
+        0 0 28px rgba(108, 244, 196, 0.1);
+    }
+
+    .hud-chip.effects strong {
+      font-size: 0.84rem;
+      color: #99ffd2;
+      text-shadow: 0 0 18px rgba(108, 244, 196, 0.22);
+    }
+
+    .shell {
+      overflow: hidden;
+      position: relative;
+    }
+
+    .shell-head {
+      display: none;
+    }
+
+    .shell-head p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 34ch;
+      font-size: 0.88rem;
+      line-height: 1.3;
+    }
+
+    .canvas-wrap {
+      position: relative;
+      padding: 0;
+    }
+
+    body[data-device="desktop"] .canvas-wrap {
+      padding: 0;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 20px;
+      background: linear-gradient(180deg, #0b1727 0%, #08111d 100%);
+      border: 1px solid rgba(112, 211, 255, 0.14);
+      box-shadow:
+        inset 0 0 60px rgba(48, 141, 225, 0.14),
+        0 16px 36px rgba(0, 0, 0, 0.24);
+      image-rendering: pixelated;
+      touch-action: none;
+    }
+
+    body[data-device="desktop"] canvas {
+      width: 100%;
+      max-height: var(--canvas-max-height);
+    }
+
+    body[data-device="mobile"] canvas {
+      width: 100%;
+      max-height: none;
+    }
+
+    body[data-device="mobile"] .shell,
+    body[data-device="mobile"] .canvas-wrap {
+      overflow: visible;
+    }
+
+    body[data-device="mobile"] .hud {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 5px;
+    }
+
+    body[data-device="mobile"] .hud-chip {
+      min-height: 48px;
+      padding: 6px 7px;
+    }
+
+    body[data-device="mobile"] .hud-chip span {
+      font-size: 0.52rem;
+      letter-spacing: 0.1em;
+    }
+
+    body[data-device="mobile"] .hud-chip strong {
+      font-size: 0.82rem;
+    }
+
+    body[data-device="mobile"] .hud-chip.effects {
+      display: none;
+    }
+
+    body[data-device="mobile"] #questionOverlay {
+      position: fixed;
+      inset: var(--mobile-question-top, 152px) 6px calc(env(safe-area-inset-bottom, 0px) + 8px) 6px;
+      padding: 8px;
+      align-items: stretch;
+      border-radius: 24px;
+      z-index: 40;
+    }
+
+    body[data-device="mobile"] .question-card {
+      width: 100%;
+      max-height: none;
+      height: 100%;
+      padding: 12px 14px;
+      gap: 8px;
+    }
+
+    body[data-device="mobile"] .question-card .question-meta {
+      margin-bottom: 0;
+    }
+
+    body[data-device="mobile"] #questionStem {
+      font-size: 0.9rem;
+      line-height: 1.34;
+    }
+
+    body[data-device="mobile"] .question-card .answers {
+      gap: 8px;
+      margin-top: 0;
+    }
+
+    body[data-device="mobile"] .question-card .answers button {
+      min-height: 58px;
+      padding: 0.72rem 0.82rem;
+      font-size: 0.9rem;
+      line-height: 1.28;
+    }
+
+    body[data-device="mobile"] .question-card .explanation-box {
+      max-height: 96px;
+    }
+
+    .toast {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      max-width: min(360px, calc(100% - 48px));
+      padding: 0.84rem 0.95rem;
+      border-radius: 16px;
+      background: rgba(10, 22, 38, 0.94);
+      border: 1px solid rgba(124, 214, 255, 0.12);
+      box-shadow: var(--shadow);
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(-8px);
+      transition: opacity 0.18s ease, transform 0.18s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .toast strong {
+      display: block;
+      margin-bottom: 0.25rem;
+      color: #ffd786;
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(4, 9, 15, 0.68);
+      backdrop-filter: blur(8px);
+      border-radius: 20px;
+      z-index: 5;
+    }
+
+    .overlay.hidden,
+    .hidden {
+      display: none !important;
+    }
+
+    .overlay-card {
+      width: min(760px, 100%);
+      max-height: 100%;
+      overflow-y: auto;
+      background: var(--panel-2);
+      border: 1px solid rgba(125, 214, 255, 0.12);
+      border-radius: 22px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .settings-card {
+      width: min(540px, 100%);
+    }
+
+    .settings-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .audio-toggle-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .audio-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 0.9rem 1rem;
+      border-radius: 16px;
+      background: rgba(10, 24, 41, 0.72);
+      border: 1px solid rgba(124, 214, 255, 0.12);
+      box-shadow: inset 0 0 0 1px rgba(198, 238, 255, 0.04);
+    }
+
+    .audio-toggle-copy {
+      display: grid;
+      gap: 3px;
+    }
+
+    .audio-toggle-copy span {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted-2);
+    }
+
+    .audio-toggle-copy strong {
+      font-size: 0.95rem;
+      color: #f7fcff;
+      font-weight: 700;
+    }
+
+    .toggle-switch {
+      position: relative;
+      flex: 0 0 auto;
+      width: 58px;
+      height: 32px;
+    }
+
+    .toggle-switch input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      margin: 0;
+      cursor: pointer;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      border-radius: 999px;
+      background: rgba(33, 58, 80, 0.9);
+      border: 1px solid rgba(124, 214, 255, 0.18);
+      box-shadow: inset 0 0 0 1px rgba(204, 240, 255, 0.04);
+      transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .toggle-slider::before {
+      content: "";
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      top: 3px;
+      left: 3px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, #f2fbff, #a7d9ee);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.26);
+      transition: transform 0.2s ease;
+    }
+
+    .toggle-switch input:checked + .toggle-slider {
+      background: linear-gradient(180deg, rgba(39, 160, 118, 0.95), rgba(22, 109, 78, 0.95));
+      border-color: rgba(121, 255, 206, 0.36);
+      box-shadow:
+        inset 0 0 0 1px rgba(224, 255, 244, 0.08),
+        0 0 20px rgba(60, 214, 154, 0.18);
+    }
+
+    .toggle-switch input:checked + .toggle-slider::before {
+      transform: translateX(26px);
+    }
+
+    .toggle-switch input:focus-visible + .toggle-slider {
+      outline: 2px solid rgba(125, 214, 255, 0.4);
+      outline-offset: 2px;
+    }
+
+    .settings-atlas-row {
+      display: flex;
+      gap: 10px;
+      align-items: stretch;
+      flex-wrap: wrap;
+    }
+
+    .settings-atlas-card {
+      flex: 1 1 180px;
+      padding: 0.9rem 1rem;
+      border-radius: 16px;
+      background: rgba(10, 24, 41, 0.72);
+      border: 1px solid rgba(124, 214, 255, 0.08);
+      display: grid;
+      gap: 4px;
+    }
+
+    .settings-atlas-card span {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted-2);
+    }
+
+    .settings-atlas-card strong {
+      font-size: 1.05rem;
+      color: #f7fcff;
+    }
+
+    .overlay-card p,
+    .atlas-card p,
+    .review-card p {
+      color: #c4e7fb;
+      line-height: 1.5;
+    }
+
+    #questionOverlay {
+      inset: 10px;
+      padding: 12px;
+    }
+
+    .question-card {
+      width: min(860px, 100%);
+      max-height: 100%;
+      padding: 16px 18px;
+      display: grid;
+      gap: 10px;
+      overflow: hidden;
+    }
+
+    .question-card h2,
+    .question-card p {
+      margin: 0;
+    }
+
+    .question-card h2 {
+      font-size: 1.12rem;
+      line-height: 1.18;
+    }
+
+    .question-card .question-meta {
+      margin-bottom: 2px;
+    }
+
+    #questionStem {
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+
+    .question-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 0.34rem 0.62rem;
+      background: rgba(11, 37, 59, 0.58);
+      color: #bde8fd;
+      border: 1px solid rgba(125, 214, 255, 0.1);
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+    }
+
+    .answers,
+    .atlas-grid,
+    .review-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .question-card .answers {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 2px;
+    }
+
+    .answers button {
+      text-align: left;
+      border-radius: 16px;
+      padding: 0.95rem 1rem;
+      background: rgba(10, 27, 47, 0.76);
+      border: 1px solid rgba(123, 214, 255, 0.1);
+    }
+
+    .question-card .answers button {
+      min-height: 72px;
+      padding: 0.78rem 0.9rem;
+      display: flex;
+      align-items: center;
+      font-size: 0.93rem;
+      line-height: 1.35;
+    }
+
+    .answers button.correct {
+      background: rgba(21, 92, 61, 0.92);
+    }
+
+    .answers button.wrong {
+      background: rgba(116, 37, 47, 0.92);
+    }
+
+    .explanation-box {
+      margin-top: 14px;
+      padding: 0.95rem 1rem;
+      border-radius: 16px;
+      background: rgba(8, 21, 37, 0.95);
+      border: 1px solid rgba(126, 214, 255, 0.08);
+    }
+
+    .question-card .explanation-box {
+      margin-top: 0;
+      max-height: 128px;
+      overflow-y: auto;
+    }
+
+    .question-card .button-row {
+      margin-top: 0;
+      justify-content: flex-end;
+    }
+
+    .atlas-card,
+    .review-card {
+      border-radius: 16px;
+      padding: 1rem;
+      background: rgba(7, 19, 35, 0.7);
+      border: 1px solid rgba(127, 214, 255, 0.08);
+    }
+
+    .atlas-card.locked {
+      opacity: 0.68;
+    }
+
+    .atlas-card h3,
+    .review-card h3 {
+      margin: 0 0 0.55rem;
+      font-size: 1rem;
+    }
+
+    .atlas-summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .summary-card {
+      padding: 0.92rem;
+      border-radius: 16px;
+      background: rgba(10, 24, 41, 0.72);
+      border: 1px solid rgba(124, 214, 255, 0.08);
+    }
+
+    .summary-card strong {
+      display: block;
+      font-size: 1.3rem;
+      color: #ffd993;
+      margin-top: 0.15rem;
+    }
+
+    .mobile-controls {
+      display: none;
+      gap: 8px;
+      padding: 0 14px 14px;
+      flex-wrap: wrap;
+    }
+
+    body[data-device="mobile"] .mobile-controls {
+      display: none;
+    }
+
+    .mobile-controls button {
+      flex: 1 1 120px;
+      min-height: 54px;
+      border-radius: 16px;
+      background: rgba(12, 29, 47, 0.94);
+    }
+
+    .footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      align-items: center;
+      margin-top: 10px;
+      color: var(--muted-2);
+      font-size: 0.82rem;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 1080px) {
+      .hud {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 760px) {
+      .app {
+        width: min(100% - 12px, 100%);
+        padding-top: 12px;
+      }
+
+      .hero {
+        padding: 0 4px;
+        justify-content: center;
+      }
+
+      .hero-actions {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .brand-logo {
+        max-width: min(100%, 320px);
+        max-height: 56px;
+      }
+
+      #startButton,
+      #pauseButton,
+      #settingsButton {
+        width: 150px;
+      }
+
+      #questionOverlay {
+        inset: 8px;
+        padding: 10px;
+      }
+
+      .question-card {
+        padding: 14px;
+        overflow-y: auto;
+      }
+
+      .question-card .answers {
+        grid-template-columns: 1fr;
+      }
+
+      .question-card .answers button {
+        min-height: 64px;
+      }
+
+      .hud {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+      }
+
+      .hud-chip {
+        min-height: 52px;
+        padding: 7px 9px;
+        border-radius: 14px;
+      }
+
+      .hud-chip::before {
+        border-radius: 13px;
+      }
+
+      .hud-chip::after {
+        left: 10px;
+        right: 10px;
+        height: 10px;
+      }
+
+      .hud-chip span {
+        font-size: 0.56rem;
+        letter-spacing: 0.11em;
+      }
+
+      .hud-chip strong {
+        font-size: 0.88rem;
+      }
+
+      .hud-chip.effects {
+        grid-column: span 2;
+      }
+
+      .hud-chip.effects strong {
+        font-size: 0.74rem;
+      }
+
+      .settings-atlas-row {
+        flex-direction: column;
+      }
+
+      .audio-toggle-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .atlas-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section class="hero">
+      <div class="title-wrap">
+        <h1 class="brand-logo-wrap">
+          <img class="brand-logo" src="graphics/logo.png" alt="BRAIN-out!">
+        </h1>
+      </div>
+      <div class="hero-actions">
+        <button class="primary" id="startButton" aria-label="Play">
+          <span class="visually-hidden">Play</span>
+        </button>
+        <button class="secondary hidden" id="pauseButton" aria-label="Pause">
+          <span class="visually-hidden">Pause</span>
+        </button>
+        <button class="ghost" id="settingsButton" aria-label="Settings">
+          <span class="visually-hidden">Settings</span>
+        </button>
+      </div>
+    </section>
+
+    <main class="layout">
+      <section class="game-column">
+        <div class="hud">
+          <div class="hud-chip"><span>Stage</span><strong id="hudStage">Ready</strong></div>
+          <div class="hud-chip"><span>Lives</span><strong id="hudLives">3</strong></div>
+          <div class="hud-chip"><span>Score</span><strong id="hudScore">0</strong></div>
+          <div class="hud-chip"><span>Combo</span><strong id="hudCombo">x0</strong></div>
+          <div class="hud-chip effects"><span>Powerup</span><strong id="hudEffects">None</strong></div>
+        </div>
+
+        <div class="shell panel">
+          <div class="shell-head">
+            <div>
+              <h2 id="shellTitle">Ready Room</h2>
+              <p id="shellSubtitle">Open Settings to change mode, tier, and topic.</p>
+            </div>
+          </div>
+
+          <div class="canvas-wrap">
+            <canvas id="gameCanvas" width="960" height="600" aria-label="BRAIN-out game area"></canvas>
+            <div class="toast" id="toast"></div>
+
+            <div class="overlay hidden" id="settingsOverlay">
+              <div class="overlay-card settings-card">
+                <div class="button-row" style="justify-content: space-between; align-items: center;">
+                  <h2>Settings</h2>
+                  <button class="ghost" id="closeSettingsButton">Close</button>
+                </div>
+                <div class="settings-grid">
+                  <div class="field">
+                    <label for="modeSelect">Mode</label>
+                    <select id="modeSelect">
+                      <option value="campaign">Campaign</option>
+                      <option value="endless">Endless</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="difficultySelect">Question Tier</label>
+                    <select id="difficultySelect">
+                      <option value="student">Student</option>
+                      <option value="resident">Resident</option>
+                      <option value="attending">Attending</option>
+                      <option value="mixed">Mixed</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="topicSelect">Topic</label>
+                    <select id="topicSelect">
+                      <option value="all">All boards topics</option>
+                      <option value="stroke">Stroke</option>
+                      <option value="neuroanatomy">Neuroanatomy</option>
+                      <option value="epilepsy">Epilepsy</option>
+                      <option value="movement">Movement</option>
+                      <option value="neuromuscular">Neuromuscular</option>
+                      <option value="neurocritical">Neurocritical care</option>
+                      <option value="localization">Localization</option>
+                      <option value="imaging">Imaging</option>
+                    </select>
+                  </div>
+                  <div class="audio-toggle-grid">
+                    <label class="audio-toggle" for="sfxToggle">
+                      <span class="audio-toggle-copy">
+                        <strong>Sound Effects</strong>
+                      </span>
+                      <span class="toggle-switch">
+                        <input type="checkbox" id="sfxToggle" checked>
+                        <span class="toggle-slider" aria-hidden="true"></span>
+                      </span>
+                    </label>
+                    <label class="audio-toggle" for="musicToggle">
+                      <span class="audio-toggle-copy">
+                        <strong>Music</strong>
+                      </span>
+                      <span class="toggle-switch">
+                        <input type="checkbox" id="musicToggle" checked>
+                        <span class="toggle-slider" aria-hidden="true"></span>
+                      </span>
+                    </label>
+                  </div>
+                  <div class="settings-atlas-row">
+                    <div class="settings-atlas-card">
+                      <span>Atlas Progress</span>
+                      <strong id="settingsAtlasProgress">0 / 20</strong>
+                    </div>
+                    <div class="button-row">
+                      <button class="ghost" id="openAtlasButton">Open Atlas</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="overlay hidden" id="questionOverlay">
+              <div class="overlay-card question-card">
+                <div class="question-meta">
+                  <span class="pill" id="questionTier">Student</span>
+                  <span class="pill" id="questionTopic">Stroke</span>
+                  <span class="pill">Quiz Brick</span>
+                </div>
+                <h2 id="questionPrompt">Question prompt</h2>
+                <p id="questionStem"></p>
+                <div class="answers" id="questionAnswers"></div>
+                <div class="explanation-box hidden" id="questionExplanation"></div>
+                <div class="button-row" id="questionButtons">
+                  <button class="ghost" id="skipQuestionButton">Skip</button>
+                  <button class="primary hidden" id="continueQuestionButton">Resume Run</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="overlay hidden" id="atlasOverlay">
+              <div class="overlay-card">
+                <div class="button-row" style="justify-content: space-between; align-items: center;">
+                  <h2>Atlas</h2>
+                  <button class="ghost" id="closeAtlasButton">Close</button>
+                </div>
+                <p>Correct answers unlock quick-reference cards.</p>
+                <div class="atlas-summary" id="atlasSummary"></div>
+                <div class="atlas-grid" id="atlasEntries"></div>
+              </div>
+            </div>
+
+            <div class="overlay hidden" id="reviewOverlay">
+              <div class="overlay-card">
+                <h2 id="reviewTitle">Run Complete</h2>
+                <p id="reviewSummary"></p>
+                <div class="stats-list" id="reviewStats"></div>
+                <div class="review-list" id="reviewMissed"></div>
+                <div class="button-row" style="margin-top: 16px;">
+                  <button class="primary" id="playAgainButton">Play Again</button>
+                  <button class="ghost" id="closeReviewButton">Close Review</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mobile-controls">
+            <button id="mobileLeft">Left</button>
+            <button id="mobileLaunch">Launch</button>
+            <button id="mobileRight">Right</button>
+            <button id="mobileFire">Pulse</button>
+          </div>
+        </div>
+
+        <footer class="footer">
+          <span>by micah etter</span>
+        </footer>
+      </section>
+    </main>
+  </div>
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    ctx.imageSmoothingEnabled = false;
+
+    const ui = {
+      modeSelect: document.getElementById("modeSelect"),
+      difficultySelect: document.getElementById("difficultySelect"),
+      topicSelect: document.getElementById("topicSelect"),
+      sfxToggle: document.getElementById("sfxToggle"),
+      musicToggle: document.getElementById("musicToggle"),
+      startButton: document.getElementById("startButton"),
+      pauseButton: document.getElementById("pauseButton"),
+      settingsButton: document.getElementById("settingsButton"),
+      settingsOverlay: document.getElementById("settingsOverlay"),
+      closeSettingsButton: document.getElementById("closeSettingsButton"),
+      openAtlasButton: document.getElementById("openAtlasButton"),
+      closeAtlasButton: document.getElementById("closeAtlasButton"),
+      closeReviewButton: document.getElementById("closeReviewButton"),
+      playAgainButton: document.getElementById("playAgainButton"),
+      skipQuestionButton: document.getElementById("skipQuestionButton"),
+      continueQuestionButton: document.getElementById("continueQuestionButton"),
+      questionOverlay: document.getElementById("questionOverlay"),
+      atlasOverlay: document.getElementById("atlasOverlay"),
+      reviewOverlay: document.getElementById("reviewOverlay"),
+      questionTier: document.getElementById("questionTier"),
+      questionTopic: document.getElementById("questionTopic"),
+      questionPrompt: document.getElementById("questionPrompt"),
+      questionStem: document.getElementById("questionStem"),
+      questionAnswers: document.getElementById("questionAnswers"),
+      questionExplanation: document.getElementById("questionExplanation"),
+      highScores: document.getElementById("highScores"),
+      settingsAtlasProgress: document.getElementById("settingsAtlasProgress"),
+      atlasSummary: document.getElementById("atlasSummary"),
+      atlasEntries: document.getElementById("atlasEntries"),
+      reviewTitle: document.getElementById("reviewTitle"),
+      reviewSummary: document.getElementById("reviewSummary"),
+      reviewStats: document.getElementById("reviewStats"),
+      reviewMissed: document.getElementById("reviewMissed"),
+      toast: document.getElementById("toast"),
+      hudStage: document.getElementById("hudStage"),
+      hudLives: document.getElementById("hudLives"),
+      hudScore: document.getElementById("hudScore"),
+      hudCombo: document.getElementById("hudCombo"),
+      hudEffects: document.getElementById("hudEffects"),
+      shellTitle: document.getElementById("shellTitle"),
+      shellSubtitle: document.getElementById("shellSubtitle"),
+      mobileLeft: document.getElementById("mobileLeft"),
+      mobileRight: document.getElementById("mobileRight"),
+      mobileLaunch: document.getElementById("mobileLaunch"),
+      mobileFire: document.getElementById("mobileFire"),
+    };
+
+    const STORAGE_KEYS = {
+      highScores: "brainout-highscores-v1",
+      atlas: "brainout-knowledge-atlas-v1",
+      audio: "brainout-audio-v1",
+    };
+
+    const CANVAS = { width: 960, height: 600 };
+    const BRICK = { width: 88, height: 33, gap: 6 };
+    const QUIZ_BRICK_MULTIPLIER = 6;
+    const CAMPAIGN_QUIZ_START_MULTIPLIER = 4;
+    const CAMPAIGN_QUIZ_STAGE_STEP = 0.5;
+    const QUIZ_REFRACTORY_MS = 3000;
+
+    const SPRITE_PATHS = {
+      background: "graphics/bg-blurred-small.png",
+      ball: "graphics/ball.png",
+      paddle: "graphics/paddle.png",
+      brickRegular: "graphics/brick-regular.png",
+      brickDense: "graphics/brick-dense.png",
+      brickPower: "graphics/brick-powerup.png",
+      brickQuiz: "graphics/brick-quiz.png",
+      brickBarrier: "graphics/brick-barrier.png",
+    };
+
+    const SOUND_PATHS = {
+      brickBreak: "audio/boom.mp3",
+      contactPing: "audio/ping.mp3",
+      loseLife: "audio/lose.wav",
+      successCue: "audio/success.mp3",
+    };
+    const MUSIC_PATH = "audio/bgmusic.mp3";
+
+    const sprites = {};
+    const audioPools = {};
+    let musicTrack = null;
+
+    const TOPICS = {
+      all: { label: "All boards topics", color: "#8bdcff" },
+      stroke: { label: "Stroke", color: "#ff9b7f" },
+      neuroanatomy: { label: "Neuroanatomy", color: "#a7ec7a" },
+      epilepsy: { label: "Epilepsy", color: "#ffd36f" },
+      movement: { label: "Movement", color: "#f6a7ff" },
+      neuromuscular: { label: "Neuromuscular", color: "#8ff4dc" },
+      neurocritical: { label: "Neurocritical care", color: "#ff7878" },
+      localization: { label: "Localization", color: "#8dc6ff" },
+      imaging: { label: "Imaging", color: "#c1d1ff" },
+    };
+
+    const DIFFICULTIES = {
+      student: { label: "Student", color: "#7dd5ff" },
+      resident: { label: "Resident", color: "#ffd66e" },
+      attending: { label: "Attending", color: "#ff8fa2" },
+      mixed: { label: "Mixed", color: "#aef2cb" },
+    };
+
+    const POWER_UPS = {
+      wide: { name: "Myelin Sheath", color: "#74f4b5", symbol: "W" },
+      multiball: { name: "Corpus Clone", color: "#ffe072", symbol: "M" },
+      slow: { name: "GABA Drip", color: "#98c3ff", symbol: "S" },
+      laser: { name: "TMS Pulse", color: "#ff8fa2", symbol: "L" },
+      sticky: { name: "Astroglia Gel", color: "#d8b6ff", symbol: "T" },
+      life: { name: "Extra Life", color: "#ffb06a", symbol: "+" },
+      shield: { name: "Dura Shield", color: "#8ffff8", symbol: "D" },
+    };
+
+    const CAMPAIGN_STAGES = [
+      {
+        name: "Cortex Circuit",
+        subtitle: "Brain silhouette. Split-hemisphere lanes.",
+        palette: ["#72d7ff", "#8ef7b5", "#ffd26c"],
+        pattern: ["..NNNNNN..", ".NNNNNNNN.", "NNNQNNQNNN", "NNNNNNNNNN", ".NNDNNNDN.", "..NNDDNN.."],
+      },
+      {
+        name: "Brainstem Barrage",
+        subtitle: "Face mask layout. Midline pressure.",
+        palette: ["#ffb570", "#ff7a7a", "#6ec3ff"],
+        pattern: ["..NNNNNN..", ".NNNNNNNN.", "NNQNNNNQNN", "NNNNDDNNNN", "..PPNNPP..", "...NNNN..."],
+      },
+      {
+        name: "Spinal Surge",
+        subtitle: "Vertebral stack. Tight central tracts.",
+        palette: ["#96f09d", "#73d2ff", "#ffd779"],
+        pattern: ["...NDDN...", "..NDDDDN..", "..NQNNQN..", "..NDDDDN..", "..NPNNNP..", "...NDDN..."],
+      },
+      {
+        name: "Peripheral Pulse",
+        subtitle: "Neuron arbor. Branches with bonus drops.",
+        palette: ["#8ff4dc", "#c3a7ff", "#ffa9a0"],
+        pattern: ["...NNNN...", "..NQNNQN..", ".NNNNNNNN.", "..PNDDNP..", "...NDDN...", "...NDDN..."],
+      },
+      {
+        name: "Stroke Code Showdown",
+        subtitle: "Clot-ring arena. Boss fight.",
+        palette: ["#ff8e84", "#ffd06e", "#8bd7ff"],
+        pattern: ["..BBDDDB..", ".BQDDDDQB.", "BBDDDDDDBB", ".BBDPPDDB.", "..BBPPBB.."],
+        boss: true,
+        bossName: "The Great Vessel",
+      },
+    ];
+
+    const QUESTION_BANK = [
+      {
+        id: "s1",
+        difficulty: "student",
+        topic: "stroke",
+        prompt: "Dominant MCA stroke",
+        stem: "An infarct in the dominant middle cerebral artery territory most classically causes which deficit?",
+        choices: ["Aphasia", "Resting tremor", "Isolated vertical diplopia", "Pure truncal ataxia"],
+        answer: 0,
+        explanation: "The dominant MCA territory supplies classic language cortex, so aphasia is a hallmark cortical deficit.",
+      },
+      {
+        id: "s2",
+        difficulty: "student",
+        topic: "neuroanatomy",
+        prompt: "Third nerve pattern",
+        stem: "A pupil-involving third nerve palsy most classically leaves the eye in which position?",
+        choices: ["Down and out", "Internuclear ophthalmoplegia", "Pure vertical gaze palsy", "Conjugate left gaze deviation"],
+        answer: 0,
+        explanation: "Oculomotor palsy removes most adduction, elevation, and depression, leaving the lateral rectus and superior oblique relatively unopposed.",
+      },
+      {
+        id: "s3",
+        difficulty: "student",
+        topic: "movement",
+        prompt: "Parkinsonism core sign",
+        stem: "Which motor feature is required for the diagnosis of parkinsonism?",
+        choices: ["Bradykinesia", "Chorea", "Myoclonus", "Asterixis"],
+        answer: 0,
+        explanation: "Bradykinesia is the anchor sign of parkinsonism and is typically paired with rigidity, tremor, or postural instability.",
+      },
+      {
+        id: "s4",
+        difficulty: "student",
+        topic: "epilepsy",
+        prompt: "Deja vu aura",
+        stem: "A sudden deja vu aura before impaired awareness most strongly suggests seizure onset in which lobe?",
+        choices: ["Temporal", "Occipital", "Frontal motor strip", "Parietal sensory cortex only"],
+        answer: 0,
+        explanation: "Mesial temporal structures are classic for experiential auras such as deja vu.",
+      },
+      {
+        id: "s5",
+        difficulty: "student",
+        topic: "localization",
+        prompt: "Brown-Sequard pattern",
+        stem: "Brown-Sequard syndrome classically causes which combination below the lesion?",
+        choices: [
+          "Ipsilateral weakness with contralateral pain and temperature loss",
+          "Bilateral flaccid paralysis only",
+          "Contralateral weakness with ipsilateral pain loss",
+          "Isolated cranial neuropathy without long-tract signs"
+        ],
+        answer: 0,
+        explanation: "Hemisection hits ipsilateral corticospinal and dorsal column pathways plus crossing spinothalamic fibers from the opposite side.",
+      },
+      {
+        id: "s6",
+        difficulty: "student",
+        topic: "neurocritical",
+        prompt: "Thunderclap warning",
+        stem: "Thunderclap headache with neck stiffness should raise immediate concern for which diagnosis?",
+        choices: ["Subarachnoid hemorrhage", "Benign positional vertigo", "Tension headache", "Bell palsy"],
+        answer: 0,
+        explanation: "Sudden maximal headache with meningismus is a classic red flag for subarachnoid hemorrhage.",
+      },
+      {
+        id: "s7",
+        difficulty: "student",
+        topic: "neuromuscular",
+        prompt: "GBS CSF clue",
+        stem: "What CSF pattern is classically seen in Guillain-Barre syndrome?",
+        choices: ["High protein with few cells", "Marked neutrophilic pleocytosis", "Low protein and low glucose", "Numerous oligoclonal bands only"],
+        answer: 0,
+        explanation: "Albuminocytologic dissociation means elevated protein with a relatively normal cell count.",
+      },
+      {
+        id: "s8",
+        difficulty: "student",
+        topic: "stroke",
+        prompt: "ACA weakness pattern",
+        stem: "An anterior cerebral artery infarct most classically causes weakness that is greatest in the:",
+        choices: ["Contralateral leg", "Contralateral face", "Ipsilateral arm only", "Both pupils equally"],
+        answer: 0,
+        explanation: "ACA territory prominently involves the medial frontal motor cortex that represents the leg.",
+      },
+      {
+        id: "s9",
+        difficulty: "student",
+        topic: "epilepsy",
+        prompt: "Absence EEG",
+        stem: "The classic EEG pattern in childhood absence epilepsy is:",
+        choices: ["Generalized 3-Hz spike-and-wave", "Focal temporal slowing only", "Periodic lateralized epileptiform discharges", "Burst suppression"],
+        answer: 0,
+        explanation: "Typical absence seizures are associated with generalized 3-Hz spike-and-wave discharges.",
+      },
+      {
+        id: "s10",
+        difficulty: "student",
+        topic: "imaging",
+        prompt: "Epidural shape",
+        stem: "On head CT, an epidural hematoma most often appears as a:",
+        choices: ["Biconvex lens-shaped collection", "Crescent-shaped extra-axial collection", "Diffuse sulcal hyperintensity only", "Ring-enhancing intraparenchymal lesion"],
+        answer: 0,
+        explanation: "Epidural blood is classically lentiform because it is limited by suture lines.",
+      },
+      {
+        id: "s11",
+        difficulty: "student",
+        topic: "localization",
+        prompt: "Chiasm lesion",
+        stem: "A lesion compressing the optic chiasm most classically causes:",
+        choices: ["Bitemporal hemianopia", "Monocular central scotoma only", "Homonymous hemianopia", "Internuclear ophthalmoplegia"],
+        answer: 0,
+        explanation: "Crossing nasal retinal fibers are injured at the chiasm, producing bitemporal field loss.",
+      },
+      {
+        id: "s12",
+        difficulty: "student",
+        topic: "movement",
+        prompt: "Essential tremor clue",
+        stem: "Which feature best fits essential tremor rather than Parkinson disease?",
+        choices: ["Action tremor during posture or movement", "Marked bradykinesia at onset", "Rest tremor with cogwheel rigidity only", "Vertical gaze palsy"],
+        answer: 0,
+        explanation: "Essential tremor is typically an action or postural tremor, not a classic rest tremor syndrome.",
+      },
+      {
+        id: "s13",
+        difficulty: "student",
+        topic: "neurocritical",
+        prompt: "Uncal herniation clue",
+        stem: "A newly dilated unreactive pupil in a patient with mass effect suggests compression of which structure?",
+        choices: ["Third cranial nerve", "Facial nerve", "Abducens nucleus", "Optic tract only"],
+        answer: 0,
+        explanation: "Uncal herniation classically compresses CN III, producing a blown pupil.",
+      },
+      {
+        id: "s14",
+        difficulty: "student",
+        topic: "neuromuscular",
+        prompt: "Lambert-Eaton pattern",
+        stem: "Which bedside pattern is more typical of Lambert-Eaton myasthenic syndrome than myasthenia gravis?",
+        choices: ["Strength improving briefly with repeated effort", "Fatigable ptosis worsening through the day", "Isolated sensory level", "Resting tremor with masked facies"],
+        answer: 0,
+        explanation: "Lambert-Eaton often shows facilitation, with transient improvement after repeated activation.",
+      },
+      {
+        id: "r1",
+        difficulty: "resident",
+        topic: "stroke",
+        prompt: "Wallenberg vessel",
+        stem: "Lateral medullary syndrome is most often caused by occlusion of which vessel?",
+        choices: ["Posterior inferior cerebellar artery", "Anterior spinal artery", "Middle cerebral artery", "Superior cerebellar artery"],
+        answer: 0,
+        explanation: "Wallenberg syndrome is classically tied to PICA territory ischemia.",
+      },
+      {
+        id: "r2",
+        difficulty: "resident",
+        topic: "neuromuscular",
+        prompt: "Fatigable weakness",
+        stem: "Which feature best supports myasthenia gravis over a primary muscle disease?",
+        choices: ["Weakness that worsens with sustained use", "Early severe sensory loss", "Marked fasciculations with hyperreflexia", "Resting tremor with cogwheeling"],
+        answer: 0,
+        explanation: "Myasthenia gravis causes fluctuating, fatigable weakness, often involving ocular or bulbar muscles.",
+      },
+      {
+        id: "r3",
+        difficulty: "resident",
+        topic: "imaging",
+        prompt: "Hyperacute stroke imaging",
+        stem: "In suspected hyperacute stroke, the initial brain imaging study used to exclude hemorrhage is most commonly:",
+        choices: ["Noncontrast head CT", "Brain biopsy", "Routine EEG", "Cervical spine MRI"],
+        answer: 0,
+        explanation: "Noncontrast head CT is fast and reliable for detecting acute hemorrhage in the emergent setting.",
+      },
+      {
+        id: "r4",
+        difficulty: "resident",
+        topic: "neurocritical",
+        prompt: "Cushing triad",
+        stem: "Which set of findings makes up Cushing triad in rising intracranial pressure?",
+        choices: ["Hypertension, bradycardia, irregular respirations", "Fever, tachycardia, hypotension", "Ptosis, miosis, anhidrosis", "Diplopia, tinnitus, vertigo"],
+        answer: 0,
+        explanation: "Cushing triad reflects brainstem compression and is a late sign of dangerous intracranial hypertension.",
+      },
+      {
+        id: "r5",
+        difficulty: "resident",
+        topic: "localization",
+        prompt: "Horner syndrome",
+        stem: "Which triad is classic for Horner syndrome?",
+        choices: ["Ptosis, miosis, anhidrosis", "Ptosis, mydriasis, proptosis", "Dysarthria, ataxia, nystagmus", "Aphasia, neglect, apraxia"],
+        answer: 0,
+        explanation: "Loss of sympathetic input produces ptosis, miosis, and decreased sweating on the affected side.",
+      },
+      {
+        id: "r6",
+        difficulty: "resident",
+        topic: "neuromuscular",
+        prompt: "Botulism mechanism",
+        stem: "Botulinum toxin causes paralysis primarily by which mechanism?",
+        choices: ["Blocking presynaptic acetylcholine release", "Destroying postsynaptic acetylcholine receptors", "Demyelinating central white matter tracts", "Increasing dopamine turnover in the basal ganglia"],
+        answer: 0,
+        explanation: "Botulinum toxin prevents acetylcholine vesicle release at the neuromuscular junction, causing descending weakness.",
+      },
+      {
+        id: "r7",
+        difficulty: "resident",
+        topic: "stroke",
+        prompt: "AICA clues",
+        stem: "Ipsilateral facial weakness, decreased lacrimation, hearing loss, and vertigo suggest infarction in which vascular territory?",
+        choices: ["Anterior inferior cerebellar artery", "Posterior inferior cerebellar artery", "Anterior cerebral artery", "Basilar tip only"],
+        answer: 0,
+        explanation: "AICA strokes can involve the facial nerve and labyrinthine structures, so facial weakness and hearing symptoms are big clues.",
+      },
+      {
+        id: "r8",
+        difficulty: "resident",
+        topic: "epilepsy",
+        prompt: "Status first step",
+        stem: "What is the usual first-line medication class for convulsive status epilepticus?",
+        choices: ["Benzodiazepines", "Acetazolamide", "Dopamine agonists", "Carbonic anhydrase inhibitors only for chronic use"],
+        answer: 0,
+        explanation: "A benzodiazepine is the classic first emergent treatment for active convulsive status epilepticus.",
+      },
+      {
+        id: "r9",
+        difficulty: "resident",
+        topic: "localization",
+        prompt: "INO tract",
+        stem: "Internuclear ophthalmoplegia localizes to a lesion in the:",
+        choices: ["Medial longitudinal fasciculus", "Optic chiasm", "Caudate nucleus", "Cerebellar flocculus only"],
+        answer: 0,
+        explanation: "INO is the classic sign of medial longitudinal fasciculus dysfunction.",
+      },
+      {
+        id: "r10",
+        difficulty: "resident",
+        topic: "imaging",
+        prompt: "Subdural shape",
+        stem: "A subdural hematoma most typically appears on CT as a:",
+        choices: ["Crescent-shaped extra-axial collection", "Biconvex lens-shaped collection", "Midline pontine hyperdensity only", "Symmetric basal ganglia calcification"],
+        answer: 0,
+        explanation: "Subdural blood tracks along the dural surface, producing a crescentic appearance.",
+      },
+      {
+        id: "r11",
+        difficulty: "resident",
+        topic: "stroke",
+        prompt: "PCA deficit",
+        stem: "Posterior cerebral artery infarction most classically produces which deficit?",
+        choices: ["Contralateral homonymous hemianopia", "Ipsilateral peripheral facial palsy", "Pure leg weakness only", "Bilateral hearing loss"],
+        answer: 0,
+        explanation: "Occipital cortex ischemia in PCA stroke classically causes contralateral homonymous visual field loss.",
+      },
+      {
+        id: "r12",
+        difficulty: "resident",
+        topic: "neurocritical",
+        prompt: "SAH complication window",
+        stem: "After aneurysmal subarachnoid hemorrhage, delayed neurologic worsening several days later should raise concern for:",
+        choices: ["Cerebral vasospasm", "Primary myopathy", "Normal pressure hydrocephalus only", "Peripheral entrapment neuropathy"],
+        answer: 0,
+        explanation: "Delayed vasospasm is a classic complication in the days following aneurysmal SAH.",
+      },
+      {
+        id: "r13",
+        difficulty: "resident",
+        topic: "neuroanatomy",
+        prompt: "Hemiballismus nucleus",
+        stem: "Hemiballismus is classically caused by a lesion of the:",
+        choices: ["Subthalamic nucleus", "Dentate nucleus", "Mammillary body", "Inferior olive"],
+        answer: 0,
+        explanation: "Damage to the subthalamic nucleus disinhibits movement and can produce violent flinging movements.",
+      },
+      {
+        id: "r14",
+        difficulty: "resident",
+        topic: "movement",
+        prompt: "Essential tremor treatment",
+        stem: "A common first-line symptomatic treatment for essential tremor is:",
+        choices: ["Propranolol", "Levodopa-carbidopa", "Edrophonium", "Acetazolamide for all cases"],
+        answer: 0,
+        explanation: "Propranolol is a standard first-line symptomatic therapy for essential tremor.",
+      },
+      {
+        id: "p1",
+        difficulty: "attending",
+        topic: "stroke",
+        prompt: "Pure motor lacune",
+        stem: "A pure motor lacunar stroke without cortical signs most classically localizes to the:",
+        choices: ["Posterior limb of the internal capsule", "Occipital pole", "Lateral temporal neocortex", "Cerebellar vermis"],
+        answer: 0,
+        explanation: "Small-vessel disease in the posterior limb of the internal capsule is a classic cause of pure motor hemiparesis.",
+      },
+      {
+        id: "p2",
+        difficulty: "attending",
+        topic: "neuroanatomy",
+        prompt: "Weber localization",
+        stem: "Ipsilateral third nerve palsy with contralateral hemiparesis localizes most strongly to which structure?",
+        choices: ["Midbrain cerebral peduncle", "Lateral medulla", "Pontine tegmentum", "Cervical dorsal columns"],
+        answer: 0,
+        explanation: "That crossed finding pattern is classic Weber syndrome from ventral midbrain involvement.",
+      },
+      {
+        id: "p3",
+        difficulty: "attending",
+        topic: "localization",
+        prompt: "Cape-like sensory loss",
+        stem: "Bilateral suspended cape-like loss of pain and temperature with hand weakness most strongly suggests:",
+        choices: ["Syringomyelia", "Tabes dorsalis", "Peripheral neuropathy", "Pure cerebellar degeneration"],
+        answer: 0,
+        explanation: "A central cord cavity can interrupt crossing spinothalamic fibers while affecting anterior horn cells in the hands.",
+      },
+      {
+        id: "p4",
+        difficulty: "attending",
+        topic: "neuromuscular",
+        prompt: "Foot drop localization",
+        stem: "Foot drop with weak eversion but preserved inversion favors which localization?",
+        choices: ["Common peroneal neuropathy", "L5 radiculopathy", "Sciatic neuropathy", "Myasthenia gravis"],
+        answer: 0,
+        explanation: "Preserved inversion points away from L5 root involvement and toward a more distal common peroneal lesion.",
+      },
+      {
+        id: "p5",
+        difficulty: "attending",
+        topic: "neurocritical",
+        prompt: "Triphasic waves",
+        stem: "Triphasic waves on EEG most classically suggest which broad process?",
+        choices: ["Metabolic or toxic encephalopathy", "Primary demyelinating relapse", "Vestibular neuritis", "Isolated peripheral nerve entrapment"],
+        answer: 0,
+        explanation: "Triphasic waves are classically associated with diffuse metabolic or toxic encephalopathy rather than a focal epileptic syndrome.",
+      },
+      {
+        id: "p6",
+        difficulty: "attending",
+        topic: "imaging",
+        prompt: "Earliest MRI sequence",
+        stem: "Which MRI sequence is most sensitive for early acute ischemic stroke?",
+        choices: ["Diffusion-weighted imaging", "Routine T1 only", "Gradient echo for bone detail", "Cine CSF flow imaging"],
+        answer: 0,
+        explanation: "Diffusion-weighted imaging detects restricted diffusion early in acute cerebral ischemia.",
+      },
+      {
+        id: "p7",
+        difficulty: "attending",
+        topic: "stroke",
+        prompt: "Medial medullary triad",
+        stem: "Contralateral arm and leg weakness with contralateral vibration loss plus ipsilateral tongue weakness best localizes to the:",
+        choices: ["Medial medulla", "Lateral pons", "Occipital cortex", "High cervical sympathetic chain"],
+        answer: 0,
+        explanation: "That crossed long-tract and hypoglossal pattern is classic for medial medullary involvement.",
+      },
+      {
+        id: "p8",
+        difficulty: "attending",
+        topic: "epilepsy",
+        prompt: "Todd paralysis",
+        stem: "Transient focal weakness immediately after a focal seizure is called:",
+        choices: ["Todd paralysis", "Astasia-abasia", "Lhermitte phenomenon", "Apraxia"],
+        answer: 0,
+        explanation: "Postictal focal weakness is the classic Todd paralysis phenomenon.",
+      },
+      {
+        id: "p9",
+        difficulty: "attending",
+        topic: "neurocritical",
+        prompt: "Rapid sodium correction",
+        stem: "Overly rapid correction of chronic hyponatremia risks which neurologic complication?",
+        choices: ["Osmotic demyelination syndrome", "Normal pressure hydrocephalus", "Idiopathic intracranial hypertension", "Trigeminal neuralgia"],
+        answer: 0,
+        explanation: "Rapid sodium correction can injure myelin, especially in the pons, causing osmotic demyelination syndrome.",
+      },
+      {
+        id: "p10",
+        difficulty: "attending",
+        topic: "imaging",
+        prompt: "Microbleed sequence",
+        stem: "Cerebral microbleeds are particularly well detected on which MRI technique?",
+        choices: ["Susceptibility-sensitive imaging", "Routine T1-weighted imaging only", "Diffusion-weighted imaging alone", "Time-of-flight angiography only"],
+        answer: 0,
+        explanation: "Susceptibility-sensitive MRI sequences highlight blood products and are useful for detecting microbleeds.",
+      },
+      {
+        id: "p11",
+        difficulty: "attending",
+        topic: "localization",
+        prompt: "Anterior spinal artery cord",
+        stem: "Acute bilateral weakness with loss of pain and temperature but preserved vibration sense below a spinal lesion most strongly suggests:",
+        choices: ["Anterior spinal artery syndrome", "Posterior column syndrome only", "Pure cauda equina syndrome", "Isolated dorsal root ganglionopathy"],
+        answer: 0,
+        explanation: "Anterior spinal cord injury often spares dorsal columns while damaging corticospinal and spinothalamic pathways.",
+      },
+      {
+        id: "p12",
+        difficulty: "attending",
+        topic: "neuromuscular",
+        prompt: "Myotonic dystrophy clue",
+        stem: "Which examination finding strongly supports myotonic dystrophy?",
+        choices: ["Delayed relaxation after hand grip", "Fatigable upgaze that improves with ice", "Isolated sensory ataxia with areflexia", "Pure spastic paraparesis"],
+        answer: 0,
+        explanation: "Myotonia is delayed muscle relaxation, often seen after grip or percussion in myotonic dystrophy.",
+      },
+      {
+        id: "s15",
+        difficulty: "student",
+        topic: "neuroanatomy",
+        prompt: "Central facial weakness",
+        stem: "A unilateral corticobulbar lesion above the facial nucleus most classically causes weakness of the contralateral:",
+        choices: ["Lower face with forehead sparing", "Entire face equally", "Tongue only", "Platysma only"],
+        answer: 0,
+        explanation: "The upper face receives more bilateral cortical input, so central facial weakness mainly affects the contralateral lower face.",
+      },
+      {
+        id: "s16",
+        difficulty: "student",
+        topic: "stroke",
+        prompt: "Pure sensory lacune",
+        stem: "A pure sensory stroke syndrome without cortical signs most classically localizes to the:",
+        choices: ["Thalamus", "Frontal eye fields", "Cerebellar vermis", "Occipital pole"],
+        answer: 0,
+        explanation: "Small-vessel infarction in the thalamus is a classic cause of pure sensory stroke.",
+      },
+      {
+        id: "s17",
+        difficulty: "student",
+        topic: "epilepsy",
+        prompt: "Postictal state",
+        stem: "Which feature is common immediately after a generalized tonic-clonic seizure?",
+        choices: ["Confusion and sleepiness", "Immediate return to full alertness every time", "Persistent conjugate gaze without fatigue", "Isolated loss of vibration sense"],
+        answer: 0,
+        explanation: "A postictal period of confusion, fatigue, and slowed recovery is common after generalized tonic-clonic seizures.",
+      },
+      {
+        id: "s18",
+        difficulty: "student",
+        topic: "imaging",
+        prompt: "Acute blood on CT",
+        stem: "Fresh intracranial blood on noncontrast CT is typically:",
+        choices: ["Hyperdense", "Hypodense like CSF", "Invisible on CT", "Bright only on bone windows"],
+        answer: 0,
+        explanation: "Acute blood usually appears hyperdense on noncontrast head CT.",
+      },
+      {
+        id: "s19",
+        difficulty: "student",
+        topic: "localization",
+        prompt: "Cerebellar hemisphere sign",
+        stem: "A lesion of a cerebellar hemisphere most classically causes:",
+        choices: ["Ipsilateral limb ataxia", "Contralateral hemianopia", "Bilateral spastic paraparesis", "Isolated aphasia"],
+        answer: 0,
+        explanation: "Cerebellar hemisphere dysfunction classically causes ipsilateral dysmetria and limb ataxia.",
+      },
+      {
+        id: "s20",
+        difficulty: "student",
+        topic: "movement",
+        prompt: "Huntington inheritance",
+        stem: "Huntington disease is inherited in which pattern?",
+        choices: ["Autosomal dominant", "Autosomal recessive", "X-linked recessive", "Mitochondrial"],
+        answer: 0,
+        explanation: "Huntington disease is a trinucleotide repeat disorder with autosomal dominant inheritance.",
+      },
+      {
+        id: "s21",
+        difficulty: "student",
+        topic: "neurocritical",
+        prompt: "CT before LP",
+        stem: "Which finding is a classic reason to consider brain imaging before lumbar puncture?",
+        choices: ["Focal neurologic deficit", "Seasonal allergies", "Mild isolated nausea", "History of migraine alone"],
+        answer: 0,
+        explanation: "A focal deficit can suggest a mass lesion or elevated intracranial pressure, prompting imaging before LP.",
+      },
+      {
+        id: "s22",
+        difficulty: "student",
+        topic: "neuromuscular",
+        prompt: "GBS reflexes",
+        stem: "Deep tendon reflexes in Guillain-Barre syndrome are usually:",
+        choices: ["Reduced or absent", "Markedly brisk with clonus", "Normal in every case", "Limited to the face only"],
+        answer: 0,
+        explanation: "GBS is a peripheral demyelinating neuropathy, so reflexes are typically diminished or absent.",
+      },
+      {
+        id: "s23",
+        difficulty: "student",
+        topic: "stroke",
+        prompt: "Nondominant parietal sign",
+        stem: "A right parietal cortical stroke most classically causes:",
+        choices: ["Left hemispatial neglect", "Expressive aphasia", "Isolated resting tremor", "Bilateral ptosis"],
+        answer: 0,
+        explanation: "Nondominant parietal injury classically causes contralateral hemispatial neglect.",
+      },
+      {
+        id: "s24",
+        difficulty: "student",
+        topic: "neuroanatomy",
+        prompt: "Dorsal column modality",
+        stem: "The dorsal columns primarily carry which sensory modality?",
+        choices: ["Vibration and proprioception", "Pain and temperature", "Taste from the tongue", "Olfaction"],
+        answer: 0,
+        explanation: "The dorsal columns convey vibration, fine touch, and joint position sense.",
+      },
+      {
+        id: "s25",
+        difficulty: "student",
+        topic: "epilepsy",
+        prompt: "Status threshold",
+        stem: "A convulsive seizure lasting at least how long is generally treated as status epilepticus?",
+        choices: ["5 minutes", "30 seconds", "90 minutes", "24 hours"],
+        answer: 0,
+        explanation: "Five minutes is the practical emergency threshold used for convulsive status epilepticus treatment.",
+      },
+      {
+        id: "s26",
+        difficulty: "student",
+        topic: "localization",
+        prompt: "Wrist drop nerve",
+        stem: "Wrist drop most classically reflects dysfunction of which nerve?",
+        choices: ["Radial nerve", "Median nerve", "Ulnar nerve", "Accessory nerve"],
+        answer: 0,
+        explanation: "Radial nerve injury weakens wrist and finger extension, producing wrist drop.",
+      },
+      {
+        id: "s27",
+        difficulty: "student",
+        topic: "imaging",
+        prompt: "Hydrocephalus clue",
+        stem: "Hydrocephalus on head imaging is suggested by:",
+        choices: ["Enlarged ventricles", "Shrunken skull sutures", "Absent cerebellum", "Diffuse skull fracture"],
+        answer: 0,
+        explanation: "Ventricular enlargement is the core imaging clue to hydrocephalus.",
+      },
+      {
+        id: "s28",
+        difficulty: "student",
+        topic: "movement",
+        prompt: "Wilson eye finding",
+        stem: "Which examination finding is classic in Wilson disease?",
+        choices: ["Kayser-Fleischer rings", "Cherry-red macula", "Argyll Robertson pupils", "Cotton-wool spots"],
+        answer: 0,
+        explanation: "Copper deposition in the cornea produces the classic Kayser-Fleischer ring finding.",
+      },
+      {
+        id: "r15",
+        difficulty: "resident",
+        topic: "stroke",
+        prompt: "Locked-in localization",
+        stem: "Quadriplegia with preserved consciousness and vertical eye movements most strongly localizes to the:",
+        choices: ["Ventral pons", "Occipital cortex", "Cerebellar vermis", "High cervical dorsal columns"],
+        answer: 0,
+        explanation: "Locked-in syndrome classically reflects ventral pontine injury, often from basilar artery occlusion.",
+      },
+      {
+        id: "r16",
+        difficulty: "resident",
+        topic: "neurocritical",
+        prompt: "Miller Fisher triad",
+        stem: "Which triad is classic for Miller Fisher syndrome?",
+        choices: ["Ophthalmoplegia, ataxia, areflexia", "Ptosis, miosis, anhidrosis", "Aphasia, neglect, apraxia", "Chorea, dystonia, myoclonus"],
+        answer: 0,
+        explanation: "Miller Fisher syndrome is the ophthalmoplegia-ataxia-areflexia variant within the GBS spectrum.",
+      },
+      {
+        id: "r17",
+        difficulty: "resident",
+        topic: "neuromuscular",
+        prompt: "Inflammatory myopathy lab",
+        stem: "A markedly elevated serum CK most strongly supports which broad process?",
+        choices: ["Primary muscle injury", "Pure neuromuscular junction failure", "Isolated dorsal column disease", "Basal ganglia degeneration only"],
+        answer: 0,
+        explanation: "A high CK points toward muscle breakdown or myopathic injury rather than a pure junctional disorder.",
+      },
+      {
+        id: "r18",
+        difficulty: "resident",
+        topic: "imaging",
+        prompt: "CAA hemorrhage pattern",
+        stem: "Cerebral amyloid angiopathy most classically causes hemorrhage in which distribution?",
+        choices: ["Lobar cortical-subcortical regions", "Deep basal ganglia only", "Conus medullaris only", "Pituitary stalk only"],
+        answer: 0,
+        explanation: "Amyloid angiopathy classically causes lobar hemorrhage rather than the deep hypertensive pattern.",
+      },
+      {
+        id: "r19",
+        difficulty: "resident",
+        topic: "localization",
+        prompt: "Cauda equina clue",
+        stem: "Urinary retention, saddle anesthesia, and asymmetric leg weakness suggest:",
+        choices: ["Cauda equina syndrome", "Isolated cerebellar lesion", "Pure cortical visual loss", "Vestibular neuritis"],
+        answer: 0,
+        explanation: "That combination is a classic red-flag pattern for cauda equina syndrome.",
+      },
+      {
+        id: "r20",
+        difficulty: "resident",
+        topic: "epilepsy",
+        prompt: "Mesial temporal MRI",
+        stem: "A common MRI correlate of mesial temporal lobe epilepsy is:",
+        choices: ["Hippocampal sclerosis", "Caudate atrophy only", "Diffuse leptomeningeal enhancement", "Pituitary macroadenoma"],
+        answer: 0,
+        explanation: "Mesial temporal epilepsy is classically associated with hippocampal sclerosis.",
+      },
+      {
+        id: "r21",
+        difficulty: "resident",
+        topic: "stroke",
+        prompt: "Dissection clue",
+        stem: "Painful Horner syndrome after neck trauma should raise concern for:",
+        choices: ["Carotid artery dissection", "Benign essential tremor", "Normal pressure hydrocephalus", "Myotonic dystrophy"],
+        answer: 0,
+        explanation: "A painful partial Horner syndrome after trauma is a classic clue to carotid dissection.",
+      },
+      {
+        id: "r22",
+        difficulty: "resident",
+        topic: "movement",
+        prompt: "PSP hallmark",
+        stem: "Which feature strongly suggests progressive supranuclear palsy rather than idiopathic Parkinson disease?",
+        choices: ["Early vertical gaze palsy", "Rest tremor improved by alcohol", "Pure unilateral action tremor", "Fluctuating ptosis"],
+        answer: 0,
+        explanation: "Supranuclear vertical gaze limitation is a hallmark clue for PSP.",
+      },
+      {
+        id: "r23",
+        difficulty: "resident",
+        topic: "neuroanatomy",
+        prompt: "Pontine horizontal gaze",
+        stem: "A lesion of the abducens nucleus causes:",
+        choices: ["Ipsilateral horizontal gaze palsy", "Monocular vision loss", "Contralateral homonymous hemianopia", "Pure lower motor neuron facial palsy only"],
+        answer: 0,
+        explanation: "The abducens nucleus coordinates horizontal gaze, so nucleus injury impairs ipsilateral gaze of both eyes.",
+      },
+      {
+        id: "r24",
+        difficulty: "resident",
+        topic: "neuromuscular",
+        prompt: "CIDP timeline",
+        stem: "Progressive demyelinating neuropathy evolving over more than 8 weeks suggests:",
+        choices: ["Chronic inflammatory demyelinating polyneuropathy", "Classic hyperacute botulism", "Pure motor neuron disease only", "Transient migraine aura"],
+        answer: 0,
+        explanation: "CIDP is the chronic counterpart to the acute demyelinating GBS pattern.",
+      },
+      {
+        id: "r25",
+        difficulty: "resident",
+        topic: "imaging",
+        prompt: "MS MRI sequence",
+        stem: "Periventricular demyelinating plaques are often especially conspicuous on which MRI sequence?",
+        choices: ["FLAIR", "Bone algorithm CT", "Time-of-flight MRA only", "Routine scout localizer"],
+        answer: 0,
+        explanation: "FLAIR suppresses CSF signal and makes periventricular white matter lesions easier to see.",
+      },
+      {
+        id: "r26",
+        difficulty: "resident",
+        topic: "neurocritical",
+        prompt: "NCSE diagnosis",
+        stem: "Definitive diagnosis of nonconvulsive status epilepticus usually requires:",
+        choices: ["EEG monitoring", "Lumbar puncture only", "EMG and nerve conduction studies", "Skull radiographs"],
+        answer: 0,
+        explanation: "EEG is essential for diagnosing nonconvulsive status epilepticus because motor signs may be minimal or absent.",
+      },
+      {
+        id: "r27",
+        difficulty: "resident",
+        topic: "stroke",
+        prompt: "Venous thrombosis clue",
+        stem: "Severe headache with papilledema and hemorrhagic venous infarct should raise concern for:",
+        choices: ["Cerebral venous sinus thrombosis", "Bell palsy", "AICA stroke", "Essential tremor"],
+        answer: 0,
+        explanation: "CVST often presents with headache, raised intracranial pressure, and hemorrhagic venous infarction.",
+      },
+      {
+        id: "r28",
+        difficulty: "resident",
+        topic: "localization",
+        prompt: "Lhermitte symptom",
+        stem: "An electric-shock sensation down the spine with neck flexion suggests pathology in the:",
+        choices: ["Cervical dorsal columns", "Basal ganglia", "Neuromuscular junction", "Temporal pole"],
+        answer: 0,
+        explanation: "Lhermitte symptom points to cervical cord involvement, especially the dorsal columns.",
+      },
+      {
+        id: "p13",
+        difficulty: "attending",
+        topic: "stroke",
+        prompt: "Top of basilar clue",
+        stem: "Fluctuating consciousness with vertical gaze abnormalities and bilateral thalamic findings suggests ischemia in the:",
+        choices: ["Rostral basilar distribution", "Anterior cerebral artery only", "Isolated peroneal nerve", "Lumbosacral plexus"],
+        answer: 0,
+        explanation: "Top-of-the-basilar syndrome can produce bilateral thalamic and midbrain findings with impaired arousal and eye movement abnormalities.",
+      },
+      {
+        id: "p14",
+        difficulty: "attending",
+        topic: "localization",
+        prompt: "One-and-a-half syndrome",
+        stem: "One-and-a-half syndrome most strongly localizes to the:",
+        choices: ["Pontine tegmentum involving the MLF and PPRF or abducens nucleus", "Optic chiasm", "Posterior limb of the internal capsule only", "Cerebellar vermis"],
+        answer: 0,
+        explanation: "One-and-a-half syndrome reflects combined injury to the ipsilateral horizontal gaze center and the ipsilateral MLF in the pons.",
+      },
+      {
+        id: "p15",
+        difficulty: "attending",
+        topic: "imaging",
+        prompt: "Percheron infarct pattern",
+        stem: "Bilateral paramedian thalamic infarcts on MRI should raise concern for occlusion of the:",
+        choices: ["Artery of Percheron", "Middle meningeal artery", "Labyrinthine artery", "Vein of Galen only"],
+        answer: 0,
+        explanation: "A single artery of Percheron can supply both paramedian thalami, producing a distinctive bilateral infarct pattern.",
+      },
+      {
+        id: "p16",
+        difficulty: "attending",
+        topic: "neurocritical",
+        prompt: "Meningitis steroid timing",
+        stem: "When dexamethasone is used for suspected bacterial meningitis, it is generally most effective when given:",
+        choices: ["Before or with the first antibiotic dose", "Only after culture clearance", "Several days after discharge", "Only if EEG is abnormal"],
+        answer: 0,
+        explanation: "Adjunctive dexamethasone is most beneficial when started before or with the first dose of antibiotics.",
+      },
+      {
+        id: "p17",
+        difficulty: "attending",
+        topic: "neuromuscular",
+        prompt: "Lambert-Eaton antibodies",
+        stem: "Lambert-Eaton myasthenic syndrome is most commonly associated with antibodies against:",
+        choices: ["Presynaptic voltage-gated calcium channels", "Postsynaptic acetylcholine receptors only", "Myelin basic protein", "Aquaporin-4"],
+        answer: 0,
+        explanation: "Lambert-Eaton is classically associated with antibodies to presynaptic P/Q-type voltage-gated calcium channels.",
+      },
+      {
+        id: "p18",
+        difficulty: "attending",
+        topic: "epilepsy",
+        prompt: "Automatisms clue",
+        stem: "Oral automatisms with impaired awareness most strongly suggest seizure onset in the:",
+        choices: ["Temporal lobe", "Occipital pole", "Primary motor cortex only", "Lower cervical cord"],
+        answer: 0,
+        explanation: "Automatisms with impaired awareness are classic for temporal lobe seizures.",
+      },
+      {
+        id: "p19",
+        difficulty: "attending",
+        topic: "stroke",
+        prompt: "Anton syndrome",
+        stem: "Cortical blindness with denial of blindness is called:",
+        choices: ["Anton syndrome", "Balint syndrome", "Weber syndrome", "Claude syndrome"],
+        answer: 0,
+        explanation: "Anton syndrome describes unawareness of cortical blindness, typically from bilateral occipital injury.",
+      },
+      {
+        id: "p20",
+        difficulty: "attending",
+        topic: "movement",
+        prompt: "MSA red flag",
+        stem: "Which feature strongly favors multiple system atrophy over idiopathic Parkinson disease?",
+        choices: ["Early prominent autonomic failure", "Isolated rest tremor improved by levodopa", "Pure sensory loss in a stocking pattern", "Visual aura with scintillations"],
+        answer: 0,
+        explanation: "Severe early autonomic failure is a major clue toward multiple system atrophy.",
+      },
+      {
+        id: "p21",
+        difficulty: "attending",
+        topic: "imaging",
+        prompt: "CAA microbleed pattern",
+        stem: "A strictly lobar pattern of cerebral microbleeds is most suggestive of:",
+        choices: ["Cerebral amyloid angiopathy", "Hypertensive arteriopathy of deep nuclei only", "Acute transverse myelitis", "Benign intracranial hypotension"],
+        answer: 0,
+        explanation: "Strictly lobar microbleeds are a classic imaging pattern in cerebral amyloid angiopathy.",
+      },
+      {
+        id: "p22",
+        difficulty: "attending",
+        topic: "localization",
+        prompt: "Medial pontine cross sign",
+        stem: "Contralateral hemiparesis with ipsilateral abducens palsy most strongly suggests a lesion in the:",
+        choices: ["Medial pons", "Lateral medulla", "Temporal neocortex", "Conus medullaris"],
+        answer: 0,
+        explanation: "That crossed abducens and corticospinal pattern is a classic medial pontine localization.",
+      },
+      {
+        id: "p23",
+        difficulty: "attending",
+        topic: "neurocritical",
+        prompt: "Central fever clue",
+        stem: "Persistent fever after severe brain injury with negative infectious workup raises concern for:",
+        choices: ["Central fever", "Myasthenic crisis", "BPPV", "Amyloid neuropathy"],
+        answer: 0,
+        explanation: "Central fever is a diagnosis considered after brain injury when infection has not explained the fever pattern.",
+      },
+      {
+        id: "p24",
+        difficulty: "attending",
+        topic: "neuromuscular",
+        prompt: "Inclusion body clue",
+        stem: "Finger flexor and quadriceps weakness in an older adult is a classic clue for:",
+        choices: ["Inclusion body myositis", "Myasthenia gravis", "Acute inflammatory demyelinating neuropathy", "Pure dystonia"],
+        answer: 0,
+        explanation: "Inclusion body myositis often targets finger flexors and quadriceps in an asymmetric pattern.",
+      },
+      { id: "s29", difficulty: "student", topic: "stroke", prompt: "Broca localization", stem: "Nonfluent aphasia with relatively preserved comprehension most strongly localizes to the dominant:", choices: ["Inferior frontal gyrus", "Occipital pole", "Cerebellar vermis", "Midline medulla"], answer: 0, explanation: "Broca aphasia classically localizes to the dominant inferior frontal language region." },
+      { id: "s30", difficulty: "student", topic: "neuroanatomy", prompt: "Light reflex afferent", stem: "The afferent limb of the pupillary light reflex travels in which cranial nerve?", choices: ["Optic nerve", "Oculomotor nerve", "Trochlear nerve", "Abducens nerve"], answer: 0, explanation: "Light information enters through CN II before the reflex output is carried by CN III." },
+      { id: "s31", difficulty: "student", topic: "movement", prompt: "Target tremor", stem: "A tremor that worsens as the finger approaches the target most strongly suggests dysfunction of the:", choices: ["Cerebellum", "Basal ganglia only", "Neuromuscular junction", "Anterior horn cell"], answer: 0, explanation: "Intention tremor is a classic cerebellar sign." },
+      { id: "s32", difficulty: "student", topic: "epilepsy", prompt: "Focal aware definition", stem: "During a focal aware seizure, consciousness is typically:", choices: ["Preserved", "Completely absent", "Always followed by coma", "Replaced by quadriplegia"], answer: 0, explanation: "Focal aware seizures are focal seizures in which awareness is retained." },
+      { id: "s33", difficulty: "student", topic: "localization", prompt: "Sensory level clue", stem: "A clearly defined sensory level on the trunk usually localizes to the:", choices: ["Spinal cord", "Peripheral nerve at the wrist", "Occipital lobe", "Cerebellar hemisphere"], answer: 0, explanation: "A truncal sensory level is a classic clue to spinal cord pathology." },
+      { id: "s34", difficulty: "student", topic: "neurocritical", prompt: "Papilledema meaning", stem: "Papilledema on funduscopic exam is a clue to:", choices: ["Raised intracranial pressure", "Peripheral vestibulopathy", "Radial neuropathy", "Bell palsy"], answer: 0, explanation: "Papilledema reflects optic disc swelling from elevated intracranial pressure." },
+      { id: "s35", difficulty: "student", topic: "neuromuscular", prompt: "Fatigable ptosis", stem: "Ptosis and diplopia that worsen late in the day are classic for:", choices: ["Myasthenia gravis", "Parkinson disease", "Essential tremor", "Cauda equina syndrome"], answer: 0, explanation: "Fluctuating ocular weakness is a classic presentation of myasthenia gravis." },
+      { id: "s36", difficulty: "student", topic: "imaging", prompt: "Midline shift", stem: "Midline shift on head imaging usually reflects:", choices: ["Mass effect", "Normal aging only", "Pure peripheral neuropathy", "Benign tremor"], answer: 0, explanation: "Midline shift is a major clue that a lesion or edema is exerting mass effect." },
+      { id: "s37", difficulty: "student", topic: "stroke", prompt: "Curtain vision loss", stem: "Transient monocular vision loss described as a curtain coming down most strongly suggests ischemia in the:", choices: ["Ipsilateral carotid circulation", "Contralateral cerebellar hemisphere", "Thoracic spinal cord only", "Basal ganglia bilaterally"], answer: 0, explanation: "Amaurosis fugax is classically linked to retinal ischemia from ipsilateral carotid disease." },
+      { id: "s38", difficulty: "student", topic: "neuroanatomy", prompt: "Facial sensation nerve", stem: "Light touch sensation from the face is carried primarily by which cranial nerve?", choices: ["Trigeminal nerve", "Facial nerve", "Glossopharyngeal nerve", "Hypoglossal nerve"], answer: 0, explanation: "CN V is the major sensory nerve of the face." },
+      { id: "s39", difficulty: "student", topic: "movement", prompt: "Dystonia pattern", stem: "Dystonia is best described as:", choices: ["Sustained twisting postures or abnormal muscle contractions", "A pure sensory syndrome", "A fixed complete paralysis", "Loss of consciousness with convulsions"], answer: 0, explanation: "Dystonia causes sustained or intermittent abnormal postures from muscle contractions." },
+      { id: "s40", difficulty: "student", topic: "epilepsy", prompt: "Automatisms term", stem: "Lip smacking and repetitive picking movements during a seizure are called:", choices: ["Automatisms", "Asterixis", "Fasciculations", "Myokymia"], answer: 0, explanation: "Automatisms are repetitive semipurposeful movements often seen in focal seizures." },
+      { id: "s41", difficulty: "student", topic: "localization", prompt: "Lower motor neuron sign", stem: "Which finding most strongly points to a lower motor neuron lesion?", choices: ["Atrophy with fasciculations", "Spasticity with clonus", "Pronator drift", "Hyperreflexia alone"], answer: 0, explanation: "Atrophy and fasciculations are classic lower motor neuron findings." },
+      { id: "s42", difficulty: "student", topic: "neurocritical", prompt: "Meningeal irritation", stem: "Neck stiffness in meningitis or subarachnoid hemorrhage reflects:", choices: ["Meningeal irritation", "Basal ganglia failure", "Peripheral nerve entrapment", "Isolated cerebellar injury"], answer: 0, explanation: "Meningismus reflects irritation of the meninges." },
+      { id: "s43", difficulty: "student", topic: "neuromuscular", prompt: "High CK clue", stem: "A very high serum creatine kinase level is most suggestive of:", choices: ["Muscle injury or myopathy", "Pure neuromuscular junction disease only", "Occipital stroke", "Trigeminal neuralgia"], answer: 0, explanation: "Marked CK elevation generally points toward muscle breakdown or muscle disease." },
+      { id: "s44", difficulty: "student", topic: "imaging", prompt: "Restricted diffusion meaning", stem: "Restricted diffusion on brain MRI most classically suggests:", choices: ["Acute ischemia", "Chronic peripheral neuropathy", "Essential tremor", "Bell palsy"], answer: 0, explanation: "Restricted diffusion is a classic early imaging feature of acute ischemic stroke." },
+      { id: "s45", difficulty: "student", topic: "stroke", prompt: "Lacunar mechanism", stem: "Lacunar infarcts are usually caused by disease of the:", choices: ["Small penetrating arteries", "Dural venous sinuses", "External carotid branches", "Cerebellar cortex only"], answer: 0, explanation: "Lacunar strokes are classically due to small-vessel disease affecting penetrating arteries." },
+      { id: "s46", difficulty: "student", topic: "neuroanatomy", prompt: "Spinothalamic modality", stem: "The spinothalamic tract primarily carries:", choices: ["Pain and temperature", "Fine smell only", "Motor output to the eye", "Hearing from the cochlea"], answer: 0, explanation: "The spinothalamic tract carries pain and temperature sensation." },
+      { id: "s47", difficulty: "student", topic: "movement", prompt: "Lead-pipe rigidity", stem: "Lead-pipe rigidity is classically associated with:", choices: ["Parkinsonism", "Myasthenia gravis", "Guillain-Barre syndrome", "Migraine aura"], answer: 0, explanation: "Rigidity is a classic extrapyramidal sign in parkinsonian syndromes." },
+      { id: "s48", difficulty: "student", topic: "epilepsy", prompt: "Generalized onset", stem: "A generalized onset seizure by definition involves:", choices: ["Both hemispheres from the beginning", "Only one temporal lobe", "Only the spinal cord", "Only the peripheral nerves"], answer: 0, explanation: "Generalized seizures involve bilateral networks from onset." },
+      { id: "s49", difficulty: "student", topic: "localization", prompt: "Pronator drift meaning", stem: "A pronator drift most strongly suggests subtle:", choices: ["Corticospinal weakness", "Vestibular hearing loss", "Occipital visual loss", "Pure autonomic failure"], answer: 0, explanation: "Pronator drift is a sensitive sign of mild corticospinal tract weakness." },
+      { id: "s50", difficulty: "student", topic: "neurocritical", prompt: "Blown pupil emergency", stem: "An acute unilateral fixed dilated pupil after head trauma may indicate:", choices: ["Uncal herniation", "Essential tremor", "Pure radial neuropathy", "Benign fasciculation syndrome"], answer: 0, explanation: "A blown pupil in that setting is a classic herniation warning sign." },
+      { id: "s51", difficulty: "student", topic: "neuromuscular", prompt: "Stocking-glove pattern", stem: "Symmetric distal numbness in a stocking-glove distribution most strongly suggests:", choices: ["Peripheral neuropathy", "Pure frontal lobe stroke", "Cerebellar degeneration", "Third nerve palsy"], answer: 0, explanation: "A stocking-glove sensory pattern is classic for peripheral neuropathy." },
+      { id: "s52", difficulty: "student", topic: "imaging", prompt: "CTA use", stem: "CT angiography is especially useful for evaluating:", choices: ["Arterial anatomy and occlusion", "Only scalp swelling", "Only skeletal muscle injury", "The neuromuscular junction directly"], answer: 0, explanation: "CTA is a rapid way to evaluate cerebral and cervical arteries for stenosis or occlusion." },
+      { id: "s53", difficulty: "student", topic: "stroke", prompt: "Posterior circulation clue", stem: "Vertigo with diplopia and dysarthria should raise concern for a process in the:", choices: ["Posterior circulation or brainstem", "Isolated median nerve", "Lumbar plexus only", "Distal ulnar nerve"], answer: 0, explanation: "Those crossed cranial and balance symptoms are classic posterior circulation red flags." },
+      { id: "s54", difficulty: "student", topic: "neuroanatomy", prompt: "Abducens action", stem: "Cranial nerve VI primarily performs which eye movement?", choices: ["Abduction", "Adduction", "Depression in adduction", "Pupillary constriction"], answer: 0, explanation: "The abducens nerve innervates the lateral rectus muscle, which abducts the eye." },
+      { id: "s55", difficulty: "student", topic: "movement", prompt: "Asterixis clue", stem: "Asterixis most commonly suggests:", choices: ["Metabolic encephalopathy", "Pure cerebellar stroke", "Isolated radial neuropathy", "Migraine without aura"], answer: 0, explanation: "Asterixis is a negative myoclonus often seen in metabolic encephalopathy." },
+      { id: "s56", difficulty: "student", topic: "epilepsy", prompt: "Epigastric aura", stem: "An epigastric rising sensation before a seizure most strongly suggests onset in the:", choices: ["Temporal lobe", "Occipital lobe", "Cervical cord", "Peripheral nerve"], answer: 0, explanation: "An epigastric rising aura is classic for mesial temporal seizures." },
+      { id: "r29", difficulty: "resident", topic: "stroke", prompt: "MCA gaze preference", stem: "In an acute right MCA stroke affecting the frontal eye field, the eyes tend to deviate:", choices: ["Toward the right", "Toward the left", "Upward only", "Downward only"], answer: 0, explanation: "Frontal eye field lesions cause gaze preference toward the side of the lesion." },
+      { id: "r30", difficulty: "resident", topic: "neurocritical", prompt: "EVD purpose", stem: "An external ventricular drain can both monitor and directly treat:", choices: ["Hydrocephalus with elevated intracranial pressure", "Peripheral neuropathy", "Essential tremor", "Myasthenia gravis"], answer: 0, explanation: "An EVD allows CSF drainage while monitoring ventricular pressure." },
+      { id: "r31", difficulty: "resident", topic: "neuromuscular", prompt: "Lambert-Eaton physiology", stem: "A transient increase in strength after brief exercise most strongly supports:", choices: ["Lambert-Eaton myasthenic syndrome", "Duchenne muscular dystrophy", "Peripheral sensory neuropathy", "Isolated occipital infarct"], answer: 0, explanation: "Facilitation after exertion is a classic bedside clue in Lambert-Eaton syndrome." },
+      { id: "r32", difficulty: "resident", topic: "imaging", prompt: "ADC map", stem: "True acute ischemic restriction on MRI is supported by diffusion brightness with:", choices: ["Low ADC signal", "High ADC signal only", "Normal bone windows", "Absent FLAIR lesions in every case"], answer: 0, explanation: "Low ADC supports true restricted diffusion rather than T2 shine-through." },
+      { id: "r33", difficulty: "resident", topic: "localization", prompt: "Crossed sensory signs", stem: "Ipsilateral facial pain loss with contralateral body pain loss most strongly localizes to the:", choices: ["Brainstem", "Peripheral nerve at the elbow", "Frontal eye field", "Neuromuscular junction"], answer: 0, explanation: "Crossed face-body findings are classic for brainstem localization." },
+      { id: "r34", difficulty: "resident", topic: "epilepsy", prompt: "Mesial temporal aura", stem: "A rising epigastric sensation with fear before impaired awareness most strongly suggests:", choices: ["Mesial temporal lobe epilepsy", "Primary generalized epilepsy", "Pure occipital migraine only", "Functional tremor"], answer: 0, explanation: "That aura pattern is a classic mesial temporal seizure clue." },
+      { id: "r35", difficulty: "resident", topic: "stroke", prompt: "Cortical vs lacunar", stem: "Which feature makes a lacunar syndrome less likely and a cortical stroke more likely?", choices: ["Aphasia", "Pure motor weakness", "Pure sensory symptoms", "Ataxic hemiparesis"], answer: 0, explanation: "Aphasia is a cortical sign and argues against a pure lacunar syndrome." },
+      { id: "r36", difficulty: "resident", topic: "movement", prompt: "Tardive cause", stem: "Tardive dyskinesia is classically associated with chronic exposure to:", choices: ["Dopamine receptor blocking agents", "Acetylcholinesterase inhibitors", "Beta blockers", "Magnesium infusions"], answer: 0, explanation: "Chronic dopamine blockade is the classic risk factor for tardive dyskinesia." },
+      { id: "r37", difficulty: "resident", topic: "neuroanatomy", prompt: "PPRF role", stem: "The paramedian pontine reticular formation is crucial for generating:", choices: ["Ipsilateral horizontal saccades", "Pupillary constriction only", "Lower facial sensation", "Smell perception"], answer: 0, explanation: "The PPRF is part of the horizontal gaze center in the pons." },
+      { id: "r38", difficulty: "resident", topic: "neuromuscular", prompt: "ALS exam mix", stem: "Which exam combination best fits amyotrophic lateral sclerosis?", choices: ["Upper and lower motor neuron findings together", "Pure sensory loss with a level", "Fluctuating diplopia only", "Pure cerebellar ataxia"], answer: 0, explanation: "ALS classically combines UMN and LMN signs in the same disorder." },
+      { id: "r39", difficulty: "resident", topic: "imaging", prompt: "Rapid LVO study", stem: "When a large vessel occlusion is suspected in acute stroke, the rapid vascular study is usually:", choices: ["CT angiography", "Routine skull x-ray", "EEG", "EMG and nerve conduction studies"], answer: 0, explanation: "CTA is commonly used to identify emergent large vessel occlusion." },
+      { id: "r40", difficulty: "resident", topic: "neurocritical", prompt: "Hyperventilation effect", stem: "Brief hyperventilation lowers intracranial pressure mainly by causing:", choices: ["Cerebral vasoconstriction", "Immediate CSF production", "Spinal cord vasodilation", "Neuromuscular blockade"], answer: 0, explanation: "Lowering PaCO2 causes cerebral vasoconstriction and can transiently reduce ICP." },
+      { id: "r41", difficulty: "resident", topic: "localization", prompt: "Right INO", stem: "A right internuclear ophthalmoplegia most strongly localizes to the right:", choices: ["Medial longitudinal fasciculus", "Optic nerve", "Facial nerve", "Posterior column nucleus only"], answer: 0, explanation: "INO is the signature deficit of a medial longitudinal fasciculus lesion." },
+      { id: "r42", difficulty: "resident", topic: "epilepsy", prompt: "Lateral tongue bite", stem: "A lateral tongue bite after a transient loss of consciousness favors:", choices: ["Generalized tonic-clonic seizure", "Simple vasovagal syncope", "Benign positional vertigo", "Transient peripheral neuropathy"], answer: 0, explanation: "Lateral tongue biting is a classic supportive clue for generalized seizure." },
+      { id: "r43", difficulty: "resident", topic: "stroke", prompt: "Vertebral dissection clue", stem: "Posterior circulation symptoms with neck pain after manipulation should raise concern for:", choices: ["Vertebral artery dissection", "Essential tremor", "Normal pressure hydrocephalus", "Peripheral vestibulopathy"], answer: 0, explanation: "Neck pain with posterior circulation ischemic symptoms is a classic vertebral dissection clue." },
+      { id: "r44", difficulty: "resident", topic: "movement", prompt: "Torticollis syndrome", stem: "Cervical dystonia most commonly presents as:", choices: ["Abnormal involuntary neck turning or tilting", "Pure distal sensory loss", "Bilateral ophthalmoplegia", "Persistent homonymous hemianopia"], answer: 0, explanation: "Cervical dystonia produces involuntary neck posturing, often called torticollis." },
+      { id: "r45", difficulty: "resident", topic: "neuroanatomy", prompt: "Nucleus ambiguus deficit", stem: "A lesion of the nucleus ambiguus classically causes:", choices: ["Dysphagia and hoarseness", "Monocular blindness", "Isolated hand tremor", "Loss of smell"], answer: 0, explanation: "The nucleus ambiguus contributes to palatal, pharyngeal, and laryngeal motor function." },
+      { id: "r46", difficulty: "resident", topic: "neuromuscular", prompt: "Repetitive stimulation decrement", stem: "A decremental response on repetitive nerve stimulation most strongly supports:", choices: ["Myasthenia gravis", "Pure myopathy", "Cerebellar stroke", "Frontal lobe seizure"], answer: 0, explanation: "A decrement on repetitive stimulation is a classic electrodiagnostic clue in myasthenia gravis." },
+      { id: "r47", difficulty: "resident", topic: "imaging", prompt: "Blood product MRI", stem: "MRI detection of small hemorrhagic blood products is especially sensitive with:", choices: ["Susceptibility-sensitive sequences", "Routine T1 alone", "Only diffusion-weighted imaging", "Only MR spectroscopy"], answer: 0, explanation: "Susceptibility-sensitive sequences are particularly good for detecting blood products." },
+      { id: "r48", difficulty: "resident", topic: "neurocritical", prompt: "CPP formula", stem: "Cerebral perfusion pressure is approximated by:", choices: ["Mean arterial pressure minus intracranial pressure", "Intracranial pressure minus mean arterial pressure", "Heart rate plus PaCO2", "PaO2 minus temperature"], answer: 0, explanation: "CPP is typically approximated as MAP minus ICP." },
+      { id: "r49", difficulty: "resident", topic: "localization", prompt: "Sensory ataxia clue", stem: "Pseudoathetosis and worsening imbalance with eye closure most strongly suggest dysfunction of the:", choices: ["Dorsal columns", "Basal ganglia only", "Frontal eye fields", "Neuromuscular junction"], answer: 0, explanation: "Loss of proprioceptive input from dorsal column disease causes sensory ataxia and pseudoathetosis." },
+      { id: "r50", difficulty: "resident", topic: "epilepsy", prompt: "Focal to bilateral term", stem: "The modern term for a seizure that begins focally and then generalizes is:", choices: ["Focal to bilateral tonic-clonic seizure", "Absence status", "Psychogenic nonepileptic spell", "Isolated aura only"], answer: 0, explanation: "The current preferred term is focal to bilateral tonic-clonic seizure." },
+      { id: "r51", difficulty: "resident", topic: "stroke", prompt: "Wernicke territory", stem: "Fluent aphasia with poor comprehension most strongly suggests infarction in the dominant:", choices: ["Inferior division MCA territory", "Anterior spinal artery territory", "Cerebellar hemisphere only", "Thoracic cord"], answer: 0, explanation: "Wernicke aphasia classically localizes to the dominant posterior temporal region supplied by the inferior MCA division." },
+      { id: "r52", difficulty: "resident", topic: "movement", prompt: "Levodopa response", stem: "Clear improvement of bradykinesia and rigidity with levodopa most strongly supports:", choices: ["Idiopathic Parkinson disease", "Essential tremor", "Myasthenia gravis", "Peripheral neuropathy"], answer: 0, explanation: "A robust levodopa response is a classic clue toward idiopathic Parkinson disease." },
+      { id: "r53", difficulty: "resident", topic: "neuroanatomy", prompt: "Facial colliculus lesion", stem: "A lesion at the facial colliculus can affect which nearby structure most directly?", choices: ["Abducens nucleus", "Optic chiasm", "Subthalamic nucleus", "Dorsal root ganglion"], answer: 0, explanation: "The facial colliculus overlies the abducens nucleus and facial nerve fibers in the dorsal pons." },
+      { id: "r54", difficulty: "resident", topic: "neuromuscular", prompt: "Myasthenic crisis trigger", stem: "A common precipitant of myasthenic crisis is:", choices: ["Infection", "Occipital infarct", "Benign positional vertigo", "Isolated radial neuropathy"], answer: 0, explanation: "Infection is a classic trigger for myasthenic crisis." },
+      { id: "r55", difficulty: "resident", topic: "imaging", prompt: "Abscess MRI clue", stem: "Which imaging feature favors a brain abscess over a necrotic tumor?", choices: ["Central diffusion restriction", "Absence of edema", "No mass effect ever", "Pure extra-axial location"], answer: 0, explanation: "Central restricted diffusion is a classic clue favoring abscess." },
+      { id: "r56", difficulty: "resident", topic: "neurocritical", prompt: "Basal cistern effacement", stem: "Effaced basal cisterns on head CT usually suggest:", choices: ["Significant cerebral edema or mass effect", "Pure peripheral neuropathy", "Essential tremor", "Benign fasciculation syndrome"], answer: 0, explanation: "Basal cistern effacement is a concerning imaging sign of increased intracranial pressure and mass effect." },
+      { id: "p25", difficulty: "attending", topic: "stroke", prompt: "Alexia without agraphia", stem: "Alexia without agraphia classically follows infarction involving the dominant PCA territory plus the:", choices: ["Splenium of the corpus callosum", "Cerebellar vermis", "Internal auditory canal", "Cauda equina"], answer: 0, explanation: "Disconnection of visual input from language areas via splenial involvement is the classic mechanism." },
+      { id: "p26", difficulty: "attending", topic: "localization", prompt: "Benedikt syndrome", stem: "Ipsilateral third nerve palsy with contralateral tremor or ataxia most strongly suggests a lesion in the:", choices: ["Midbrain tegmentum", "Lateral medulla", "Occipital pole", "Conus medullaris"], answer: 0, explanation: "Benedikt syndrome reflects a tegmental midbrain lesion affecting CN III fascicles and cerebellothalamic pathways." },
+      { id: "p27", difficulty: "attending", topic: "imaging", prompt: "PRES pattern", stem: "Posterior reversible encephalopathy syndrome most classically shows which MRI pattern?", choices: ["Posterior-predominant vasogenic edema", "Pure restricted diffusion in the internal capsule", "Isolated skull base enhancement", "Diffuse peripheral nerve enlargement"], answer: 0, explanation: "PRES classically causes posterior-predominant vasogenic edema, often in parieto-occipital regions." },
+      { id: "p28", difficulty: "attending", topic: "neurocritical", prompt: "MG crisis monitoring", stem: "In myasthenic crisis, a key respiratory bedside metric to trend is the:", choices: ["Vital capacity", "Ankle-brachial index", "Intraocular pressure", "QT interval only"], answer: 0, explanation: "Vital capacity is commonly followed to gauge impending respiratory failure in myasthenic crisis." },
+      { id: "p29", difficulty: "attending", topic: "neuromuscular", prompt: "MuSK phenotype", stem: "Compared with typical acetylcholine receptor myasthenia, MuSK-associated disease more often features prominent:", choices: ["Bulbar and neck weakness", "Stocking-glove sensory loss", "Upper motor neuron signs", "Cerebellar eye movement findings"], answer: 0, explanation: "MuSK myasthenia often has marked bulbar, facial, and neck weakness." },
+      { id: "p30", difficulty: "attending", topic: "epilepsy", prompt: "LPD significance", stem: "Lateralized periodic discharges on EEG most strongly imply:", choices: ["Acute focal cerebral dysfunction with increased seizure risk", "A benign normal variant", "Pure peripheral nerve disease", "Definite psychogenic nonepileptic events"], answer: 0, explanation: "LPDs often occur with acute focal brain injury and are associated with heightened seizure risk." },
+      { id: "p31", difficulty: "attending", topic: "stroke", prompt: "Watershed syndrome", stem: "Bilateral border-zone ischemia can produce the classic 'man-in-the-barrel' pattern of:", choices: ["Proximal arm-predominant weakness", "Isolated lower facial paralysis", "Pure sensory ataxia", "Hemichorea only"], answer: 0, explanation: "Watershed infarction can selectively impair proximal upper limb strength." },
+      { id: "p32", difficulty: "attending", topic: "movement", prompt: "Corticobasal clue", stem: "Which feature strongly favors corticobasal syndrome over idiopathic Parkinson disease?", choices: ["Marked asymmetry with apraxia", "Symmetric resting tremor alone", "Pure sensory neuropathy", "Fluctuating diplopia"], answer: 0, explanation: "Corticobasal syndrome often shows striking asymmetry and cortical signs such as apraxia." },
+      { id: "p33", difficulty: "attending", topic: "neuroanatomy", prompt: "Dorsal midbrain syndrome", stem: "Upgaze palsy with light-near dissociation most strongly localizes to the:", choices: ["Dorsal midbrain", "Lateral medulla", "Internal capsule", "Cauda equina"], answer: 0, explanation: "This pattern is classic for dorsal midbrain or Parinaud syndrome." },
+      { id: "p34", difficulty: "attending", topic: "imaging", prompt: "True restriction check", stem: "Diffusion brightness without corresponding low ADC is most likely due to:", choices: ["T2 shine-through", "Proven hyperacute infarction", "Definite abscess every time", "Acute subdural blood"], answer: 0, explanation: "Low ADC helps confirm true restricted diffusion rather than T2 shine-through." },
+      { id: "p35", difficulty: "attending", topic: "neurocritical", prompt: "Refractory status step", stem: "Convulsive status epilepticus persisting despite benzodiazepine and second-line therapy may require:", choices: ["Continuous anesthetic infusion with intensive monitoring", "Only reassurance", "Outpatient Holter monitoring", "Immediate EMG"], answer: 0, explanation: "Refractory status epilepticus often requires continuous anesthetic therapy and ICU-level monitoring." },
+      { id: "p36", difficulty: "attending", topic: "localization", prompt: "Cheiro-oral syndrome", stem: "Numbness limited to the hand and corner of the mouth most classically localizes to the:", choices: ["Thalamus", "Cervical sympathetic chain", "Neuromuscular junction", "Cerebellar vermis"], answer: 0, explanation: "Cheiro-oral sensory syndromes classically localize to thalamic small-vessel lesions." },
+      { id: "p37", difficulty: "attending", topic: "stroke", prompt: "Pseudobulbar source", stem: "Pseudobulbar affect most strongly suggests disruption of:", choices: ["Bilateral corticobulbar pathways", "Only the optic radiations", "Only the dorsal columns", "The common peroneal nerve"], answer: 0, explanation: "Pseudobulbar affect is classically associated with bilateral corticobulbar pathway injury." },
+      { id: "p38", difficulty: "attending", topic: "movement", prompt: "MSA red flag", stem: "Which additional feature most strongly favors multiple system atrophy over idiopathic Parkinson disease?", choices: ["Early severe autonomic failure", "Isolated action tremor improved by alcohol", "Pure stocking sensory loss", "Monocular vision loss"], answer: 0, explanation: "Early marked dysautonomia is a major red flag for multiple system atrophy." },
+      { id: "p39", difficulty: "attending", topic: "neuromuscular", prompt: "Conduction block syndrome", stem: "Motor conduction block on nerve conduction studies strongly supports:", choices: ["Multifocal motor neuropathy", "Pure myotonic dystrophy", "Primary generalized epilepsy", "Basilar migraine"], answer: 0, explanation: "Conduction block is a classic electrodiagnostic clue for multifocal motor neuropathy." },
+      { id: "p40", difficulty: "attending", topic: "imaging", prompt: "Epidural abscess imaging", stem: "The best initial imaging study for suspected spinal epidural abscess is typically:", choices: ["MRI with contrast", "Plain radiography alone", "Routine EEG", "Head CT without contrast only"], answer: 0, explanation: "MRI with contrast is the preferred imaging study for suspected spinal epidural abscess." },
+      { id: "p41", difficulty: "attending", topic: "localization", prompt: "Pseudoathetosis source", stem: "Pseudoathetosis of the fingers is most strongly linked to loss of:", choices: ["Proprioceptive dorsal column input", "Basal ganglia dopamine", "Neuromuscular transmission", "Vestibular end-organ function"], answer: 0, explanation: "Pseudoathetosis reflects impaired position sense, often from dorsal column dysfunction." },
+      { id: "p42", difficulty: "attending", topic: "stroke", prompt: "Thalamic pain syndrome", stem: "Delayed severe burning pain after a pure sensory stroke most strongly suggests injury to the:", choices: ["Thalamus", "Cerebellar flocculus", "Peripheral facial nerve", "Lumbosacral plexus"], answer: 0, explanation: "Central post-stroke pain classically follows thalamic sensory pathway injury." },
+      { id: "p43", difficulty: "attending", topic: "movement", prompt: "Holmes tremor", stem: "A low-frequency tremor present at rest, posture, and action after brainstem injury is most consistent with:", choices: ["Holmes tremor", "Primary orthostatic tremor", "Physiologic tremor", "Asterixis"], answer: 0, explanation: "Holmes tremor classically follows lesions involving midbrain or cerebellothalamic pathways." },
+      { id: "p44", difficulty: "attending", topic: "neurocritical", prompt: "Persistent coma after convulsions", stem: "Unexplained persistent altered mental status after convulsive seizures should prompt urgent evaluation for:", choices: ["Nonconvulsive status epilepticus", "Essential tremor", "Pure radiculopathy", "Benign fasciculations"], answer: 0, explanation: "Persistent unresponsiveness after convulsions should raise concern for ongoing nonconvulsive status." },
+      { id: "p45", difficulty: "attending", topic: "localization", prompt: "Balint syndrome", stem: "Optic ataxia with simultanagnosia and ocular apraxia most strongly suggests lesions in the:", choices: ["Bilateral parieto-occipital regions", "Pontomedullary junction", "Cauda equina", "Neuromuscular junction"], answer: 0, explanation: "Balint syndrome classically follows bilateral parieto-occipital dysfunction." },
+      { id: "p46", difficulty: "attending", topic: "epilepsy", prompt: "Faciobrachial dystonic seizures", stem: "Very brief frequent faciobrachial dystonic seizures should raise concern for autoimmune encephalitis associated with:", choices: ["LGI1 antibodies", "Aquaporin-4 antibodies", "Acetylcholine receptor antibodies", "Voltage-gated calcium channel antibodies only in Lambert-Eaton"], answer: 0, explanation: "Faciobrachial dystonic seizures are classically associated with LGI1 autoimmunity." },
+      { id: "p47", difficulty: "attending", topic: "stroke", prompt: "Border-zone mechanism", stem: "Internal border-zone infarcts are most often associated with:", choices: ["Hypoperfusion or severe proximal stenosis", "Primary demyelination", "Pure neuromuscular junction failure", "Temporal lobe epilepsy"], answer: 0, explanation: "Watershed infarcts classically arise in low-flow states or with severe proximal stenosis." },
+      { id: "p48", difficulty: "attending", topic: "neuromuscular", prompt: "Autonomic clue in weakness", stem: "Prominent dry mouth and other autonomic symptoms with proximal weakness most strongly suggest:", choices: ["Lambert-Eaton myasthenic syndrome", "Typical ocular myasthenia gravis", "Inclusion body myositis", "Primary lateral sclerosis"], answer: 0, explanation: "Autonomic symptoms are a classic clue favoring Lambert-Eaton over typical myasthenia gravis." }
+    ];
+
+    const QUESTION_DIFFICULTY_OVERRIDES = {
+      s14: "resident",
+      s16: "resident",
+      s21: "resident",
+      s37: "resident",
+      s44: "resident",
+      s52: "resident",
+      s53: "resident",
+      s56: "resident",
+      r3: "student",
+      r5: "student",
+      r10: "student",
+      r11: "student",
+      r14: "student",
+      r29: "student",
+      r36: "student",
+      r52: "student",
+      p1: "resident",
+      p5: "resident",
+      p6: "resident",
+      p8: "resident",
+      p10: "resident",
+      p11: "resident",
+      p12: "resident",
+      p16: "resident",
+      p18: "resident",
+      p21: "resident",
+      p23: "resident",
+      p24: "resident",
+      p28: "resident",
+      p37: "resident",
+      p40: "resident",
+      p41: "resident",
+      p44: "resident",
+      r15: "attending",
+      r23: "attending",
+      r32: "attending",
+      r53: "attending",
+    };
+
+    QUESTION_BANK.forEach((question) => {
+      if (QUESTION_DIFFICULTY_OVERRIDES[question.id]) {
+        question.difficulty = QUESTION_DIFFICULTY_OVERRIDES[question.id];
+      }
+    });
+
+    const state = {
+      running: false,
+      paused: false,
+      pauseReason: "",
+      mode: "campaign",
+      difficulty: "student",
+      topic: "all",
+      stageIndex: 0,
+      endlessWave: 1,
+      stageLabel: "Ready",
+      stageTheme: CAMPAIGN_STAGES[0],
+      lives: 3,
+      score: 0,
+      combo: 0,
+      startTime: 0,
+      elapsed: 0,
+      balls: [],
+      bricks: [],
+      drops: [],
+      lasers: [],
+      particles: [],
+      hazards: [],
+      boss: null,
+      paddle: null,
+      pointerX: CANVAS.width / 2,
+      usingPointer: false,
+      awaitingLaunch: true,
+      musicStarted: false,
+      activeEffects: {},
+      shieldCharges: 0,
+      permanent: { paddleTier: 0, dropBoost: 0, scoreBonus: 0 },
+      stats: { bricks: 0, correct: 0, wrong: 0, skipped: 0, bosses: 0, longestCombo: 0 },
+      comboTracker: { brickSincePaddle: false, boundarySincePaddle: false, paddleCycleArmed: false },
+      shownQuestions: [],
+      missedQuestions: [],
+      atlasUnlockedThisRun: 0,
+      banner: null,
+      reviewOpen: false,
+      currentQuestion: null,
+      currentQuestionOrder: [],
+      quizRefractoryRemaining: 0,
+      toastTimer: 0,
+      laserCooldown: 0,
+      lastFrame: 0,
+      runToken: 0,
+      stars: [],
+    };
+
+    const input = { left: false, right: false };
+    let highScores = [];
+    let atlasProgress = [];
+    let responsiveLayoutRaf = 0;
+    let audioPreferences = { sfx: true, music: true };
+    let audioUnlocked = false;
+    let musicPlayRequested = false;
+
+    function loadStorage(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch (error) {
+        return fallback;
+      }
+    }
+
+    function saveStorage(key, value) {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+      } catch (error) {
+        return;
+      }
+    }
+
+    function normalizeAudioPreferences(value) {
+      return {
+        sfx: value && typeof value.sfx === "boolean" ? value.sfx : true,
+        music: value && typeof value.music === "boolean" ? value.music : true,
+      };
+    }
+
+    function syncAudioControls() {
+      ui.sfxToggle.checked = audioPreferences.sfx;
+      ui.musicToggle.checked = audioPreferences.music;
+    }
+
+    function saveAudioPreferences() {
+      saveStorage(STORAGE_KEYS.audio, audioPreferences);
+    }
+
+    function unlockAudio() {
+      if (audioUnlocked) return;
+      audioUnlocked = true;
+    }
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function randomItem(array) {
+      return array[Math.floor(Math.random() * array.length)];
+    }
+
+    function shuffleInPlace(array) {
+      for (let index = array.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [array[index], array[swapIndex]] = [array[swapIndex], array[index]];
+      }
+      return array;
+    }
+
+    function nowMs() {
+      return performance.now();
+    }
+
+    function detectDeviceMode() {
+      const coarsePointer = window.matchMedia("(pointer: coarse)").matches || window.matchMedia("(hover: none)").matches;
+      const narrowViewport = window.innerWidth <= 820;
+      return coarsePointer || narrowViewport ? "mobile" : "desktop";
+    }
+
+    function detectPlatformMode() {
+      const ua = navigator.userAgent || "";
+      const platform = navigator.platform || "";
+      const touchPoints = navigator.maxTouchPoints || 0;
+      const isIOS = /iPad|iPhone|iPod/.test(ua)
+        || (/Mac/.test(platform) && touchPoints > 1);
+      return isIOS ? "ios" : "default";
+    }
+
+    function applyResponsiveLayout() {
+      responsiveLayoutRaf = 0;
+      const mode = detectDeviceMode();
+      const platformMode = detectPlatformMode();
+      document.body.dataset.device = mode;
+      document.body.dataset.platform = platformMode;
+
+      const app = document.querySelector(".app");
+      const hero = document.querySelector(".hero");
+      const hud = document.querySelector(".hud");
+      const shellHead = document.querySelector(".shell-head");
+      const footer = document.querySelector(".footer");
+      const mobileControls = document.querySelector(".mobile-controls");
+      if (!app) {
+        return;
+      }
+
+      const appStyles = getComputedStyle(app);
+      const paddingTop = parseFloat(appStyles.paddingTop) || 0;
+      const paddingBottom = parseFloat(appStyles.paddingBottom) || 0;
+      const aspectRatio = CANVAS.width / CANVAS.height;
+      const heroHeight = hero ? hero.offsetHeight : 0;
+      const hudHeight = hud ? hud.offsetHeight : 0;
+      const hudBottom = hud ? hud.getBoundingClientRect().bottom : 0;
+      const shellHeadHeight = shellHead ? shellHead.offsetHeight : 0;
+      const footerHeight = footer ? footer.offsetHeight : 0;
+      const mobileControlsHeight = mode === "mobile" && mobileControls ? mobileControls.offsetHeight : 0;
+      const buffer = mode === "desktop" ? 44 : 72;
+      document.documentElement.style.setProperty("--mobile-question-top", `${Math.max(92, Math.round(hudBottom + 6))}px`);
+      const availableHeight = clamp(
+        window.innerHeight - heroHeight - hudHeight - shellHeadHeight - footerHeight - mobileControlsHeight - paddingTop - paddingBottom - buffer,
+        mode === "desktop" ? 300 : 240,
+        mode === "desktop" ? 760 : 560
+      );
+
+      document.documentElement.style.setProperty("--canvas-max-height", availableHeight + "px");
+      document.documentElement.style.setProperty("--desktop-playfield-width", Math.round(availableHeight * aspectRatio) + "px");
+    }
+
+    function scheduleResponsiveLayout() {
+      if (responsiveLayoutRaf) {
+        cancelAnimationFrame(responsiveLayoutRaf);
+      }
+      responsiveLayoutRaf = requestAnimationFrame(applyResponsiveLayout);
+    }
+
+    function createSprite(src) {
+      const image = new Image();
+      image.decoding = "async";
+      image.src = src;
+      return image;
+    }
+
+    function spriteReady(image) {
+      return Boolean(image && image.complete && image.naturalWidth > 0);
+    }
+
+    function preloadSprites() {
+      Object.entries(SPRITE_PATHS).forEach(([key, src]) => {
+        sprites[key] = createSprite(src);
+      });
+    }
+
+    function createAudioPool(src, size = 5) {
+      return Array.from({ length: size }, () => {
+        const audio = new Audio(src);
+        audio.preload = "auto";
+        return audio;
+      });
+    }
+
+    function preloadAudio() {
+      Object.entries(SOUND_PATHS).forEach(([key, src]) => {
+        audioPools[key] = createAudioPool(src);
+      });
+      musicTrack = new Audio(MUSIC_PATH);
+      musicTrack.preload = "auto";
+      musicTrack.loop = true;
+      musicTrack.volume = 0.34;
+    }
+
+    function playSound(name, volume = 0.38) {
+      if (!audioPreferences.sfx || !audioUnlocked) {
+        return;
+      }
+      const pool = audioPools[name];
+      if (!pool || !pool.length) {
+        return;
+      }
+
+      const available = pool.find((audio) => audio.paused || audio.ended);
+      const sound = available || new Audio(SOUND_PATHS[name]);
+      sound.volume = volume;
+
+      try {
+        sound.currentTime = 0;
+        const playPromise = sound.play();
+        if (playPromise && typeof playPromise.catch === "function") {
+          playPromise.catch(() => {});
+        }
+      } catch (error) {
+        return;
+      }
+    }
+
+    function shouldPlayMusic() {
+      return Boolean(
+        musicTrack &&
+        audioUnlocked &&
+        audioPreferences.music &&
+        state.running &&
+        state.musicStarted &&
+        !state.paused &&
+        !state.reviewOpen
+      );
+    }
+
+    function syncMusicPlayback(forceAttempt = false) {
+      if (!musicTrack) {
+        return;
+      }
+
+      if (!shouldPlayMusic()) {
+        if (!musicTrack.paused) {
+          musicTrack.pause();
+        }
+        musicPlayRequested = false;
+        return;
+      }
+
+      if (!forceAttempt && (musicPlayRequested || !musicTrack.paused)) {
+        return;
+      }
+
+      try {
+        musicTrack.volume = 0.34;
+        musicPlayRequested = true;
+        const playPromise = musicTrack.play();
+        if (playPromise && typeof playPromise.catch === "function") {
+          playPromise.then(() => {
+            musicPlayRequested = false;
+          }).catch(() => {
+            musicPlayRequested = false;
+          });
+        } else {
+          musicPlayRequested = false;
+        }
+      } catch (error) {
+        musicPlayRequested = false;
+        return;
+      }
+    }
+
+    function getBrickSprite(brick) {
+      if (brick.kind === "dense" && brick.hp === brick.maxHp) return sprites.brickDense;
+      if (brick.kind === "dense" && brick.hp < brick.maxHp) return sprites.brickRegular;
+      if (brick.kind === "power") return sprites.brickPower;
+      if (brick.kind === "quiz") return sprites.brickQuiz;
+      if (brick.kind === "barrier") return sprites.brickBarrier;
+      return sprites.brickRegular;
+    }
+
+    function createStars() {
+      state.stars = Array.from({ length: 44 }, () => ({
+        x: Math.random() * CANVAS.width,
+        y: Math.random() * CANVAS.height,
+        size: Math.random() * 2 + 1,
+        speed: Math.random() * 10 + 8,
+        alpha: Math.random() * 0.5 + 0.15,
+      }));
+    }
+
+    function showToast(title, body) {
+      ui.toast.innerHTML = "<strong>" + title + "</strong>" + body;
+      ui.toast.classList.add("show");
+      state.toastTimer = nowMs() + 2200;
+    }
+
+    function hideToastIfNeeded() {
+      if (state.toastTimer && nowMs() > state.toastTimer) {
+        ui.toast.classList.remove("show");
+        state.toastTimer = 0;
+      }
+    }
+
+    function setBanner(title, subtitle, duration = 1800) {
+      state.banner = { title, subtitle, until: nowMs() + duration };
+    }
+
+    function initPaddle() {
+      state.paddle = {
+        x: CANVAS.width / 2 - 64,
+        y: CANVAS.height - 42,
+        width: 128,
+        height: 20,
+        speed: 540,
+      };
+      syncPaddleWidth();
+    }
+
+    function syncPaddleWidth() {
+      if (!state.paddle) return;
+      const wideBonus = isEffectActive("wide") ? 36 : 0;
+      const permanentBonus = state.permanent.paddleTier * 14;
+      state.paddle.width = 128 + wideBonus + permanentBonus;
+      state.paddle.x = clamp(state.paddle.x, 0, CANVAS.width - state.paddle.width);
+    }
+
+    function createBall(stuck = true) {
+      const centerX = state.paddle.x + state.paddle.width / 2;
+      return { x: centerX, y: state.paddle.y - 12, prevX: centerX, prevY: state.paddle.y - 12, vx: 165, vy: -330, r: 10, stuck, angle: 0, spin: 0 };
+    }
+
+    function resetBalls() {
+      state.balls = [createBall(true)];
+      state.awaitingLaunch = true;
+      state.comboTracker = { brickSincePaddle: false, boundarySincePaddle: false, paddleCycleArmed: false };
+    }
+
+    function getBallBaseSpeed() {
+      const stageBoost = state.mode === "campaign" ? state.stageIndex * 8 : Math.min(54, (state.endlessWave - 1) * 6);
+      return 340 + stageBoost;
+    }
+
+    function normalizeBall(ball, targetSpeed = getBallBaseSpeed()) {
+      const magnitude = Math.hypot(ball.vx, ball.vy) || 1;
+      ball.vx = (ball.vx / magnitude) * targetSpeed;
+      ball.vy = (ball.vy / magnitude) * targetSpeed;
+    }
+
+    function updateBallSpin(ball) {
+      const speed = Math.hypot(ball.vx, ball.vy) || getBallBaseSpeed();
+      const direction = Math.sign(ball.vx) || (ball.spin >= 0 ? 1 : -1) || 1;
+      ball.spin = direction * clamp(speed / 42, 4.5, 10.5);
+    }
+
+    function launchBalls() {
+      if (!state.running || state.paused || !state.awaitingLaunch) return;
+      const speed = getBallBaseSpeed();
+      state.balls.forEach((ball, index) => {
+        if (ball.stuck) {
+          const direction = index % 2 === 0 ? 1 : -1;
+          ball.stuck = false;
+          ball.vx = (120 + Math.random() * 80) * direction;
+          ball.vy = -speed;
+          normalizeBall(ball, speed);
+          updateBallSpin(ball);
+        }
+      });
+      state.awaitingLaunch = false;
+      state.musicStarted = true;
+      syncMusicPlayback(true);
+      showToast("Cortical volley", "Brain launched.");
+    }
+
+    function boostQuizPattern(pattern, multiplier = QUIZ_BRICK_MULTIPLIER) {
+      const grid = pattern.map((row) => row.split(""));
+      const quizCells = [];
+      const candidates = [];
+      const centerRow = (grid.length - 1) / 2;
+      const centerCol = (grid[0].length - 1) / 2;
+
+      grid.forEach((row, rowIndex) => {
+        row.forEach((cell, colIndex) => {
+          if (cell === "Q") {
+            quizCells.push({ rowIndex, colIndex });
+            return;
+          }
+          if (cell !== "N" && cell !== "D" && cell !== "P") return;
+          candidates.push({ rowIndex, colIndex, cell });
+        });
+      });
+
+      const baseQuizCount = Math.max(1, quizCells.length);
+      const targetCount = Math.min(quizCells.length + candidates.length, Math.round(baseQuizCount * multiplier));
+      const needed = Math.max(0, targetCount - quizCells.length);
+      if (!needed) return pattern.slice();
+
+      const typePriority = { N: 0, D: 1, P: 2 };
+      const selectedQuizCells = quizCells.slice();
+      const remaining = candidates.slice();
+
+      function getSpacingMetrics(cell) {
+        if (!selectedQuizCells.length) {
+          const centerDistance = Math.hypot((cell.colIndex - centerCol) * 1.1, (cell.rowIndex - centerRow) * 1.35);
+          return { minDistance: centerDistance, nearCount: 0, rowCrowding: 0, centerDistance };
+        }
+
+        let minDistance = Infinity;
+        let nearCount = 0;
+        let rowCrowding = 0;
+        selectedQuizCells.forEach((quiz) => {
+          const rowDelta = Math.abs(cell.rowIndex - quiz.rowIndex);
+          const colDelta = Math.abs(cell.colIndex - quiz.colIndex);
+          const distance = Math.hypot(colDelta * 1.1, rowDelta * 1.35);
+          minDistance = Math.min(minDistance, distance);
+          if (rowDelta <= 1 && colDelta <= 1) nearCount += 1;
+          if (rowDelta === 0 || (rowDelta === 1 && colDelta <= 2)) rowCrowding += 1;
+        });
+        const centerDistance = Math.hypot((cell.colIndex - centerCol) * 1.1, (cell.rowIndex - centerRow) * 1.35);
+        return { minDistance, nearCount, rowCrowding, centerDistance };
+      }
+
+      for (let index = 0; index < needed && remaining.length; index += 1) {
+        let bestIndex = 0;
+        let bestMetrics = getSpacingMetrics(remaining[0]);
+
+        for (let candidateIndex = 1; candidateIndex < remaining.length; candidateIndex += 1) {
+          const candidate = remaining[candidateIndex];
+          const candidateMetrics = getSpacingMetrics(candidate);
+          const currentBest = remaining[bestIndex];
+
+          const shouldReplace = candidateMetrics.nearCount < bestMetrics.nearCount
+            || (candidateMetrics.nearCount === bestMetrics.nearCount && candidateMetrics.rowCrowding < bestMetrics.rowCrowding)
+            || (candidateMetrics.nearCount === bestMetrics.nearCount && candidateMetrics.rowCrowding === bestMetrics.rowCrowding && candidateMetrics.minDistance > bestMetrics.minDistance)
+            || (candidateMetrics.nearCount === bestMetrics.nearCount && candidateMetrics.rowCrowding === bestMetrics.rowCrowding && candidateMetrics.minDistance === bestMetrics.minDistance && typePriority[candidate.cell] < typePriority[currentBest.cell])
+            || (candidateMetrics.nearCount === bestMetrics.nearCount && candidateMetrics.rowCrowding === bestMetrics.rowCrowding && candidateMetrics.minDistance === bestMetrics.minDistance && typePriority[candidate.cell] === typePriority[currentBest.cell] && candidateMetrics.centerDistance > bestMetrics.centerDistance);
+
+          if (shouldReplace) {
+            bestIndex = candidateIndex;
+            bestMetrics = candidateMetrics;
+          }
+        }
+
+        const [chosen] = remaining.splice(bestIndex, 1);
+        grid[chosen.rowIndex][chosen.colIndex] = "Q";
+        selectedQuizCells.push(chosen);
+      }
+
+      return grid.map((row) => row.join(""));
+    }
+
+    function getQuizBrickMultiplier() {
+      if (state.mode === "campaign") {
+        return CAMPAIGN_QUIZ_START_MULTIPLIER + state.stageIndex * CAMPAIGN_QUIZ_STAGE_STEP;
+      }
+      return QUIZ_BRICK_MULTIPLIER;
+    }
+
+    function buildPatternBricks(pattern, theme) {
+      const cols = pattern[0].length;
+      const totalWidth = cols * BRICK.width + (cols - 1) * BRICK.gap;
+      const startX = (CANVAS.width - totalWidth) / 2;
+      const startY = 92;
+      const bricks = [];
+      pattern.forEach((row, rowIndex) => {
+        [...row].forEach((cell, colIndex) => {
+          if (cell === ".") return;
+          let kind = "standard";
+          let hp = 1;
+          let points = 100;
+          if (cell === "D") { kind = "dense"; hp = 2; points = 160; }
+          if (cell === "P") { kind = "power"; points = 150; }
+          if (cell === "Q") { kind = "quiz"; points = 170; }
+          if (cell === "B") { kind = "barrier"; hp = 2; points = 140; }
+          bricks.push({
+            x: startX + colIndex * (BRICK.width + BRICK.gap),
+            y: startY + rowIndex * (BRICK.height + BRICK.gap),
+            w: BRICK.width,
+            h: BRICK.height,
+            kind,
+            hp,
+            maxHp: hp,
+            points,
+            color: theme.palette[rowIndex % theme.palette.length],
+          });
+        });
+      });
+      return bricks;
+    }
+
+    function generateEndlessPattern(wave, bossRound) {
+      if (bossRound) {
+        return ["..DDBBDD..", ".BBDQDBB.", "..DDDDDD.."];
+      }
+      const rows = clamp(4 + Math.floor((wave - 1) / 2), 4, 6);
+      const cols = 10;
+      const pattern = [];
+      for (let row = 0; row < rows; row += 1) {
+        const leftHalf = [];
+        for (let col = 0; col < cols / 2; col += 1) {
+          const roll = Math.random();
+          let cell = "N";
+          if (roll < 0.1) cell = ".";
+          else if (roll < 0.2) cell = "D";
+          else if (roll < 0.27) cell = "P";
+          leftHalf.push(cell);
+        }
+        pattern.push(leftHalf.concat([...leftHalf].reverse()).join(""));
+      }
+      const qRow = Math.floor(Math.random() * pattern.length);
+      const qCol = 4 + Math.floor(Math.random() * 2);
+      const chars = pattern[qRow].split("");
+      chars[qCol] = "Q";
+      pattern[qRow] = chars.join("");
+      return pattern;
+    }
+
+    function getEndlessTheme(wave) {
+      const base = CAMPAIGN_STAGES[(wave - 1) % 4];
+      return {
+        name: base.name + " Wave " + wave,
+        subtitle: "Endless escalation.",
+        palette: base.palette,
+        boss: wave % 3 === 0,
+        bossName: wave % 3 === 0 ? randomItem(["Localize the Lesion", "Board Review Beast", "Stroke Code Surge"]) : "",
+        pattern: generateEndlessPattern(wave, wave % 3 === 0),
+      };
+    }
+
+    function createBoss(theme) {
+      const waveFactor = state.mode === "endless" ? Math.max(0, state.endlessWave - 1) : state.stageIndex;
+      return {
+        name: theme.bossName || "Boss",
+        x: CANVAS.width / 2 - 86,
+        y: 84,
+        w: 172,
+        h: 54,
+        vx: 130 + waveFactor * 10,
+        hp: 20 + waveFactor * 2,
+        maxHp: 20 + waveFactor * 2,
+        flashUntil: 0,
+        nextHazard: nowMs() + 2000,
+        rewardThresholds: new Set([14, 8, 4]),
+      };
+    }
+
+    function buildStage(showBanner = true) {
+      const theme = state.mode === "campaign" ? CAMPAIGN_STAGES[state.stageIndex] : getEndlessTheme(state.endlessWave);
+      const boostedPattern = boostQuizPattern(theme.pattern, getQuizBrickMultiplier());
+      state.stageTheme = theme;
+      state.stageLabel = state.mode === "campaign"
+        ? "Stage " + (state.stageIndex + 1)
+        : "Wave " + state.endlessWave;
+      state.bricks = buildPatternBricks(boostedPattern, theme);
+      state.drops = [];
+      state.lasers = [];
+      state.hazards = [];
+      state.boss = theme.boss ? createBoss(theme) : null;
+      state.laserCooldown = 0;
+      if (!state.paddle) initPaddle();
+      state.paddle.x = CANVAS.width / 2 - state.paddle.width / 2;
+      resetBalls();
+      syncPaddleWidth();
+      updateHud();
+      ui.shellTitle.textContent = state.stageLabel;
+      ui.shellSubtitle.textContent = theme.subtitle;
+      if (showBanner) {
+        setBanner(state.stageLabel, theme.boss ? "Boss round incoming." : "Quiz synapse bricks armed.", 2600);
+      }
+    }
+
+    function startRun() {
+      state.runToken += 1;
+      state.mode = ui.modeSelect.value;
+      state.difficulty = ui.difficultySelect.value;
+      state.topic = ui.topicSelect.value;
+      state.stageIndex = 0;
+      state.endlessWave = 1;
+      state.lives = 3;
+      state.score = 0;
+      state.combo = 0;
+      state.startTime = nowMs();
+      state.elapsed = 0;
+        state.activeEffects = {};
+        state.shieldCharges = 0;
+        state.permanent = { paddleTier: 0, dropBoost: 0, scoreBonus: 0 };
+        state.stats = { bricks: 0, correct: 0, wrong: 0, skipped: 0, bosses: 0, longestCombo: 0 };
+        state.comboTracker = { brickSincePaddle: false, boundarySincePaddle: false, paddleCycleArmed: false };
+        state.shownQuestions = [];
+        state.missedQuestions = [];
+      state.atlasUnlockedThisRun = 0;
+        state.reviewOpen = false;
+        state.currentQuestion = null;
+        state.currentQuestionOrder = [];
+        state.quizRefractoryRemaining = 0;
+        state.particles = [];
+        state.running = true;
+        state.paused = false;
+        state.pauseReason = "";
+        state.musicStarted = false;
+        musicPlayRequested = false;
+        ui.settingsOverlay.classList.add("hidden");
+        ui.reviewOverlay.classList.add("hidden");
+        ui.atlasOverlay.classList.add("hidden");
+        ui.questionOverlay.classList.add("hidden");
+        ui.startButton.textContent = "Play";
+        if (musicTrack) {
+          try {
+            musicTrack.currentTime = 0;
+          } catch (error) {}
+        }
+        initPaddle();
+        buildStage(false);
+        updateHud();
+        scheduleResponsiveLayout();
+      }
+
+    function resetRun() {
+      state.runToken += 1;
+      state.running = false;
+      state.paused = false;
+      state.pauseReason = "";
+      musicPlayRequested = false;
+      state.stageIndex = 0;
+      state.endlessWave = 1;
+      state.score = 0;
+      state.combo = 0;
+        state.lives = 3;
+        state.balls = [];
+          state.bricks = [];
+          state.drops = [];
+          state.lasers = [];
+          state.particles = [];
+          state.hazards = [];
+          state.boss = null;
+        state.comboTracker = { brickSincePaddle: false, boundarySincePaddle: false, paddleCycleArmed: false };
+        state.awaitingLaunch = true;
+        state.musicStarted = false;
+        state.currentQuestion = null;
+        state.currentQuestionOrder = [];
+        state.quizRefractoryRemaining = 0;
+        ui.settingsOverlay.classList.add("hidden");
+        ui.questionOverlay.classList.add("hidden");
+        ui.reviewOverlay.classList.add("hidden");
+        ui.atlasOverlay.classList.add("hidden");
+        ui.startButton.textContent = "Play";
+        ui.shellTitle.textContent = "Ready Room";
+        ui.shellSubtitle.textContent = "Open Settings to change mode, tier, and topic.";
+        initPaddle();
+        resetBalls();
+        syncMusicPlayback();
+        updateHud();
+        setBanner("BRAIN-out!", "Load in when ready.", 1800);
+        scheduleResponsiveLayout();
+      }
+
+    function syncRunControls() {
+      const showPause = state.running && !state.paused && !state.reviewOpen && !state.awaitingLaunch;
+      ui.startButton.classList.toggle("hidden", showPause);
+      ui.pauseButton.classList.toggle("hidden", !showPause);
+    }
+
+    function updateHud() {
+      syncRunControls();
+      syncMusicPlayback();
+      ui.hudStage.textContent = state.running ? state.stageLabel : "Ready";
+      ui.hudLives.textContent = state.lives + (state.shieldCharges ? " + " + state.shieldCharges + " shield" : "");
+      ui.hudScore.textContent = Math.round(state.score).toLocaleString();
+      ui.hudCombo.textContent = "x" + state.combo;
+      ui.settingsAtlasProgress.textContent = atlasProgress.length + " / " + QUESTION_BANK.length;
+      const active = [];
+      if (isEffectActive("wide")) active.push(POWER_UPS.wide.name);
+      if (isEffectActive("slow")) active.push(POWER_UPS.slow.name);
+      if (isEffectActive("laser")) active.push(POWER_UPS.laser.name);
+      if (isEffectActive("sticky")) active.push(POWER_UPS.sticky.name);
+      if (state.shieldCharges > 0) active.push(POWER_UPS.shield.name + " x" + state.shieldCharges);
+      if (state.permanent.paddleTier > 0) active.push("Knowledge Rank " + state.permanent.paddleTier);
+      ui.hudEffects.textContent = active.length ? active.join(" | ") : "None";
+    }
+
+    function isEffectActive(name) {
+      return Boolean(state.activeEffects[name] && state.activeEffects[name] > nowMs());
+    }
+
+    function extendEffect(name, duration) {
+      state.activeEffects[name] = Math.max(state.activeEffects[name] || 0, nowMs() + duration);
+      if (name === "wide") syncPaddleWidth();
+      updateHud();
+    }
+
+    function spawnMultiball() {
+      if (!state.balls.length) return;
+      const clones = [];
+      state.balls.slice(0, 2).forEach((ball, index) => {
+        const angle = index === 0 ? 0.55 : -0.55;
+        const speed = getBallBaseSpeed();
+        const vx = ball.vx * Math.cos(angle) - ball.vy * Math.sin(angle);
+        const vy = ball.vx * Math.sin(angle) + ball.vy * Math.cos(angle);
+        const clone = { x: ball.x, y: ball.y, prevX: ball.x, prevY: ball.y, vx, vy, r: ball.r, stuck: false, angle: ball.angle || 0, spin: ball.spin || 0 };
+        normalizeBall(clone, speed);
+        updateBallSpin(clone);
+        clones.push(clone);
+      });
+      state.balls.push(...clones);
+      if (state.awaitingLaunch) launchBalls();
+    }
+
+    function applyPowerUp(type, direct = false) {
+      if (type === "wide") extendEffect("wide", 18000);
+      if (type === "multiball") spawnMultiball();
+      if (type === "slow") extendEffect("slow", 14000);
+      if (type === "laser") extendEffect("laser", 16000);
+      if (type === "sticky") extendEffect("sticky", 18000);
+      if (type === "life") state.lives = Math.min(7, state.lives + 1);
+      if (type === "shield") state.shieldCharges = Math.min(4, state.shieldCharges + 1);
+      if (direct) state.score += 60;
+      playSound("successCue", 0.42);
+      showToast(POWER_UPS[type].name, type === "wide" ? "Synaptic paddle widened." : "Upgrade collected.");
+      updateHud();
+    }
+
+    function getDropPool() {
+      const pool = ["wide", "slow", "sticky", "laser", "shield", "life", "multiball"];
+      return state.permanent.paddleTier > 1 ? pool.concat(["laser", "multiball"]) : pool;
+    }
+
+    function spawnDrop(x, y, forcedType = null) {
+      state.drops.push({ x, y, vy: 120, type: forcedType || randomItem(getDropPool()), size: 14, phase: Math.random() * Math.PI * 2 });
+    }
+
+    function isQuizRefractoryActive() {
+      return state.quizRefractoryRemaining > 0;
+    }
+
+    function startQuizRefractory() {
+      state.quizRefractoryRemaining = QUIZ_REFRACTORY_MS;
+    }
+
+    function stripOneReward() {
+      const activeEntries = Object.entries(state.activeEffects).filter(([, until]) => until > nowMs());
+      if (activeEntries.length) {
+        activeEntries.sort((a, b) => b[1] - a[1]);
+        const [effectName] = activeEntries[0];
+        delete state.activeEffects[effectName];
+        if (effectName === "wide") syncPaddleWidth();
+        updateHud();
+        return POWER_UPS[effectName] ? POWER_UPS[effectName].name : "Upgrade";
+      }
+      if (state.shieldCharges > 0) {
+        state.shieldCharges -= 1;
+        updateHud();
+        return POWER_UPS.shield.name;
+      }
+      if (state.permanent.paddleTier > 0) {
+        state.permanent.paddleTier -= 1;
+        state.permanent.dropBoost = Math.max(0, state.permanent.dropBoost - 1);
+        state.permanent.scoreBonus = Math.max(0, state.permanent.scoreBonus - 0.05);
+        syncPaddleWidth();
+        updateHud();
+        return "Knowledge Rank";
+      }
+      return null;
+    }
+
+    function unlockAtlas(question) {
+      if (!atlasProgress.includes(question.id)) {
+        atlasProgress.push(question.id);
+        saveStorage(STORAGE_KEYS.atlas, atlasProgress);
+        state.atlasUnlockedThisRun += 1;
+      }
+      renderAtlas();
+      updateHud();
+    }
+
+    function getQuestionPool() {
+      const difficultyFilter = state.difficulty === "mixed" ? () => true : (question) => question.difficulty === state.difficulty;
+      const topicFilter = state.topic === "all" ? () => true : (question) => question.topic === state.topic;
+      let pool = QUESTION_BANK.filter((question) => difficultyFilter(question) && topicFilter(question));
+      if (!pool.length && state.topic !== "all") pool = QUESTION_BANK.filter((question) => difficultyFilter(question));
+      if (!pool.length && state.difficulty !== "mixed") pool = QUESTION_BANK.filter((question) => topicFilter(question));
+      return pool.length ? pool : QUESTION_BANK.slice();
+    }
+
+    function chooseQuestion() {
+      const pool = getQuestionPool();
+      const unseen = pool.filter((question) => !state.shownQuestions.includes(question.id));
+      const chosen = unseen.length ? randomItem(unseen) : randomItem(pool);
+      state.shownQuestions.push(chosen.id);
+      return chosen;
+    }
+
+    function triggerQuestion() {
+      if (!state.running) return;
+      state.currentQuestion = chooseQuestion();
+      state.paused = true;
+      state.pauseReason = "question";
+      renderQuestion();
+    }
+
+    function renderQuestion() {
+      const question = state.currentQuestion;
+      if (!question) return;
+      ui.questionTier.textContent = DIFFICULTIES[question.difficulty].label;
+      ui.questionTier.style.color = DIFFICULTIES[question.difficulty].color;
+      ui.questionTopic.textContent = TOPICS[question.topic].label;
+      ui.questionTopic.style.color = TOPICS[question.topic].color;
+      ui.questionPrompt.textContent = question.prompt;
+      ui.questionStem.textContent = question.stem;
+      ui.questionAnswers.innerHTML = "";
+      ui.questionExplanation.classList.add("hidden");
+      ui.questionExplanation.innerHTML = "";
+      ui.continueQuestionButton.classList.add("hidden");
+      ui.skipQuestionButton.classList.remove("hidden");
+      state.currentQuestionOrder = shuffleInPlace(question.choices.map((_, index) => index));
+      state.currentQuestionOrder.forEach((choiceIndex, index) => {
+        const button = document.createElement("button");
+        button.textContent = String.fromCharCode(65 + index) + ". " + question.choices[choiceIndex];
+        button.addEventListener("click", () => answerQuestion(index));
+        ui.questionAnswers.appendChild(button);
+      });
+      ui.questionOverlay.classList.remove("hidden");
+    }
+
+    function answerQuestion(index) {
+      const question = state.currentQuestion;
+      if (!question) return;
+      const answerOrder = state.currentQuestionOrder && state.currentQuestionOrder.length
+        ? state.currentQuestionOrder
+        : question.choices.map((_, choiceIndex) => choiceIndex);
+      const correctDisplayIndex = answerOrder.indexOf(question.answer);
+      const selectedChoiceIndex = answerOrder[index];
+      const buttons = [...ui.questionAnswers.querySelectorAll("button")];
+      buttons.forEach((button, buttonIndex) => {
+        button.disabled = true;
+        if (buttonIndex === correctDisplayIndex) button.classList.add("correct");
+        else if (buttonIndex === index) button.classList.add("wrong");
+      });
+      const correct = selectedChoiceIndex === question.answer;
+      ui.questionExplanation.classList.remove("hidden");
+      if (correct) {
+        state.stats.correct += 1;
+        state.score += 420 + state.stats.correct * 45;
+        unlockAtlas(question);
+        if (state.stats.correct % 2 === 0) {
+          state.permanent.paddleTier = clamp(state.permanent.paddleTier + 1, 0, 3);
+          state.permanent.dropBoost = clamp(state.permanent.dropBoost + 1, 0, 3);
+          state.permanent.scoreBonus = Math.min(0.25, state.permanent.scoreBonus + 0.05);
+        }
+        const rewardType = randomItem(getDropPool());
+        applyPowerUp(rewardType, true);
+        ui.questionExplanation.innerHTML = "<strong>Correct.</strong> " + question.explanation + "<br><br><strong>Reward:</strong> " + POWER_UPS[rewardType].name + (state.stats.correct % 2 === 0 ? " plus a permanent paddle rank up." : ".");
+      } else {
+        state.stats.wrong += 1;
+        playSound("brickBreak", 0.42);
+        const removed = stripOneReward();
+        state.missedQuestions.push(question);
+        ui.questionExplanation.innerHTML = "<strong>Missed.</strong> Correct answer: " + question.choices[question.answer] + ". " + question.explanation + (removed ? "<br><br><strong>Penalty:</strong> Lost " + removed + "." : "<br><br><strong>Penalty:</strong> No active upgrade to remove.");
+      }
+      updateHud();
+      ui.skipQuestionButton.classList.add("hidden");
+      ui.continueQuestionButton.classList.remove("hidden");
+      renderAtlas();
+    }
+
+    function skipQuestion() {
+      if (!state.currentQuestion) return;
+      state.stats.skipped += 1;
+      ui.questionOverlay.classList.add("hidden");
+      state.currentQuestion = null;
+      state.currentQuestionOrder = [];
+      state.paused = false;
+      state.pauseReason = "";
+    }
+
+    function closeQuestion() {
+      ui.questionOverlay.classList.add("hidden");
+      state.currentQuestion = null;
+      state.currentQuestionOrder = [];
+      state.paused = false;
+      state.pauseReason = "";
+      updateHud();
+    }
+
+    function openAtlas() {
+      renderAtlas();
+      ui.atlasOverlay.classList.remove("hidden");
+      if (state.running && !state.paused) {
+        state.paused = true;
+        state.pauseReason = "atlas";
+      }
+    }
+
+    function closeAtlas() {
+      ui.atlasOverlay.classList.add("hidden");
+      if (state.pauseReason === "atlas") {
+        state.paused = false;
+        state.pauseReason = "";
+      }
+    }
+
+    function openSettings() {
+      if (state.pauseReason === "question" || state.pauseReason === "review") {
+        return;
+      }
+      ui.settingsOverlay.classList.remove("hidden");
+      if (state.running && !state.paused) {
+        state.paused = true;
+        state.pauseReason = "settings";
+      }
+    }
+
+    function closeSettings() {
+      ui.settingsOverlay.classList.add("hidden");
+      if (state.pauseReason === "settings") {
+        state.paused = false;
+        state.pauseReason = "";
+      }
+    }
+
+    function renderAtlas() {
+      const unlockedSet = new Set(atlasProgress);
+      const studentCount = QUESTION_BANK.filter((question) => question.difficulty === "student" && unlockedSet.has(question.id)).length;
+      const residentCount = QUESTION_BANK.filter((question) => question.difficulty === "resident" && unlockedSet.has(question.id)).length;
+      const attendingCount = QUESTION_BANK.filter((question) => question.difficulty === "attending" && unlockedSet.has(question.id)).length;
+      ui.atlasSummary.innerHTML = `
+        <div class="summary-card">Unlocked<strong>${unlockedSet.size}</strong></div>
+        <div class="summary-card">Student<strong>${studentCount}</strong></div>
+        <div class="summary-card">Resident<strong>${residentCount}</strong></div>
+        <div class="summary-card">Attending<strong>${attendingCount}</strong></div>
+      `;
+      ui.atlasEntries.innerHTML = "";
+      QUESTION_BANK.forEach((question) => {
+        const unlocked = unlockedSet.has(question.id);
+        const card = document.createElement("article");
+        card.className = "atlas-card" + (unlocked ? "" : " locked");
+        card.innerHTML = `
+          <div class="question-meta">
+            <span class="pill">${DIFFICULTIES[question.difficulty].label}</span>
+            <span class="pill">${TOPICS[question.topic].label}</span>
+          </div>
+          <h3>${unlocked ? question.prompt : "Locked synapse entry"}</h3>
+          <p>${unlocked ? question.stem : "Answer the matching quiz brick to unlock."}</p>
+          <p>${unlocked ? "<strong>Key:</strong> " + question.choices[question.answer] + ". " + question.explanation : ""}</p>
+        `;
+        ui.atlasEntries.appendChild(card);
+      });
+    }
+
+    function renderHighScores() {
+      if (!ui.highScores) {
+        return;
+      }
+      if (!highScores.length) {
+        ui.highScores.innerHTML = '<div class="score-row"><span>No runs yet</span><strong>Play</strong></div>';
+        return;
+      }
+      ui.highScores.innerHTML = "";
+      highScores.slice(0, 8).forEach((entry, index) => {
+        const row = document.createElement("div");
+        row.className = "score-row";
+        row.innerHTML = `<span>#${index + 1} ${entry.mode} / ${entry.difficulty} / ${entry.topic}</span><strong>${Math.round(entry.score).toLocaleString()}</strong>`;
+        ui.highScores.appendChild(row);
+      });
+    }
+
+    function saveHighScore(score) {
+      highScores.push({ score, mode: state.mode, difficulty: state.difficulty, topic: state.topic, date: new Date().toISOString() });
+      highScores.sort((a, b) => b.score - a.score);
+      highScores = highScores.slice(0, 10);
+      saveStorage(STORAGE_KEYS.highScores, highScores);
+      renderHighScores();
+    }
+
+    function fireLaser() {
+      if (!state.running || state.paused || !isEffectActive("laser") || state.awaitingLaunch) return;
+      if (state.laserCooldown > 0) return;
+      state.lasers.push(
+        { x: state.paddle.x + 18, y: state.paddle.y, vy: -760 },
+        { x: state.paddle.x + state.paddle.width - 18, y: state.paddle.y, vy: -760 },
+      );
+      state.laserCooldown = 0.32;
+      showToast("TMS Pulse", "Laser volley fired.");
+    }
+
+    function loseLife() {
+      state.lives -= 1;
+      playSound("loseLife", 0.42);
+      state.comboTracker = { brickSincePaddle: false, boundarySincePaddle: false, paddleCycleArmed: false };
+      if (state.lives <= 0) {
+        finishRun(false);
+        return;
+      }
+      syncPaddleWidth();
+      resetBalls();
+      setBanner("Neural setback", "Life lost. Relaunch when ready.", 2200);
+      updateHud();
+    }
+
+    function finishRun(wonCampaign) {
+      if (wonCampaign) {
+        playSound("successCue", 0.46);
+      }
+      state.running = false;
+      state.paused = true;
+      state.pauseReason = "review";
+      state.reviewOpen = true;
+      syncMusicPlayback();
+      const timeSeconds = Math.round((state.elapsed || 0) / 1000);
+      const bonus = state.lives * 220 + state.stats.correct * 160 + state.stats.longestCombo * 25 + state.stats.bosses * 350 + timeSeconds * 4;
+      state.score += bonus;
+      saveHighScore(state.score);
+      updateHud();
+      ui.reviewTitle.textContent = wonCampaign ? "Campaign Cleared" : "Run Complete";
+      ui.reviewSummary.textContent = wonCampaign
+        ? "Full campaign clear."
+        : "Review stats and missed questions.";
+      ui.reviewStats.innerHTML = `
+        <div class="stat-row"><span>Final score</span><strong>${Math.round(state.score).toLocaleString()}</strong></div>
+        <div class="stat-row"><span>Bricks cleared</span><strong>${state.stats.bricks}</strong></div>
+        <div class="stat-row"><span>Correct answers</span><strong>${state.stats.correct}</strong></div>
+        <div class="stat-row"><span>Missed answers</span><strong>${state.stats.wrong}</strong></div>
+        <div class="stat-row"><span>Longest combo</span><strong>x${state.stats.longestCombo}</strong></div>
+        <div class="stat-row"><span>Boss rounds cleared</span><strong>${state.stats.bosses}</strong></div>
+      `;
+      ui.reviewMissed.innerHTML = "";
+      if (!state.missedQuestions.length) {
+        const card = document.createElement("article");
+        card.className = "review-card";
+        card.innerHTML = "<h3>Clean sheet</h3><p>No missed questions this run.</p>";
+        ui.reviewMissed.appendChild(card);
+      } else {
+        state.missedQuestions.forEach((question) => {
+          const card = document.createElement("article");
+          card.className = "review-card";
+          card.innerHTML = `
+            <div class="question-meta">
+              <span class="pill">${DIFFICULTIES[question.difficulty].label}</span>
+              <span class="pill">${TOPICS[question.topic].label}</span>
+            </div>
+            <h3>${question.prompt}</h3>
+            <p>${question.stem}</p>
+            <p><strong>Correct answer:</strong> ${question.choices[question.answer]}</p>
+            <p>${question.explanation}</p>
+          `;
+          ui.reviewMissed.appendChild(card);
+        });
+      }
+      ui.reviewOverlay.classList.remove("hidden");
+    }
+
+    function checkStageClear() {
+      const remainingBricks = state.bricks.length > 0;
+      if (state.boss && state.boss.hp > 0) {
+        if (!remainingBricks) setBanner(state.boss.name, "Boss exposed. Keep the pressure on.", 1200);
+        return;
+      }
+      if (remainingBricks) return;
+      if (state.mode === "campaign") {
+        if (state.stageIndex >= CAMPAIGN_STAGES.length - 1) {
+          finishRun(true);
+        } else {
+          const token = state.runToken;
+          state.stageIndex += 1;
+          state.paused = true;
+          state.pauseReason = "transition";
+          playSound("successCue", 0.46);
+          setBanner("Stage clear", "Advancing to the next neuro zone.", 2200);
+          setTimeout(() => {
+            if (!state.reviewOpen && state.running && token === state.runToken) {
+              state.paused = false;
+              state.pauseReason = "";
+              buildStage();
+            }
+          }, 1300);
+        }
+      } else {
+        const token = state.runToken;
+        state.endlessWave += 1;
+        state.paused = true;
+        state.pauseReason = "transition";
+        playSound("successCue", 0.46);
+        setBanner("Wave clear", "Endless escalation incoming.", 2000);
+        setTimeout(() => {
+          if (!state.reviewOpen && state.running && token === state.runToken) {
+            state.paused = false;
+            state.pauseReason = "";
+            buildStage();
+          }
+        }, 1200);
+      }
+    }
+
+    function checkBossDefeat() {
+      if (state.boss && state.boss.hp <= 0) {
+        state.boss = null;
+        state.score += 900;
+        state.stats.bosses += 1;
+        setBanner("Boss down", "Lesion neutralized.", 2400);
+        checkStageClear();
+      }
+    }
+
+    function hitBoss() {
+      if (!state.boss) return;
+      state.boss.hp -= 1;
+      state.boss.flashUntil = nowMs() + 120;
+      state.score += 95;
+      if (state.boss.rewardThresholds.has(state.boss.hp)) {
+        state.boss.rewardThresholds.delete(state.boss.hp);
+        spawnDrop(state.boss.x + state.boss.w / 2, state.boss.y + state.boss.h, randomItem(["shield", "laser", "multiball", "wide"]));
+      }
+      checkBossDefeat();
+      updateHud();
+    }
+
+    function updateBoss(dt) {
+      if (!state.boss) return;
+      state.boss.x += state.boss.vx * dt;
+      if (state.boss.x <= 24 || state.boss.x + state.boss.w >= CANVAS.width - 24) state.boss.vx *= -1;
+      if (nowMs() >= state.boss.nextHazard) {
+        state.hazards.push({ x: state.boss.x + 24 + Math.random() * (state.boss.w - 48), y: state.boss.y + state.boss.h, vy: 170, r: 8 });
+        state.boss.nextHazard = nowMs() + 2200;
+      }
+    }
+
+    function updateHazards(dt) {
+      state.hazards = state.hazards.filter((hazard) => {
+        hazard.y += hazard.vy * dt;
+        const hitPaddle = hazard.y + hazard.r >= state.paddle.y && hazard.y - hazard.r <= state.paddle.y + state.paddle.height && hazard.x >= state.paddle.x && hazard.x <= state.paddle.x + state.paddle.width;
+        if (hitPaddle) {
+          const removed = stripOneReward();
+          showToast("Vascular debris", removed ? "Lost " + removed + "." : "No active upgrade to strip.");
+          return false;
+        }
+        return hazard.y < CANVAS.height + 20;
+      });
+    }
+
+    function updateDrops(dt) {
+      state.drops = state.drops.filter((drop) => {
+        drop.y += drop.vy * dt;
+        drop.phase += dt * 5.6;
+        const caught = drop.y + drop.size >= state.paddle.y && drop.y - drop.size <= state.paddle.y + state.paddle.height && drop.x >= state.paddle.x && drop.x <= state.paddle.x + state.paddle.width;
+        if (caught) {
+          applyPowerUp(drop.type);
+          return false;
+        }
+        return drop.y < CANVAS.height + 30;
+      });
+    }
+
+    function updateLasers(dt) {
+      state.lasers = state.lasers.filter((laser) => {
+        laser.y += laser.vy * dt;
+        for (let index = state.bricks.length - 1; index >= 0; index -= 1) {
+          const brick = state.bricks[index];
+          if (laser.x >= brick.x && laser.x <= brick.x + brick.w && laser.y >= brick.y && laser.y <= brick.y + brick.h) {
+            brick.hp -= 1;
+            if (brick.hp <= 0) {
+              state.bricks.splice(index, 1);
+              onBrickDestroyed(brick);
+            }
+            return false;
+          }
+        }
+        if (state.boss && laser.x >= state.boss.x && laser.x <= state.boss.x + state.boss.w && laser.y >= state.boss.y && laser.y <= state.boss.y + state.boss.h) {
+          hitBoss();
+          return false;
+        }
+        return laser.y > -20;
+      });
+    }
+
+    function brickBreakPoints(brick) {
+      const comboBonus = 1 + Math.min(0.9, state.combo * 0.08);
+      const knowledgeBonus = 1 + state.permanent.scoreBonus;
+      return Math.round(brick.points * comboBonus * knowledgeBonus);
+    }
+
+    function getParticleColor(brick) {
+      if (brick.kind === "power") return "#ffd36f";
+      if (brick.kind === "quiz") return "#d08bff";
+      if (brick.kind === "barrier") return "#d7d9df";
+      if (brick.kind === "dense") return "#7fd9ff";
+      return brick.color || "#86dfff";
+    }
+
+    function spawnBrickBurst(brick) {
+      const count = brick.kind === "barrier" ? 14 : 10;
+      const color = getParticleColor(brick);
+      for (let index = 0; index < count; index += 1) {
+        const angle = (Math.PI * 2 * index) / count + Math.random() * 0.35;
+        const speed = 55 + Math.random() * 130;
+        const life = 0.42 + Math.random() * 0.22;
+        state.particles.push({
+          x: brick.x + brick.w / 2,
+          y: brick.y + brick.h / 2,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed - 20,
+          life,
+          maxLife: life,
+          size: 4 + Math.random() * 7,
+          color,
+        });
+      }
+    }
+
+    function onBrickDestroyed(brick) {
+      state.stats.bricks += 1;
+      state.combo += 1;
+      state.stats.longestCombo = Math.max(state.stats.longestCombo, state.combo);
+      state.score += brickBreakPoints(brick);
+      spawnBrickBurst(brick);
+      playSound("brickBreak");
+      const dropX = brick.x + brick.w / 2;
+      const dropY = brick.y + brick.h / 2;
+      const chance = clamp(0.17 + state.permanent.dropBoost * 0.05, 0.17, 0.36);
+      if (brick.kind === "power") {
+        spawnDrop(dropX, dropY);
+      } else if (brick.kind === "quiz") {
+        const refractoryActive = isQuizRefractoryActive();
+        startQuizRefractory();
+        if (refractoryActive) {
+          spawnDrop(dropX, dropY, randomItem(getDropPool()));
+          showToast("Neural refractory period", "Quiz brick converted to a power-up.");
+        } else {
+          if (Math.random() < chance) spawnDrop(dropX, dropY);
+          triggerQuestion();
+        }
+      } else if (Math.random() < chance) {
+        spawnDrop(dropX, dropY);
+      }
+      updateHud();
+      checkStageClear();
+    }
+
+    function updateParticles(dt) {
+      state.particles = state.particles.filter((particle) => {
+        particle.life -= dt;
+        particle.x += particle.vx * dt;
+        particle.y += particle.vy * dt;
+        particle.vy += 180 * dt;
+        particle.vx *= 0.985;
+        return particle.life > 0;
+      });
+    }
+
+    function updatePaddle(dt) {
+      if (!state.paddle) return;
+      let move = 0;
+      if (input.left) move -= 1;
+      if (input.right) move += 1;
+      if (move !== 0) state.paddle.x += move * state.paddle.speed * dt;
+      else if (state.usingPointer) state.paddle.x += (state.pointerX - state.paddle.width / 2 - state.paddle.x) * Math.min(1, dt * 16);
+      state.paddle.x = clamp(state.paddle.x, 0, CANVAS.width - state.paddle.width);
+      state.balls.forEach((ball, index) => {
+        if (ball.stuck) {
+          ball.x = state.paddle.x + state.paddle.width / 2 + (index * 18 - 9);
+          ball.y = state.paddle.y - ball.r - 2;
+        }
+      });
+    }
+
+    function handlePaddleBounce(ball) {
+      playSound("contactPing", 0.24);
+      if (state.comboTracker.paddleCycleArmed && state.comboTracker.boundarySincePaddle && !state.comboTracker.brickSincePaddle) {
+        state.combo = 0;
+      }
+      state.comboTracker.paddleCycleArmed = true;
+      state.comboTracker.boundarySincePaddle = false;
+      state.comboTracker.brickSincePaddle = false;
+      const impact = (ball.x - (state.paddle.x + state.paddle.width / 2)) / (state.paddle.width / 2);
+      const speed = getBallBaseSpeed();
+      ball.vx = clamp(impact * speed * 0.95, -speed * 0.96, speed * 0.96);
+      ball.vy = -Math.abs(speed - Math.abs(ball.vx) * 0.24);
+      normalizeBall(ball, speed);
+      if (isEffectActive("sticky")) {
+        ball.stuck = true;
+        state.awaitingLaunch = true;
+      }
+    }
+
+    function ballHitsBrick(ball, brick) {
+      const closestX = clamp(ball.x, brick.x, brick.x + brick.w);
+      const closestY = clamp(ball.y, brick.y, brick.y + brick.h);
+      const dx = ball.x - closestX;
+      const dy = ball.y - closestY;
+      return dx * dx + dy * dy <= ball.r * ball.r;
+    }
+
+    function bounceOffRect(ball, rect) {
+      const fromTop = ball.prevY + ball.r <= rect.y;
+      const fromBottom = ball.prevY - ball.r >= rect.y + rect.h;
+      if (fromTop) ball.vy = -Math.abs(ball.vy);
+      else if (fromBottom) ball.vy = Math.abs(ball.vy);
+      else ball.vx *= -1;
+    }
+
+    function updateBalls(dt) {
+      const nextBalls = [];
+      state.balls.forEach((ball) => {
+        if (ball.stuck) {
+          nextBalls.push(ball);
+          return;
+        }
+        ball.prevX = ball.x;
+        ball.prevY = ball.y;
+        ball.x += ball.vx * dt;
+        ball.y += ball.vy * dt;
+        if (ball.x - ball.r <= 0) {
+          ball.x = ball.r;
+          ball.vx = Math.abs(ball.vx);
+          state.comboTracker.boundarySincePaddle = true;
+          playSound("contactPing", 0.2);
+        } else if (ball.x + ball.r >= CANVAS.width) {
+          ball.x = CANVAS.width - ball.r;
+          ball.vx = -Math.abs(ball.vx);
+          state.comboTracker.boundarySincePaddle = true;
+          playSound("contactPing", 0.2);
+        }
+        if (ball.y - ball.r <= 0) {
+          ball.y = ball.r;
+          ball.vy = Math.abs(ball.vy);
+          state.comboTracker.boundarySincePaddle = true;
+          playSound("contactPing", 0.2);
+        }
+        if (ball.y + ball.r >= state.paddle.y && ball.y - ball.r <= state.paddle.y + state.paddle.height && ball.x >= state.paddle.x && ball.x <= state.paddle.x + state.paddle.width && ball.vy > 0) {
+          handlePaddleBounce(ball);
+        }
+        let brickHit = false;
+        for (let index = state.bricks.length - 1; index >= 0; index -= 1) {
+          const brick = state.bricks[index];
+          if (ballHitsBrick(ball, brick)) {
+            state.comboTracker.brickSincePaddle = true;
+            const wasDenseFirstHit = brick.kind === "dense" && brick.hp === brick.maxHp;
+            const wasBarrierHit = brick.kind === "barrier";
+            bounceOffRect(ball, brick);
+            brick.hp -= 1;
+            brickHit = true;
+            if (brick.hp <= 0) {
+              state.bricks.splice(index, 1);
+              onBrickDestroyed(brick);
+            } else if (wasDenseFirstHit || wasBarrierHit) {
+              playSound("contactPing", 0.24);
+            }
+            break;
+          }
+        }
+        if (!brickHit && state.boss && ballHitsBrick(ball, state.boss)) {
+          state.comboTracker.brickSincePaddle = true;
+          bounceOffRect(ball, state.boss);
+          hitBoss();
+        }
+        if (ball.y - ball.r > CANVAS.height) {
+          if (state.shieldCharges > 0) {
+            state.shieldCharges -= 1;
+            ball.y = CANVAS.height - 28;
+            ball.vy = -Math.abs(ball.vy);
+            updateBallSpin(ball);
+            updateHud();
+            showToast("Dura Shield", "Bottom barrier absorbed the hit.");
+            nextBalls.push(ball);
+            return;
+          }
+          return;
+        }
+        updateBallSpin(ball);
+        ball.angle = (ball.angle || 0) + ball.spin * dt;
+        nextBalls.push(ball);
+      });
+      state.balls = nextBalls;
+      if (!state.balls.length && state.running) loseLife();
+    }
+
+    function updateEffects() {
+      let widthChanged = false;
+      Object.entries(state.activeEffects).forEach(([name, until]) => {
+        if (until <= nowMs()) {
+          delete state.activeEffects[name];
+          if (name === "wide") widthChanged = true;
+        }
+      });
+      if (widthChanged) syncPaddleWidth();
+    }
+
+    function update(dt) {
+      if (!state.running) return;
+      state.elapsed = nowMs() - state.startTime;
+      updateEffects();
+      updateHud();
+      hideToastIfNeeded();
+      if (state.paused) return;
+      state.quizRefractoryRemaining = Math.max(0, state.quizRefractoryRemaining - dt * 1000);
+      const worldDt = dt * (isEffectActive("slow") ? 0.74 : 1);
+      state.laserCooldown = Math.max(0, state.laserCooldown - dt);
+      updatePaddle(worldDt);
+      updateBoss(worldDt);
+      updateHazards(worldDt);
+      updateDrops(worldDt);
+      updateLasers(worldDt);
+      updateParticles(worldDt);
+      updateBalls(worldDt);
+    }
+
+    function hexToRgba(hex, alpha) {
+      const sanitized = hex.replace("#", "");
+      const value = sanitized.length === 3 ? sanitized.split("").map((char) => char + char).join("") : sanitized;
+      const int = parseInt(value, 16);
+      const r = (int >> 16) & 255;
+      const g = (int >> 8) & 255;
+      const b = int & 255;
+      return "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";
+    }
+
+    function drawBackground() {
+      const palette = state.stageTheme && state.stageTheme.palette ? state.stageTheme.palette : ["#72d7ff", "#8ef7b5", "#ffd26c"];
+      const primaryTint = palette[0];
+      const secondaryTint = palette[1] || palette[0];
+      const accentTint = palette[2] || palette[1] || palette[0];
+      const stageProgress = state.mode === "campaign"
+        ? state.stageIndex / Math.max(1, CAMPAIGN_STAGES.length - 1)
+        : Math.min(1, Math.max(0, state.endlessWave - 1) / 6);
+      const gradient = ctx.createLinearGradient(0, 0, CANVAS.width, CANVAS.height);
+      gradient.addColorStop(0, "#08131f");
+      gradient.addColorStop(0.55, "#050d16");
+      gradient.addColorStop(1, "#03070d");
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, CANVAS.width, CANVAS.height);
+
+      const tintSweep = ctx.createLinearGradient(0, 0, CANVAS.width, CANVAS.height);
+      tintSweep.addColorStop(0, hexToRgba(primaryTint, 0.16 + stageProgress * 0.06));
+      tintSweep.addColorStop(0.48, "rgba(8, 17, 28, 0.04)");
+      tintSweep.addColorStop(1, hexToRgba(accentTint, 0.12 + stageProgress * 0.08));
+      ctx.fillStyle = tintSweep;
+      ctx.fillRect(0, 0, CANVAS.width, CANVAS.height);
+
+      const glowA = ctx.createRadialGradient(CANVAS.width * 0.22, CANVAS.height * 0.18, 20, CANVAS.width * 0.22, CANVAS.height * 0.18, CANVAS.height * 0.7);
+      glowA.addColorStop(0, hexToRgba(primaryTint, 0.18 + stageProgress * 0.07));
+      glowA.addColorStop(1, hexToRgba(primaryTint, 0));
+      ctx.fillStyle = glowA;
+      ctx.fillRect(0, 0, CANVAS.width, CANVAS.height);
+
+      const glowB = ctx.createRadialGradient(CANVAS.width * 0.82, CANVAS.height * 0.24, 16, CANVAS.width * 0.82, CANVAS.height * 0.24, CANVAS.height * 0.56);
+      glowB.addColorStop(0, hexToRgba(secondaryTint, 0.14 + stageProgress * 0.05));
+      glowB.addColorStop(1, hexToRgba(secondaryTint, 0));
+      ctx.fillStyle = glowB;
+      ctx.fillRect(0, 0, CANVAS.width, CANVAS.height);
+
+      if (spriteReady(sprites.background)) {
+        const tile = 240;
+        const driftX = ((state.elapsed || 0) * 0.005) % tile;
+        const driftY = ((state.elapsed || 0) * 0.0025) % tile;
+        ctx.save();
+        ctx.globalAlpha = 0.12 + stageProgress * 0.06;
+        for (let x = -tile; x < CANVAS.width + tile; x += tile) {
+          for (let y = -tile; y < CANVAS.height + tile; y += tile) {
+            ctx.drawImage(sprites.background, x - driftX, y - driftY, tile, tile);
+          }
+        }
+        ctx.restore();
+      }
+
+      state.stars.forEach((star) => {
+        star.y += star.speed * 0.016;
+        if (star.y > CANVAS.height) {
+          star.y = -4;
+          star.x = Math.random() * CANVAS.width;
+        }
+        ctx.fillStyle = "rgba(151, 218, 255, " + star.alpha + ")";
+        ctx.fillRect(star.x, star.y, star.size, star.size);
+      });
+      ctx.save();
+      ctx.globalAlpha = 0.1 + stageProgress * 0.05;
+      ctx.strokeStyle = primaryTint;
+      ctx.lineWidth = 2;
+      for (let x = 40; x < CANVAS.width; x += 120) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x + 12, CANVAS.height);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    function drawBrainBall(ball) {
+      if (spriteReady(sprites.ball)) {
+        const size = ball.r * 2.55;
+        ctx.save();
+        ctx.translate(ball.x, ball.y);
+        ctx.rotate(ball.angle || 0);
+        ctx.shadowColor = "rgba(110, 218, 255, 0.28)";
+        ctx.shadowBlur = 16;
+        ctx.drawImage(sprites.ball, -size / 2, -size / 2, size, size);
+        ctx.restore();
+        return;
+      }
+      ctx.save();
+      ctx.translate(ball.x, ball.y);
+      ctx.rotate(ball.angle || 0);
+      ctx.fillStyle = "#ffb6c5";
+      ctx.beginPath();
+      ctx.arc(0, 0, ball.r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#d15c88";
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(-5, -3);
+      ctx.quadraticCurveTo(-1, -8, 2, -3);
+      ctx.quadraticCurveTo(5, 1, 0, 5);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(-3, 4);
+      ctx.quadraticCurveTo(-1, 1, 2, 4);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawPaddle() {
+      if (!state.paddle) return;
+      const { x, y, width, height } = state.paddle;
+      if (spriteReady(sprites.paddle)) {
+        const spriteW = width + 18;
+        const spriteH = spriteW * (64 / 280);
+        const spriteX = x - (spriteW - width) / 2;
+        const spriteY = y - (spriteH - height) / 2 - 5;
+        ctx.save();
+        ctx.shadowColor = "rgba(97, 212, 255, 0.28)";
+        ctx.shadowBlur = 18;
+        ctx.drawImage(sprites.paddle, spriteX, spriteY, spriteW, spriteH);
+        ctx.restore();
+        if (isEffectActive("laser")) {
+          ctx.save();
+          ctx.fillStyle = "#ff97a8";
+          ctx.fillRect(x + 10, y - 10, 6, 10);
+          ctx.fillRect(x + width - 16, y - 10, 6, 10);
+          ctx.restore();
+        }
+        return;
+      }
+      ctx.save();
+      ctx.fillStyle = "#1c4f70";
+      ctx.fillRect(x, y, width, height);
+      ctx.fillStyle = "#77f0b7";
+      ctx.fillRect(x + 4, y + 3, width - 8, 4);
+      ctx.fillStyle = "#ffde7a";
+      ctx.fillRect(x + 8, y + height - 5, width - 16, 2);
+      if (isEffectActive("laser")) {
+        ctx.fillStyle = "#ff7f95";
+        ctx.fillRect(x + 8, y - 5, 8, 6);
+        ctx.fillRect(x + width - 16, y - 5, 8, 6);
+      }
+      ctx.restore();
+    }
+
+    function drawBricks() {
+      state.bricks.forEach((brick) => {
+        const sprite = getBrickSprite(brick);
+        if (spriteReady(sprite)) {
+          ctx.save();
+          ctx.shadowColor = "rgba(98, 209, 255, 0.14)";
+          ctx.shadowBlur = brick.kind === "quiz" || brick.kind === "power" ? 12 : 6;
+          ctx.drawImage(sprite, brick.x, brick.y, brick.w, brick.h);
+          if (brick.hp < brick.maxHp) {
+            ctx.fillStyle = "rgba(255, 255, 255, 0.14)";
+            ctx.fillRect(brick.x + 6, brick.y + brick.h - 9, brick.w - 12, 3);
+          }
+          ctx.restore();
+          return;
+        }
+        const alpha = brick.kind === "barrier" ? 0.95 : 0.86;
+        ctx.fillStyle = hexToRgba(brick.color, alpha);
+        ctx.fillRect(brick.x, brick.y, brick.w, brick.h);
+        ctx.fillStyle = "rgba(255,255,255,0.18)";
+        ctx.fillRect(brick.x + 4, brick.y + 4, brick.w - 8, 4);
+        if (brick.hp > 1) {
+          ctx.strokeStyle = "rgba(255,255,255,0.35)";
+          ctx.strokeRect(brick.x + 2, brick.y + 2, brick.w - 4, brick.h - 4);
+        }
+        ctx.fillStyle = "#08121d";
+        ctx.font = "bold 12px monospace";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        const labelKind = brick.kind === "dense" && brick.hp < brick.maxHp ? "standard" : brick.kind;
+        const label = labelKind === "quiz" ? "?" : labelKind === "power" ? "+" : labelKind === "dense" ? "II" : labelKind === "barrier" ? "B" : "";
+        if (label) ctx.fillText(label, brick.x + brick.w / 2, brick.y + brick.h / 2 + 1);
+      });
+    }
+
+    function drawParticles() {
+      state.particles.forEach((particle) => {
+        const alpha = Math.max(0, particle.life / particle.maxLife);
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = particle.color;
+        ctx.shadowColor = particle.color;
+        ctx.shadowBlur = 12;
+        ctx.fillRect(particle.x - particle.size / 2, particle.y - particle.size / 2, particle.size, particle.size);
+        ctx.restore();
+      });
+    }
+
+    function drawBoss() {
+      if (!state.boss) return;
+      const boss = state.boss;
+      if (spriteReady(sprites.brickBarrier)) {
+        ctx.save();
+        ctx.shadowColor = "rgba(121, 221, 255, 0.18)";
+        ctx.shadowBlur = 20;
+        ctx.drawImage(sprites.brickBarrier, boss.x, boss.y, boss.w, boss.h);
+        if (spriteReady(sprites.ball)) {
+          const coreSize = Math.min(40, boss.h - 6);
+          ctx.drawImage(sprites.ball, boss.x + boss.w / 2 - coreSize / 2, boss.y + boss.h / 2 - coreSize / 2 + 2, coreSize, coreSize);
+        }
+        if (nowMs() < boss.flashUntil) {
+          ctx.fillStyle = "rgba(255, 223, 147, 0.22)";
+          ctx.fillRect(boss.x + 4, boss.y + 4, boss.w - 8, boss.h - 8);
+        }
+        ctx.restore();
+        ctx.fillStyle = "#0a1622";
+        ctx.fillRect(boss.x, boss.y - 14, boss.w, 8);
+        ctx.fillStyle = "#74f0b6";
+        ctx.fillRect(boss.x, boss.y - 14, (boss.hp / boss.maxHp) * boss.w, 8);
+        return;
+      }
+      ctx.save();
+      ctx.fillStyle = nowMs() < boss.flashUntil ? "#ffd37d" : "#ff7c75";
+      ctx.fillRect(boss.x, boss.y, boss.w, boss.h);
+      ctx.fillStyle = "rgba(255,255,255,0.18)";
+      ctx.fillRect(boss.x + 6, boss.y + 6, boss.w - 12, 6);
+      ctx.fillStyle = "#1d0b12";
+      ctx.fillRect(boss.x + 36, boss.y + 18, 18, 14);
+      ctx.fillRect(boss.x + boss.w - 54, boss.y + 18, 18, 14);
+      ctx.fillRect(boss.x + 68, boss.y + 34, boss.w - 136, 8);
+      ctx.fillStyle = "#0a1622";
+      ctx.fillRect(boss.x, boss.y - 14, boss.w, 8);
+      ctx.fillStyle = "#74f0b6";
+      ctx.fillRect(boss.x, boss.y - 14, (boss.hp / boss.maxHp) * boss.w, 8);
+      ctx.restore();
+    }
+
+    function drawDrops() {
+      state.drops.forEach((drop) => {
+        const config = POWER_UPS[drop.type];
+        const bobY = drop.y + Math.sin(drop.phase) * 2.2;
+        const pulse = 0.92 + Math.sin(drop.phase * 1.35) * 0.08;
+        const haloRadius = drop.size * (1.38 + pulse * 0.16);
+        const orbitAngle = drop.phase * 1.15;
+        ctx.save();
+        ctx.translate(drop.x, bobY);
+        ctx.strokeStyle = hexToRgba(config.color, 0.24);
+        ctx.lineWidth = 2.5;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(0, -drop.size * 1.55);
+        ctx.lineTo(0, drop.size * 1.95);
+        ctx.stroke();
+
+        ctx.fillStyle = hexToRgba(config.color, 0.08);
+        ctx.beginPath();
+        ctx.arc(0, 0, haloRadius * 1.14, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = hexToRgba(config.color, 0.72);
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(0, 0, haloRadius, 0, Math.PI * 2);
+        ctx.stroke();
+
+        const shellGradient = ctx.createRadialGradient(0, -drop.size * 0.28, drop.size * 0.18, 0, 0, drop.size * 1.15);
+        shellGradient.addColorStop(0, "rgba(255,255,255,0.95)");
+        shellGradient.addColorStop(0.28, config.color);
+        shellGradient.addColorStop(1, "rgba(6,16,25,0.92)");
+
+        ctx.save();
+        ctx.rotate(Math.sin(drop.phase * 0.7) * 0.18);
+        ctx.beginPath();
+        ctx.moveTo(0, -drop.size * 1.14);
+        ctx.lineTo(drop.size * 0.88, -drop.size * 0.24);
+        ctx.lineTo(drop.size * 0.64, drop.size * 0.96);
+        ctx.lineTo(0, drop.size * 1.26);
+        ctx.lineTo(-drop.size * 0.64, drop.size * 0.96);
+        ctx.lineTo(-drop.size * 0.88, -drop.size * 0.24);
+        ctx.closePath();
+        ctx.fillStyle = shellGradient;
+        ctx.shadowColor = config.color;
+        ctx.shadowBlur = 18;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = hexToRgba(config.color, 0.92);
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.restore();
+
+        ctx.fillStyle = "rgba(255,255,255,0.18)";
+        ctx.beginPath();
+        ctx.ellipse(-drop.size * 0.18, -drop.size * 0.34, drop.size * 0.44, drop.size * 0.24, -0.42, 0, Math.PI * 2);
+        ctx.fill();
+
+        for (let index = 0; index < 2; index += 1) {
+          const angle = orbitAngle + index * Math.PI;
+          const orbitX = Math.cos(angle) * drop.size * 1.18;
+          const orbitY = Math.sin(angle) * drop.size * 0.74;
+          ctx.fillStyle = config.color;
+          ctx.globalAlpha = 0.9 - index * 0.15;
+          ctx.beginPath();
+          ctx.arc(orbitX, orbitY, drop.size * 0.16, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = "#f5fbff";
+        ctx.shadowColor = config.color;
+        ctx.shadowBlur = 10;
+        ctx.font = "bold 13px monospace";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(config.symbol, 0, 1);
+        ctx.restore();
+      });
+    }
+
+    function drawLasers() {
+      ctx.save();
+      ctx.fillStyle = "#ff8ca5";
+      state.lasers.forEach((laser) => ctx.fillRect(laser.x - 2, laser.y - 12, 4, 18));
+      ctx.restore();
+    }
+
+    function drawHazards() {
+      ctx.save();
+      state.hazards.forEach((hazard) => {
+        ctx.fillStyle = "#ff7777";
+        ctx.beginPath();
+        ctx.arc(hazard.x, hazard.y, hazard.r, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.restore();
+    }
+
+    function drawShield() {
+      if (state.shieldCharges <= 0) return;
+      ctx.save();
+      ctx.strokeStyle = "rgba(124, 255, 248, 0.7)";
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(18, CANVAS.height - 8);
+      ctx.lineTo(CANVAS.width - 18, CANVAS.height - 8);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawBanner() {
+      if (!state.running || !state.banner || state.banner.until < nowMs()) return;
+      ctx.save();
+      ctx.fillStyle = "rgba(8, 18, 31, 0.84)";
+      ctx.fillRect(CANVAS.width / 2 - 210, CANVAS.height / 2 - 48, 420, 96);
+      ctx.strokeStyle = "rgba(125, 214, 255, 0.22)";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(CANVAS.width / 2 - 210, CANVAS.height / 2 - 48, 420, 96);
+      ctx.textAlign = "center";
+      ctx.fillStyle = "#ffe08e";
+      ctx.font = "bold 24px monospace";
+      ctx.fillText(state.banner.title, CANVAS.width / 2, CANVAS.height / 2 - 10);
+      ctx.fillStyle = "#d3f1ff";
+      ctx.font = "16px monospace";
+      ctx.fillText(state.banner.subtitle, CANVAS.width / 2, CANVAS.height / 2 + 18);
+      ctx.restore();
+    }
+
+    function drawPausedLabel() {
+      if (!state.paused || state.pauseReason === "question" || state.pauseReason === "review" || state.pauseReason === "atlas") return;
+      ctx.save();
+      ctx.fillStyle = "rgba(4, 10, 16, 0.45)";
+      ctx.fillRect(0, 0, CANVAS.width, CANVAS.height);
+      ctx.fillStyle = "#ffdd87";
+      ctx.textAlign = "center";
+      ctx.font = "bold 28px monospace";
+      ctx.fillText("PAUSED", CANVAS.width / 2, CANVAS.height / 2);
+      ctx.restore();
+    }
+
+    function drawReadyPrompt() {
+      if (state.running || state.reviewOpen) return;
+      ctx.save();
+      ctx.fillStyle = "rgba(8, 18, 31, 0.84)";
+      ctx.fillRect(CANVAS.width / 2 - 250, CANVAS.height / 2 - 64, 500, 128);
+      ctx.strokeStyle = "rgba(125, 214, 255, 0.22)";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(CANVAS.width / 2 - 250, CANVAS.height / 2 - 64, 500, 128);
+      ctx.textAlign = "center";
+      ctx.fillStyle = "#ffe18d";
+      ctx.font = "bold 26px monospace";
+      ctx.fillText("BRAIN-out!", CANVAS.width / 2, CANVAS.height / 2 - 16);
+      ctx.fillStyle = "#d1efff";
+      ctx.font = "15px monospace";
+      ctx.fillText("Press Play or open Settings.", CANVAS.width / 2, CANVAS.height / 2 + 20);
+      ctx.restore();
+    }
+
+    function draw() {
+      drawBackground();
+      drawBricks();
+      drawParticles();
+      drawBoss();
+      drawDrops();
+      drawLasers();
+      drawHazards();
+      drawShield();
+      drawPaddle();
+      state.balls.forEach(drawBrainBall);
+      drawBanner();
+      drawPausedLabel();
+      drawReadyPrompt();
+    }
+
+    function pointerToCanvas(event) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = event.touches ? event.touches[0].clientX : event.clientX;
+      const clientY = event.touches ? event.touches[0].clientY : event.clientY;
+      return {
+        x: ((clientX - rect.left) / rect.width) * CANVAS.width,
+        y: ((clientY - rect.top) / rect.height) * CANVAS.height,
+      };
+    }
+
+    function bindHold(button, direction) {
+      const start = () => { input[direction] = true; };
+      const stop = () => { input[direction] = false; };
+      ["mousedown", "touchstart"].forEach((eventName) => button.addEventListener(eventName, start, { passive: true }));
+      ["mouseup", "mouseleave", "touchend", "touchcancel"].forEach((eventName) => button.addEventListener(eventName, stop, { passive: true }));
+    }
+
+    function registerEvents() {
+      ui.startButton.addEventListener("click", () => {
+        unlockAudio();
+        if (!state.running) {
+          startRun();
+          return;
+        }
+        if (state.awaitingLaunch) {
+          launchBalls();
+          return;
+        }
+        if (state.paused && state.pauseReason === "manual") {
+          state.paused = false;
+          state.pauseReason = "";
+          updateHud();
+        }
+      });
+      ui.pauseButton.addEventListener("click", () => {
+        unlockAudio();
+        if (!state.running || state.pauseReason === "question" || state.pauseReason === "review" || state.pauseReason === "settings" || state.pauseReason === "atlas") return;
+        state.paused = !state.paused;
+        state.pauseReason = state.paused ? "manual" : "";
+        updateHud();
+      });
+      ui.sfxToggle.addEventListener("change", () => {
+        audioPreferences.sfx = ui.sfxToggle.checked;
+        saveAudioPreferences();
+      });
+      ui.musicToggle.addEventListener("change", () => {
+        audioPreferences.music = ui.musicToggle.checked;
+        saveAudioPreferences();
+        syncMusicPlayback(true);
+      });
+      ui.settingsButton.addEventListener("click", openSettings);
+      ui.closeSettingsButton.addEventListener("click", closeSettings);
+      ui.openAtlasButton.addEventListener("click", () => {
+        closeSettings();
+        openAtlas();
+      });
+      ui.closeAtlasButton.addEventListener("click", closeAtlas);
+      ui.skipQuestionButton.addEventListener("click", skipQuestion);
+      ui.continueQuestionButton.addEventListener("click", closeQuestion);
+      ui.closeReviewButton.addEventListener("click", () => {
+          ui.reviewOverlay.classList.add("hidden");
+          state.reviewOpen = false;
+          state.paused = false;
+          state.pauseReason = "";
+          scheduleResponsiveLayout();
+        });
+      ui.playAgainButton.addEventListener("click", () => {
+          ui.reviewOverlay.classList.add("hidden");
+          state.reviewOpen = false;
+          startRun();
+        });
+
+      window.addEventListener("resize", scheduleResponsiveLayout);
+      window.addEventListener("orientationchange", scheduleResponsiveLayout);
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener("resize", scheduleResponsiveLayout);
+      }
+
+      document.addEventListener("keydown", (event) => {
+        unlockAudio();
+        if (event.key === "ArrowLeft" || event.key.toLowerCase() === "a") input.left = true;
+        if (event.key === "ArrowRight" || event.key.toLowerCase() === "d") input.right = true;
+        if (event.key === " " || event.key === "Spacebar") {
+          event.preventDefault();
+          launchBalls();
+        }
+        if (event.key.toLowerCase() === "f") fireLaser();
+        if (event.key.toLowerCase() === "p") {
+          if (state.running && state.pauseReason !== "question" && state.pauseReason !== "review" && state.pauseReason !== "settings" && state.pauseReason !== "atlas") {
+            state.paused = !state.paused;
+            state.pauseReason = state.paused ? "manual" : "";
+          }
+        }
+      });
+
+      document.addEventListener("keyup", (event) => {
+        if (event.key === "ArrowLeft" || event.key.toLowerCase() === "a") input.left = false;
+        if (event.key === "ArrowRight" || event.key.toLowerCase() === "d") input.right = false;
+      });
+
+      canvas.addEventListener("mousemove", (event) => {
+        const point = pointerToCanvas(event);
+        state.pointerX = point.x;
+        state.usingPointer = true;
+      });
+      canvas.addEventListener("mouseleave", () => { state.usingPointer = false; });
+      canvas.addEventListener("click", () => {
+        unlockAudio();
+        if (!state.running) return;
+        if (state.awaitingLaunch) launchBalls();
+        else fireLaser();
+      });
+
+      canvas.addEventListener("touchstart", (event) => {
+        event.preventDefault();
+        unlockAudio();
+        const point = pointerToCanvas(event);
+        state.pointerX = point.x;
+        state.usingPointer = true;
+        if (state.awaitingLaunch) launchBalls();
+      }, { passive: false });
+      canvas.addEventListener("touchmove", (event) => {
+        event.preventDefault();
+        const point = pointerToCanvas(event);
+        state.pointerX = point.x;
+        state.usingPointer = true;
+      }, { passive: false });
+      canvas.addEventListener("touchend", () => { state.usingPointer = false; });
+
+      bindHold(ui.mobileLeft, "left");
+      bindHold(ui.mobileRight, "right");
+      ui.mobileLaunch.addEventListener("click", () => {
+        unlockAudio();
+        launchBalls();
+      });
+      ui.mobileFire.addEventListener("click", fireLaser);
+    }
+
+    function gameLoop(timestamp) {
+      if (!state.lastFrame) state.lastFrame = timestamp;
+      const dt = Math.min(0.032, (timestamp - state.lastFrame) / 1000);
+      state.lastFrame = timestamp;
+      update(dt);
+      draw();
+      requestAnimationFrame(gameLoop);
+    }
+
+    function bootstrap() {
+      highScores = loadStorage(STORAGE_KEYS.highScores, []);
+      atlasProgress = loadStorage(STORAGE_KEYS.atlas, []);
+      audioPreferences = normalizeAudioPreferences(loadStorage(STORAGE_KEYS.audio, audioPreferences));
+      preloadSprites();
+      preloadAudio();
+      createStars();
+      initPaddle();
+      syncAudioControls();
+      renderHighScores();
+      renderAtlas();
+      registerEvents();
+      scheduleResponsiveLayout();
+      requestAnimationFrame(gameLoop);
+      startRun();
+    }
+
+    bootstrap();
+  </script>
+</body>
+</html>
