@@ -3,95 +3,213 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Interactive clinical reasoning cases organized by specialty." />
+  <meta
+    name="description"
+    content="A branching case library for medical students and early residents focused on diagnostic reasoning, communication, triage, and management."
+  />
   <title>Adventures in Medicine</title>
-  <link rel="stylesheet" href="adventures-medicine.css" />
+  <script>
+    (function () {
+      var target = "workspace.html" + (window.location.hash || "");
+      window.location.replace(target);
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Source+Sans+3:wght@400;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="adventures-medicine-v2.css" />
 </head>
 <body>
   <div class="pageShell">
-    <header class="hero">
-      <p class="heroEyebrow">Interactive clinical reasoning</p>
-      <h1>Adventures in Medicine</h1>
-      <p class="heroCopy">
-        Psychiatry is live today. Future specialties can be added to this same folder and the hub will pick them up
-        without another layout rewrite.
-      </p>
-      <div class="heroStats" aria-live="polite">
-        <div class="heroStat">
-          <span class="heroStatLabel">Live specialties</span>
-          <strong class="heroStatValue" id="liveSeriesCount">0</strong>
-        </div>
-        <div class="heroStat">
-          <span class="heroStatLabel">Available cases</span>
-          <strong class="heroStatValue" id="liveCaseCount">0</strong>
-        </div>
+    <header class="topbar">
+      <a class="brandLockup" href="#top" aria-label="Return to the top of Adventures in Medicine">
+        <span class="brandLockupMark">AM</span>
+        <span class="brandLockupText">
+          <strong>Adventures in Medicine</strong>
+          <span>Standalone clinical cases for trainees</span>
+        </span>
+      </a>
+      <div class="topbarMeta">
+        <span class="statusChip">Medical students + early residents</span>
+        <a class="topbarLink" href="#library">Browse Cases</a>
       </div>
     </header>
 
-    <div class="appShell" role="application" aria-label="Adventures in Medicine hub">
-      <aside class="drawer" id="drawer" aria-label="Specialty navigation">
-        <div class="drawerHeader">
-          <button class="brandButton" id="brandButton" type="button" aria-label="Return to the overview">
-            <span class="brandTitle">Medicine Hub</span>
-            <span class="brandSubtitle">Choose a specialty and case</span>
-          </button>
-          <button class="closeDrawerButton" id="closeDrawerButton" type="button" aria-label="Close specialty list">Close</button>
-        </div>
-
-        <div class="drawerBody">
-          <p class="drawerIntro">
-            Psychiatry is the first live branch. As new files land with the expected naming pattern, their specialty
-            sections can populate automatically.
+    <main class="pageMain">
+      <section class="hero" id="top">
+        <div class="heroCopyBlock">
+          <p class="heroEyebrow">Serious branching cases for trainees</p>
+          <h1>Adventures in Medicine</h1>
+          <p class="heroLead">
+            A themed case library for diagnostic reasoning, interview skills, emergency triage, management decisions,
+            communication, and ethics.
           </p>
-          <div class="seriesContainer" id="seriesContainer"></div>
-        </div>
-      </aside>
+          <p class="heroSublead">
+            Each case plays like a short clinical simulator: choose a path, watch the patient course unfold, and end
+            with reflective feedback instead of punitive scoring.
+          </p>
 
-      <main class="viewer" aria-label="Case viewer">
-        <button class="openDrawerButton" id="openDrawerButton" type="button" aria-label="Open specialty list">Specialties</button>
-
-        <div class="viewerHeader isHidden" id="viewerHeader">
-          <div>
-            <p class="viewerEyebrow" id="viewerEyebrow"></p>
-            <h2 class="viewerTitle" id="viewerTitle"></h2>
+          <div class="heroActions">
+            <a class="primaryButton" href="#library">Browse Cases</a>
+            <button class="secondaryButton" id="heroLaunchButton" type="button">Start Highlighted Case</button>
           </div>
-          <a class="viewerLink" id="viewerStandaloneLink" href="about:blank" rel="noopener" target="_blank">Open standalone</a>
+
+          <div class="heroStats" aria-live="polite">
+            <article class="heroStat">
+              <span class="heroStatLabel">Live specialties</span>
+              <strong class="heroStatValue" id="liveSeriesCount">0</strong>
+            </article>
+            <article class="heroStat">
+              <span class="heroStatLabel">Published cases</span>
+              <strong class="heroStatValue" id="liveCaseCount">0</strong>
+            </article>
+            <article class="heroStat">
+              <span class="heroStatLabel">Case length</span>
+              <strong class="heroStatValue">5-10 min</strong>
+            </article>
+          </div>
         </div>
 
-        <section class="welcomePanel" id="welcomePanel">
-          <div class="welcomeCard">
-            <p class="welcomeEyebrow">Start here</p>
-            <h2>One home for every specialty.</h2>
-            <p class="welcomeCopy">
-              Browse existing cases now, then keep scaling the library later. The hub is designed so each specialty can
-              be managed as a simple file-series instead of a full navigation rewrite.
+        <div class="heroStage">
+          <article class="heroPoster">
+            <p class="posterEyebrow">Highlighted archive</p>
+            <h2 class="posterTitle" id="heroFeatureTitle">Scanning case files</h2>
+            <p class="posterCopy" id="heroFeatureText">
+              The library is indexing available specialties and case titles.
             </p>
-
-            <div class="welcomeGrid">
-              <article class="welcomeItem">
-                <h3>Live now</h3>
-                <p>Psychiatry cases are auto-detected and loaded directly in the viewer.</p>
-              </article>
-              <article class="welcomeItem">
-                <h3>Expansion-ready</h3>
-                <p>Add files like <code>AdventuresInInternalMedicine-Case1.html</code> and the section can start filling itself.</p>
-              </article>
-              <article class="welcomeItem">
-                <h3>Backwards-safe</h3>
-                <p>Older index file names stay valid and now forward people into the same canonical medicine hub.</p>
-              </article>
-            </div>
-          </div>
-        </section>
-
-        <div class="frameWrap isHidden" id="frameWrap">
-          <iframe id="caseFrame" title="Case viewer" loading="lazy" referrerpolicy="no-referrer"></iframe>
+            <div class="posterMeta" id="heroFeatureMeta"></div>
+          </article>
+          <div class="heroShelf" id="heroShelf"></div>
         </div>
-      </main>
+      </section>
+
+      <section class="workflowStrip" aria-label="How the cases work">
+        <article class="workflowStep">
+          <span class="workflowNumber">01</span>
+          <h2>Choose a case</h2>
+          <p>Select a specialty archive, then open a short standalone case built for focused reasoning practice.</p>
+        </article>
+        <article class="workflowStep">
+          <span class="workflowNumber">02</span>
+          <h2>Make clinical decisions</h2>
+          <p>Interview, triage, and manage the patient while the story responds to what you ask and what you miss.</p>
+        </article>
+        <article class="workflowStep">
+          <span class="workflowNumber">03</span>
+          <h2>Reflect on the course</h2>
+          <p>Feedback stays inside the case logic first, then closes with a concise reflective debrief.</p>
+        </article>
+      </section>
+
+      <section class="librarySection" id="library">
+        <div class="sectionIntro">
+          <div>
+            <p class="sectionEyebrow">Case Library</p>
+            <h2>Choose a specialty. Enter a patient story.</h2>
+          </div>
+          <p class="sectionCopy">
+            Psychiatry is live now. Internal medicine, emergency medicine, neurology, surgery, and pediatrics are
+            already part of the interface so the library can expand without another redesign.
+          </p>
+        </div>
+
+        <div class="libraryShell" role="application" aria-label="Adventures in Medicine case library">
+          <nav class="specialtyRail" id="specialtyRail" aria-label="Specialty archives"></nav>
+
+          <section class="caseShelfPanel">
+            <div class="panelHeader">
+              <div>
+                <p class="panelEyebrow" id="selectedSeriesEyebrow">Archive</p>
+                <h3 class="panelTitle" id="selectedSeriesTitle">Loading archive</h3>
+              </div>
+              <p class="panelMeta" id="selectedSeriesMeta">Scanning available files</p>
+            </div>
+
+            <div class="caseShelf" id="caseShelf"></div>
+
+            <div class="emptyShelf isHidden" id="emptyShelf">
+              <div class="ghostCoverRow" aria-hidden="true">
+                <div class="ghostCover"></div>
+                <div class="ghostCover"></div>
+                <div class="ghostCover"></div>
+              </div>
+              <p class="emptyShelfTitle">Archive in preparation</p>
+              <p class="emptyShelfCopy">
+                This specialty is part of the medicine hub and is ready to receive standalone case files.
+              </p>
+            </div>
+          </section>
+
+          <aside class="previewPanel">
+            <p class="sectionEyebrow">Selected Case</p>
+            <h3 class="previewTitle" id="previewTitle">Choose a case</h3>
+            <p class="previewSubtitle" id="previewSubtitle">
+              Select a specialty archive or choose a casebook from the shelf to preview the encounter.
+            </p>
+            <div class="previewMeta" id="previewMeta"></div>
+            <p class="previewBody" id="previewBody">
+              Published cases load in the simulator overlay. Planned archives stay visible so future specialties feel
+              native to the app from day one.
+            </p>
+            <div class="previewTags" id="previewTags"></div>
+
+            <section class="reflectionBlock">
+              <h4>Clinical Reflection</h4>
+              <p id="reflectionText">
+                Choices shape the patient course in real time, then the case closes with a short reflective debrief on
+                what you did well, what you missed, and how the encounter shifted.
+              </p>
+            </section>
+
+            <div class="previewActions">
+              <button class="primaryButton" id="launchCaseButton" type="button">Start Case</button>
+              <a
+                class="secondaryLink"
+                id="previewStandaloneLink"
+                href="about:blank"
+                target="_blank"
+                rel="noopener"
+              >Open standalone</a>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footerNote">
+      <p>
+        Built for short clinical reasoning sessions: start with a complaint, make decisions under uncertainty, and see
+        how the encounter changes.
+      </p>
+    </footer>
+  </div>
+
+  <div class="viewerOverlay isHidden" id="viewerOverlay" aria-hidden="true">
+    <div class="viewerOverlayInner">
+      <div class="viewerOverlayBar">
+        <button class="overlayButton" id="closeViewerButton" type="button">Back to Library</button>
+        <div class="overlayTitleGroup">
+          <p class="overlayEyebrow" id="overlayEyebrow">Archive</p>
+          <h2 class="overlayTitle" id="overlayTitle">Case viewer</h2>
+        </div>
+        <a
+          class="overlayButton overlayLink"
+          id="overlayStandaloneLink"
+          href="about:blank"
+          target="_blank"
+          rel="noopener"
+        >Open standalone</a>
+      </div>
+
+      <div class="viewerFrameWrap">
+        <iframe id="caseFrame" title="Case simulator" loading="lazy" referrerpolicy="no-referrer"></iframe>
+      </div>
     </div>
   </div>
 
-  <div class="scrim" id="scrim" aria-hidden="true"></div>
-  <script src="adventures-medicine-hub.js" defer></script>
+  <script src="adventures-medicine-hub-v2.js" defer></script>
 </body>
 </html>

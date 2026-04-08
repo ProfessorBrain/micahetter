@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta
+    name="description"
+    content="A serious branching case workspace for medical students and early residents focused on diagnostic reasoning, communication, triage, and management."
+  />
+  <title>Adventures in Medicine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Source+Sans+3:wght@400;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="adventures-medicine-workspace.css" />
+</head>
+<body>
+  <div class="workspaceShell">
+    <header class="workspaceTopbar">
+      <div class="topbarSide">
+        <button
+          class="chromeButton"
+          id="sidebarToggleButton"
+          type="button"
+          aria-controls="selectorSidebar"
+          aria-expanded="true"
+        >Hide selector</button>
+      </div>
+
+      <div class="workspaceTitleGroup">
+        <p class="workspaceEyebrow" id="activeSeriesEyebrow">Adventures in Medicine</p>
+        <h1 class="workspaceTitle" id="activeCaseTitle">Loading case library</h1>
+      </div>
+
+      <div class="topbarSide topbarSideEnd">
+        <button class="chromeButton" id="restartCaseButton" type="button" disabled>Restart case</button>
+        <a
+          class="chromeButton chromeLink"
+          id="standaloneLink"
+          href="about:blank"
+          target="_blank"
+          rel="noopener"
+          aria-disabled="true"
+          tabindex="-1"
+        >Open standalone</a>
+      </div>
+    </header>
+
+    <div class="workspaceFrame">
+      <aside class="selectorSidebar" id="selectorSidebar" aria-label="Specialty and case selector">
+        <div class="collapsedSidebarCard" id="collapsedSidebarCard" aria-hidden="true">
+          <span class="collapsedSeries" id="collapsedSeriesLabel">AM</span>
+          <span class="collapsedCase" id="collapsedCaseNumber">--</span>
+        </div>
+
+        <div class="sidebarContent">
+          <div class="sidebarNavHeader">
+            <p class="sectionEyebrow">Case selector</p>
+            <h2 class="sidebarNavTitle">Library</h2>
+            <p class="sidebarNavCopy">Choose a specialty, then choose a case.</p>
+          </div>
+
+          <section class="sidebarSection">
+            <div class="sidebarSectionHead">
+              <p class="sectionLabel">Specialties</p>
+              <span class="sectionMeta" id="specialtyMeta">6 archives</span>
+            </div>
+            <nav class="specialtyRail" id="specialtyRail" aria-label="Specialty selector"></nav>
+          </section>
+
+          <section class="sidebarSection sidebarCases">
+            <div class="sidebarSectionHead">
+              <div class="sectionHeadBlock">
+                <p class="sectionLabel">Cases</p>
+                <h2 class="sidebarSectionTitle" id="selectedSeriesTitle">Loading archive</h2>
+              </div>
+              <span class="sectionMeta" id="selectedSeriesMeta">Scanning available files</span>
+            </div>
+            <div class="caseList" id="caseList"></div>
+            <div class="emptyList isHidden" id="emptyShelf">
+              <p class="emptyListTitle">Archive in preparation</p>
+              <p class="emptyListCopy">
+                This specialty is already part of the workspace and is ready for future standalone cases.
+              </p>
+            </div>
+          </section>
+        </div>
+      </aside>
+
+      <main class="viewerWorkspace" aria-label="Case simulator">
+        <div class="viewerPlaceholder" id="viewerEmpty">
+          <div class="viewerPlaceholderInner">
+            <p class="viewerPlaceholderEyebrow">Workspace loading</p>
+            <h2 class="viewerPlaceholderTitle" id="viewerEmptyTitle">Preparing the first live case</h2>
+            <p class="viewerPlaceholderCopy" id="viewerEmptyCopy">
+              Once the selector finishes indexing available case files, the main simulator will load here.
+            </p>
+          </div>
+        </div>
+        <iframe
+          class="isHidden"
+          id="caseFrame"
+          title="Case simulator"
+          loading="lazy"
+          referrerpolicy="no-referrer"
+        ></iframe>
+      </main>
+    </div>
+  </div>
+
+  <div class="sidebarScrim isHidden" id="sidebarScrim"></div>
+
+  <script src="adventures-medicine-workspace.js" defer></script>
+</body>
+</html>

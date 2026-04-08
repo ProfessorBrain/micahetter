@@ -304,10 +304,10 @@ button.options-strong:active{
     <button id="topbarToggle" type="button" aria-controls="topbar" aria-expanded="false">Show Controls</button>
     <div class="ctrl"><label>Montage</label>
       <select id="montageSel">
-        <option value="bipolar_longitudinal" selected>Longitudinal bipolar</option>
+        <option value="bipolar_longitudinal" selected>Longitudinal (Double Banana)</option>
         <option value="bipolar_transverse">Transverse</option>
-        <option value="referential">Reference (A1/A2)</option>
-        <option value="average">Average</option>
+        <option value="referential">Reference (A1/A2; linked ears for midline)</option>
+        <option value="average">Average reference (AVG)</option>
       </select>
     </div>
     <div class="ctrl"><label>Timebase (mm/sec)</label>
@@ -438,7 +438,7 @@ button.options-strong:active{
     <div class="modal-card">
       <h1 id="pathologyTitle">Pathology</h1>
       <fieldset>
-        <legend></legend>
+        <legend>Potential patterns</legend>
         <div style="display:flex;flex-direction:column;gap:.35rem;margin-top:.25rem">
           <label><input id="gpd" type="checkbox"> Generalized periodic discharges (GPDs)</label>
           <label><input id="lpd" type="checkbox"> Lateralized periodic discharges (LPDs)</label>
@@ -1072,30 +1072,30 @@ function buildInterictalLeadMeta(resolvedLead, orientation){
     const dx = p[0] - resolvedLead.center[0];
     const dy = p[1] - resolvedLead.center[1];
     const d = Math.hypot(dx, dy);
-    const radial = Math.exp(-0.5 * Math.pow(d / 0.92, 2));
+    const radial = Math.exp(-0.5 * Math.pow(d / 1.10, 2));
     const proj = ((dx * resolvedLead.axis[0] + dy * resolvedLead.axis[1]) / resolvedLead.halfSpan) * dir;
-    const gradient = Math.max(0.10, Math.min(1.34, 0.66 + 0.52 * proj));
+    const gradient = Math.max(0.14, Math.min(1.16, 0.74 + 0.28 * proj));
     const side = scalpSide(name);
     const sideFactor = resolvedLead.focusSide === 'M'
-      ? (side === 'M' ? 0.86 : 1)
-      : (side === resolvedLead.focusSide ? 1 : (side === 'M' ? 0.34 : 0.06));
+      ? 1
+      : (side === resolvedLead.focusSide ? 1 : (side === 'M' ? 0.52 : 0.14));
     let weight = radial * gradient * sideFactor;
-    if (MIDLINE_DISPLAY_ELECTRODES.has(name)) weight *= 0.62;
-    if (weight > 0.010) weights[name] = weight;
+    if (MIDLINE_DISPLAY_ELECTRODES.has(name)) weight *= 0.78;
+    if (weight > 0.015) weights[name] = weight;
     let lag = 0.004 + 0.008 * Math.min(2.5, d);
     if (proj > 0.18) lag += 0.006;
     else if (proj < -0.18) lag += 0.012;
     if (resolvedLead.focusSide !== 'M' && side !== resolvedLead.focusSide){
-      lag += side === 'M' ? 0.010 : 0.022;
+      lag += side === 'M' ? 0.006 : 0.016;
     }
     lags[name] = lag + (rng() - 0.5) * 0.0015;
   }
   const earlyElectrode = dir > 0 ? resolvedLead.a : resolvedLead.b;
   const lateElectrode = dir > 0 ? resolvedLead.b : resolvedLead.a;
-  weights[earlyElectrode] = Math.max(weights[earlyElectrode] || 0, 1.34);
-  weights[lateElectrode] = Math.max(weights[lateElectrode] || 0, 0.38);
+  weights[earlyElectrode] = Math.max(weights[earlyElectrode] || 0, 1.08);
+  weights[lateElectrode] = Math.max(weights[lateElectrode] || 0, 0.70);
   lags[earlyElectrode] = 0;
-  lags[lateElectrode] = 0.016 + 0.006 * rng();
+  lags[lateElectrode] = 0.010 + 0.003 * rng();
   return {weights, lags};
 }
 function scheduleInterictalPathology(now, immediate=false){
@@ -1105,33 +1105,33 @@ function scheduleInterictalPathology(now, immediate=false){
   const orientation = rng() < 0.5 ? -1 : 1;
   const meta = buildInterictalLeadMeta(resolvedLead, orientation);
   const startDelay = immediate ? (0.02 + 0.06*rng()) : (0.08 + 0.16*rng());
-  const interval = 1.15 + 1.05*rng();
-  const clusterPeriod = 5.2 + 3.0*rng();
+  const interval = 1.55 + 1.65*rng();
+  const clusterPeriod = 7.5 + 4.5*rng();
   state.interictalPathology.active = true;
   state.interictalPathology.t0 = now + startDelay;
   state.interictalPathology.lead = resolvedLead.label;
   state.interictalPathology.weights = meta.weights;
   state.interictalPathology.lags = meta.lags;
   state.interictalPathology.interval = interval;
-  state.interictalPathology.window = 0.16 + 0.05*rng();
+  state.interictalPathology.window = 0.13 + 0.05*rng();
   state.interictalPathology.phaseShift = rng()*interval;
-  state.interictalPathology.amp = 240 + 95*rng();
-  state.interictalPathology.slowAmp = 78 + 40*rng();
-  state.interictalPathology.plusAmp = 14 + 20*rng();
+  state.interictalPathology.amp = 170 + 80*rng();
+  state.interictalPathology.slowAmp = 54 + 30*rng();
+  state.interictalPathology.plusAmp = 8 + 14*rng();
   state.interictalPathology.fastPhase = rng()*2*Math.PI;
-  state.interictalPathology.doubletGap = 0.026 + 0.014*rng();
-  state.interictalPathology.doubletScale = 0.34 + 0.20*rng();
+  state.interictalPathology.doubletGap = 0.034 + 0.018*rng();
+  state.interictalPathology.doubletScale = 0.24 + 0.18*rng();
   state.interictalPathology.clusterPeriod = clusterPeriod;
   state.interictalPathology.clusterPhase = rng()*clusterPeriod;
-  state.interictalPathology.clusterFloor = 0.54 + 0.18*rng();
+  state.interictalPathology.clusterFloor = 0.30 + 0.14*rng();
 }
 function syncInterictalPathology(forceRestart=false){
   state.interictalPathology = {
     active:false, t0:0, lead:'Random', weights:{}, lags:{},
-    interval:1.6, window:0.18, phaseShift:0,
-    amp:280, slowAmp:92, plusAmp:18, fastPhase:0,
-    doubletGap:0.034, doubletScale:0.42,
-    clusterPeriod:6.4, clusterPhase:0, clusterFloor:0.62,
+    interval:2.2, window:0.16, phaseShift:0,
+    amp:190, slowAmp:62, plusAmp:12, fastPhase:0,
+    doubletGap:0.045, doubletScale:0.32,
+    clusterPeriod:10.0, clusterPhase:0, clusterFloor:0.36,
     ...(state.interictalPathology || {})
   };
   ensurePathologyDefaults();
@@ -2236,7 +2236,7 @@ class Channel {
           emgW.leftFront * opts.emgArtifact.leftFrontalEnv * leftFrontCarrier +
           emgW.rightFront * opts.emgArtifact.rightFrontalEnv * rightFrontCarrier +
           emgW.mid * opts.emgArtifact.commonEnv * commonCarrier;
-        y += (28 + 104*R) * EMG_PWR * (opts.emgArtifact.level ?? 1) * muscle;
+        y += (18 + 56*R) * EMG_PWR * (opts.emgArtifact.level ?? 1) * muscle;
       }
     }
     return y;
@@ -3599,6 +3599,7 @@ if (interictalBox) {
     ensurePathologyDefaults();
     state.pathology.interictal = interictalBox.checked;
     syncInterictalPathology(true);
+    if (pathologyModal) pathologyModal.hidden = true;
   });
 }
 const genSzBtn = $('genSz');
