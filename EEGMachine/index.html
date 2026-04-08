@@ -15,9 +15,11 @@
 #quizPanel{position:fixed;top:64px;right:8px;width:320px;max-width:38vw;background:rgba(255,255,255,.95);border:1px solid rgba(0,0,0,.12);border-radius:12px;padding:12px;box-shadow:0 6px 18px rgba(0,0,0,.14);display:none; z-index:9999;}
 #quizPanel h2{font-size:1.05rem;margin:.2rem 0 .4rem;font-weight:700}
 .tutorial-panel{position:fixed;top:64px;right:8px;width:min(36rem, calc(100vw - 1rem));max-width:42vw;background:rgba(255,255,255,.97);border:1px solid rgba(0,0,0,.12);border-radius:12px;padding:12px;box-shadow:0 6px 18px rgba(0,0,0,.14);display:none;z-index:9999;max-height:min(80dvh, calc(100dvh - 5rem));overflow:auto}
-.tutorial-panel h2{font-size:1.05rem;margin:.2rem 0 .3rem;font-weight:700}
-.tutorial-meta{display:flex;flex-wrap:wrap;gap:.35rem;margin:.3rem 0 .55rem}
-.tutorial-chip{display:inline-flex;align-items:center;padding:.18rem .5rem;border-radius:999px;border:1px solid rgba(0,0,0,.12);background:#f3f5f6;font-size:12px;color:#31414d}
+.tutorial-header{display:flex;align-items:flex-start;justify-content:space-between;gap:.6rem;margin:.1rem 0 .35rem}
+.tutorial-panel h2{font-size:1.05rem;margin:.1rem 0 0;font-weight:700}
+.tutorial-meta{display:flex;align-items:flex-start;justify-content:flex-end;gap:.35rem;margin:0 0 .1rem auto;min-width:max-content}
+.tutorial-toggle{display:inline-flex;align-items:center;justify-content:center;padding:.24rem .62rem;border-radius:999px;border:1px solid rgba(0,0,0,.16);background:#fff;font-size:12px;font-weight:700;letter-spacing:.02em}
+.tutorial-toggle.active{background:#eef6ff;border-color:#9fbff2;color:#204b87}
 .tutorial-progress{font-size:12px;opacity:.72;margin-bottom:.55rem}
 .tutorial-step-card{border-top:1px dashed rgba(0,0,0,.15);padding-top:.65rem}
 .tutorial-step-title{font-size:14px;font-weight:700;margin-bottom:.25rem}
@@ -25,6 +27,7 @@
 .tutorial-answer{font-size:13px;line-height:1.4;padding:.45rem .55rem;border-radius:8px;background:#eef6ff;border:1px solid #c9dcfb;margin:.35rem 0 .55rem}
 .tutorial-explanation{font-size:13px;line-height:1.45;color:#22313b}
 .tutorial-note{font-size:12px;line-height:1.35;color:#576673;margin-top:.45rem}
+.tutorial-case-focus{margin:.15rem 0 .55rem}
 .tutorial-controls{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.75rem}
 .tutorial-aux{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.55rem}
 .tutorial-choice-row{display:flex;flex-wrap:wrap;gap:.45rem;margin:.45rem 0 .6rem}
@@ -147,10 +150,29 @@ button.options-strong:active{
 #topbar button{ padding:.45rem .7rem; line-height:1.1; min-height:2.2rem; font:inherit; }
 #rhythmFieldset .pill{ align-self:center; }
 @media (max-width: 1100px){
-  #topbar{ flex-wrap:wrap; overflow-x:visible; }
-  .ctrl{ flex:1 1 10rem; }
-  #rhythmFieldset{ flex-basis:100%; order:4; }
-  .topbar-actions{ width:100%; margin-left:0; justify-content:flex-start; }
+  #topbar{
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    overflow-y:hidden;
+    gap:clamp(.35rem, .8vw, .6rem);
+    padding:clamp(.35rem, .7vw, .55rem) clamp(.45rem, 1vw, .8rem);
+  }
+  #topbar > .ctrl{ flex:0 0 auto; width:max-content; }
+  #rhythmFieldset{
+    flex:0 0 auto;
+    width:auto;
+    padding:.28rem .45rem;
+  }
+  #rhythmFieldset .mode-controls{ gap:.35rem .55rem; }
+  .topbar-actions{
+    width:auto;
+    margin-left:auto;
+    gap:.35rem;
+    flex-wrap:nowrap;
+  }
+  #topbar select,
+  #topbar button{ min-height:2.05rem; }
+  #topbar button{ padding:.4rem .62rem; }
 }
 @media (max-width: 760px){
   #topbar{ align-items:stretch; }
@@ -189,6 +211,8 @@ button.options-strong:active{
 <style id="pathology-align-fix">
 #pathologyModal fieldset label, #artifactsModal fieldset label{ margin-left:0 !important; }
 #pathologyModal .modal-card, #artifactsModal .modal-card{width:fit-content;max-width:min(94vw, 29rem)}
+#tutorialSetupModal .modal-card{width:min(92vw, 24rem);max-width:24rem}
+#tutorialCaseSelWrap[hidden]{display:none !important}
 #artifactsModal{background:transparent;align-items:flex-start;justify-content:flex-start}
 #artifactsModal .modal-card{
   position:fixed;
@@ -285,18 +309,6 @@ button.options-strong:active{
     </div>
   </div>
 
-  <!-- Intro modal -->
-  <div id="introModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="introTitle">
-    <div class="modal-card">
-      <h1 id="introTitle">EEG Machine</h1>
-      <p class="sub">Created by <strong>Micah Etter, MD</strong></p>
-      <p><strong>Disclaimer:</strong> Not for medical use - educational purposes only.</p>
-      <div class="modal-actions">
-        <button id="introClose">Got it</button>
-      </div>
-    </div>
-  </div>
-
   <!-- Options modal -->
   <div id="optionsModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="optionsTitle" hidden>
     <div class="modal-card">
@@ -389,22 +401,23 @@ button.options-strong:active{
       <fieldset>
         <legend>Mode</legend>
         <div class="ctrl" style="min-width:0">
-          <label for="tutorialModeSel">How to learn</label>
-          <select id="tutorialModeSel">
+          <select id="tutorialModeSel" aria-label="Tutorial mode">
             <option value="guided" selected>Guided walkthrough</option>
             <option value="interactive">Interactive questions</option>
           </select>
         </div>
       </fieldset>
       <fieldset>
-        <legend>Scaffolding</legend>
+        <legend>Cases</legend>
         <div class="ctrl" style="min-width:0">
-          <label for="tutorialLevelSel">Teaching depth</label>
-          <select id="tutorialLevelSel">
-            <option value="beginner" selected>Beginner</option>
-            <option value="intermediate">Intermediate</option>
-            <option value="advanced">Advanced</option>
+          <select id="tutorialCaseModeSel" aria-label="Tutorial case order">
+            <option value="ordered" selected>In order</option>
+            <option value="random">Random</option>
+            <option value="specific">Specific case</option>
           </select>
+        </div>
+        <div id="tutorialCaseSelWrap" class="ctrl" style="min-width:0;margin-top:.45rem" hidden>
+          <select id="tutorialCaseSel" aria-label="Specific tutorial case"></select>
         </div>
       </fieldset>
       <div class="modal-actions">
@@ -426,8 +439,10 @@ button.options-strong:active{
   </aside>
 
   <aside id="tutorialPanel" class="tutorial-panel" aria-live="polite">
-    <h2>Tutorial Mode</h2>
-    <div id="tutorialMeta" class="tutorial-meta"></div>
+    <div class="tutorial-header">
+      <h2>Tutorial Mode</h2>
+      <div id="tutorialMeta" class="tutorial-meta"></div>
+    </div>
     <div id="tutorialProgress" class="tutorial-progress"></div>
     <div id="tutorialBody"></div>
     <div class="tutorial-controls">
@@ -1292,11 +1307,11 @@ class Channel {
         noiseGain = 0.74;
         break;
       case 'drowsy':
-        A = posterior ? (opts.eyesOpen ? 2.0 : 8.0) : 3.2;
-        B = (r==='frontal') ? 4.0 : 3.0;
-        T = (r==='temporal') ? 20 : (r==='central' ? 17 : (r==='parietal' ? 13.5 : (r==='frontal' ? 12 : 10)));
-        D = (r==='frontal') ? 5.5 : 4.2;
-        noiseGain = 0.72;
+        A = posterior ? (opts.eyesOpen ? 1.6 : 11.5) : 2.4;
+        B = (r==='frontal') ? 2.8 : 2.2;
+        T = (r==='temporal') ? 24 : (r==='central' ? 20 : (r==='parietal' ? 16 : (r==='frontal' ? 14.5 : 12.8)));
+        D = (r==='frontal') ? 7.2 : (r==='central' ? 6.0 : 5.0);
+        noiseGain = 0.68;
         break;
       case 'delta':
         A = 2.5; B = 2.0; T = (r==='temporal') ? 4.5 : 3.0;
@@ -1304,30 +1319,30 @@ class Channel {
         noiseGain = 0.58;
         break;
       case 'n1':
-        A = posterior ? 3.8 : 2.6;
-        B = (r==='frontal') ? 3.8 : 3.2;
-        T = (r==='central') ? 16.5 : (r==='temporal' ? 15.5 : (r==='frontal' ? 12.5 : 11.5));
-        D = (r==='frontal') ? 6.2 : (r==='central' ? 5.4 : 4.5);
-        noiseGain = 0.70;
-        break;
-      case 'n2':
-        A = posterior ? 2.8 : 2.0;
-        B = (r==='frontal') ? 4.8 : (r==='central' ? 4.2 : 3.6);
-        T = (r==='central') ? 12.5 : (r==='temporal' ? 11.5 : 9.5);
-        D = (r==='frontal') ? 9.8 : (r==='central' ? 8.0 : (r==='parietal' ? 6.6 : 5.8));
+        A = posterior ? 1.8 : 1.3;
+        B = (r==='frontal') ? 2.6 : 2.0;
+        T = (r==='central') ? 19.0 : (r==='temporal' ? 17.0 : (r==='frontal' ? 15.0 : 13.5));
+        D = (r==='frontal') ? 8.0 : (r==='central' ? 6.8 : 5.6);
         noiseGain = 0.66;
         break;
+      case 'n2':
+        A = posterior ? 1.2 : 0.9;
+        B = (r==='frontal') ? 3.0 : (r==='central' ? 2.6 : 2.2);
+        T = (r==='central') ? 14.0 : (r==='temporal' ? 12.4 : 10.5);
+        D = (r==='frontal') ? 11.0 : (r==='central' ? 9.0 : (r==='parietal' ? 7.2 : 6.2));
+        noiseGain = 0.62;
+        break;
       case 'rem':
-        A = posterior ? 2.4 : 2.0;
-        B = (r==='frontal') ? 10.5 : (r==='central' ? 8.5 : 6.8);
-        T = (r==='temporal') ? 11.8 : (r==='central' ? 10.6 : 9.0);
-        D = 1.8;
-        noiseGain = 0.74;
+        A = posterior ? 0.9 : 0.7;
+        B = (r==='frontal') ? 11.8 : (r==='central' ? 9.8 : 7.5);
+        T = (r==='temporal') ? 10.8 : (r==='central' ? 9.8 : 8.0);
+        D = 0.9;
+        noiseGain = 0.70;
         break;
       case 'sws':
-        A = 1.4; B = 1.2; T = 2.2;
-        D = (r==='frontal') ? 44 : (r==='central' ? 37 : (r==='parietal' ? 28 : (r==='temporal' ? 23 : 20)));
-        noiseGain = 0.44;
+        A = 0.5; B = 0.7; T = 1.6;
+        D = (r==='frontal') ? 60 : (r==='central' ? 50 : (r==='parietal' ? 38 : (r==='temporal' ? 31 : 26)));
+        noiseGain = 0.34;
         break;
     }
     this.envA = lowpass(this.envA, (this.rng()-0.5)*2*S3, 0.002);
@@ -1380,10 +1395,10 @@ class Channel {
           /^(Fp1|F7|F3)$/.test(this.name) ? 0.42 :
           /^(Fp2|F8|F4)$/.test(this.name) ? -0.42 : 0;
         const slowRoll =
-          0.76*Math.sin(2*Math.PI*0.23*opts.clock + sidePhase) +
-          0.34*Math.sin(2*Math.PI*0.11*opts.clock - 0.6*sidePhase);
-        const eyeEnv = 0.72 + 0.28*Math.sin(2*Math.PI*0.03*opts.clock + this.fmTheta);
-        y += 42*eyeScale*eyeEnv*slowRoll;
+          0.82*Math.sin(2*Math.PI*0.19*opts.clock + sidePhase) +
+          0.38*Math.sin(2*Math.PI*0.095*opts.clock - 0.7*sidePhase);
+        const eyeEnv = 0.74 + 0.26*Math.sin(2*Math.PI*0.026*opts.clock + this.fmTheta);
+        y += 56*eyeScale*eyeEnv*slowRoll;
       }
     }
     if (opts.mode==='rem') {
@@ -1397,13 +1412,13 @@ class Channel {
         const remMove =
           0.86*Math.sin(2*Math.PI*eyeHz*opts.clock + sidePhase) +
           0.30*Math.sin(2*Math.PI*1.05*opts.clock - 0.4*sidePhase);
-        y += 24*eyeScale*burstEnv*remMove;
+        y += 34*eyeScale*burstEnv*remMove;
       }
       const sawScale = remSawScale(this.name);
       if (sawScale){
         const sawEnv = Math.pow(Math.max(0, Math.sin(2*Math.PI*0.075*opts.clock - 0.45)), 3);
         const sawHz = 2.4 + 0.35*Math.sin(2*Math.PI*0.028*opts.clock + this.fmBeta);
-        y += 22*sawScale*sawEnv*sleepSawWave(opts.clock, sawHz, 0.35*this.fmTheta);
+        y += 30*sawScale*sawEnv*sleepSawWave(opts.clock, sawHz, 0.35*this.fmTheta);
       }
     }
     if (opts.vertex){
@@ -1412,7 +1427,7 @@ class Channel {
         /^(C3|C4)$/.test(this.name) ? 0.58 :
         this.name==='Fz' ? 0.52 :
         /^(F3|F4)$/.test(this.name) ? 0.26 : 0;
-      if (vertexScale) y += 140*vertexScale*opts.vertexShape;
+      if (vertexScale) y += 176*vertexScale*opts.vertexShape;
     }
     if (opts.spindleEnv) {
       const spindleScale =
@@ -1423,14 +1438,14 @@ class Channel {
       if (spindleScale){
         const fSigma = 12.6 + 0.8*Math.sin(2*Math.PI*0.06*opts.clock + this.fmBeta);
         const sigma = Math.sin(2*Math.PI*fSigma*opts.clock + 0.12*this.fmAlpha) + 0.22*Math.sin(2*Math.PI*(2*fSigma)*opts.clock - 0.3);
-        y += 34*spindleScale*opts.spindleEnv*sigma;
+        y += 48*spindleScale*opts.spindleEnv*sigma;
       }
     }
     if (opts.kcShape){
       const kcScale =
         /^(Fz|F3|F4)$/.test(this.name) ? 1.00 :
         /^(Cz|C3|C4)$/.test(this.name) ? 0.82 : 0;
-      if (kcScale) y += 138*kcScale*opts.kcShape;
+      if (kcScale) y += 172*kcScale*opts.kcShape;
     }
     const w = (this.rng()-0.5)*4.0*S3;
     this.brown = 0.98*this.brown + w;
@@ -1517,9 +1532,9 @@ const state = {
   sweat: {active:false, t0:0, commonAmp:1, leftAmp:1, rightAmp:1, f1:0.06, f2:0.11, f3:0.18, leftFreq:0.04, rightFreq:0.04, envelopeFreq:0.025, phase1:0, phase2:0, phase3:0, leftPhase:0, rightPhase:0, envelopePhase:0},
   popEvent: {active:false, t0:0, nextT:Infinity, electrode:'Fp1', polarity:1, amp:160, decayTau:0.35, recoveryTau:1.1, ringAmp:0.08, ringHz:3.0, dur:1.4},
   emg: {active:false, t0:0, leftAmp:1, rightAmp:1, leftBurstHz:0.7, rightBurstHz:0.7, commonBurstHz:0.3, leftBurstPhase:0, rightBurstPhase:0, commonPhase:0, leftTempF1:30, leftTempF2:56, leftFrontF1:28, leftFrontF2:50, rightTempF1:30, rightTempF2:56, rightFrontF1:28, rightFrontF2:50, commonF1:34, commonF2:60, leftTempPhase:0, leftFrontPhase:0, rightTempPhase:0, rightFrontPhase:0, commonCarrierPhase:0},
-  spindle: {active:false, t0:0, dur:0.0},
-  kcomplex: {active:false, t0:0},
-  vertex: {active:false, t0:0},
+  spindle: {active:false, t0:0, dur:0.0, nextT:1.5},
+  kcomplex: {active:false, t0:0, nextT:2.4},
+  vertex: {active:false, t0:0, nextT:1.1},
   quizBannerTimer: null
 };
 
@@ -1543,6 +1558,8 @@ function applySleepStateMode(mode){
   if (!SLEEP_STATE_MODES.has(mode)) {
     if (state.rhythmOverride) {
       state.mode = state.rhythmOverride;
+      resetSleepTransientState(state.artClock);
+      reseedSleepTransientTargets(state.mode);
       return;
     }
     mode = state.sleepState || 'awake';
@@ -1550,6 +1567,8 @@ function applySleepStateMode(mode){
   state.sleepState = mode;
   state.rhythmOverride = '';
   state.mode = state.sleepState;
+  resetSleepTransientState(state.artClock);
+  reseedSleepTransientTargets(state.mode);
 }
 function applyRhythmOverride(mode){
   const next = RHYTHM_MODES.has(mode) ? mode : '';
@@ -1560,6 +1579,8 @@ function applyRhythmOverride(mode){
   } else {
     state.mode = SLEEP_STATE_MODES.has(state.sleepState) ? state.sleepState : 'awake';
   }
+  resetSleepTransientState(state.artClock);
+  reseedSleepTransientTargets(state.mode);
 }
 reconcileModeControls();
 
@@ -1808,10 +1829,40 @@ function kComplexShape(t, t0){
 }
 function vertexShape(t, t0){
   const x=t-t0;
-  if(x<0||x>0.18) return 0;
-  const peak=(x<=0.08)?-Math.sin(Math.PI*(x/0.08)):0;
-  const rebound=(x>0.08&&x<=0.18)?0.28*Math.sin(Math.PI*((x-0.08)/0.10)):0;
+  if(x<0||x>0.24) return 0;
+  const peak=(x<=0.10)?-Math.sin(Math.PI*(x/0.10)):0;
+  const rebound=(x>0.10&&x<=0.24)?0.34*Math.sin(Math.PI*((x-0.10)/0.14)):0;
   return peak + rebound;
+}
+function resetSleepTransientState(seedNow=0){
+  const rng = state.rng || Math.random;
+  state.spindle.active = false;
+  state.spindle.t0 = 0;
+  state.spindle.dur = 0;
+  state.spindle.nextT = seedNow + 1.1 + rng()*1.5;
+  state.kcomplex.active = false;
+  state.kcomplex.t0 = 0;
+  state.kcomplex.nextT = seedNow + 1.8 + rng()*2.2;
+  state.vertex.active = false;
+  state.vertex.t0 = 0;
+  state.vertex.nextT = seedNow + 0.7 + rng()*1.3;
+}
+function reseedSleepTransientTargets(mode){
+  const rng = state.rng || Math.random;
+  const now = Number(state.artClock) || 0;
+  if (mode === 'n2'){
+    state.spindle.nextT = now + 0.55 + rng()*1.0;
+    state.kcomplex.nextT = now + 1.0 + rng()*1.6;
+    state.vertex.nextT = now + 1.6 + rng()*2.2;
+  } else if (mode === 'n1'){
+    state.vertex.nextT = now + 0.45 + rng()*0.95;
+    state.spindle.nextT = now + 3.5 + rng()*3.0;
+    state.kcomplex.nextT = now + 4.0 + rng()*4.0;
+  } else {
+    state.spindle.nextT = now + 2.4 + rng()*3.4;
+    state.kcomplex.nextT = now + 3.6 + rng()*4.8;
+    state.vertex.nextT = now + 2.2 + rng()*3.0;
+  }
 }
 function drowsyEyeScale(e){
   if (/^Fp[12]$/.test(e)) return 1.00;
@@ -2090,29 +2141,42 @@ function step(){
         const sleepFeatures = currentSleepFeatureConstraints();
         const spindleMode = sleepFeatures ? (sleepFeatures.spindles || 'absent') : null;
         const kcomplexMode = sleepFeatures ? (sleepFeatures.kcomplexes || 'absent') : null;
-        const spindleRate = spindleMode === 'present' ? 0.00165 : (spindleMode === 'absent' ? 0 : 0.0010);
-        const kcomplexRate = kcomplexMode === 'present' ? 0.00040 : (kcomplexMode === 'absent' ? 0 : 0.00022);
-        if(state.mode==='n2' && !state.spindle.active && spindleRate > 0 && rng()<spindleRate){
-          state.spindle.active=true;
-          state.spindle.t0=state.artClock+rng()*0.7;
-          state.spindle.dur=0.55+rng()*0.85;
+        if (state.mode !== 'n2'){
+          state.spindle.active = false;
+          state.kcomplex.active = false;
         }
-        if(state.mode==='n2' && !state.kcomplex.active && kcomplexRate > 0 && rng()<kcomplexRate){
-          state.kcomplex.active=true;
-          state.kcomplex.t0=state.artClock+rng()*0.45;
-          if(!state.spindle.active && spindleRate > 0 && rng()<0.68){
+        if (state.mode !== 'n1'){
+          state.vertex.active = false;
+        }
+        if(state.mode==='n2'){
+          const spindleEnabled = spindleMode !== 'absent';
+          const kcomplexEnabled = kcomplexMode !== 'absent';
+          if(!state.spindle.active && spindleEnabled && state.artClock >= (state.spindle.nextT || 0)){
             state.spindle.active=true;
-            state.spindle.t0=state.kcomplex.t0+0.22+rng()*0.28;
-            state.spindle.dur=0.60+rng()*0.90;
+            state.spindle.t0=state.artClock+rng()*0.18;
+            state.spindle.dur=(spindleMode === 'present' ? 0.90 : 0.68)+rng()*(spindleMode === 'present' ? 0.78 : 0.46);
+            state.spindle.nextT=state.artClock+(spindleMode === 'present' ? 3.4 + rng()*4.8 : 5.2 + rng()*6.6);
+          }
+          if(!state.kcomplex.active && kcomplexEnabled && state.artClock >= (state.kcomplex.nextT || 0)){
+            state.kcomplex.active=true;
+            state.kcomplex.t0=state.artClock+rng()*0.14;
+            state.kcomplex.nextT=state.artClock+(kcomplexMode === 'present' ? 6.5 + rng()*7.8 : 9.5 + rng()*10.5);
+            if(spindleEnabled){
+              state.spindle.active=true;
+              state.spindle.t0=state.kcomplex.t0+0.24+rng()*0.30;
+              state.spindle.dur=0.92+rng()*0.76;
+              state.spindle.nextT=Math.max(state.spindle.nextT || 0, state.kcomplex.t0 + 4.2 + rng()*5.2);
+            }
           }
         }
-        if(state.mode==='n1' && !state.vertex.active && rng()<0.00055){
+        if(state.mode==='n1' && !state.vertex.active && state.artClock >= (state.vertex.nextT || 0)){
           state.vertex.active=true;
-          state.vertex.t0=state.artClock+rng()*0.25;
+          state.vertex.t0=state.artClock+rng()*0.12;
+          state.vertex.nextT=state.artClock+2.6+rng()*4.8;
         }
         if(state.spindle.active && state.artClock>state.spindle.t0+state.spindle.dur) state.spindle.active=false;
-        if(state.kcomplex.active && state.artClock>state.kcomplex.t0+1.0) state.kcomplex.active=false;
-        if(state.vertex.active && state.artClock>state.vertex.t0+0.15) state.vertex.active=false;
+        if(state.kcomplex.active && state.artClock>state.kcomplex.t0+1.05) state.kcomplex.active=false;
+        if(state.vertex.active && state.artClock>state.vertex.t0+0.22) state.vertex.active=false;
         const blinkShape = currentBlinkShape(state.artClock);
         const chewArtifact = currentChewArtifact(state.artClock);
         const sweatArtifact = currentSweatArtifact(state.artClock);
@@ -2303,9 +2367,8 @@ function regen(){
   state.opts={ blink:$('blink')?.checked||false, chew:$('chew')?.checked||false, sweat:$('sweat')?.checked||false, pop:$('pop')?.checked||false, emg:$('emg')?.checked||false };
   state.montage=$('montageSel')?$('montageSel').value:state.montage;
   state.pdrHz=9.0 + 1.8*state.rng(); state.pdrPhase=0; state.artClock=0; state.sampleCarry=0;
-  state.spindle.active = false; state.spindle.t0 = 0; state.spindle.dur = 0;
-  state.kcomplex.active = false; state.kcomplex.t0 = 0;
-  state.vertex.active = false; state.vertex.t0 = 0;
+  resetSleepTransientState(0);
+  reseedSleepTransientTargets(state.mode);
   lastT=performance.now()/1000; initChannels();
   syncBlinkGenerator(true);
   syncChewGenerator(true);
@@ -2422,9 +2485,6 @@ if (optBtn && optionsModal) {
 }
 if($('timebase')) $('timebase').addEventListener('change',()=>{ resizeBuffersForSeconds(secondsFromTimebase($('timebase').value)); });
 if($('sensitivity')) $('sensitivity').addEventListener('change',()=>{ applySensitivityValue($('sensitivity').value); syncControlsFromState(); });
-
-/* Intro modal */
-(function(){ const modal=document.getElementById('introModal'); const closeBtn=document.getElementById('introClose'); function close(){ modal.setAttribute('hidden',''); } if(closeBtn) closeBtn.addEventListener('click', close); if(modal) modal.addEventListener('click',(e)=>{ if(e.target===modal) close(); }); document.addEventListener('keydown',(e)=>{ if(e.key==='Escape') close(); }); })();
 
 /***********************
  * Self-tests & boot
@@ -2876,6 +2936,7 @@ if (_qe) _qe.addEventListener('click', endQuiz);
 // Pathology modal buttons are already wired above
 
 // ---------------- Tutorial Mode ----------------
+const DEFAULT_TUTORIAL_LEVEL = 'beginner';
 function createNeutralEducationalBias(){
   return {leftScale:1, rightScale:1, diffuseScale:1, focal:{}};
 }
@@ -2884,7 +2945,11 @@ function createTutorialState(){
   return {
     active:false,
     mode:'guided',
-    level:'beginner',
+    level:DEFAULT_TUTORIAL_LEVEL,
+    caseMode:'ordered',
+    selectedCaseId:'normal_awake_alpha',
+    lastCaseId:null,
+    caseFocusOpen:false,
     stepIndex:0,
     currentCase:null,
     responses:{},
@@ -2900,7 +2965,9 @@ state.tutorial = state.tutorial || createTutorialState();
 
 const TUTORIAL_SETUP_MODAL = document.getElementById('tutorialSetupModal');
 const tutorialModeSel = document.getElementById('tutorialModeSel');
-const tutorialLevelSel = document.getElementById('tutorialLevelSel');
+const tutorialCaseModeSel = document.getElementById('tutorialCaseModeSel');
+const tutorialCaseSelWrap = document.getElementById('tutorialCaseSelWrap');
+const tutorialCaseSel = document.getElementById('tutorialCaseSel');
 const tutorialSetupClose = document.getElementById('tutorialSetupClose');
 const tutorialStartBtn = document.getElementById('tutorialStartBtn');
 const tutorialPanel = document.getElementById('tutorialPanel');
@@ -2982,20 +3049,71 @@ const TUTORIAL_CASE_ORDER = {
   intermediate:['normal_awake_alpha','blink_awake_alpha','drowsy_transition','stage2_sleep','generalized_slowing','focal_slowing_left','chewing_artifact','gpd_case'],
   advanced:['normal_awake_alpha','blink_awake_alpha','drowsy_transition','stage2_sleep','generalized_slowing','focal_slowing_left','chewing_artifact','gpd_case','lpd_left','absence_seizure','generalized_seizure','focal_seizure']
 };
-function tutorialModeLabel(mode){
-  return mode === 'interactive' ? 'Interactive' : 'Guided';
-}
-function tutorialLevelLabel(level){
-  if (level === 'advanced') return 'Advanced';
-  if (level === 'intermediate') return 'Intermediate';
-  return 'Beginner';
-}
 function updateModeButtons(){
   if (quizBtnTop) quizBtnTop.textContent = (state.quiz && state.quiz.active) ? 'End Quiz' : 'Quiz';
   if (tutorialBtnTop) tutorialBtnTop.textContent = (state.tutorial && state.tutorial.active) ? 'End Tutorial' : 'Tutorial';
 }
 function tutorialPoolForLevel(level){
-  return TUTORIAL_CASE_ORDER[level] || TUTORIAL_CASE_ORDER.beginner;
+  return TUTORIAL_CASE_ORDER.advanced || TUTORIAL_CASE_ORDER.beginner;
+}
+function tutorialAllCaseIds(){
+  return Array.from(new Set(Object.values(TUTORIAL_CASE_ORDER).flat()));
+}
+function tutorialCaseTitle(caseId){
+  return (TUTORIAL_CASE_LIBRARY[caseId] && TUTORIAL_CASE_LIBRARY[caseId].title) || caseId;
+}
+function tutorialResolveSelectedCaseId(selectedCaseId){
+  const allCases = tutorialAllCaseIds();
+  if (!allCases.length) return '';
+  return allCases.includes(selectedCaseId) ? selectedCaseId : allCases[0];
+}
+function populateTutorialCaseSelect(preferredId){
+  if (!tutorialCaseSel) return '';
+  const allCases = tutorialAllCaseIds();
+  const selectedId = tutorialResolveSelectedCaseId(preferredId || tutorialCaseSel.value || (state.tutorial && state.tutorial.selectedCaseId));
+  const frag = document.createDocumentFragment();
+  allCases.forEach((caseId)=>{
+    const opt = document.createElement('option');
+    opt.value = caseId;
+    opt.textContent = tutorialCaseTitle(caseId);
+    frag.appendChild(opt);
+  });
+  tutorialCaseSel.replaceChildren(frag);
+  tutorialCaseSel.value = selectedId;
+  return selectedId;
+}
+function syncTutorialSetupCaseControls(){
+  const caseMode = tutorialCaseModeSel ? tutorialCaseModeSel.value : (state.tutorial && state.tutorial.caseMode) || 'ordered';
+  const selectedId = populateTutorialCaseSelect();
+  if (tutorialCaseSelWrap){
+    const showSpecific = caseMode === 'specific';
+    tutorialCaseSelWrap.hidden = !showSpecific;
+    tutorialCaseSelWrap.style.display = showSpecific ? '' : 'none';
+  }
+  if (tutorialCaseSel) tutorialCaseSel.disabled = caseMode !== 'specific';
+  return selectedId;
+}
+function chooseNextTutorialCaseId(){
+  const pool = tutorialPoolForLevel(state.tutorial.level);
+  if (!pool.length) return '';
+  const caseMode = state.tutorial.caseMode || 'ordered';
+  if (caseMode === 'specific'){
+    const selectedId = tutorialResolveSelectedCaseId(state.tutorial.selectedCaseId);
+    state.tutorial.selectedCaseId = selectedId;
+    return selectedId;
+  }
+  if (caseMode === 'random'){
+    const rng = state.rng || Math.random;
+    const candidates = pool.length > 1
+      ? pool.filter((caseId)=> caseId !== state.tutorial.lastCaseId)
+      : pool.slice();
+    const source = candidates.length ? candidates : pool;
+    return source[Math.floor(rng() * source.length)] || source[0] || '';
+  }
+  const cursor = state.tutorial.caseCursor[state.tutorial.level] || 0;
+  const caseId = pool[cursor % pool.length];
+  state.tutorial.caseCursor[state.tutorial.level] = (cursor + 1) % pool.length;
+  return caseId;
 }
 function tutorialCloneCase(caseId){
   const source = TUTORIAL_CASE_LIBRARY[caseId];
@@ -3159,7 +3277,7 @@ function tutorialExplanation(step, caseData){
 }
 function tutorialAnswerBanner(step, caseData){
   if (!step || !caseData) return '';
-  if (step.key === 'finalImpression') return 'Reference read';
+  if (step.key === 'finalImpression') return '';
   const truth = caseData.truth ? caseData.truth[step.key] : '';
   if (state.tutorial.mode === 'guided') return `Best answer: ${truth}`;
   const response = tutorialCurrentResponse(step.key);
@@ -3196,12 +3314,18 @@ function renderTutorialUI(){
 
   if (tutorialMeta){
     const frag = document.createDocumentFragment();
-    [caseData.title, tutorialModeLabel(state.tutorial.mode), tutorialLevelLabel(state.tutorial.level)].forEach((label)=>{
-      const chip = document.createElement('span');
-      chip.className = 'tutorial-chip';
-      chip.textContent = label;
-      frag.appendChild(chip);
-    });
+    if (caseData.summary){
+      const caseToggle = document.createElement('button');
+      caseToggle.type = 'button';
+      caseToggle.className = `tutorial-toggle${state.tutorial.caseFocusOpen ? ' active' : ''}`;
+      caseToggle.textContent = state.tutorial.caseFocusOpen ? 'Hide Case' : 'Reveal Case';
+      caseToggle.setAttribute('aria-pressed', state.tutorial.caseFocusOpen ? 'true' : 'false');
+      caseToggle.addEventListener('click', ()=>{
+        state.tutorial.caseFocusOpen = !state.tutorial.caseFocusOpen;
+        renderTutorialUI();
+      });
+      frag.appendChild(caseToggle);
+    }
     tutorialMeta.replaceChildren(frag);
   }
   if (tutorialProgress){
@@ -3220,10 +3344,10 @@ function renderTutorialUI(){
     prompt.className = 'tutorial-prompt';
     prompt.textContent = step ? step.prompt : '';
     card.appendChild(prompt);
-    if (caseData.summary){
+    if (caseData.summary && state.tutorial.caseFocusOpen){
       const summary = document.createElement('div');
-      summary.className = 'tutorial-note';
-      summary.textContent = `Case focus: ${caseData.summary}`;
+      summary.className = 'tutorial-note tutorial-case-focus';
+      summary.textContent = caseData.summary;
       card.appendChild(summary);
     }
     if (step && step.options && state.tutorial.mode === 'interactive'){
@@ -3247,10 +3371,13 @@ function renderTutorialUI(){
       card.appendChild(row);
     }
     if (step && (state.tutorial.mode === 'guided' || tutorialStepRevealed(step))){
-      const answer = document.createElement('div');
-      answer.className = 'tutorial-answer';
-      answer.textContent = tutorialAnswerBanner(step, caseData);
-      card.appendChild(answer);
+      const answerText = tutorialAnswerBanner(step, caseData);
+      if (answerText){
+        const answer = document.createElement('div');
+        answer.className = 'tutorial-answer';
+        answer.textContent = answerText;
+        card.appendChild(answer);
+      }
       const explanation = document.createElement('div');
       explanation.className = 'tutorial-explanation';
       explanation.textContent = tutorialExplanation(step, caseData);
@@ -3282,6 +3409,7 @@ function renderTutorialUI(){
 
   if (tutorialBackBtn) tutorialBackBtn.disabled = state.tutorial.stepIndex <= 0;
   if (tutorialNextBtn) tutorialNextBtn.disabled = state.tutorial.stepIndex >= TUTORIAL_STEPS.length-1 || !tutorialCanAdvance();
+  if (tutorialNewCaseBtn) tutorialNewCaseBtn.textContent = (state.tutorial.caseMode === 'specific') ? 'Restart Case' : 'New Case';
   syncPlaybackButtons();
   updateModeButtons();
 }
@@ -3351,6 +3479,8 @@ function applyTutorialCase(caseData){
   if (tutorialPanel) tutorialPanel.style.display = 'block';
   const rf = document.getElementById('rhythmFieldset');
   if (rf) rf.style.display = 'none';
+  state.tutorial.lastCaseId = caseData.caseId || null;
+  state.tutorial.caseFocusOpen = false;
   state.tutorial.currentCase = caseData;
   state.tutorial.stepIndex = 0;
   state.tutorial.responses = {};
@@ -3371,13 +3501,11 @@ function applyTutorialCase(caseData){
   renderTutorialUI();
 }
 function startNextTutorialCase(){
-  const pool = tutorialPoolForLevel(state.tutorial.level);
-  if (!pool.length) return;
-  const cursor = state.tutorial.caseCursor[state.tutorial.level] || 0;
-  const caseId = pool[cursor % pool.length];
-  state.tutorial.caseCursor[state.tutorial.level] = (cursor + 1) % pool.length;
+  const caseId = chooseNextTutorialCaseId();
+  if (!caseId) return;
   const caseData = tutorialCloneCase(caseId);
   if (!caseData) return;
+  caseData.caseId = caseId;
   applyTutorialCase(caseData);
 }
 function openTutorialSetup(){
@@ -3387,7 +3515,9 @@ function openTutorialSetup(){
   const optionsModal = document.getElementById('optionsModal');
   if (optionsModal) optionsModal.hidden = true;
   if (tutorialModeSel) tutorialModeSel.value = (state.tutorial && state.tutorial.mode) || 'guided';
-  if (tutorialLevelSel) tutorialLevelSel.value = (state.tutorial && state.tutorial.level) || 'beginner';
+  if (tutorialCaseModeSel) tutorialCaseModeSel.value = (state.tutorial && state.tutorial.caseMode) || 'ordered';
+  populateTutorialCaseSelect((state.tutorial && state.tutorial.selectedCaseId) || '');
+  syncTutorialSetupCaseControls();
   TUTORIAL_SETUP_MODAL.hidden = false;
 }
 function startTutorial(mode, level){
@@ -3397,7 +3527,9 @@ function startTutorial(mode, level){
   }
   state.tutorial.active = true;
   state.tutorial.mode = mode || (tutorialModeSel ? tutorialModeSel.value : 'guided') || 'guided';
-  state.tutorial.level = level || (tutorialLevelSel ? tutorialLevelSel.value : 'beginner') || 'beginner';
+  state.tutorial.level = level || DEFAULT_TUTORIAL_LEVEL;
+  state.tutorial.caseMode = (tutorialCaseModeSel ? tutorialCaseModeSel.value : state.tutorial.caseMode) || 'ordered';
+  state.tutorial.selectedCaseId = tutorialResolveSelectedCaseId(tutorialCaseSel ? tutorialCaseSel.value : state.tutorial.selectedCaseId);
   state.tutorial.responses = {};
   clearQuizBannerTimer();
   const banner = document.getElementById('quizBanner');
@@ -3417,6 +3549,7 @@ function endTutorial(){
   state.tutorial.currentCase = null;
   state.tutorial.stepIndex = 0;
   state.tutorial.responses = {};
+  state.tutorial.caseFocusOpen = false;
   resetTutorialEducationalState();
   clearActiveTutorialSeizures();
   if (tutorialPanel) tutorialPanel.style.display = 'none';
@@ -3796,6 +3929,12 @@ if (tutorialSetupClose && TUTORIAL_SETUP_MODAL){
 }
 if (tutorialStartBtn){
   tutorialStartBtn.addEventListener('click', ()=> startTutorial());
+}
+if (tutorialCaseModeSel){
+  tutorialCaseModeSel.addEventListener('change', syncTutorialSetupCaseControls);
+}
+if (tutorialCaseSel){
+  tutorialCaseSel.addEventListener('change', ()=>{ state.tutorial.selectedCaseId = tutorialCaseSel.value; });
 }
 if (TUTORIAL_SETUP_MODAL){
   TUTORIAL_SETUP_MODAL.addEventListener('click', (e)=>{ if (e.target === TUTORIAL_SETUP_MODAL) TUTORIAL_SETUP_MODAL.hidden = true; });
