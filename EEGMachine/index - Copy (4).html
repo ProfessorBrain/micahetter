@@ -3743,13 +3743,8 @@ function startQuiz(){
   const sleep      = randChoice(rng, ['Awake','Drowsy','Stage 1','Stage 2','SWS','REM']);
   const background = deriveQuizBackgroundForSleep(rng, sleep);
   const artifact   = (rng()<0.25) ? randChoice(rng, ['Eye blinks','Chewing','Sweat','EMG']) : 'None';
-  let symmetry   = randChoice(rng, ['symmetric','asymmetric']);
+  const symmetry   = randChoice(rng, ['symmetric','asymmetric']);
   const amplitude  = randChoice(rng, ['Normal','diffuse attenuation','focal attenuation']);
-  let focalAttenuationTarget = '';
-  if (amplitude === 'focal attenuation'){
-    symmetry = 'asymmetric';
-    focalAttenuationTarget = randChoice(rng, ['F7','T3','T5','F8','T4','T6','F3','C3','P3','F4','C4','P4','O1','O2']);
-  }
   const slowingDist = (rng()<0.34) ? 'None' : randChoice(rng, ['Generalized','Focal - Left','Focal - Right']);
   const slowingTempo = slowingDist === 'None' ? '' : randChoice(rng, ['Intermittent','Continuous']);
   const periodic   = (rng()<0.30) ? randChoice(rng, ['GPDs','LPDs']) : 'None';
@@ -3801,22 +3796,16 @@ function startQuiz(){
   state.quiz.spikes = buildQuizSpikeConfig(rng, epileptiform);
 
   if (symmetry==='asymmetric'){
-    const bias = (amplitude === 'focal attenuation') ? (0.60 + 0.14*rng()) : (0.7 + 0.25*rng());
-    let attenuatedSide = rng()<0.5 ? 'L' : 'R';
-    if (amplitude === 'focal attenuation' && focalAttenuationTarget){
-      attenuatedSide = /^(F7|T3|T5|F3|C3|P3|O1)$/.test(focalAttenuationTarget) ? 'L' : 'R';
-    }
-    if (attenuatedSide === 'L') state.quiz.bias.leftScale = bias;
-    else state.quiz.bias.rightScale = bias;
+    const bias = 0.7 + 0.25*rng();
+    if (rng()<0.5){ state.quiz.bias.leftScale=bias; } else { state.quiz.bias.rightScale=bias; }
   }
   if (amplitude==='diffuse attenuation'){
     state.quiz.bias.diffuseScale = 0.52 + 0.16*rng();
   }
   if (amplitude==='focal attenuation'){
-    state.quiz.truth.symmetry = 'asymmetric';
-    state.quiz.bias.focal[focalAttenuationTarget]=0.44;
+    const target = randChoice(rng, ['F7','T3','T5','F8','T4','T6','F3','C3','P3','F4','C4','P4','O1','O2']);
+    state.quiz.bias.focal[target]=0.55;
   }
-  enforceFocalAttenuationAsymmetry(state.quiz.bias);
 
   // --- Build the ordered spec the UI renderer consumes ---
   state.quiz.order = QUIZ_SPEC_BASE.map((step)=>{
@@ -4007,21 +3996,6 @@ if (_qe) _qe.addEventListener('click', endQuiz);
 const DEFAULT_TUTORIAL_LEVEL = 'beginner';
 function createNeutralEducationalBias(){
   return {leftScale:1, rightScale:1, diffuseScale:1, focal:{}};
-}
-function enforceFocalAttenuationAsymmetry(bias){
-  if (!bias || !bias.focal) return bias;
-  if ((bias.leftScale ?? 1) !== 1 || (bias.rightScale ?? 1) !== 1) return bias;
-  const focalTargets = Object.keys(bias.focal).filter((key)=> (bias.focal[key] ?? 1) < 0.999);
-  if (!focalTargets.length) return bias;
-  let leftCount = 0;
-  let rightCount = 0;
-  focalTargets.forEach((key)=>{
-    if (/^(Fp1|F7|T3|T5|F3|C3|P3|O1)$/.test(key)) leftCount++;
-    else if (/^(Fp2|F8|T4|T6|F4|C4|P4|O2)$/.test(key)) rightCount++;
-  });
-  if (leftCount > rightCount) bias.leftScale = 0.72;
-  else if (rightCount > leftCount) bias.rightScale = 0.72;
-  return bias;
 }
 function createTutorialState(){
   const rng = state.rng || Math.random;
@@ -4538,7 +4512,6 @@ function tutorialSetCommonSimulatorState(caseData){
       focal:{...(signal.bias.focal || {})}
     };
   }
-  enforceFocalAttenuationAsymmetry(state.tutorial.bias);
   state.tutorial.sleepFeatures = (signal.sleepDrive === 'Stage 2')
     ? {spindles: signal.spindles || 'present', kcomplexes: signal.kcomplexes || 'present'}
     : null;
