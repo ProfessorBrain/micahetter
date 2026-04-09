@@ -165,6 +165,7 @@
 
   const els = {
     workspaceShell: document.querySelector(".workspaceShell"),
+    sidebarContent: document.querySelector(".sidebarContent"),
     sidebarToggleButton: document.getElementById("sidebarToggleButton"),
     collapsedSidebarToggleButton: document.getElementById("collapsedSidebarToggleButton"),
     casePanel: document.getElementById("casePanel"),
@@ -564,21 +565,51 @@
     setCaseColumnOpen(false);
   }
 
+  function focusControl(target) {
+    if (!target || typeof target.focus !== "function") {
+      return;
+    }
+
+    try {
+      target.focus({ preventScroll: true });
+    } catch (_error) {
+      target.focus();
+    }
+  }
+
+  function syncRegionVisibility(region, visible, fallbackTarget) {
+    if (!region) {
+      return;
+    }
+
+    const activeElement = document.activeElement;
+    if (!visible && activeElement && region.contains(activeElement)) {
+      focusControl(fallbackTarget);
+    }
+
+    region.setAttribute("aria-hidden", visible ? "false" : "true");
+    if ("inert" in region) {
+      region.inert = !visible;
+    }
+  }
+
   function updateSidebarToggleButton() {
     const mobile = isMobileLayout();
     const drawerOpen = document.body.classList.contains("drawerOpen");
     const collapsed = document.body.classList.contains("sidebarCollapsed");
     const expanded = mobile ? drawerOpen : !collapsed;
-    const collapsedLabel = mobile ? "Browse cases" : "Browse";
+    const collapsedLabel = mobile ? "Cases" : "Browse";
     const collapsedVisible = mobile ? !drawerOpen : collapsed;
+    const sidebarContentVisible = mobile ? drawerOpen : !collapsed;
 
     els.sidebarToggleButton.textContent = mobile
-      ? (drawerOpen ? "Hide Sidebar" : "Browse cases")
+      ? (drawerOpen ? "Close menu" : "Cases")
       : (collapsed ? "Show Sidebar" : "Hide Sidebar");
     els.sidebarToggleButton.setAttribute("aria-expanded", expanded ? "true" : "false");
     els.collapsedSidebarToggleButton.textContent = collapsedLabel;
     els.collapsedSidebarToggleButton.setAttribute("aria-expanded", expanded ? "true" : "false");
-    els.collapsedSidebarCard.setAttribute("aria-hidden", collapsedVisible ? "false" : "true");
+    syncRegionVisibility(els.sidebarContent, sidebarContentVisible, els.collapsedSidebarToggleButton);
+    syncRegionVisibility(els.collapsedSidebarCard, collapsedVisible, els.sidebarToggleButton);
   }
 
   function applySelectedContext(record, caseInfo) {
@@ -629,8 +660,8 @@
     els.viewerWelcome.classList.remove("isHidden");
     els.viewerMessage.classList.add("isHidden");
     els.viewerWelcomeStatus.textContent = activeRecord
-      ? activeRecord.def.label + " is open in the sidebar. Select any published case there to begin the simulator."
-      : "Start on the left by choosing a specialty, then select any published case to launch the simulator.";
+      ? activeRecord.def.label + " is open in the case menu. Select any published case there to begin the simulator."
+      : "Open the case menu to choose a specialty, then select any published case to launch the simulator.";
   }
 
   function showSeriesViewer(record) {

@@ -744,28 +744,53 @@ body.sidebarCollapsed .collapsedSidebarCard {
 
   .selectorSidebar {
     position: fixed;
-    top: 12px;
-    bottom: 12px;
+    top: max(12px, env(safe-area-inset-top));
     left: 12px;
-    width: min(340px, calc(100vw - 28px));
-    border: 1px solid rgba(255, 181, 53, 0.22);
-    border-radius: 26px;
-    box-shadow: var(--shadow-shell);
-    transform: translateX(calc(-100% + 78px));
-    transition: transform 220ms ease;
+    bottom: auto;
+    width: auto;
+    min-width: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    overflow: visible;
+    transform: none;
     z-index: 30;
   }
 
-  body.drawerOpen .selectorSidebar {
-    transform: translateX(0);
+  .selectorSidebar::before,
+  .selectorSidebar::after {
+    display: none;
   }
 
   .sidebarContent {
     display: none;
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    width: min(360px, calc(100vw - 24px));
+    max-height: calc(100svh - 94px - env(safe-area-inset-top));
+    padding: 12px;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 181, 53, 0.22);
+    background:
+      radial-gradient(circle at 22% 8%, rgba(255, 214, 44, 0.12), transparent 16%),
+      linear-gradient(180deg, rgba(255, 157, 23, 0.08), transparent 22%),
+      linear-gradient(180deg, rgba(24, 18, 13, 0.98) 0%, rgba(8, 8, 8, 0.995) 54%, rgba(0, 0, 0, 1) 100%);
+    box-shadow: var(--shadow-shell);
+    overflow: hidden;
   }
 
   .collapsedSidebarCard {
     display: flex;
+    height: auto;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    padding: 0;
+    border-radius: 999px;
+    backdrop-filter: blur(10px);
   }
 
   body.drawerOpen .sidebarContent {
@@ -790,6 +815,29 @@ body.sidebarCollapsed .collapsedSidebarCard {
 
   .selectorTrack {
     display: flex;
+  }
+
+  .collapsedToggleButton {
+    width: auto;
+    min-width: 116px;
+    padding-inline: 16px;
+  }
+
+  .collapsedSeries,
+  .collapsedCase {
+    width: auto;
+    min-height: 44px;
+    padding: 0 12px;
+  }
+
+  .viewerWorkspace {
+    background:
+      radial-gradient(circle at top center, rgba(228, 58, 34, 0.05), transparent 18%),
+      linear-gradient(180deg, #f7f1e1 0%, #efe5cf 46%, #eadbbd 100%);
+  }
+
+  .viewerPlaceholder {
+    padding: 98px 24px 24px;
   }
 
   .viewerWelcomeGrid {
@@ -830,5 +878,13 @@ body.sidebarCollapsed .collapsedSidebarCard {
 
   .viewerPlaceholder {
     padding: 28px 18px;
+  }
+
+  .sidebarContent {
+    width: min(340px, calc(100vw - 20px));
+  }
+
+  .viewerPlaceholder {
+    padding-top: 92px;
   }
 }

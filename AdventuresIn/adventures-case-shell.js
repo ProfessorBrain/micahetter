@@ -92,6 +92,59 @@
       'body.has-medicine-shell tw-sidebar { top: 4.9rem !important; }' +
       'body.has-medicine-shell.medicineEmbedded tw-story tw-passage { padding-top: 0.9em !important; }' +
       'body.has-medicine-shell.medicineEmbedded tw-sidebar { top: 0.75rem !important; }' +
+      '@media (max-width: 980px) {' +
+        'body.has-medicine-shell.medicineEmbedded {' +
+          'background: linear-gradient(180deg, #f7f1e1 0%, #efe5cf 46%, #eadbbd 100%) !important;' +
+          'background-image: none !important;' +
+        '}' +
+        'body.has-medicine-shell.medicineEmbedded::before {' +
+          'display: none !important;' +
+        '}' +
+        'body.has-medicine-shell.medicineEmbedded tw-story {' +
+          'position: relative !important;' +
+          'top: 0 !important;' +
+          'left: auto !important;' +
+          'right: auto !important;' +
+          'width: auto !important;' +
+          'max-width: 46rem !important;' +
+          'margin: 0 auto !important;' +
+          'padding: 4.6rem 1.15rem 2rem !important;' +
+          'border: 0 !important;' +
+          'border-radius: 0 !important;' +
+          'background: transparent !important;' +
+          'box-shadow: none !important;' +
+          'color: #25180f !important;' +
+          'font-size: clamp(1rem, 2.8vw, 1.16rem) !important;' +
+          'line-height: 1.65 !important;' +
+        '}' +
+        'body.has-medicine-shell.medicineEmbedded tw-story, ' +
+        'body.has-medicine-shell.medicineEmbedded tw-story tw-passage {' +
+          'color: #25180f !important;' +
+        '}' +
+        'body.has-medicine-shell.medicineEmbedded tw-story blockquote {' +
+          'margin-inline: 0 !important;' +
+          'padding-left: 1rem !important;' +
+          'border-left: 3px solid rgba(159, 25, 15, 0.22) !important;' +
+          'color: rgba(37, 24, 15, 0.84) !important;' +
+        '}' +
+        'body.has-medicine-shell.medicineEmbedded tw-link, ' +
+        'body.has-medicine-shell.medicineEmbedded .enchantment-link {' +
+          'color: #9f190f !important;' +
+        '}' +
+        'body.has-medicine-shell.medicineEmbedded tw-link:hover, ' +
+        'body.has-medicine-shell.medicineEmbedded .enchantment-link:hover {' +
+          'color: #d36a08 !important;' +
+        '}' +
+        'body.has-medicine-shell.medicineEmbedded tw-story tw-passage {' +
+          'padding-top: 0 !important;' +
+        '}' +
+        'body.has-medicine-shell.medicineEmbedded tw-sidebar {' +
+          'top: 0.85rem !important;' +
+          'left: auto !important;' +
+          'right: 0.85rem !important;' +
+          'color: #4a2610 !important;' +
+        '}' +
+      '}' +
       'body.has-medicine-shell .medicineDeck {' +
         'position: fixed;' +
         'top: 0;' +
