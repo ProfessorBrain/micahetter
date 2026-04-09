@@ -326,15 +326,14 @@ a {
   border-color: rgba(255, 204, 92, 0.44);
 }
 
-.sidebarHeaderRow,
-.sidebarActions {
+.sidebarHeaderRow {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
 .sidebarHeaderRow {
-  justify-content: space-between;
+  justify-content: stretch;
 }
 
 .selectorViewport {
@@ -375,15 +374,10 @@ body.caseColumnOpen .selectorTrack {
   overflow: hidden;
 }
 
-.sidebarActions {
-  margin-top: 14px;
-  flex-wrap: wrap;
-}
-
 .sidebarUtilityButton {
-  min-height: 42px;
+  min-height: 44px;
   padding-inline: 14px;
-  flex: 0 0 auto;
+  flex: 1 1 0;
 }
 
 .sidebarActionButton {
@@ -806,13 +800,12 @@ body.sidebarCollapsed .collapsedSidebarCard {
 
 @media (max-width: 760px) {
   .sidebarHeaderRow {
-    align-items: flex-start;
-    flex-direction: column;
+    align-items: stretch;
   }
 
   .sidebarUtilityButton,
   .sidebarActionButton {
-    width: 100%;
+    width: auto;
   }
 
   .viewerWelcomeTitle {

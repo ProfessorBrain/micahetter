@@ -1193,8 +1193,8 @@ function scheduleInterictalPathology(now, immediate=false){
   const orientation = rng() < 0.5 ? -1 : 1;
   const meta = buildInterictalLeadMeta(resolvedLead, orientation);
   const startDelay = immediate ? (0.02 + 0.06*rng()) : (0.08 + 0.16*rng());
-  const interval = 4.0 + 1.0*rng();
-  const clusterPeriod = 12.0 + 5.0*rng();
+  const interval = 1.15 + 1.05*rng();
+  const clusterPeriod = 5.2 + 3.0*rng();
   state.interictalPathology.active = true;
   state.interictalPathology.t0 = now + startDelay;
   state.interictalPathology.lead = resolvedLead.label;
@@ -1216,10 +1216,10 @@ function scheduleInterictalPathology(now, immediate=false){
 function syncInterictalPathology(forceRestart=false){
   state.interictalPathology = {
     active:false, t0:0, lead:'Random', weights:{}, lags:{},
-    interval:4.5, window:0.18, phaseShift:0,
+    interval:1.6, window:0.18, phaseShift:0,
     amp:280, slowAmp:92, plusAmp:18, fastPhase:0,
     doubletGap:0.034, doubletScale:0.42,
-    clusterPeriod:14.0, clusterPhase:0, clusterFloor:0.62,
+    clusterPeriod:6.4, clusterPhase:0, clusterFloor:0.62,
     ...(state.interictalPathology || {})
   };
   ensurePathologyDefaults();
