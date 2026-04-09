@@ -85,11 +85,13 @@
     const style = document.createElement('style');
     style.id = 'adventures-medicine-shell-style';
     style.textContent = '' +
-      'body.has-medicine-shell { background-color: #0d1721; }' +
-      'body.has-medicine-shell.medicineEmbedded { background-position: center top !important; }' +
+      'body.has-medicine-shell { background-color: #f5ebd6; }' +
+      'body.has-medicine-shell.medicineEmbedded { background-color: #f5ebd6 !important; background-position: center top !important; }' +
       'body.has-medicine-shell.medicineEmbedded::before { background-position: center top !important; }' +
       'body.has-medicine-shell tw-story tw-passage { padding-top: 6.6em !important; }' +
       'body.has-medicine-shell tw-sidebar { top: 4.9rem !important; }' +
+      'body.has-medicine-shell.medicineEmbedded tw-story tw-passage { padding-top: 0.9em !important; }' +
+      'body.has-medicine-shell.medicineEmbedded tw-sidebar { top: 0.75rem !important; }' +
       'body.has-medicine-shell .medicineDeck {' +
         'position: fixed;' +
         'top: 0;' +
@@ -195,6 +197,10 @@
   }
 
   function buildDeck(match) {
+    if (isEmbeddedWorkspace()) {
+      return;
+    }
+
     if (document.querySelector('.medicineDeck')) {
       return;
     }

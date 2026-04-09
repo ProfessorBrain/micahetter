@@ -1,19 +1,35 @@
 :root {
-  --bg-top: #31353d;
-  --bg-bottom: #1d2128;
-  --shell-top: #18212c;
-  --shell-bottom: #0f1824;
-  --panel: rgba(19, 28, 39, 0.94);
-  --panel-soft: rgba(28, 38, 51, 0.94);
-  --panel-line: rgba(255, 255, 255, 0.08);
-  --panel-line-strong: rgba(255, 255, 255, 0.14);
-  --ink: #f8f4ec;
-  --ink-soft: rgba(248, 244, 236, 0.76);
-  --ink-muted: rgba(248, 244, 236, 0.54);
-  --accent: #b5533d;
-  --accent-deep: #7f3323;
-  --shadow-shell: 0 36px 90px rgba(0, 0, 0, 0.34);
-  --shadow-panel: 0 18px 42px rgba(0, 0, 0, 0.22);
+  --bg-top: #f0e4c3;
+  --bg-bottom: #d2b887;
+  --shell-top: #f7efdb;
+  --shell-bottom: #ead9b5;
+  --panel: rgba(37, 16, 8, 0.94);
+  --panel-soft: rgba(61, 28, 14, 0.9);
+  --panel-line: rgba(135, 91, 28, 0.24);
+  --panel-line-strong: rgba(255, 215, 128, 0.28);
+  --ink: #fdf1e2;
+  --ink-soft: rgba(253, 241, 226, 0.78);
+  --ink-muted: rgba(253, 228, 198, 0.6);
+  --paper-ink: #24160f;
+  --paper-ink-soft: rgba(36, 22, 15, 0.74);
+  --gold: #f2c559;
+  --gold-deep: #bd7d1f;
+  --accent: #e43a22;
+  --accent-deep: #9f190f;
+  --sidebar-black: #050505;
+  --sidebar-black-soft: #120d09;
+  --sidebar-charcoal: #1b1410;
+  --sidebar-orange-bright: #ffd62c;
+  --sidebar-orange: #ff9d17;
+  --sidebar-orange-deep: #d36a08;
+  --sidebar-orange-shadow: rgba(255, 146, 27, 0.18);
+  --sidebar-compact-width: 320px;
+  --sidebar-expanded-width: 614px;
+  --specialty-panel-width: 292px;
+  --case-panel-width: 272px;
+  --selector-gap: 14px;
+  --shadow-shell: 0 34px 84px rgba(79, 45, 11, 0.22);
+  --shadow-panel: 0 18px 42px rgba(0, 0, 0, 0.28);
   --radius-shell: 32px;
   --radius-panel: 24px;
   --radius-chip: 999px;
@@ -32,9 +48,11 @@ body {
 
 body {
   background:
-    radial-gradient(circle at top center, rgba(181, 83, 61, 0.12), transparent 30%),
+    radial-gradient(circle at top center, rgba(228, 58, 34, 0.14), transparent 28%),
+    radial-gradient(circle at 16% 18%, rgba(173, 121, 46, 0.15), transparent 22%),
+    radial-gradient(circle at 82% 20%, rgba(255, 255, 255, 0.4), transparent 24%),
     linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
-  color: var(--ink);
+  color: var(--paper-ink);
   font-family: var(--font-body);
 }
 
@@ -44,11 +62,11 @@ body::before {
   inset: 0;
   pointer-events: none;
   background:
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 28px 28px;
-  opacity: 0.26;
-  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent 85%);
+    radial-gradient(circle at 20% 24%, rgba(255, 255, 255, 0.34), transparent 20%),
+    radial-gradient(circle at 78% 32%, rgba(149, 96, 26, 0.08), transparent 16%),
+    linear-gradient(115deg, rgba(255, 255, 255, 0.18), transparent 40%),
+    linear-gradient(180deg, rgba(122, 75, 17, 0.08), transparent 45%, rgba(255, 255, 255, 0.16));
+  opacity: 0.72;
 }
 
 button,
@@ -69,65 +87,33 @@ a {
   height: calc(100svh - 24px);
   min-height: calc(100svh - 24px);
   margin: 12px auto;
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
   background:
-    radial-gradient(circle at top center, rgba(181, 83, 61, 0.16), transparent 20%),
+    radial-gradient(circle at top center, rgba(228, 58, 34, 0.14), transparent 20%),
+    radial-gradient(circle at 88% 14%, rgba(242, 197, 89, 0.24), transparent 18%),
+    radial-gradient(circle at 14% 28%, rgba(255, 255, 255, 0.34), transparent 24%),
     linear-gradient(180deg, var(--shell-top) 0%, var(--shell-bottom) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(133, 91, 30, 0.34);
   border-radius: var(--radius-shell);
   overflow: hidden;
   box-shadow: var(--shadow-shell);
   position: relative;
 }
 
-.workspaceTopbar {
-  display: grid;
-  grid-template-columns: minmax(180px, 1fr) minmax(0, 1.6fr) minmax(220px, 1fr);
-  align-items: center;
-  gap: 20px;
-  padding: 18px 18px 16px;
-  border-bottom: 1px solid var(--panel-line);
-  background: rgba(19, 28, 39, 0.96);
-}
-
-.topbarSide {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.topbarSideEnd {
-  justify-content: flex-end;
-  flex-wrap: wrap;
-}
-
-.workspaceTitleGroup {
-  min-width: 0;
-  text-align: center;
-}
-
-.workspaceEyebrow,
 .sectionEyebrow,
 .sectionLabel {
   margin: 0;
-  color: var(--series-accent);
+  color: rgba(255, 223, 156, 0.92);
   font-size: 0.82rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
-.workspaceTitle,
 .sidebarTitle,
 .viewerPlaceholderTitle {
   margin: 8px 0 0;
   font-family: var(--font-display);
   font-weight: 700;
   line-height: 1;
-}
-
-.workspaceTitle {
-  font-size: clamp(2rem, 4vw, 3.2rem);
 }
 
 .chromeButton {
@@ -138,10 +124,13 @@ a {
   padding: 0 18px;
   border-radius: var(--radius-chip);
   border: 1px solid var(--panel-line-strong);
-  background: rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
+    rgba(82, 39, 18, 0.88);
   color: var(--ink);
   text-decoration: none;
   cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
   transition:
     transform 160ms ease,
     background 160ms ease,
@@ -151,13 +140,16 @@ a {
 
 .chromeButton:hover {
   transform: translateY(-1px);
-  background: rgba(255, 255, 255, 0.12);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03)),
+    rgba(106, 48, 22, 0.92);
+  border-color: rgba(255, 220, 142, 0.36);
 }
 
 .chromeButton:focus-visible,
 .specialtyButton:focus-visible,
 .caseButton:focus-visible {
-  outline: 3px solid rgba(181, 83, 61, 0.32);
+  outline: 3px solid rgba(255, 157, 23, 0.34);
   outline-offset: 3px;
 }
 
@@ -170,28 +162,59 @@ a {
 
 .workspaceFrame {
   display: grid;
-  grid-template-columns: 320px minmax(0, 1fr);
+  grid-template-columns: var(--sidebar-compact-width) minmax(0, 1fr);
+  height: 100%;
   min-height: 0;
   transition: grid-template-columns 220ms ease;
+}
+
+body.caseColumnOpen .workspaceFrame {
+  grid-template-columns: var(--sidebar-expanded-width) minmax(0, 1fr);
 }
 
 .selectorSidebar {
   min-width: 0;
   min-height: 0;
-  border-right: 1px solid var(--panel-line);
+  border-right: 1px solid rgba(255, 181, 53, 0.28);
   background:
-    linear-gradient(180deg, rgba(20, 29, 41, 0.98) 0%, rgba(11, 20, 30, 0.96) 100%);
+    radial-gradient(circle at 22% 8%, rgba(255, 214, 44, 0.12), transparent 16%),
+    linear-gradient(180deg, rgba(255, 157, 23, 0.08), transparent 22%),
+    linear-gradient(180deg, rgba(24, 18, 13, 0.98) 0%, rgba(8, 8, 8, 0.995) 54%, rgba(0, 0, 0, 1) 100%);
+  color: var(--ink);
   overflow: hidden;
   position: relative;
 }
 
+.selectorSidebar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 16%),
+    radial-gradient(circle at 18% 7%, rgba(255, 214, 44, 0.08), transparent 16%);
+  opacity: 0.9;
+}
+
+.selectorSidebar::after {
+  content: "";
+  position: absolute;
+  top: 18px;
+  right: 0;
+  bottom: 18px;
+  width: 3px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, transparent 0%, rgba(255, 214, 44, 0.92) 12%, rgba(255, 157, 23, 0.96) 44%, rgba(211, 106, 8, 0.96) 76%, transparent 100%);
+  box-shadow: 0 0 22px rgba(255, 157, 23, 0.24);
+}
+
 .sidebarContent {
   height: 100%;
-  overflow-y: auto;
   padding: 16px 14px 18px;
   display: flex;
   flex-direction: column;
   gap: 14px;
+  min-height: 0;
 }
 
 .sidebarContent::-webkit-scrollbar {
@@ -199,7 +222,7 @@ a {
 }
 
 .sidebarContent::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 176, 45, 0.3);
   border-radius: 999px;
 }
 
@@ -219,9 +242,12 @@ a {
   display: inline-grid;
   place-items: center;
   border-radius: 20px;
-  border: 1px solid var(--panel-line);
-  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 181, 53, 0.22);
+  background:
+    linear-gradient(180deg, rgba(255, 214, 44, 0.12), rgba(255, 255, 255, 0.02) 24%, rgba(255, 255, 255, 0.01)),
+    rgba(8, 8, 8, 0.92);
   color: var(--ink);
+  box-shadow: inset 0 0 0 1px rgba(255, 214, 44, 0.06);
 }
 
 .collapsedSeries {
@@ -239,8 +265,13 @@ a {
 .sidebarNavHeader,
 .sidebarSection {
   border-radius: 20px;
-  border: 1px solid var(--panel-line);
-  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 181, 53, 0.18);
+  background:
+    linear-gradient(180deg, rgba(255, 214, 44, 0.08), rgba(255, 157, 23, 0.015) 22%, rgba(255, 255, 255, 0.01)),
+    rgba(8, 8, 8, 0.86);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 214, 44, 0.08),
+    0 12px 28px rgba(0, 0, 0, 0.28);
 }
 
 .sidebarNavHeader,
@@ -254,6 +285,7 @@ a {
   font-family: var(--font-display);
   font-weight: 700;
   line-height: 1;
+  color: #fff8f2;
 }
 
 .sidebarNavTitle {
@@ -273,11 +305,138 @@ a {
   line-height: 1.55;
 }
 
+.selectorSidebar .sectionEyebrow,
+.selectorSidebar .sectionLabel {
+  color: rgba(255, 214, 44, 0.92);
+}
+
+.selectorSidebar .sectionMeta,
+.selectorSidebar .sidebarNavCopy,
+.selectorSidebar .caseButtonSubtitle,
+.selectorSidebar .emptyListCopy,
+.selectorSidebar .specialtyButtonMeta {
+  color: rgba(255, 244, 228, 0.74);
+}
+
+.selectorSidebar .chromeButton {
+  border-color: rgba(255, 181, 53, 0.3);
+  background:
+    linear-gradient(180deg, rgba(255, 214, 44, 0.14), rgba(255, 255, 255, 0.02) 26%, rgba(255, 255, 255, 0.01)),
+    rgba(13, 13, 13, 0.94);
+  color: #fff8f2;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 214, 44, 0.12),
+    0 8px 18px rgba(0, 0, 0, 0.26);
+}
+
+.selectorSidebar .chromeButton:hover {
+  background:
+    linear-gradient(180deg, rgba(255, 214, 44, 0.18), rgba(255, 255, 255, 0.03) 26%, rgba(255, 255, 255, 0.015)),
+    rgba(24, 18, 13, 0.98);
+  border-color: rgba(255, 204, 92, 0.44);
+}
+
+.sidebarHeaderRow,
+.sidebarActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sidebarHeaderRow {
+  justify-content: space-between;
+}
+
+.selectorViewport {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.selectorTrack {
+  display: flex;
+  gap: var(--selector-gap);
+  width: max-content;
+  height: 100%;
+  min-height: 0;
+}
+
+.selectorPanel {
+  min-height: 0;
+}
+
+.specialtyPanel {
+  flex: 0 0 var(--specialty-panel-width);
+}
+
+.casePanel {
+  flex: 0 0 var(--case-panel-width);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(26px);
+  transition:
+    transform 220ms ease,
+    opacity 180ms ease;
+}
+
+body.caseColumnOpen .casePanel {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+}
+
+.selectorPanel .sidebarSection {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sidebarActions {
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.sidebarUtilityButton {
+  min-height: 42px;
+  padding-inline: 14px;
+  flex: 0 0 auto;
+}
+
+.sidebarActionButton {
+  min-height: 44px;
+  flex: 1 1 0;
+}
+
+.collapsedToggleButton {
+  min-height: 44px;
+  width: 100%;
+  padding-inline: 10px;
+}
+
 .sidebarSectionHead {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
+}
+
+.casePanelHeader {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+
+.casePanelBackButton {
+  min-height: 38px;
+  padding-inline: 14px;
+  align-self: start;
+}
+
+.casePanelHeader .sectionMeta {
+  grid-column: 2;
 }
 
 .sectionHeadBlock {
@@ -296,16 +455,34 @@ a {
   margin-top: 12px;
   display: grid;
   gap: 8px;
+  min-height: 0;
+  overflow-y: auto;
+  align-content: start;
+  padding-right: 4px;
+}
+
+.specialtyRail::-webkit-scrollbar,
+.caseList::-webkit-scrollbar {
+  width: 8px;
+}
+
+.specialtyRail::-webkit-scrollbar-thumb,
+.caseList::-webkit-scrollbar-thumb {
+  background: rgba(255, 176, 45, 0.22);
+  border-radius: 999px;
 }
 
 .specialtyButton,
 .caseButton {
   width: 100%;
-  border: 1px solid var(--panel-line);
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 181, 53, 0.14);
+  background:
+    linear-gradient(180deg, rgba(255, 214, 44, 0.08), rgba(255, 255, 255, 0.015) 26%, rgba(255, 255, 255, 0.01)),
+    rgba(10, 10, 10, 0.88);
   color: var(--ink);
   text-align: left;
   cursor: pointer;
+  box-shadow: inset 0 0 0 1px rgba(255, 214, 44, 0.02);
 }
 
 .specialtyButton {
@@ -324,14 +501,19 @@ a {
   bottom: 12px;
   width: 5px;
   border-radius: 999px;
-  background: linear-gradient(180deg, var(--series-top) 0%, var(--series-bottom) 100%);
+  background: linear-gradient(180deg, var(--sidebar-orange-bright) 0%, var(--sidebar-orange) 58%, var(--sidebar-orange-deep) 100%);
   opacity: 0;
   transition: opacity 160ms ease;
 }
 
 .specialtyButton.isActive {
-  border-color: rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 181, 53, 0.38);
+  background:
+    linear-gradient(180deg, rgba(255, 214, 44, 0.14), rgba(255, 157, 23, 0.03) 24%, rgba(255, 255, 255, 0.015)),
+    rgba(20, 14, 10, 0.96);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 214, 44, 0.08),
+    0 12px 24px rgba(0, 0, 0, 0.28);
 }
 
 .specialtyButton.isActive::before {
@@ -360,8 +542,13 @@ a {
 }
 
 .caseButton.isActive {
-  border-color: rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 181, 53, 0.42);
+  background:
+    linear-gradient(180deg, rgba(255, 214, 44, 0.12), rgba(255, 157, 23, 0.03) 22%, rgba(255, 255, 255, 0.02)),
+    rgba(18, 13, 9, 0.96);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 214, 44, 0.08),
+    0 12px 24px rgba(0, 0, 0, 0.24);
 }
 
 .caseButtonNumber {
@@ -373,8 +560,11 @@ a {
   font-size: 1rem;
   color: #fff7f1;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, transparent 20%),
-    linear-gradient(165deg, var(--series-top) 0%, var(--series-bottom) 100%);
+    linear-gradient(180deg, rgba(255, 244, 188, 0.96) 0%, rgba(255, 214, 44, 0.9) 16%, rgba(255, 157, 23, 0.92) 44%, rgba(211, 106, 8, 0.96) 76%, rgba(126, 54, 5, 0.98) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 252, 227, 0.58),
+    inset 0 0 0 1px rgba(255, 212, 83, 0.22),
+    0 6px 18px rgba(255, 146, 27, 0.16);
 }
 
 .caseButtonBody {
@@ -393,8 +583,10 @@ a {
   margin-top: 12px;
   padding: 14px;
   border-radius: 16px;
-  border: 1px dashed rgba(255, 255, 255, 0.16);
-  background: rgba(255, 255, 255, 0.03);
+  border: 1px dashed rgba(255, 181, 53, 0.24);
+  background:
+    linear-gradient(180deg, rgba(255, 214, 44, 0.05), rgba(255, 255, 255, 0.01)),
+    rgba(8, 8, 8, 0.82);
 }
 
 .emptyListTitle {
@@ -408,8 +600,10 @@ a {
   min-height: 0;
   position: relative;
   background:
-    radial-gradient(circle at top center, rgba(181, 83, 61, 0.08), transparent 18%),
-    linear-gradient(180deg, rgba(14, 23, 34, 0.98) 0%, rgba(10, 18, 28, 0.98) 100%);
+    radial-gradient(circle at top center, rgba(228, 58, 34, 0.08), transparent 18%),
+    radial-gradient(circle at 14% 24%, rgba(255, 255, 255, 0.34), transparent 20%),
+    radial-gradient(circle at 84% 20%, rgba(190, 139, 59, 0.12), transparent 18%),
+    linear-gradient(180deg, #f7f1e1 0%, #efe5cf 46%, #eadbbd 100%);
 }
 
 .viewerWorkspace::before {
@@ -418,10 +612,11 @@ a {
   inset: 0;
   pointer-events: none;
   background:
-    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-  background-size: 36px 36px;
-  opacity: 0.4;
+    radial-gradient(circle at 24% 28%, rgba(255, 255, 255, 0.22), transparent 18%),
+    radial-gradient(circle at 76% 34%, rgba(155, 103, 27, 0.08), transparent 16%),
+    linear-gradient(115deg, rgba(255, 255, 255, 0.14), transparent 38%),
+    linear-gradient(180deg, rgba(135, 89, 21, 0.08), transparent 44%, rgba(255, 255, 255, 0.14));
+  opacity: 0.72;
 }
 
 .viewerPlaceholder,
@@ -439,6 +634,7 @@ iframe {
   display: grid;
   place-items: center;
   text-align: center;
+  color: var(--paper-ink);
 }
 
 .viewerPlaceholderInner {
@@ -447,7 +643,7 @@ iframe {
 
 .viewerPlaceholderEyebrow {
   margin: 0;
-  color: var(--series-accent);
+  color: rgba(159, 25, 15, 0.82);
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
@@ -456,9 +652,13 @@ iframe {
   font-size: clamp(2.2rem, 4vw, 3.3rem);
 }
 
+.viewerPlaceholderCopy {
+  color: var(--paper-ink-soft);
+}
+
 iframe {
   border: 0;
-  background: #000;
+  background: transparent;
 }
 
 .sidebarScrim {
@@ -481,12 +681,6 @@ body.sidebarCollapsed .collapsedSidebarCard {
   display: flex;
 }
 
-@media (max-width: 1120px) {
-  .workspaceTopbar {
-    grid-template-columns: auto minmax(0, 1fr) auto;
-  }
-}
-
 @media (max-width: 980px) {
   .workspaceShell {
     width: min(100vw - 12px, 1500px);
@@ -506,17 +700,33 @@ body.sidebarCollapsed .collapsedSidebarCard {
     top: 12px;
     bottom: 12px;
     left: 12px;
-    width: min(320px, calc(100vw - 28px));
-    border: 1px solid var(--panel-line);
+    width: min(340px, calc(100vw - 28px));
+    border: 1px solid rgba(255, 181, 53, 0.22);
     border-radius: 26px;
     box-shadow: var(--shadow-shell);
-    transform: translateX(calc(-100% - 20px));
+    transform: translateX(calc(-100% + 78px));
     transition: transform 220ms ease;
     z-index: 30;
   }
 
   body.drawerOpen .selectorSidebar {
     transform: translateX(0);
+  }
+
+  .sidebarContent {
+    display: none;
+  }
+
+  .collapsedSidebarCard {
+    display: flex;
+  }
+
+  body.drawerOpen .sidebarContent {
+    display: flex;
+  }
+
+  body.drawerOpen .collapsedSidebarCard {
+    display: none;
   }
 
   body.sidebarCollapsed .workspaceFrame {
@@ -531,31 +741,51 @@ body.sidebarCollapsed .collapsedSidebarCard {
     display: flex;
   }
 
+  .selectorTrack {
+    width: 200%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 100% 100%;
+    gap: 0;
+    transform: translateX(0);
+    transition: transform 220ms ease;
+  }
+
+  body.caseColumnOpen .selectorTrack {
+    transform: translateX(-50%);
+  }
+
+  .specialtyPanel,
+  .casePanel {
+    flex: 0 0 auto;
+    width: auto;
+  }
+
+  .casePanel {
+    opacity: 1;
+    pointer-events: auto;
+    transform: none;
+  }
+
 }
 
 @media (max-width: 760px) {
-  .workspaceTopbar {
-    grid-template-columns: 1fr;
-    text-align: left;
+  .sidebarHeaderRow {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
-  .workspaceTitleGroup {
-    text-align: left;
-  }
-
-  .topbarSide,
-  .topbarSideEnd {
-    justify-content: flex-start;
-    flex-wrap: wrap;
-  }
-
-  .workspaceTitle {
-    font-size: clamp(1.9rem, 9vw, 2.8rem);
-  }
-
-  .chromeButton,
-  .chromeLink {
+  .sidebarUtilityButton,
+  .sidebarActionButton {
     width: 100%;
+  }
+
+  .casePanelHeader {
+    grid-template-columns: 1fr;
+  }
+
+  .casePanelHeader .sectionMeta {
+    grid-column: 1;
   }
 }
 

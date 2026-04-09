@@ -145,10 +145,10 @@
   const els = {
     workspaceShell: document.querySelector(".workspaceShell"),
     sidebarToggleButton: document.getElementById("sidebarToggleButton"),
+    collapsedSidebarToggleButton: document.getElementById("collapsedSidebarToggleButton"),
+    casePanel: document.getElementById("casePanel"),
+    casePanelBackButton: document.getElementById("casePanelBackButton"),
     restartCaseButton: document.getElementById("restartCaseButton"),
-    standaloneLink: document.getElementById("standaloneLink"),
-    activeSeriesEyebrow: document.getElementById("activeSeriesEyebrow"),
-    activeCaseTitle: document.getElementById("activeCaseTitle"),
     selectedSeriesTitle: document.getElementById("selectedSeriesTitle"),
     specialtyMeta: document.getElementById("specialtyMeta"),
     specialtyRail: document.getElementById("specialtyRail"),
@@ -187,19 +187,6 @@
     target.style.setProperty("--series-top", def.topColor);
     target.style.setProperty("--series-bottom", def.baseColor);
     target.style.setProperty("--series-accent", def.accentColor);
-  }
-
-  function setLinkState(link, href, enabled) {
-    if (enabled) {
-      link.href = href;
-      link.removeAttribute("aria-disabled");
-      link.removeAttribute("tabindex");
-      return;
-    }
-
-    link.href = "about:blank";
-    link.setAttribute("aria-disabled", "true");
-    link.setAttribute("tabindex", "-1");
   }
 
   function pluralizeCases(count) {
@@ -442,8 +429,22 @@
 
   function closeDrawer() {
     document.body.classList.remove("drawerOpen");
+    closeCaseColumn();
     els.sidebarScrim.classList.add("isHidden");
     updateSidebarToggleButton();
+  }
+
+  function setCaseColumnOpen(open) {
+    document.body.classList.toggle("caseColumnOpen", open);
+    els.casePanel.setAttribute("aria-hidden", open ? "false" : "true");
+  }
+
+  function openCaseColumn() {
+    setCaseColumnOpen(true);
+  }
+
+  function closeCaseColumn() {
+    setCaseColumnOpen(false);
   }
 
   function updateSidebarToggleButton() {
@@ -451,12 +452,16 @@
     const drawerOpen = document.body.classList.contains("drawerOpen");
     const collapsed = document.body.classList.contains("sidebarCollapsed");
     const expanded = mobile ? drawerOpen : !collapsed;
+    const collapsedLabel = mobile ? "Browse cases" : "Browse";
+    const collapsedVisible = mobile ? !drawerOpen : collapsed;
 
     els.sidebarToggleButton.textContent = mobile
       ? (drawerOpen ? "Hide selector" : "Browse cases")
       : (collapsed ? "Show selector" : "Hide selector");
     els.sidebarToggleButton.setAttribute("aria-expanded", expanded ? "true" : "false");
-    els.collapsedSidebarCard.setAttribute("aria-hidden", collapsed ? "false" : "true");
+    els.collapsedSidebarToggleButton.textContent = collapsedLabel;
+    els.collapsedSidebarToggleButton.setAttribute("aria-expanded", expanded ? "true" : "false");
+    els.collapsedSidebarCard.setAttribute("aria-hidden", collapsedVisible ? "false" : "true");
   }
 
   function applySelectedContext(record, caseInfo) {
@@ -465,15 +470,14 @@
     setActiveSpecialtyButton(def.id);
     renderCaseList(record);
 
-    els.activeSeriesEyebrow.textContent = def.archiveTitle;
-    els.activeCaseTitle.textContent = caseInfo ? "Case " + caseInfo.n + ": " + caseInfo.displayTitle : def.archiveTitle;
-
     els.selectedSeriesTitle.textContent = def.label;
     els.selectedSeriesMeta.textContent = record.cases.length ? pluralizeCases(record.cases.length) : "No published cases yet";
     els.collapsedSeriesLabel.textContent = def.shortCode;
     els.collapsedCaseNumber.textContent = caseInfo ? String(caseInfo.n).padStart(2, "0") : "--";
+    document.title = caseInfo
+      ? "Adventures in Medicine - " + def.label + " - Case " + caseInfo.n + ": " + caseInfo.displayTitle
+      : "Adventures in Medicine - " + def.label;
 
-    setLinkState(els.standaloneLink, caseInfo ? caseInfo.href : "", Boolean(caseInfo));
     els.restartCaseButton.disabled = !caseInfo;
   }
 
@@ -521,6 +525,7 @@
 
     const selectedCase = getSelectedCase(record);
     applySelectedContext(record, selectedCase);
+    openCaseColumn();
 
     if (selectedCase) {
       loadCase(selectedCase, false);
@@ -529,10 +534,6 @@
     }
 
     updateHash(seriesId, selectedCase ? selectedCase.n : null);
-
-    if (isMobileLayout()) {
-      closeDrawer();
-    }
   }
 
   function selectCase(seriesId, caseNumber, forceReload) {
@@ -637,7 +638,9 @@
   }
 
   function handleLayoutChange() {
-    if (!isMobileLayout()) {
+    if (isMobileLayout()) {
+      document.body.classList.remove("sidebarCollapsed");
+    } else {
       closeDrawer();
     }
     updateSidebarToggleButton();
@@ -652,12 +655,9 @@
   }
 
   els.sidebarToggleButton.addEventListener("click", handleSidebarToggle);
+  els.collapsedSidebarToggleButton.addEventListener("click", handleSidebarToggle);
+  els.casePanelBackButton.addEventListener("click", closeCaseColumn);
   els.restartCaseButton.addEventListener("click", restartCurrentCase);
-  els.standaloneLink.addEventListener("click", function (event) {
-    if (els.standaloneLink.getAttribute("aria-disabled") === "true") {
-      event.preventDefault();
-    }
-  });
   els.sidebarScrim.addEventListener("click", closeDrawer);
   if (typeof state.mediaQuery.addEventListener === "function") {
     state.mediaQuery.addEventListener("change", handleLayoutChange);
@@ -666,8 +666,17 @@
   }
 
   window.addEventListener("keydown", function (event) {
-    if (event.key === "Escape" && document.body.classList.contains("drawerOpen")) {
+    if (event.key !== "Escape") {
+      return;
+    }
+
+    if (document.body.classList.contains("drawerOpen")) {
       closeDrawer();
+      return;
+    }
+
+    if (document.body.classList.contains("caseColumnOpen")) {
+      closeCaseColumn();
     }
   });
 

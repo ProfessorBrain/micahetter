@@ -18,74 +18,70 @@
 </head>
 <body>
   <div class="workspaceShell">
-    <header class="workspaceTopbar">
-      <div class="topbarSide">
-        <button
-          class="chromeButton"
-          id="sidebarToggleButton"
-          type="button"
-          aria-controls="selectorSidebar"
-          aria-expanded="true"
-        >Hide selector</button>
-      </div>
-
-      <div class="workspaceTitleGroup">
-        <p class="workspaceEyebrow" id="activeSeriesEyebrow">Adventures in Medicine</p>
-        <h1 class="workspaceTitle" id="activeCaseTitle">Loading case library</h1>
-      </div>
-
-      <div class="topbarSide topbarSideEnd">
-        <button class="chromeButton" id="restartCaseButton" type="button" disabled>Restart case</button>
-        <a
-          class="chromeButton chromeLink"
-          id="standaloneLink"
-          href="about:blank"
-          target="_blank"
-          rel="noopener"
-          aria-disabled="true"
-          tabindex="-1"
-        >Open standalone</a>
-      </div>
-    </header>
-
     <div class="workspaceFrame">
       <aside class="selectorSidebar" id="selectorSidebar" aria-label="Specialty and case selector">
         <div class="collapsedSidebarCard" id="collapsedSidebarCard" aria-hidden="true">
+          <button
+            class="chromeButton collapsedToggleButton"
+            id="collapsedSidebarToggleButton"
+            type="button"
+            aria-controls="selectorSidebar"
+            aria-expanded="false"
+          >Browse</button>
           <span class="collapsedSeries" id="collapsedSeriesLabel">AM</span>
           <span class="collapsedCase" id="collapsedCaseNumber">--</span>
         </div>
 
         <div class="sidebarContent">
           <div class="sidebarNavHeader">
-            <p class="sectionEyebrow">Case selector</p>
-            <h2 class="sidebarNavTitle">Library</h2>
-            <p class="sidebarNavCopy">Choose a specialty, then choose a case.</p>
+            <div class="sidebarHeaderRow">
+              <p class="sectionEyebrow">Case selector</p>
+              <button
+                class="chromeButton sidebarUtilityButton"
+                id="sidebarToggleButton"
+                type="button"
+                aria-controls="selectorSidebar"
+                aria-expanded="true"
+              >Hide selector</button>
+            </div>
+            <div class="sidebarActions">
+              <button class="chromeButton sidebarActionButton" id="restartCaseButton" type="button" disabled>Restart case</button>
+            </div>
           </div>
 
-          <section class="sidebarSection">
-            <div class="sidebarSectionHead">
-              <p class="sectionLabel">Specialties</p>
-              <span class="sectionMeta" id="specialtyMeta">6 archives</span>
-            </div>
-            <nav class="specialtyRail" id="specialtyRail" aria-label="Specialty selector"></nav>
-          </section>
+          <div class="selectorViewport">
+            <div class="selectorTrack">
+              <section class="selectorPanel specialtyPanel">
+                <div class="sidebarSection">
+                  <div class="sidebarSectionHead">
+                    <p class="sectionLabel">Specialties</p>
+                    <span class="sectionMeta" id="specialtyMeta">6 archives</span>
+                  </div>
+                  <nav class="specialtyRail" id="specialtyRail" aria-label="Specialty selector"></nav>
+                </div>
+              </section>
 
-          <section class="sidebarSection sidebarCases">
-            <div class="sidebarSectionHead">
-              <div class="sectionHeadBlock">
-                <p class="sectionLabel">Cases</p>
-                <h2 class="sidebarSectionTitle" id="selectedSeriesTitle">Loading archive</h2>
-              </div>
-              <span class="sectionMeta" id="selectedSeriesMeta">Scanning available files</span>
+              <section class="selectorPanel casePanel" id="casePanel" aria-label="Case selector panel" aria-hidden="true">
+                <div class="sidebarSection sidebarCases">
+                  <div class="casePanelHeader">
+                    <button class="chromeButton casePanelBackButton" id="casePanelBackButton" type="button">Specialties</button>
+                    <div class="sectionHeadBlock">
+                      <p class="sectionLabel">Cases</p>
+                      <h2 class="sidebarSectionTitle" id="selectedSeriesTitle">Loading archive</h2>
+                    </div>
+                    <span class="sectionMeta" id="selectedSeriesMeta">Scanning available files</span>
+                  </div>
+                  <div class="caseList" id="caseList"></div>
+                  <div class="emptyList isHidden" id="emptyShelf">
+                    <p class="emptyListTitle">Archive in preparation</p>
+                    <p class="emptyListCopy">
+                      This specialty is already part of the workspace and is ready for future standalone cases.
+                    </p>
+                  </div>
+                </div>
+              </section>
             </div>
-            <div class="caseList" id="caseList"></div>
-            <div class="emptyList isHidden" id="emptyShelf">
-              <p class="emptyListTitle">Archive in preparation</p>
-              <p class="emptyListCopy">
-                This specialty is already part of the workspace and is ready for future standalone cases.
-              </p>
-            </div>
-          </section>
+          </div>
         </div>
       </aside>
 
