@@ -12,14 +12,13 @@
       tags: ["Diagnostic reasoning", "Interview skills", "Communication", "Ethics"],
       prefix: "AdventuresInPsychiatry-Case",
       candidatePrefixes: [
-        "cases/psychiatry/AdventuresInPsychiatry-Case",
-        "AdventuresInPsychiatry-Case"
+        "cases/psychiatry/case"
       ],
       shortPrompt: "Behavioral health cases with reflective debriefs.",
       seriesPrompt: "Published psychiatry cases ready to open now.",
-      baseColor: "#7f4b52",
-      topColor: "#b46a66",
-      accentColor: "#f0d3c2",
+      baseColor: "#ff2d22",
+      topColor: "#ffd62c",
+      accentColor: "#ff9d17",
       maxN: 90,
       emptyProbeMax: 5,
       stopAfterConsecutiveMisses: 10
@@ -36,14 +35,13 @@
       tags: ["Diagnostic reasoning", "Management choices", "Communication"],
       prefix: "AdventuresInInternalMedicine-Case",
       candidatePrefixes: [
-        "cases/internal-medicine/AdventuresInInternalMedicine-Case",
-        "AdventuresInInternalMedicine-Case"
+        "cases/internal-medicine/case"
       ],
       shortPrompt: "Adult medicine cases are preparing for the archive.",
       seriesPrompt: "This archive is staged and waiting for its first published cases.",
-      baseColor: "#365e78",
-      topColor: "#5f8cad",
-      accentColor: "#d4e6f0",
+      baseColor: "#ff2d22",
+      topColor: "#ffd62c",
+      accentColor: "#ff9d17",
       maxN: 90,
       emptyProbeMax: 4,
       stopAfterConsecutiveMisses: 8
@@ -60,14 +58,13 @@
       tags: ["Emergency triage", "Management choices", "Communication"],
       prefix: "AdventuresInEmergencyMedicine-Case",
       candidatePrefixes: [
-        "cases/emergency-medicine/AdventuresInEmergencyMedicine-Case",
-        "AdventuresInEmergencyMedicine-Case"
+        "cases/emergency-medicine/case"
       ],
       shortPrompt: "Time-sensitive emergency cases are on deck.",
       seriesPrompt: "This archive is staged and waiting for its first published cases.",
-      baseColor: "#8a4938",
-      topColor: "#c2765a",
-      accentColor: "#f0d0c3",
+      baseColor: "#ff2d22",
+      topColor: "#ffd62c",
+      accentColor: "#ff9d17",
       maxN: 90,
       emptyProbeMax: 4,
       stopAfterConsecutiveMisses: 8
@@ -84,14 +81,13 @@
       tags: ["Diagnostic reasoning", "Interview skills", "Management choices"],
       prefix: "AdventuresInNeurology-Case",
       candidatePrefixes: [
-        "cases/neurology/AdventuresInNeurology-Case",
-        "AdventuresInNeurology-Case"
+        "cases/neurology/case"
       ],
       shortPrompt: "Neurology cases are preparing for the archive.",
       seriesPrompt: "This archive is staged and waiting for its first published cases.",
-      baseColor: "#4d4f7e",
-      topColor: "#7b7fb6",
-      accentColor: "#d6d8f4",
+      baseColor: "#ff2d22",
+      topColor: "#ffd62c",
+      accentColor: "#ff9d17",
       maxN: 90,
       emptyProbeMax: 4,
       stopAfterConsecutiveMisses: 8
@@ -108,14 +104,13 @@
       tags: ["Emergency triage", "Management choices", "Communication"],
       prefix: "AdventuresInSurgery-Case",
       candidatePrefixes: [
-        "cases/surgery/AdventuresInSurgery-Case",
-        "AdventuresInSurgery-Case"
+        "cases/surgery/case"
       ],
       shortPrompt: "Surgery cases are preparing for the archive.",
       seriesPrompt: "This archive is staged and waiting for its first published cases.",
-      baseColor: "#52634e",
-      topColor: "#839978",
-      accentColor: "#dfe8d8",
+      baseColor: "#ff2d22",
+      topColor: "#ffd62c",
+      accentColor: "#ff9d17",
       maxN: 90,
       emptyProbeMax: 4,
       stopAfterConsecutiveMisses: 8
@@ -132,23 +127,25 @@
       tags: ["Interview skills", "Communication", "Ethics", "Management choices"],
       prefix: "AdventuresInPediatrics-Case",
       candidatePrefixes: [
-        "cases/pediatrics/AdventuresInPediatrics-Case",
-        "AdventuresInPediatrics-Case"
+        "cases/pediatrics/case"
       ],
       shortPrompt: "Pediatrics cases are preparing for the archive.",
       seriesPrompt: "This archive is staged and waiting for its first published cases.",
-      baseColor: "#5a6b50",
-      topColor: "#91aa77",
-      accentColor: "#dce8c9",
+      baseColor: "#ff2d22",
+      topColor: "#ffd62c",
+      accentColor: "#ff9d17",
       maxN: 90,
       emptyProbeMax: 4,
       stopAfterConsecutiveMisses: 8
     }
   ];
 
+  const CASE_PAGE_SIZE = 20;
+
   const state = {
     specialtyButtons: new Map(),
     records: new Map(),
+    visibleCaseCounts: new Map(),
     selectedSeriesId: null,
     selectedCaseKey: null,
     currentFrameSrc: "",
@@ -204,6 +201,34 @@
     return seriesId + ":" + String(caseNumber);
   }
 
+  function getVisibleCaseCount(seriesId) {
+    return state.visibleCaseCounts.get(seriesId) || CASE_PAGE_SIZE;
+  }
+
+  function setVisibleCaseCount(seriesId, count) {
+    state.visibleCaseCounts.set(seriesId, Math.max(CASE_PAGE_SIZE, count));
+  }
+
+  function syncVisibleCaseCount(record, caseNumber) {
+    const current = getVisibleCaseCount(record.def.id);
+    let next = current;
+
+    if (Number.isFinite(caseNumber)) {
+      const caseIndex = record.cases.findIndex(function (entry) {
+        return entry.n === caseNumber;
+      });
+
+      if (caseIndex !== -1) {
+        next = Math.max(
+          next,
+          Math.ceil((caseIndex + 1) / CASE_PAGE_SIZE) * CASE_PAGE_SIZE
+        );
+      }
+    }
+
+    setVisibleCaseCount(record.def.id, next);
+    return Math.min(record.cases.length, next);
+  }
   function buildCandidateHrefs(def, caseNumber) {
     const prefixes = Array.isArray(def.candidatePrefixes) && def.candidatePrefixes.length
       ? def.candidatePrefixes
@@ -505,7 +530,10 @@
       return;
     }
 
-    record.cases.forEach(function (caseInfo) {
+    const selectedCase = getSelectedCase(record);
+    const visibleCount = syncVisibleCaseCount(record, selectedCase ? selectedCase.n : null);
+
+    record.cases.slice(0, visibleCount).forEach(function (caseInfo) {
       const button = document.createElement("button");
       button.type = "button";
       button.className = "caseButton";
@@ -519,10 +547,28 @@
           '<strong class="caseButtonTitle">' + caseInfo.displayTitle + "</strong>" +
         "</span>";
       button.addEventListener("click", function () {
-        selectCase(record.def.id, caseInfo.n, false);
+        const isCurrentCase = state.selectedCaseKey === key(record.def.id, caseInfo.n);
+        selectCase(record.def.id, caseInfo.n, isCurrentCase);
       });
       els.caseList.appendChild(button);
     });
+
+    if (visibleCount < record.cases.length) {
+      const remaining = record.cases.length - visibleCount;
+      const step = Math.min(CASE_PAGE_SIZE, remaining);
+      const loadMoreButton = document.createElement("button");
+      loadMoreButton.type = "button";
+      loadMoreButton.className = "chromeButton caseLoadMoreButton";
+      setSeriesColors(loadMoreButton, record.def);
+      loadMoreButton.textContent = "Load " + String(step) + " more case" + (step === 1 ? "" : "s");
+      loadMoreButton.addEventListener("click", function () {
+        const previousScrollTop = els.caseList.scrollTop;
+        setVisibleCaseCount(record.def.id, visibleCount + CASE_PAGE_SIZE);
+        renderCaseList(record);
+        els.caseList.scrollTop = previousScrollTop;
+      });
+      els.caseList.appendChild(loadMoreButton);
+    }
   }
 
   function getSelectedCase(record) {
@@ -910,3 +956,4 @@
     init();
   }
 })();
+

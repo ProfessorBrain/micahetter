@@ -1,9 +1,9 @@
-﻿(function () {
+(function () {
   const rules = [
     {
       seriesId: 'psychiatry',
       label: 'Psychiatry',
-      regex: /AdventuresInPsychiatry-Case(\d+)\.html$/i
+      regex: /(?:AdventuresInPsychiatry-Case|case)(\d+)\.html$/i
     }
   ];
 
@@ -53,6 +53,21 @@
     return isIOS() ? EMBEDDED_FRAME.blackTopIos : EMBEDDED_FRAME.blackTopDefault;
   }
 
+  function ensureFavicon() {
+    if (document.getElementById('adventures-medicine-shell-favicon')) {
+      return;
+    }
+
+    const currentScript = document.currentScript ||
+      document.querySelector('script[src*="adventures-case-shell.js"]');
+    const href = currentScript ? new URL('favicon.png', currentScript.src).href : 'favicon.png';
+    const link = document.createElement('link');
+    link.id = 'adventures-medicine-shell-favicon';
+    link.rel = 'icon';
+    link.type = 'image/png';
+    link.href = href;
+    document.head.appendChild(link);
+  }
   function ensureFonts() {
     if (document.getElementById('adventures-medicine-shell-fonts')) {
       return;
@@ -85,8 +100,13 @@
     const style = document.createElement('style');
     style.id = 'adventures-medicine-shell-style';
     style.textContent = '' +
-      'body.has-medicine-shell { background-color: #f5ebd6; }' +
-      'body.has-medicine-shell.medicineEmbedded { background-color: #f5ebd6 !important; background-position: center top !important; }' +
+      '@font-face {' +
+        'font-family: "Adventures Benguiat";' +
+        'src: local("ITC Benguiat Std"), local("ITC Benguiat"), local("Benguiat Std"), local("Benguiat");' +
+        'font-display: swap;' +
+      '}' +
+      'body.has-medicine-shell { background-color: #ffffff; }' +
+      'body.has-medicine-shell.medicineEmbedded { background-color: #ffffff !important; background-position: center top !important; }' +
       'body.has-medicine-shell.medicineEmbedded::before { background-position: center top !important; }' +
       'body.has-medicine-shell tw-story tw-passage { padding-top: 6.6em !important; }' +
       'body.has-medicine-shell tw-sidebar { top: 4.9rem !important; }' +
@@ -94,7 +114,7 @@
       'body.has-medicine-shell.medicineEmbedded tw-sidebar { top: 0.75rem !important; }' +
       '@media (max-width: 980px) {' +
         'body.has-medicine-shell.medicineEmbedded {' +
-          'background: linear-gradient(180deg, #f7f1e1 0%, #efe5cf 46%, #eadbbd 100%) !important;' +
+          'background: linear-gradient(180deg, #ffffff 0%, #ffffff 100%) !important;' +
           'background-image: none !important;' +
         '}' +
         'body.has-medicine-shell.medicineEmbedded::before {' +
@@ -113,27 +133,27 @@
           'border-radius: 0 !important;' +
           'background: transparent !important;' +
           'box-shadow: none !important;' +
-          'color: #25180f !important;' +
+          'color: #050505 !important;' +
           'font-size: clamp(1rem, 2.8vw, 1.16rem) !important;' +
           'line-height: 1.65 !important;' +
         '}' +
         'body.has-medicine-shell.medicineEmbedded tw-story, ' +
         'body.has-medicine-shell.medicineEmbedded tw-story tw-passage {' +
-          'color: #25180f !important;' +
+          'color: #050505 !important;' +
         '}' +
         'body.has-medicine-shell.medicineEmbedded tw-story blockquote {' +
           'margin-inline: 0 !important;' +
           'padding-left: 1rem !important;' +
-          'border-left: 3px solid rgba(159, 25, 15, 0.22) !important;' +
-          'color: rgba(37, 24, 15, 0.84) !important;' +
+          'border-left: 3px solid rgba(255, 45, 34, 0.28) !important;' +
+          'color: rgba(5, 5, 5, 0.84) !important;' +
         '}' +
         'body.has-medicine-shell.medicineEmbedded tw-link, ' +
         'body.has-medicine-shell.medicineEmbedded .enchantment-link {' +
-          'color: #9f190f !important;' +
+          'color: #ff2d22 !important;' +
         '}' +
         'body.has-medicine-shell.medicineEmbedded tw-link:hover, ' +
         'body.has-medicine-shell.medicineEmbedded .enchantment-link:hover {' +
-          'color: #d36a08 !important;' +
+          'color: #ff9d17 !important;' +
         '}' +
         'body.has-medicine-shell.medicineEmbedded tw-story tw-passage {' +
           'padding-top: 0 !important;' +
@@ -142,7 +162,7 @@
           'top: 0.85rem !important;' +
           'left: auto !important;' +
           'right: 0.85rem !important;' +
-          'color: #4a2610 !important;' +
+          'color: #050505 !important;' +
         '}' +
       '}' +
       'body.has-medicine-shell .medicineDeck {' +
@@ -156,12 +176,12 @@
         'justify-content: space-between;' +
         'gap: 16px;' +
         'padding: 14px 18px;' +
-        'background: linear-gradient(180deg, rgba(11, 20, 30, 0.94) 0%, rgba(11, 20, 30, 0.82) 100%);' +
+        'background: linear-gradient(180deg, rgba(0, 0, 0, 0.96) 0%, rgba(0, 0, 0, 0.88) 100%);' +
         'backdrop-filter: blur(14px);' +
-        'border-bottom: 1px solid rgba(255,255,255,0.12);' +
+        'border-bottom: 2px solid rgba(255, 157, 23, 0.6);' +
         'box-shadow: 0 16px 34px rgba(0,0,0,0.22);' +
         'font-family: "Source Sans 3", "Segoe UI", sans-serif;' +
-        'color: #f8f4ec;' +
+        'color: #ffffff;' +
       '}' +
       'body.has-medicine-shell .medicineDeckCopy { min-width: 0; }' +
       'body.has-medicine-shell .medicineDeckEyebrow {' +
@@ -169,17 +189,17 @@
         'font-size: 0.78rem;' +
         'letter-spacing: 0.16em;' +
         'text-transform: uppercase;' +
-        'color: rgba(255, 214, 196, 0.8);' +
+        'color: rgba(255, 214, 44, 0.92);' +
       '}' +
       'body.has-medicine-shell .medicineDeckTitle {' +
         'margin: 4px 0 0;' +
-        'font-family: "Fraunces", Georgia, serif;' +
+        'font-family: "Adventures Benguiat", "ITC Benguiat Std", "ITC Benguiat", "Benguiat Std", "Benguiat", "Fraunces", Georgia, serif;' +
         'font-size: clamp(1.2rem, 2.2vw, 1.8rem);' +
         'line-height: 1.05;' +
       '}' +
       'body.has-medicine-shell .medicineDeckBody {' +
         'margin: 6px 0 0;' +
-        'color: rgba(248, 244, 236, 0.74);' +
+        'color: rgba(255, 255, 255, 0.74);' +
       '}' +
       'body.has-medicine-shell .medicineHubLink {' +
         'display: inline-flex;' +
@@ -188,18 +208,18 @@
         'min-height: 42px;' +
         'padding: 0 16px;' +
         'border-radius: 999px;' +
-        'border: 1px solid rgba(255,255,255,0.16);' +
-        'background: rgba(255,255,255,0.08);' +
-        'color: #fffaf4;' +
+        'border: 1px solid rgba(255, 214, 44, 0.34);' +
+        'background: linear-gradient(180deg, rgba(255, 214, 44, 0.12), rgba(255, 45, 34, 0.04)), rgba(0, 0, 0, 0.96);' +
+        'color: #ffffff;' +
         'text-decoration: none;' +
         'white-space: nowrap;' +
       '}' +
       'body.has-medicine-shell .medicineHubLink:hover {' +
-        'border-color: rgba(255,255,255,0.28);' +
-        'background: rgba(255,255,255,0.12);' +
+        'border-color: rgba(255, 214, 44, 0.54);' +
+        'background: linear-gradient(180deg, rgba(255, 214, 44, 0.18), rgba(255, 45, 34, 0.08)), rgba(0, 0, 0, 0.98);' +
       '}' +
       'body.has-medicine-shell .medicineHubLink:focus-visible {' +
-        'outline: 3px solid rgba(181, 83, 61, 0.35);' +
+        'outline: 3px solid rgba(255, 157, 23, 0.35);' +
         'outline-offset: 2px;' +
       '}' +
       '@media (max-width: 720px) {' +
@@ -272,7 +292,9 @@
   }
 
   function init() {
+    ensureFavicon();
     const match = detectCase();
+
     if (!match || !Number.isFinite(match.caseNumber)) {
       return;
     }
