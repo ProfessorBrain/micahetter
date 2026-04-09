@@ -27,7 +27,7 @@
 .tutorial-answer{font-size:13px;line-height:1.4;padding:.45rem .55rem;border-radius:8px;background:#eef6ff;border:1px solid #c9dcfb;margin:.35rem 0 .55rem}
 .tutorial-explanation{font-size:13px;line-height:1.45;color:#22313b}
 .tutorial-note{font-size:12px;line-height:1.35;color:#576673;margin-top:.45rem}
-.tutorial-case-focus{margin:.2rem 0 .65rem;padding:.65rem .8rem;border-radius:10px;background:linear-gradient(180deg, #f4f9ff 0%, #eaf4ff 100%);border:1px solid #bdd5f7;box-shadow:0 1px 0 rgba(255,255,255,.8) inset;font-size:13px;line-height:1.5;color:#173a66;font-weight:600}
+.tutorial-case-focus{margin:.15rem 0 .55rem}
 .tutorial-controls{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.75rem}
 .tutorial-aux{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.55rem}
 .tutorial-choice-row{display:flex;flex-wrap:wrap;gap:.45rem;margin:.45rem 0 .6rem}
@@ -36,8 +36,6 @@
 .tutorial-choice.correct{background:#e7f8ea;border-color:#4db569}
 .tutorial-choice.wrong{background:#fde7ea;border-color:#e05757}
 .tutorial-choice.neutral{background:#f0f2f4;border-color:#97a6b3;color:#465562}
-.topbar-mini-btn{width:2.2rem;min-width:2.2rem;padding:0;display:inline-flex;align-items:center;justify-content:center;overflow:hidden}
-.topbar-mini-btn img{display:block;width:1.35rem;height:1.35rem;object-fit:contain}
 .quiz-step{margin:.6rem 0;border-top:1px dashed rgba(0,0,0,.15);padding-top:.5rem}
 .quiz-pills{display:flex;flex-wrap:wrap;gap:.4rem}
 .quiz-pill{padding:.28rem .6rem;border-radius:999px;border:1px solid rgba(0,0,0,.2);background:#fff;cursor:pointer;font-size:.9rem}
@@ -261,21 +259,6 @@ button.options-strong:active{
 <style id="pathology-align-fix">
 #pathologyModal fieldset label, #artifactsModal fieldset label{ margin-left:0 !important; }
 #pathologyModal .modal-card, #artifactsModal .modal-card{width:fit-content;max-width:min(94vw, 29rem)}
-#aboutModal .modal-card{width:min(92vw, 26rem);max-width:26rem}
-#aboutModal fieldset{margin-top:.8rem}
-#aboutModal .about-seed-help{margin:.15rem 0 .45rem;font-size:.83rem;line-height:1.35;color:#43524a}
-#aboutModal .about-seed-text{
-  width:100%;
-  min-height:5.8rem;
-  resize:vertical;
-  font:12px/1.35 ui-monospace,SFMono-Regular,Consolas,Monaco,monospace;
-}
-#aboutModal .about-seed-status{
-  min-height:1.1rem;
-  margin-top:.35rem;
-  font-size:.82rem;
-  color:#2f5d3a;
-}
 #tutorialSetupModal .modal-card{width:min(92vw, 24rem);max-width:24rem}
 #tutorialCaseSelWrap[hidden]{display:none !important}
 #artifactsModal{background:transparent;align-items:flex-start;justify-content:flex-start}
@@ -382,7 +365,6 @@ button.options-strong:active{
       <button id="artifactsBtn" class="options-strong">Artifacts</button>
       <button id="quizBtnTop" class="options-strong">Quiz</button>
       <button id="tutorialBtnTop" class="options-strong">Tutorial</button>
-      <button id="aboutBtn" class="topbar-mini-btn" aria-label="About"><img src="infoicon.png" alt="" aria-hidden="true"></button>
     </div>
   </div>
 
@@ -411,30 +393,6 @@ button.options-strong:active{
     </div>
   </div>
 
-  <div id="aboutModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="aboutTitle" hidden>
-    <div class="modal-card">
-      <h1 id="aboutTitle">About</h1>
-      <p>Created by Micah Etter, MD</p>
-      <p>Version 0.3</p>
-      <p>The EEG Machine is built as an educational tool for learning EEG patterns, artifacts, sleep stages, and seizure morphology in an interactive way.</p>
-      <p>It is meant to support curiosity, pattern recognition, and deliberate practice rather than replace clinical judgment.</p>
-      <p>Explore, compare patterns, test yourself, share your favorite EEG seed, and have fun!</p>
-      <fieldset>
-        <legend>Seed</legend>
-        <p class="about-seed-help">Save or paste a seed to recreate the same baseline settings, pathology, artifacts, and related detail selections.</p>
-        <textarea id="aboutSeedText" class="about-seed-text" rows="5" spellcheck="false" aria-label="EEG seed"></textarea>
-        <div class="modal-actions">
-          <button id="aboutSeedCurrent" type="button">Current Seed</button>
-          <button id="aboutSeedApply" type="button">Apply Seed</button>
-        </div>
-        <div id="aboutSeedStatus" class="about-seed-status" aria-live="polite"></div>
-      </fieldset>
-      <div class="modal-actions">
-        <button id="aboutClose">Close</button>
-      </div>
-    </div>
-  </div>
-
   <!-- Artifacts modal -->
   <div id="artifactsModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="artifactsTitle" hidden>
     <div class="modal-card">
@@ -446,13 +404,6 @@ button.options-strong:active{
           <label><input id="rovingEyes" type="checkbox"> Roving eye movements</label>
           <label><input id="reading" type="checkbox"> Reading</label>
           <label><input id="ventilator" type="checkbox"> Ventilator</label>
-          <div class="artifact-control-row">
-            <label><input id="photicStim" type="checkbox"> Photic stimulation</label>
-            <label class="artifact-lead" for="photicHzSel">
-              <span>Rate</span>
-              <select id="photicHzSel" aria-label="Photic stimulation rate"></select>
-            </label>
-          </div>
           <label><input id="chew" type="checkbox"> Chewing</label>
           <label><input id="sweat" type="checkbox"> Sweat</label>
           <div class="artifact-control-row">
@@ -496,7 +447,6 @@ button.options-strong:active{
         <legend></legend>
         <div style="display:flex;flex-direction:column;gap:.35rem;margin-top:.25rem">
           <label><input id="encephalopathy" type="checkbox"> Encephalopathy</label>
-          <label><input id="burstSuppression" type="checkbox"> Burst suppression</label>
           <label><input id="gpd" type="checkbox"> Generalized periodic discharges (GPDs)</label>
           <label><input id="lpd" type="checkbox"> Lateralized periodic discharges (LPDs)</label>
           <div class="pathology-action-row">
@@ -601,7 +551,6 @@ button.options-strong:active{
       <h2>Tutorial Mode</h2>
       <div id="tutorialMeta" class="tutorial-meta"></div>
     </div>
-    <div id="tutorialCaseSummary"></div>
     <div id="tutorialProgress" class="tutorial-progress"></div>
     <div id="tutorialBody"></div>
     <div class="tutorial-controls">
@@ -688,8 +637,6 @@ const INTERICTAL_LEAD_MAP = new Map(
     {a, b, label:`${a}-${b}`}
   ])
 );
-const PHOTIC_STIM_RATE_OPTIONS = [2,4,6,8,10,12,14,15,16,18,20,25,30].map((hz)=>({value:String(hz), label:`${hz} Hz`}));
-const PHOTIC_STIM_RATE_SET = new Set(PHOTIC_STIM_RATE_OPTIONS.map((opt)=> Number(opt.value)));
 const EMG_LEAD_OPTIONS = [{value:'diffuse', label:'Diffuse'}, {value:'random', label:'Random'}].concat(
   LONGITUDINAL_CHAINS.map(([a,b])=>({value:`${a}-${b}`, label:`${a}-${b}`}))
 );
@@ -723,26 +670,9 @@ const TRANSVERSE_CHAINS = [
 /***********************
  * Seeded RNG
  ***********************/
-const DEFAULT_APP_SEED = 'EEG-1001';
-const SEED_TOKEN_PREFIX = 'EEGSEED1.';
 function xmur3(str){let h=1779033703^str.length;for(let i=0;i<str.length;i++){h=Math.imul(h^str.charCodeAt(i),3432918353);h=h<<13|h>>>19;}return ()=>{h=Math.imul(h^ (h>>>16),2246822507);h=Math.imul(h^ (h>>>13),3266489909);h^=h>>>16;return h>>>0;};}
 function sfc32(a,b,c,d){return function(){a|=0;b|=0;c|=0;d|=0;var t=(a+b|0)+d|0;d=d+1|0;a=b^b>>>9;b=c+(c<<3)|0;c=(c<<21|c>>>11);c=c+t|0;return (t>>>0)/4294967296;};}
 function makeRNG(seedStr){ const seed = xmur3(seedStr); return sfc32(seed(),seed(),seed(),seed()); }
-function normalizeSeedString(seedStr){
-  const text = String(seedStr == null ? '' : seedStr).trim();
-  return text || DEFAULT_APP_SEED;
-}
-function encodeSeedPayload(payload){
-  return SEED_TOKEN_PREFIX + btoa(JSON.stringify(payload)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
-}
-function decodeSeedPayload(token){
-  const text = String(token == null ? '' : token).trim().replace(/\s+/g,'');
-  if (!text) throw new Error('Enter a seed first.');
-  const encoded = text.startsWith(SEED_TOKEN_PREFIX) ? text.slice(SEED_TOKEN_PREFIX.length) : text;
-  const base64 = encoded.replace(/-/g,'+').replace(/_/g,'/');
-  const padded = base64 + '='.repeat((4 - base64.length % 4) % 4);
-  return JSON.parse(atob(padded));
-}
 
 /***********************
  * Signal Model
@@ -1325,184 +1255,6 @@ function encephalopathyPathologyValue(clock, e){
   const overlay = regionW * (1.06*polymorph + 1.18*firda);
   const preserveBase = 0.05 + 0.05*(1-regionW);
   const preserve = Math.max(0.02, preserveBase - 0.02*frontalW);
-  return {overlay, preserve};
-}
-function scheduleBurstSuppressionPathology(now, immediate=false){
-  state.burstSuppression = state.burstSuppression || {};
-  const rng = state.rng || Math.random;
-  const startDelay = immediate ? 0 : (0.05 + 0.18*rng());
-  state.burstSuppression.active = true;
-  state.burstSuppression.t0 = now + startDelay;
-  state.burstSuppression.burstDur = 0.72 + 0.36*rng();
-  state.burstSuppression.suppressionDur = 2.4 + 2.0*rng();
-  state.burstSuppression.thetaHz = 4.1 + 1.2*rng();
-  state.burstSuppression.deltaHz = 1.4 + 0.7*rng();
-  state.burstSuppression.fastHz = 9.0 + 4.0*rng();
-  state.burstSuppression.spikeHz = 11.5 + 4.5*rng();
-  state.burstSuppression.ampTheta = 70 + 24*rng();
-  state.burstSuppression.ampDelta = 56 + 22*rng();
-  state.burstSuppression.ampFast = 20 + 10*rng();
-  state.burstSuppression.ampSpike = 34 + 16*rng();
-  state.burstSuppression.suppressNoise = 2.6 + 1.2*rng();
-  state.burstSuppression.suppressDrift = 1.0 + 0.8*rng();
-  state.burstSuppression.phaseTheta = rng()*2*Math.PI;
-  state.burstSuppression.phaseDelta = rng()*2*Math.PI;
-  state.burstSuppression.phaseFast = rng()*2*Math.PI;
-  state.burstSuppression.phaseSpike = rng()*2*Math.PI;
-  state.burstSuppression.phaseMix = rng()*2*Math.PI;
-  state.burstSuppression.phaseSupp = rng()*2*Math.PI;
-}
-function syncBurstSuppressionPathology(forceRestart=false){
-  state.burstSuppression = {
-    active:false, t0:0,
-    burstDur:0.95, suppressionDur:3.0,
-    thetaHz:4.8, deltaHz:1.9, fastHz:11.0, spikeHz:13.5,
-    ampTheta:64, ampDelta:52, ampFast:20, ampSpike:36,
-    suppressNoise:2.6, suppressDrift:1.2,
-    phaseTheta:0, phaseDelta:0, phaseFast:0, phaseSpike:0, phaseMix:0, phaseSupp:0,
-    ...(state.burstSuppression || {})
-  };
-  ensurePathologyDefaults();
-  if (!(state.pathology && state.pathology.burstSuppression)){
-    state.burstSuppression.active = false;
-    return;
-  }
-  if (forceRestart || !state.burstSuppression.active){
-    scheduleBurstSuppressionPathology(state.artClock || 0, true);
-  }
-}
-function burstSuppressionRegionScale(e){
-  if (EAR_REFERENCE_ELECTRODES.has(e)) return 0;
-  if (/^(Fp1|Fp2|F3|F4|F7|F8|Fz)$/.test(e)) return 1.00;
-  if (/^(C3|C4|Cz|T3|T4)$/.test(e)) return 0.92;
-  if (/^(P3|P4|Pz|T5|T6)$/.test(e)) return 0.82;
-  if (/^(O1|O2)$/.test(e)) return 0.70;
-  return 0.84;
-}
-function burstSuppressionLag(e){
-  let lag = 0;
-  if (/^(C3|C4|Cz|T3|T4)$/.test(e)) lag += 0.008;
-  if (/^(P3|P4|Pz|T5|T6)$/.test(e)) lag += 0.018;
-  if (/^(O1|O2)$/.test(e)) lag += 0.026;
-  if (/[2468]$/.test(e)) lag += 0.003;
-  if (/z$/.test(e)) lag -= 0.002;
-  return lag;
-}
-function burstSuppressionPathologyValue(clock, e){
-  if (!(state.pathology && state.pathology.burstSuppression) || !AVG_ELECTRODE_SET.has(e)) return null;
-  const cfg = state.burstSuppression || {
-    active:false, t0:0,
-    burstDur:0.95, suppressionDur:3.0,
-    thetaHz:4.8, deltaHz:1.9, fastHz:11.0, spikeHz:13.5,
-    ampTheta:64, ampDelta:52, ampFast:20, ampSpike:36,
-    suppressNoise:2.6, suppressDrift:1.2,
-    phaseTheta:0, phaseDelta:0, phaseFast:0, phaseSpike:0, phaseMix:0, phaseSupp:0
-  };
-  if (!cfg.active) return null;
-  const t = clock - cfg.t0;
-  if (t < 0) return null;
-  const lag = burstSuppressionLag(e);
-  const tt = Math.max(0, t + lag);
-  const regionW = burstSuppressionRegionScale(e);
-  const sidePhase = /[1357z]$/.test(e) ? -0.18 : 0.18;
-  const cycle = Math.max(1.4, cfg.burstDur + cfg.suppressionDur);
-  const cyclePos = ((tt % cycle) + cycle) % cycle;
-  if (cyclePos < cfg.burstDur){
-    const p = cyclePos / Math.max(0.001, cfg.burstDur);
-    const env = Math.pow(Math.sin(Math.PI * p), 0.72);
-    const theta = cfg.ampTheta * Math.sin(2*Math.PI*cfg.thetaHz*tt + cfg.phaseTheta + sidePhase);
-    const delta = cfg.ampDelta * Math.sin(2*Math.PI*cfg.deltaHz*tt + cfg.phaseDelta - 0.35*sidePhase);
-    const fast = cfg.ampFast * Math.sin(2*Math.PI*cfg.fastHz*tt + cfg.phaseFast + 0.6*sidePhase);
-    const spikeCarrier = Math.sin(2*Math.PI*cfg.spikeHz*tt + cfg.phaseSpike);
-    const spikes = cfg.ampSpike * (Math.pow(Math.max(0, spikeCarrier), 6) - 0.32*Math.pow(Math.max(0, -spikeCarrier), 4));
-    const mix = 0.58 + 0.16*Math.sin(2*Math.PI*0.35*tt + cfg.phaseMix);
-    const burst = mix*(theta + 0.42*fast + spikes) + (1-mix)*(delta + 0.28*theta + spikes);
-    return {
-      overlay: regionW * env * burst,
-      preserve: 0.08 + 0.02*(1-regionW)
-    };
-  }
-  const suppressPos = (cyclePos - cfg.burstDur) / Math.max(0.001, cfg.suppressionDur);
-  const suppressTail = Math.max(0, 1 - suppressPos);
-  const drift = cfg.suppressDrift * Math.sin(2*Math.PI*0.32*tt + cfg.phaseSupp + 0.5*sidePhase);
-  const tinyFast = 0.6 * cfg.suppressNoise * Math.sin(2*Math.PI*6.4*tt + cfg.phaseFast);
-  return {
-    overlay: regionW * (0.24*suppressTail*drift + tinyFast),
-    preserve: 0.025 + 0.015*suppressTail
-  };
-}
-function schedulePhoticStimPathology(now, immediate=false){
-  state.photicStim = state.photicStim || {};
-  const rng = state.rng || Math.random;
-  const rateHz = PHOTIC_STIM_RATE_SET.has(Number(state.artifactConfig && state.artifactConfig.photicHz)) ? Number(state.artifactConfig.photicHz) : 15;
-  const startDelay = immediate ? 0 : (0.03 + 0.12*rng());
-  state.photicStim.active = true;
-  state.photicStim.t0 = now + startDelay;
-  state.photicStim.rateHz = rateHz;
-  state.photicStim.driveAmp = 34 + 10*rng();
-  state.photicStim.harmonicAmp = 10 + 5*rng();
-  state.photicStim.flashAmp = 14 + 6*rng();
-  state.photicStim.envHz = 0.05 + 0.04*rng();
-  state.photicStim.phaseDrive = rng()*2*Math.PI;
-  state.photicStim.phaseHarm = rng()*2*Math.PI;
-  state.photicStim.phaseEnv = rng()*2*Math.PI;
-  state.photicStim.phaseFlash = rng()*2*Math.PI;
-}
-function syncPhoticStimPathology(forceRestart=false){
-  state.photicStim = {
-    active:false, t0:0, rateHz:15, driveAmp:38, harmonicAmp:12, flashAmp:15, envHz:0.08,
-    phaseDrive:0, phaseHarm:0, phaseEnv:0, phaseFlash:0,
-    ...(state.photicStim || {})
-  };
-  ensureArtifactDefaults();
-  if (!(state.opts && state.opts.photicStim)){
-    state.photicStim.active = false;
-    return;
-  }
-  const desiredRate = PHOTIC_STIM_RATE_SET.has(Number(state.artifactConfig.photicHz)) ? Number(state.artifactConfig.photicHz) : 15;
-  if (forceRestart || !state.photicStim.active || Math.abs((state.photicStim.rateHz || 15) - desiredRate) > 0.001){
-    schedulePhoticStimPathology(state.artClock || 0, true);
-  }
-}
-function photicStimPosteriorScale(e){
-  if (EAR_REFERENCE_ELECTRODES.has(e)) return 0;
-  if (/^(O1|O2)$/.test(e)) return 1.00;
-  if (/^(P3|P4|Pz|T5|T6)$/.test(e)) return 0.82;
-  if (/^(C3|C4|Cz|T3|T4)$/.test(e)) return 0.48;
-  if (/^(F3|F4|Fz|F7|F8)$/.test(e)) return 0.22;
-  if (/^(Fp1|Fp2)$/.test(e)) return 0.10;
-  return 0.18;
-}
-function photicStimLag(e){
-  let lag = 0;
-  if (/^(P3|P4|Pz|T5|T6)$/.test(e)) lag += 0.006;
-  if (/^(C3|C4|Cz|T3|T4)$/.test(e)) lag += 0.014;
-  if (/^(F3|F4|Fz|F7|F8)$/.test(e)) lag += 0.022;
-  if (/^(Fp1|Fp2)$/.test(e)) lag += 0.028;
-  if (/[2468]$/.test(e)) lag += 0.002;
-  if (/z$/.test(e)) lag -= 0.001;
-  return lag;
-}
-function photicStimPathologyValue(clock, e){
-  if (!(state.opts && state.opts.photicStim) || !AVG_ELECTRODE_SET.has(e)) return null;
-  const cfg = state.photicStim || {active:false, t0:0, rateHz:15, driveAmp:38, harmonicAmp:12, flashAmp:15, envHz:0.08, phaseDrive:0, phaseHarm:0, phaseEnv:0, phaseFlash:0};
-  if (!cfg.active) return null;
-  const t = clock - cfg.t0;
-  if (t < 0) return null;
-  const lag = photicStimLag(e);
-  const tt = Math.max(0, t + lag);
-  const regionW = photicStimPosteriorScale(e);
-  const sidePhase = /[1357z]$/.test(e) ? -0.10 : 0.10;
-  const env = 0.90 + 0.10*Math.sin(2*Math.PI*cfg.envHz*tt + cfg.phaseEnv);
-  const drive =
-    cfg.driveAmp * Math.sin(2*Math.PI*cfg.rateHz*tt + cfg.phaseDrive + sidePhase) +
-    cfg.harmonicAmp * Math.sin(2*Math.PI*(cfg.rateHz*2)*tt + cfg.phaseHarm - 0.45*sidePhase);
-  const cyclePos = (((tt * cfg.rateHz) % 1) + 1) % 1;
-  const flashComplex =
-    1.05*Math.exp(-0.5*Math.pow((cyclePos - 0.08)/0.045, 2)) -
-    0.30*Math.exp(-0.5*Math.pow((cyclePos - 0.24)/0.09, 2));
-  const overlay = regionW * env * (drive + cfg.flashAmp * flashComplex);
-  const preserve = 0.26 + 0.34*(1-regionW);
   return {overlay, preserve};
 }
 function resolveEmgLeadSelection(selection){
@@ -2604,8 +2356,7 @@ class Channel {
  * Engine state
  ***********************/
 const state = {
-  seedBase: DEFAULT_APP_SEED,
-  rng: makeRNG(DEFAULT_APP_SEED),
+  rng: makeRNG("EEG-1001"),
   channels: new Map(),
   buffer: new Map(),
   idx: 0,
@@ -2614,9 +2365,9 @@ const state = {
   running: true,
   realism: 0.75,
   speed: 1,
-  opts: {blink:false, rovingEyes:false, reading:false, ventilator:false, photicStim:false, chew:false, sweat:false, breach:false, pop:false, emg:false},
-  artifactConfig: {photicHz:15, breachLead:'random', popLead:'random', emgLead:'diffuse'},
-  pathology: {encephalopathy:false, burstSuppression:false, gpd:false, lpd:false, bipds:false, interictal:false, interictalLead:'random', focalSeizure:false, focalFocus:'random', fbtcSeizure:false, fbtcFocus:'random'},
+  opts: {blink:false, rovingEyes:false, reading:false, ventilator:false, chew:false, sweat:false, breach:false, pop:false, emg:false},
+  artifactConfig: {breachLead:'random', popLead:'random', emgLead:'diffuse'},
+  pathology: {encephalopathy:false, gpd:false, lpd:false, bipds:false, interictal:false, interictalLead:'random', focalSeizure:false, focalFocus:'random', fbtcSeizure:false, fbtcFocus:'random'},
   seizureDurations: {generalized:20, absence:10, focal:10, fbtc:20},
   seizureEvents: [],
   montage: 'bipolar_longitudinal',
@@ -2636,8 +2387,6 @@ const state = {
   sweat: {active:false, t0:0, commonAmp:1, leftAmp:1, rightAmp:1, f1:0.06, f2:0.11, f3:0.18, leftFreq:0.04, rightFreq:0.04, envelopeFreq:0.025, phase1:0, phase2:0, phase3:0, leftPhase:0, rightPhase:0, envelopePhase:0},
   breach: {active:false, t0:0, lead:'Random', weights:{}, alphaHz:10.2, betaHz:18.5, fastHz:27.5, envHz:0.10, phaseAlpha:0, phaseBeta:0, phaseFast:0, envPhase:0},
   encephalopathy: {active:false, t0:0, thetaHz:4.8, thetaHz2:5.6, deltaHz:2.1, deltaHz2:1.4, firdaHz:2.4, mixHz:0.09, ampTheta:18, ampDelta:12, ampFirda:14, phaseTheta:0, phaseTheta2:0, phaseDelta:0, phaseDelta2:0, phaseMix:0, phaseFirda:0, burstPhase:0},
-  burstSuppression: {active:false, t0:0, burstDur:0.95, suppressionDur:3.0, thetaHz:4.8, deltaHz:1.9, fastHz:11.0, spikeHz:13.5, ampTheta:64, ampDelta:52, ampFast:20, ampSpike:36, suppressNoise:2.6, suppressDrift:1.2, phaseTheta:0, phaseDelta:0, phaseFast:0, phaseSpike:0, phaseMix:0, phaseSupp:0},
-  photicStim: {active:false, t0:0, rateHz:15, driveAmp:38, harmonicAmp:12, flashAmp:15, envHz:0.08, phaseDrive:0, phaseHarm:0, phaseEnv:0, phaseFlash:0},
   interictalPathology: {active:false, t0:0, lead:'Random', weights:{}, lags:{}, interval:2.2, window:0.16, phaseShift:0, amp:190, slowAmp:62, plusAmp:12, fastPhase:0, doubletGap:0.045, doubletScale:0.32, clusterPeriod:10.0, clusterPhase:0, clusterFloor:0.36},
   popEvent: {active:false, t0:0, nextT:Infinity, electrode:'Fp1', polarity:1, amp:160, decayTau:0.35, recoveryTau:1.1, ringAmp:0.08, ringHz:3.0, dur:1.4},
   emg: {active:false, t0:0, focus:'Diffuse', weights:null, leftAmp:1, rightAmp:1, leftBurstHz:0.7, rightBurstHz:0.7, commonBurstHz:0.3, leftBurstPhase:0, rightBurstPhase:0, commonPhase:0, leftTempF1:30, leftTempF2:56, leftFrontF1:28, leftFrontF2:50, rightTempF1:30, rightTempF2:56, rightFrontF1:28, rightFrontF2:50, commonF1:34, commonF2:60, leftTempPhase:0, leftFrontPhase:0, rightTempPhase:0, rightFrontPhase:0, commonCarrierPhase:0},
@@ -3378,14 +3127,6 @@ function step(){
             const enceph = encephalopathyPathologyValue(sampleClock, e);
             if (enceph) y = y*enceph.preserve + enceph.overlay;
           }
-          if (state.pathology && state.pathology.burstSuppression) {
-            const burstSupp = burstSuppressionPathologyValue(sampleClock, e);
-            if (burstSupp) y = y*burstSupp.preserve + burstSupp.overlay;
-          }
-          if (state.opts && state.opts.photicStim) {
-            const photic = photicStimPathologyValue(sampleClock, e);
-            if (photic) y = y*photic.preserve + photic.overlay;
-          }
           if (state.pathology && state.pathology.gpd) {
             y += gpdWave(sampleClock + gpdLag(e), rng) * gpdScale(e);
           }
@@ -3479,7 +3220,6 @@ const $=id=>document.getElementById(id);
 function ensurePathologyDefaults(){
   state.pathology = {
     encephalopathy:false,
-    burstSuppression:false,
     gpd:false,
     lpd:false,
     bipds:false,
@@ -3497,14 +3237,12 @@ function ensurePathologyDefaults(){
 }
 function ensureArtifactDefaults(){
   state.artifactConfig = {
-    photicHz:15,
     breachLead:'random',
     popLead:'random',
     emgLead:'diffuse',
     emgLevel:0,
     ...(state.artifactConfig || {})
   };
-  if (!PHOTIC_STIM_RATE_SET.has(Number(state.artifactConfig.photicHz))) state.artifactConfig.photicHz = 15;
   if (!BREACH_RHYTHM_LEAD_MAP.has(state.artifactConfig.breachLead)) state.artifactConfig.breachLead = 'random';
   if (!POP_LEAD_SET.has(state.artifactConfig.popLead)) state.artifactConfig.popLead = 'random';
   if (!(state.artifactConfig.emgLead === 'diffuse' || EMG_LEAD_MAP.has(state.artifactConfig.emgLead))) state.artifactConfig.emgLead = 'diffuse';
@@ -3589,22 +3327,6 @@ function populateInterictalLeadSelect(){
   ensurePathologyDefaults();
   sel.value = state.pathology.interictalLead || 'random';
 }
-function populatePhoticHzSelect(){
-  const sel = $('photicHzSel');
-  if (!sel) return;
-  if (sel.options.length !== PHOTIC_STIM_RATE_OPTIONS.length){
-    const frag = document.createDocumentFragment();
-    PHOTIC_STIM_RATE_OPTIONS.forEach((opt)=>{
-      const el = document.createElement('option');
-      el.value = opt.value;
-      el.textContent = opt.label;
-      frag.appendChild(el);
-    });
-    sel.replaceChildren(frag);
-  }
-  ensureArtifactDefaults();
-  sel.value = String(state.artifactConfig.photicHz || 15);
-}
 function populateBreachLeadSelect(){
   const sel = $('breachLeadSel');
   if (!sel) return;
@@ -3640,7 +3362,6 @@ function populatePopLeadSelect(){
 ensurePathologyDefaults();
 ensureArtifactDefaults();
 populateInterictalLeadSelect();
-populatePhoticHzSelect();
 populateFocalFocusSelect();
 populateBreachLeadSelect();
 populatePopLeadSelect();
@@ -3722,169 +3443,12 @@ function syncSeizureDurationInput(id, key){
   if (input) input.value = String(next);
   return next;
 }
-function timebaseValueFromSeconds(secs){
-  if (secs >= 19) return '15';
-  if (secs <= 6) return '60';
-  return '30';
-}
 function secondsFromUI(){ const tb=$('timebase'); return tb?secondsFromTimebase(tb.value):10; }
-function resetSeededRng(seedStr){
-  const seed = normalizeSeedString(seedStr);
-  state.seedBase = seed;
-  state.rng = makeRNG(seed);
-  return seed;
-}
-function clearActiveSeedSeizures(){
-  state.seizureEvents = [];
-  if (state.focalSz){
-    state.focalSz.active = false;
-    delete state.focalSz;
-  }
-  if (state.fbtcSz){
-    state.fbtcSz.active = false;
-    delete state.fbtcSz;
-  }
-}
-function captureActiveSeizureSeed(){
-  const ev = (state.seizureEvents || []).find((item)=> item && !item.done && (item.type === 'generalized' || item.type === 'absence'));
-  if (ev){
-    return {
-      type: ev.type,
-      duration: clampSeizureDuration(ev.dur, ev.type === 'absence' ? DEFAULT_SEIZURE_DURATIONS.absence : DEFAULT_SEIZURE_DURATIONS.generalized)
-    };
-  }
-  if (state.focalSz && state.focalSz.active){
-    const focus = FOCAL_SEIZURE_FOCUS_MAP.has(state.focalSz.focusLabel) ? state.focalSz.focusLabel : ((state.pathology && state.pathology.focalFocus) || 'random');
-    return {type:'focal', duration:clampSeizureDuration(state.focalSz.dur, DEFAULT_SEIZURE_DURATIONS.focal), focus};
-  }
-  if (state.fbtcSz && state.fbtcSz.active){
-    const focus = FOCAL_SEIZURE_FOCUS_MAP.has(state.fbtcSz.focusLabel) ? state.fbtcSz.focusLabel : ((state.pathology && state.pathology.fbtcFocus) || 'random');
-    return {type:'fbtc', duration:clampSeizureDuration(state.fbtcSz.dur, DEFAULT_SEIZURE_DURATIONS.fbtc), focus};
-  }
-  return null;
-}
-function createDisplaySeedPayload(){
-  ensureArtifactDefaults();
-  ensurePathologyDefaults();
-  return {
-    v:1,
-    seed: normalizeSeedString(state.seedBase),
-    controls:{
-      montage: state.montage || 'bipolar_longitudinal',
-      timebase: $('timebase') ? $('timebase').value : timebaseValueFromSeconds(state.seconds),
-      sensitivity: sensitivityValueFromUvPerDiv(state.uvPerDiv),
-      mode: state.mode || 'awake',
-      sleepState: state.sleepState || 'awake',
-      rhythmOverride: state.rhythmOverride || '',
-      eyesOpen: !!state.eyesOpen,
-      running: !!state.running,
-      realism: Math.max(0, Math.min(1, Number(state.realism) || 0.75)),
-      speed: Math.max(0.25, Math.min(5, Number(state.speed) || 1))
-    },
-    opts:{...(state.opts || {})},
-    artifactConfig:{...(state.artifactConfig || {})},
-    pathology:{...(state.pathology || {})},
-    seizureDurations:{...(state.seizureDurations || DEFAULT_SEIZURE_DURATIONS)},
-    activeSeizure:captureActiveSeizureSeed()
-  };
-}
-function currentDisplaySeedToken(){
-  return encodeSeedPayload(createDisplaySeedPayload());
-}
-function applyDisplaySeedPayload(payload){
-  if (!payload || Number(payload.v) !== 1) throw new Error('Unsupported seed format.');
-  if (state.quiz && state.quiz.active) endQuiz();
-  if (state.tutorial && state.tutorial.active) endTutorial();
-
-  const controls = payload.controls || {};
-  clearActiveSeedSeizures();
-  resetSeededRng(payload.seed);
-  ensureArtifactDefaults();
-  ensurePathologyDefaults();
-
-  const montageSel = $('montageSel');
-  const timebaseSel = $('timebase');
-  const sensitivitySel = $('sensitivity');
-  const speedSlider = $('speedSlider');
-  const speedValue = $('speedValue');
-  const realismSlider = $('realismSlider');
-  const realismValue = $('realismValue');
-
-  const montage = String(controls.montage || 'bipolar_longitudinal');
-  state.montage = montage;
-  if (montageSel && Array.from(montageSel.options).some((opt)=> opt.value === montage)) montageSel.value = montage;
-
-  const timebase = String(controls.timebase || '30');
-  if (timebaseSel && Array.from(timebaseSel.options).some((opt)=> opt.value === timebase)) timebaseSel.value = timebase;
-
-  const sensitivity = String(controls.sensitivity || '7');
-  if (sensitivitySel && Array.from(sensitivitySel.options).some((opt)=> opt.value === sensitivity)) sensitivitySel.value = sensitivity;
-  applySensitivityValue(sensitivity);
-
-  state.mode = String(controls.mode || 'awake');
-  state.sleepState = String(controls.sleepState || 'awake');
-  state.rhythmOverride = String(controls.rhythmOverride || '');
-  state.eyesOpen = !!controls.eyesOpen;
-
-  state.realism = Math.max(0, Math.min(1, Number(controls.realism)));
-  if (!Number.isFinite(state.realism)) state.realism = 0.75;
-  if (realismSlider) realismSlider.value = String(state.realism);
-  if (realismValue) realismValue.textContent = Math.round(state.realism * 100) + '%';
-
-  state.speed = Math.max(0.25, Math.min(5, Number(controls.speed)));
-  if (!Number.isFinite(state.speed)) state.speed = 1;
-  if (speedSlider) speedSlider.value = String(state.speed);
-  if (speedValue) speedValue.textContent = state.speed.toFixed(2) + 'x';
-
-  setPlaybackRunning(controls.running !== false);
-  state.opts = {
-    blink:false, rovingEyes:false, reading:false, ventilator:false, photicStim:false, chew:false, sweat:false, breach:false, pop:false, emg:false,
-    ...(payload.opts || {})
-  };
-  state.artifactConfig = {
-    photicHz:15, breachLead:'random', popLead:'random', emgLead:'diffuse', emgLevel:0,
-    ...(payload.artifactConfig || {})
-  };
-  state.pathology = {
-    encephalopathy:false, burstSuppression:false, gpd:false, lpd:false, bipds:false,
-    interictal:false, interictalLead:'random', focalSeizure:false, focalFocus:'random', fbtcSeizure:false, fbtcFocus:'random',
-    ...(payload.pathology || {})
-  };
-  if (payload.pathology && payload.pathology.photicStim) state.opts.photicStim = true;
-  if (payload.pathology && PHOTIC_STIM_RATE_SET.has(Number(payload.pathology.photicHz))) state.artifactConfig.photicHz = Number(payload.pathology.photicHz);
-  state.seizureDurations = {...DEFAULT_SEIZURE_DURATIONS, ...(payload.seizureDurations || {})};
-  state.pathology.focalSeizure = false;
-  state.pathology.fbtcSeizure = false;
-  if (!Number.isFinite(Number(state.artifactConfig.emgLevel))){
-    state.artifactConfig.emgLevel = state.opts.emg ? 0.45 : 0;
-  }
-  ensureArtifactDefaults();
-  ensurePathologyDefaults();
-  syncControlsFromState();
-  updateEyesOpenEnabled();
-  regen();
-
-  const activeSeizure = payload.activeSeizure || null;
-  if (activeSeizure){
-    const duration = clampSeizureDuration(activeSeizure.duration, DEFAULT_SEIZURE_DURATIONS[activeSeizure.type] || DEFAULT_SEIZURE_DURATIONS.generalized);
-    if (activeSeizure.type === 'generalized'){
-      state.seizureEvents.push(makeGeneralizedSeizureEvent(state.artClock, duration));
-    } else if (activeSeizure.type === 'absence'){
-      state.seizureEvents.push(makeAbsenceSeizureEvent(state.artClock, duration));
-    } else if (activeSeizure.type === 'focal' && typeof window.armFocalSeizure === 'function'){
-      window.armFocalSeizure(duration, activeSeizure.focus || state.pathology.focalFocus || 'random', state.artClock);
-    } else if (activeSeizure.type === 'fbtc' && typeof window.armFbtcSeizure === 'function'){
-      window.armFbtcSeizure(duration, activeSeizure.focus || state.pathology.fbtcFocus || 'random');
-    }
-    if (typeof updateSeizureActionButtons === 'function') updateSeizureActionButtons();
-  }
-}
 function regen(){
   state.seconds=secondsFromUI(); const sensEl=$('sensitivity'); if(sensEl) applySensitivityValue(sensEl.value);
   ensureArtifactDefaults();
   state.artifactConfig.emgLevel = readEmgLevelFromUI();
-  state.opts={ blink:$('blink')?.checked||false, rovingEyes:$('rovingEyes')?.checked||false, reading:$('reading')?.checked||false, ventilator:$('ventilator')?.checked||false, photicStim:$('photicStim')?.checked||false, chew:$('chew')?.checked||false, sweat:$('sweat')?.checked||false, breach:$('breach')?.checked||false, pop:$('pop')?.checked||false, emg:(state.artifactConfig.emgLevel > 0) };
-  state.artifactConfig.photicHz = PHOTIC_STIM_RATE_SET.has(Number($('photicHzSel')?.value)) ? Number($('photicHzSel').value) : (state.artifactConfig.photicHz || 15);
+  state.opts={ blink:$('blink')?.checked||false, rovingEyes:$('rovingEyes')?.checked||false, reading:$('reading')?.checked||false, ventilator:$('ventilator')?.checked||false, chew:$('chew')?.checked||false, sweat:$('sweat')?.checked||false, breach:$('breach')?.checked||false, pop:$('pop')?.checked||false, emg:(state.artifactConfig.emgLevel > 0) };
   state.artifactConfig.breachLead = BREACH_RHYTHM_LEAD_MAP.has($('breachLeadSel')?.value) ? $('breachLeadSel').value : (state.artifactConfig.breachLead || 'random');
   state.artifactConfig.popLead = POP_LEAD_SET.has($('popLeadSel')?.value) ? $('popLeadSel').value : (state.artifactConfig.popLead || 'random');
   state.artifactConfig.emgLead = ($('emgLeadSel')?.value === 'diffuse' || EMG_LEAD_MAP.has($('emgLeadSel')?.value)) ? $('emgLeadSel').value : (state.artifactConfig.emgLead || 'diffuse');
@@ -3901,8 +3465,6 @@ function regen(){
   syncSweatGenerator(true);
   syncBreachGenerator(true);
   syncEncephalopathyPathology(true);
-  syncBurstSuppressionPathology(true);
-  syncPhoticStimPathology(true);
   syncInterictalPathology(true);
   syncPopGenerator(true);
   syncEmgGenerator(true);
@@ -3922,7 +3484,6 @@ function syncControlsFromState(){
   syncSeizureDurationInput('focalSzDur', 'focal');
   syncSeizureDurationInput('fbtcSzDur', 'fbtc');
   populateInterictalLeadSelect();
-  populatePhoticHzSelect();
   populateFocalFocusSelect();
   populateFbtcFocusSelect();
   populateBreachLeadSelect();
@@ -3933,7 +3494,6 @@ function syncControlsFromState(){
   if ($('rovingEyes')) $('rovingEyes').checked = !!state.opts.rovingEyes;
   if ($('reading')) $('reading').checked = !!state.opts.reading;
   if ($('ventilator')) $('ventilator').checked = !!state.opts.ventilator;
-  if ($('photicStim')) $('photicStim').checked = !!state.opts.photicStim;
   if ($('chew')) $('chew').checked = !!state.opts.chew;
   if ($('sweat')) $('sweat').checked = !!state.opts.sweat;
   if ($('breach')) $('breach').checked = !!state.opts.breach;
@@ -3942,7 +3502,6 @@ function syncControlsFromState(){
   if ($('gpd')) $('gpd').checked = !!state.pathology.gpd;
   if ($('lpd')) $('lpd').checked = !!state.pathology.lpd;
   if ($('encephalopathy')) $('encephalopathy').checked = !!state.pathology.encephalopathy;
-  if ($('burstSuppression')) $('burstSuppression').checked = !!state.pathology.burstSuppression;
   if ($('interictal')) $('interictal').checked = !!state.pathology.interictal;
   if (typeof updateSeizureActionButtons === 'function') updateSeizureActionButtons();
 }
@@ -3986,7 +3545,6 @@ function bindArtifactToggle(id, key){
     if (key === 'rovingEyes') syncRovingEyesGenerator(true);
     if (key === 'reading') syncReadingGenerator(true);
     if (key === 'ventilator') syncVentilatorGenerator(true);
-    if (key === 'photicStim') syncPhoticStimPathology(true);
     if (key === 'chew') syncChewGenerator(true);
     if (key === 'sweat') syncSweatGenerator(true);
     if (key === 'breach') syncBreachGenerator(true);
@@ -4010,7 +3568,6 @@ bindArtifactToggle('blink', 'blink');
 bindArtifactToggle('rovingEyes', 'rovingEyes');
 bindArtifactToggle('reading', 'reading');
 bindArtifactToggle('ventilator', 'ventilator');
-bindArtifactToggle('photicStim', 'photicStim');
 bindArtifactToggle('chew', 'chew');
 bindArtifactToggle('sweat', 'sweat');
 bindArtifactToggle('breach', 'breach');
@@ -4057,16 +3614,6 @@ if (popLeadSel){
     if (state.opts && state.opts.pop) syncPopGenerator(true);
   });
 }
-const photicHzSel = $('photicHzSel');
-if (photicHzSel){
-  photicHzSel.addEventListener('change', ()=>{
-    ensureArtifactDefaults();
-    const nextRate = Number(photicHzSel.value);
-    state.artifactConfig.photicHz = PHOTIC_STIM_RATE_SET.has(nextRate) ? nextRate : 15;
-    populatePhoticHzSelect();
-    if (state.opts && state.opts.photicStim) syncPhoticStimPathology(true);
-  });
-}
 const optBtn = $('optionsBtn');
 const optionsModal = document.getElementById('optionsModal');
 
@@ -4091,53 +3638,6 @@ if (optBtn && optionsModal) {
   optionsClose?.addEventListener('click', closeOptions);
   optionsModal.addEventListener('click', (e) => { if (e.target === optionsModal) closeOptions(); });
   document.addEventListener('keydown', (e) => { if (!optionsModal.hidden && e.key === 'Escape') closeOptions(); });
-}
-const aboutBtn = $('aboutBtn');
-const aboutModal = document.getElementById('aboutModal');
-const aboutClose = document.getElementById('aboutClose');
-const aboutSeedText = $('aboutSeedText');
-const aboutSeedCurrent = $('aboutSeedCurrent');
-const aboutSeedApply = $('aboutSeedApply');
-const aboutSeedStatus = $('aboutSeedStatus');
-function setAboutSeedStatus(message, isError=false){
-  if (!aboutSeedStatus) return;
-  aboutSeedStatus.textContent = message || '';
-  aboutSeedStatus.style.color = isError ? '#8b2f2f' : '#2f5d3a';
-}
-function refreshAboutSeedText(){
-  if (!aboutSeedText) return;
-  aboutSeedText.value = currentDisplaySeedToken();
-}
-if (aboutBtn && aboutModal) {
-  const openAbout = () => {
-    refreshAboutSeedText();
-    setAboutSeedStatus('');
-    aboutModal.hidden = false;
-  };
-  const closeAbout = () => { aboutModal.hidden = true; };
-  aboutBtn.addEventListener('click', (e) => { e.stopPropagation(); openAbout(); });
-  aboutClose?.addEventListener('click', closeAbout);
-  aboutModal.addEventListener('click', (e) => { if (e.target === aboutModal) closeAbout(); });
-  document.addEventListener('keydown', (e) => { if (!aboutModal.hidden && e.key === 'Escape') closeAbout(); });
-}
-if (aboutSeedCurrent){
-  aboutSeedCurrent.addEventListener('click', ()=>{
-    refreshAboutSeedText();
-    setAboutSeedStatus('Current seed loaded.');
-  });
-}
-if (aboutSeedApply){
-  aboutSeedApply.addEventListener('click', ()=>{
-    try{
-      const raw = aboutSeedText ? aboutSeedText.value : '';
-      const payload = decodeSeedPayload(raw);
-      applyDisplaySeedPayload(payload);
-      refreshAboutSeedText();
-      setAboutSeedStatus('Seed applied.');
-    }catch(err){
-      setAboutSeedStatus(`Invalid seed: ${err && err.message ? err.message : 'Unable to decode.'}`, true);
-    }
-  });
 }
 if($('timebase')) $('timebase').addEventListener('change',()=>{ resizeBuffersForSeconds(secondsFromTimebase($('timebase').value)); });
 if($('sensitivity')) $('sensitivity').addEventListener('change',()=>{ applySensitivityValue($('sensitivity').value); syncControlsFromState(); });
@@ -4175,7 +3675,6 @@ const pathologyBtn = $('pathologyBtn');
 const pathologyModal = document.getElementById('pathologyModal');
 const pathologyClose = document.getElementById('pathologyClose');
 const encephalopathyBox = $('encephalopathy');
-const burstSuppressionBox = $('burstSuppression');
 const gpdBox = $('gpd');
 const lpdBox = $('lpd');
 const interictalBox = $('interictal');
@@ -4239,14 +3738,6 @@ if (encephalopathyBox) {
     ensurePathologyDefaults();
     state.pathology.encephalopathy = encephalopathyBox.checked;
     syncEncephalopathyPathology(true);
-  });
-}
-if (burstSuppressionBox) {
-  burstSuppressionBox.checked = !!(state.pathology && state.pathology.burstSuppression);
-  burstSuppressionBox.addEventListener('change', ()=>{
-    ensurePathologyDefaults();
-    state.pathology.burstSuppression = burstSuppressionBox.checked;
-    syncBurstSuppressionPathology(true);
   });
 }
 if (lpdBox) {
@@ -4464,7 +3955,6 @@ function startQuiz(){
   applyQuizModeFromTruth(sleep, background);
 
   state.pathology.encephalopathy = false;
-  state.pathology.burstSuppression = false;
   state.pathology.gpd   = (periodic==='GPDs');
   state.pathology.lpd   = (periodic==='LPDs');
   state.pathology.bipds = false;
@@ -4485,7 +3975,6 @@ function startQuiz(){
   state.opts.rovingEyes = false;
   state.opts.reading = (artifact==='Reading');
   state.opts.ventilator = (artifact==='Ventilator');
-  state.opts.photicStim = false;
   state.opts.chew  = (artifact==='Chewing');
   state.opts.sweat = (artifact==='Sweat');
   state.opts.breach = false;
@@ -4707,6 +4196,7 @@ if (_qe) _qe.addEventListener('click', endQuiz);
 // Pathology modal buttons are already wired above
 
 // ---------------- Tutorial Mode ----------------
+const DEFAULT_TUTORIAL_LEVEL = 'beginner';
 function createNeutralEducationalBias(){
   return {leftScale:1, rightScale:1, diffuseScale:1, focal:{}};
 }
@@ -4730,6 +4220,7 @@ function createTutorialState(){
   return {
     active:false,
     mode:'guided',
+    level:DEFAULT_TUTORIAL_LEVEL,
     caseMode:'ordered',
     selectedCaseId:'normal_awake_alpha',
     lastCaseId:null,
@@ -4738,7 +4229,7 @@ function createTutorialState(){
     currentCase:null,
     responses:{},
     snapshot:null,
-    caseCursor:0,
+    caseCursor:{beginner:0, intermediate:0, advanced:0},
     slowing:buildQuizSlowingConfig(rng, 'None', 'Continuous'),
     spikes:buildQuizSpikeConfig(rng, 'none'),
     bias:createNeutralEducationalBias(),
@@ -4756,7 +4247,6 @@ const tutorialSetupClose = document.getElementById('tutorialSetupClose');
 const tutorialStartBtn = document.getElementById('tutorialStartBtn');
 const tutorialPanel = document.getElementById('tutorialPanel');
 const tutorialMeta = document.getElementById('tutorialMeta');
-const tutorialCaseSummary = document.getElementById('tutorialCaseSummary');
 const tutorialProgress = document.getElementById('tutorialProgress');
 const tutorialBody = document.getElementById('tutorialBody');
 const tutorialBackBtn = document.getElementById('tutorialBack');
@@ -4787,36 +4277,62 @@ const TUTORIAL_STEPS = [
   {key:'finalImpression', title:'Final Impression', prompt:'Put the findings together into a final impression.'}
 ];
 const TUTORIAL_SCAFFOLD = {
-  background:'Lead with the dominant background rhythm and organization.',
-  symmetry:'Judge symmetry by comparing homologous chains, not isolated deflections.',
-  pdr:'Check whether an organized posterior rhythm is sustained and appropriately placed.',
-  reactivity:'Tie reactivity to a reproducible change in posterior background with eye opening.',
-  sleep:'Use actual sleep features rather than generalized slowing alone to stage sleep.',
-  artifact:'Artifact is best recognized by its anatomy and behavior across channels.',
-  epileptiform:'Distinguish true epileptiform or periodic patterns from background variation or artifact.',
-  seizure:'Reserve seizure for evolving electrographic activity.'
+  background:{
+    beginner:'Start by naming the dominant background before you chase shorter transients or focal abnormalities.',
+    intermediate:'Lead with the dominant background rhythm and organization.',
+    advanced:'Anchor the read in the dominant background.'
+  },
+  symmetry:{
+    beginner:'Use matched left-right chains rather than a single flashy channel when you judge symmetry.',
+    intermediate:'Judge symmetry by comparing homologous chains, not isolated deflections.',
+    advanced:'Compare homologous derivations first.'
+  },
+  pdr:{
+    beginner:'A posterior dominant rhythm is best judged in posterior chains such as P3-O1 and P4-O2.',
+    intermediate:'Check whether an organized posterior rhythm is sustained and appropriately placed.',
+    advanced:'Confirm whether a true posterior dominant rhythm is present.'
+  },
+  reactivity:{
+    beginner:'For awake studies, reactivity usually means posterior alpha attenuates when the eyes open.',
+    intermediate:'Tie reactivity to a reproducible change in posterior background with eye opening.',
+    advanced:'Reactivity should reflect a reproducible posterior change, not random fluctuation.'
+  },
+  sleep:{
+    beginner:'Sleep staging depends on the right features: slow eye movements for drowsiness, vertex waves for N1, and spindles/K-complexes for N2.',
+    intermediate:'Use actual sleep features rather than generalized slowing alone to stage sleep.',
+    advanced:'Stage sleep only when the defining features are really present.'
+  },
+  artifact:{
+    beginner:'Ask whether the pattern tracks a known artifact distribution before you call it abnormal cerebral activity.',
+    intermediate:'Artifact is best recognized by its anatomy and behavior across channels.',
+    advanced:'Use spatial distribution and morphology to separate artifact from brain signal.'
+  },
+  epileptiform:{
+    beginner:'Spikes, sharp waves, and periodic discharges should be called only when the morphology and field fit.',
+    intermediate:'Distinguish true epileptiform / periodic patterns from background variation or artifact.',
+    advanced:'Call epileptiform activity only when morphology and field are convincing.'
+  },
+  seizure:{
+    beginner:'A seizure should show an evolving rhythmic or spike-wave pattern, not just repeated isolated discharges.',
+    intermediate:'Reserve seizure for evolving electrographic activity.',
+    advanced:'Require evolution, field, and sustained ictal organization.'
+  }
 };
 const TUTORIAL_CASE_LIBRARY = {};
-const TUTORIAL_CASE_ORDER = [
-  'normal_awake_alpha',
-  'blink_awake_alpha',
-  'drowsy_transition',
-  'stage2_sleep',
-  'generalized_slowing',
-  'focal_slowing_left',
-  'chewing_artifact',
-  'gpd_case',
-  'lpd_left',
-  'absence_seizure',
-  'generalized_seizure',
-  'focal_seizure'
-];
+const TUTORIAL_CASE_ORDER = {
+  beginner:['normal_awake_alpha','blink_awake_alpha','drowsy_transition','stage2_sleep'],
+  intermediate:['normal_awake_alpha','blink_awake_alpha','drowsy_transition','stage2_sleep','generalized_slowing','focal_slowing_left','chewing_artifact','gpd_case'],
+  advanced:['normal_awake_alpha','blink_awake_alpha','drowsy_transition','stage2_sleep','generalized_slowing','focal_slowing_left','chewing_artifact','gpd_case','lpd_left','absence_seizure','generalized_seizure','focal_seizure']
+};
 function updateModeButtons(){
   if (quizBtnTop) quizBtnTop.textContent = (state.quiz && state.quiz.active) ? 'End Quiz' : 'Quiz';
   if (tutorialBtnTop) tutorialBtnTop.textContent = (state.tutorial && state.tutorial.active) ? 'End Tutorial' : 'Tutorial';
 }
+function tutorialPoolForLevel(level){
+  return TUTORIAL_CASE_ORDER.advanced || TUTORIAL_CASE_ORDER.beginner;
+}
 function tutorialAllCaseIds(){
-  return TUTORIAL_CASE_ORDER.slice();
+  return Array.from(new Set(Object.values(TUTORIAL_CASE_ORDER).flat()));
 }
 function tutorialCaseTitle(caseId){
   return (TUTORIAL_CASE_LIBRARY[caseId] && TUTORIAL_CASE_LIBRARY[caseId].title) || caseId;
@@ -4853,7 +4369,7 @@ function syncTutorialSetupCaseControls(){
   return selectedId;
 }
 function chooseNextTutorialCaseId(){
-  const pool = tutorialAllCaseIds();
+  const pool = tutorialPoolForLevel(state.tutorial.level);
   if (!pool.length) return '';
   const caseMode = state.tutorial.caseMode || 'ordered';
   if (caseMode === 'specific'){
@@ -4869,9 +4385,9 @@ function chooseNextTutorialCaseId(){
     const source = candidates.length ? candidates : pool;
     return source[Math.floor(rng() * source.length)] || source[0] || '';
   }
-  const cursor = Number.isFinite(state.tutorial.caseCursor) ? state.tutorial.caseCursor : 0;
+  const cursor = state.tutorial.caseCursor[state.tutorial.level] || 0;
   const caseId = pool[cursor % pool.length];
-  state.tutorial.caseCursor = (cursor + 1) % pool.length;
+  state.tutorial.caseCursor[state.tutorial.level] = (cursor + 1) % pool.length;
   return caseId;
 }
 function tutorialCloneCase(caseId){
@@ -5027,16 +4543,16 @@ function renderTutorialHighlights(pairs, yMids, rowH, canvasWidth){
   }
   ctx.restore();
 }
-function tutorialScaffoldText(stepKey){
+function tutorialScaffoldText(stepKey, level){
   const entry = TUTORIAL_SCAFFOLD[stepKey];
-  return typeof entry === 'string' ? entry : '';
+  return entry ? (entry[level] || entry.beginner || '') : '';
 }
 function tutorialExplanation(step, caseData){
   if (!step || !caseData) return '';
   if (step.key === 'finalImpression') return caseData.modelRead || '';
   const answer = caseData.truth ? caseData.truth[step.key] : '';
   const core = caseData.stepNotes ? caseData.stepNotes[step.key] : '';
-  const scaffold = tutorialScaffoldText(step.key);
+  const scaffold = tutorialScaffoldText(step.key, state.tutorial.level);
   return [`The best answer here is ${answer}.`, core, scaffold].filter(Boolean).join(' ');
 }
 function tutorialAnswerBanner(step, caseData){
@@ -5065,7 +4581,6 @@ function renderTutorialUI(){
   tutorialPanel.style.display = active ? 'block' : 'none';
   if (!active){
     if (tutorialMeta) tutorialMeta.replaceChildren();
-    if (tutorialCaseSummary) tutorialCaseSummary.replaceChildren();
     if (tutorialProgress) tutorialProgress.textContent = '';
     if (tutorialBody) tutorialBody.replaceChildren();
     updateModeButtons();
@@ -5096,16 +4611,6 @@ function renderTutorialUI(){
   if (tutorialProgress){
     tutorialProgress.textContent = `Step ${stepNumber} of ${TUTORIAL_STEPS.length}: ${step ? step.title : ''}`;
   }
-  if (tutorialCaseSummary){
-    if (caseData.summary && state.tutorial.caseFocusOpen){
-      const summary = document.createElement('div');
-      summary.className = 'tutorial-note tutorial-case-focus';
-      summary.textContent = caseData.summary;
-      tutorialCaseSummary.replaceChildren(summary);
-    } else {
-      tutorialCaseSummary.replaceChildren();
-    }
-  }
 
   if (tutorialBody){
     const frag = document.createDocumentFragment();
@@ -5119,6 +4624,12 @@ function renderTutorialUI(){
     prompt.className = 'tutorial-prompt';
     prompt.textContent = step ? step.prompt : '';
     card.appendChild(prompt);
+    if (caseData.summary && state.tutorial.caseFocusOpen){
+      const summary = document.createElement('div');
+      summary.className = 'tutorial-note tutorial-case-focus';
+      summary.textContent = caseData.summary;
+      card.appendChild(summary);
+    }
     if (step && step.options && state.tutorial.mode === 'interactive'){
       const row = document.createElement('div');
       row.className = 'tutorial-choice-row';
@@ -5186,12 +4697,11 @@ function tutorialSetCommonSimulatorState(caseData){
   const signal = caseData.signal || {};
   const rng = state.rng || Math.random;
   state.pathology.encephalopathy = false;
-  state.pathology.burstSuppression = false;
   state.pathology.gpd = false;
   state.pathology.lpd = false;
   state.pathology.bipds = false;
   state.pathology.focalSeizure = false;
-  state.opts = {blink:false, rovingEyes:false, reading:false, ventilator:false, photicStim:false, chew:false, sweat:false, breach:false, pop:false, emg:false};
+  state.opts = {blink:false, rovingEyes:false, reading:false, ventilator:false, chew:false, sweat:false, breach:false, pop:false, emg:false};
   clearActiveTutorialSeizures();
   resetTutorialEducationalState();
 
@@ -5244,81 +4754,16 @@ function primeTutorialSleepFeatures(caseData){
     state.spindle.dur = 0.92;
   }
 }
-function primeTutorialBaselineDisplay(seconds){
-  const primeSeconds = Math.max(0, Math.min(state.seconds, Number(seconds) || state.seconds));
-  const sampleCount = Math.max(0, Math.round(primeSeconds * Fs));
-  if (!sampleCount) return;
-  const educationalBias = currentEducationalBias();
-  for (let i=0; i<sampleCount; i++){
-    const sampleClock = state.artClock;
-    const opts = {
-      mode:state.mode,
-      eyesOpen:state.eyesOpen,
-      blinkShape:currentBlinkShape(sampleClock),
-      rovingEyeArtifact:currentRovingEyeArtifact(sampleClock),
-      readingArtifact:currentReadingArtifact(sampleClock),
-      ventilatorArtifact:currentVentilatorArtifact(sampleClock),
-      chewArtifact:currentChewArtifact(sampleClock),
-      sweatArtifact:currentSweatArtifact(sampleClock),
-      breachArtifact:currentBreachArtifact(sampleClock),
-      popArtifact:currentPopArtifact(sampleClock),
-      emgArtifact:currentEmgArtifact(sampleClock),
-      pdrPhase:state.pdrPhase,
-      pdrHz:state.pdrHz,
-      clock:sampleClock,
-      realism:state.realism,
-      spindleEnv:0,
-      kcShape:0,
-      vertex:false,
-      vertexShape:0
-    };
-    let sum = 0, cnt = 0, refSum = 0, refCnt = 0;
-    for (const e of ELECTRODES){
-      const ch = state.channels.get(e);
-      if (!ch) continue;
-      let y = ch.sample(sampleClock, opts);
-      if (educationalBias){
-        const isDisplayScalp = AVG_ELECTRODE_SET.has(e);
-        const L = /^(Fp1|F3|C3|P3|O1|F7|T3|T5|Fz|Cz|Pz)$/.test(e);
-        let hemiScale = 1;
-        if (isDisplayScalp && educationalBias.leftScale!==1 && L) hemiScale = educationalBias.leftScale;
-        if (isDisplayScalp && educationalBias.rightScale!==1 && !L) hemiScale = educationalBias.rightScale;
-        const diffuseScale = isDisplayScalp ? (educationalBias.diffuseScale ?? 1) : 1;
-        const focalScale = (isDisplayScalp && educationalBias.focal && educationalBias.focal[e]!==undefined) ? educationalBias.focal[e] : 1;
-        y *= diffuseScale * hemiScale * focalScale;
-      }
-      const buf = state.buffer.get(e);
-      if (!buf) continue;
-      buf[state.idx % buf.length] = y;
-      if (AVG_ELECTRODE_SET.has(e)) { sum += y; cnt++; }
-      if (EAR_REFERENCE_ELECTRODES.has(e)) { refSum += y; refCnt++; }
-    }
-    const avgBuf = state.buffer.get('AVG');
-    if (avgBuf) avgBuf[state.idx % avgBuf.length] = cnt ? (sum / cnt) : 0;
-    const linkedEarBuf = state.buffer.get('AAVG');
-    if (linkedEarBuf) linkedEarBuf[state.idx % linkedEarBuf.length] = refCnt ? (refSum / refCnt) : 0;
-    state.idx++;
-    state.artClock += 1/Fs;
-  }
-  state.sampleCarry = 0;
-  lastT = performance.now()/1000;
-}
 function armTutorialSeizure(caseData){
   const signal = caseData.signal || {};
   const duration = clampSeizureDuration(signal.seizureDuration || DEFAULT_SEIZURE_DURATIONS.generalized, signal.seizureDuration || DEFAULT_SEIZURE_DURATIONS.generalized);
-  const leadIn = Math.max(0.8, Math.min(4.0, Number(signal.seizureLeadIn) || 2.2));
-  const hasSeizure = signal.seizure === 'Generalized seizure' || signal.seizure === 'Absence seizure' || signal.seizure === 'Focal seizure';
-  if (hasSeizure){
-    primeTutorialBaselineDisplay(signal.baselinePrimeSeconds || state.seconds);
-  }
-  const startAt = state.artClock + leadIn;
   if (signal.seizure === 'Generalized seizure'){
-    state.seizureEvents.push(makeGeneralizedSeizureEvent(startAt, duration));
+    state.seizureEvents.push(makeGeneralizedSeizureEvent(state.artClock, duration));
   } else if (signal.seizure === 'Absence seizure'){
-    state.seizureEvents.push(makeAbsenceSeizureEvent(startAt, duration));
+    state.seizureEvents.push(makeAbsenceSeizureEvent(state.artClock, duration));
   } else if (signal.seizure === 'Focal seizure' && typeof window.armFocalSeizure === 'function'){
     state.pathology.focalSeizure = true;
-    window.armFocalSeizure(duration, 'random', startAt);
+    window.armFocalSeizure(duration, 'random');
   }
 }
 function applyTutorialCase(caseData){
@@ -5366,13 +4811,14 @@ function openTutorialSetup(){
   syncTutorialSetupCaseControls();
   TUTORIAL_SETUP_MODAL.hidden = false;
 }
-function startTutorial(mode){
+function startTutorial(mode, level){
   if (state.quiz && state.quiz.active) endQuiz();
   if (!(state.tutorial && state.tutorial.active)){
     state.tutorial.snapshot = createQuizSnapshot();
   }
   state.tutorial.active = true;
   state.tutorial.mode = mode || (tutorialModeSel ? tutorialModeSel.value : 'guided') || 'guided';
+  state.tutorial.level = level || DEFAULT_TUTORIAL_LEVEL;
   state.tutorial.caseMode = (tutorialCaseModeSel ? tutorialCaseModeSel.value : state.tutorial.caseMode) || 'ordered';
   state.tutorial.selectedCaseId = tutorialResolveSelectedCaseId(tutorialCaseSel ? tutorialCaseSel.value : state.tutorial.selectedCaseId);
   state.tutorial.responses = {};
@@ -5688,84 +5134,84 @@ TUTORIAL_CASE_LIBRARY.lpd_left = {
 TUTORIAL_CASE_LIBRARY.absence_seizure = {
   title:'Absence Seizure',
   summary:'Generalized 3 Hz spike-wave seizure with bilateral involvement.',
-  signal:{sleepDrive:'Awake', backgroundDrive:'alpha', artifact:'None', slowingDist:'None', slowingTempo:'Continuous', periodic:'None', epileptiformOverlay:'none', seizure:'Absence seizure', seizureDuration:10, seizureLeadIn:1.8, baselinePrimeSeconds:10, spindles:'absent', kcomplexes:'absent'},
+  signal:{sleepDrive:'Awake', backgroundDrive:'alpha', artifact:'None', slowingDist:'None', slowingTempo:'Continuous', periodic:'None', epileptiformOverlay:'none', seizure:'Absence seizure', seizureDuration:10, spindles:'absent', kcomplexes:'absent'},
   truth:{background:'Unable to determine', symmetry:'symmetric', pdr:'Absent / not identifiable', reactivity:'unable to determine', sleep:'No clear sleep architecture', artifact:'None', epileptiform:'Generalized discharges', seizure:'Absence seizure'},
   stepNotes:{
-    background:'A brief normal awake background precedes onset, but once the generalized 3 Hz spike-wave discharge takes over, the baseline is not meaningfully assessable.',
+    background:'Once the generalized 3 Hz spike-wave discharge takes over, the baseline background is not meaningfully assessable.',
     symmetry:'The ictal pattern is generalized and bilaterally expressed across the tracing.',
     pdr:'A posterior dominant rhythm is not identifiable during the generalized spike-wave seizure.',
     reactivity:'Formal eye-opening reactivity is not assessable during the ictal pattern.',
     sleep:'This is an ictal generalized spike-wave pattern, not physiologic sleep architecture.',
     artifact:'The pattern is cerebral and generalized, not artifactual.',
     epileptiform:'The seizure is built from generalized spike-wave discharges.',
-    seizure:'This is an absence seizure, with an abrupt transition from normal baseline into regular generalized spike-wave activity around 3 Hz.'
+    seizure:'This is an absence seizure, with regular generalized spike-wave activity around 3 Hz.'
   },
   modelRead:'Generalized absence seizure with bilateral 3 Hz spike-wave activity, most prominent anteriorly and at the midline. Background, posterior dominant rhythm, and reactivity are not meaningfully assessable during the ictal pattern.',
   highlights:{
-    background:{allRows:true, windowSec:2.8, note:'Use the brief pre-ictal awake baseline to appreciate the abrupt ictal takeover.'},
+    background:{allRows:true, windowSec:2.8, note:'During the spike-wave seizure, the background itself is not separately readable.'},
     symmetry:{allRows:true, windowSec:2.4, note:'The discharge is generalized across both hemispheres.'},
     pdr:{electrodes:['P3','O1','P4','O2'], windowSec:2.4, note:'There is no meaningful posterior dominant rhythm during the seizure.'},
     reactivity:{allRows:true, windowSec:2.4, note:'Reactivity is not the right question during ongoing generalized spike-wave seizure activity.'},
     sleep:{allRows:true, windowSec:2.4, note:'This is ictal generalized spike-wave activity, not sleep.'},
     artifact:{allRows:true, windowSec:2.4, note:'The full bilateral field and spike-wave morphology argue strongly for cerebral activity rather than artifact.'},
     epileptiform:{allRows:true, windowSec:2.4, note:'The seizure waveform itself is generalized spike-wave epileptiform activity.'},
-    seizure:{allRows:true, windowSec:2.4, note:'Watch the transition from baseline into the regular generalized 3 Hz spike-wave pattern.'},
+    seizure:{allRows:true, windowSec:2.4, note:'The regular generalized 3 Hz spike-wave pattern defines the absence seizure.'},
     finalImpression:{allRows:true, windowSec:3.0, note:'Summarize this as an absence seizure with generalized 3 Hz spike-wave activity.'}
   }
 };
 TUTORIAL_CASE_LIBRARY.generalized_seizure = {
   title:'Generalized Seizure',
   summary:'Generalized electrographic seizure with diffuse bilateral involvement.',
-  signal:{sleepDrive:'Awake', backgroundDrive:'alpha', artifact:'None', slowingDist:'None', slowingTempo:'Continuous', periodic:'None', epileptiformOverlay:'none', seizure:'Generalized seizure', seizureDuration:20, seizureLeadIn:2.2, baselinePrimeSeconds:10, spindles:'absent', kcomplexes:'absent'},
+  signal:{sleepDrive:'Awake', backgroundDrive:'alpha', artifact:'None', slowingDist:'None', slowingTempo:'Continuous', periodic:'None', epileptiformOverlay:'none', seizure:'Generalized seizure', seizureDuration:20, spindles:'absent', kcomplexes:'absent'},
   truth:{background:'Unable to determine', symmetry:'symmetric', pdr:'Absent / not identifiable', reactivity:'unable to determine', sleep:'No clear sleep architecture', artifact:'None', epileptiform:'Generalized discharges', seizure:'Generalized seizure'},
   stepNotes:{
-    background:'A short normal awake background precedes onset, but the seizure quickly obscures the underlying rhythm once the ictal run begins.',
+    background:'The seizure obscures the underlying background enough that it is not meaningfully characterized during the ictal run.',
     symmetry:'The ictal pattern is generalized across both hemispheres rather than focal.',
     pdr:'A posterior dominant rhythm is not identifiable during the generalized seizure.',
     reactivity:'Formal reactivity is not assessable during ongoing seizure activity.',
     sleep:'This is ictal generalized activity, not sleep architecture.',
     artifact:'The pattern reflects generalized cerebral seizure activity rather than artifact.',
     epileptiform:'The seizure contains generalized epileptiform spike-wave / polyspike-wave activity.',
-    seizure:'There is clear electrographic evolution from baseline into a generalized seizure.'
+    seizure:'There is clear electrographic evolution consistent with a generalized seizure.'
   },
   modelRead:'Generalized electrographic seizure with bilateral diffuse involvement and evolving generalized spike-wave / polyspike-wave activity. Background, posterior dominant rhythm, and reactivity are not meaningfully assessable during the ictal event.',
   highlights:{
-    background:{allRows:true, windowSec:2.8, note:'Use the brief pre-ictal baseline to appreciate how the generalized seizure takes over.'},
+    background:{allRows:true, windowSec:2.8, note:'The ongoing seizure obscures the underlying background.'},
     symmetry:{allRows:true, windowSec:2.4, note:'The seizure involves all regions rather than a unilateral onset zone.'},
     pdr:{electrodes:['P3','O1','P4','O2'], windowSec:2.4, note:'A posterior dominant rhythm is not separately readable during the seizure.'},
     reactivity:{allRows:true, windowSec:2.4, note:'Do not try to stage reactivity during a generalized seizure.'},
     sleep:{allRows:true, windowSec:2.4, note:'This is ictal activity, not sleep architecture.'},
     artifact:{allRows:true, windowSec:2.4, note:'The evolving widespread field argues for true seizure activity.'},
     epileptiform:{allRows:true, windowSec:2.4, note:'Generalized spike-wave and polyspike-wave activity makes the epileptiform nature clear.'},
-    seizure:{allRows:true, windowSec:2.4, note:'Watch the transition from baseline into evolving widespread bilateral ictal activity.'},
+    seizure:{allRows:true, windowSec:2.4, note:'Evolution and widespread bilateral involvement support a generalized seizure call.'},
     finalImpression:{allRows:true, windowSec:3.0, note:'The correct impression is generalized electrographic seizure.'}
   }
 };
 TUTORIAL_CASE_LIBRARY.focal_seizure = {
   title:'Focal Seizure',
   summary:'Lateralized electrographic seizure with temporal predominance.',
-  signal:{sleepDrive:'Awake', backgroundDrive:'alpha', artifact:'None', slowingDist:'None', slowingTempo:'Continuous', periodic:'None', epileptiformOverlay:'none', seizure:'Focal seizure', seizureDuration:10, seizureLeadIn:2.2, baselinePrimeSeconds:10, spindles:'absent', kcomplexes:'absent'},
+  signal:{sleepDrive:'Awake', backgroundDrive:'alpha', artifact:'None', slowingDist:'None', slowingTempo:'Continuous', periodic:'None', epileptiformOverlay:'none', seizure:'Focal seizure', seizureDuration:10, spindles:'absent', kcomplexes:'absent'},
   truth:{background:'Unable to determine', symmetry:'asymmetric', pdr:'Absent / not identifiable', reactivity:'unable to determine', sleep:'No clear sleep architecture', artifact:'None', epileptiform:'Focal discharges', seizure:'Focal seizure'},
   stepNotes:{
-    background:'A brief normal awake background precedes onset, but once the focal ictal pattern begins the involved region no longer has a separately meaningful background.',
+    background:'During the focal ictal run, the underlying background is not separately meaningful in the involved region.',
     symmetry:'The ictal activity is clearly more prominent on one side, producing asymmetry.',
     pdr:'A reliable posterior dominant rhythm is not the relevant feature during the focal seizure.',
     reactivity:'Formal eye-opening reactivity is not assessable during the ictal pattern.',
     sleep:'This is seizure activity rather than a physiologic sleep stage.',
     artifact:'The lateralized evolving field argues for true cerebral seizure activity rather than artifact.',
     epileptiform:'The seizure contains focal evolving epileptiform activity, strongest over the temporal region.',
-    seizure:'This is a focal seizure, with a visible transition from baseline into lateralized onset and evolution.'
+    seizure:'This is a focal seizure, with lateralized onset and evolution.'
   },
   modelRead:'Focal electrographic seizure with lateralized temporal-predominant ictal activity and clear asymmetry. Background, posterior dominant rhythm, and reactivity are not meaningfully assessable during the seizure.',
   highlights:{
-    background:{electrodes:['F7','T3','T5','F8','T4','T6'], windowSec:2.8, note:'Use the pre-ictal baseline to contrast with the later focal ictal takeover.'},
+    background:{electrodes:['F7','T3','T5','F8','T4','T6'], windowSec:2.8, note:'During the seizure, the focal ictal pattern dominates the tracing.'},
     symmetry:{electrodes:['F7','T3','T5','F8','T4','T6'], windowSec:2.4, note:'Compare the temporal chains and identify the clearly dominant side.'},
     pdr:{electrodes:['P3','O1','P4','O2'], windowSec:2.4, note:'A posterior dominant rhythm is not the key finding during this ictal pattern.'},
     reactivity:{allRows:true, windowSec:2.4, note:'Reactivity is not assessable during ongoing focal seizure activity.'},
     sleep:{allRows:true, windowSec:2.4, note:'This is ictal activity, not sleep architecture.'},
     artifact:{electrodes:['F7','T3','T5','F8','T4','T6'], windowSec:2.4, note:'The evolving lateralized field argues against artifact.'},
     epileptiform:{electrodes:['F7','T3','T5','F8','T4','T6'], windowSec:2.4, note:'The epileptiform / rhythmic activity is focal rather than generalized.'},
-    seizure:{electrodes:['F7','T3','T5','F8','T4','T6'], windowSec:2.4, note:'Watch the temporal chains transition from baseline into clear lateralized ictal evolution.'},
+    seizure:{electrodes:['F7','T3','T5','F8','T4','T6'], windowSec:2.4, note:'Lateralized evolution and temporal predominance support a focal seizure.'},
     finalImpression:{allRows:true, windowSec:3.0, note:'The correct impression is focal electrographic seizure with temporal predominance.'}
   }
 };
@@ -6067,13 +5513,13 @@ updateModeButtons();
     };
   }
   // Setup per-channel seizure params on trigger
-  function armFocalSeizure(durSec = DEFAULT_SEIZURE_DURATIONS.focal, focusSelection, startAt){
+  function armFocalSeizure(durSec = DEFAULT_SEIZURE_DURATIONS.focal, focusSelection){
     const resolvedFocus = resolveFocalFocusSelection(
       focusSelection || (state.pathology && state.pathology.focalFocus) || 'random'
     );
     const focusSide = resolvedFocus.focusSide;
     const focus = resolvedFocus.focus;
-    const now = Number.isFinite(startAt) ? Number(startAt) : (state.artClock || 0);
+    const now = state.artClock || 0;
     const rng = state.rng || Math.random;
     const duration = clampSeizureDuration(durSec, DEFAULT_SEIZURE_DURATIONS.focal);
     const lvfaDur = duration * (DEF.lvfaDur / DEF.dur);

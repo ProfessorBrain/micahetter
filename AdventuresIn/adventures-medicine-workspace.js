@@ -11,6 +11,10 @@
       reflectionText: "Feedback stays close to the encounter: missed questions and premature conclusions change the conversation before the debrief explains what shifted.",
       tags: ["Diagnostic reasoning", "Interview skills", "Communication", "Ethics"],
       prefix: "AdventuresInPsychiatry-Case",
+      candidatePrefixes: [
+        "cases/psychiatry/AdventuresInPsychiatry-Case",
+        "AdventuresInPsychiatry-Case"
+      ],
       shortPrompt: "Behavioral health cases with reflective debriefs.",
       seriesPrompt: "Published psychiatry cases ready to open now.",
       baseColor: "#7f4b52",
@@ -31,6 +35,10 @@
       reflectionText: "Future internal medicine cases will focus on whether your workup and management strategy matched the pace of the illness.",
       tags: ["Diagnostic reasoning", "Management choices", "Communication"],
       prefix: "AdventuresInInternalMedicine-Case",
+      candidatePrefixes: [
+        "cases/internal-medicine/AdventuresInInternalMedicine-Case",
+        "AdventuresInInternalMedicine-Case"
+      ],
       shortPrompt: "Adult medicine cases are preparing for the archive.",
       seriesPrompt: "This archive is staged and waiting for its first published cases.",
       baseColor: "#365e78",
@@ -51,6 +59,10 @@
       reflectionText: "The reflective layer here centers on what you stabilized first, what you nearly missed, and how the clock changed the case.",
       tags: ["Emergency triage", "Management choices", "Communication"],
       prefix: "AdventuresInEmergencyMedicine-Case",
+      candidatePrefixes: [
+        "cases/emergency-medicine/AdventuresInEmergencyMedicine-Case",
+        "AdventuresInEmergencyMedicine-Case"
+      ],
       shortPrompt: "Time-sensitive emergency cases are on deck.",
       seriesPrompt: "This archive is staged and waiting for its first published cases.",
       baseColor: "#8a4938",
@@ -71,6 +83,10 @@
       reflectionText: "The debrief will emphasize whether your exam logic and localization strategy actually matched the patient course.",
       tags: ["Diagnostic reasoning", "Interview skills", "Management choices"],
       prefix: "AdventuresInNeurology-Case",
+      candidatePrefixes: [
+        "cases/neurology/AdventuresInNeurology-Case",
+        "AdventuresInNeurology-Case"
+      ],
       shortPrompt: "Neurology cases are preparing for the archive.",
       seriesPrompt: "This archive is staged and waiting for its first published cases.",
       baseColor: "#4d4f7e",
@@ -91,6 +107,10 @@
       reflectionText: "Reflective feedback here will weigh decisiveness against overcalling, undercalling, and poor escalation.",
       tags: ["Emergency triage", "Management choices", "Communication"],
       prefix: "AdventuresInSurgery-Case",
+      candidatePrefixes: [
+        "cases/surgery/AdventuresInSurgery-Case",
+        "AdventuresInSurgery-Case"
+      ],
       shortPrompt: "Surgery cases are preparing for the archive.",
       seriesPrompt: "This archive is staged and waiting for its first published cases.",
       baseColor: "#52634e",
@@ -111,6 +131,10 @@
       reflectionText: "The reflective layer will emphasize communication, age-appropriate assessment, and how the family context changed the choices.",
       tags: ["Interview skills", "Communication", "Ethics", "Management choices"],
       prefix: "AdventuresInPediatrics-Case",
+      candidatePrefixes: [
+        "cases/pediatrics/AdventuresInPediatrics-Case",
+        "AdventuresInPediatrics-Case"
+      ],
       shortPrompt: "Pediatrics cases are preparing for the archive.",
       seriesPrompt: "This archive is staged and waiting for its first published cases.",
       baseColor: "#5a6b50",
@@ -127,9 +151,6 @@
     records: new Map(),
     selectedSeriesId: null,
     selectedCaseKey: null,
-    liveSeriesCount: 0,
-    liveCaseCount: 0,
-    firstLiveCase: null,
     currentFrameSrc: "",
     mediaQuery: window.matchMedia("(max-width: 980px)")
   };
@@ -149,24 +170,47 @@
     casePanel: document.getElementById("casePanel"),
     casePanelBackButton: document.getElementById("casePanelBackButton"),
     restartCaseButton: document.getElementById("restartCaseButton"),
-    selectedSeriesTitle: document.getElementById("selectedSeriesTitle"),
-    specialtyMeta: document.getElementById("specialtyMeta"),
     specialtyRail: document.getElementById("specialtyRail"),
-    selectedSeriesMeta: document.getElementById("selectedSeriesMeta"),
     caseList: document.getElementById("caseList"),
     emptyShelf: document.getElementById("emptyShelf"),
+    emptyShelfTitle: document.querySelector("#emptyShelf .emptyListTitle"),
+    emptyShelfCopy: document.querySelector("#emptyShelf .emptyListCopy"),
     collapsedSidebarCard: document.getElementById("collapsedSidebarCard"),
     collapsedSeriesLabel: document.getElementById("collapsedSeriesLabel"),
     collapsedCaseNumber: document.getElementById("collapsedCaseNumber"),
     viewerEmpty: document.getElementById("viewerEmpty"),
+    viewerWelcome: document.getElementById("viewerWelcome"),
+    viewerWelcomeStatus: document.getElementById("viewerWelcomeStatus"),
+    viewerMessage: document.getElementById("viewerMessage"),
+    viewerEmptyEyebrow: document.getElementById("viewerEmptyEyebrow"),
     viewerEmptyTitle: document.getElementById("viewerEmptyTitle"),
     viewerEmptyCopy: document.getElementById("viewerEmptyCopy"),
     caseFrame: document.getElementById("caseFrame"),
     sidebarScrim: document.getElementById("sidebarScrim")
   };
 
+  function createRecord(def) {
+    return {
+      def: def,
+      cases: [],
+      liveCount: 0,
+      status: "idle",
+      loadingPromise: null
+    };
+  }
+
   function key(seriesId, caseNumber) {
     return seriesId + ":" + String(caseNumber);
+  }
+
+  function buildCandidateHrefs(def, caseNumber) {
+    const prefixes = Array.isArray(def.candidatePrefixes) && def.candidatePrefixes.length
+      ? def.candidatePrefixes
+      : [def.prefix];
+
+    return prefixes.map(function (prefix) {
+      return prefix + caseNumber + ".html";
+    });
   }
 
   function cleanText(value) {
@@ -187,10 +231,6 @@
     target.style.setProperty("--series-top", def.topColor);
     target.style.setProperty("--series-bottom", def.baseColor);
     target.style.setProperty("--series-accent", def.accentColor);
-  }
-
-  function pluralizeCases(count) {
-    return count + (count === 1 ? " published case" : " published cases");
   }
 
   function updateHash(seriesId, caseNumber) {
@@ -234,22 +274,6 @@
     }
   }
 
-  async function exists(url) {
-    try {
-      let response = await fetch(url, { method: "HEAD", cache: "no-store" });
-      if (response.ok) {
-        return true;
-      }
-      if (response.status === 403 || response.status === 405) {
-        response = await fetch(url, { method: "GET", cache: "no-store" });
-        return response.ok;
-      }
-      return false;
-    } catch (_error) {
-      return false;
-    }
-  }
-
   async function fetchText(url) {
     try {
       const response = await fetch(url, { method: "GET", cache: "no-store" });
@@ -262,7 +286,37 @@
     }
   }
 
+  function extractNamedMeta(text, name) {
+    const escapedName = String(name).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const patterns = [
+      new RegExp('<meta[^>]*\\bname=["\']' + escapedName + '["\'][^>]*\\bcontent=["\']([^"\']*)["\'][^>]*>', "i"),
+      new RegExp('<meta[^>]*\\bcontent=["\']([^"\']*)["\'][^>]*\\bname=["\']' + escapedName + '["\'][^>]*>', "i")
+    ];
+
+    for (const pattern of patterns) {
+      const match = text.match(pattern);
+      if (match && match[1]) {
+        return decodeHtml(match[1]).replace(/\s+/g, " ").trim();
+      }
+    }
+
+    return "";
+  }
+
   function extractCaseMeta(text, caseNumber, def) {
+    const explicitTitle = extractNamedMeta(text, "adventures-case-title");
+    const explicitSubtitle = extractNamedMeta(text, "adventures-case-subtitle");
+
+    if (explicitTitle || explicitSubtitle) {
+      const title = cleanText(explicitTitle || ("Case " + caseNumber)) || ("Case " + caseNumber);
+      const subtitle = cleanText(explicitSubtitle || def.shortPrompt) || def.shortPrompt;
+      return {
+        displayTitle: title,
+        subtitle: subtitle,
+        fullCaseLabel: title + " - " + subtitle
+      };
+    }
+
     const storyMatch = text.match(/<tw-storydata[^>]*\bname="([^"]+)"/i);
     const noscriptMatch = text.match(/<tw-noscript>([\s\S]*?)<\/tw-noscript>/i);
     const rawValue = storyMatch ? storyMatch[1] : noscriptMatch ? noscriptMatch[1] : "";
@@ -290,65 +344,112 @@
     };
   }
 
-  async function hydrateCaseInfo(def, href, caseNumber) {
-    const text = await fetchText(href);
-    const meta = extractCaseMeta(text, caseNumber, def);
-    return {
-      n: caseNumber,
-      href: href,
-      displayTitle: meta.displayTitle,
-      subtitle: meta.subtitle,
-      fullCaseLabel: meta.fullCaseLabel
-    };
+  async function hydrateCaseInfo(def, caseNumber) {
+    const candidates = buildCandidateHrefs(def, caseNumber);
+
+    for (const href of candidates) {
+      const text = await fetchText(href);
+      if (!text) {
+        continue;
+      }
+
+      const meta = extractCaseMeta(text, caseNumber, def);
+      return {
+        n: caseNumber,
+        href: href,
+        displayTitle: meta.displayTitle,
+        subtitle: meta.subtitle,
+        fullCaseLabel: meta.fullCaseLabel
+      };
+    }
+
+    return null;
   }
 
   async function scanSeries(def) {
     const found = [];
     let consecutiveMisses = 0;
+    const batchSize = 8;
 
-    for (let n = 1; n <= def.maxN; n += 1) {
-      const href = def.prefix + n + ".html";
-      const live = await exists(href);
-
-      if (live) {
-        found.push({ n: n, href: href });
-        consecutiveMisses = 0;
-      } else {
-        consecutiveMisses += 1;
+    scanLoop:
+    for (let start = 1; start <= def.maxN; start += batchSize) {
+      const batchNumbers = [];
+      for (let n = start; n < start + batchSize && n <= def.maxN; n += 1) {
+        batchNumbers.push(n);
       }
 
-      if (!found.length && n >= def.emptyProbeMax) {
-        break;
-      }
+      const batch = await Promise.all(batchNumbers.map(async function (caseNumber) {
+        return {
+          n: caseNumber,
+          caseInfo: await hydrateCaseInfo(def, caseNumber)
+        };
+      }));
 
-      if (found.length && consecutiveMisses >= def.stopAfterConsecutiveMisses) {
-        break;
+      for (const entry of batch) {
+        if (entry.caseInfo) {
+          found.push(entry.caseInfo);
+          consecutiveMisses = 0;
+        } else {
+          consecutiveMisses += 1;
+        }
+
+        if (!found.length && entry.n >= def.emptyProbeMax) {
+          break scanLoop;
+        }
+
+        if (found.length && consecutiveMisses >= def.stopAfterConsecutiveMisses) {
+          break scanLoop;
+        }
       }
     }
-
-    if (!found.length) {
-      return {
-        def: def,
-        cases: [],
-        liveCount: 0
-      };
-    }
-
-    const hydrated = await Promise.all(found.map(function (entry) {
-      return hydrateCaseInfo(def, entry.href, entry.n);
-    }));
 
     return {
       def: def,
-      cases: hydrated.sort(function (a, b) {
+      cases: found.sort(function (a, b) {
         return a.n - b.n;
       }),
-      liveCount: hydrated.length
+      liveCount: found.length
     };
   }
 
-  function renderCounts() {
-    els.specialtyMeta.textContent = SERIES.length + " archives";
+  async function ensureSeriesLoaded(seriesId) {
+    const record = state.records.get(seriesId);
+    if (!record) {
+      return null;
+    }
+
+    if (record.status === "ready") {
+      return record;
+    }
+
+    if (record.loadingPromise) {
+      return record.loadingPromise;
+    }
+
+    record.status = "loading";
+    record.loadingPromise = scanSeries(record.def)
+      .then(function (loadedRecord) {
+        record.cases = loadedRecord.cases;
+        record.liveCount = loadedRecord.liveCount;
+        record.status = "ready";
+        record.loadingPromise = null;
+        return record;
+      })
+      .catch(function (_error) {
+        record.cases = [];
+        record.liveCount = 0;
+        record.status = "error";
+        record.loadingPromise = null;
+        return record;
+      });
+
+    return record.loadingPromise;
+  }
+
+  function updateCasePanelNotice(title, copy) {
+    els.emptyShelfTitle.textContent = title;
+    els.emptyShelfCopy.textContent = copy;
+    els.emptyShelf.classList.remove("isHidden");
   }
 
   function renderSpecialtyRail() {
@@ -356,14 +457,11 @@
     state.specialtyButtons.clear();
 
     SERIES.forEach(function (def) {
-      const record = state.records.get(def.id);
       const button = document.createElement("button");
       button.type = "button";
       button.className = "specialtyButton";
       setSeriesColors(button, def);
-      button.innerHTML =
-        '<span class="specialtyButtonLabel">' + def.label + "</span>" +
-        '<span class="specialtyButtonMeta">' + (record.cases.length ? pluralizeCases(record.cases.length) : "Archive preparing") + "</span>";
+      button.innerHTML = '<span class="specialtyButtonLabel">' + def.label + "</span>";
       button.addEventListener("click", function () {
         selectSeries(def.id, false);
       });
@@ -380,9 +478,29 @@
 
   function renderCaseList(record) {
     els.caseList.innerHTML = "";
-    els.emptyShelf.classList.toggle("isHidden", record.cases.length > 0);
+    els.emptyShelf.classList.add("isHidden");
+
+    if (record.status === "loading") {
+      updateCasePanelNotice(
+        "Loading cases",
+        "Checking this specialty archive for published cases."
+      );
+      return;
+    }
+
+    if (record.status === "error") {
+      updateCasePanelNotice(
+        "Could not load cases",
+        "Try this specialty again. If you recently moved files, make sure the case HTML is reachable from this workspace."
+      );
+      return;
+    }
 
     if (!record.cases.length) {
+      updateCasePanelNotice(
+        "Archive in preparation",
+        "This specialty is already part of the workspace and is ready for future standalone cases."
+      );
       return;
     }
 
@@ -398,7 +516,6 @@
         '<span class="caseButtonNumber">' + String(caseInfo.n).padStart(2, "0") + "</span>" +
         '<span class="caseButtonBody">' +
           '<strong class="caseButtonTitle">' + caseInfo.displayTitle + "</strong>" +
-          '<span class="caseButtonSubtitle">' + caseInfo.subtitle + "</span>" +
         "</span>";
       button.addEventListener("click", function () {
         selectCase(record.def.id, caseInfo.n, false);
@@ -413,18 +530,18 @@
     }
 
     if (!state.selectedCaseKey) {
-      return record.cases[0];
+      return null;
     }
 
     const parts = state.selectedCaseKey.split(":");
     if (parts[0] !== record.def.id) {
-      return record.cases[0];
+      return null;
     }
 
     const caseNumber = parseInt(parts[1], 10);
     return record.cases.find(function (entry) {
       return entry.n === caseNumber;
-    }) || record.cases[0];
+    }) || null;
   }
 
   function closeDrawer() {
@@ -456,8 +573,8 @@
     const collapsedVisible = mobile ? !drawerOpen : collapsed;
 
     els.sidebarToggleButton.textContent = mobile
-      ? (drawerOpen ? "Hide selector" : "Browse cases")
-      : (collapsed ? "Show selector" : "Hide selector");
+      ? (drawerOpen ? "Hide Sidebar" : "Browse cases")
+      : (collapsed ? "Show Sidebar" : "Hide Sidebar");
     els.sidebarToggleButton.setAttribute("aria-expanded", expanded ? "true" : "false");
     els.collapsedSidebarToggleButton.textContent = collapsedLabel;
     els.collapsedSidebarToggleButton.setAttribute("aria-expanded", expanded ? "true" : "false");
@@ -470,8 +587,6 @@
     setActiveSpecialtyButton(def.id);
     renderCaseList(record);
 
-    els.selectedSeriesTitle.textContent = def.label;
-    els.selectedSeriesMeta.textContent = record.cases.length ? pluralizeCases(record.cases.length) : "No published cases yet";
     els.collapsedSeriesLabel.textContent = def.shortCode;
     els.collapsedCaseNumber.textContent = caseInfo ? String(caseInfo.n).padStart(2, "0") : "--";
     document.title = caseInfo
@@ -481,13 +596,69 @@
     els.restartCaseButton.disabled = !caseInfo;
   }
 
-  function showEmptyViewer(record) {
+  function resetViewerSurface() {
     els.viewerEmpty.classList.remove("isHidden");
     els.caseFrame.classList.add("isHidden");
     els.caseFrame.src = "about:blank";
     state.currentFrameSrc = "";
-    els.viewerEmptyTitle.textContent = record.def.archiveTitle + " is preparing";
-    els.viewerEmptyCopy.textContent = "This archive is already part of the medicine workspace and will load here as soon as its standalone cases are published.";
+  }
+
+  function showViewerPlaceholder(eyebrow, title, copy) {
+    resetViewerSurface();
+    els.viewerWelcome.classList.add("isHidden");
+    els.viewerMessage.classList.remove("isHidden");
+    els.viewerEmptyEyebrow.textContent = eyebrow;
+    els.viewerEmptyTitle.textContent = title;
+    els.viewerEmptyCopy.textContent = copy;
+  }
+
+  function showWelcomeViewer(record) {
+    const activeRecord = record || null;
+    document.title = activeRecord
+      ? "Adventures in Medicine - " + activeRecord.def.label
+      : "Adventures in Medicine";
+    setActiveSpecialtyButton(activeRecord ? activeRecord.def.id : null);
+    els.collapsedSeriesLabel.textContent = activeRecord ? activeRecord.def.shortCode : "AM";
+    els.collapsedCaseNumber.textContent = "--";
+    if (!activeRecord) {
+      els.caseList.innerHTML = "";
+      els.emptyShelf.classList.add("isHidden");
+    }
+    els.restartCaseButton.disabled = true;
+    resetViewerSurface();
+    els.viewerWelcome.classList.remove("isHidden");
+    els.viewerMessage.classList.add("isHidden");
+    els.viewerWelcomeStatus.textContent = activeRecord
+      ? activeRecord.def.label + " is open in the sidebar. Select any published case there to begin the simulator."
+      : "Start on the left by choosing a specialty, then select any published case to launch the simulator.";
+  }
+
+  function showSeriesViewer(record) {
+    showWelcomeViewer(record);
+  }
+
+  function showSeriesLoading(record) {
+    showViewerPlaceholder(
+      record.def.label,
+      "Loading " + record.def.label + " cases",
+      "Checking this specialty directory for published cases and preparing the case list."
+    );
+  }
+
+  function showEmptyViewer(record) {
+    showViewerPlaceholder(
+      record.def.label,
+      record.def.archiveTitle + " is preparing",
+      "This archive is already part of the medicine workspace and will load here as soon as its standalone cases are published."
+    );
+  }
+
+  function showSeriesError(record) {
+    showViewerPlaceholder(
+      record.def.label,
+      "Could not load " + record.def.label,
+      "The workspace could not finish scanning this specialty. If you recently moved files, check the case paths and try again."
+    );
   }
 
   function loadCase(caseInfo, forceReload) {
@@ -511,7 +682,26 @@
     els.caseFrame.src = caseInfo.href;
   }
 
-  function selectSeries(seriesId, preserveCase) {
+  function syncSeriesSelection(record) {
+    const selectedCase = getSelectedCase(record);
+    applySelectedContext(record, selectedCase);
+
+    if (record.status === "loading") {
+      showSeriesLoading(record);
+    } else if (record.status === "error") {
+      showSeriesError(record);
+    } else if (selectedCase) {
+      loadCase(selectedCase, false);
+    } else if (record.cases.length) {
+      showSeriesViewer(record);
+    } else {
+      showEmptyViewer(record);
+    }
+
+    updateHash(record.def.id, selectedCase ? selectedCase.n : null);
+  }
+
+  async function selectSeries(seriesId, preserveCase) {
     const record = state.records.get(seriesId);
     if (!record) {
       return;
@@ -519,41 +709,55 @@
 
     state.selectedSeriesId = seriesId;
 
-    if (!preserveCase || !getSelectedCase(record)) {
-      state.selectedCaseKey = record.cases.length ? key(seriesId, record.cases[0].n) : null;
+    if (!preserveCase || !state.selectedCaseKey || state.selectedCaseKey.split(":")[0] !== seriesId) {
+      state.selectedCaseKey = null;
     }
 
-    const selectedCase = getSelectedCase(record);
-    applySelectedContext(record, selectedCase);
     openCaseColumn();
+    const loadingPromise = record.status === "ready" ? null : ensureSeriesLoaded(seriesId);
+    syncSeriesSelection(record);
 
-    if (selectedCase) {
-      loadCase(selectedCase, false);
-    } else {
-      showEmptyViewer(record);
+    if (loadingPromise) {
+      await loadingPromise;
+      if (state.selectedSeriesId !== seriesId) {
+        return;
+      }
+      syncSeriesSelection(record);
     }
-
-    updateHash(seriesId, selectedCase ? selectedCase.n : null);
   }
 
-  function selectCase(seriesId, caseNumber, forceReload) {
+  async function selectCase(seriesId, caseNumber, forceReload) {
     const record = state.records.get(seriesId);
     if (!record) {
-      return;
-    }
-
-    const caseInfo = record.cases.find(function (entry) {
-      return entry.n === caseNumber;
-    });
-
-    if (!caseInfo) {
-      selectSeries(seriesId, false);
       return;
     }
 
     state.selectedSeriesId = seriesId;
     state.selectedCaseKey = key(seriesId, caseNumber);
-    applySelectedContext(record, caseInfo);
+    openCaseColumn();
+
+    const loadingPromise = record.status === "ready" ? null : ensureSeriesLoaded(seriesId);
+    if (loadingPromise) {
+      applySelectedContext(record, null);
+      showSeriesLoading(record);
+      updateHash(seriesId, caseNumber);
+      await loadingPromise;
+      if (state.selectedSeriesId !== seriesId || state.selectedCaseKey !== key(seriesId, caseNumber)) {
+        return;
+      }
+    }
+
+    const currentRecord = state.records.get(seriesId);
+    const caseInfo = currentRecord.cases.find(function (entry) {
+      return entry.n === caseNumber;
+    });
+
+    if (!caseInfo) {
+      await selectSeries(seriesId, false);
+      return;
+    }
+
+    applySelectedContext(currentRecord, caseInfo);
     loadCase(caseInfo, forceReload);
     updateHash(seriesId, caseNumber);
 
@@ -576,52 +780,38 @@
     }
   }
 
-  function restoreFromHash() {
+  async function restoreFromHash() {
     const requested = parseHash();
 
     if (!requested) {
-      if (state.firstLiveCase) {
-        selectCase(state.firstLiveCase.def.id, state.firstLiveCase.caseInfo.n, false);
-        return;
-      }
-
-      selectSeries(SERIES[0].id, false);
+      state.selectedSeriesId = null;
+      state.selectedCaseKey = null;
+      closeCaseColumn();
+      showWelcomeViewer();
       return;
     }
 
     const record = state.records.get(requested.seriesId);
     if (!record) {
+      state.selectedSeriesId = null;
+      state.selectedCaseKey = null;
+      closeCaseColumn();
+      showWelcomeViewer();
       return;
     }
 
     if (requested.caseNumber) {
-      const matchingCase = record.cases.find(function (entry) {
-        return entry.n === requested.caseNumber;
-      });
-      if (matchingCase) {
-        selectCase(requested.seriesId, requested.caseNumber, false);
-        return;
-      }
+      await selectCase(requested.seriesId, requested.caseNumber, false);
+      return;
     }
 
-    selectSeries(requested.seriesId, false);
+    await selectSeries(requested.seriesId, false);
   }
 
-  async function initRecords() {
-    for (const def of SERIES) {
-      const record = await scanSeries(def);
-      state.records.set(def.id, record);
-      if (record.liveCount > 0) {
-        state.liveSeriesCount += 1;
-        state.liveCaseCount += record.liveCount;
-        if (!state.firstLiveCase) {
-          state.firstLiveCase = {
-            def: def,
-            caseInfo: record.cases[0]
-          };
-        }
-      }
-    }
+  function initRecords() {
+    SERIES.forEach(function (def) {
+      state.records.set(def.id, createRecord(def));
+    });
   }
 
   function handleSidebarToggle() {
@@ -647,10 +837,9 @@
   }
 
   async function init() {
-    await initRecords();
-    renderCounts();
+    initRecords();
     renderSpecialtyRail();
-    restoreFromHash();
+    await restoreFromHash();
     updateSidebarToggleButton();
   }
 
@@ -678,6 +867,10 @@
     if (document.body.classList.contains("caseColumnOpen")) {
       closeCaseColumn();
     }
+  });
+
+  window.addEventListener("hashchange", function () {
+    restoreFromHash();
   });
 
   if (document.readyState === "loading") {
