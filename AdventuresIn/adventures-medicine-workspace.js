@@ -35,7 +35,7 @@
       tags: ["Diagnostic reasoning", "Management choices", "Communication"],
       prefix: "AdventuresInInternalMedicine-Case",
       candidatePrefixes: [
-        "cases/internal-medicine/case"
+        "cases/internalmedicine/case"
       ],
       shortPrompt: "Adult medicine cases are preparing for the archive.",
       seriesPrompt: "This archive is staged and waiting for its first published cases.",
@@ -178,7 +178,6 @@
     collapsedCaseNumber: document.getElementById("collapsedCaseNumber"),
     viewerEmpty: document.getElementById("viewerEmpty"),
     viewerWelcome: document.getElementById("viewerWelcome"),
-    viewerWelcomeStatus: document.getElementById("viewerWelcomeStatus"),
     viewerMessage: document.getElementById("viewerMessage"),
     viewerEmptyEyebrow: document.getElementById("viewerEmptyEyebrow"),
     viewerEmptyTitle: document.getElementById("viewerEmptyTitle"),
@@ -705,9 +704,7 @@
     resetViewerSurface();
     els.viewerWelcome.classList.remove("isHidden");
     els.viewerMessage.classList.add("isHidden");
-    els.viewerWelcomeStatus.textContent = activeRecord
-      ? activeRecord.def.label + " is open in the case menu. Select any published case there to begin the simulator."
-      : "Open the case menu to choose a specialty, then select any published case to launch the simulator.";
+
   }
 
   function showSeriesViewer(record) {

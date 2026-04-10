@@ -38,8 +38,6 @@
 .tutorial-choice.neutral{background:#f0f2f4;border-color:#97a6b3;color:#465562}
 .topbar-mini-btn{width:2.2rem;min-width:2.2rem;padding:0;display:inline-flex;align-items:center;justify-content:center;overflow:hidden}
 .topbar-mini-btn img{display:block;width:1.35rem;height:1.35rem;object-fit:contain}
-.topbar-speed{min-width:5.55rem;width:5.55rem;padding-right:1.65rem;font-variant-numeric:tabular-nums}
-.topbar-tool-btn.active{background:#fff0f0;border-color:#d38181;color:#9a1d1d;box-shadow:0 0 0 1px rgba(154,29,29,.12) inset}
 .quiz-step{margin:.6rem 0;border-top:1px dashed rgba(0,0,0,.15);padding-top:.5rem}
 .quiz-pills{display:flex;flex-wrap:wrap;gap:.4rem}
 .quiz-pill{padding:.28rem .6rem;border-radius:999px;border:1px solid rgba(0,0,0,.2);background:#fff;cursor:pointer;font-size:.9rem}
@@ -103,8 +101,6 @@ button.options-strong:active{
     .pill{display:inline-flex;align-items:center;gap:.35rem;min-height:2.2rem;box-sizing:border-box;background:#fff;border:1px solid var(--panel-border);border-radius:999px;padding:.2rem .6rem;font-size:var(--ui-label-size);line-height:1;color:#245f24}
     #wrap{position:relative;flex:1;min-height:0;overflow:hidden}
     #c{width:100%;height:100%;display:block}
-    #wrap.pen-mode, #c.pen-mode{cursor:crosshair}
-    #c.pen-mode{touch-action:none}
     #err{position:absolute;left:8px;bottom:8px;background:#ffefef;border:1px solid #e6b0b0;border-radius:8px;padding:.35rem .55rem;font-size:var(--ui-label-size);display:none;color:#7b1b1b}
     .popover{position:fixed;top:56px;right:12px;background:#fff;border:1px solid var(--panel-border);border-radius:8px;padding:.5rem .75rem;box-shadow:0 8px 24px rgba(0,0,0,.08);display:none;z-index:3}
     .popover.open{display:block}
@@ -144,8 +140,8 @@ button.options-strong:active{
 #topbar{ align-items:center; gap:var(--topbar-gap); flex-wrap:nowrap; overflow-x:auto; overflow-y:hidden; }
 #topbar > .ctrl,
 #topbar > #rhythmFieldset,
-#topbar > .topbar-separator{ align-self:center; }
-#topbar > .topbar-actions{ align-self:flex-end; }
+#topbar > .topbar-separator,
+#topbar > .topbar-actions{ align-self:center; }
 #topbar > .ctrl{ min-width:0; width:max-content; flex:0 0 auto; }
 #topbar > .ctrl select{ width:auto; }
 #rhythmFieldset{ flex:0 1 auto; min-width:0; margin:0; width:auto; border:0; padding:0; display:flex; align-items:center; }
@@ -153,8 +149,8 @@ button.options-strong:active{
 #rhythmFieldset .ctrl{ min-width:0; width:max-content; flex:0 0 auto; }
 #rhythmFieldset .ctrl select{ width:auto; }
 #rhythmFieldset .pill{ margin:0; white-space:nowrap; }
-.topbar-actions{ margin-left:auto; display:flex; gap:.4rem; align-items:flex-end; flex-wrap:wrap; justify-content:flex-end; }
-#play, #penToolBtn, #artifactsBtn, #pathologyBtn, #quizBtnTop, #tutorialBtnTop{ white-space:nowrap; flex:0 0 auto; }
+.topbar-actions{ margin-left:auto; display:flex; gap:.4rem; align-items:center; flex-wrap:wrap; justify-content:flex-end; }
+#play, #artifactsBtn, #pathologyBtn, #quizBtnTop, #tutorialBtnTop{ white-space:nowrap; flex:0 0 auto; }
 #topbar select, #topbar label, #topbar button{ font-size:var(--ui-label-size); }
 #topbar button{ padding:.45rem .7rem; line-height:1.1; min-height:2.2rem; font:inherit; }
 #rhythmFieldset .pill{ align-self:flex-end; }
@@ -382,16 +378,6 @@ button.options-strong:active{
     </div>
     <div class="topbar-actions">
       <button id="play">Pause</button>
-      <select id="playSpeedSel" class="topbar-speed" aria-label="Playback speed">
-        <option value="0.25">0.25x</option>
-        <option value="0.5">0.5x</option>
-        <option value="1" selected>1x</option>
-        <option value="1.5">1.5x</option>
-        <option value="2">2x</option>
-        <option value="4">4x</option>
-        <option value="8">8x</option>
-      </select>
-      <button id="penToolBtn" type="button" class="topbar-tool-btn" aria-pressed="false">🖊️</button>
       <button id="pathologyBtn" class="options-strong">PATHOLOGY</button>
       <button id="artifactsBtn" class="options-strong">Artifacts</button>
       <button id="quizBtnTop" class="options-strong">Quiz</button>
@@ -407,7 +393,7 @@ button.options-strong:active{
       <fieldset>
         <legend>Playback speed</legend>
         <div style="display:flex;align-items:center;gap:.6rem;margin-top:.25rem">
-          <input id="speedSlider" type="range" min="0.25" max="8" step="0.25" value="1" style="width:260px">
+          <input id="speedSlider" type="range" min="0.25" max="5" step="0.25" value="1" style="width:260px">
           <output id="speedValue" for="speedSlider">1.00x</output>
         </div>
 </fieldset>
@@ -2626,7 +2612,6 @@ const state = {
   seconds: 10,
   uvPerDiv: 70,
   running: true,
-  annotations: {enabled:false, drawing:false, pointerId:null, strokes:[]},
   realism: 0.75,
   speed: 1,
   opts: {blink:false, rovingEyes:false, reading:false, ventilator:false, photicStim:false, chew:false, sweat:false, breach:false, pop:false, emg:false},
@@ -2665,21 +2650,9 @@ const state = {
 const RHYTHM_MODES = new Set(['delta','theta','alpha','beta']);
 const SLEEP_STATE_MODES = new Set(['awake','drowsy','n1','n2','sws','rem']);
 const SENSITIVITY_VALUES = [3,5,7,10,15];
-const PLAYBACK_SPEED_VALUES = [0.25,0.5,1,1.5,2,4,8];
-const MIN_PLAYBACK_SPEED = 0.25;
-const MAX_PLAYBACK_SPEED = 8;
 const MIN_SEIZURE_DURATION = 10;
 const MAX_SEIZURE_DURATION = 99;
 const DEFAULT_SEIZURE_DURATIONS = { generalized:20, absence:10, focal:10, fbtc:20 };
-function clampPlaybackSpeed(value){
-  const v = Number(value);
-  if (!Number.isFinite(v)) return 1;
-  return Math.max(MIN_PLAYBACK_SPEED, Math.min(MAX_PLAYBACK_SPEED, v));
-}
-function formatPlaybackSpeed(value){
-  const v = clampPlaybackSpeed(value);
-  return Number.isInteger(v) ? `${v}x` : `${v.toFixed(2).replace(/0+$/,'').replace(/\.$/,'')}x`;
-}
 function reconcileModeControls(){
   if (RHYTHM_MODES.has(state.mode)) {
     state.rhythmOverride = state.mode;
@@ -2860,138 +2833,6 @@ function getSampleOffsets(width, secs){
   return renderCache.sampleOffsets;
 }
 
-function ensureAnnotationDefaults(){
-  if (!state.annotations || typeof state.annotations !== 'object'){
-    state.annotations = {enabled:false, drawing:false, pointerId:null, strokes:[]};
-  }
-  if (!Array.isArray(state.annotations.strokes)) state.annotations.strokes = [];
-  if (typeof state.annotations.enabled !== 'boolean') state.annotations.enabled = false;
-  if (typeof state.annotations.drawing !== 'boolean') state.annotations.drawing = false;
-  if (!('pointerId' in state.annotations)) state.annotations.pointerId = null;
-}
-function clearAnnotationStrokes(){
-  ensureAnnotationDefaults();
-  state.annotations.strokes = [];
-  state.annotations.drawing = false;
-  state.annotations.pointerId = null;
-}
-function updatePenToolUI(){
-  ensureAnnotationDefaults();
-  const btn = document.getElementById('penToolBtn');
-  const enabled = !!state.annotations.enabled;
-  if (btn){
-    btn.classList.toggle('active', enabled);
-    btn.setAttribute('aria-pressed', String(enabled));
-    btn.textContent = '🖊️';
-    btn.title = enabled ? 'Disable pen annotations' : 'Enable pen annotations';
-  }
-  const wrap = document.getElementById('wrap');
-  wrap?.classList.toggle('pen-mode', enabled);
-  canvas.classList.toggle('pen-mode', enabled);
-}
-function setPenToolEnabled(enabled, options={}){
-  ensureAnnotationDefaults();
-  const next = !!enabled;
-  state.annotations.enabled = next;
-  state.annotations.drawing = false;
-  state.annotations.pointerId = null;
-  if (options.clear) clearAnnotationStrokes();
-  updatePenToolUI();
-  if (next){
-    setPlaybackRunning(false);
-  } else if (options.resume !== false){
-    setPlaybackRunning(true);
-  }
-}
-function togglePenTool(){
-  ensureAnnotationDefaults();
-  setPenToolEnabled(!state.annotations.enabled);
-}
-function annotationPointFromEvent(evt){
-  const rect = canvas.getBoundingClientRect();
-  if (!rect.width || !rect.height) return null;
-  const x = Math.max(0, Math.min(rect.width, evt.clientX - rect.left));
-  const y = Math.max(0, Math.min(rect.height, evt.clientY - rect.top));
-  const pxPerSec = rect.width / Math.max(.001, state.seconds || 10);
-  const sample = state.idx - ((rect.width - x) / pxPerSec) * Fs;
-  return {sample, yNorm:y / rect.height};
-}
-function appendAnnotationPoint(point, startStroke=false){
-  ensureAnnotationDefaults();
-  if (!point) return;
-  if (startStroke || !state.annotations.strokes.length){
-    state.annotations.strokes.push({
-      points:[point],
-      minSample:point.sample,
-      maxSample:point.sample
-    });
-    return;
-  }
-  const stroke = state.annotations.strokes[state.annotations.strokes.length - 1];
-  if (!stroke) return;
-  const last = stroke.points[stroke.points.length - 1];
-  if (last && Math.abs(last.sample - point.sample) < .75 && Math.abs(last.yNorm - point.yNorm) < .003){
-    return;
-  }
-  stroke.points.push(point);
-  stroke.minSample = Math.min(stroke.minSample, point.sample);
-  stroke.maxSample = Math.max(stroke.maxSample, point.sample);
-}
-function pruneAnnotationStrokes(){
-  ensureAnnotationDefaults();
-  const oldestVisibleSample = state.idx - (Math.max(1, state.seconds || 10) * Fs) - 8;
-  state.annotations.strokes = state.annotations.strokes.filter((stroke)=>
-    stroke && stroke.points && stroke.points.length && stroke.maxSample >= oldestVisibleSample
-  );
-}
-function renderAnnotations(){
-  ensureAnnotationDefaults();
-  pruneAnnotationStrokes();
-  if (!state.annotations.strokes.length) return;
-  const w = canvas.clientWidth;
-  const h = canvas.clientHeight;
-  if (!w || !h) return;
-  const pxPerSec = w / Math.max(.001, state.seconds || 10);
-  ctx.save();
-  ctx.lineCap = 'round';
-  ctx.lineJoin = 'round';
-  for (const stroke of state.annotations.strokes){
-    let started = false;
-    let visibleCount = 0;
-    let dotX = 0;
-    let dotY = 0;
-    ctx.beginPath();
-    for (const point of stroke.points){
-      const x = w - ((state.idx - point.sample) / Fs) * pxPerSec;
-      if (x < -18 || x > w + 18) continue;
-      const y = Math.max(0, Math.min(h, point.yNorm * h));
-      if (!started){
-        ctx.moveTo(x, y);
-        dotX = x;
-        dotY = y;
-        started = true;
-      } else {
-        ctx.lineTo(x, y);
-      }
-      visibleCount++;
-    }
-    if (!visibleCount) continue;
-    if (visibleCount === 1){
-      ctx.beginPath();
-      ctx.fillStyle = '#ff7a00';
-      ctx.arc(dotX, dotY, 2.15, 0, Math.PI*2);
-      ctx.fill();
-      continue;
-    }
-    ctx.strokeStyle = 'rgba(255,255,255,.88)';
-    ctx.lineWidth = 4.2;
-    ctx.stroke();
-    ctx.strokeStyle = '#ff7a00';
-    ctx.lineWidth = 2.4;
-    ctx.stroke();
-  }
-  ctx.restore();
-}
 
 function drawGrid(rows, secs){
   const w = canvas.clientWidth, h = canvas.clientHeight;
@@ -3626,9 +3467,7 @@ function step(){
       ctx.stroke();
     }
     renderTutorialHighlights(pairs, yMids, rowH, w);
-    renderLabels(pairs, yMids, strokeColors);
-    renderAnnotations();
-    errBox.style.display='none';
+    renderLabels(pairs, yMids, strokeColors); errBox.style.display='none';
   }catch(e){ console.error(e); errBox.textContent='Render error: '+e.message; errBox.style.display='block'; }
   requestAnimationFrame(step);
 }
@@ -3840,36 +3679,11 @@ function syncPlaybackButtons(){
   const tutorialPlayBtn = $('tutorialPlay');
   if (tutorialPlayBtn) tutorialPlayBtn.textContent = state.running ? 'Pause Trace' : 'Resume Trace';
 }
-function syncPlaybackSpeedUI(){
-  const speedSel = $('playSpeedSel');
-  const speedSlider = $('speedSlider');
-  const speedValue = $('speedValue');
-  const speed = clampPlaybackSpeed(state.speed);
-  state.speed = speed;
-  const speedString = String(speed);
-  if (speedSel){
-    const hasOption = Array.from(speedSel.options).some((opt)=> opt.value === speedString);
-    speedSel.value = hasOption ? speedString : '1';
-  }
-  if (speedSlider) speedSlider.value = speedString;
-  if (speedValue) speedValue.textContent = formatPlaybackSpeed(speed);
-}
-function applyPlaybackSpeed(value){
-  state.speed = clampPlaybackSpeed(value);
-  syncPlaybackSpeedUI();
-}
 function setPlaybackRunning(running){
   state.running = !!running;
   syncPlaybackButtons();
 }
 function togglePlayback(){
-  ensureAnnotationDefaults();
-  if (state.annotations.enabled){
-    const nextRunning = !state.running;
-    setPenToolEnabled(false, {resume:false});
-    setPlaybackRunning(nextRunning);
-    return;
-  }
   setPlaybackRunning(!state.running);
 }
 function uvPerDivFromSensitivity(uVperMM){
@@ -3965,7 +3779,7 @@ function createDisplaySeedPayload(){
       eyesOpen: !!state.eyesOpen,
       running: !!state.running,
       realism: Math.max(0, Math.min(1, Number(state.realism) || 0.75)),
-      speed: clampPlaybackSpeed(state.speed)
+      speed: Math.max(0.25, Math.min(5, Number(state.speed) || 1))
     },
     opts:{...(state.opts || {})},
     artifactConfig:{...(state.artifactConfig || {})},
@@ -4017,8 +3831,10 @@ function applyDisplaySeedPayload(payload){
   if (realismSlider) realismSlider.value = String(state.realism);
   if (realismValue) realismValue.textContent = Math.round(state.realism * 100) + '%';
 
-  state.speed = clampPlaybackSpeed(controls.speed);
-  syncPlaybackSpeedUI();
+  state.speed = Math.max(0.25, Math.min(5, Number(controls.speed)));
+  if (!Number.isFinite(state.speed)) state.speed = 1;
+  if (speedSlider) speedSlider.value = String(state.speed);
+  if (speedValue) speedValue.textContent = state.speed.toFixed(2) + 'x';
 
   setPlaybackRunning(controls.running !== false);
   state.opts = {
@@ -4066,7 +3882,6 @@ function applyDisplaySeedPayload(payload){
 function regen(){
   state.seconds=secondsFromUI(); const sensEl=$('sensitivity'); if(sensEl) applySensitivityValue(sensEl.value);
   ensureArtifactDefaults();
-  clearAnnotationStrokes();
   state.artifactConfig.emgLevel = readEmgLevelFromUI();
   state.opts={ blink:$('blink')?.checked||false, rovingEyes:$('rovingEyes')?.checked||false, reading:$('reading')?.checked||false, ventilator:$('ventilator')?.checked||false, photicStim:$('photicStim')?.checked||false, chew:$('chew')?.checked||false, sweat:$('sweat')?.checked||false, breach:$('breach')?.checked||false, pop:$('pop')?.checked||false, emg:(state.artifactConfig.emgLevel > 0) };
   state.artifactConfig.photicHz = PHOTIC_STIM_RATE_SET.has(Number($('photicHzSel')?.value)) ? Number($('photicHzSel').value) : (state.artifactConfig.photicHz || 15);
@@ -4124,56 +3939,14 @@ function syncControlsFromState(){
   if ($('breach')) $('breach').checked = !!state.opts.breach;
   if ($('pop')) $('pop').checked = !!state.opts.pop;
   syncEmgSliderUI();
-  syncPlaybackSpeedUI();
   if ($('gpd')) $('gpd').checked = !!state.pathology.gpd;
   if ($('lpd')) $('lpd').checked = !!state.pathology.lpd;
   if ($('encephalopathy')) $('encephalopathy').checked = !!state.pathology.encephalopathy;
   if ($('burstSuppression')) $('burstSuppression').checked = !!state.pathology.burstSuppression;
   if ($('interictal')) $('interictal').checked = !!state.pathology.interictal;
-  updatePenToolUI();
   if (typeof updateSeizureActionButtons === 'function') updateSeizureActionButtons();
 }
 if($('play')) $('play').addEventListener('click', togglePlayback);
-if($('penToolBtn')) $('penToolBtn').addEventListener('click', togglePenTool);
-canvas.addEventListener('contextmenu', (e)=>{
-  ensureAnnotationDefaults();
-  if (state.annotations.enabled) e.preventDefault();
-});
-canvas.addEventListener('pointerdown', (e)=>{
-  ensureAnnotationDefaults();
-  if (!state.annotations.enabled) return;
-  if (e.pointerType !== 'touch' && e.button !== 0) return;
-  const point = annotationPointFromEvent(e);
-  if (!point) return;
-  e.preventDefault();
-  state.annotations.drawing = true;
-  state.annotations.pointerId = e.pointerId;
-  appendAnnotationPoint(point, true);
-  if (typeof canvas.setPointerCapture === 'function'){
-    try{ canvas.setPointerCapture(e.pointerId); }catch(_err){}
-  }
-});
-canvas.addEventListener('pointermove', (e)=>{
-  ensureAnnotationDefaults();
-  if (!state.annotations.enabled || !state.annotations.drawing || state.annotations.pointerId !== e.pointerId) return;
-  const point = annotationPointFromEvent(e);
-  if (!point) return;
-  e.preventDefault();
-  appendAnnotationPoint(point, false);
-});
-function finishAnnotationStroke(e){
-  ensureAnnotationDefaults();
-  if (!state.annotations.drawing) return;
-  if (e && state.annotations.pointerId !== null && e.pointerId !== undefined && state.annotations.pointerId !== e.pointerId) return;
-  if (e && typeof canvas.releasePointerCapture === 'function'){
-    try{ canvas.releasePointerCapture(e.pointerId); }catch(_err){}
-  }
-  state.annotations.drawing = false;
-  state.annotations.pointerId = null;
-}
-canvas.addEventListener('pointerup', finishAnnotationStroke);
-canvas.addEventListener('pointercancel', finishAnnotationStroke);
-canvas.addEventListener('lostpointercapture', ()=> finishAnnotationStroke());
 if($('montageSel')) $('montageSel').addEventListener('change',()=>{ state.montage=$('montageSel').value; });
 if($('rhythmSel')) $('rhythmSel').addEventListener('change',()=>{
   applyRhythmOverride($('rhythmSel').value);
@@ -4297,22 +4070,18 @@ if (photicHzSel){
 const optBtn = $('optionsBtn');
 const optionsModal = document.getElementById('optionsModal');
 
-// Playback speed wiring
-const playSpeedSel = $('playSpeedSel');
+// Playback speed slider wiring
 const speedSlider = $('speedSlider');
-if (playSpeedSel){
-  playSpeedSel.addEventListener('change', ()=>{
-    const next = PLAYBACK_SPEED_VALUES.includes(Number(playSpeedSel.value)) ? Number(playSpeedSel.value) : 1;
-    applyPlaybackSpeed(next);
-  });
-}
-if (speedSlider) {
-  speedSlider.value = String(clampPlaybackSpeed(state.speed || 1));
+const speedValue = $('speedValue');
+if (speedSlider && speedValue) {
+  speedSlider.value = String(state.speed || 1);
+  speedValue.textContent = (Number(speedSlider.value)).toFixed(2) + 'x';
   speedSlider.addEventListener('input', () => {
-    applyPlaybackSpeed(speedSlider.value);
+    const v = Math.max(0.25, Math.min(5, Number(speedSlider.value)));
+    state.speed = v || 1;
+    speedValue.textContent = v.toFixed(2) + 'x';
   });
 }
-syncPlaybackSpeedUI();
 
 const optionsClose = document.getElementById('optionsClose');
 if (optBtn && optionsModal) {

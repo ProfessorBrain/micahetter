@@ -3,31 +3,33 @@
     {
       seriesId: 'psychiatry',
       label: 'Psychiatry',
-      regex: /(?:AdventuresInPsychiatry-Case|case)(\d+)\.html$/i
+      folder: '/cases/psychiatry/'
+    },
+    {
+      seriesId: 'internal-medicine',
+      label: 'Internal Medicine',
+      folder: '/cases/internalmedicine/'
     }
   ];
 
-  const EMBEDDED_FRAME = {
-    blackLeft: 130,
-    blackRight: 1918,
-    blackTopDefault: 220,
-    blackTopIos: 195,
-    blackTopIpad: 210
-  };
-
   function detectCase() {
     const href = String(window.location.pathname || window.location.href || '');
-    for (const rule of rules) {
-      const match = href.match(rule.regex);
-      if (match) {
-        return {
-          seriesId: rule.seriesId,
-          label: rule.label,
-          caseNumber: parseInt(match[1], 10)
-        };
-      }
+    const normalizedHref = href.replace(/\\/g, '/').toLowerCase();
+    const numberMatch = normalizedHref.match(/(?:adventuresin[a-z]+-case|case)(\d+)\.html$/i);
+
+    if (!numberMatch) {
+      return null;
     }
-    return null;
+
+    const matchedRule = rules.find(function (rule) {
+      return normalizedHref.indexOf(rule.folder) !== -1;
+    }) || rules[0];
+
+    return {
+      seriesId: matchedRule.seriesId,
+      label: matchedRule.label,
+      caseNumber: parseInt(numberMatch[1], 10)
+    };
   }
 
   function isEmbeddedWorkspace() {

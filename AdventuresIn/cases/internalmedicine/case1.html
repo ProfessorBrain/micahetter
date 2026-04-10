@@ -1,0 +1,774 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="adventures-case-title" content="The Stairs Feel Steeper" />
+  <meta name="adventures-case-subtitle" content="Primary care clinic" />
+  <title>Adventures in Medicine - Internal Medicine - Case 1</title>
+  <style>
+    :root {
+      --paper: #ffffff;
+      --ink: #f8f5ef;
+      --ink-soft: rgba(255, 255, 255, 0.8);
+      --black: #050505;
+      --red: #ff2d22;
+      --orange: #ff9d17;
+      --yellow: #ffd62c;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at top, rgba(255, 214, 44, 0.16), transparent 34%),
+        linear-gradient(180deg, #ffffff 0%, #fff9ef 55%, #fff4d9 100%);
+      color: var(--black);
+      font-family: "Source Sans 3", "Segoe UI", sans-serif;
+    }
+
+    body.has-medicine-shell .imApp {
+      padding-top: 8rem;
+    }
+
+    body.has-medicine-shell.medicineEmbedded .imApp {
+      padding-top: 1.5rem;
+    }
+
+    .imApp {
+      min-height: 100vh;
+      padding: 2rem 1rem 3rem;
+    }
+
+    .imStage {
+      max-width: 62rem;
+      margin: 0 auto;
+    }
+
+    .imBanner {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      padding: 0.7rem 1.5rem;
+      border-radius: 999px;
+      background: var(--red);
+      color: var(--paper);
+      font-family: "Adventures Benguiat", "Fraunces", Georgia, serif;
+      font-size: clamp(1rem, 1.6vw, 1.35rem);
+      letter-spacing: 0.05em;
+      text-align: center;
+      box-shadow: 0 18px 38px rgba(255, 45, 34, 0.2);
+    }
+
+    .imBannerWrap {
+      display: flex;
+      justify-content: center;
+    }
+
+    .imFrame {
+      position: relative;
+      border-radius: 2rem;
+      background: var(--black);
+      padding: 2rem 1.5rem 1.5rem;
+      border: 3px solid var(--orange);
+      box-shadow:
+        0 0 0 7px var(--yellow),
+        0 0 0 12px var(--orange),
+        0 26px 60px rgba(0, 0, 0, 0.22);
+      color: var(--ink);
+    }
+
+    .imFrame::before,
+    .imFrame::after {
+      content: "";
+      position: absolute;
+      inset: 10px;
+      border-radius: 1.45rem;
+      pointer-events: none;
+    }
+
+    .imFrame::before {
+      border: 1px solid rgba(255, 214, 44, 0.24);
+    }
+
+    .imFrame::after {
+      inset: auto 1.2rem 1.2rem;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 214, 44, 0.4), transparent);
+    }
+
+    .sceneEyebrow {
+      margin: 0;
+      color: var(--red);
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .sceneTitle {
+      margin: 0.45rem 0 0;
+      font-family: "Adventures Benguiat", "Fraunces", Georgia, serif;
+      font-size: clamp(2rem, 4vw, 3.1rem);
+      line-height: 0.95;
+      color: var(--paper);
+    }
+
+    .sceneStep {
+      margin: 0.65rem 0 0;
+      color: var(--yellow);
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .sceneMeta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      margin: 1.1rem 0 0;
+    }
+
+    .sceneMeta span {
+      border: 1px solid rgba(255, 157, 23, 0.34);
+      border-radius: 999px;
+      padding: 0.38rem 0.75rem;
+      color: var(--paper);
+      background: rgba(255, 255, 255, 0.04);
+      font-size: 0.94rem;
+    }
+
+    .sceneBody {
+      margin-top: 1.5rem;
+      font-size: clamp(1.02rem, 2.3vw, 1.22rem);
+      line-height: 1.72;
+    }
+
+    .sceneBody p {
+      margin: 0 0 1rem;
+    }
+
+    .sceneBody p:last-child {
+      margin-bottom: 0;
+    }
+
+    .sceneBullets {
+      margin: 1rem 0 0;
+      padding-left: 1.35rem;
+      color: var(--ink);
+      line-height: 1.65;
+    }
+
+    .sceneBullets.isHidden {
+      display: none;
+    }
+
+    .sceneBullets li + li {
+      margin-top: 0.65rem;
+    }
+
+    .sceneOptions {
+      display: grid;
+      gap: 0.8rem;
+      margin-top: 1.8rem;
+    }
+
+    .sceneOption {
+      width: 100%;
+      border: 1px solid rgba(255, 157, 23, 0.42);
+      border-radius: 1.15rem;
+      background:
+        linear-gradient(180deg, rgba(255, 214, 44, 0.12), rgba(255, 45, 34, 0.08) 40%, rgba(255, 255, 255, 0.02)),
+        rgba(0, 0, 0, 0.96);
+      color: var(--paper);
+      padding: 1rem 1.05rem;
+      font: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.45;
+      text-align: left;
+      cursor: pointer;
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+    }
+
+    .sceneOption:hover {
+      transform: translateY(-1px);
+      border-color: rgba(255, 214, 44, 0.74);
+      background:
+        linear-gradient(180deg, rgba(255, 214, 44, 0.18), rgba(255, 45, 34, 0.11) 40%, rgba(255, 255, 255, 0.03)),
+        rgba(0, 0, 0, 1);
+    }
+
+    .sceneOption:focus-visible,
+    .restartButton:focus-visible {
+      outline: 3px solid rgba(255, 214, 44, 0.45);
+      outline-offset: 3px;
+    }
+
+    .caseFooter {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 1.3rem;
+    }
+
+    .restartButton {
+      border: 1px solid rgba(255, 157, 23, 0.42);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--paper);
+      padding: 0.7rem 1rem;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .reflectionBox {
+      margin-top: 1.25rem;
+      padding: 1rem 1rem 0.3rem;
+      border-radius: 1.2rem;
+      border: 1px solid rgba(255, 214, 44, 0.24);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .reflectionBox h2 {
+      margin: 0 0 0.75rem;
+      color: var(--yellow);
+      font-family: "Adventures Benguiat", "Fraunces", Georgia, serif;
+      font-size: 1.6rem;
+      line-height: 1;
+    }
+
+    @media (max-width: 720px) {
+      .imApp {
+        padding: 1rem 0.8rem 2rem;
+      }
+
+      .imFrame {
+        border-radius: 1.4rem;
+        padding: 1.45rem 1rem 1rem;
+        box-shadow:
+          0 0 0 5px var(--yellow),
+          0 0 0 9px var(--orange),
+          0 16px 32px rgba(0, 0, 0, 0.18);
+      }
+
+      .imFrame::before {
+        inset: 8px;
+      }
+
+      .sceneOption {
+        padding: 0.95rem 0.9rem;
+      }
+    }
+  </style>
+  <script src="../../adventures-case-shell.js" defer></script>
+</head>
+<body>
+  <noscript>This case requires JavaScript in order to present its interactive choices.</noscript>
+
+  <main class="imApp">
+    <div class="imStage">
+      <div class="imBannerWrap">
+        <div class="imBanner">ADVENTURES IN INTERNAL MEDICINE</div>
+      </div>
+
+      <section class="imFrame" aria-live="polite">
+        <p class="sceneEyebrow" id="sceneEyebrow">Adventures in Internal Medicine</p>
+        <h1 class="sceneTitle" id="sceneTitle">Case 1: The Stairs Feel Steeper</h1>
+        <p class="sceneStep" id="sceneStep">Primary care clinic</p>
+
+        <div class="sceneMeta" aria-label="case context">
+          <span>58-year-old patient</span>
+          <span>Fatigue and dyspnea</span>
+          <span>Outpatient clinic</span>
+        </div>
+
+        <div class="sceneBody" id="sceneBody"></div>
+        <ul class="sceneBullets isHidden" id="sceneBullets"></ul>
+        <div class="sceneOptions" id="sceneOptions"></div>
+
+        <div class="caseFooter">
+          <button class="restartButton" id="restartButton" type="button">Restart case</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    (function () {
+      const scenes = {
+        start: {
+          eyebrow: "Adventures in Internal Medicine",
+          title: "Case 1: The Stairs Feel Steeper",
+          step: "Primary care clinic",
+          body: [
+            "You are a medical student in an internal medicine clinic. Your next patient is Elena Ramirez, 58, who says the stairs at work have become much harder over the past 2 months.",
+            "She reports worsening fatigue and shortness of breath with exertion. She is speaking in full sentences and does not look toxic, but she does look tired and a little pale.",
+            "Your preceptor asks you to start the visit, identify the most important next steps, and think carefully about what cannot wait."
+          ],
+          options: [
+            { label: "Begin the encounter", next: "step1" }
+          ]
+        },
+        step1: {
+          eyebrow: "Step 1",
+          title: "How do you open the visit?",
+          step: "Start broad before you narrow",
+          body: [
+            "Elena is comfortable enough to talk in full sentences, so you have room to gather a focused but thoughtful history before deciding what rises to the top of the differential."
+          ],
+          options: [
+            { label: "Ask Elena to describe what has been changing and what worried her enough to come in today.", next: "step1A" },
+            { label: "Ask whether she thinks this is mostly stress or burnout.", next: "step1B" },
+            { label: "Tell her this sounds like getting older and being out of shape.", next: "step1C" },
+            { label: "Order tests before hearing much more of the story.", next: "step1D" }
+          ]
+        },
+        step1A: {
+          eyebrow: "Step 1 feedback",
+          title: "You start with Elena's story.",
+          step: "That keeps the differential open.",
+          body: [
+            "Strong opening. You let the patient describe the change in her own words before you frame it for her.",
+            "That makes it easier to judge timeline, severity, and functional impact without anchoring too early."
+          ],
+          options: [
+            { label: "Continue to Step 2", next: "step2" }
+          ]
+        },
+        step1B: {
+          eyebrow: "Step 1 feedback",
+          title: "You narrowed too early.",
+          step: "Mood matters, but physiology still comes first here.",
+          body: [
+            "Stress and depression can absolutely coexist with medical illness, but leading there risks underplaying exertional dyspnea and fatigue before you have characterized them.",
+            "You can still recover by stepping back into a broader symptom history."
+          ],
+          options: [
+            { label: "Continue to Step 2", next: "step2" }
+          ]
+        },
+        step1C: {
+          eyebrow: "Step 1 feedback",
+          title: "That response normalizes a potentially serious change.",
+          step: "Be careful not to reassure before you understand the problem.",
+          body: [
+            "Calling this age or deconditioning too early may shut down important details and make Elena feel dismissed.",
+            "A change in exertional tolerance over months deserves a real differential."
+          ],
+          options: [
+            { label: "Continue to Step 2", next: "step2" }
+          ]
+        },
+        step1D: {
+          eyebrow: "Step 1 feedback",
+          title: "Testing will matter, but not before the first focused history.",
+          step: "History drives the right first workup.",
+          body: [
+            "You may eventually order tests, but skipping the opening history makes it harder to choose them well.",
+            "At this stage, the highest-yield move is still to define the problem clearly."
+          ],
+          options: [
+            { label: "Continue to Step 2", next: "step2" }
+          ]
+        },
+        step2: {
+          eyebrow: "Step 2",
+          title: "Elena fills in the picture.",
+          step: "Characterize the dyspnea before you anchor.",
+          body: [
+            "Elena says the stairs at work have felt steeper for about 2 months. She now pauses halfway up. She also feels more tired than usual and sometimes notices her heart racing.",
+            "She has no fever and no cough."
+          ],
+          options: [
+            { label: "Clarify the pace of onset, current exertional threshold, and whether she has chest pain, syncope, orthopnea, or leg swelling.", next: "step2A" },
+            { label: "Move directly into depression screening questions.", next: "step2B" },
+            { label: "Ask only whether she has ever had asthma or COPD.", next: "step2C" },
+            { label: "Skip symptom characterization and go straight to her medication list.", next: "step2D" }
+          ]
+        },
+        step2A: {
+          eyebrow: "Step 2 feedback",
+          title: "You define the syndrome before choosing a cause.",
+          step: "That is exactly the right move.",
+          body: [
+            "Good. This helps you sort cardiopulmonary, hematologic, and other systemic causes while also checking whether something unstable is emerging.",
+            "Elena says the symptoms are gradual, worse with exertion, and sometimes accompanied by lightheadedness when she stands quickly."
+          ],
+          options: [
+            { label: "Continue to Step 3", next: "step3" }
+          ]
+        },
+        step2B: {
+          eyebrow: "Step 2 feedback",
+          title: "You are still narrowing too soon.",
+          step: "Exertional dyspnea needs physiologic framing first.",
+          body: [
+            "Depression screening can happen later, but it should not replace core characterization of dyspnea and fatigue.",
+            "You still need to decide whether this sounds cardiopulmonary, hematologic, or something else."
+          ],
+          options: [
+            { label: "Continue to Step 3", next: "step3" }
+          ]
+        },
+        step2C: {
+          eyebrow: "Step 2 feedback",
+          title: "One organ system is not the whole differential.",
+          step: "Do not let a single idea take over too early.",
+          body: [
+            "Pulmonary history matters, but limiting yourself to asthma and COPD narrows the workup before the pattern is even clear.",
+            "You still need broader symptom framing."
+          ],
+          options: [
+            { label: "Continue to Step 3", next: "step3" }
+          ]
+        },
+        step2D: {
+          eyebrow: "Step 2 feedback",
+          title: "Medication review matters after you know what you are explaining.",
+          step: "Sequence matters here.",
+          body: [
+            "Skipping the symptom pattern makes it harder to use the medication list wisely.",
+            "First define the problem. Then look for contributors."
+          ],
+          options: [
+            { label: "Continue to Step 3", next: "step3" }
+          ]
+        },
+        step3: {
+          eyebrow: "Step 3",
+          title: "The pattern gets clearer.",
+          step: "Now look for contributors and red flags.",
+          body: [
+            "Elena says the symptoms are gradually progressive. She gets lightheaded if she stands quickly, but has had no syncope, no orthopnea, no leg swelling, and no pleuritic pain.",
+            "Her oxygen saturation in clinic is 99 percent on room air."
+          ],
+          options: [
+            { label: "Ask about bleeding, stool color, NSAID use, anticoagulants, and prior GI history.", next: "step3A" },
+            { label: "Ask whether spicy food or late meals make the breathing feel worse.", next: "step3B" },
+            { label: "Reassure her because the oxygen saturation is normal.", next: "step3C" },
+            { label: "Ask only about family history of early heart disease.", next: "step3D" }
+          ]
+        },
+        step3A: {
+          eyebrow: "Step 3 feedback",
+          title: "You opened an important diagnostic door.",
+          step: "This is where the case turns.",
+          body: [
+            "Excellent. Elena says she takes ibuprofen 800 mg most days for knee pain. She has noticed darker stools for several weeks but thought it was just something she ate.",
+            "She has been postmenopausal for years and has no known history of anemia."
+          ],
+          options: [
+            { label: "Continue to Step 4", next: "step4" }
+          ]
+        },
+        step3B: {
+          eyebrow: "Step 3 feedback",
+          title: "That question is too narrow for the moment.",
+          step: "You still have not addressed systemic causes.",
+          body: [
+            "Reflux-style questions may become relevant in some patients, but they are not the highest-yield next move in a patient with exertional dyspnea, fatigue, and lightheadedness.",
+            "You still need to look for bleeding, medication contributors, and other systemic clues."
+          ],
+          options: [
+            { label: "Continue to Step 4", next: "step4" }
+          ]
+        },
+        step3C: {
+          eyebrow: "Step 3 feedback",
+          title: "Normal oxygen saturation does not make this safe.",
+          step: "Do not let one reassuring number end the evaluation.",
+          body: [
+            "Severe anemia, early cardiac disease, and other important causes of exertional symptoms can all present with a normal oxygen saturation.",
+            "You still need to explain why she is so much more limited."
+          ],
+          options: [
+            { label: "Continue to Step 4", next: "step4" }
+          ]
+        },
+        step3D: {
+          eyebrow: "Step 3 feedback",
+          title: "Family history helps, but not by itself.",
+          step: "You still need the contributor history.",
+          body: [
+            "Family history can refine risk, but it does not replace asking about bleeding, medication exposure, and other direct clues.",
+            "The next right step is still to look for a source."
+          ],
+          options: [
+            { label: "Continue to Step 4", next: "step4" }
+          ]
+        },
+        step4: {
+          eyebrow: "Step 4",
+          title: "The exam supports your concern.",
+          step: "Pick the test that changes the day.",
+          body: [
+            "On exam, Elena has pale conjunctiva. Her heart rate is 104, blood pressure is 108 over 68, respiratory rate is 18, and oxygen saturation remains 99 percent.",
+            "Her lungs are clear and there is no edema. She looks tired but remains conversational."
+          ],
+          options: [
+            { label: "Obtain a same-day CBC, ferritin and iron studies, chemistry panel, and an ECG.", next: "step4A" },
+            { label: "Try albuterol first and arrange follow-up.", next: "step4B" },
+            { label: "Reassure her and place routine labs for next month.", next: "step4C" },
+            { label: "Send her straight for CT pulmonary angiography.", next: "step4D" }
+          ]
+        },
+        step4A: {
+          eyebrow: "Step 4 feedback",
+          title: "The workup changes the urgency immediately.",
+          step: "Now the case is no longer subtle.",
+          body: [
+            "This is the pivot. Her CBC returns with a hemoglobin of 6.8 g/dL and an MCV of 68 fL. Ferritin is 5 ng/mL. The ECG shows sinus tachycardia.",
+            "She has severe symptomatic microcytic anemia, very likely iron deficiency, and now needs urgent management plus source evaluation."
+          ],
+          options: [
+            { label: "Continue to Step 5", next: "step5" }
+          ]
+        },
+        step4B: {
+          eyebrow: "Step 4 feedback",
+          title: "Empiric treatment would miss the real problem.",
+          step: "This presentation is not pointing to asthma first.",
+          body: [
+            "An inhaler trial does not explain pallor, tachycardia, or progressive exertional limitation with lightheadedness.",
+            "What this patient needed was a CBC early."
+          ],
+          options: [
+            { label: "Continue to Step 5", next: "step5" }
+          ]
+        },
+        step4C: {
+          eyebrow: "Step 4 feedback",
+          title: "Routine follow-up would be unsafe here.",
+          step: "The timeline and exam argue for action today.",
+          body: [
+            "Her symptoms and vitals support doing the workup now, not later.",
+            "If you delay the CBC, you delay recognizing severe symptomatic anemia."
+          ],
+          options: [
+            { label: "Continue to Step 5", next: "step5" }
+          ]
+        },
+        step4D: {
+          eyebrow: "Step 4 feedback",
+          title: "That would be too much of a leap.",
+          step: "The clue cluster points somewhere more common and more testable first.",
+          body: [
+            "Pulmonary embolism belongs on some dyspnea differentials, but this gradual course plus pallor and likely blood-loss clues makes a CBC much higher yield than CT angiography as the first move.",
+            "You still needed the test that could explain the whole picture."
+          ],
+          options: [
+            { label: "Continue to Step 5", next: "step5" }
+          ]
+        },
+        step5: {
+          eyebrow: "Step 5",
+          title: "Now you need the right level of urgency.",
+          step: "Management matters as much as diagnosis.",
+          body: [
+            "Elena asks, \"Is this why I cannot make it up the stairs anymore?\"",
+            "You need to decide what happens next."
+          ],
+          options: [
+            { label: "Explain concern for symptomatic severe anemia and arrange same-day emergency evaluation for likely transfusion and urgent source workup.", next: "step5A" },
+            { label: "Start oral iron and place an outpatient GI referral.", next: "step5B" },
+            { label: "Repeat the CBC next week before deciding on urgency.", next: "step5C" },
+            { label: "Attribute the symptoms to anxiety because the oxygen saturation is normal.", next: "step5D" }
+          ]
+        },
+        step5A: {
+          eyebrow: "Step 5 feedback",
+          title: "This is the safest next step.",
+          step: "Severe symptomatic anemia cannot wait quietly.",
+          body: [
+            "Yes. Severe symptomatic anemia with exertional dyspnea and lightheadedness needs same-day evaluation, not slow outpatient follow-up.",
+            "She may need transfusion, hemodynamic reassessment, and prompt investigation for ongoing gastrointestinal blood loss."
+          ],
+          options: [
+            { label: "Continue to Step 6", next: "step6" }
+          ]
+        },
+        step5B: {
+          eyebrow: "Step 5 feedback",
+          title: "The destination is too slow.",
+          step: "Iron and referral are not enough today.",
+          body: [
+            "Oral iron and GI follow-up would eventually matter, but they are not adequate for a patient who is already symptomatic with a hemoglobin of 6.8.",
+            "This patient needs urgent same-day care."
+          ],
+          options: [
+            { label: "Continue to Step 6", next: "step6" }
+          ]
+        },
+        step5C: {
+          eyebrow: "Step 5 feedback",
+          title: "Waiting would be the mistake here.",
+          step: "The numbers already answered the urgency question.",
+          body: [
+            "Repeating the CBC later delays treatment without adding useful information now.",
+            "You already know enough to act urgently."
+          ],
+          options: [
+            { label: "Continue to Step 6", next: "step6" }
+          ]
+        },
+        step5D: {
+          eyebrow: "Step 5 feedback",
+          title: "That would miss the physiology entirely.",
+          step: "Normal oxygen saturation is not the whole story.",
+          body: [
+            "Severe anemia can produce major exertional symptoms while oxygen saturation remains normal.",
+            "This is exactly why one reassuring vital sign should not dominate the whole assessment."
+          ],
+          options: [
+            { label: "Continue to Step 6", next: "step6" }
+          ]
+        },
+        step6: {
+          eyebrow: "Step 6",
+          title: "How do you explain the urgency?",
+          step: "Clear communication is part of the management plan.",
+          body: [
+            "Elena looks worried. She asks whether this could be serious."
+          ],
+          options: [
+            { label: "Tell her, \"Your blood count is much lower than normal. Because you are short of breath and lightheaded, I am concerned you may need urgent treatment today. We are going to help you get evaluated right away and look for where the blood loss is coming from.\"", next: "step6A" },
+            { label: "Tell her, \"It is probably fine, but you can go in if you want to.\"", next: "step6B" },
+            { label: "Tell her, \"This is probably colon cancer.\"", next: "step6C" },
+            { label: "Tell her to take iron first and wait to see whether she feels better.", next: "step6D" }
+          ]
+        },
+        step6A: {
+          eyebrow: "Communication feedback",
+          title: "Clear, calm, and honest.",
+          step: "You explain the urgency without overclaiming the cause.",
+          body: [
+            "This is the strongest response. You name what is known, explain why today matters, and avoid guessing beyond the data.",
+            "That kind of communication builds trust while still moving quickly."
+          ],
+          options: [
+            { label: "View the debrief", next: "final" }
+          ]
+        },
+        step6B: {
+          eyebrow: "Communication feedback",
+          title: "You softened the urgency too much.",
+          step: "The patient needs a firm recommendation here.",
+          body: [
+            "That answer sounds permissive when the situation needs clarity.",
+            "Patients often borrow their sense of urgency from how confidently we communicate it."
+          ],
+          options: [
+            { label: "View the debrief", next: "final" }
+          ]
+        },
+        step6C: {
+          eyebrow: "Communication feedback",
+          title: "You jumped beyond the available evidence.",
+          step: "Name concern without naming a cause you have not proven.",
+          body: [
+            "Occult GI blood loss is absolutely concerning, but this moment is not the place to state a diagnosis you do not yet have.",
+            "Urgent evaluation should be clear. Speculation should not."
+          ],
+          options: [
+            { label: "View the debrief", next: "final" }
+          ]
+        },
+        step6D: {
+          eyebrow: "Communication feedback",
+          title: "That plan still underestimates the severity.",
+          step: "She needs more than outpatient reassurance.",
+          body: [
+            "This approach delays care and leaves the patient holding too much risk outside a monitored setting.",
+            "Severe symptomatic anemia is a same-day problem."
+          ],
+          options: [
+            { label: "View the debrief", next: "final" }
+          ]
+        },
+        final: {
+          eyebrow: "Clinical Reflection",
+          title: "What this case was teaching",
+          step: "Reflective debrief",
+          body: [
+            "Most likely teaching diagnosis: severe iron deficiency anemia from chronic gastrointestinal blood loss until proven otherwise.",
+            "The highest-yield moves were not flashy. They were disciplined: start broad, characterize exertional symptoms, ask about bleeding and NSAID exposure, and get the CBC early."
+          ],
+          bullets: [
+            "What moved the case forward: open-ended history, exertional symptom framing, bleeding questions, medication review, and a same-day CBC.",
+            "What could have been missed: normal oxygen saturation does not rule out dangerous anemia, and fatigue should not be reflexively labeled as mood, age, or deconditioning.",
+            "Management pearl: severe symptomatic anemia with lightheadedness and dyspnea needs urgent same-day evaluation, not delayed outpatient follow-up.",
+            "Next likely steps after transfer: repeat CBC, type and screen, consideration of transfusion, hemodynamic reassessment, and evaluation for the bleeding source."
+          ],
+          reflection: "In a postmenopausal adult, iron deficiency anemia is gastrointestinal blood loss until proven otherwise.",
+          options: [
+            { label: "Play the case again", next: "start" }
+          ]
+        }
+      };
+
+      const sceneEyebrow = document.getElementById("sceneEyebrow");
+      const sceneTitle = document.getElementById("sceneTitle");
+      const sceneStep = document.getElementById("sceneStep");
+      const sceneBody = document.getElementById("sceneBody");
+      const sceneBullets = document.getElementById("sceneBullets");
+      const sceneOptions = document.getElementById("sceneOptions");
+      const restartButton = document.getElementById("restartButton");
+
+      function renderScene(sceneId) {
+        const scene = scenes[sceneId];
+        if (!scene) {
+          return;
+        }
+
+        sceneEyebrow.textContent = scene.eyebrow || "";
+        sceneTitle.textContent = scene.title || "";
+        sceneStep.textContent = scene.step || "";
+        sceneBody.innerHTML = (scene.body || []).map(function (paragraph) {
+          return "<p>" + paragraph + "</p>";
+        }).join("");
+
+        if (scene.reflection) {
+          sceneBody.innerHTML += '<div class="reflectionBox"><h2>Take-home pearl</h2><p>' + scene.reflection + '</p></div>';
+        }
+
+        if (scene.bullets && scene.bullets.length) {
+          sceneBullets.classList.remove("isHidden");
+          sceneBullets.innerHTML = scene.bullets.map(function (item) {
+            return "<li>" + item + "</li>";
+          }).join("");
+        } else {
+          sceneBullets.classList.add("isHidden");
+          sceneBullets.innerHTML = "";
+        }
+
+        sceneOptions.innerHTML = "";
+        (scene.options || []).forEach(function (option) {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "sceneOption";
+          button.textContent = option.label;
+          button.addEventListener("click", function () {
+            renderScene(option.next);
+          });
+          sceneOptions.appendChild(button);
+        });
+
+        window.scrollTo(0, 0);
+      }
+
+      restartButton.addEventListener("click", function () {
+        renderScene("start");
+      });
+
+      renderScene("start");
+    })();
+  </script>
+</body>
+</html>
