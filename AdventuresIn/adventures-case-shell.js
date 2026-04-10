@@ -1,4 +1,4 @@
-(function () {
+﻿(function () {
   const rules = [
     {
       seriesId: 'psychiatry',
@@ -108,8 +108,16 @@
         'font-display: swap;' +
       '}' +
       'body.has-medicine-shell { background-color: #ffffff; }' +
-      'body.has-medicine-shell.medicineEmbedded { background-color: #ffffff !important; background-position: center top !important; }' +
+      'body.has-medicine-shell.medicineEmbedded { background-color: #ffffff !important; background-position: center top !important; overflow: hidden !important; }' +
       'body.has-medicine-shell.medicineEmbedded::before { background-position: center top !important; }' +
+      'body.has-medicine-shell.medicineEmbedded tw-story {' +
+        'box-sizing: border-box !important;' +
+        'height: calc(100dvh - 2.4rem) !important;' +
+        'max-height: calc(100dvh - 2.4rem) !important;' +
+        'overflow-y: auto !important;' +
+        'overscroll-behavior: contain !important;' +
+        'scrollbar-gutter: stable both-edges !important;' +
+      '}' +
       'body.has-medicine-shell tw-story tw-passage { padding-top: 6.6em !important; }' +
       'body.has-medicine-shell tw-sidebar { top: 4.9rem !important; }' +
       'body.has-medicine-shell.medicineEmbedded tw-story tw-passage { padding-top: 0.9em !important; }' +
@@ -130,6 +138,8 @@
           'width: auto !important;' +
           'max-width: 46rem !important;' +
           'margin: 0 auto !important;' +
+          'height: calc(100dvh - 1.7rem) !important;' +
+          'max-height: calc(100dvh - 1.7rem) !important;' +
           'padding: 4.6rem 1.15rem 2rem !important;' +
           'border: 0 !important;' +
           'border-radius: 0 !important;' +
@@ -315,3 +325,4 @@
     init();
   }
 })();
+

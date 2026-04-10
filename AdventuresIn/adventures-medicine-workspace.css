@@ -1,4 +1,4 @@
-@font-face {
+﻿@font-face {
   font-family: "Adventures Benguiat";
   src:
     local("ITC Benguiat Std"),
@@ -60,6 +60,7 @@ body {
     linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
   color: var(--paper-ink);
   font-family: var(--font-body);
+  overflow: hidden;
 }
 
 body::before {
@@ -589,6 +590,9 @@ body.caseColumnOpen .selectorTrack {
   min-width: 0;
   min-height: 0;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   background:
     radial-gradient(circle at top center, rgba(255, 45, 34, 0.08), transparent 18%),
     radial-gradient(circle at 14% 24%, rgba(255, 214, 44, 0.16), transparent 20%),
@@ -617,12 +621,14 @@ iframe {
   width: 100%;
   height: 100%;
   min-height: 0;
+  flex: 1 1 auto;
 }
 
 .viewerPlaceholder {
   padding: 42px;
   display: grid;
   place-items: center;
+  overflow-y: auto;
   color: var(--paper-ink);
 }
 
@@ -881,3 +887,4 @@ body.sidebarCollapsed .collapsedSidebarCard {
     padding-top: 92px;
   }
 }
+
