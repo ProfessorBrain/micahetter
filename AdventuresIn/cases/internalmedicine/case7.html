@@ -1,0 +1,220 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="adventures-case-title" content="Fever Between Normal Days" />
+  <meta name="adventures-case-subtitle" content="Recurrent fever and a new murmur" />
+  <title>Adventures in Medicine - Internal Medicine - Case 7</title>
+  <link rel="stylesheet" href="../../adventures-casebook.css" />
+  <script src="../../adventures-case-shell.js" defer></script>
+  <script src="../../adventures-casebook-runtime.js" defer></script>
+</head>
+<body>
+  <noscript>This case requires JavaScript in order to present its interactive choices.</noscript>
+
+  <main class="caseApp">
+    <div class="caseStage">
+      <div class="caseBannerWrap">
+        <div class="caseBanner">ADVENTURES IN INTERNAL MEDICINE</div>
+      </div>
+
+      <section class="caseFrame" aria-live="polite">
+        <h1 class="sceneTitle" id="sceneTitle"></h1>
+        <div class="sceneBody" id="sceneBody"></div>
+        <ul class="sceneBullets isHidden" id="sceneBullets"></ul>
+        <div class="sceneOptions" id="sceneOptions"></div>
+        <div class="sceneFooter">
+          <button type="button" class="backButton" id="backButton" aria-label="Go back" disabled>&larr;</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script id="adventures-casebook-data" type="application/json">
+{
+    "scenes":  {
+                   "start":  {
+                                 "title":  "Case 7: Fever Between Normal Days",
+                                 "body":  [
+                                              "Aaron, 49, comes in because intermittent fevers and fatigue have been coming and going for nearly three weeks. He thought he was just â€œfighting something,â€ but now climbing stairs feels slower and his wife says his face looks different when the fevers hit.",
+                                              "He is not toxic, but he does not look like a healthy man with a cold. A faint new murmur makes the room feel heavier than the triage note did.",
+                                              "The challenge is deciding how urgently to treat a patient who looks subacute but feels infected in a way you do not yet understand."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "next":  "step1",
+                                                     "label":  "Begin the case"
+                                                 }
+                                             ]
+                             },
+                   "step1":  {
+                                 "title":  "How do you frame the problem?",
+                                 "body":  [
+                                              "Aaron mentions recent dental pain he never addressed, some unplanned weight loss, and a habit of pushing through illness until it either resolves or embarrasses him."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Open broadly around fever pattern, cardiac risk, embolic clues, exposures, and functional change before choosing a single source.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This is often the strongest opening because prolonged fever with a new murmur can belong to infection, inflammation, malignancy, or several of them until the pattern sharpens.",
+                                                                                   "It also gives subtle endocarditis clues room to surface before the room narrows too hard."
+                                                                               ],
+                                                                      "title":  "You let the syndrome stay wide enough to show its edges."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Lean early into endocarditis-style questioning because the murmur and dental history make that branch too important to leave soft.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be very reasonable and may ultimately be right.",
+                                                                                   "The tradeoff is that the rest of the prolonged-fever differential can become quieter than it deserves."
+                                                                               ],
+                                                                      "title":  "You let one high-consequence explanation lead the first pass."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Treat this as a constitutional-fever workup first and let the murmur become important only if the next layer keeps pointing there.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be thoughtful in a vague fever room.",
+                                                                                   "It becomes weaker if a new murmur and systemic symptoms are already clustering more specifically than the room first appears."
+                                                                               ],
+                                                                      "title":  "You give the broader fever framework the first vote."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step2":  {
+                                 "title":  "What should the first workup answer?",
+                                 "body":  [
+                                              "He is mildly tachycardic, blood pressure is acceptable, and there are no obvious peripheral stigmata from across the room. The murmur is still there once you listen carefully enough to believe yourself."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Get blood cultures, inflammatory labs, and echocardiographic planning underway before antibiotics outrun the diagnosis.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This is often the strongest next step because culture timing matters and the syndrome is beginning to sound like it may reward precision.",
+                                                                                   "It also keeps the room moving without pretending the causative story is already proven."
+                                                                               ],
+                                                                      "title":  "You let the first workup preserve both treatment and proof."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Start empiric antibiotics early because the prolonged fever and murmur make you least willing to miss occult endovascular infection.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be appropriate if the patient is more unstable than he first appears or if access to cultures will meaningfully delay care.",
+                                                                                   "The tradeoff is that treating before defining may blur the very data that would help the rest of the plan."
+                                                                               ],
+                                                                      "title":  "You let consequence move faster than clean sequencing."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Use a broader prolonged-fever workup first and decide whether the echo and culture pathway still dominate once the first data return.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be reasonable in a patient who still looks relatively well and whose murmur story remains uncertain.",
+                                                                                   "It becomes less strong if the bedside pattern is already telling you the heart deserves an earlier vote."
+                                                                               ],
+                                                                      "title":  "You keep the room diagnostically wider for a little longer."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step3":  {
+                                 "title":  "How do you set the tempo once endocarditis becomes plausible rather than theoretical?",
+                                 "body":  [
+                                              "Cultures are pending, inflammatory markers are up, and Aaron looks more tired by the hour even though he is still talking to you normally. He wants to know whether this is a â€œfinish the clinic workupâ€ problem or a â€œchange the weekâ€ problem."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Treat the possibility of endovascular infection as enough to move the evaluation and care setting faster while culture and echo catch up.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You let the pattern, not just the proof, set the tempo.",
+                                                                      "body":  [
+                                                                                   "This is often the strongest plan because the room has begun to look like one where delay carries more risk than diagnostic discomfort.",
+                                                                                   "It tells Aaron that the seriousness is about the syndrome and its consequences, not about the room looking dramatic."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Subacute infective processes are easy to underweight because patients can remain conversational while accumulating real harm. Internal Medicine often has to act on converging signals before the signature result returns."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Culture timing and treatment timing have to be balanced deliberately.",
+                                                                                                         "A new murmur matters more when it arrives inside a systemic story.",
+                                                                                                         "Tempo often matters as much as the final label."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Use a tightly coordinated outpatient or observation path only if cultures, echo, follow-up, and clinical stability genuinely support it.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You keep the lighter path alive, but only if the system can carry it.",
+                                                                      "body":  [
+                                                                                   "That can be possible in carefully selected patients with strong access and a slower-seeming syndrome.",
+                                                                                   "It becomes fragile if â€œclose follow-upâ€ is just a phrase rather than an operational reality."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "An outpatient infectious workup can still be urgent medicine, but it has to be built on logistics strong enough to hold the risk."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Systems of care are part of risk stratification.",
+                                                                                                         "A patient\u0027s stable blood pressure should not be allowed to do all the reassuring work alone.",
+                                                                                                         "Good plans sound concrete when repeated back."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Escalate the care setting early because the combination of fever, murmur, and progressive fatigue makes slower pacing feel too optimistic.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You let the cluster, not any one sign, lower your threshold.",
+                                                                      "body":  [
+                                                                                   "That may be the strongest answer if you are less persuaded that outpatient structure can safely hold the diagnostic and therapeutic needs here.",
+                                                                                   "The important thing is that escalation is about what the syndrome may be doing, not about how sick the patient looks from the doorway."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Some Internal Medicine escalations are best understood as pacing decisions rather than panic decisions."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "A conversational patient can still be accumulating serious illness.",
+                                                                                                         "Clustered moderate findings can justify a serious plan.",
+                                                                                                         "The right setting is the one most likely to deliver the plan you think the patient needs."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 }
+                                             ]
+                             }
+               },
+    "startScene":  "start",
+    "banner":  "ADVENTURES IN INTERNAL MEDICINE",
+    "caseTitle":  "Fever Between Normal Days"
+}
+  </script>
+</body>
+</html>

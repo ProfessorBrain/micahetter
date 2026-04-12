@@ -1,0 +1,264 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="adventures-case-title" content="Still Hot in the Shade" />
+  <meta name="adventures-case-subtitle" content="Heat illness in an older adult" />
+  <title>Adventures in Medicine - Emergency Medicine - Case 15</title>
+  <link rel="stylesheet" href="../../adventures-casebook.css" />
+  <script src="../../adventures-case-shell.js" defer></script>
+  <script src="../../adventures-casebook-runtime.js" defer></script>
+</head>
+<body>
+  <noscript>This case requires JavaScript in order to present its interactive choices.</noscript>
+
+  <main class="caseApp">
+    <div class="caseStage">
+      <div class="caseBannerWrap">
+        <div class="caseBanner">ADVENTURES IN EMERGENCY MEDICINE</div>
+      </div>
+
+      <section class="caseFrame" aria-live="polite">
+        <h1 class="sceneTitle" id="sceneTitle"></h1>
+        <div class="sceneBody" id="sceneBody"></div>
+        <ul class="sceneBullets isHidden" id="sceneBullets"></ul>
+        <div class="sceneOptions" id="sceneOptions"></div>
+        <div class="sceneFooter">
+          <button type="button" class="backButton" id="backButton" aria-label="Go back" disabled>&larr;</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script id="adventures-casebook-data" type="application/json">
+{
+    "scenes":  {
+                   "start":  {
+                                 "title":  "Case 15: Still Hot in the Shade",
+                                 "body":  [
+                                              "During a severe heat wave, EMS brings in Curtis, 62, after he was found confused at a bus stop. His clothes are dry, his speech is slow, and his daughter says he insisted he was fine until he was not.",
+                                              "He is hot enough that everyone in the room is using the word heat before the first formal temperature is even charted.",
+                                              "The challenge is acting fast without assuming heat is the only story that can produce fever and altered mentation."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "next":  "step1",
+                                                     "label":  "Begin the case"
+                                                 }
+                                             ]
+                             },
+                   "step1":  {
+                                 "title":  "What gets the opening move?",
+                                 "body":  [
+                                              "The monitor is going on, the room feels warm even to you, and there is just enough hypotension to make the case feel fragile rather than dramatic."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Start active cooling, IV access, and core-temperature-minded assessment right away while broad labs are drawn.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This is usually the strongest opening because heat injury worsens while you admire it.",
+                                                                                   "It still leaves room for other diagnoses because broad labs and bedside exam can move in parallel."
+                                                                               ],
+                                                                      "title":  "You let the immediate physiology set the pace."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Treat the altered fever as possible sepsis first and let the environmental context stay in the background until more data arrive.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That caution is understandable because not every hot patient has heat stroke.",
+                                                                                   "The downside is that environmental exposure sometimes needs treatment before the lab story can catch up."
+                                                                               ],
+                                                                      "title":  "You refuse to let weather become diagnosis."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Start with more history from EMS and family before you commit to an aggressive cooling path.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "History can absolutely matter here, especially around duration of exposure and baseline function.",
+                                                                                   "The risk is that core temperature and organ injury are not impressed by how complete the story becomes."
+                                                                               ],
+                                                                      "title":  "You ask the context to settle the urgency."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step2":  {
+                                 "title":  "How do you respond when the first numbers support heat injury?",
+                                 "body":  [
+                                              "Core temperature is 40.2 C. Creatinine is rising, and he remains confused even after the first cooling steps start to work. He is not seizing or collapsing, but he is clearly not safe.",
+                                              "Now the room is deciding whether this is heat stroke plus, or whether plus is still the whole point."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Keep aggressive cooling and supportive care centered while you simultaneously check for other sources of shock or infection.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This is often the strongest frame because heat stroke is time-sensitive and mixed etiologies are still possible.",
+                                                                                   "It uses parallel thinking instead of false exclusivity."
+                                                                               ],
+                                                                      "title":  "You treat heat as the lead diagnosis without letting it become the only diagnosis."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Broaden immediately into antibiotics and a more sepsis-weighted pathway because the mental status change still feels too nonspecific.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be reasonable if the overall bedside picture is not convincingly environmental.",
+                                                                                   "The risk is that broader treatment can distract from the one intervention that absolutely cannot wait."
+                                                                               ],
+                                                                      "title":  "You let the nonspecific piece widen the treatment net."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Slow the cooling pace once the temperature starts to fall and see whether the rest of the room settles with it.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "Sometimes the trajectory becomes reassuring quickly.",
+                                                                                   "Sometimes early improvement is the room asking for more treatment, not less."
+                                                                               ],
+                                                                      "title":  "You ask whether early response is enough to ease off."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step3":  {
+                                 "title":  "What deserves parallel attention once the temperature is coming down?",
+                                 "body":  [
+                                              "His temperature is improving, but CK is climbing and the urine is getting darker. He is more awake than before, yet still not back to himself.",
+                                              "The room is cooling down while the organ injury story is warming up."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Treat this as heat stroke with evolving organ injury and keep fluids, monitoring, and complication surveillance moving.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This is usually the strongest move because improved temperature does not erase rhabdo, renal stress, or the need for monitored care.",
+                                                                                   "It is the antidote to overcelebrating the first good trend."
+                                                                               ],
+                                                                      "title":  "You let the downstream physiology stay visible."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Use the improving mental status to reopen the question of whether another diagnosis deserves to dominate the rest of the night.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be wise when the bedside picture still contains features heat does not fully explain.",
+                                                                                   "It becomes weaker if the broadening causes you to under-treat the heat injury already demonstrated."
+                                                                               ],
+                                                                      "title":  "You let the response create room for a broader second look."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Assume the worst is over if the core temperature and mentation are both better than arrival.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That may feel intuitive when the room looks calmer.",
+                                                                                   "The danger is that heat injury often lingers in the labs after the patient stops looking cinematic."
+                                                                               ],
+                                                                      "title":  "You let the visible improvement carry most of the plan."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step4":  {
+                                 "title":  "How do you choose the right landing spot?",
+                                 "body":  [
+                                              "Curtis is cooler and more interactive, but his kidney function, CK, and overall frailty still make the room feel active. His daughter is relieved and asks whether that means the emergency is over.",
+                                              "You need a disposition that respects the part of the illness still happening."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Admit for monitored care, possibly ICU or step-down depending the trend, because the organ-injury phase is now the real problem.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You let the next danger, not the first danger, determine the bed.",
+                                                                      "body":  [
+                                                                                   "This is often the strongest answer because heat injury evolves over hours after the temperature headline fades.",
+                                                                                   "It matches the physiology instead of the optics."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Heat illness is a good reminder that the emergency often changes shape after the first successful intervention. Cooling the patient and finishing the emergency are not the same event."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Aggressive cooling should start early when heat stroke is plausible.",
+                                                                                                         "Improved temperature does not erase organ injury.",
+                                                                                                         "Disposition should follow the active complication profile, not the fact that the room looks calmer."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Keep him in the ED a little longer to see whether the lab trend and mentation declare how much monitoring he really needs.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You use the next trend to choose between levels of care.",
+                                                                      "body":  [
+                                                                                   "That can be a very thoughtful move when the immediate crisis is better but the destination still feels unsettled.",
+                                                                                   "It works only if the observation period has a clear question attached to it."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "The next hour matters most when it changes the destination rather than merely delaying the phone call."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Observation is strongest when it helps right-size the bed.",
+                                                                                                         "Heat injury can improve clinically before the complications have declared themselves fully.",
+                                                                                                         "A calmer room is not always a safer room."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Consider a lighter inpatient path only if the organ injury markers and functional status both improve more than they have so far.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You keep the disposition proportional without getting casual.",
+                                                                      "body":  [
+                                                                                   "Sometimes the patient truly stabilizes into a lower-acuity course.",
+                                                                                   "In this room, that conclusion should come from trend, not optimism."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Level of care in heat illness should be driven by end-organ involvement and trajectory, not by how dramatic the arrival looked."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Frailty changes the consequence of a partial improvement.",
+                                                                                                         "Labs are part of the bedside in heat injury because they tell you what the room will become next.",
+                                                                                                         "The right bed can change as the physiology declares itself."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 }
+                                             ]
+                             }
+               },
+    "startScene":  "start",
+    "banner":  "ADVENTURES IN EMERGENCY MEDICINE",
+    "caseTitle":  "Still Hot in the Shade"
+}
+  </script>
+</body>
+</html>

@@ -1,0 +1,264 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="adventures-case-title" content="Maybe Just Panic" />
+  <meta name="adventures-case-subtitle" content="Palpitations and chest tightness" />
+  <title>Adventures in Medicine - Emergency Medicine - Case 18</title>
+  <link rel="stylesheet" href="../../adventures-casebook.css" />
+  <script src="../../adventures-case-shell.js" defer></script>
+  <script src="../../adventures-casebook-runtime.js" defer></script>
+</head>
+<body>
+  <noscript>This case requires JavaScript in order to present its interactive choices.</noscript>
+
+  <main class="caseApp">
+    <div class="caseStage">
+      <div class="caseBannerWrap">
+        <div class="caseBanner">ADVENTURES IN EMERGENCY MEDICINE</div>
+      </div>
+
+      <section class="caseFrame" aria-live="polite">
+        <h1 class="sceneTitle" id="sceneTitle"></h1>
+        <div class="sceneBody" id="sceneBody"></div>
+        <ul class="sceneBullets isHidden" id="sceneBullets"></ul>
+        <div class="sceneOptions" id="sceneOptions"></div>
+        <div class="sceneFooter">
+          <button type="button" class="backButton" id="backButton" aria-label="Go back" disabled>&larr;</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script id="adventures-casebook-data" type="application/json">
+{
+    "scenes":  {
+                   "start":  {
+                                 "title":  "Case 18: Maybe Just Panic",
+                                 "body":  [
+                                              "Imani, 34, arrives saying she thinks she is having another panic attack. She has chest tightness, tingling in her hands, and a heart rate that was 154 in triage but is already drifting down while you talk to her.",
+                                              "She has a prior anxiety diagnosis, but she also flew home yesterday and started estrogen therapy a month ago. The chart is offering you an easy story and a harder story at the same time.",
+                                              "The task is not deciding whether anxiety is real. It is deciding whether anxiety is enough."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "next":  "step1",
+                                                     "label":  "Begin the case"
+                                                 }
+                                             ]
+                             },
+                   "step1":  {
+                                 "title":  "How do you open the room without inheriting the chart?",
+                                 "body":  [
+                                              "She is breathing fast but speaking clearly. The nurse asks whether you just want an anxiolytic and a quiet room or the full chest-pain-and-palpitations setup."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Get an ECG and vitals trend immediately while you ask about onset, triggers, travel, estrogen use, and prior episodes.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This is usually the strongest opening because it honors both the emotional distress and the physiologic uncertainty.",
+                                                                                   "It also keeps you from asking a past diagnosis to do present-tense diagnostic work."
+                                                                               ],
+                                                                      "title":  "You let the bedside data speak before the chart does."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Start with grounding and breathing coaching to see whether the symptoms break the way prior panic has broken for her.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be humane and sometimes very revealing.",
+                                                                                   "The danger is that partial emotional improvement can make a still-concerning physiologic story easier to underweight."
+                                                                               ],
+                                                                      "title":  "You test whether calming the mind also calms the physiology."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Order broad labs and defer most interpretation until the room has more numbers in it.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This can be useful when the differential truly feels broad.",
+                                                                                   "It becomes weaker when the first question is really about how urgent the physiology feels, not how many lab values you can collect."
+                                                                               ],
+                                                                      "title":  "You let the workup get ahead of your framing."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step2":  {
+                                 "title":  "What matters once the first bedside story sharpens?",
+                                 "body":  [
+                                              "ECG shows sinus tachycardia. Oxygen saturation is 95 percent. She says the tightness is pleuritic if she pays attention to it, but also says that focusing on her breathing makes everything worse.",
+                                              "The room is still interpretable in more than one direction."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Reopen the clot question directly because the travel, estrogen, and chest symptoms are enough to deserve a real threshold discussion.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This is often the strongest move because anxiety and PE can coexist and because risk factors do not disappear when the patient sounds self-aware.",
+                                                                                   "It keeps the dangerous branch alive without pretending it has already won."
+                                                                               ],
+                                                                      "title":  "You refuse to let the anxiety frame end the visit early."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Let the improving heart rate and organized thought process move panic higher on the list while you keep watching the vitals.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be appropriate when the physiologic trend truly follows the emotional trend.",
+                                                                                   "It becomes weaker if the objective findings refuse to normalize at the same pace as the conversation."
+                                                                               ],
+                                                                      "title":  "You let trajectory pull against consequence."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Shift attention toward endocrine or stimulant causes because the rhythm is sinus rather than a discrete arrhythmia.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That broadness can protect against overanchoring on PE.",
+                                                                                   "The risk is that the high-consequence branch fades mostly because you found a less dramatic branch to think about."
+                                                                               ],
+                                                                      "title":  "You let the ECG shape the next layer of differential."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step3":  {
+                                 "title":  "What do you do when the room stays gray instead of declaring itself?",
+                                 "body":  [
+                                              "Imani calms somewhat with time, but the heart rate keeps hovering around 115 to 120 and the pleuritic note never fully leaves the story. She is frustrated by the possibility that the answer could still be serious.",
+                                              "This is the classic ED tension between a reassuring affect and an unreassuring residual physiology."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Use a PE-oriented pathway or similarly structured risk-stratification approach because the residual concern has not earned the right to disappear.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This is often the strongest frame because it turns vague worry into a transparent next step.",
+                                                                                   "It keeps you from inventing reassurance simply because the patient is easier to talk to now."
+                                                                               ],
+                                                                      "title":  "You ask the room to meet an explicit threshold instead of an emotional one."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Use a period of observation and repeated vitals to see whether the physiologic trend eventually follows the emotional trend.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be a very good ED answer when the patient is stable and the next trend is likely to change what you recommend.",
+                                                                                   "It only helps if you are willing to act differently if the rate refuses to settle."
+                                                                               ],
+                                                                      "title":  "You let time test the story you are being offered."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Give anxiolysis and see whether a cleaner reduction in symptoms finally clarifies whether the physiology is secondary.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That may be entirely appropriate when the room genuinely looks panic-heavy.",
+                                                                                   "It becomes less elegant if the treatment response is being asked to answer a question it cannot truly answer."
+                                                                               ],
+                                                                      "title":  "You use treatment as one more diagnostic nudge."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step4":  {
+                                 "title":  "How do you finish when the patient most wants a simple answer?",
+                                 "body":  [
+                                              "Imani says she does not want to be the person who overreacted to panic, but she also does not want to be the person who talked herself out of the wrong diagnosis. That is a sophisticated way of saying she needs help calibrating her own threshold.",
+                                              "Your disposition has to respect both the data and the psychology of the room."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Be explicit that panic may be part of the room without letting it close the room, and keep her in care until the higher-risk branches are narrowed enough.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You separate validation from premature closure.",
+                                                                      "body":  [
+                                                                                   "This is often the strongest answer because it treats the patient\u0027s lived experience as real without making it diagnostically dominant by default.",
+                                                                                   "It also models a kind of clinical honesty patients often remember."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Anxiety diagnoses create some of the most common anchoring errors in the ED. The goal is not to avoid naming anxiety; it is to avoid letting anxiety answer questions it has not actually answered."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "A calm conversation can coexist with a dangerous diagnosis.",
+                                                                                                         "Residual abnormal physiology deserves as much respect as peak physiology.",
+                                                                                                         "Shared decision-making is strongest when the clinician names both the likely story and the dangerous story clearly."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Use continued observation and repeat vitals to decide whether the room earns discharge or continues to argue for more workup.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You make trend the final referee.",
+                                                                      "body":  [
+                                                                                   "That can be an excellent emergency path because it avoids both overreacting and underreacting to a gray room.",
+                                                                                   "The observation period should be purposeful enough that it can actually change the recommendation."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "A good observation period is often just a way of making the room answer the question more clearly."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Serial reassessment is often the antidote to anxiety-related anchoring.",
+                                                                                                         "The patient\u0027s own uncertainty can be clinically informative when it is taken seriously.",
+                                                                                                         "Discharge should feel earned by trend, not by relief alone."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "If the workup and the trend truly quiet down together, discharge with a very specific return threshold instead of a vague one.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You let home happen only if the dangerous branches are genuinely softer.",
+                                                                      "body":  [
+                                                                                   "This can be completely appropriate in the right patient.",
+                                                                                   "The key is that the discharge is built on a room that changed in the right direction, not on a chart label you inherited at the door."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "A safe discharge after a panic-like presentation should still show your work about why the more dangerous stories faded."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Return precautions should tell the patient what would make the story meaningfully different.",
+                                                                                                         "The chart is context, not verdict.",
+                                                                                                         "Emergency medicine often means helping patients hold two possibilities at once until the room earns one of them."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 }
+                                             ]
+                             }
+               },
+    "startScene":  "start",
+    "banner":  "ADVENTURES IN EMERGENCY MEDICINE",
+    "caseTitle":  "Maybe Just Panic"
+}
+  </script>
+</body>
+</html>

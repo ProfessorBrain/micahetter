@@ -1,0 +1,264 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="adventures-case-title" content="Hard to Wake After Midnight" />
+  <meta name="adventures-case-subtitle" content="Somnolence after a party" />
+  <title>Adventures in Medicine - Emergency Medicine - Case 10</title>
+  <link rel="stylesheet" href="../../adventures-casebook.css" />
+  <script src="../../adventures-case-shell.js" defer></script>
+  <script src="../../adventures-casebook-runtime.js" defer></script>
+</head>
+<body>
+  <noscript>This case requires JavaScript in order to present its interactive choices.</noscript>
+
+  <main class="caseApp">
+    <div class="caseStage">
+      <div class="caseBannerWrap">
+        <div class="caseBanner">ADVENTURES IN EMERGENCY MEDICINE</div>
+      </div>
+
+      <section class="caseFrame" aria-live="polite">
+        <h1 class="sceneTitle" id="sceneTitle"></h1>
+        <div class="sceneBody" id="sceneBody"></div>
+        <ul class="sceneBullets isHidden" id="sceneBullets"></ul>
+        <div class="sceneOptions" id="sceneOptions"></div>
+        <div class="sceneFooter">
+          <button type="button" class="backButton" id="backButton" aria-label="Go back" disabled>&larr;</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script id="adventures-casebook-data" type="application/json">
+{
+    "scenes":  {
+                   "start":  {
+                                 "title":  "Case 10: Hard to Wake After Midnight",
+                                 "body":  [
+                                              "Jordan, 23, arrives by private vehicle after a party. Friends say he drank heavily, may have taken something else, and might have fallen in the driveway, though nobody can give the same story twice.",
+                                              "He is breathing on his own but too sleepy to answer much. His friends keep alternating between apology and minimization.",
+                                              "This is the kind of toxicology room where the easy story and the dangerous story can look identical for a while."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "next":  "step1",
+                                                     "label":  "Begin the case"
+                                                 }
+                                             ]
+                             },
+                   "step1":  {
+                                 "title":  "What gets the first move?",
+                                 "body":  [
+                                              "He opens his eyes to voice but drifts right back down. There is emesis on his shirt and no one in the room can tell you whether he hit his head."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Start with airway positioning, pulse oximetry, glucose, and a low-threshold naloxone trial while you assess for trauma.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This is a strong opening because it respects how quickly intoxication can become aspiration, opioid toxicity, or something else.",
+                                                                                   "It also buys you information without pretending the story is clean."
+                                                                               ],
+                                                                      "title":  "You treat the reversible threats before you decide which threat won the night."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Get a longer friend history first so you do not overreact to a patient who may simply be drunk.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "Collateral can absolutely matter in ingestion cases.",
+                                                                                   "The danger is that intoxicated friends are often least reliable when the room most needs reliable information."
+                                                                               ],
+                                                                      "title":  "You try to use the social story to keep the medicine proportional."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Send him to CT early because possible head injury is the one branch you are least willing to miss.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be a thoughtful path when the history of falling is believable enough and the patient cannot protect the story himself.",
+                                                                                   "The cost is that bedside reversibles may still deserve attention before the scanner does."
+                                                                               ],
+                                                                      "title":  "You privilege the trauma consequence first."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step2":  {
+                                 "title":  "How do you respond once the first quick checks are back?",
+                                 "body":  [
+                                              "Fingerstick glucose is normal. He improves only a little with a cautious naloxone trial, enough to mumble but not enough to clarify what happened. His pupils are small but not pinpoints from a textbook.",
+                                              "The room is less mysterious than it was, but not by much."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Use repeated small-dose naloxone and close respiratory monitoring while you keep trauma and co-ingestion in play.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This lets you test a reversible path while still behaving like the history might be mixed rather than pure.",
+                                                                                   "It is often the most emergency-minded answer in a room where toxicology and trauma may both matter."
+                                                                               ],
+                                                                      "title":  "You treat the opioid possibility without pretending it is the whole story."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Hold off on more naloxone and watch because he is breathing adequately right now.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be reasonable when the airway is protected and you think the observation window itself will be clarifying.",
+                                                                                   "The risk is that adequate can become inadequate between checks if you are too reassured by one moment."
+                                                                               ],
+                                                                      "title":  "You avoid turning the room into an agitated wake-up scene too quickly."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Move toward head imaging now that the bedside reversibles are less obvious than you hoped.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This can be an excellent next step when the trauma branch is not fading and the tox branch is not entirely explanatory.",
+                                                                                   "The trick is doing it as the next step rather than as a substitute for ongoing monitoring."
+                                                                               ],
+                                                                      "title":  "You let the unclear fall story take on more gravity."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step3":  {
+                                 "title":  "What matters once he starts to wake up?",
+                                 "body":  [
+                                              "Jordan becomes more interactive, vomits again, and now says he remembers falling backward but cannot say whether he lost consciousness. He wants to sleep and is annoyed that you keep asking questions.",
+                                              "This is the part where a slightly better exam can trick you into overvaluing what the patient thinks he remembers."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Keep head injury and aspiration in the story and decide whether imaging or prolonged observation answers the bigger question first.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This keeps you from calling the room simple just because the patient can now talk back.",
+                                                                                   "It also respects the fact that vomiting, sedation, and a possible fall do not combine into a clean one-line explanation."
+                                                                               ],
+                                                                      "title":  "You let the mixed story stay mixed."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Treat the improved mental status as a sign that toxic observation is probably enough if the vitals stay stable.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That may be right if the course keeps moving in a single reassuring direction.",
+                                                                                   "It becomes much weaker if you are using improvement to excuse yourself from deciding whether trauma still matters."
+                                                                               ],
+                                                                      "title":  "You let trajectory carry more weight than the incomplete history."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Push harder on a tox-focused workup because the clinical picture still looks more ingestion than trauma.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That is often appropriate when the trauma branch remains plausible but not dominant.",
+                                                                                   "The downside is that toxicology labs rarely rescue you from a weak bedside plan."
+                                                                               ],
+                                                                      "title":  "You let the physiology vote louder than the story inconsistencies."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step4":  {
+                                 "title":  "How do you handle the patient who wants to leave before the story is done?",
+                                 "body":  [
+                                              "A little later Jordan says he is fine, wants to go home, and is tired of being watched. He is better than on arrival, but still intermittently drifts and still has a story that does not fully hold together.",
+                                              "Now the question is no longer only what happened. It is whether he can safely leave while the answer is still incomplete."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Keep him for further observation and repeat assessment because partial improvement is not the same thing as decision-making capacity.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You let capacity and trajectory stay linked.",
+                                                                      "body":  [
+                                                                                   "This is often the strongest path in mixed-ingestion rooms because the ability to speak is not always the same thing as the ability to weigh risk.",
+                                                                                   "It also buys time for the trauma branch to either soften or become more convincing."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Somnolent intoxication rooms punish clinicians who treat the first improvement as the end of the story. Capacity, airway safety, and occult trauma all change on different clocks."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Bedside reversibles should usually be treated before the chart gets more elaborate.",
+                                                                                                         "A partly improved patient may still be a poor historian and a poor decision-maker.",
+                                                                                                         "Observation is often the safest answer when the toxicology story and the trauma story both remain alive."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Negotiate one more hour and one more reassessment if he can stay voluntarily, rather than turning the room immediately adversarial.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You use relationship as part of the management plan.",
+                                                                      "body":  [
+                                                                                   "That can be a very good emergency move when the patient is improving and the team can keep a close eye on the next interval.",
+                                                                                   "It works only if you are prepared to act differently if he looks worse, not just to feel better because he stayed longer."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Not every safe plan has to begin with confrontation. Sometimes a negotiated pause gives you the information the room was about to reveal anyway."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "A voluntary patient who agrees to stay can still need a firm clinical boundary around what must improve before discharge.",
+                                                                                                         "Capacity is dynamic and should be reassessed, not assumed.",
+                                                                                                         "Good emergency care sometimes means buying one more clean look at the patient."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Discharge with a sober ride and strict precautions if the trend, exam, and your concern all truly soften together.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You let the whole room earn home, not just the patient\u0027s desire for it.",
+                                                                      "body":  [
+                                                                                   "This is the least aggressive path and only becomes strong if the trauma concern, aspiration concern, and intoxication concern have all meaningfully eased.",
+                                                                                   "A discharge built mostly on inconvenience or crowding is a much weaker thing than a discharge built on actual resolution."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Some intoxicated patients can go home safely. The question is whether the room earned that conclusion or simply drifted there."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Trauma and tox often overlap in ways that make early certainty unreliable.",
+                                                                                                         "The safer the discharge, the easier it should be to explain why the dangerous branches fell away.",
+                                                                                                         "A sober ride is logistics; it is not the whole disposition."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 }
+                                             ]
+                             }
+               },
+    "startScene":  "start",
+    "banner":  "ADVENTURES IN EMERGENCY MEDICINE",
+    "caseTitle":  "Hard to Wake After Midnight"
+}
+  </script>
+</body>
+</html>

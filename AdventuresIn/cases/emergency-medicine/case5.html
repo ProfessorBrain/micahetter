@@ -1,0 +1,264 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="adventures-case-title" content="Pain That Moved Low" />
+  <meta name="adventures-case-subtitle" content="Right lower quadrant abdominal pain" />
+  <title>Adventures in Medicine - Emergency Medicine - Case 5</title>
+  <link rel="stylesheet" href="../../adventures-casebook.css" />
+  <script src="../../adventures-case-shell.js" defer></script>
+  <script src="../../adventures-casebook-runtime.js" defer></script>
+</head>
+<body>
+  <noscript>This case requires JavaScript in order to present its interactive choices.</noscript>
+
+  <main class="caseApp">
+    <div class="caseStage">
+      <div class="caseBannerWrap">
+        <div class="caseBanner">ADVENTURES IN EMERGENCY MEDICINE</div>
+      </div>
+
+      <section class="caseFrame" aria-live="polite">
+        <h1 class="sceneTitle" id="sceneTitle"></h1>
+        <div class="sceneBody" id="sceneBody"></div>
+        <ul class="sceneBullets isHidden" id="sceneBullets"></ul>
+        <div class="sceneOptions" id="sceneOptions"></div>
+        <div class="sceneFooter">
+          <button type="button" class="backButton" id="backButton" aria-label="Go back" disabled>&larr;</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script id="adventures-casebook-data" type="application/json">
+{
+    "scenes":  {
+                   "start":  {
+                                 "title":  "Case 5: Pain That Moved Low",
+                                 "body":  [
+                                              "Keira, 22, comes to the ED because abdominal pain started near her umbilicus this morning and now sits low on the right. She has nausea, does not want food, and wants to know whether this is going to end in surgery.",
+                                              "She is uncomfortable but not toxic. Her answer to nearly every question is that she does not know because this has never happened before.",
+                                              "Abdominal pain in the ED is less about finding the perfect first label than about choosing what kind of uncertainty you can safely tolerate."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "next":  "step1",
+                                                     "label":  "Begin the case"
+                                                 }
+                                             ]
+                             },
+                   "step1":  {
+                                 "title":  "What do you do before the pain gets louder than the reasoning?",
+                                 "body":  [
+                                              "You still need the basics here: pregnancy status, analgesia, and some version of an exam that you can trust enough to revisit later. The temptation is to make imaging the whole story immediately."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Order pregnancy testing and basic labs, treat the pain, and do an initial exam with the expectation that you will repeat it.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This treats pain control as compatible with good emergency reasoning rather than as a threat to it.",
+                                                                                   "It also keeps space for the fact that abdominal cases often declare themselves over time rather than in one perfect exam."
+                                                                               ],
+                                                                      "title":  "You build a framework instead of a single snapshot."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Skip ahead to CT because the migration story already sounds appendiceal and you want a fast answer.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be efficient, especially when imaging is readily available and the patient is stable enough to go.",
+                                                                                   "The tradeoff is that you may bypass information that would help you pick the best imaging path rather than simply the fastest one."
+                                                                               ],
+                                                                      "title":  "You chase clarity early."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Hold pain medication so the exam stays as pure as possible before you decide what to order.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That used to be a common reflex and still has intuitive appeal for some clinicians.",
+                                                                                   "In practice, it often buys less diagnostic clarity than people hope and more patient misery than the case needs."
+                                                                               ],
+                                                                      "title":  "You protect the exam by asking the patient to carry more discomfort."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step2":  {
+                                 "title":  "Where do you narrow once the first basics are back?",
+                                 "body":  [
+                                              "Pregnancy testing is negative. Keira has focal right lower quadrant tenderness without rigid guarding, and her white count is mildly elevated. The pain is still real, but the room is not screaming at you.",
+                                              "Now the question is how much anatomy you need tonight and which anatomy you want first."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Use imaging, but stay open about which modality gives you the best first answer for appendix and ovary instead of pretending the differential is already solved.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This keeps torsion, cyst, and appendicitis in the same neighborhood rather than crowning one too early.",
+                                                                                   "It may feel less decisive than jumping to CT, but it is often more disciplined."
+                                                                               ],
+                                                                      "title":  "You refuse to let a classic-sounding story erase the adjacent organs."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Go straight to CT because it is the strongest single test for the biggest branches in front of you.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be a solid ED answer when you want a wide look and a quicker path to disposition.",
+                                                                                   "The cost is exposure and the chance that a more tailored first study might have been enough."
+                                                                               ],
+                                                                      "title":  "You privilege breadth of anatomy over elegance."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Ask surgery to see her before imaging so bedside judgment shapes the next step.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This can be helpful when the exam is convincing but not dramatic and the next move could go in more than one direction.",
+                                                                                   "It becomes less helpful if consultation replaces, rather than refines, your own diagnostic frame."
+                                                                               ],
+                                                                      "title":  "You bring another pair of hands into the uncertainty early."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step3":  {
+                                 "title":  "What do you do if the room gets a little softer but not actually simple?",
+                                 "body":  [
+                                              "After medication the pain eases some, which makes Keira more comfortable but does not resolve the localization question. She still points to the right lower quadrant when you ask where the problem lives.",
+                                              "This is a dangerous moment to confuse symptom relief with diagnostic closure."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Keep moving toward imaging because the repeat exam still points to a process you are not ready to dismiss.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That is a strong use of serial assessment: you treated pain and the belly still has an opinion.",
+                                                                                   "It protects against the common error of overvaluing the fact that the patient is nicer to talk to now."
+                                                                               ],
+                                                                      "title":  "You let the repeat exam keep its voice."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Observe longer with another exam cycle before you choose imaging or discharge.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be very reasonable in a stable patient whose abdominal exam is informative rather than alarming.",
+                                                                                   "The risk is that observation turns into drift if you do not know what finding would finally change your plan."
+                                                                               ],
+                                                                      "title":  "You use time as one more diagnostic instrument."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Use the improvement to start talking about outpatient follow-up and the possibility that this will declare itself later.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That may be appropriate in some low-acuity abdominal cases.",
+                                                                                   "It is weaker when the story still has localization, appetite change, and enough tenderness to keep appendicitis alive."
+                                                                               ],
+                                                                      "title":  "You consider whether tonight\u0027s safest answer might still be incomplete."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step4":  {
+                                 "title":  "How do you finish when the patient wants the least dramatic path?",
+                                 "body":  [
+                                              "Keira says she would love to avoid radiation and surgery if at all possible, but she also does not want to come back worse at three in the morning. She is asking you for a thoughtful version of the truth.",
+                                              "That means the final plan has to account for both her preferences and your uncertainty."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Use a shared decision process around the imaging sequence instead of pretending there is only one respectable next step.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You keep the plan flexible without letting it get mushy.",
+                                                                      "body":  [
+                                                                                   "This respects her values while still acknowledging that you are not comfortable simply closing the chart.",
+                                                                                   "In abdominal pain, the best next test is often the one that fits both the differential and the patient in front of you."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Abdominal pain rewards clinicians who stay broad long enough to choose the right kind of narrowing. Good emergency care here often looks like serial reasoning rather than instant certainty."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Pain control should support the exam, not threaten it.",
+                                                                                                         "Repeat abdominal exams are part of the test, not a substitute for having a plan.",
+                                                                                                         "Shared decisions around imaging work best when the clinician is honest about what still worries them."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Recommend definitive imaging tonight because the pattern remains too appendiceal to call safely incomplete.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You let the localization outrank the patient\u0027s wish for a lighter path.",
+                                                                      "body":  [
+                                                                                   "That is a coherent answer when the story still feels directional rather than vague.",
+                                                                                   "The key is that you are recommending imaging because the case earned it, not because abdominal pain makes you anxious."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Sometimes the most patient-centered option is the more decisive option, especially when it prevents a worse return later."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "A quieter patient is not necessarily a safer patient.",
+                                                                                                         "Imaging is strongest when it answers the question the bedside assessment actually created.",
+                                                                                                         "Disposition in abdominal pain should match both the present exam and the likely overnight trajectory."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "If the next reassessment is substantially softer, build a very explicit return-and-recheck plan instead of forcing a one-night answer.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You decide the remaining uncertainty can be managed, not eliminated.",
+                                                                      "body":  [
+                                                                                   "This is the least aggressive path and can be appropriate only when the repeat exam truly changes your risk estimate.",
+                                                                                   "It requires excellent instructions, low barriers to return, and your own willingness to admit the answer may still evolve."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Some abdominal pain cases are safest when you acknowledge that the first ED visit may be part one rather than the whole story."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Observation and discharge are both active choices that need a clear rationale.",
+                                                                                                         "Return precautions should tell the patient what change would matter, not just that change matters somehow.",
+                                                                                                         "The right disposition is often the one that best fits your residual uncertainty."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 }
+                                             ]
+                             }
+               },
+    "startScene":  "start",
+    "banner":  "ADVENTURES IN EMERGENCY MEDICINE",
+    "caseTitle":  "Pain That Moved Low"
+}
+  </script>
+</body>
+</html>

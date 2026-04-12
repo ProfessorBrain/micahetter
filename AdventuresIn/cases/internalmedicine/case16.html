@@ -1,0 +1,220 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="adventures-case-title" content="Itch Before Yellow" />
+  <meta name="adventures-case-subtitle" content="Cholestatic jaundice and pruritus" />
+  <title>Adventures in Medicine - Internal Medicine - Case 16</title>
+  <link rel="stylesheet" href="../../adventures-casebook.css" />
+  <script src="../../adventures-case-shell.js" defer></script>
+  <script src="../../adventures-casebook-runtime.js" defer></script>
+</head>
+<body>
+  <noscript>This case requires JavaScript in order to present its interactive choices.</noscript>
+
+  <main class="caseApp">
+    <div class="caseStage">
+      <div class="caseBannerWrap">
+        <div class="caseBanner">ADVENTURES IN INTERNAL MEDICINE</div>
+      </div>
+
+      <section class="caseFrame" aria-live="polite">
+        <h1 class="sceneTitle" id="sceneTitle"></h1>
+        <div class="sceneBody" id="sceneBody"></div>
+        <ul class="sceneBullets isHidden" id="sceneBullets"></ul>
+        <div class="sceneOptions" id="sceneOptions"></div>
+        <div class="sceneFooter">
+          <button type="button" class="backButton" id="backButton" aria-label="Go back" disabled>&larr;</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script id="adventures-casebook-data" type="application/json">
+{
+    "scenes":  {
+                   "start":  {
+                                 "title":  "Case 16: Itch Before Yellow",
+                                 "body":  [
+                                              "Marina, 50, comes in because relentless itching showed up before she ever noticed her eyes turning yellow. She says the itching is now worse than the color change itself.",
+                                              "She is not acutely ill, but the room is beginning to look hepatobiliary in a way that should not be treated as cosmetic.",
+                                              "The challenge is deciding whether this is obstruction, autoimmune cholestasis, drug injury, or another liver story wearing the same surface."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "next":  "step1",
+                                                     "label":  "Begin the case"
+                                                 }
+                                             ]
+                             },
+                   "step1":  {
+                                 "title":  "How do you frame cholestatic symptoms?",
+                                 "body":  [
+                                              "Marina reports dark urine, pale stools, and fatigue without significant abdominal pain. She is asking whether itching can really mean anything serious."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Clarify timing, stool and urine change, medication exposures, autoimmune clues, and pain pattern before choosing intrahepatic versus extrahepatic language.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This is often the strongest opening because cholestatic complaints are shaped by what changed first and what stayed absent.",
+                                                                                   "It gives the patient a more precise explanation of why itching matters medically."
+                                                                               ],
+                                                                      "title":  "You let the syndrome speak before the anatomy does."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Lean early into obstruction because jaundice plus pale stool and dark urine make a mechanical story hard to ignore.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be very reasonable and may ultimately be right.",
+                                                                                   "The tradeoff is that autoimmune and medication-related cholestatic syndromes can become quieter than they deserve."
+                                                                               ],
+                                                                      "title":  "You let one high-yield branch lead the first frame."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Treat the visit mainly as a liver-lab problem first and let anatomy follow once the chemistry is clearer.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be thoughtful if the bedside story is still mixed.",
+                                                                                   "It becomes weaker when the symptom pattern is already strongly trying to tell you the flow of bile is the central issue."
+                                                                               ],
+                                                                      "title":  "You let the lab pattern lead before the anatomy does."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step2":  {
+                                 "title":  "What should the first workup answer?",
+                                 "body":  [
+                                              "She has scleral icterus, no peritoneal signs, and only mild right upper quadrant tenderness. Nothing about the room is shouting, but the pattern feels directional."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Order a cholestatic-focused lab panel and right-upper-quadrant imaging together so the biochemistry and the plumbing can answer the room in parallel.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This is often the strongest next step because cholestatic syndromes are often sorted best by the relationship between the lab pattern and the ductal picture.",
+                                                                                   "It also keeps the visit from becoming either all imaging or all chemistry."
+                                                                               ],
+                                                                      "title":  "You let physiology and anatomy move at the same pace."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Start with imaging because if there is an obstruction, the next practical decisions will depend on seeing it.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be a strong move when the symptom pattern already sounds mechanical enough to act on.",
+                                                                                   "The cost is that autoimmune and medication clues may still need their own parallel attention even if the first image is unrevealing."
+                                                                               ],
+                                                                      "title":  "You let anatomy set the sequence."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Stage the workup more gradually because she is stable and not systemically ill.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be appropriate in selected patients.",
+                                                                                   "It becomes less strong if the patient is already losing enough bile flow or time that the next step should not be casual."
+                                                                               ],
+                                                                      "title":  "You let the calm room lower the pace."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step3":  {
+                                 "title":  "How do you set the tempo once the syndrome looks clearly cholestatic?",
+                                 "body":  [
+                                              "The labs are cholestatic and the first imaging narrows the possibilities without completely resolving them. Marina mostly wants to know whether the next week should now revolve around this problem."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Treat this as a syndrome that deserves symptom relief, accelerated source-finding, and a plan that respects biliary obstruction risk even before the final label is polished.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You let the syndrome change the week before the final name changes the chart.",
+                                                                      "body":  [
+                                                                                   "This is often the strongest plan because cholestasis is not only diagnostic information; it is a physiologic burden with downstream consequences.",
+                                                                                   "It gives the patient a reason for urgency that is more medically useful than simple alarm."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Itching is easy to trivialize until the rest of the cholestatic pattern reveals why it matters. Internal Medicine often starts by taking small symptoms seriously enough to discover the larger syndrome underneath."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "The relationship between labs and imaging often defines the next hepatobiliary step.",
+                                                                                                         "A stable patient can still need a fast plan.",
+                                                                                                         "Symptom relief and source-finding should move together."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Use an outpatient path only if hepatobiliary follow-up, repeat testing, and return thresholds are specific enough to be trustworthy.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You keep clinic pacing possible, but only if it is operationally real.",
+                                                                      "body":  [
+                                                                                   "That can be very appropriate in the right setting.",
+                                                                                   "It becomes fragile if the patient is being reassured more clearly than the system is being organized."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Outpatient hepatology can still be urgent medicine when the sequence is concrete enough and the patient understands the stakes."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Logistics are part of biliary safety.",
+                                                                                                         "The absence of dramatic pain does not make cholestasis low stakes.",
+                                                                                                         "A good plan should sound specific when repeated back."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Escalate the setting or specialty tempo if bilirubin burden, obstruction risk, or practical barriers make slower pacing feel too thin.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You let consequence lower your threshold for a more supported path.",
+                                                                      "body":  [
+                                                                                   "That may be the strongest answer if the syndrome is already too active or too procedurally dependent for ordinary clinic timing.",
+                                                                                   "The point is not that Marina looks toxic; it is that the next step may matter too much to drift."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Some Internal Medicine cases become urgent because anatomy and physiology are both waiting on the same next decision."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Tempo should match what the syndrome could still become, not just what it looks like right now.",
+                                                                                                         "The best setting is the one most likely to deliver the plan you are describing.",
+                                                                                                         "A quiet liver room can still need fast medicine."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 }
+                                             ]
+                             }
+               },
+    "startScene":  "start",
+    "banner":  "ADVENTURES IN INTERNAL MEDICINE",
+    "caseTitle":  "Itch Before Yellow"
+}
+  </script>
+</body>
+</html>

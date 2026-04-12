@@ -1,0 +1,264 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="adventures-case-title" content="Too Thirsty to Stand" />
+  <meta name="adventures-case-subtitle" content="Hyperglycemia and vomiting" />
+  <title>Adventures in Medicine - Emergency Medicine - Case 9</title>
+  <link rel="stylesheet" href="../../adventures-casebook.css" />
+  <script src="../../adventures-case-shell.js" defer></script>
+  <script src="../../adventures-casebook-runtime.js" defer></script>
+</head>
+<body>
+  <noscript>This case requires JavaScript in order to present its interactive choices.</noscript>
+
+  <main class="caseApp">
+    <div class="caseStage">
+      <div class="caseBannerWrap">
+        <div class="caseBanner">ADVENTURES IN EMERGENCY MEDICINE</div>
+      </div>
+
+      <section class="caseFrame" aria-live="polite">
+        <h1 class="sceneTitle" id="sceneTitle"></h1>
+        <div class="sceneBody" id="sceneBody"></div>
+        <ul class="sceneBullets isHidden" id="sceneBullets"></ul>
+        <div class="sceneOptions" id="sceneOptions"></div>
+        <div class="sceneFooter">
+          <button type="button" class="backButton" id="backButton" aria-label="Go back" disabled>&larr;</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script id="adventures-casebook-data" type="application/json">
+{
+    "scenes":  {
+                   "start":  {
+                                 "title":  "Case 9: Too Thirsty to Stand",
+                                 "body":  [
+                                              "Aiden, 19, has been vomiting for a day, cannot keep water down, and says he has been so thirsty this week that he has been waking at night to drink. He looks exhausted and slightly embarrassed to be here.",
+                                              "He is breathing a little deeper than expected, complains of abdominal pain, and says he thought this was just a stomach bug until he nearly fainted in the shower.",
+                                              "The room is full of clues, but you still have to decide how quickly to act on them."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "next":  "step1",
+                                                     "label":  "Begin the case"
+                                                 }
+                                             ]
+                             },
+                   "step1":  {
+                                 "title":  "What does the first move look like?",
+                                 "body":  [
+                                              "The nurse asks whether you want insulin up front if the glucose is high or whether you want to wait for the rest of the chemistry panel. You have enough information to suspect a metabolic emergency, but not enough to know its edges."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Start fluids and get the full metabolic picture before insulin commits the next chapter.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This is a common and thoughtful way to open possible DKA because it respects how much potassium can change the safety of the next step.",
+                                                                                   "It may feel slower, but it usually keeps the room safer rather than less decisive."
+                                                                               ],
+                                                                      "title":  "You treat the physiology without outrunning the electrolytes."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Start insulin as soon as the glucose confirms the suspicion, because the gap is the thing you are trying to close.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That instinct makes sense, especially when the room is already pointing strongly toward DKA.",
+                                                                                   "The danger is that the syndrome label can arrive a few minutes before the electrolyte data you need to treat it safely."
+                                                                               ],
+                                                                      "title":  "You let the syndrome label move the treatment quickly."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Prioritize antiemetics and a little more history before you commit to a full DKA pathway.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "Sometimes more history changes everything. Sometimes it mostly delays the treatment of a process that was already visible at the bedside.",
+                                                                                   "This path becomes weaker when the patient already looks like their chemistry will be unkind."
+                                                                               ],
+                                                                      "title":  "You slow the pace to better understand the story."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step2":  {
+                                 "title":  "How do you respond when the labs make the problem official?",
+                                 "body":  [
+                                              "Glucose is 468, pH is 7.24, anion gap is 26, and potassium is 3.2. The diagnosis is no longer vague, but the safest order of operations still matters.",
+                                              "Now the room is asking whether you can be urgent and careful at the same time."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Replete potassium first, keep fluids moving, and start insulin when the chemistry is ready for it.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That is often the strongest path because low potassium can turn a familiar protocol into a dangerous one quickly.",
+                                                                                   "You are not slowing the DKA treatment down so much as making it survivable."
+                                                                               ],
+                                                                      "title":  "You let the dangerous number, not just the loud diagnosis, set the sequence."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Start a lower-dose insulin strategy while replacing potassium aggressively in parallel.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This can be workable in some settings with close monitoring and a team that knows the protocol cold.",
+                                                                                   "It asks the system to stay ahead of a number that can move faster than you want."
+                                                                               ],
+                                                                      "title":  "You try to do both urgent jobs at once."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Hold insulin longer and see how much the gap improves with fluids alone before you risk shifting potassium further.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "There are cases where the first liter or two changes the room meaningfully.",
+                                                                                   "The risk is that caution can drift into under-treatment once the diagnosis is already clear."
+                                                                               ],
+                                                                      "title":  "You buy a little chemistry time before the next commitment."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step3":  {
+                                 "title":  "What do you manage besides the protocol itself?",
+                                 "body":  [
+                                              "After fluids and potassium the room is less dramatic, but Aiden still has a fever of 38.3 and says his throat has been sore for two days. He looks more scared now that he feels better enough to understand what is happening.",
+                                              "Closing the gap is not the only job you have."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Keep the DKA protocol moving while you look for the trigger, because the trigger often decides what happens after the ED.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This is usually the strongest frame because infection, missed insulin, new diabetes, and other triggers change what the next day looks like.",
+                                                                                   "Emergency medicine is often about managing the protocol without becoming a protocol technician."
+                                                                               ],
+                                                                      "title":  "You treat the chemistry and the story at the same time."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Focus almost entirely on the metabolic pathway until the gap is clearly moving the right way.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be reasonable when the room still feels fragile and you do not want the protocol to drift.",
+                                                                                   "It becomes less complete if the trigger would change disposition, antibiotics, or the patient\u0027s understanding of what is happening."
+                                                                               ],
+                                                                      "title":  "You keep the immediate threat from getting diluted."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Broaden quickly into infection treatment now even though you do not yet have a clean source.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That may be appropriate if the overall picture feels septic rather than simply inflamed.",
+                                                                                   "The risk is that you begin treating a trigger more confidently than you are treating the syndrome in front of you."
+                                                                               ],
+                                                                      "title":  "You let the fever expand the frame early."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step4":  {
+                                 "title":  "Where should a patient like this finish the ED portion of the story?",
+                                 "body":  [
+                                              "The gap is improving, but not closed. Aiden is mentally clear, still dry, and finally asking when he can eat. He is young, but youth does not close an anion gap.",
+                                              "Your disposition has to match the part of the illness that is still active."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Admit to a monitored setting where the protocol can finish safely and the trigger can keep being clarified.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You let the unfinished physiology determine the bed.",
+                                                                      "body":  [
+                                                                                   "This is the most common and most coherent path because DKA is often more stable after the ED, not finished in the ED.",
+                                                                                   "It also gives the patient room to learn what happened without trying to learn it between lab draws and discharge papers."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Protocols are useful in DKA, but the bedside thinking still matters. The safest sequence is often dictated by the number that looks least glamorous, not by the diagnosis you are already proud to have recognized."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Potassium often decides the next safe step more than glucose does.",
+                                                                                                         "Looking for the trigger is part of emergency care, not an afterthought for the admitting team.",
+                                                                                                         "Disposition should follow the active physiology, not the patient\u0027s age."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Keep him in ED observation until the gap is nearly closed before you choose whether he needs a higher or lower level of inpatient care.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You use the next few hours to make the landing smarter.",
+                                                                      "body":  [
+                                                                                   "That can be a good systems move when the initial direction is right and the trajectory will likely change the bed choice.",
+                                                                                   "It is useful only if there is real monitoring and real willingness to escalate if the course wobbles."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Observation can be part of DKA care when it helps clarify trajectory and destination rather than pretending to replace either."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "The next few labs often matter more than the first reassuring one.",
+                                                                                                         "Emergency medicine often means deciding where a protocol should continue, not whether it should.",
+                                                                                                         "A patient who is clearer may finally be ready to hear the explanation of what is happening."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Treat the improvement as enough to start talking about an unusually fast discharge path if the chemistry keeps moving.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You consider whether the room is stabilizing faster than expected.",
+                                                                      "body":  [
+                                                                                   "This is the least aggressive answer and should be reserved for a truly exceptional trajectory with strong systems support.",
+                                                                                   "Most of the time, a patient who still has an open gap is not actually telling you they are done."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Sometimes the boldest disposition choice is to admit that the illness is not done just because the patient looks better than they looked an hour ago."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Metabolic emergencies often improve before they resolve.",
+                                                                                                         "A fast ED turnaround should be earned, not wished into being.",
+                                                                                                         "Discharge thinking is strongest when it is hard to justify, not easy to imagine."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 }
+                                             ]
+                             }
+               },
+    "startScene":  "start",
+    "banner":  "ADVENTURES IN EMERGENCY MEDICINE",
+    "caseTitle":  "Too Thirsty to Stand"
+}
+  </script>
+</body>
+</html>

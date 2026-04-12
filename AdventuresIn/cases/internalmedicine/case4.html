@@ -1,0 +1,220 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="adventures-case-title" content="The Cough Stayed" />
+  <meta name="adventures-case-subtitle" content="Subacute cough with night sweats" />
+  <title>Adventures in Medicine - Internal Medicine - Case 4</title>
+  <link rel="stylesheet" href="../../adventures-casebook.css" />
+  <script src="../../adventures-case-shell.js" defer></script>
+  <script src="../../adventures-casebook-runtime.js" defer></script>
+</head>
+<body>
+  <noscript>This case requires JavaScript in order to present its interactive choices.</noscript>
+
+  <main class="caseApp">
+    <div class="caseStage">
+      <div class="caseBannerWrap">
+        <div class="caseBanner">ADVENTURES IN INTERNAL MEDICINE</div>
+      </div>
+
+      <section class="caseFrame" aria-live="polite">
+        <h1 class="sceneTitle" id="sceneTitle"></h1>
+        <div class="sceneBody" id="sceneBody"></div>
+        <ul class="sceneBullets isHidden" id="sceneBullets"></ul>
+        <div class="sceneOptions" id="sceneOptions"></div>
+        <div class="sceneFooter">
+          <button type="button" class="backButton" id="backButton" aria-label="Go back" disabled>&larr;</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script id="adventures-casebook-data" type="application/json">
+{
+    "scenes":  {
+                   "start":  {
+                                 "title":  "Case 4: The Cough Stayed",
+                                 "body":  [
+                                              "Nolan, 57, comes in because a cough that started like a routine illness never really left. Now there is weight loss, occasional streaks of blood, and enough night sweating that he has started sleeping on a towel.",
+                                              "He is still walking and working, which makes the room feel deceptively outpatient.",
+                                              "The question is not whether he looks sick enough for urgency. It is whether the differential is serious enough to demand it anyway."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "next":  "step1",
+                                                     "label":  "Begin the case"
+                                                 }
+                                             ]
+                             },
+                   "step1":  {
+                                 "title":  "How do you frame a cough that has outlived its original story?",
+                                 "body":  [
+                                              "Nolan mentions a long smoking history, recent travel abroad to visit family, and an assumption that this was bronchitis that simply forgot to end."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Open broadly around timeline, exposures, hemoptysis, constitutional symptoms, and functional change before naming a lane.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This is often the strongest opening because malignancy, infection, and inflammatory disease can all share this surface.",
+                                                                                   "It keeps epidemiologic clues from arriving too late."
+                                                                               ],
+                                                                      "title":  "You let the cough remain a syndrome for a little longer."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Lean early into malignancy because smoking and weight loss make that branch too important to leave vague.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be very reasonable and may ultimately be right.",
+                                                                                   "The tradeoff is that infectious risk can become quieter than it should in a room with public-health implications."
+                                                                               ],
+                                                                      "title":  "You let consequence narrow the first conversation."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Treat lingering infection as the leading story unless the next layer of history clearly pushes you away from it.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be fair if you are genuinely ready to abandon it quickly when the red flags accumulate.",
+                                                                                   "It becomes weaker when the red flags already outnumber the reassuring features."
+                                                                               ],
+                                                                      "title":  "You give the common explanation one serious pass."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step2":  {
+                                 "title":  "What should the first workup try to settle?",
+                                 "body":  [
+                                              "He is oxygenating well, but looks thinner than expected and has scattered right-sided crackles. The blood in the sputum is not dramatic, which is another way of saying it is definitely there."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Get chest imaging, basic labs, and infection-aware testing while keeping precautions in view.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This is often the strongest next step because the case may matter to other people, not just to Nolan.",
+                                                                                   "It also gives you anatomy without pretending you already know which serious lane wins."
+                                                                               ],
+                                                                      "title":  "You let the first workup answer both the patient question and the contagion question."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Move fast toward CT-level imaging because plain films may not give enough direction in a room this loaded with red flags.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be an excellent choice when malignancy and complicated infection are both high on the list.",
+                                                                                   "The cost is that some of the first operational decisions may still need to be made in parallel."
+                                                                               ],
+                                                                      "title":  "You ask for more definitive anatomy early."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Use a narrower infection-first workup before deciding whether the malignancy branch needs to dominate.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That may be reasonable in lower-risk subacute cough.",
+                                                                                   "Here, it becomes weaker if the constitutional symptoms are already asking you to act like the differential is heavier."
+                                                                               ],
+                                                                      "title":  "You let common infection answer one clean question first."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step3":  {
+                                 "title":  "How do you set the tempo once the imaging is concerning but not self-explanatory?",
+                                 "body":  [
+                                              "Imaging shows a right upper lobe cavitary process that could fit more than one serious story. Nolan still feels mostly functional, which keeps trying to soften the rest of the room."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Keep infection and malignancy equally alive, and let the next tests and precautions reflect both possibilities.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You resist choosing a winner before the room has earned one.",
+                                                                      "body":  [
+                                                                                   "This is often the strongest stance because a cavitary lesion can punish premature closure in several directions at once.",
+                                                                                   "It also keeps public-health implications from disappearing just because cancer is plausible."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Subacute cough becomes high-stakes not only when the patient looks ill, but when the differential contains diseases that change quickly or matter to others beyond the patient."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Stable appearance does not erase malignancy or transmissible infection risk.",
+                                                                                                         "Early broad framing is especially valuable when imaging can fit more than one serious story.",
+                                                                                                         "Tempo decisions often matter as much as diagnosis decisions in Internal Medicine."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Use a carefully structured outpatient plan only if diagnostic speed and infection-control logistics are truly concrete.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You keep clinic pacing available, but only if clinic pacing is actually fast.",
+                                                                      "body":  [
+                                                                                   "This can be safe in the right system with the right access.",
+                                                                                   "It becomes fragile if the plan assumes urgency without actually delivering it."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Outpatient workup can still be urgent medicine, but only if the system can support the urgency you are promising."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Logistics are part of risk stratification.",
+                                                                                                         "Precautions matter when infection is still on the table.",
+                                                                                                         "A good outpatient plan should sound specific enough to repeat back."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Escalate the setting because the cluster of symptoms and imaging findings makes slower pacing feel too optimistic.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You let the whole constellation lower your threshold for faster care.",
+                                                                      "body":  [
+                                                                                   "That may be the strongest answer if hemoptysis, access concerns, or public-health logistics make outpatient management too thin.",
+                                                                                   "The important thing is that the escalation is about the whole case, not just about the image looking ominous."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Some Internal Medicine cases become urgent because the differential is dangerous, the logistics are fragile, or the consequences of delay spread beyond the patient."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "The right setting is the one most likely to deliver the plan you are describing.",
+                                                                                                         "Diagnostic ambiguity should widen operational planning rather than narrow it.",
+                                                                                                         "A patient who looks functional can still need a fast workup."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 }
+                                             ]
+                             }
+               },
+    "startScene":  "start",
+    "banner":  "ADVENTURES IN INTERNAL MEDICINE",
+    "caseTitle":  "The Cough Stayed"
+}
+  </script>
+</body>
+</html>

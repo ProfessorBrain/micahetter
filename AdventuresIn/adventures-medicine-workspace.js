@@ -37,8 +37,8 @@
       candidatePrefixes: [
         "cases/internalmedicine/case"
       ],
-      shortPrompt: "Adult medicine cases are preparing for the archive.",
-      seriesPrompt: "This archive is staged and waiting for its first published cases.",
+      shortPrompt: "Published internal medicine cases are ready to open now.",
+      seriesPrompt: "Choose from the published internal medicine cases in this archive.",
       baseColor: "#ff2d22",
       topColor: "#ffd62c",
       accentColor: "#ff9d17",
@@ -60,8 +60,8 @@
       candidatePrefixes: [
         "cases/emergency-medicine/case"
       ],
-      shortPrompt: "Time-sensitive emergency cases are on deck.",
-      seriesPrompt: "This archive is staged and waiting for its first published cases.",
+      shortPrompt: "Published emergency medicine cases are ready to open now.",
+      seriesPrompt: "Choose from the published emergency cases in this archive.",
       baseColor: "#ff2d22",
       topColor: "#ffd62c",
       accentColor: "#ff9d17",

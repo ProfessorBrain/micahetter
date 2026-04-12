@@ -1,0 +1,220 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="adventures-case-title" content="The Belly Keeps Filling" />
+  <meta name="adventures-case-subtitle" content="Ascites and early satiety" />
+  <title>Adventures in Medicine - Internal Medicine - Case 9</title>
+  <link rel="stylesheet" href="../../adventures-casebook.css" />
+  <script src="../../adventures-case-shell.js" defer></script>
+  <script src="../../adventures-casebook-runtime.js" defer></script>
+</head>
+<body>
+  <noscript>This case requires JavaScript in order to present its interactive choices.</noscript>
+
+  <main class="caseApp">
+    <div class="caseStage">
+      <div class="caseBannerWrap">
+        <div class="caseBanner">ADVENTURES IN INTERNAL MEDICINE</div>
+      </div>
+
+      <section class="caseFrame" aria-live="polite">
+        <h1 class="sceneTitle" id="sceneTitle"></h1>
+        <div class="sceneBody" id="sceneBody"></div>
+        <ul class="sceneBullets isHidden" id="sceneBullets"></ul>
+        <div class="sceneOptions" id="sceneOptions"></div>
+        <div class="sceneFooter">
+          <button type="button" class="backButton" id="backButton" aria-label="Go back" disabled>&larr;</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script id="adventures-casebook-data" type="application/json">
+{
+    "scenes":  {
+                   "start":  {
+                                 "title":  "Case 9: The Belly Keeps Filling",
+                                 "body":  [
+                                              "Ruben, 59, comes in because his abdomen has become steadily more tense and his appetite keeps fading after a few bites. He says his pants fit oddly and sleeping flat has become less comfortable.",
+                                              "He still goes to work, which keeps the room from feeling dramatic even though the physiology is trying to tell a larger story.",
+                                              "The challenge is deciding whether this is primarily a liver room, a heart room, a malignancy room, or a syndrome that still belongs to all three."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "next":  "step1",
+                                                     "label":  "Begin the case"
+                                                 }
+                                             ]
+                             },
+                   "step1":  {
+                                 "title":  "How do you frame new ascites?",
+                                 "body":  [
+                                              "Ruben has a history of heavy alcohol use years ago but now drinks only occasionally by his report. He has some leg edema, mild scleral icterus, and no frank respiratory distress."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Open broadly around liver risk, cardiac symptoms, cancer clues, and tempo of abdominal change before you name the syndrome too narrowly.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This is often the strongest opening because new ascites can reflect portal, cardiac, malignant, or inflammatory physiology that looks similar from the doorway.",
+                                                                                   "It gives multiple organ systems a fair first hearing before one of them inherits the room."
+                                                                               ],
+                                                                      "title":  "You let ascites stay a syndrome long enough to show its origin."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Treat this mainly as decompensated liver disease from the start because the exam and history already feel hepatically weighted.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be very reasonable and may ultimately be correct.",
+                                                                                   "The tradeoff is that malignant and cardiac causes get quieter before they have actually been asked to leave."
+                                                                               ],
+                                                                      "title":  "You let one likely system lead early."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Frame the visit first around abdominal distension and symptom burden, letting the organ-system question settle later.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can help keep the patient-centered problem visible.",
+                                                                                   "It becomes weaker if source-finding is what actually determines how urgently the room should move."
+                                                                               ],
+                                                                      "title":  "You let the consequence of the fluid lead before its source does."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step2":  {
+                                 "title":  "What should the first workup answer?",
+                                 "body":  [
+                                              "He has shifting dullness, trace edema, and labs that are beginning to suggest synthetic dysfunction but not with perfect clarity. The abdomen feels full rather than surgical."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Order the standard first-pass ascites workup, including diagnostic paracentesis planning, while keeping liver, cardiac, and malignant causes active.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This is often the strongest next step because paracentesis changes both diagnostic confidence and immediate safety.",
+                                                                                   "It keeps the workup syndrome-centered instead of label-centered."
+                                                                               ],
+                                                                      "title":  "You let the fluid tell you what system pressures created it."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Push first toward liver-focused labs and imaging, letting paracentesis follow once the hepatic picture is more convincing.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be thoughtful if the bedside pattern feels strongly hepatic.",
+                                                                                   "It becomes less strong if the fluid itself is the most informative next test you have available."
+                                                                               ],
+                                                                      "title":  "You let one likely explanation shape the sequence."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Use diuretic-style symptomatic management first and let the initial response help determine how much deeper the workup needs to go.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can help the patient and sometimes clarify the trajectory.",
+                                                                                   "It becomes weaker when the diagnosis and complication profile depend on fluid analysis rather than on whether the swelling temporarily softens."
+                                                                               ],
+                                                                      "title":  "You use symptom treatment as a first diagnostic nudge."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step3":  {
+                                 "title":  "How do you set the tempo once the syndrome is real?",
+                                 "body":  [
+                                              "Paracentesis confirms high-volume ascites and the rest of the labs suggest liver disease, though not with enough precision to make the story feel complete. Ruben wants to know whether this is a â€œstart medicine and follow upâ€ problem or the kind of thing that changes the week."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Treat this as a syndrome that needs symptom relief, complication screening, and fast cause-directed workup at the same time.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You let the syndrome widen the plan instead of ending it.",
+                                                                      "body":  [
+                                                                                   "This is often the strongest plan because new ascites changes infection risk, kidney risk, and disposition even before the final label is polished.",
+                                                                                   "It gives Ruben a tempo that matches both the physiology and the unanswered question."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Ascites is often a syndromic diagnosis before it is an etiologic one. Internal Medicine gets stronger when it manages the syndrome and investigates the source in parallel."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Paracentesis often matters because the fluid itself is data.",
+                                                                                                         "A patient who looks stable can still have a workup that should move quickly.",
+                                                                                                         "Tempo and source-finding are tightly linked in new ascites."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Use a carefully structured outpatient path only if procedures, labs, follow-up, and return thresholds are concrete enough to be real.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You keep clinic pacing possible, but only if the system can actually carry it.",
+                                                                      "body":  [
+                                                                                   "That can be safe for the right patient in the right system.",
+                                                                                   "It becomes fragile if â€œclose follow-upâ€ is the most specific part of the plan."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Outpatient management of ascites can be excellent, but only when it is specific enough to manage the risks it is inheriting."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Logistics are part of physiologic safety.",
+                                                                                                         "Symptom burden and complication risk both matter.",
+                                                                                                         "A calm room can still deserve a fast plan."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Escalate the care setting if the fluid burden, kidney risk, diagnostic uncertainty, or practical barriers make slower pacing feel too thin.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You let the syndrome lower your threshold for more monitored care.",
+                                                                      "body":  [
+                                                                                   "That may be the strongest answer if the problem has already become too operationally complex for ordinary outpatient timing.",
+                                                                                   "The key is that escalation is about total risk, not just about discomfort with uncertainty."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Many Internal Medicine escalation decisions are best understood as tempo decisions in the face of layered risk."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "A good setting is one that can deliver the plan you think the patient needs.",
+                                                                                                         "Source-finding and complication management should move together.",
+                                                                                                         "The body can compensate for a while without making the syndrome low-stakes."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 }
+                                             ]
+                             }
+               },
+    "startScene":  "start",
+    "banner":  "ADVENTURES IN INTERNAL MEDICINE",
+    "caseTitle":  "The Belly Keeps Filling"
+}
+  </script>
+</body>
+</html>

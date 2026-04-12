@@ -1,0 +1,265 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="adventures-case-title" content="Pressure Through Dinner" />
+  <meta name="adventures-case-subtitle" content="Chest pressure after a meal" />
+  <title>Adventures in Medicine - Emergency Medicine - Case 1</title>
+  <link rel="stylesheet" href="../../adventures-casebook.css" />
+  <script src="../../adventures-case-shell.js" defer></script>
+  <script src="../../adventures-casebook-runtime.js" defer></script>
+</head>
+<body>
+  <noscript>This case requires JavaScript in order to present its interactive choices.</noscript>
+
+  <main class="caseApp">
+    <div class="caseStage">
+      <div class="caseBannerWrap">
+        <div class="caseBanner">ADVENTURES IN EMERGENCY MEDICINE</div>
+      </div>
+
+      <section class="caseFrame" aria-live="polite">
+        <h1 class="sceneTitle" id="sceneTitle"></h1>
+        <div class="sceneBody" id="sceneBody"></div>
+        <ul class="sceneBullets isHidden" id="sceneBullets"></ul>
+        <div class="sceneOptions" id="sceneOptions"></div>
+        <div class="sceneFooter">
+          <button type="button" class="backButton" id="backButton" aria-label="Go back" disabled>&larr;</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script id="adventures-casebook-data" type="application/json">
+{
+    "scenes":  {
+                   "start":  {
+                                 "title":  "Case 1: Pressure Through Dinner",
+                                 "body":  [
+                                              "You are working a busy emergency department shift when Martin, 54, is roomed for central chest pressure that started during dinner and never fully let up.",
+                                              "He is pale enough to notice, talking in full sentences, and keeps pressing the heel of his hand into the center of his sternum. He seems eager to call it reflux before you do.",
+                                              "The first challenge here is not naming the diagnosis. It is deciding how much danger to assume before the first reassuring data point arrives."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "next":  "step1",
+                                                     "label":  "Begin the case"
+                                                 }
+                                             ]
+                             },
+                   "step1":  {
+                                 "title":  "What do you do before the story gets longer?",
+                                 "body":  [
+                                              "The monitor is not on yet. A nurse is at the doorway. Martin says the pain climbed toward his jaw for a few minutes on the drive in and now feels a little less dramatic.",
+                                              "You have room for more than one move, but not for every move."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Stay at the bedside, ask for an ECG and aspirin, and use the next minute to clarify onset, radiation, and exertional triggers.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "The room starts moving in parallel. You do not get a perfect history, but you get the pieces most likely to change urgency while the first tracing prints.",
+                                                                                   "This approach spends certainty later in exchange for speed now, which is often a reasonable bargain when active chest pain is still live."
+                                                                               ],
+                                                                      "title":  "You make the first minute do two jobs."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Spend the first few minutes on a very complete chest pain history before you order anything.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "You learn more about prior episodes, family history, and his tendency toward heartburn, but the room stays oddly static while you do it.",
+                                                                                   "The history is cleaner. The cost is that your first objective data arrive later than they needed to."
+                                                                               ],
+                                                                      "title":  "You buy detail by spending time first."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Try a GI cocktail first and see whether symptom relief helps label the pain.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "If the pain softens, that may help Martin relax, but it does not do much to separate reflux from something more dangerous.",
+                                                                                   "Early symptom treatment can be humane. It can also create a false sense that the case has declared itself."
+                                                                               ],
+                                                                      "title":  "You test one story before the rest are done introducing themselves."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step2":  {
+                                 "title":  "Where do you narrow next?",
+                                 "body":  [
+                                              "The ECG shows no obvious STEMI, but it is not elegantly normal either. Martin still rates the pressure as 6 out of 10 and now admits he felt sweaty walking in from the parking lot.",
+                                              "Nothing in the room is definitive. Plenty in the room is still worth respecting."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Keep serial ECG and troponin moving while you ask about exertion, diaphoresis, prior coronary history, and immediate family events.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This keeps the workup anchored to acute coronary syndrome without pretending the first ECG settled anything.",
+                                                                                   "It is a disciplined move, though it risks underemphasizing less common but equally bad alternatives if you never reopen the frame."
+                                                                               ],
+                                                                      "title":  "You keep the most common dangerous path in front."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Broaden immediately to dissection, PE, and other catastrophic causes with pulse checks, back pain questions, neuro symptoms, and clot risk.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That broadness protects you from premature closure, especially because nondiagnostic ECGs are common in sick patients.",
+                                                                                   "The tradeoff is that you can spend a lot of attention on lower-probability branches before the more likely branch is fully characterized."
+                                                                               ],
+                                                                      "title":  "You widen the lens before the room can narrow itself."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Wait for labs before you commit more of the interview to any one direction.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This keeps you from overbuilding around a first impression, but it also slows the clinical synthesis that helps you decide what data matter most.",
+                                                                                   "In chest pain, silence from the clinician can feel safe while actually being a subtle form of drift."
+                                                                               ],
+                                                                      "title":  "You let data arrive before you spend more cognitive weight."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step3":  {
+                                 "title":  "What deserves parallel attention now?",
+                                 "body":  [
+                                              "The first troponin returns negative. After nitroglycerin the pressure falls to 3 out of 10, but it is not gone. Martin looks better, which is helpful but not clarifying.",
+                                              "You still need a plan for the next hour, not just a reaction to the last ten minutes."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Keep him on the monitor and commit to repeat ECG and repeat troponin before you talk seriously about disposition.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This approach respects the fact that many concerning chest pain cases are not decided by the first wave of data.",
+                                                                                   "It can feel unsatisfying because it buys time more than closure, but time is often part of the diagnostic workup in the ED."
+                                                                               ],
+                                                                      "title":  "You treat the next hour as part of the test."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Push immediately toward CT-based imaging because the uncertainty itself feels dangerous.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "Cross-sectional imaging can be useful when the story starts leaning toward aortic or thromboembolic disease, and it can feel more decisive than serial biomarkers.",
+                                                                                   "The risk is that you end up chasing a scan because uncertainty is uncomfortable rather than because the bedside story truly changed."
+                                                                               ],
+                                                                      "title":  "You try to outrun ambiguity with anatomy."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Test whether he is already drifting into a lower-risk lane by ambulating him and talking through rapid outpatient follow-up.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That may reveal how stable he really feels, but improvement after treatment is not the same thing as reassurance.",
+                                                                                   "You are strongest here only if you keep the threshold for backing away from discharge very low."
+                                                                               ],
+                                                                      "title":  "You explore whether the room is actually calming down."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step4":  {
+                                 "title":  "How do you close the loop if he wants to leave tonight?",
+                                 "body":  [
+                                              "Martin says the pain is now just an ache and asks whether he can sleep in his own bed instead of staying for more testing. He is polite, not reckless, and clearly wants a grown-up answer rather than a lecture.",
+                                              "This is where emergency medicine turns from workup into judgment."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Recommend observation and serial testing, and explain that the first reassuring wave is not enough yet.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You name the remaining risk directly.",
+                                                                      "body":  [
+                                                                                   "Martin may still push back, but he now understands that the concern is about trajectory more than panic.",
+                                                                                   "This keeps the conversation aligned with uncertainty instead of pretending you have more certainty than you do."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Chest pain is often less about guessing the diagnosis in one pass and more about making sure the dangerous paths stay active until the data earn their way out."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Parallel action at the bedside usually beats a beautiful but delayed interview.",
+                                                                                                         "A single reassuring result should not outrank ongoing symptoms or a concerning story.",
+                                                                                                         "Disposition is strongest when it matches the patient\u0027s trajectory, not just the first test result."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Use shared decision-making around one more troponin and one more reassessment before you lock in the final disposition.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You buy one more cycle of data and honesty.",
+                                                                      "body":  [
+                                                                                   "This can be an excellent middle path when the patient is stable and engaged, because it turns the next hour into a deliberate plan rather than a vague delay.",
+                                                                                   "It only works if you are willing to let the new data change your mind in either direction."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "The most useful chest pain conversations often turn uncertainty into a plan the patient can actually understand and tolerate."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Serial reassessment is a decision, not a failure to decide.",
+                                                                                                         "Shared decision-making works best when the clinician is explicit about what still worries them.",
+                                                                                                         "A patient who wants to leave is not necessarily a patient who wants less medicine; often they want clearer reasoning."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Call cardiology now so the disposition is shared rather than carried alone.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You make the uncertainty multidisciplinary.",
+                                                                      "body":  [
+                                                                                   "Consultation can be exactly right when your next step may be observation, stress testing, or admission and you want the downstream plan to fit the room in front of you.",
+                                                                                   "The risk is using the consultant as a substitute for your own bedside synthesis rather than as an extension of it."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Consults are most useful when they sharpen a plan you can already explain, not when they replace the need to explain it."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Emergency medicine often means holding multiple reasonable pathways open at the same time.",
+                                                                                                         "The patient\u0027s story, serial exams, and serial data usually matter more than any one isolated test.",
+                                                                                                         "Good disposition planning should feel shared without becoming vague."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 }
+                                             ]
+                             }
+               },
+    "startScene":  "start",
+    "banner":  "ADVENTURES IN EMERGENCY MEDICINE",
+    "caseTitle":  "Pressure Through Dinner"
+}
+  </script>
+</body>
+</html>

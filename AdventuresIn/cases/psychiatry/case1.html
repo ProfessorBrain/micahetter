@@ -72,16 +72,21 @@
       padding: 0.7rem 1.5rem;
       border-radius: 999px;
       background: var(--red);
+      border: 2px solid var(--paper);
       color: var(--paper);
       font-family: "Adventures Benguiat", "Fraunces", Georgia, serif;
       font-size: clamp(1rem, 1.6vw, 1.35rem);
       letter-spacing: 0.05em;
       text-align: center;
-      box-shadow: 0 18px 38px rgba(255, 45, 34, 0.2);
+      box-shadow:
+        0 0 0 2px var(--black),
+        0 18px 38px rgba(255, 45, 34, 0.2);
     }
 
     .caseFrame {
       position: relative;
+      display: flex;
+      flex-direction: column;
       flex: 1 1 auto;
       min-height: 0;
       border-radius: 2rem;
@@ -170,6 +175,13 @@
       margin-top: 1.8rem;
     }
 
+    .sceneFooter {
+      display: flex;
+      justify-content: flex-start;
+      margin-top: auto;
+      padding-top: 1.2rem;
+    }
+
     .sceneOption {
       width: 100%;
       border: 1px solid rgba(255, 157, 23, 0.42);
@@ -199,6 +211,38 @@
     .sceneOption:focus-visible {
       outline: 3px solid rgba(255, 214, 44, 0.45);
       outline-offset: 3px;
+    }
+
+    .backButton {
+      border: 1px solid rgba(255, 157, 23, 0.5);
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.94);
+      color: var(--paper);
+      min-width: 3.2rem;
+      min-height: 3.2rem;
+      padding: 0.7rem;
+      font: inherit;
+      font-size: 1.4rem;
+      font-weight: 700;
+      line-height: 1;
+      cursor: pointer;
+      transition: transform 180ms ease, border-color 180ms ease, opacity 180ms ease;
+    }
+
+    .backButton:hover:not(:disabled) {
+      transform: translateY(-1px);
+      border-color: rgba(255, 214, 44, 0.78);
+    }
+
+    .backButton:focus-visible {
+      outline: 3px solid rgba(255, 214, 44, 0.45);
+      outline-offset: 3px;
+    }
+
+    .backButton:disabled {
+      cursor: not-allowed;
+      opacity: 0.42;
+      border-color: rgba(255, 157, 23, 0.22);
     }
 
     .reflectionBox {
@@ -256,20 +300,29 @@
         <div class="sceneBody" id="sceneBody"></div>
         <ul class="sceneBullets isHidden" id="sceneBullets"></ul>
         <div class="sceneOptions" id="sceneOptions"></div>
+        <div class="sceneFooter">
+          <button type="button" class="backButton" id="backButton" aria-label="Go back" disabled>&larr;</button>
+        </div>
       </section>
     </div>
   </main>
 
   <script>
     (function () {
+      const initialState = {
+        ruleoutsDone: false,
+        safetyStatus: "none"
+      };
       const defaultMeta = ["32-year-old patient", "low mood and fatigue", "outpatient PCP visit"];
       const diagnosticMeta = ["depression interview", "medical ruleouts", "risk assessment"];
       const treatmentMeta = ["treatment planning", "follow-up", "reflective feedback"];
 
       const state = {
-        ruleoutsDone: false,
-        safetyStatus: "none"
+        ruleoutsDone: initialState.ruleoutsDone,
+        safetyStatus: initialState.safetyStatus
       };
+      const historyStack = [];
+      let currentSceneId = null;
 
       const scenes = {
         start: {
@@ -733,7 +786,7 @@
           ],
           reflection: "In depression visits, empathy is not enough by itself. Good care also means naming risk directly and ruling out common medical contributors.",
           options: [
-            { label: "Play the case again", next: "start" }
+            { label: "Play the case again", next: "start", resetHistory: true }
           ]
         },
         ending2: function () {
@@ -755,7 +808,7 @@
             ],
             reflection: "Single-modality care can help, but treatment planning works best when it is paired with a full assessment of risk and contributors.",
             options: [
-              { label: "Play the case again", next: "start" }
+              { label: "Play the case again", next: "start", resetHistory: true }
             ]
           };
         },
@@ -775,7 +828,7 @@
           ],
           reflection: "A good psychiatric interview is stronger when it still behaves like good medicine.",
           options: [
-            { label: "Play the case again", next: "start" }
+            { label: "Play the case again", next: "start", resetHistory: true }
           ]
         },
         ending7: {
@@ -794,7 +847,7 @@
           ],
           reflection: "Naming the problem well still has to be followed by treating it well.",
           options: [
-            { label: "Play the case again", next: "start" }
+            { label: "Play the case again", next: "start", resetHistory: true }
           ]
         },
         ending8: {
@@ -813,15 +866,37 @@
           ],
           reflection: "In depression care, the question you avoid may be the question that most changes the outcome.",
           options: [
-            { label: "Play the case again", next: "start" }
+            { label: "Play the case again", next: "start", resetHistory: true }
           ]
         }
       };
 
+      const caseFrame = document.querySelector(".caseFrame");
       const sceneTitle = document.getElementById("sceneTitle");
       const sceneBody = document.getElementById("sceneBody");
       const sceneBullets = document.getElementById("sceneBullets");
       const sceneOptions = document.getElementById("sceneOptions");
+      const backButton = document.getElementById("backButton");
+
+      function snapshotState() {
+        return {
+          ruleoutsDone: state.ruleoutsDone,
+          safetyStatus: state.safetyStatus
+        };
+      }
+
+      function restoreState(snapshot) {
+        state.ruleoutsDone = snapshot.ruleoutsDone;
+        state.safetyStatus = snapshot.safetyStatus;
+      }
+
+      function resetState() {
+        restoreState(initialState);
+      }
+
+      function syncBackButton() {
+        backButton.disabled = historyStack.length === 0;
+      }
 
       function resolveEnding(treatmentChoice) {
         if (treatmentChoice === "supplements") {
@@ -845,6 +920,33 @@
           return scene();
         }
         return scene;
+      }
+
+      function navigateTo(option) {
+        if (!option) {
+          return;
+        }
+
+        if (option && option.resetHistory) {
+          historyStack.length = 0;
+          resetState();
+        } else if (currentSceneId) {
+          historyStack.push({
+            sceneId: currentSceneId,
+            state: snapshotState()
+          });
+        }
+
+        if (typeof option.effect === "function") {
+          option.effect();
+        }
+
+        const nextScene = typeof option.next === "function" ? option.next() : option.next;
+        if (!nextScene) {
+          return;
+        }
+
+        renderScene(nextScene);
       }
 
       function renderScene(sceneId) {
@@ -878,23 +980,34 @@
         }
 
         sceneOptions.innerHTML = "";
+        currentSceneId = sceneId;
         (scene.options || []).forEach(function (option) {
           const button = document.createElement("button");
           button.type = "button";
           button.className = "sceneOption";
           button.textContent = option.label;
           button.addEventListener("click", function () {
-            if (typeof option.effect === "function") {
-              option.effect();
-            }
-            const nextScene = typeof option.next === "function" ? option.next() : option.next;
-            renderScene(nextScene);
+            navigateTo(option);
           });
           sceneOptions.appendChild(button);
         });
 
-        window.scrollTo(0, 0);
+        syncBackButton();
+        if (caseFrame) {
+          caseFrame.scrollTop = 0;
+        }
       }
+
+      backButton.addEventListener("click", function () {
+        const previousEntry = historyStack.pop();
+        if (!previousEntry) {
+          syncBackButton();
+          return;
+        }
+
+        restoreState(previousEntry.state);
+        renderScene(previousEntry.sceneId);
+      });
 
       renderScene("start");
     })();

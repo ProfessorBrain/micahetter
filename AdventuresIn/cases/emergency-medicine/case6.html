@@ -1,0 +1,264 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="adventures-case-title" content="Not Himself Since Noon" />
+  <meta name="adventures-case-subtitle" content="Fever and confusion in an older adult" />
+  <title>Adventures in Medicine - Emergency Medicine - Case 6</title>
+  <link rel="stylesheet" href="../../adventures-casebook.css" />
+  <script src="../../adventures-case-shell.js" defer></script>
+  <script src="../../adventures-casebook-runtime.js" defer></script>
+</head>
+<body>
+  <noscript>This case requires JavaScript in order to present its interactive choices.</noscript>
+
+  <main class="caseApp">
+    <div class="caseStage">
+      <div class="caseBannerWrap">
+        <div class="caseBanner">ADVENTURES IN EMERGENCY MEDICINE</div>
+      </div>
+
+      <section class="caseFrame" aria-live="polite">
+        <h1 class="sceneTitle" id="sceneTitle"></h1>
+        <div class="sceneBody" id="sceneBody"></div>
+        <ul class="sceneBullets isHidden" id="sceneBullets"></ul>
+        <div class="sceneOptions" id="sceneOptions"></div>
+        <div class="sceneFooter">
+          <button type="button" class="backButton" id="backButton" aria-label="Go back" disabled>&larr;</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script id="adventures-casebook-data" type="application/json">
+{
+    "scenes":  {
+                   "start":  {
+                                 "title":  "Case 6: Not Himself Since Noon",
+                                 "body":  [
+                                              "Mr. Alvarez, 74, is brought in by his daughter because he has been confused since early afternoon and looked chilled at dinner. He is usually sharp enough to manage the family calendar and tonight cannot remember why he is in the hospital.",
+                                              "He has a low-grade fever, looks dry, and has no obvious focal deficit at first glance. His daughter keeps asking whether this is just another UTI.",
+                                              "Older patients can make common illnesses look dramatic and dangerous illnesses look common."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "next":  "step1",
+                                                     "label":  "Begin the case"
+                                                 }
+                                             ]
+                             },
+                   "step1":  {
+                                 "title":  "What gets priority at the bedside?",
+                                 "body":  [
+                                              "The nurse has cultures half set up already and asks whether you want fluids and antibiotics now or more clarity first. Mr. Alvarez is not crashing, but he is not normal either."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Treat this like possible sepsis while you examine him and gather collateral, using fluids, cultures, and broad labs in parallel.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This approach respects the fact that altered older adults can decompensate before the diagnosis becomes elegant.",
+                                                                                   "It is broad by design, which is often appropriate before the source is obvious."
+                                                                               ],
+                                                                      "title":  "You act on instability without pretending you know the source."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Send him for head imaging before you build the rest of the workup because confusion can hide a central process.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That is understandable, especially when altered mental status arrives without a clean explanation.",
+                                                                                   "The cost is that the more common infectious and metabolic causes may remain undertreated while the scan moves."
+                                                                               ],
+                                                                      "title":  "You protect the neurologic branch early."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Start with a longer collateral history and focused exam before you commit to treatment bundles.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "Collateral can dramatically improve this case, especially around timeline, baseline, and medication changes.",
+                                                                                   "The tradeoff is that the patient may need treatment before the story is tidy enough to satisfy you."
+                                                                               ],
+                                                                      "title":  "You ask the room to tell you what it is before you treat it."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step2":  {
+                                 "title":  "How do you narrow when no source is clean yet?",
+                                 "body":  [
+                                              "Temperature is 38.8 C, blood pressure is 98 over 60, and he has no obvious meningismus or focal weakness. Urinalysis is suggestive but not definitive, and his daughter says he had been sleeping more even yesterday.",
+                                              "This is the kind of case that invites premature closure because one common answer is nearby."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Continue broad sepsis care and let source-finding happen on top of treatment rather than before it.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That is a strong ED answer when the patient\u0027s physiology is already leaning toward you.",
+                                                                                   "The downside is mostly cognitive: you must keep looking for a source after treatment starts."
+                                                                               ],
+                                                                      "title":  "You separate management urgency from diagnostic elegance."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Reopen the possibility of meningitis or encephalitis enough to decide whether LP belongs in tonight\u0027s plan.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This protects against anchoring, especially when confusion is out of proportion to the rest of the picture.",
+                                                                                   "It can also expand the workup quickly if you are not careful about the pretest story you are actually acting on."
+                                                                               ],
+                                                                      "title":  "You resist the seductive pull of the almost-positive urinalysis."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Use a smaller fluid bolus and bedside reassessment first so you do not overtreat a patient whose problem may not be septic after all.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be reasonable in older patients when heart failure, renal disease, or mixed etiologies are on your mind.",
+                                                                                   "The risk is that caution feels gentler while actually asking the patient to prove they are sick enough."
+                                                                               ],
+                                                                      "title":  "You let caution shape the treatment pace."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step3":  {
+                                 "title":  "What deserves attention once the first labs land?",
+                                 "body":  [
+                                              "Lactate is 3.2, creatinine is worse than baseline, and Mr. Alvarez is a little more interactive after fluids but still clearly off. The daughter says he is never this slow, even when he is tired.",
+                                              "You now have partial response without actual resolution."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Stay in the sepsis lane, broaden source evaluation as needed, and let the partial improvement reinforce rather than replace your concern.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This uses the improvement correctly: it tells you treatment may be helping, not that the danger has passed.",
+                                                                                   "It also keeps the family from hearing improvement as the same thing as discharge readiness."
+                                                                               ],
+                                                                      "title":  "You treat response as data, not absolution."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Use the partial improvement to push harder on alternate diagnoses such as stroke, tox, or intracranial pathology.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That is often wise when altered mental status does not fit the presumed source neatly.",
+                                                                                   "The trick is doing it without letting the sepsis treatment lane cool off prematurely."
+                                                                               ],
+                                                                      "title":  "You refuse to let one plausible answer monopolize the room."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Wait for more trend before escalating because he is not worse and may simply need more time.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "Sometimes it does, especially when volume depletion is a major piece of the story.",
+                                                                                   "Sometimes it mostly delays the moment you admit he is still sick enough to need monitored care."
+                                                                               ],
+                                                                      "title":  "You test whether another hour will simplify the case."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step4":  {
+                                 "title":  "How do you decide where he belongs tonight?",
+                                 "body":  [
+                                              "After initial treatment he is more awake, but not back to baseline. He remains frail, mildly hypotensive, and unable to walk safely to the bathroom without help.",
+                                              "The family is relieved he improved but is not asking to take him home."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Admit him for monitored care because improved confusion is still confusion, and the source is not settled enough for anything lighter.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You let residual dysfunction keep its vote.",
+                                                                      "body":  [
+                                                                                   "This is often the right landing for older altered patients whose physiology improved without normalizing.",
+                                                                                   "It respects how quickly these cases can wobble again after the ED adrenaline fades."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Fever and confusion in an older adult are usually more about trajectory than about one beautiful diagnostic clue. Improvement matters, but incomplete improvement matters too."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Treating possible sepsis early does not excuse you from continuing to search for the source.",
+                                                                                                         "A suggestive urinalysis should not automatically close every altered-mental-status case.",
+                                                                                                         "Disposition should match baseline function, residual deficits, and how much of the story is still unresolved."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Escalate to step-down or ICU if the blood pressure and renal injury keep the room feeling too soft for an ordinary floor bed.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You let the physiology, not the diagnosis label, determine the bed.",
+                                                                      "body":  [
+                                                                                   "That is a thoughtful answer when the patient\u0027s numbers still look like they may misbehave overnight.",
+                                                                                   "Higher-acuity placement can be a pacing decision as much as a panic decision."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Level of care decisions are often about how much volatility you expect, not just about how dramatic the room looks this second."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "The patient who is better after fluids may still be one bad hour away from looking much worse again.",
+                                                                                                         "Frailty changes the consequence of being almost stable.",
+                                                                                                         "Good emergency medicine includes picking the right surveillance intensity."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Keep him in the ED a little longer for one more reassessment cycle before you request the bed.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You buy clarity before you choose the floor.",
+                                                                      "body":  [
+                                                                                   "This can be useful when the response curve itself may tell you whether he is floor-ready or not.",
+                                                                                   "It only helps if you plan to let the reassessment change the level of care rather than merely delay the phone call."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Another hour can be valuable in altered older adults, but only if you know what you are looking for in that hour."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Observation should answer a placement question, not avoid one.",
+                                                                                                         "Family descriptions of baseline are high-value emergency data.",
+                                                                                                         "A room that is less alarming is not automatically a room that is safe for discharge."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 }
+                                             ]
+                             }
+               },
+    "startScene":  "start",
+    "banner":  "ADVENTURES IN EMERGENCY MEDICINE",
+    "caseTitle":  "Not Himself Since Noon"
+}
+  </script>
+</body>
+</html>

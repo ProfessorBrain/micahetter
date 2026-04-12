@@ -1,0 +1,264 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="adventures-case-title" content="This One Landed Different" />
+  <meta name="adventures-case-subtitle" content="A sudden severe headache" />
+  <title>Adventures in Medicine - Emergency Medicine - Case 4</title>
+  <link rel="stylesheet" href="../../adventures-casebook.css" />
+  <script src="../../adventures-case-shell.js" defer></script>
+  <script src="../../adventures-casebook-runtime.js" defer></script>
+</head>
+<body>
+  <noscript>This case requires JavaScript in order to present its interactive choices.</noscript>
+
+  <main class="caseApp">
+    <div class="caseStage">
+      <div class="caseBannerWrap">
+        <div class="caseBanner">ADVENTURES IN EMERGENCY MEDICINE</div>
+      </div>
+
+      <section class="caseFrame" aria-live="polite">
+        <h1 class="sceneTitle" id="sceneTitle"></h1>
+        <div class="sceneBody" id="sceneBody"></div>
+        <ul class="sceneBullets isHidden" id="sceneBullets"></ul>
+        <div class="sceneOptions" id="sceneOptions"></div>
+        <div class="sceneFooter">
+          <button type="button" class="backButton" id="backButton" aria-label="Go back" disabled>&larr;</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script id="adventures-casebook-data" type="application/json">
+{
+    "scenes":  {
+                   "start":  {
+                                 "title":  "Case 4: This One Landed Different",
+                                 "body":  [
+                                              "Maya, 38, comes in after a workout ended with a headache that she describes as different from every other headache she has ever had. She vomited once in the waiting room and still looks unsettled.",
+                                              "Her neurologic exam is clean at first pass. That is comforting without being conclusive.",
+                                              "The difficulty here is that the scariest headache diagnoses often coexist with a patient who can still talk to you normally."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "next":  "step1",
+                                                     "label":  "Begin the case"
+                                                 }
+                                             ]
+                             },
+                   "step1":  {
+                                 "title":  "What gets the opening move?",
+                                 "body":  [
+                                              "She wants the pain treated quickly, and you want that too. You also know that the first few minutes shape whether the rest of the workup stays broad."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Do a focused neuro exam, get the noncontrast head CT moving, and treat pain in parallel instead of serially.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This keeps the workup honest while still acting like symptoms matter.",
+                                                                                   "In sudden severe headache, parallel care often protects both the patient and the clinician from false choices."
+                                                                               ],
+                                                                      "title":  "You refuse to choose between comfort and urgency."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Lead with migraine treatment and see whether improvement changes how hard you need to chase the dangerous branch.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be humane and sometimes informative, especially in patients with a long headache history.",
+                                                                                   "The risk is that pain relief becomes a proxy for reassurance even when it should not."
+                                                                               ],
+                                                                      "title":  "You test the common explanation before committing to the uncommon one."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Spend several more minutes building a very detailed headache history before you order imaging.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "A careful history matters here, especially around thunderclap timing and associated symptoms.",
+                                                                                   "The tradeoff is that early imaging is one of the few things in this room that can change the ground beneath your feet quickly."
+                                                                               ],
+                                                                      "title":  "You ask the history to carry the first layer of risk."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step2":  {
+                                 "title":  "How do you respond when the first test is reassuring but not finishing?",
+                                 "body":  [
+                                              "The CT is read as negative. Her pain is better after medication, but she keeps saying this still feels wrong and still is not like her prior headaches.",
+                                              "Now you are in the uncomfortable territory where negative is not the same thing as closed."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Talk through LP or CTA because your concern is lower than at the door but not low enough to stop.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This is a nuanced path because it treats the normal CT as important but not omnipotent.",
+                                                                                   "It also invites the patient into the uncertainty rather than forcing certainty onto the room."
+                                                                               ],
+                                                                      "title":  "You acknowledge the residual risk instead of arguing it away."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Treat the negative CT and improving symptoms as enough to move her toward a primary-headache frame.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That may be right, and it will often feel tempting once the patient looks more comfortable.",
+                                                                                   "The danger is that unusual symptoms become easier to discount precisely because the room is calmer now."
+                                                                               ],
+                                                                      "title":  "You let the common diagnosis reclaim some territory."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Observe longer with repeat neuro checks before you decide whether another test is still worth it.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be a very reasonable middle path when the patient is stable and engaged.",
+                                                                                   "Its weakness is that observation clarifies trajectory better than it clarifies anatomy."
+                                                                               ],
+                                                                      "title":  "You turn uncertainty into serial examination."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step3":  {
+                                 "title":  "What matters if she keeps improving but the story still bothers you?",
+                                 "body":  [
+                                              "An hour later Maya looks less miserable and the exam remains normal. She now says she would rather avoid an LP if there is another reasonable path, but she is not demanding discharge.",
+                                              "The case has become more negotiable without necessarily becoming safer."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Use CTA as the next test because it fits her preferences while still respecting the concern that remains.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That is often a thoughtful emergency move when the patient\u0027s preferences are real and the residual concern is real.",
+                                                                                   "It does not make the room perfect; it makes the next step more aligned."
+                                                                               ],
+                                                                      "title":  "You choose the next-best clarifier the patient can accept."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Keep LP in front because ruling out the dangerous branch matters more than preserving the tidier patient experience.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be exactly right when the concern remains meaningfully above your threshold.",
+                                                                                   "The key is that the argument for LP should come from the residual risk, not from reflex."
+                                                                               ],
+                                                                      "title":  "You prioritize the diagnostic standard over the smoother experience."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Decide that the trend toward normal is strong enough to support discharge with very explicit return precautions.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "Sometimes the safest thing is not more testing but a very honest discharge conversation.",
+                                                                                   "This path should feel deliberate, not like fatigue dressed up as confidence."
+                                                                               ],
+                                                                      "title":  "You give the trajectory more authority than the worry."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step4":  {
+                                 "title":  "How do you land a headache case that still feels a little unfinished?",
+                                 "body":  [
+                                              "Maya asks the question many headache patients eventually ask: if she is acting normal and the first scan was negative, why should tonight still be different?",
+                                              "Your answer has to balance probability, consequence, and the fact that emergency medicine is rarely about certainty."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Recommend one more diagnostic step tonight because the consequence of being wrong still outweighs the inconvenience.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You let consequence keep a vote at the table.",
+                                                                      "body":  [
+                                                                                   "This is a principled position when the headache story still has thunderclap energy despite a calmer room.",
+                                                                                   "It works best when you say clearly that the issue is not panic, but residual risk."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Severe headache is often an exercise in deciding how much reassurance a normal first pass really buys. The most dangerous mistake is treating comfort as closure."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Pain control and diagnostic urgency can happen in parallel.",
+                                                                                                         "A reassuring test result should change your concern, not automatically end it.",
+                                                                                                         "Shared decisions in headache work best when the clinician is explicit about both probability and consequence."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Observe longer with repeat examination and make the next decision from the trend rather than from the first calm moment.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You accept that the case may need one more cycle.",
+                                                                      "body":  [
+                                                                                   "That can be a strong emergency-medicine answer because it honors the uncertainty without overpromising what another test will do.",
+                                                                                   "It requires deliberate reassessment rather than simply letting the patient sit in the room."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Observation is useful when the next question is about stability, trajectory, or the patient\u0027s own risk tolerance."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Serial neuro exams are meaningful data.",
+                                                                                                         "The patient\u0027s preferences matter most when they are informed by a realistic description of what remains possible.",
+                                                                                                         "Waiting should answer a question, not postpone one."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Use an explicit shared-discharge conversation if the trend and the patient both point there, and make the return threshold low.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You make the uncertainty portable instead of pretending it vanished.",
+                                                                      "body":  [
+                                                                                   "Discharge can be appropriate when the room has truly softened and the patient understands what would make the story different again.",
+                                                                                   "It becomes weak when it is built on the hope that the patient will not come back rather than on the expectation that she will if she needs to."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Some good discharges are built on uncertainty that has been named clearly rather than uncertainty that has been denied."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Return precautions should be specific enough to feel actionable.",
+                                                                                                         "The most dangerous pathology is not always the most likely pathology.",
+                                                                                                         "Honesty about uncertainty often does more for patient safety than a falsely confident answer."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 }
+                                             ]
+                             }
+               },
+    "startScene":  "start",
+    "banner":  "ADVENTURES IN EMERGENCY MEDICINE",
+    "caseTitle":  "This One Landed Different"
+}
+  </script>
+</body>
+</html>

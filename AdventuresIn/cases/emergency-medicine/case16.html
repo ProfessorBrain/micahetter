@@ -1,0 +1,264 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="adventures-case-title" content="Blue Before the Neb" />
+  <meta name="adventures-case-subtitle" content="A child with wheeze and retractions" />
+  <title>Adventures in Medicine - Emergency Medicine - Case 16</title>
+  <link rel="stylesheet" href="../../adventures-casebook.css" />
+  <script src="../../adventures-case-shell.js" defer></script>
+  <script src="../../adventures-casebook-runtime.js" defer></script>
+</head>
+<body>
+  <noscript>This case requires JavaScript in order to present its interactive choices.</noscript>
+
+  <main class="caseApp">
+    <div class="caseStage">
+      <div class="caseBannerWrap">
+        <div class="caseBanner">ADVENTURES IN EMERGENCY MEDICINE</div>
+      </div>
+
+      <section class="caseFrame" aria-live="polite">
+        <h1 class="sceneTitle" id="sceneTitle"></h1>
+        <div class="sceneBody" id="sceneBody"></div>
+        <ul class="sceneBullets isHidden" id="sceneBullets"></ul>
+        <div class="sceneOptions" id="sceneOptions"></div>
+        <div class="sceneFooter">
+          <button type="button" class="backButton" id="backButton" aria-label="Go back" disabled>&larr;</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script id="adventures-casebook-data" type="application/json">
+{
+    "scenes":  {
+                   "start":  {
+                                 "title":  "Case 16: Blue Before the Neb",
+                                 "body":  [
+                                              "A 3-year-old named Milo is brought in for noisy breathing and increased work of breathing after two days of cough. His parents say he has never really wheezed like this before, though they did try an old inhaler from a cousin at home.",
+                                              "He is fussy, retracting, and a little dusky around the lips when he cries. Pediatric breathing rooms punish delays and overconfidence equally well.",
+                                              "The first job is deciding whether this is ordinary bronchospasm, something aspirated, or a different airway problem altogether."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "next":  "step1",
+                                                     "label":  "Begin the case"
+                                                 }
+                                             ]
+                             },
+                   "step1":  {
+                                 "title":  "What does the first pass need to answer?",
+                                 "body":  [
+                                              "You have a crying toddler, worried parents, and enough respiratory effort that everyone wants treatment immediately. The question is what kind of treatment the room has actually earned."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Assess work of breathing, oxygenation, and air movement carefully while getting bronchodilator treatment started.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This is usually the strongest opening because pediatric respiratory distress asks for both speed and a real exam.",
+                                                                                   "It also helps you decide whether the next escalation should be more bronchodilator, steroids, or a different branch entirely."
+                                                                               ],
+                                                                      "title":  "You let severity assessment and treatment travel together."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Lean hard into a history-first approach because first-time wheeze can mean many different things.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "History matters here, especially around choking, prior episodes, and fever.",
+                                                                                   "The risk is that work of breathing can worsen while the adults become more articulate."
+                                                                               ],
+                                                                      "title":  "You ask the parents to help define the physiology before you medicate it."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Treat this like straightforward asthma immediately and plan to refine the story later.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can absolutely be correct in some children.",
+                                                                                   "It becomes weaker when the child has asymmetric findings, no prior pattern, or a history that still feels strange."
+                                                                               ],
+                                                                      "title":  "You let the most common severe answer move fastest."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step2":  {
+                                 "title":  "How do you react when the first treatment helps, but not cleanly?",
+                                 "body":  [
+                                              "After initial bronchodilator therapy Milo looks a little better, but the right side still sounds quieter than the left and the retractions have not fully disappeared.",
+                                              "This is where improvement can either clarify the case or distract from it."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Repeat bronchodilator therapy and steroids while deliberately reassessing whether this still behaves like pure bronchospasm.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That is often a very good emergency answer because many pediatric wheeze cases do improve with more of the same, but not all of them.",
+                                                                                   "It keeps the serial exam as the deciding voice."
+                                                                               ],
+                                                                      "title":  "You treat the likely branch without letting it monopolize the room."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Reopen foreign body or focal process concerns because the asymmetry did not disappear the way you hoped.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This can be the strongest move when the response is partial and the physical exam still feels lopsided.",
+                                                                                   "It prevents the initial treatment from bullying the diagnosis into staying simple."
+                                                                               ],
+                                                                      "title":  "You let the off-note stay audible."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Use imaging early because the bedside asymmetry is now the most important part of the case.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be very helpful if the exam remains asymmetric or the history contains any choking possibility.",
+                                                                                   "It should complement serial respiratory assessment rather than replace it."
+                                                                               ],
+                                                                      "title":  "You ask anatomy to settle the disagreement."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step3":  {
+                                 "title":  "What matters when the child is better but still not ordinary?",
+                                 "body":  [
+                                              "Milo is less blue and more interactive, but there is still a sense that the right side is not participating quite like the left. The parents want to know whether this means the scary part is over.",
+                                              "With small children, partial improvement is often the most dangerous kind of reassurance."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Keep both asthma-style treatment and nonasthma explanations active until the repeat exam is truly symmetric.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This is often the strongest frame because the child may still be telling you the diagnosis has not fully declared itself.",
+                                                                                   "It also avoids asking a single response to speak for the whole night."
+                                                                               ],
+                                                                      "title":  "You let the serial exam dictate how simple the case gets to become."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Shift toward discharge thinking if the pulse ox and distress keep trending in the right direction.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That may be right in some children who are steadily normalizing.",
+                                                                                   "It is weaker when the lingering asymmetry is real enough that you keep mentioning it to yourself."
+                                                                               ],
+                                                                      "title":  "You let the broad physiologic trend carry more weight than one leftover finding."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Bring in pediatrics, respiratory therapy, or airway backup now because the room is better but still diagnostically uneasy.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That is often a wise choice in pediatric respiratory cases whose exam is changing but not settling.",
+                                                                                   "Consultation can be a form of safety rather than a sign of failure."
+                                                                               ],
+                                                                      "title":  "You use the team to widen the safety margin."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step4":  {
+                                 "title":  "How do you decide whether he stays?",
+                                 "body":  [
+                                              "Milo is calmer now, but not yet the kid his parents describe from this morning. They are relieved, tired, and hoping you can tell them whether the night will keep getting better on its own.",
+                                              "The disposition depends on what you think the next several hours are likely to do."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Observe longer or admit if the exam, history, or treatment response still leaves room for foreign body, recurrent distress, or incomplete bronchodilator response.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You let the unresolved branch keep him in care.",
+                                                                      "body":  [
+                                                                                   "This is often the strongest answer because pediatric respiratory trajectories can reverse after seeming to settle.",
+                                                                                   "It respects the fact that not every improving child is a discharge-ready child."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Pediatric breathing complaints often hinge on whether improvement is clean or only partial. The more mixed the response, the more cautious the plan should become."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Treating first and thinking simultaneously is often the right approach in respiratory distress.",
+                                                                                                         "Serial lung exams matter as much as the first one.",
+                                                                                                         "Disposition should reflect what you think the next few hours will do, not just what the last fifteen minutes did."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Use another round of treatment and reassessment to see whether the remaining asymmetry truly resolves before you commit to a bed or a discharge.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You ask the next response to do the deciding.",
+                                                                      "body":  [
+                                                                                   "That can be a very useful middle path when the child is not worsening and the next treatment is already justified.",
+                                                                                   "It is most helpful when you are clear about what finding would finally persuade you in either direction."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Children often make their best diagnostic point on the repeat exam rather than the first one."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Observation can be the safest way to distinguish incomplete treatment response from the wrong diagnosis.",
+                                                                                                         "Parents need a plan they can use, not just a label they can repeat.",
+                                                                                                         "In pediatrics, trajectory is often the most important data set in the room."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Discharge only if the work of breathing, oxygenation, symmetry, and parental comfort all become meaningfully stronger than they are now.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You make home the high-bar option.",
+                                                                      "body":  [
+                                                                                   "This can be appropriate in the right child, especially once the exam and response become convincingly clean.",
+                                                                                   "In this room, discharge should feel earned by the trend rather than hoped for by the adults."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "A good pediatric discharge depends on the child, the parents, and the expected overnight trajectory all lining up."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Partial improvement is useful data, but not always enough data.",
+                                                                                                         "Parent reliability and understanding are part of respiratory safety.",
+                                                                                                         "A child who still looks a little off often deserves one more clean look before going home."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 }
+                                             ]
+                             }
+               },
+    "startScene":  "start",
+    "banner":  "ADVENTURES IN EMERGENCY MEDICINE",
+    "caseTitle":  "Blue Before the Neb"
+}
+  </script>
+</body>
+</html>

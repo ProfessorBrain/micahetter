@@ -1,0 +1,220 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="adventures-case-title" content="Bones, Blood, and Kidneys" />
+  <meta name="adventures-case-subtitle" content="Bone pain, anemia, and renal decline" />
+  <title>Adventures in Medicine - Internal Medicine - Case 18</title>
+  <link rel="stylesheet" href="../../adventures-casebook.css" />
+  <script src="../../adventures-case-shell.js" defer></script>
+  <script src="../../adventures-casebook-runtime.js" defer></script>
+</head>
+<body>
+  <noscript>This case requires JavaScript in order to present its interactive choices.</noscript>
+
+  <main class="caseApp">
+    <div class="caseStage">
+      <div class="caseBannerWrap">
+        <div class="caseBanner">ADVENTURES IN INTERNAL MEDICINE</div>
+      </div>
+
+      <section class="caseFrame" aria-live="polite">
+        <h1 class="sceneTitle" id="sceneTitle"></h1>
+        <div class="sceneBody" id="sceneBody"></div>
+        <ul class="sceneBullets isHidden" id="sceneBullets"></ul>
+        <div class="sceneOptions" id="sceneOptions"></div>
+        <div class="sceneFooter">
+          <button type="button" class="backButton" id="backButton" aria-label="Go back" disabled>&larr;</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script id="adventures-casebook-data" type="application/json">
+{
+    "scenes":  {
+                   "start":  {
+                                 "title":  "Case 18: Bones, Blood, and Kidneys",
+                                 "body":  [
+                                              "Gloria, 68, comes in because diffuse back pain, fatigue, and worsening kidney numbers have started to travel together in a way her prior clinicians could not fully explain. She says she feels older every month, not just every year.",
+                                              "Her pain has been easy to call degenerative, but the rest of the room no longer agrees with that simplification.",
+                                              "The challenge is deciding when a collection of moderate abnormalities becomes a syndrome that should move like one."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "next":  "step1",
+                                                     "label":  "Begin the case"
+                                                 }
+                                             ]
+                             },
+                   "step1":  {
+                                 "title":  "How do you frame a cluster like this?",
+                                 "body":  [
+                                              "Gloria has chronic back pain, new constipation, declining appetite, and recent labs showing anemia plus worsening creatinine. She has no fever and no obvious infection to hide behind."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Open across bone pain, anemia, kidney change, calcium-type symptoms, and constitutional drift before choosing a single explanatory label.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This is often the strongest opening because these findings can align around malignancy, endocrine disease, kidney disease, or hematologic syndromes that should not be split apart too early.",
+                                                                                   "It keeps the case from being fragmented into separate â€œchronic issues.â€"
+                                                                               ],
+                                                                      "title":  "You let the cluster become a syndrome rather than a coincidence."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Lean early into plasma-cell or marrow disease because the pattern already feels too clustered to ignore.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be very reasonable and may ultimately be right.",
+                                                                                   "The tradeoff is that other causes of anemia-plus-kidney-change can become quieter than they deserve."
+                                                                               ],
+                                                                      "title":  "You let one high-consequence syndrome lead the first pass."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Treat this primarily as CKD with musculoskeletal pain until the next layer proves the combination is more than the sum of its parts.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be fair if the clustering is still weak.",
+                                                                                   "It becomes weaker when the body is already telling you these findings likely belong to one process."
+                                                                               ],
+                                                                      "title":  "You give the more ordinary chronic explanations one last serious pass."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step2":  {
+                                 "title":  "What should the first workup answer?",
+                                 "body":  [
+                                              "Exam is not dramatic, but she looks pale and moves like the pain is more structural than muscular. The prior labs are not alarming one by one, but together they make the room feel different."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Order a syndrome-focused workup that treats anemia, renal decline, and bone symptoms as connected until proven otherwise.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This is often the strongest next step because the power of the case lies in how the abnormalities line up, not in any single isolated number.",
+                                                                                   "It also gives you the best chance of deciding whether the syndrome is hematologic, endocrine, renal, or mixed."
+                                                                               ],
+                                                                      "title":  "You let the first workup test the cluster instead of dissecting it apart."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Lean first into renal and metabolic clarification, letting the bone and blood pieces follow if the kidney story still looks incomplete.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be thoughtful when kidney disease feels like the most actionable anchor point.",
+                                                                                   "It becomes less strong if the clustering is already the most important feature of the case."
+                                                                               ],
+                                                                      "title":  "You let one major system organize the next layer."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Use symptom management and a smaller first lab set before broadening, since the patient is not acutely unstable.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be efficient in selected outpatient cases.",
+                                                                                   "It becomes weaker when several moderate abnormalities are already asking to be interpreted together rather than sequentially."
+                                                                               ],
+                                                                      "title":  "You let stability lower the pace a little."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step3":  {
+                                 "title":  "How do you set the tempo once the cluster holds together?",
+                                 "body":  [
+                                              "The early workup makes a unifying hematologic syndrome much more plausible, even if the final label is not yet fully signed. Gloria asks whether this is the sort of problem that has already been hiding for too long."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Treat this as a connected syndrome that deserves fast specialty clarification and active management of the kidney, pain, and blood consequences right now.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You let the cluster change the pace before the paperwork catches up.",
+                                                                      "body":  [
+                                                                                   "This is often the strongest plan because clustered abnormalities become dangerous partly when they are allowed to remain separated on paper.",
+                                                                                   "It turns the visit from chronic complaint management into syndrome-based medicine."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Internal Medicine often gets strongest when it notices that several moderate problems are actually one disease announcing itself in pieces."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Pattern aggregation can matter more than any one dramatic value.",
+                                                                                                         "A chronic complaint can become a fast-moving workup once the clues start to align.",
+                                                                                                         "Managing the syndrome and naming the syndrome should move together."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Use a fast outpatient hematology-nephrology path only if the system can truly deliver the speed the syndrome now seems to require.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You keep clinic pacing possible, but only if it is genuinely strong enough.",
+                                                                      "body":  [
+                                                                                   "That can be safe in selected patients with rapid access and clear contingency planning.",
+                                                                                   "It becomes fragile if the outpatient plan is doing more hopeful work than actual work."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Outpatient medicine can still be urgent medicine when the structure is specific enough and the patient is physiologically stable enough."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Logistics are part of syndrome management.",
+                                                                                                         "Clustered findings deserve clustered planning.",
+                                                                                                         "A good plan should sound concrete when repeated back."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Escalate the setting because kidney decline, pain burden, and hematologic uncertainty together make slower pacing feel too permissive.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You let total syndrome burden lower your threshold for a more supported path.",
+                                                                      "body":  [
+                                                                                   "That may be the strongest answer if the patient\u0027s physiology and access concerns make outpatient momentum too easy to lose.",
+                                                                                   "The point is not that Gloria looks acutely toxic; it is that the syndrome has become too consequential to let drift."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Some of the most important escalations in Internal Medicine are about protecting the next diagnostic and therapeutic steps, not just reacting to crisis physiology."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "The best setting is the one most likely to deliver the workup you think the syndrome needs.",
+                                                                                                         "Moderate abnormalities can become a high-stakes pattern when they align.",
+                                                                                                         "Tempo is often where the real decision lives."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 }
+                                             ]
+                             }
+               },
+    "startScene":  "start",
+    "banner":  "ADVENTURES IN INTERNAL MEDICINE",
+    "caseTitle":  "Bones, Blood, and Kidneys"
+}
+  </script>
+</body>
+</html>

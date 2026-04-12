@@ -1,0 +1,264 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="adventures-case-title" content="Gone for a Moment" />
+  <meta name="adventures-case-subtitle" content="Syncope in a grocery store line" />
+  <title>Adventures in Medicine - Emergency Medicine - Case 3</title>
+  <link rel="stylesheet" href="../../adventures-casebook.css" />
+  <script src="../../adventures-case-shell.js" defer></script>
+  <script src="../../adventures-casebook-runtime.js" defer></script>
+</head>
+<body>
+  <noscript>This case requires JavaScript in order to present its interactive choices.</noscript>
+
+  <main class="caseApp">
+    <div class="caseStage">
+      <div class="caseBannerWrap">
+        <div class="caseBanner">ADVENTURES IN EMERGENCY MEDICINE</div>
+      </div>
+
+      <section class="caseFrame" aria-live="polite">
+        <h1 class="sceneTitle" id="sceneTitle"></h1>
+        <div class="sceneBody" id="sceneBody"></div>
+        <ul class="sceneBullets isHidden" id="sceneBullets"></ul>
+        <div class="sceneOptions" id="sceneOptions"></div>
+        <div class="sceneFooter">
+          <button type="button" class="backButton" id="backButton" aria-label="Go back" disabled>&larr;</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script id="adventures-casebook-data" type="application/json">
+{
+    "scenes":  {
+                   "start":  {
+                                 "title":  "Case 3: Gone for a Moment",
+                                 "body":  [
+                                              "Darnell, 67, fainted while waiting to pay for groceries. By the time EMS rolled him into the ED he was talking again and insisting he had probably stood up too fast.",
+                                              "He has a bruise over one elbow from the fall, looks a little washed out, and says he has been more tired than usual this week. He does not volunteer much unless you ask.",
+                                              "Transient loss of consciousness can clean itself up before you get there. The risk is mistaking that cleanup for reassurance."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "next":  "step1",
+                                                     "label":  "Begin the case"
+                                                 }
+                                             ]
+                             },
+                   "step1":  {
+                                 "title":  "What earns the first minute of your attention?",
+                                 "body":  [
+                                              "He is awake now, glucose is still pending, and the nurse is asking whether you want the syncope order set or a head CT first. Darnell denies chest pain and wants some water."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Put him on the monitor, check a glucose, repeat vitals, and start a focused witness-and-patient history before deciding what lane this is in.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This gives you rhythm, blood pressure, and context quickly enough to shape the rest of the workup without pretending you already know why he passed out.",
+                                                                                   "It is a broad opening, but syncope usually punishes narrow openings more than broad ones."
+                                                                               ],
+                                                                      "title":  "You treat syncope as a physiology problem before a paperwork problem."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Send him straight to head CT because he fell and is older, then circle back to the rest once the scan is moving.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That is understandable, especially when a fall and age show up in the same sentence.",
+                                                                                   "The tradeoff is that the most likely drivers of syncope remain less explored while you chase a consequence instead of a cause."
+                                                                               ],
+                                                                      "title":  "You privilege the injury branch early."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Spend most of the opening on a detailed witness history before you order much else.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "Witness detail is valuable in syncope, and the history may become clearer while the patient is normal again.",
+                                                                                   "The risk is that the patient\u0027s physiology keeps changing while the room feels calmer than it really is."
+                                                                               ],
+                                                                      "title":  "You prioritize the story over the monitor."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step2":  {
+                                 "title":  "What matters once the first answers start to show up?",
+                                 "body":  [
+                                              "His glucose is normal. Blood pressure is softer standing than lying down, and he finally mentions a few dark stools that he blamed on something he ate. The monitor shows sinus rhythm with occasional ectopy.",
+                                              "Now the case is wider, not narrower."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Lean into volume loss and possible GI bleeding with labs, type and screen, and a more direct stool and medication history.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "The dark stool history does not close the case, but it does give you a reason for both fatigue and syncope that needs more respect than a vague dehydration story.",
+                                                                                   "This path works because it treats new information like information rather than like an inconvenience."
+                                                                               ],
+                                                                      "title":  "You follow the story that changed the room most."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Keep the rhythm branch in front and build the next steps around telemetry, ECG review, and structural-cardiac questions.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That discipline is useful because older patients can have more than one plausible reason to pass out.",
+                                                                                   "The tradeoff is that the bleeding story can fade just because it arrived in a quieter voice."
+                                                                               ],
+                                                                      "title":  "You refuse to let ectopy become background decoration."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Give fluids, repeat vitals, and see whether the whole picture normalizes before deciding how much workup he really needs.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "Sometimes that is exactly the right move, especially when orthostasis and poor intake are part of the story.",
+                                                                                   "It becomes weaker when the dark stool history suggests the simple explanation may not actually be simple."
+                                                                               ],
+                                                                      "title":  "You test whether the room responds to a simple explanation."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step3":  {
+                                 "title":  "What do you move in parallel now?",
+                                 "body":  [
+                                              "Hemoglobin returns at 8.1, lower than expected, and the BUN is higher than you would like. Darnell looks better after some fluid but still feels lightheaded when he sits up too fast.",
+                                              "You can feel the case trying to become tidy, but it is not tidy yet."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Start type and cross, IV PPI, and an admission-level GI bleed plan while you keep telemetry in the background.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That is a pragmatic emergency-medicine move because the bleeding story now has both symptoms and labs behind it.",
+                                                                                   "You are not proving that nothing cardiac happened. You are deciding which problem is currently most dangerous to underplay."
+                                                                               ],
+                                                                      "title":  "You treat the likely source as actionable before it announces itself again."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Circle back to the head injury question and get the CT now that the immediate physiology is a little less noisy.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be reasonable, especially if the fall details were unclear or anticoagulation enters the story later.",
+                                                                                   "It just should not crowd out the fact that the patient fainted for a reason that still needs management."
+                                                                               ],
+                                                                      "title":  "You return to the consequence branch once the room is steadier."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "See whether repeated fluids and a repeat hemoglobin change how much of this feels truly inpatient.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "Serial assessment matters, and watching the trend can be useful.",
+                                                                                   "The caution is that bleeding can look improved right before it stops looking improved at all."
+                                                                               ],
+                                                                      "title":  "You ask whether the trajectory will make the disposition decision for you."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step4":  {
+                                 "title":  "How do you land the night if he looks better than he looked on arrival?",
+                                 "body":  [
+                                              "After initial treatment Darnell is conversational again and says he would strongly prefer not to stay unless you think he really needs it. His repeat blood pressure is better, but the dark stool story and anemia are both still in the room.",
+                                              "This is where looking improved can become the most seductive part of the case."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Recommend admission or observation with telemetry and a GI plan because the improvement does not erase the reason he fainted.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You let the underlying problem outrank the temporary recovery.",
+                                                                      "body":  [
+                                                                                   "This answer respects the fact that syncope paired with anemia is rarely a casual outpatient moment.",
+                                                                                   "It also keeps room for both the bleeding story and the rhythm story instead of pretending only one can be real."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Syncope often asks you to think about the event and the aftermath at the same time. A patient who looks normal now may still carry abnormal risk from whatever made them collapse."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Volume loss, occult bleeding, and arrhythmia can coexist in the same older patient.",
+                                                                                                         "Improvement after fluids is helpful but not automatically exculpatory.",
+                                                                                                         "Disposition should match the vulnerability of the story, not just the politeness of the patient."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Keep him in the ED longer for another reassessment cycle before you decide whether he truly needs a bed.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You turn hesitation into a deliberate observation plan.",
+                                                                      "body":  [
+                                                                                   "That can be a strong compromise when the patient is stable and the team can actually watch the trend rather than merely hope for it.",
+                                                                                   "The key is making the next reassessment real enough to change your mind if the room drifts the wrong way."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Observation is useful when it is active. Passive waiting is just delayed decision-making with less honesty."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Serial vitals and serial conversations are part of syncope care.",
+                                                                                                         "A patient who feels better may still have a story that is inpatient in spirit.",
+                                                                                                         "When you buy time, make sure you know what question the time is supposed to answer."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "If he continues to look good, discuss rapid outpatient follow-up and strict return precautions rather than pushing admission he may resist.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You make space for the patient\u0027s threshold as part of the plan.",
+                                                                      "body":  [
+                                                                                   "This is the least aggressive path, and it can be the right one only if your concern has truly softened and the follow-up is concrete rather than fictional.",
+                                                                                   "It asks a lot of both the patient and the system, so it should feel carefully chosen rather than merely convenient."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Some patients will push toward home from the moment they can stand up again. The art is deciding whether the room has actually earned the option."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Outpatient plans are strongest when they are backed by access, support, and diagnostic humility.",
+                                                                                                         "Syncope plus anemia deserves more respect than a simple fainting story.",
+                                                                                                         "Return precautions matter most when you believe the patient can use them."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 }
+                                             ]
+                             }
+               },
+    "startScene":  "start",
+    "banner":  "ADVENTURES IN EMERGENCY MEDICINE",
+    "caseTitle":  "Gone for a Moment"
+}
+  </script>
+</body>
+</html>

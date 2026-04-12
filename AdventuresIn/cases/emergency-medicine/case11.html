@@ -1,0 +1,264 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="adventures-case-title" content="Under the Right Ribs" />
+  <meta name="adventures-case-subtitle" content="Right upper quadrant pain and fever" />
+  <title>Adventures in Medicine - Emergency Medicine - Case 11</title>
+  <link rel="stylesheet" href="../../adventures-casebook.css" />
+  <script src="../../adventures-case-shell.js" defer></script>
+  <script src="../../adventures-casebook-runtime.js" defer></script>
+</head>
+<body>
+  <noscript>This case requires JavaScript in order to present its interactive choices.</noscript>
+
+  <main class="caseApp">
+    <div class="caseStage">
+      <div class="caseBannerWrap">
+        <div class="caseBanner">ADVENTURES IN EMERGENCY MEDICINE</div>
+      </div>
+
+      <section class="caseFrame" aria-live="polite">
+        <h1 class="sceneTitle" id="sceneTitle"></h1>
+        <div class="sceneBody" id="sceneBody"></div>
+        <ul class="sceneBullets isHidden" id="sceneBullets"></ul>
+        <div class="sceneOptions" id="sceneOptions"></div>
+        <div class="sceneFooter">
+          <button type="button" class="backButton" id="backButton" aria-label="Go back" disabled>&larr;</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script id="adventures-casebook-data" type="application/json">
+{
+    "scenes":  {
+                   "start":  {
+                                 "title":  "Case 11: Under the Right Ribs",
+                                 "body":  [
+                                              "Victor, 61, comes in with right upper quadrant pain that has grown more constant through the afternoon. He has felt chilled, has not wanted dinner, and is now breathing shallowly because deep breaths hurt.",
+                                              "He is old enough and diabetic enough that you do not want to let any tidy story win too quickly.",
+                                              "The room contains gallbladder language, but it does not contain only gallbladder language."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "next":  "step1",
+                                                     "label":  "Begin the case"
+                                                 }
+                                             ]
+                             },
+                   "step1":  {
+                                 "title":  "What should the first pass accomplish?",
+                                 "body":  [
+                                              "He is uncomfortable, febrile, and asking whether this is just another gallbladder attack. You have time for more than one move if you choose well."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Treat pain, order RUQ-focused labs and ultrasound, and keep an ECG in the first wave because upper abdominal pain can still be a chest problem.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This is often the strongest emergency move because it respects the common diagnosis without handing it the entire room.",
+                                                                                   "It also avoids the trap of treating location as proof."
+                                                                               ],
+                                                                      "title":  "You keep the first layer broad without losing speed."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Call surgery early because the story already sounds biliary and you want them anchored before imaging catches up.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be helpful in a patient who may be headed toward an operative conversation anyway.",
+                                                                                   "It is weaker if the consult arrives before you have done enough bedside work to know what question you are actually asking."
+                                                                               ],
+                                                                      "title":  "You use consultation to sharpen the room early."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Treat this like uncomplicated biliary pain until something proves otherwise.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "Sometimes the familiar story is right.",
+                                                                                   "The danger is that fever, age, diabetes, and shallow breathing all make simple confidence less trustworthy than it feels."
+                                                                               ],
+                                                                      "title":  "You let the familiar story take the lead."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step2":  {
+                                 "title":  "Where do you narrow once the first data start landing?",
+                                 "body":  [
+                                              "White count is up, bilirubin is near normal, and he still winces under the right costal margin. The ECG is not alarming, but he remains a little more uncomfortable than a simple colic story would like.",
+                                              "You have enough evidence to lean, but not enough to stop checking the floor beneath you."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Keep biliary infection high while still asking whether pneumonia, liver disease, or atypical ACS deserve a second look.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That protects against the classic error of finding one plausible answer and forgetting the room was broader a minute ago.",
+                                                                                   "It is cognitively busier, but often safer."
+                                                                               ],
+                                                                      "title":  "You let the leading diagnosis lead without making it king."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Start antibiotics and build the rest of the plan around presumed cholecystitis.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This is often a very reasonable emergency decision when fever and focal findings keep lining up.",
+                                                                                   "The cost is mostly one of vigilance: you have to keep noticing if the case starts behaving unlike itself."
+                                                                               ],
+                                                                      "title":  "You treat the likely diagnosis as likely enough to act on."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Wait for the ultrasound before you add more treatment or more differential work.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can keep the plan neat.",
+                                                                                   "It can also make you slower than the patient needs in a room that already feels infected."
+                                                                               ],
+                                                                      "title":  "You let the imaging earn the next commitment."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step3":  {
+                                 "title":  "What matters when the ultrasound is suggestive but not absolute?",
+                                 "body":  [
+                                              "Ultrasound shows stones and a sonographic Murphy sign, but the wall findings are not dramatic. Victor feels a little better after analgesia, which helps the conversation but not the uncertainty.",
+                                              "This is a classic ED moment: enough to do something, not enough to feel finished."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Treat the case as likely cholecystitis, continue antibiotics, and involve surgery from that working diagnosis.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That is often the strongest move because the ED rarely gets perfectly cinematic abdominal imaging.",
+                                                                                   "A coherent working diagnosis is not the same thing as overconfidence."
+                                                                               ],
+                                                                      "title":  "You let the weight of the evidence, not the lack of perfection, guide the plan."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Use additional imaging or HIDA-type thinking because the ultrasound is not satisfying enough on its own.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That may be useful when the first study and the bedside story still feel importantly mismatched.",
+                                                                                   "The risk is that you start chasing purity when the clinical direction is already usable."
+                                                                               ],
+                                                                      "title":  "You ask for cleaner anatomy before you commit the bed."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Use the symptom improvement to consider whether this can still be a nonoperative discharge story.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "Some biliary cases do settle and leave.",
+                                                                                   "This path becomes weaker when the fever and inflammatory markers are still trying to remind you what kind of room this is."
+                                                                               ],
+                                                                      "title":  "You let the immediate comfort pull against the diagnostic momentum."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step4":  {
+                                 "title":  "How do you land the case after the first round of answers?",
+                                 "body":  [
+                                              "Victor asks the fair question: if the ultrasound is not dramatic and he is feeling somewhat better, why can this not be one more outpatient gallbladder episode?",
+                                              "You need an answer that is about this room, not about every room that looks a little like it."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Recommend admission-level management or observation with surgical input because the combination of fever, exam, and imaging is enough even without textbook perfection.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You let the whole pattern outrank the imperfect image.",
+                                                                      "body":  [
+                                                                                   "This is the most coherent path when the bedside picture and the workup are pointing the same direction, even if softly.",
+                                                                                   "It also keeps the patient from bearing the whole risk of overnight change by himself."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Abdominal emergencies often ask for a working diagnosis that is stronger than a hunch but weaker than certainty. That is still enough to build a good plan."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "RUQ pain deserves parallel thinking about biliary, pulmonary, and cardiac causes early on.",
+                                                                                                         "A suggestive ultrasound plus a concerning bedside picture can be enough to act.",
+                                                                                                         "Improvement after analgesia should soften panic, not erase physiology."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Use one more round of observation, repeat exam, and consultant discussion before you decide whether a bed is really necessary.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You turn the uncertainty into one more deliberate cycle.",
+                                                                      "body":  [
+                                                                                   "That can be a very good ED answer when the patient is stable and the next exam is likely to help more than the next abstract debate.",
+                                                                                   "It only works if you are clear about what change would move you toward or away from admission."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Observation is often a way to make abdominal pain smarter, not simply slower."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Repeat exams are high-value data in upper abdominal pain.",
+                                                                                                         "Consultation is most useful when it sharpens a question the ED already understands.",
+                                                                                                         "The next hour should answer something specific."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Discharge only if the whole picture softens enough that the risk of being wrong feels genuinely low rather than merely lower.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You hold the door open to home without pretending it is already earned.",
+                                                                      "body":  [
+                                                                                   "This is the least aggressive option and should be reserved for a room that truly stops looking infected and stops behaving like a surgical problem.",
+                                                                                   "It is a viable path only when the return plan is real and the residual uncertainty is small."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Not every concerning abdominal case needs admission, but the better the discharge, the easier it should be to explain why the dangerous branch faded."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Disposition should match the room you have at the end, not the room you hoped for at the start.",
+                                                                                                         "Return precautions matter most when you have chosen to live with residual uncertainty.",
+                                                                                                         "A patient feeling better is helpful data, not a complete argument."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 }
+                                             ]
+                             }
+               },
+    "startScene":  "start",
+    "banner":  "ADVENTURES IN EMERGENCY MEDICINE",
+    "caseTitle":  "Under the Right Ribs"
+}
+  </script>
+</body>
+</html>

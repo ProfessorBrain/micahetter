@@ -1,0 +1,290 @@
+:root {
+  --paper: #ffffff;
+  --ink: #f8f5ef;
+  --ink-soft: rgba(255, 255, 255, 0.8);
+  --black: #050505;
+  --red: #ff2d22;
+  --orange: #ff9d17;
+  --yellow: #ffd62c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  min-height: 100%;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top, rgba(255, 214, 44, 0.16), transparent 34%),
+    linear-gradient(180deg, #ffffff 0%, #fff9ef 55%, #fff4d9 100%);
+  color: var(--black);
+  font-family: "Source Sans 3", "Segoe UI", sans-serif;
+}
+
+body.has-medicine-shell .caseApp {
+  padding-top: 8rem;
+}
+
+body.has-medicine-shell.medicineEmbedded .caseApp {
+  padding-top: 1.5rem;
+}
+
+.caseApp {
+  height: 100dvh;
+  min-height: 100dvh;
+  padding: 2rem 1rem 2rem;
+  overflow: hidden;
+}
+
+.caseStage {
+  max-width: 62rem;
+  height: 100%;
+  min-height: 0;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.caseBannerWrap {
+  display: flex;
+  justify-content: center;
+}
+
+.caseBanner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  padding: 0.7rem 1.5rem;
+  border-radius: 999px;
+  background: var(--red);
+  border: 2px solid var(--paper);
+  color: var(--paper);
+  font-family: "Adventures Benguiat", "Fraunces", Georgia, serif;
+  font-size: clamp(1rem, 1.6vw, 1.35rem);
+  letter-spacing: 0.05em;
+  text-align: center;
+  box-shadow:
+    0 0 0 2px var(--black),
+    0 18px 38px rgba(255, 45, 34, 0.2);
+}
+
+.caseFrame {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  border-radius: 2rem;
+  background: var(--black);
+  padding: 2rem 1.5rem 1.6rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  border: 3px solid var(--orange);
+  box-shadow:
+    0 0 0 7px var(--yellow),
+    0 0 0 12px var(--orange),
+    0 26px 60px rgba(0, 0, 0, 0.22);
+  color: var(--ink);
+}
+
+.caseFrame::before,
+.caseFrame::after {
+  content: "";
+  position: absolute;
+  inset: 10px;
+  border-radius: 1.45rem;
+  pointer-events: none;
+}
+
+.caseFrame::before {
+  border: 1px solid rgba(255, 214, 44, 0.24);
+}
+
+.caseFrame::after {
+  inset: auto 1.2rem 1.2rem;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 214, 44, 0.4), transparent);
+}
+
+.caseFrame::-webkit-scrollbar {
+  width: 12px;
+}
+
+.caseFrame::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(255, 214, 44, 0.9), rgba(255, 157, 23, 0.88), rgba(255, 45, 34, 0.84));
+  border: 3px solid rgba(0, 0, 0, 0);
+  border-radius: 999px;
+  background-clip: padding-box;
+}
+
+.sceneTitle {
+  margin: 0;
+  font-family: "Adventures Benguiat", "Fraunces", Georgia, serif;
+  font-size: clamp(1.45rem, 2.35vw, 2.05rem);
+  line-height: 0.95;
+  color: var(--paper);
+}
+
+.sceneBody {
+  margin-top: 1.5rem;
+  font-size: clamp(1.02rem, 2.3vw, 1.22rem);
+  line-height: 1.72;
+}
+
+.sceneBody p {
+  margin: 0 0 1rem;
+}
+
+.sceneBody p:last-child {
+  margin-bottom: 0;
+}
+
+.sceneBullets {
+  margin: 1rem 0 0;
+  padding-left: 1.35rem;
+  color: var(--ink);
+  line-height: 1.65;
+}
+
+.sceneBullets.isHidden {
+  display: none;
+}
+
+.sceneBullets li + li {
+  margin-top: 0.65rem;
+}
+
+.sceneOptions {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 1.8rem;
+}
+
+.sceneFooter {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: auto;
+  padding-top: 1.2rem;
+}
+
+.sceneOption {
+  width: 100%;
+  border: 1px solid rgba(255, 157, 23, 0.42);
+  border-radius: 1.15rem;
+  background:
+    linear-gradient(180deg, rgba(255, 214, 44, 0.12), rgba(255, 45, 34, 0.08) 40%, rgba(255, 255, 255, 0.02)),
+    rgba(0, 0, 0, 0.96);
+  color: var(--paper);
+  padding: 1rem 1.05rem;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.45;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+
+.sceneOption:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 214, 44, 0.74);
+  background:
+    linear-gradient(180deg, rgba(255, 214, 44, 0.18), rgba(255, 45, 34, 0.11) 40%, rgba(255, 255, 255, 0.03)),
+    rgba(0, 0, 0, 1);
+}
+
+.sceneOption:focus-visible {
+  outline: 3px solid rgba(255, 214, 44, 0.45);
+  outline-offset: 3px;
+}
+
+.backButton {
+  border: 1px solid rgba(255, 157, 23, 0.5);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.94);
+  color: var(--paper);
+  min-width: 3.2rem;
+  min-height: 3.2rem;
+  padding: 0.7rem;
+  font: inherit;
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 180ms ease, border-color 180ms ease, opacity 180ms ease;
+}
+
+.backButton:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: rgba(255, 214, 44, 0.78);
+}
+
+.backButton:focus-visible {
+  outline: 3px solid rgba(255, 214, 44, 0.45);
+  outline-offset: 3px;
+}
+
+.backButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+  border-color: rgba(255, 157, 23, 0.22);
+}
+
+.reflectionBox {
+  margin-top: 1.25rem;
+  padding: 1rem 1rem 0.3rem;
+  border-radius: 1.2rem;
+  border: 1px solid rgba(255, 214, 44, 0.24);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.reflectionBox h2 {
+  margin: 0 0 0.75rem;
+  color: var(--yellow);
+  font-family: "Adventures Benguiat", "Fraunces", Georgia, serif;
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.reflectionBox p {
+  margin: 0 0 0.8rem;
+}
+
+.reflectionBox ul {
+  margin: 0 0 0.85rem;
+  padding-left: 1.35rem;
+}
+
+.reflectionBox li + li {
+  margin-top: 0.45rem;
+}
+
+@media (max-width: 720px) {
+  .caseApp {
+    padding: 1rem 0.8rem 1.15rem;
+  }
+
+  .caseFrame {
+    border-radius: 1.4rem;
+    padding: 1.45rem 1rem 1.05rem;
+    box-shadow:
+      0 0 0 5px var(--yellow),
+      0 0 0 9px var(--orange),
+      0 16px 32px rgba(0, 0, 0, 0.18);
+  }
+
+  .caseFrame::before {
+    inset: 8px;
+  }
+
+  .sceneOption {
+    padding: 0.95rem 0.9rem;
+  }
+}

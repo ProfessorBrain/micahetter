@@ -1,0 +1,220 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="adventures-case-title" content="The Sodium Keeps Falling" />
+  <meta name="adventures-case-subtitle" content="Hyponatremia, fatigue, and gait change" />
+  <title>Adventures in Medicine - Internal Medicine - Case 6</title>
+  <link rel="stylesheet" href="../../adventures-casebook.css" />
+  <script src="../../adventures-case-shell.js" defer></script>
+  <script src="../../adventures-casebook-runtime.js" defer></script>
+</head>
+<body>
+  <noscript>This case requires JavaScript in order to present its interactive choices.</noscript>
+
+  <main class="caseApp">
+    <div class="caseStage">
+      <div class="caseBannerWrap">
+        <div class="caseBanner">ADVENTURES IN INTERNAL MEDICINE</div>
+      </div>
+
+      <section class="caseFrame" aria-live="polite">
+        <h1 class="sceneTitle" id="sceneTitle"></h1>
+        <div class="sceneBody" id="sceneBody"></div>
+        <ul class="sceneBullets isHidden" id="sceneBullets"></ul>
+        <div class="sceneOptions" id="sceneOptions"></div>
+        <div class="sceneFooter">
+          <button type="button" class="backButton" id="backButton" aria-label="Go back" disabled>&larr;</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script id="adventures-casebook-data" type="application/json">
+{
+    "scenes":  {
+                   "start":  {
+                                 "title":  "Case 6: The Sodium Keeps Falling",
+                                 "body":  [
+                                              "Mrs. Lane, 71, comes in because she has felt increasingly tired, foggy, and unsteady for two weeks. Her daughter says she is not frankly delirious, just â€œless crispâ€ than usual.",
+                                              "A basic metabolic panel from urgent care showed sodium of 122 and prompted the referral. The room is quiet but not benign.",
+                                              "The challenge is deciding whether this is a number problem, a syndrome problem, or both."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "next":  "step1",
+                                                     "label":  "Begin the case"
+                                                 }
+                                             ]
+                             },
+                   "step1":  {
+                                 "title":  "How do you frame a quiet sodium room?",
+                                 "body":  [
+                                              "Mrs. Lane takes a thiazide, drinks a lot of tea, and recently started an SSRI after her husband died. She denies chest pain and says she mostly feels â€œoff.â€"
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Clarify onset, medications, intake, volume status clues, and neurologic change before deciding whether the sodium is chronic, acute, or mixed.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This is often the strongest opening because sodium disorders are as much about context and pace as they are about the absolute value.",
+                                                                                   "It also keeps medication, grief, intake, and endocrine possibilities in the same room long enough to matter."
+                                                                               ],
+                                                                      "title":  "You let the physiology arrive through the history before the number gets to own everything."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Lean first into medication-induced hyponatremia because the thiazide and SSRI combination is already persuasive.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be very reasonable and may ultimately be right.",
+                                                                                   "The tradeoff is that the syndrome\u0027s urgency and competing causes can become quieter than they should."
+                                                                               ],
+                                                                      "title":  "You let one plausible cause lead early."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Treat this mainly as a gait-and-falls visit and let the sodium explain itself later if it still seems central.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be thoughtful if the room is clinically vague.",
+                                                                                   "It becomes weaker if the chemistry is already giving you the clearest clue to why function is changing."
+                                                                               ],
+                                                                      "title":  "You let the functional complaint lead the first framing."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step2":  {
+                                 "title":  "What should the first workup answer?",
+                                 "body":  [
+                                              "She looks mildly euvolemic, not shocky or overtly overloaded. Exam is nonfocal, but her tandem gait is worse than her daughter expected."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Repeat chemistries and add serum osmolality, urine studies, and a focused endocrine/volume-status evaluation before choosing a correction strategy.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This is often the strongest next step because hyponatremia management depends on type and tempo, not only on the number itself.",
+                                                                                   "It also prevents a medication story from becoming the whole story too early."
+                                                                               ],
+                                                                      "title":  "You let the workup define the physiology before the treatment outruns it."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Stop the likely culprit medications and see whether the rest of the picture becomes simpler before broadening much further.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be reasonable when the medication story is compelling.",
+                                                                                   "It becomes less strong if the sodium is symptomatic enough that the patient deserves a fuller physiologic definition right now."
+                                                                               ],
+                                                                      "title":  "You let a strong causal hypothesis simplify the room."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Start with gentle treatment and serial checks, letting the correction pattern help decide what the syndrome really is.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be a thoughtful move in a stable patient.",
+                                                                                   "It is only strongest when the treatment plan is disciplined enough not to outrun the diagnosis."
+                                                                               ],
+                                                                      "title":  "You use the first response as part of the diagnosis."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step3":  {
+                                 "title":  "How do you set the tempo once the sodium looks real and symptomatic?",
+                                 "body":  [
+                                              "Repeat sodium is still 122. The urine studies are suggestive but not perfectly clean, and Mrs. Lane insists she does not feel â€œsick enoughâ€ for the hospital even though walking now looks less safe than it did at the start."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Treat the sodium disorder as clinically meaningful now and build the plan around safe correction plus cause-finding in parallel.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You let the symptoms and the number share authority.",
+                                                                      "body":  [
+                                                                                   "This is often the strongest plan because falls, fogginess, and gait change are part of the syndrome even when the patient does not feel critically ill.",
+                                                                                   "It treats tempo as a clinical decision rather than a reaction to panic."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Hyponatremia is a good reminder that â€œstableâ€ and â€œsafe to driftâ€ are not the same thing. The number matters, but the way the number is affecting the patient matters just as much."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Medication stories can be true without being complete.",
+                                                                                                         "Sodium disorders are about pace, physiology, and symptoms, not only lab thresholds.",
+                                                                                                         "Internal Medicine often asks you to take quiet functional decline seriously."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Use close monitoring and deliberate outpatient-level planning only if the gait change, support system, and correction pathway truly make that feasible.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You keep the lighter path available, but only if it is real.",
+                                                                      "body":  [
+                                                                                   "This can be appropriate in select patients with strong support and reliable follow-up.",
+                                                                                   "It becomes fragile if the patient\u0027s functional change is already telling you that home is not as safe as it sounds."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Outpatient management of a quiet syndrome works only when the quiet syndrome is not already eroding the patient\u0027s ability to carry the plan."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Function is part of risk stratification.",
+                                                                                                         "Monitoring plans have to be specific enough to work in real life.",
+                                                                                                         "A composed patient can still have an unsafe trajectory."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Escalate the setting sooner because the combination of sodium level, gait change, and mixed causality makes slower pacing feel too thin.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You let consequence lower your threshold for a monitored plan.",
+                                                                      "body":  [
+                                                                                   "That may be the strongest option if falls risk, uncertainty, or correction complexity make outpatient pacing unrealistic.",
+                                                                                   "The point is not that the room is dramatic. It is that the room is easier to misjudge than it looks."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Some Internal Medicine escalations are about protecting the patient from a subtle syndrome rather than from a loud crisis."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "A quieter room can still deserve a monitored setting.",
+                                                                                                         "Cause-finding and correction strategy should move together.",
+                                                                                                         "Tempo decisions are often where the real medicine lives."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 }
+                                             ]
+                             }
+               },
+    "startScene":  "start",
+    "banner":  "ADVENTURES IN INTERNAL MEDICINE",
+    "caseTitle":  "The Sodium Keeps Falling"
+}
+  </script>
+</body>
+</html>

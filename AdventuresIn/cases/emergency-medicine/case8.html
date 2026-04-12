@@ -1,0 +1,264 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="adventures-case-title" content="Only One Calf" />
+  <meta name="adventures-case-subtitle" content="Unilateral leg swelling after surgery" />
+  <title>Adventures in Medicine - Emergency Medicine - Case 8</title>
+  <link rel="stylesheet" href="../../adventures-casebook.css" />
+  <script src="../../adventures-case-shell.js" defer></script>
+  <script src="../../adventures-casebook-runtime.js" defer></script>
+</head>
+<body>
+  <noscript>This case requires JavaScript in order to present its interactive choices.</noscript>
+
+  <main class="caseApp">
+    <div class="caseStage">
+      <div class="caseBannerWrap">
+        <div class="caseBanner">ADVENTURES IN EMERGENCY MEDICINE</div>
+      </div>
+
+      <section class="caseFrame" aria-live="polite">
+        <h1 class="sceneTitle" id="sceneTitle"></h1>
+        <div class="sceneBody" id="sceneBody"></div>
+        <ul class="sceneBullets isHidden" id="sceneBullets"></ul>
+        <div class="sceneOptions" id="sceneOptions"></div>
+        <div class="sceneFooter">
+          <button type="button" class="backButton" id="backButton" aria-label="Go back" disabled>&larr;</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script id="adventures-casebook-data" type="application/json">
+{
+    "scenes":  {
+                   "start":  {
+                                 "title":  "Case 8: Only One Calf",
+                                 "body":  [
+                                              "Monica, 51, comes to the ED ten days after knee surgery because her left calf has become tight and swollen, and now she feels mildly short of breath climbing stairs.",
+                                              "She is not collapsing in front of you. That is part of what makes the room tricky.",
+                                              "Emergency medicine often asks whether a stable patient is stable enough to wait or stable enough to treat."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "next":  "step1",
+                                                     "label":  "Begin the case"
+                                                 }
+                                             ]
+                             },
+                   "step1":  {
+                                 "title":  "How do you open a room like this?",
+                                 "body":  [
+                                              "She is uncomfortable but calm, and the swelling is real enough to notice from the doorway. The ultrasound tech is not immediately available."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Check vitals, examine the leg, clarify chest symptoms, and decide whether the room is really a DVT room, a PE room, or both.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This keeps the bedside picture in charge of the workup instead of the next available test slot.",
+                                                                                   "It also helps you decide whether the delayed ultrasound is annoying or actually unsafe."
+                                                                               ],
+                                                                      "title":  "You define the problem before the queue does it for you."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Order the leg ultrasound and let the test result decide whether the chest symptom matters.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can work if the chest symptoms are minimal and the overall risk feels lower than it first sounds.",
+                                                                                   "The danger is that you may be asking one test to stand in for two related but distinct problems."
+                                                                               ],
+                                                                      "title":  "You let the most accessible diagnosis lead."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Treat the shortness of breath as the priority and skip straight to a clot-in-the-chest mindset.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That is defensible when the chest symptoms feel meaningful enough to compete with the leg exam.",
+                                                                                   "It can also rush you past useful bedside information that would sharpen how much urgency the chest branch actually deserves."
+                                                                               ],
+                                                                      "title":  "You let the higher consequence branch take the front seat."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step2":  {
+                                 "title":  "What matters once the room feels a little more concrete?",
+                                 "body":  [
+                                              "Her oxygen saturation is 94 percent, heart rate is 108, and the calf is clearly larger on the left. The dyspnea is mild at rest but real on exertion.",
+                                              "Now the question is whether you need proof before treatment or treatment before proof."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "If the pretest probability feels high enough, talk seriously about starting anticoagulation while imaging catches up.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This is a reasonable emergency path when the story already feels like clot until proven otherwise and bleeding risk is acceptable.",
+                                                                                   "The challenge is that you are choosing to treat uncertainty, not just diagnosis."
+                                                                               ],
+                                                                      "title":  "You let bedside risk do some of the work."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Wait for objective confirmation because she is stable and the cost of being wrong still matters.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be a strong answer in a patient who is not deteriorating and whose bleeding risk or outpatient course still matters.",
+                                                                                   "It becomes weaker if waiting is more about your comfort than about the patient\u0027s safety."
+                                                                               ],
+                                                                      "title":  "You keep diagnosis and treatment in sequence."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Use the chest symptoms to justify moving straight toward PE imaging instead of leg-first imaging.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This is often defensible when the disposition would change more from a chest answer than a leg answer.",
+                                                                                   "The cost is that you may leap toward a heavier test before using the lower-weight information already available."
+                                                                               ],
+                                                                      "title":  "You ask the bigger clot question first."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step3":  {
+                                 "title":  "What do you do when one branch is proven and the other is still a question?",
+                                 "body":  [
+                                              "Ultrasound eventually confirms a proximal DVT. Monica still looks well enough to joke with you, but the mild shortness of breath has not disappeared from the story.",
+                                              "You now have one diagnosis and one unresolved consequence hanging off of it."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Start anticoagulation and use the next step to decide whether the chest symptoms make this an inpatient or outpatient clot story.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This is often the most balanced emergency move because it acknowledges that proven DVT is already a treatment decision.",
+                                                                                   "It also keeps you from pretending the shortness of breath is irrelevant just because you found something else."
+                                                                               ],
+                                                                      "title":  "You treat the known problem while the unknown one is still being sized up."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Get more risk-stratifying data first, such as cardiac markers or echo-minded assessment, before you decide where she belongs.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be especially useful when the patient looks deceptively comfortable and you want a better sense of reserve.",
+                                                                                   "The tradeoff is time and complexity in a patient who may ultimately still have a straightforward course."
+                                                                               ],
+                                                                      "title":  "You try to understand clot burden by looking at consequence rather than just location."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Use the confirmed DVT plus mild symptoms to build a confident outpatient plan right away.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That may be exactly right for some patients, particularly when vitals stay steady and barriers to treatment are low.",
+                                                                                   "It is less strong when the decision rests more on convenience than on true outpatient fitness."
+                                                                               ],
+                                                                      "title":  "You let the calm room shape the destination quickly."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step4":  {
+                                 "title":  "How do you close the loop when the patient wants home?",
+                                 "body":  [
+                                              "Monica strongly prefers not to stay in the hospital if she does not have to. She asks whether this can be handled like other outpatient clots her friends have had.",
+                                              "Your answer depends on more than the word DVT."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Offer outpatient treatment only if the chest symptoms, vitals, bleeding risk, medication access, and follow-up all truly support it.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You make home an earned disposition rather than a default one.",
+                                                                      "body":  [
+                                                                                   "This is the best version of outpatient clot care: explicit, selective, and built on more than age and appearance.",
+                                                                                   "It requires honesty about how many assumptions your discharge plan is asking the patient to carry."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Stable venous thromboembolic disease often lives in the gray space between obvious admission and obvious discharge. The work is in proving which side of the line a given patient actually belongs on."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "A proven DVT does not automatically answer what to do with concurrent dyspnea.",
+                                                                                                         "Outpatient treatment is strongest when medication access and follow-up are concrete.",
+                                                                                                         "Emergency medicine often means deciding how much proof you need before you are willing to treat."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Keep her for observation or admit if the chest symptoms or the social picture make the outpatient path feel more fragile than it sounds.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You let fragility, not just physiology, influence the bed decision.",
+                                                                      "body":  [
+                                                                                   "That is a thoughtful choice when the room is medically calm but logistically less trustworthy.",
+                                                                                   "Not every good disposition decision is driven by a dramatic vital sign."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Disposition is part medical risk, part practical risk, and part diagnostic confidence. Ignoring any one of those parts weakens the plan."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Social reliability matters in clot care because missed doses and missed follow-up matter.",
+                                                                                                         "Observation can be a thoughtful bridge rather than a failure to decide.",
+                                                                                                         "A calm patient may still have a fragile outpatient path."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Use one more cycle of ED reassessment to see whether the dyspnea behaves like a disposition-changing symptom or a background symptom.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You let the next hour help you choose the next week.",
+                                                                      "body":  [
+                                                                                   "That can be an elegant middle path when you genuinely believe the trend will help.",
+                                                                                   "It is only useful if you know how a change in symptoms or vitals would alter what you recommend."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Another hour in the ED can be valuable when it helps you understand the trajectory rather than just delay the decision."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Serial reassessment is often the difference between a nervous discharge and a deliberate one.",
+                                                                                                         "A single data point rarely owns the whole clot story.",
+                                                                                                         "The right disposition is often the one that best fits the uncertainty that remains."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 }
+                                             ]
+                             }
+               },
+    "startScene":  "start",
+    "banner":  "ADVENTURES IN EMERGENCY MEDICINE",
+    "caseTitle":  "Only One Calf"
+}
+  </script>
+</body>
+</html>

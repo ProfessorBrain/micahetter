@@ -1,0 +1,264 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="adventures-case-title" content="Short Between Sentences" />
+  <meta name="adventures-case-subtitle" content="Pleuritic chest pain and dyspnea" />
+  <title>Adventures in Medicine - Emergency Medicine - Case 2</title>
+  <link rel="stylesheet" href="../../adventures-casebook.css" />
+  <script src="../../adventures-case-shell.js" defer></script>
+  <script src="../../adventures-casebook-runtime.js" defer></script>
+</head>
+<body>
+  <noscript>This case requires JavaScript in order to present its interactive choices.</noscript>
+
+  <main class="caseApp">
+    <div class="caseStage">
+      <div class="caseBannerWrap">
+        <div class="caseBanner">ADVENTURES IN EMERGENCY MEDICINE</div>
+      </div>
+
+      <section class="caseFrame" aria-live="polite">
+        <h1 class="sceneTitle" id="sceneTitle"></h1>
+        <div class="sceneBody" id="sceneBody"></div>
+        <ul class="sceneBullets isHidden" id="sceneBullets"></ul>
+        <div class="sceneOptions" id="sceneOptions"></div>
+        <div class="sceneFooter">
+          <button type="button" class="backButton" id="backButton" aria-label="Go back" disabled>&larr;</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script id="adventures-casebook-data" type="application/json">
+{
+    "scenes":  {
+                   "start":  {
+                                 "title":  "Case 2: Short Between Sentences",
+                                 "body":  [
+                                              "Naomi, 29, arrives short of breath after a twelve-hour drive back from visiting family. She is speaking in shorter phrases than she wants to and keeps saying this might just be stress.",
+                                              "Her triage heart rate is 118. She takes estrogen-containing contraception and mentions a dull soreness behind one calf when you ask why she stopped twice during the drive.",
+                                              "The room feels young, anxious, and not entirely reassuring."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "next":  "step1",
+                                                     "label":  "Begin the case"
+                                                 }
+                                             ]
+                             },
+                   "step1":  {
+                                 "title":  "How do you open the room?",
+                                 "body":  [
+                                              "She looks nervous enough that breathing coaching might help, but the physiology is still trying to tell you something. The nurse has a pulse oximeter in hand."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Put her on the monitor, get an ECG, and use the first questions for onset, pleuritic features, pregnancy status, and clot risk.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This keeps you from inheriting the anxiety label before you have earned it.",
+                                                                                   "The history is still focused, but it is focused on the things that change how worried you should be right now."
+                                                                               ],
+                                                                      "title":  "You let the basics arrive before the story narrows."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Coach slow breathing first and see whether the symptoms settle before broadening the workup.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "Sometimes that is exactly what the patient needs, and sometimes it gives you a deceptively calmer room without answering why the heart rate is elevated.",
+                                                                                   "It is not wrong to ease distress. It is risky to let the easing of distress do too much diagnostic work."
+                                                                               ],
+                                                                      "title":  "You test whether the physiology follows the emotion."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Start with chest x-ray and basic labs while holding off on a more explicit PE conversation.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This is a common ED move when the patient is stable enough to buy a little structure.",
+                                                                                   "The downside is that the most important risk factors may remain background noise longer than they should."
+                                                                               ],
+                                                                      "title":  "You move the workup without committing to the scariest branch."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step2":  {
+                                 "title":  "Where do you spend the next five minutes?",
+                                 "body":  [
+                                              "Her oxygen saturation is 93 percent on room air. The ECG shows sinus tachycardia. Lung sounds are not dramatic, and the chest x-ray is still pending.",
+                                              "You now have enough information to be concerned, but not enough to be certain."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Use the new data to reopen clot risk directly and decide whether she has already crossed your threshold for imaging.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "Recent travel, estrogen, pleuritic pain, tachycardia, and mild hypoxemia do not prove PE, but together they make dismissal hard to justify.",
+                                                                                   "This approach works because it respects the accumulation of small signals rather than waiting for one perfect signal."
+                                                                               ],
+                                                                      "title":  "You let the bedside probability change in real time."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Order a D-dimer first because she is young, stable, and not crashing.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be defensible when pretest probability still feels intermediate rather than clearly high.",
+                                                                                   "The risk is that the room already contains enough concern that a negative shortcut would need to carry more weight than it safely can."
+                                                                               ],
+                                                                      "title":  "You choose a less committal path through the gray zone."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Look for alternate explanations first with more detailed pulmonary history and a bedside lung exam before choosing advanced testing.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can protect against overtesting, especially in young patients whose charts fill quickly with incidental findings.",
+                                                                                   "The tradeoff is that the clot question does not get less time-sensitive just because other questions are also reasonable."
+                                                                               ],
+                                                                      "title":  "You stay deliberately broad a little longer."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step3":  {
+                                 "title":  "What do you move in parallel?",
+                                 "body":  [
+                                              "The chest x-ray comes back clear. Creatinine is normal. Naomi says she feels slightly better at rest, but her heart rate stays above 110 when she shifts in bed.",
+                                              "You have enough runway to choose a lane, but not enough to forget the clock."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Move toward CT angiography and keep anticoagulation on the list if the room worsens before imaging happens.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This approach is direct without being reckless. You are not pretending the diagnosis is already made, but you are acting like it might be.",
+                                                                                   "In time-sensitive cases, that balance is often more useful than waiting for the room to become dramatic."
+                                                                               ],
+                                                                      "title":  "You privilege clarity but keep escalation available."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Hold on anticoagulation, pursue imaging first, and use the stable blood pressure to keep the sequence clean.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That is often appropriate when the patient is not unstable and bleeding risk is still part of the story.",
+                                                                                   "The only danger is letting the word stable shrink how closely you watch the trajectory."
+                                                                               ],
+                                                                      "title":  "You separate diagnosis from treatment by one step."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Treat the anxiety, repeat vitals, and see whether the physiology normalizes before you commit to advanced imaging.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "Sometimes it does. Sometimes it simply delays the moment when you admit the room still bothers you.",
+                                                                                   "This path becomes weaker if the objective findings refuse to follow the patient\u0027s calmer affect."
+                                                                               ],
+                                                                      "title":  "You ask whether observation will simplify the case."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step4":  {
+                                 "title":  "How do you land the case once the clot is on the table?",
+                                 "body":  [
+                                              "Imaging eventually confirms a pulmonary embolus without clear right-heart strain. Naomi remains conversational, but she is not entirely comfortable and still wants to believe she can sleep this off at home.",
+                                              "Now the question shifts from diagnosis to risk, support, and pacing."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Start anticoagulation and admit because the persistent tachycardia and oxygen need make the room feel less settled than the scan.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You let physiology outrank age.",
+                                                                      "body":  [
+                                                                                   "This is a cautious but coherent path when the patient still looks like work, even if the imaging is not maximal.",
+                                                                                   "It prioritizes trajectory over the temptation to call every young patient low risk."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Dyspnea, anxiety, and thromboembolic disease can sit in the same room at the same time. The point is not to choose the cleanest story too early."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Serial vitals and work of breathing often say more than one well-timed sentence from the patient.",
+                                                                                                         "Young age reduces some risks but does not erase physiologic instability.",
+                                                                                                         "Disposition after PE depends on clot burden, trajectory, and support, not just the radiology report."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Start anticoagulation and discuss carefully selected outpatient treatment only if the next reassessment truly stays quiet.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You treat first and decide home later.",
+                                                                      "body":  [
+                                                                                   "This is a reasonable outpatient-minded strategy because it keeps the therapeutic part moving while you continue risk stratifying.",
+                                                                                   "It only stays safe if the reassessment is honest and your outpatient assumptions are real rather than aspirational."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Outpatient pathways can be excellent in PE, but they work best when the ED deliberately proves the patient belongs in them."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Treatment and disposition should be linked, not collapsed into the same rushed moment.",
+                                                                                                         "A patient\u0027s support system and ability to obtain medication are part of emergency medicine, not afterthoughts.",
+                                                                                                         "A stable room is something you confirm repeatedly, not something you assume once."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Keep her in the ED or observation area until bedside echo, biomarkers, and repeat vitals sharpen how low risk she really is.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You accept that the answer may need another layer.",
+                                                                      "body":  [
+                                                                                   "That can feel slower than the patient wants, but it respects the fact that low-risk PE is an earned label.",
+                                                                                   "Sometimes the best disposition decision is a deliberate pause rather than a fast binary."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Risk stratification is still treatment when it keeps you from calling a room safer than it actually is."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "The ED advantage is real-time reassessment under uncertainty.",
+                                                                                                         "If you are using the phrase low risk, make sure you can say exactly what made it low risk.",
+                                                                                                         "Good emergency care often means choosing when not to rush the final label."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 }
+                                             ]
+                             }
+               },
+    "startScene":  "start",
+    "banner":  "ADVENTURES IN EMERGENCY MEDICINE",
+    "caseTitle":  "Short Between Sentences"
+}
+  </script>
+</body>
+</html>

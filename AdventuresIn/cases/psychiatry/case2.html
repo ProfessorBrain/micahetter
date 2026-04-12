@@ -71,16 +71,21 @@
       padding: 0.7rem 1.5rem;
       border-radius: 999px;
       background: var(--red);
+      border: 2px solid var(--paper);
       color: var(--paper);
       font-family: "Adventures Benguiat", "Fraunces", Georgia, serif;
       font-size: clamp(1rem, 1.6vw, 1.35rem);
       letter-spacing: 0.05em;
       text-align: center;
-      box-shadow: 0 18px 38px rgba(255, 45, 34, 0.2);
+      box-shadow:
+        0 0 0 2px var(--black),
+        0 18px 38px rgba(255, 45, 34, 0.2);
     }
 
     .caseFrame {
       position: relative;
+      display: flex;
+      flex-direction: column;
       flex: 1 1 auto;
       min-height: 0;
       border-radius: 2rem;
@@ -170,6 +175,13 @@
       margin-top: 1.8rem;
     }
 
+    .sceneFooter {
+      display: flex;
+      justify-content: flex-start;
+      margin-top: auto;
+      padding-top: 1.2rem;
+    }
+
     .sceneOption {
       width: 100%;
       border: 1px solid rgba(255, 157, 23, 0.42);
@@ -199,6 +211,38 @@
     .sceneOption:focus-visible {
       outline: 3px solid rgba(255, 214, 44, 0.45);
       outline-offset: 3px;
+    }
+
+    .backButton {
+      border: 1px solid rgba(255, 157, 23, 0.5);
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.94);
+      color: var(--paper);
+      min-width: 3.2rem;
+      min-height: 3.2rem;
+      padding: 0.7rem;
+      font: inherit;
+      font-size: 1.4rem;
+      font-weight: 700;
+      line-height: 1;
+      cursor: pointer;
+      transition: transform 180ms ease, border-color 180ms ease, opacity 180ms ease;
+    }
+
+    .backButton:hover:not(:disabled) {
+      transform: translateY(-1px);
+      border-color: rgba(255, 214, 44, 0.78);
+    }
+
+    .backButton:focus-visible {
+      outline: 3px solid rgba(255, 214, 44, 0.45);
+      outline-offset: 3px;
+    }
+
+    .backButton:disabled {
+      cursor: not-allowed;
+      opacity: 0.42;
+      border-color: rgba(255, 157, 23, 0.22);
     }
 
     .reflectionBox {
@@ -256,18 +300,29 @@
         <div class="sceneBody" id="sceneBody"></div>
         <ul class="sceneBullets isHidden" id="sceneBullets"></ul>
         <div class="sceneOptions" id="sceneOptions"></div>
+        <div class="sceneFooter">
+          <button type="button" class="backButton" id="backButton" aria-label="Go back" disabled>&larr;</button>
+        </div>
       </section>
     </div>
   </main>
 
   <script>
     (function () {
-      const state = {
+      const initialState = {
         safetyAsked: false,
         medHistoryDeep: false,
         seizureClarified: false,
         weightConcernAsked: false
       };
+      const state = {
+        safetyAsked: initialState.safetyAsked,
+        medHistoryDeep: initialState.medHistoryDeep,
+        seizureClarified: initialState.seizureClarified,
+        weightConcernAsked: initialState.weightConcernAsked
+      };
+      const historyStack = [];
+      let currentSceneId = null;
 
       const scenes = {
         start: {
@@ -755,7 +810,7 @@
           ],
           reflection: "Medication selection improves when you treat side-effect history and comorbidities as central clinical data rather than afterthoughts.",
           options: [
-            { label: "Play the case again", next: "start" }
+            { label: "Play the case again", next: "start", resetHistory: true }
           ]
         },
         endingVilazodone: {
@@ -771,7 +826,7 @@
           ],
           reflection: "Good prescribing often means finding the option that fits the patient's priorities almost as well as it fits the diagnosis.",
           options: [
-            { label: "Play the case again", next: "start" }
+            { label: "Play the case again", next: "start", resetHistory: true }
           ]
         },
         endingMirtazapine: {
@@ -787,7 +842,7 @@
           ],
           reflection: "The best antidepressant is not just the one that treats symptoms. It is the one the patient can realistically live with.",
           options: [
-            { label: "Play the case again", next: "start" }
+            { label: "Play the case again", next: "start", resetHistory: true }
           ]
         },
         endingBupropion: {
@@ -803,7 +858,7 @@
           ],
           reflection: "Medication choice is not only about benefits. It is also about knowing when a drug is simply unsafe for the patient in front of you.",
           options: [
-            { label: "Play the case again", next: "start" }
+            { label: "Play the case again", next: "start", resetHistory: true }
           ]
         },
         endingSNRI: {
@@ -819,7 +874,7 @@
           ],
           reflection: "Good prescribing asks not only 'does this treat depression?' but also 'what other problems will this predictably make worse?'",
           options: [
-            { label: "Play the case again", next: "start" }
+            { label: "Play the case again", next: "start", resetHistory: true }
           ]
         },
         endingSSRI: {
@@ -835,7 +890,7 @@
           ],
           reflection: "When a patient says a whole class of medications has repeatedly caused the same harm, believe them and move your reasoning forward.",
           options: [
-            { label: "Play the case again", next: "start" }
+            { label: "Play the case again", next: "start", resetHistory: true }
           ]
         },
         endingParoxetine: {
@@ -851,7 +906,7 @@
           ],
           reflection: "If the side effects predictably threaten the patient's values and functioning, the medication fit is poor even when one symptom improves.",
           options: [
-            { label: "Play the case again", next: "start" }
+            { label: "Play the case again", next: "start", resetHistory: true }
           ]
         }
       };
@@ -860,6 +915,32 @@
       const sceneBody = document.getElementById("sceneBody");
       const sceneBullets = document.getElementById("sceneBullets");
       const sceneOptions = document.getElementById("sceneOptions");
+      const caseFrame = document.querySelector(".caseFrame");
+      const backButton = document.getElementById("backButton");
+
+      function snapshotState() {
+        return {
+          safetyAsked: state.safetyAsked,
+          medHistoryDeep: state.medHistoryDeep,
+          seizureClarified: state.seizureClarified,
+          weightConcernAsked: state.weightConcernAsked
+        };
+      }
+
+      function restoreState(snapshot) {
+        state.safetyAsked = snapshot.safetyAsked;
+        state.medHistoryDeep = snapshot.medHistoryDeep;
+        state.seizureClarified = snapshot.seizureClarified;
+        state.weightConcernAsked = snapshot.weightConcernAsked;
+      }
+
+      function resetState() {
+        restoreState(initialState);
+      }
+
+      function syncBackButton() {
+        backButton.disabled = historyStack.length === 0;
+      }
 
       function getScene(sceneId) {
         const scene = scenes[sceneId];
@@ -867,6 +948,33 @@
           return scene();
         }
         return scene;
+      }
+
+      function navigateTo(option) {
+        if (!option) {
+          return;
+        }
+
+        if (option.resetHistory) {
+          historyStack.length = 0;
+          resetState();
+        } else if (currentSceneId) {
+          historyStack.push({
+            sceneId: currentSceneId,
+            state: snapshotState()
+          });
+        }
+
+        if (typeof option.effect === "function") {
+          option.effect();
+        }
+
+        const nextScene = typeof option.next === "function" ? option.next() : option.next;
+        if (!nextScene) {
+          return;
+        }
+
+        renderScene(nextScene);
       }
 
       function renderBody(paragraphs, reflection) {
@@ -924,28 +1032,34 @@
         renderBullets(scene.bullets);
 
         sceneOptions.innerHTML = "";
+        currentSceneId = sceneId;
         (scene.options || []).forEach(function (option) {
           const button = document.createElement("button");
           button.type = "button";
           button.className = "sceneOption";
           button.textContent = option.label;
           button.addEventListener("click", function () {
-            if (typeof option.effect === "function") {
-              option.effect();
-            }
-
-            const nextScene = typeof option.next === "function" ? option.next() : option.next;
-            renderScene(nextScene);
+            navigateTo(option);
           });
           sceneOptions.appendChild(button);
         });
 
-        const frame = document.querySelector(".caseFrame");
-        if (frame) {
-          frame.scrollTop = 0;
+        syncBackButton();
+        if (caseFrame) {
+          caseFrame.scrollTop = 0;
         }
-        window.scrollTo(0, 0);
       }
+
+      backButton.addEventListener("click", function () {
+        const previousEntry = historyStack.pop();
+        if (!previousEntry) {
+          syncBackButton();
+          return;
+        }
+
+        restoreState(previousEntry.state);
+        renderScene(previousEntry.sceneId);
+      });
 
       renderScene("start");
     })();

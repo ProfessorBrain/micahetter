@@ -1,0 +1,264 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="adventures-case-title" content="Her Words Keep Slipping" />
+  <meta name="adventures-case-subtitle" content="Transient aphasia and stroke risk" />
+  <title>Adventures in Medicine - Emergency Medicine - Case 13</title>
+  <link rel="stylesheet" href="../../adventures-casebook.css" />
+  <script src="../../adventures-case-shell.js" defer></script>
+  <script src="../../adventures-casebook-runtime.js" defer></script>
+</head>
+<body>
+  <noscript>This case requires JavaScript in order to present its interactive choices.</noscript>
+
+  <main class="caseApp">
+    <div class="caseStage">
+      <div class="caseBannerWrap">
+        <div class="caseBanner">ADVENTURES IN EMERGENCY MEDICINE</div>
+      </div>
+
+      <section class="caseFrame" aria-live="polite">
+        <h1 class="sceneTitle" id="sceneTitle"></h1>
+        <div class="sceneBody" id="sceneBody"></div>
+        <ul class="sceneBullets isHidden" id="sceneBullets"></ul>
+        <div class="sceneOptions" id="sceneOptions"></div>
+        <div class="sceneFooter">
+          <button type="button" class="backButton" id="backButton" aria-label="Go back" disabled>&larr;</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script id="adventures-casebook-data" type="application/json">
+{
+    "scenes":  {
+                   "start":  {
+                                 "title":  "Case 13: Her Words Keep Slipping",
+                                 "body":  [
+                                              "Mrs. Patel, 72, arrives forty minutes after family noticed she was speaking in fragments and reaching for words that would not come. She looks frightened by her own language.",
+                                              "The deficits are not maximal, but they are real enough that the room changed the moment you heard them.",
+                                              "This is one of those neurologic cases where small improvements can make dangerous decisions look easier than they are."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "next":  "step1",
+                                                     "label":  "Begin the case"
+                                                 }
+                                             ]
+                             },
+                   "step1":  {
+                                 "title":  "What is the first move?",
+                                 "body":  [
+                                              "A nurse is already whispering that a stroke alert may be appropriate. The family says she has diabetes and was normal half an hour before the symptoms began."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Treat this like a stroke room immediately while checking glucose in parallel rather than in sequence.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This is usually the strongest opening because it respects both the urgency of ischemia and the reality of stroke mimics.",
+                                                                                   "It avoids the false choice between moving fast and moving intelligently."
+                                                                               ],
+                                                                      "title":  "You let time-sensitive therapy and reversible mimics share the first minute."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Get the noncontrast head CT rolling first and sort out the rest once imaging is moving.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be a practical ED move, especially when the system is built around rapid imaging.",
+                                                                                   "The risk is that a quickly reversible mimic may still deserve attention before the patient leaves the room."
+                                                                               ],
+                                                                      "title":  "You let the scanner define the opening rhythm."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Start with a fuller family history because the deficits are mild enough to buy a little more clarity.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "Collateral is high value in stroke care, especially around last known well and baseline function.",
+                                                                                   "But mild deficits are still deficits, and a gentler room can still be a fast room."
+                                                                               ],
+                                                                      "title":  "You ask the story to sharpen the urgency."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step2":  {
+                                 "title":  "How do you respond when the mimic branch partly opens but does not fully solve the case?",
+                                 "body":  [
+                                              "Glucose is 58. After dextrose her speech improves, but not all the way. She is still missing words and looks frustrated that everyone is asking whether she is better yet.",
+                                              "Now you have improvement without closure."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Keep the stroke pathway active because partial improvement does not prove the original event was only hypoglycemia.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This is often the strongest neurologic stance because mimics and true ischemia can overlap or coexist in real patients.",
+                                                                                   "It treats the dextrose response as helpful data instead of as permission to stand down."
+                                                                               ],
+                                                                      "title":  "You refuse to let a good clue become the whole answer."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Decide the glucose explains enough that the rest can slow down to a more routine pace.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That may sometimes be right.",
+                                                                                   "It becomes dangerous when the residual deficit is still right in front of you and you ask it to be less important than it looks."
+                                                                               ],
+                                                                      "title":  "You let the reversible piece claim most of the story."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Observe a little longer before deciding whether the persisting language issue is real enough to justify the rest of the pathway.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be thoughtful when the exam is clearly moving and you are genuinely unsure what is left.",
+                                                                                   "The risk is that time is one of the few resources stroke care does not replenish for you."
+                                                                               ],
+                                                                      "title":  "You ask the next few minutes to settle the ambiguity."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step3":  {
+                                 "title":  "What matters once the dramatic part softens?",
+                                 "body":  [
+                                              "CT shows no bleed. CTA is pending. Her speech is now closer to normal but not convincingly normal, and the family is split between relief and worry.",
+                                              "The easier the room becomes emotionally, the harder it can become cognitively."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Continue the stroke/TIA evaluation because near-normal is not the same thing as normal when the onset was abrupt.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This keeps the transient nature of ischemia in front of you instead of treating transient as trivial.",
+                                                                                   "It is a disciplined response to a room that is trying to talk you out of its own urgency."
+                                                                               ],
+                                                                      "title":  "You let the timeline keep its vote."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Shift toward a TIA-style disposition conversation rather than a stroke-style one if the deficits keep melting away.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be right, especially once reperfusion decisions are off the table and vascular imaging is reassuring.",
+                                                                                   "It is weaker if the shift happens before the workup has actually earned it."
+                                                                               ],
+                                                                      "title":  "You let the current exam shape the next frame."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Ask neurology to help decide how much of the original urgency should still govern the rest of the night.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That is often useful because the hardest stroke cases are sometimes the ones getting better in front of you.",
+                                                                                   "The goal should be sharper judgment, not borrowed confidence."
+                                                                               ],
+                                                                      "title":  "You use consultant judgment to calibrate the changing room."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step4":  {
+                                 "title":  "How do you land a patient who is almost normal again?",
+                                 "body":  [
+                                              "By the time the family is asking about dinner plans, Mrs. Patel is speaking much better. The temptation to call the crisis over is now stronger than it was at the door.",
+                                              "This is exactly when transient neurologic symptoms can get under-managed."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Admit or observe for stroke/TIA workup because abrupt language loss, even transient, still carries downstream risk.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You let the event carry more weight than the recovery.",
+                                                                      "body":  [
+                                                                                   "This is often the strongest path because the most important thing about the episode may be what it predicts next, not how impressive it looks right now.",
+                                                                                   "It also gives the patient and family a setting where prevention can start immediately."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Transient neurologic deficits are dangerous partly because they improve. Improvement invites clinicians to underweight the event that just happened."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Glucose correction and stroke evaluation often belong in the same room, not opposite ones.",
+                                                                                                         "Near-normal is still a clinical state that deserves interpretation, not dismissal.",
+                                                                                                         "Disposition should account for recurrence risk, not just the current exam."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Use neurology input and the completed imaging to decide whether observation is enough without automatically escalating to full admission.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You let the next layer of data right-size the bed.",
+                                                                      "body":  [
+                                                                                   "This can be a very thoughtful answer when the patient is improving and the major catastrophic branches have narrowed but not vanished.",
+                                                                                   "It keeps the plan proportional without treating proportional as casual."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "The right neurologic disposition is often about recurrence risk and available next-day workup as much as about the ED exam."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Consultation is particularly helpful when the patient is getting better faster than the uncertainty is.",
+                                                                                                         "Observation can be a meaningful neurologic plan, not a compromise plan.",
+                                                                                                         "A quieter room can still justify a serious workup."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Discharge only if the workup and follow-up path are strong enough that home is truly a monitored plan in disguise.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You treat discharge as a high-bar neurologic decision.",
+                                                                      "body":  [
+                                                                                   "That can be appropriate in select transient-episode patients with excellent infrastructure behind them.",
+                                                                                   "It becomes weak when it is powered more by symptom resolution than by the strength of the prevention plan."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "A safe discharge after transient neurologic symptoms should feel more like handing off a plan than ending a problem."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "The event itself may matter more than the current deficit.",
+                                                                                                         "Follow-up is part of the treatment path in TIA-like presentations.",
+                                                                                                         "Emergency medicine sometimes means deciding how much future risk the patient should carry home tonight."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 }
+                                             ]
+                             }
+               },
+    "startScene":  "start",
+    "banner":  "ADVENTURES IN EMERGENCY MEDICINE",
+    "caseTitle":  "Her Words Keep Slipping"
+}
+  </script>
+</body>
+</html>

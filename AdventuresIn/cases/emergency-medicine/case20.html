@@ -1,0 +1,264 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="adventures-case-title" content="Light Hurts, Neck Hurts" />
+  <meta name="adventures-case-subtitle" content="Fever, photophobia, and neck pain" />
+  <title>Adventures in Medicine - Emergency Medicine - Case 20</title>
+  <link rel="stylesheet" href="../../adventures-casebook.css" />
+  <script src="../../adventures-case-shell.js" defer></script>
+  <script src="../../adventures-casebook-runtime.js" defer></script>
+</head>
+<body>
+  <noscript>This case requires JavaScript in order to present its interactive choices.</noscript>
+
+  <main class="caseApp">
+    <div class="caseStage">
+      <div class="caseBannerWrap">
+        <div class="caseBanner">ADVENTURES IN EMERGENCY MEDICINE</div>
+      </div>
+
+      <section class="caseFrame" aria-live="polite">
+        <h1 class="sceneTitle" id="sceneTitle"></h1>
+        <div class="sceneBody" id="sceneBody"></div>
+        <ul class="sceneBullets isHidden" id="sceneBullets"></ul>
+        <div class="sceneOptions" id="sceneOptions"></div>
+        <div class="sceneFooter">
+          <button type="button" class="backButton" id="backButton" aria-label="Go back" disabled>&larr;</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script id="adventures-casebook-data" type="application/json">
+{
+    "scenes":  {
+                   "start":  {
+                                 "title":  "Case 20: Light Hurts, Neck Hurts",
+                                 "body":  [
+                                              "A college student named Priya comes in with fever, headache, light sensitivity, and neck pain that worsened over the day. She is miserable, but still oriented enough to tell you she thought it was a migraine until the fever showed up.",
+                                              "Her exam is uncomfortable rather than spectacular. That does not make the room gentle.",
+                                              "Meningitis rooms often ask whether you can move quickly without pretending the sequence is obvious."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "next":  "step1",
+                                                     "label":  "Begin the case"
+                                                 }
+                                             ]
+                             },
+                   "step1":  {
+                                 "title":  "What gets the opening move?",
+                                 "body":  [
+                                              "You are deciding between cultures, antibiotics, pain control, imaging questions, and the practical issue of whether the LP conversation belongs at the front or the middle of the visit."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Treat possible meningitis as real immediately with cultures, broad antibiotics, and a focused exam while you sort out whether anything should delay LP.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This is often the strongest opening because bacterial meningitis is one of the clearest examples of a room that should not wait for perfect sequence comfort.",
+                                                                                   "It still leaves space for more diagnostic refinement after the first treatments start."
+                                                                               ],
+                                                                      "title":  "You let consequence set the pace before anatomy does."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Get head imaging first because severe headache plus neck symptoms can still hide something that changes the LP plan.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be appropriate when focal deficits, altered mentation, or other red flags complicate the room.",
+                                                                                   "It is weaker when imaging is mostly serving your need for comfort rather than the patient\u0027s procedural risk."
+                                                                               ],
+                                                                      "title":  "You let safety around the procedure lead the timeline."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Lead with fluids, antipyretics, and a fuller history before you decide how much this should behave like meningitis.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can sometimes help the exam and the conversation.",
+                                                                                   "The risk is that it makes a time-sensitive infection wait for you to feel more certain."
+                                                                               ],
+                                                                      "title":  "You ask symptom relief and story to clarify the branch."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step2":  {
+                                 "title":  "How do you choose the next sequence?",
+                                 "body":  [
+                                              "Priya has no focal neurologic deficit and no obvious papilledema. She is febrile, photophobic, and clearly meningitic enough that the word is now being said out loud in the room.",
+                                              "The next decision is not whether meningitis is possible. It is how much of the workup can safely happen after treatment starts."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Give antibiotics and dexamethasone now, then move quickly to LP when the path is clear.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This is often the strongest answer because time-sensitive infection should not wait for a perfectly clean sequence when the exam supports action.",
+                                                                                   "It also acknowledges that treatment can begin while diagnosis is still being tightened."
+                                                                               ],
+                                                                      "title":  "You prioritize the therapy clock over the diagnostic ideal."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Perform LP promptly before antibiotics if the setup is immediate and nothing meaningful is delaying you.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be an elegant path when the logistics line up and the patient is ready for it now.",
+                                                                                   "The danger is that a theoretically ideal sequence can become a practically delayed sequence very quickly."
+                                                                               ],
+                                                                      "title":  "You try to preserve the cleanest CSF story without ignoring the clock."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Treat the room as more likely viral or inflammatory for the moment and wait for a little more data before committing to broad coverage.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "Sometimes the softer answer is right.",
+                                                                                   "Here, it is weaker because the cost of waiting is large and the bedside story is already suspicious enough to act."
+                                                                               ],
+                                                                      "title":  "You let probability soften the urgency."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step3":  {
+                                 "title":  "What matters after the first treatment and testing move?",
+                                 "body":  [
+                                              "Priya feels less miserable after medication, which makes the room easier to manage but not easier to solve. CSF results are not back yet, and you still have to decide how inpatient and how urgent this needs to stay.",
+                                              "This is where a slightly better patient can create a much weaker clinician."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Keep bacterial meningitis high until the data genuinely narrow it and plan the rest of the night around that risk.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This is often the strongest frame because partial symptom improvement after analgesia or fluids does not meaningfully reduce infectious risk.",
+                                                                                   "It keeps the disposition aligned with the illness that would hurt most if you were wrong."
+                                                                               ],
+                                                                      "title":  "You let consequence remain the dominant voice."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Broaden the conversation toward viral meningitis and supportive care now that the room looks less unstable.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That may ultimately be the right answer once the data return.",
+                                                                                   "It is weakest when the shift happens before the data actually arrive."
+                                                                               ],
+                                                                      "title":  "You let the calmer room shift the center of gravity."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Use infectious disease or admitting-team discussion early so the inpatient plan is being built while the uncertainty is still active.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can be a very thoughtful move because meningitis care often depends on coordination more than on one heroic ED moment.",
+                                                                                   "It should sharpen the plan rather than diffuse responsibility for it."
+                                                                               ],
+                                                                      "title":  "You make the next layer of care part of the emergency plan."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step4":  {
+                                 "title":  "How do you finish a room like this tonight?",
+                                 "body":  [
+                                              "Priya\u0027s boyfriend asks whether this could still just be a very bad migraine plus a virus. The truth is that it could be, but the ED does not get to act as if that softer possibility has already won.",
+                                              "The disposition has to reflect what is still live, not just what is most convenient to imagine."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Admit with bacterial coverage still active until CSF and culture data narrow the room enough to relax safely.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You let the worst plausible branch determine the immediate plan.",
+                                                                      "body":  [
+                                                                                   "This is often the strongest path because meningitis risk is exactly the kind of risk that deserves a low threshold for continued aggressive management.",
+                                                                                   "It aligns the next several hours with consequence rather than with optimism."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Possible meningitis is a classic emergency-medicine sequence problem: how to treat quickly, test intelligently, and avoid letting the cleaner-looking diagnosis steal the room too early."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Antibiotic timing matters when bacterial meningitis remains meaningfully possible.",
+                                                                                                         "A normal mental status does not eliminate serious central nervous system infection.",
+                                                                                                         "Disposition should match the danger of being wrong, not the appeal of the softer diagnosis."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Use LP results, serial exams, and consultant discussion to right-size the inpatient plan rather than treating every meningitis room exactly the same.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You let the next layer of data tune the intensity.",
+                                                                      "body":  [
+                                                                                   "That can be a sophisticated and very appropriate answer once the first urgent steps are already moving.",
+                                                                                   "It works best when the tuning happens on top of treatment, not instead of treatment."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "The best meningitis management often comes from getting the early sequence right and then adjusting intelligently as the data return."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Consultation can help tailor the inpatient path without diluting urgency.",
+                                                                                                         "Serial exams still matter in central nervous system infection.",
+                                                                                                         "Not every serious infectious room needs the same bed, but almost all of them need a bed."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Only consider a lighter path if the entire story changes more than it has so far and the data truly support it.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You keep the softer diagnosis on the board without letting it dominate too early.",
+                                                                      "body":  [
+                                                                                   "This is the highest-bar option in the room.",
+                                                                                   "It would need stronger reassurance than a little symptomatic improvement and a hopeful family conversation."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "A good discharge after a meningitis-like presentation should feel rare enough that you can name exactly why it became safe."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "Symptom relief after ED treatment is not the same thing as infectious reassurance.",
+                                                                                                         "High-consequence infections deserve a high bar for home.",
+                                                                                                         "The softer story should win only after the harder story has genuinely weakened."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 }
+                                             ]
+                             }
+               },
+    "startScene":  "start",
+    "banner":  "ADVENTURES IN EMERGENCY MEDICINE",
+    "caseTitle":  "Light Hurts, Neck Hurts"
+}
+  </script>
+</body>
+</html>
