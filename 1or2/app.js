@@ -101,14 +101,14 @@ const questions = [
       "family-medicine": 4,
       "internal-medicine": 4,
       pediatrics: 4,
-      psychiatry: 5,
-      neurology: 3,
+      psychiatry: 4,
+      neurology: 4,
       obgyn: 3,
       dermatology: 2,
-      "physical-medicine-rehab": 4,
-      "med-peds": 5,
+      "physical-medicine-rehab": 2,
+      "med-peds": 4,
       "orthopedic-surgery": 2,
-      ophthalmology: 3,
+      ophthalmology: 2,
       otolaryngology: 3,
       urology: 3,
     },
@@ -132,7 +132,7 @@ const questions = [
       "emergency-medicine": 3,
       dermatology: 3,
       "orthopedic-surgery": 5,
-      ophthalmology: 5,
+      ophthalmology: 4,
       otolaryngology: 4,
       urology: 4,
       "physical-medicine-rehab": 2,
@@ -165,12 +165,12 @@ const questions = [
     },
     no: {
       dermatology: 4,
-      psychiatry: 4,
+      psychiatry: 3,
       pathology: 4,
       radiology: 2,
       "family-medicine": 2,
       "physical-medicine-rehab": 4,
-      ophthalmology: 3,
+      ophthalmology: 2,
       "med-peds": 2,
     },
   },
@@ -184,7 +184,7 @@ const questions = [
       "internal-medicine": 4,
       pediatrics: 4,
       "emergency-medicine": 4,
-      "med-peds": 6,
+      "med-peds": 4,
       "physical-medicine-rehab": 2,
     },
     no: {
@@ -207,15 +207,15 @@ const questions = [
     text: "Do you want most of your workday to involve direct face-to-face patient interaction?",
     support: "Think about where you want your energy to go on a typical day, not just during memorable moments.",
     yes: {
-      psychiatry: 5,
+      psychiatry: 4,
       "family-medicine": 4,
       pediatrics: 4,
       "internal-medicine": 3,
       obgyn: 3,
-      "physical-medicine-rehab": 4,
-      "med-peds": 4,
+      "physical-medicine-rehab": 3,
+      "med-peds": 3,
       "orthopedic-surgery": 3,
-      ophthalmology: 4,
+      ophthalmology: 3,
       otolaryngology: 4,
       urology: 4,
     },
@@ -232,12 +232,12 @@ const questions = [
     text: "Are you especially drawn to diagnostic puzzles even when the answer may take time to unfold?",
     support: "This favors specialties where pattern recognition, synthesis, and ambiguity tolerance matter a lot.",
     yes: {
-      neurology: 5,
+      neurology: 6,
       "internal-medicine": 4,
       radiology: 4,
       pathology: 4,
       "emergency-medicine": 2,
-      ophthalmology: 3,
+      ophthalmology: 2,
       "med-peds": 2,
       otolaryngology: 2,
       "physical-medicine-rehab": 2,
@@ -288,12 +288,12 @@ const questions = [
     no: {
       "family-medicine": 4,
       "internal-medicine": 4,
-      psychiatry: 4,
+      psychiatry: 3,
       dermatology: 4,
       pediatrics: 4,
-      "physical-medicine-rehab": 4,
-      "med-peds": 5,
-      ophthalmology: 3,
+      "physical-medicine-rehab": 3,
+      "med-peds": 4,
+      ophthalmology: 2,
       otolaryngology: 2,
       urology: 2,
       "orthopedic-surgery": 1,
@@ -357,8 +357,8 @@ const questions = [
       radiology: 6,
       dermatology: 5,
       pathology: 4,
-      neurology: 2,
-      ophthalmology: 7,
+      neurology: 3,
+      ophthalmology: 5,
       "orthopedic-surgery": 1,
       otolaryngology: 1,
     },
@@ -397,12 +397,12 @@ const questions = [
     support: "Pick yes if controlled cadence and fewer abrupt schedule changes are especially important.",
     yes: {
       dermatology: 5,
-      psychiatry: 3,
+      psychiatry: 2,
       radiology: 2,
       "family-medicine": 2,
-      "physical-medicine-rehab": 5,
-      ophthalmology: 4,
-      "med-peds": 2,
+      "physical-medicine-rehab": 4,
+      ophthalmology: 3,
+      "med-peds": 1,
       otolaryngology: 1,
       urology: 1,
     },
@@ -472,7 +472,7 @@ const questions = [
       dermatology: 2,
       "emergency-medicine": 2,
       "orthopedic-surgery": 5,
-      ophthalmology: 5,
+      ophthalmology: 4,
       otolaryngology: 4,
       urology: 4,
       "physical-medicine-rehab": 2,
@@ -494,8 +494,8 @@ const questions = [
     yes: {
       "emergency-medicine": 4,
       "internal-medicine": 3,
-      neurology: 3,
-      psychiatry: 2,
+      neurology: 4,
+      psychiatry: 1,
       "med-peds": 2,
       "physical-medicine-rehab": 2,
       ophthalmology: 1,
@@ -522,7 +522,7 @@ const questions = [
       pediatrics: 4,
       "internal-medicine": 3,
       obgyn: 2,
-      "med-peds": 4,
+      "med-peds": 3,
       "physical-medicine-rehab": 2,
       ophthalmology: 1,
     },
@@ -543,7 +543,7 @@ const questions = [
     yes: {
       "physical-medicine-rehab": 7,
       "orthopedic-surgery": 3,
-      neurology: 2,
+      neurology: 3,
       pediatrics: 1,
       "family-medicine": 1,
       "med-peds": 2,
@@ -559,7 +559,7 @@ const questions = [
     text: "Would you enjoy becoming an expert in one smaller part of the body rather than working across many organ systems?",
     support: "This can point toward specialties with a narrower anatomic focus and a more tightly defined scope.",
     yes: {
-      ophthalmology: 5,
+      ophthalmology: 4,
       otolaryngology: 4,
       urology: 4,
       dermatology: 3,
@@ -595,14 +595,14 @@ const p = {
     "family-medicine": 4,
     "internal-medicine": 4,
     pediatrics: 4,
-    psychiatry: 5,
-    neurology: 3,
+    psychiatry: 4,
+    neurology: 4,
     obgyn: 3,
     dermatology: 2,
-    "physical-medicine-rehab": 4,
-    "med-peds": 5,
+    "physical-medicine-rehab": 2,
+    "med-peds": 4,
     "orthopedic-surgery": 2,
-    ophthalmology: 3,
+    ophthalmology: 2,
     otolaryngology: 3,
     urology: 3,
   },
@@ -620,7 +620,7 @@ const p = {
     "emergency-medicine": 3,
     dermatology: 3,
     "orthopedic-surgery": 5,
-    ophthalmology: 5,
+    ophthalmology: 4,
     otolaryngology: 4,
     urology: 4,
     "physical-medicine-rehab": 2,
@@ -646,12 +646,12 @@ const p = {
   },
   acuteN: {
     dermatology: 4,
-    psychiatry: 4,
+    psychiatry: 3,
     pathology: 4,
     radiology: 2,
     "family-medicine": 2,
     "physical-medicine-rehab": 4,
-    ophthalmology: 3,
+    ophthalmology: 2,
     "med-peds": 2,
   },
   broadY: {
@@ -659,7 +659,7 @@ const p = {
     "internal-medicine": 4,
     pediatrics: 4,
     "emergency-medicine": 4,
-    "med-peds": 6,
+    "med-peds": 4,
     "physical-medicine-rehab": 2,
   },
   broadN: {
@@ -676,15 +676,15 @@ const p = {
     "physical-medicine-rehab": 2,
   },
   directY: {
-    psychiatry: 5,
+    psychiatry: 4,
     "family-medicine": 4,
     pediatrics: 4,
     "internal-medicine": 3,
     obgyn: 3,
-    "physical-medicine-rehab": 4,
-    "med-peds": 4,
+    "physical-medicine-rehab": 3,
+    "med-peds": 3,
     "orthopedic-surgery": 3,
-    ophthalmology: 4,
+    ophthalmology: 3,
     otolaryngology: 4,
     urology: 4,
   },
@@ -695,12 +695,12 @@ const p = {
     dermatology: 1,
   },
   diagY: {
-    neurology: 5,
+    neurology: 6,
     "internal-medicine": 4,
     radiology: 4,
     pathology: 4,
     "emergency-medicine": 2,
-    ophthalmology: 3,
+    ophthalmology: 2,
     "med-peds": 2,
     otolaryngology: 2,
     "physical-medicine-rehab": 2,
@@ -734,12 +734,12 @@ const p = {
   shiftN: {
     "family-medicine": 4,
     "internal-medicine": 4,
-    psychiatry: 4,
+    psychiatry: 3,
     dermatology: 4,
     pediatrics: 4,
-    "physical-medicine-rehab": 4,
-    "med-peds": 5,
-    ophthalmology: 3,
+    "physical-medicine-rehab": 3,
+    "med-peds": 4,
+    ophthalmology: 2,
     otolaryngology: 2,
     urology: 2,
   },
@@ -764,8 +764,8 @@ const p = {
     radiology: 6,
     dermatology: 5,
     pathology: 4,
-    neurology: 2,
-    ophthalmology: 7,
+    neurology: 3,
+    ophthalmology: 5,
     "orthopedic-surgery": 1,
     otolaryngology: 1,
   },
@@ -776,12 +776,12 @@ const p = {
   },
   lifeY: {
     dermatology: 5,
-    psychiatry: 3,
+    psychiatry: 2,
     radiology: 2,
     "family-medicine": 2,
-    "physical-medicine-rehab": 5,
-    ophthalmology: 4,
-    "med-peds": 2,
+    "physical-medicine-rehab": 4,
+    ophthalmology: 3,
+    "med-peds": 1,
     otolaryngology: 1,
     urology: 1,
   },
@@ -811,7 +811,7 @@ const p = {
     dermatology: 2,
     "emergency-medicine": 2,
     "orthopedic-surgery": 5,
-    ophthalmology: 5,
+    ophthalmology: 4,
     otolaryngology: 4,
     urology: 4,
     "physical-medicine-rehab": 2,
@@ -819,8 +819,8 @@ const p = {
   ambigY: {
     "emergency-medicine": 4,
     "internal-medicine": 3,
-    neurology: 3,
-    psychiatry: 2,
+    neurology: 4,
+    psychiatry: 1,
     "med-peds": 2,
     "physical-medicine-rehab": 2,
     ophthalmology: 1,
@@ -841,20 +841,20 @@ const p = {
     pediatrics: 4,
     "internal-medicine": 3,
     obgyn: 2,
-    "med-peds": 4,
+    "med-peds": 3,
     "physical-medicine-rehab": 2,
     ophthalmology: 1,
   },
   rehabY: {
     "physical-medicine-rehab": 7,
     "orthopedic-surgery": 3,
-    neurology: 2,
+    neurology: 3,
     pediatrics: 1,
     "family-medicine": 1,
     "med-peds": 2,
   },
   narrowY: {
-    ophthalmology: 5,
+    ophthalmology: 4,
     otolaryngology: 4,
     urology: 4,
     dermatology: 3,
@@ -863,13 +863,13 @@ const p = {
   },
   adultY: {
     "internal-medicine": 4,
-    neurology: 2,
-    psychiatry: 2,
+    neurology: 3,
+    psychiatry: 1,
     "orthopedic-surgery": 1,
     urology: 1,
   },
   medpedsY: {
-    "med-peds": 7,
+    "med-peds": 6,
     "internal-medicine": 2,
     pediatrics: 2,
     "family-medicine": 1,
@@ -881,7 +881,7 @@ const p = {
     "emergency-medicine": 1,
   },
   ophthoY: {
-    ophthalmology: 7,
+    ophthalmology: 5,
     radiology: 1,
     dermatology: 1,
   },
@@ -899,7 +899,7 @@ const p = {
     radiology: 4,
     pathology: 4,
     anesthesiology: 3,
-    neurology: 2,
+    neurology: 3,
   },
   inpatientY: {
     "internal-medicine": 4,
@@ -910,26 +910,26 @@ const p = {
     "general-surgery": 1,
   },
   commY: {
-    psychiatry: 5,
+    psychiatry: 4,
     "family-medicine": 3,
     pediatrics: 3,
     "physical-medicine-rehab": 2,
-    "med-peds": 2,
+    "med-peds": 1,
     obgyn: 1,
   },
   outprocY: {
     dermatology: 4,
-    ophthalmology: 4,
+    ophthalmology: 3,
     otolaryngology: 3,
     urology: 3,
     "physical-medicine-rehab": 2,
   },
   chronicY: {
     "internal-medicine": 4,
-    neurology: 3,
-    psychiatry: 3,
+    neurology: 4,
+    psychiatry: 2,
     "physical-medicine-rehab": 2,
-    "med-peds": 2,
+    "med-peds": 1,
     "family-medicine": 2,
     pediatrics: 2,
   },
@@ -1026,6 +1026,19 @@ questions.push(
 );
 
 const QUESTION_ORDER_STORAGE_KEY = "1or2-question-order-mode";
+const SHARE_SEED_VERSION = "v1";
+const RESPONSE_TO_CODE = {
+  yes: "y",
+  no: "n",
+  skip: "s",
+  null: "u",
+};
+const CODE_TO_RESPONSE = {
+  y: "yes",
+  n: "no",
+  s: "skip",
+  u: null,
+};
 
 function loadOrderMode() {
   try {
@@ -1059,6 +1072,92 @@ function buildQuestionOrder(mode) {
   return mode === "random" ? shuffleIndices(indices) : indices;
 }
 
+function encodeResponseSequence(responses) {
+  return responses.map((response) => RESPONSE_TO_CODE[String(response)] ?? RESPONSE_TO_CODE.null).join("");
+}
+
+function decodeResponseSequence(encodedResponses) {
+  if (encodedResponses.length !== questions.length) {
+    throw new Error("The seed response list does not match this question set.");
+  }
+
+  return encodedResponses.split("").map((code) => {
+    if (!(code in CODE_TO_RESPONSE)) {
+      throw new Error("The seed contains an unknown response code.");
+    }
+
+    return CODE_TO_RESPONSE[code];
+  });
+}
+
+function encodeQuestionOrder(questionOrder) {
+  return questionOrder.map((index) => index.toString(36).padStart(2, "0")).join("");
+}
+
+function decodeQuestionOrder(encodedOrder) {
+  if (encodedOrder.length !== questions.length * 2) {
+    throw new Error("The seed question order does not match this question set.");
+  }
+
+  const decoded = [];
+
+  for (let index = 0; index < encodedOrder.length; index += 2) {
+    const value = Number.parseInt(encodedOrder.slice(index, index + 2), 36);
+
+    if (!Number.isInteger(value) || value < 0 || value >= questions.length) {
+      throw new Error("The seed contains an invalid question order.");
+    }
+
+    decoded.push(value);
+  }
+
+  if (new Set(decoded).size !== questions.length) {
+    throw new Error("The seed question order is incomplete or duplicated.");
+  }
+
+  return decoded;
+}
+
+function buildShareSeed() {
+  return [
+    SHARE_SEED_VERSION,
+    state.orderMode === "random" ? "r" : "s",
+    state.currentIndex.toString(36),
+    encodeResponseSequence(state.responses),
+    encodeQuestionOrder(state.questionOrder),
+  ].join(".");
+}
+
+function parseShareSeed(seedText) {
+  const normalized = seedText.trim().replace(/\s+/g, "").toLowerCase();
+  const [version, modeCode, currentIndexCode, responseSequence, questionOrderSequence] = normalized.split(".");
+
+  if (!version || !modeCode || !currentIndexCode || !responseSequence || !questionOrderSequence) {
+    throw new Error("This seed looks incomplete.");
+  }
+
+  if (version !== SHARE_SEED_VERSION) {
+    throw new Error("This seed version is not supported here.");
+  }
+
+  if (modeCode !== "r" && modeCode !== "s") {
+    throw new Error("This seed contains an invalid order mode.");
+  }
+
+  const currentIndex = Number.parseInt(currentIndexCode, 36);
+
+  if (!Number.isInteger(currentIndex) || currentIndex < 0 || currentIndex > questions.length) {
+    throw new Error("This seed contains an invalid progress marker.");
+  }
+
+  return {
+    orderMode: modeCode === "r" ? "random" : "sequential",
+    currentIndex,
+    responses: decodeResponseSequence(responseSequence),
+    questionOrder: decodeQuestionOrder(questionOrderSequence),
+  };
+}
+
 const initialOrderMode = loadOrderMode();
 
 const state = {
@@ -1082,6 +1181,20 @@ const settingsToggle = document.getElementById("settingsToggle");
 const closeSettingsButton = document.getElementById("closeSettingsButton");
 const settingsStatus = document.getElementById("settingsStatus");
 const questionOrderInputs = Array.from(document.querySelectorAll('input[name="questionOrder"]'));
+const shareModal = document.getElementById("shareModal");
+const shareBackdrop = document.getElementById("shareBackdrop");
+const shareToggle = document.getElementById("shareToggle");
+const startShareButton = document.getElementById("startShareButton");
+const resultsShareButton = document.getElementById("resultsShareButton");
+const closeShareButton = document.getElementById("closeShareButton");
+const shareExportSection = document.getElementById("shareExportSection");
+const shareSummary = document.getElementById("shareSummary");
+const shareSeedOutput = document.getElementById("shareSeedOutput");
+const copySeedButton = document.getElementById("copySeedButton");
+const shareCopyStatus = document.getElementById("shareCopyStatus");
+const shareSeedInput = document.getElementById("shareSeedInput");
+const loadSeedButton = document.getElementById("loadSeedButton");
+const shareImportStatus = document.getElementById("shareImportStatus");
 const rankToggleButton = document.getElementById("rankToggleButton");
 const appGrid = document.getElementById("appGrid");
 const startView = document.getElementById("startView");
@@ -1117,7 +1230,10 @@ const rankDetailLabel = document.getElementById("rankDetailLabel");
 const rankReasons = document.getElementById("rankReasons");
 
 function syncModalBodyLock() {
-  const modalOpen = !infoModal.classList.contains("hidden") || !settingsModal.classList.contains("hidden");
+  const modalOpen =
+    !infoModal.classList.contains("hidden") ||
+    !settingsModal.classList.contains("hidden") ||
+    !shareModal.classList.contains("hidden");
   document.body.classList.toggle("modal-open", modalOpen);
 }
 
@@ -1125,6 +1241,8 @@ function setInfoModalOpen(isOpen, trigger = null) {
   if (isOpen) {
     settingsModal.classList.add("hidden");
     settingsModal.setAttribute("aria-hidden", "true");
+    shareModal.classList.add("hidden");
+    shareModal.setAttribute("aria-hidden", "true");
   }
 
   infoModal.classList.toggle("hidden", !isOpen);
@@ -1161,6 +1279,8 @@ function setSettingsModalOpen(isOpen, trigger = null) {
   if (isOpen) {
     infoModal.classList.add("hidden");
     infoModal.setAttribute("aria-hidden", "true");
+    shareModal.classList.add("hidden");
+    shareModal.setAttribute("aria-hidden", "true");
     updateSettingsUI();
   }
 
@@ -1171,6 +1291,70 @@ function setSettingsModalOpen(isOpen, trigger = null) {
   if (isOpen) {
     lastTrigger = trigger ?? document.activeElement;
     closeSettingsButton.focus();
+    return;
+  }
+
+  if (lastTrigger instanceof HTMLElement) {
+    lastTrigger.focus();
+  }
+}
+
+function setStatusMessage(element, message, tone = "") {
+  element.textContent = message;
+  element.classList.remove("share-status--success", "share-status--error");
+
+  if (tone === "success") {
+    element.classList.add("share-status--success");
+  }
+
+  if (tone === "error") {
+    element.classList.add("share-status--error");
+  }
+}
+
+function buildShareSummary() {
+  const answered = countExplicitAnswers();
+  const skipped = countSkipped();
+
+  if (state.currentIndex >= questions.length) {
+    return `Complete session: ${answered} answered and ${skipped} skipped. Loading this seed opens the final results with the same answers.`;
+  }
+
+  return `Current progress: ${answered} answered and ${skipped} skipped. The next prompt is question ${Math.min(state.currentIndex + 1, questions.length)} of ${questions.length}.`;
+}
+
+function updateShareUI() {
+  const hasSession = state.started;
+  shareExportSection.classList.toggle("hidden", !hasSession);
+  shareSeedOutput.value = hasSession ? buildShareSeed() : "";
+  shareSummary.textContent = hasSession ? buildShareSummary() : "";
+  copySeedButton.disabled = !hasSession;
+  setStatusMessage(shareCopyStatus, "");
+  setStatusMessage(shareImportStatus, "");
+}
+
+function setShareModalOpen(isOpen, trigger = null) {
+  if (isOpen) {
+    infoModal.classList.add("hidden");
+    infoModal.setAttribute("aria-hidden", "true");
+    settingsModal.classList.add("hidden");
+    settingsModal.setAttribute("aria-hidden", "true");
+    updateShareUI();
+  }
+
+  shareModal.classList.toggle("hidden", !isOpen);
+  shareModal.setAttribute("aria-hidden", String(!isOpen));
+  syncModalBodyLock();
+
+  if (isOpen) {
+    lastTrigger = trigger ?? document.activeElement;
+
+    if (state.started) {
+      closeShareButton.focus();
+    } else {
+      shareSeedInput.focus();
+    }
+
     return;
   }
 
@@ -1194,6 +1378,95 @@ function applyOrderMode(mode) {
     if (state.started && !questionView.classList.contains("hidden")) {
       renderQuestion();
     }
+  }
+}
+
+function syncCurrentResponseControls(response) {
+  answerYes.classList.toggle("answer-button--selected", response === "yes");
+  answerNo.classList.toggle("answer-button--selected", response === "no");
+  skipButton.classList.toggle("ghost-button--selected", response === "skip");
+
+  answerYes.setAttribute("aria-pressed", String(response === "yes"));
+  answerNo.setAttribute("aria-pressed", String(response === "no"));
+  skipButton.setAttribute("aria-pressed", String(response === "skip"));
+  skipButton.textContent = response === "skip" ? "Skipped" : "Skip this question";
+}
+
+function applyImportedSession(seedPayload) {
+  state.started = true;
+  state.rankPanelCollapsed = true;
+  state.orderMode = seedPayload.orderMode;
+  state.questionOrder = [...seedPayload.questionOrder];
+  state.currentIndex = seedPayload.currentIndex;
+  state.responses = [...seedPayload.responses];
+  resultsList.innerHTML = "";
+  restartTop.classList.remove("hidden");
+  updateSettingsUI();
+  setInfoModalOpen(false);
+  setSettingsModalOpen(false);
+  setShareModalOpen(false);
+  shareSeedInput.value = "";
+  startView.classList.add("hidden");
+  progressWrap.classList.remove("hidden");
+
+  if (state.currentIndex >= questions.length) {
+    showResults();
+    return;
+  }
+
+  renderQuestion();
+}
+
+async function copyCurrentSeed() {
+  if (!state.started) {
+    return;
+  }
+
+  const seed = buildShareSeed();
+
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(seed);
+      setStatusMessage(shareCopyStatus, "Seed copied.", "success");
+      return;
+    }
+  } catch {
+    // Fall through to manual-copy fallback.
+  }
+
+  shareSeedOutput.focus();
+  shareSeedOutput.select();
+
+  try {
+    const copied = typeof document.execCommand === "function" && document.execCommand("copy");
+    setStatusMessage(
+      shareCopyStatus,
+      copied ? "Seed copied." : "Copy did not complete automatically. The seed is selected for manual copy.",
+      copied ? "success" : ""
+    );
+  } catch {
+    setStatusMessage(shareCopyStatus, "Copy did not complete automatically. The seed is selected for manual copy.");
+  }
+}
+
+function loadSeedFromInput() {
+  const seedText = shareSeedInput.value.trim();
+
+  if (!seedText) {
+    setStatusMessage(shareImportStatus, "Paste a seed first.", "error");
+    return;
+  }
+
+  try {
+    const parsedSeed = parseShareSeed(seedText);
+    setStatusMessage(shareImportStatus, "Seed loaded.", "success");
+    applyImportedSession(parsedSeed);
+  } catch (error) {
+    setStatusMessage(
+      shareImportStatus,
+      error instanceof Error ? error.message : "That seed could not be loaded.",
+      "error"
+    );
   }
 }
 
@@ -1365,6 +1638,7 @@ function showStartState() {
   resultsView.classList.add("hidden");
   restartTop.classList.add("hidden");
   setSettingsModalOpen(false);
+  setShareModalOpen(false);
   syncRankPanelVisibility();
   updateProgress();
 }
@@ -1375,6 +1649,7 @@ function startQuiz() {
   state.questionOrder = buildQuestionOrder(state.orderMode);
   setInfoModalOpen(false);
   setSettingsModalOpen(false);
+  setShareModalOpen(false);
   startView.classList.add("hidden");
   progressWrap.classList.remove("hidden");
   restartTop.classList.remove("hidden");
@@ -1396,11 +1671,13 @@ function renderQuestion() {
 
   const currentQuestionIndex = state.questionOrder[state.currentIndex];
   const currentQuestion = questions[currentQuestionIndex];
+  const currentResponse = state.responses[currentQuestionIndex];
   questionCategory.textContent = currentQuestion.category;
   questionText.textContent = currentQuestion.text;
   questionSupport.textContent = currentQuestion.support;
   backButton.disabled = state.currentIndex === 0;
   backButton.style.opacity = state.currentIndex === 0 ? "0.5" : "1";
+  syncCurrentResponseControls(currentResponse);
 
   questionView.classList.remove("hidden");
   resultsView.classList.add("hidden");
@@ -1408,7 +1685,10 @@ function renderQuestion() {
 }
 
 function getScoreData() {
+  const explicitAnswers = countExplicitAnswers();
   const scores = Object.fromEntries(specialties.map((specialty) => [specialty.id, 0]));
+  const possibleScores = Object.fromEntries(specialties.map((specialty) => [specialty.id, 0]));
+  const signalCounts = Object.fromEntries(specialties.map((specialty) => [specialty.id, 0]));
   const reasons = Object.fromEntries(specialties.map((specialty) => [specialty.id, []]));
 
   questions.forEach((question, index) => {
@@ -1416,6 +1696,15 @@ function getScoreData() {
     if (response !== "yes" && response !== "no") {
       return;
     }
+
+    specialties.forEach(({ id }) => {
+      const bestAvailableWeight = Math.max(question.yes[id] || 0, question.no[id] || 0);
+
+      if (bestAvailableWeight > 0) {
+        possibleScores[id] += bestAvailableWeight;
+        signalCounts[id] += 1;
+      }
+    });
 
     const weights = question[response];
     Object.entries(weights).forEach(([specialtyId, value]) => {
@@ -1427,10 +1716,11 @@ function getScoreData() {
     });
   });
 
-  const explicitAnswers = Math.max(countExplicitAnswers(), 1);
   const ranked = specialties
     .map((specialty) => {
       const raw = scores[specialty.id];
+      const possible = possibleScores[specialty.id];
+      const adjusted = possible > 0 ? raw / possible : 0;
       const reasonList = reasons[specialty.id]
         .sort((left, right) => right.weight - left.weight)
         .slice(0, 3);
@@ -1438,10 +1728,17 @@ function getScoreData() {
       return {
         ...specialty,
         raw,
+        possible,
+        adjusted,
+        signalCount: signalCounts[specialty.id],
         reasons: reasonList,
       };
     })
     .sort((left, right) => {
+      if (right.adjusted !== left.adjusted) {
+        return right.adjusted - left.adjusted;
+      }
+
       if (right.raw !== left.raw) {
         return right.raw - left.raw;
       }
@@ -1449,10 +1746,11 @@ function getScoreData() {
       return left.name.localeCompare(right.name);
     });
 
-  const topRaw = Math.max(ranked[0]?.raw ?? 0, 1);
+  const topAdjusted = Math.max(ranked[0]?.adjusted ?? 0, 0.0001);
   return ranked.map((specialty) => ({
     ...specialty,
-    normalized: countExplicitAnswers() === 0 ? 0 : Math.round((specialty.raw / topRaw) * 100),
+    fitPercent: explicitAnswers === 0 ? 0 : Math.round(specialty.adjusted * 100),
+    normalized: explicitAnswers === 0 ? 0 : Math.round((specialty.adjusted / topAdjusted) * 100),
   }));
 }
 
@@ -1505,7 +1803,7 @@ function showResults() {
 
   const summaryBits = [];
   if (displayedResults.length > 0) {
-    summaryBits.push(`${displayedResults[0].name} had the highest score`);
+    summaryBits.push(`${displayedResults[0].name} had the strongest current fit signal`);
   }
   if (displayedResults.length === 2) {
     summaryBits.push(`${displayedResults[1].name} was close behind`);
@@ -1589,6 +1887,7 @@ function restartQuiz() {
   resultsList.innerHTML = "";
   setInfoModalOpen(false);
   setSettingsModalOpen(false);
+  setShareModalOpen(false);
   showStartState();
 }
 
@@ -1605,16 +1904,29 @@ startButton.addEventListener("click", startQuiz);
 startInfoButton.addEventListener("click", () => {
   setInfoModalOpen(true, startInfoButton);
 });
+startShareButton.addEventListener("click", () => {
+  setShareModalOpen(true, startShareButton);
+});
 infoToggle.addEventListener("click", () => {
   setInfoModalOpen(true, infoToggle);
 });
 settingsToggle.addEventListener("click", () => {
   setSettingsModalOpen(true, settingsToggle);
 });
+shareToggle.addEventListener("click", () => {
+  setShareModalOpen(true, shareToggle);
+});
+resultsShareButton.addEventListener("click", () => {
+  setShareModalOpen(true, resultsShareButton);
+});
 closeInfoButton.addEventListener("click", () => setInfoModalOpen(false));
 infoBackdrop.addEventListener("click", () => setInfoModalOpen(false));
 closeSettingsButton.addEventListener("click", () => setSettingsModalOpen(false));
 settingsBackdrop.addEventListener("click", () => setSettingsModalOpen(false));
+closeShareButton.addEventListener("click", () => setShareModalOpen(false));
+shareBackdrop.addEventListener("click", () => setShareModalOpen(false));
+copySeedButton.addEventListener("click", copyCurrentSeed);
+loadSeedButton.addEventListener("click", loadSeedFromInput);
 rankToggleButton.addEventListener("click", toggleRankPanel);
 rankPanelToggle.addEventListener("click", toggleRankPanel);
 restartTop.addEventListener("click", restartQuiz);
@@ -1635,6 +1947,20 @@ document.addEventListener("keydown", (event) => {
   if (!settingsModal.classList.contains("hidden")) {
     if (event.key === "Escape") {
       setSettingsModalOpen(false);
+    }
+
+    return;
+  }
+
+  if (!shareModal.classList.contains("hidden")) {
+    if (event.key === "Escape") {
+      setShareModalOpen(false);
+      return;
+    }
+
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "enter") {
+      event.preventDefault();
+      loadSeedFromInput();
     }
 
     return;

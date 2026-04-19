@@ -50,6 +50,7 @@
           <div class="start-view__actions">
             <button class="secondary-button" id="startButton" type="button">Begin</button>
             <button class="ghost-button" id="startInfoButton" type="button">About this quiz</button>
+            <button class="ghost-button" id="startShareButton" type="button">Use a seed</button>
           </div>
         </section>
 
@@ -97,7 +98,10 @@
               <p class="section-kicker">Results</p>
               <h3 id="resultsTitle">Specialties suggested by your answers</h3>
             </div>
-            <button class="secondary-button" id="retakeButton" type="button">Start again</button>
+            <div class="results-view__actions">
+              <button class="ghost-button" id="resultsShareButton" type="button">Share</button>
+              <button class="secondary-button" id="retakeButton" type="button">Start again</button>
+            </div>
           </div>
 
           <div class="results-summary">
@@ -132,6 +136,15 @@
             aria-controls="settingsModal"
           >
             Settings
+          </button>
+          <button
+            class="ghost-button rank-panel__action"
+            id="shareToggle"
+            type="button"
+            aria-haspopup="dialog"
+            aria-controls="shareModal"
+          >
+            Share
           </button>
           <button class="ghost-button hidden rank-panel__action" id="restartTop" type="button">Restart</button>
         </div>
@@ -253,6 +266,46 @@
       </div>
 
       <p class="settings-pane__note" id="settingsStatus"></p>
+    </section>
+  </div>
+
+  <div class="info-modal hidden" id="shareModal" aria-hidden="true">
+    <div class="info-modal__backdrop" id="shareBackdrop"></div>
+    <section class="info-pane info-pane--modal share-pane" role="dialog" aria-modal="true" aria-labelledby="shareTitle">
+      <div class="info-pane__topbar">
+        <div class="info-pane__intro">
+          <p class="section-kicker">Share</p>
+          <h2 id="shareTitle">Share or load a seed</h2>
+          <p class="share-pane__lede">
+            A seed captures question order, progress, and answers so someone else can load the same session in this app.
+          </p>
+        </div>
+        <button class="ghost-button info-pane__close" id="closeShareButton" type="button">Close</button>
+      </div>
+
+      <div class="share-grid">
+        <section class="share-block hidden" id="shareExportSection">
+          <span class="meta-block__label">Current seed</span>
+          <p class="share-block__text" id="shareSummary"></p>
+          <textarea class="share-seed-field" id="shareSeedOutput" rows="6" readonly spellcheck="false"></textarea>
+          <div class="share-block__actions">
+            <button class="ghost-button" id="copySeedButton" type="button">Copy seed</button>
+          </div>
+          <p class="share-status" id="shareCopyStatus"></p>
+        </section>
+
+        <section class="share-block">
+          <span class="meta-block__label">Load a seed</span>
+          <p class="share-block__text">
+            Paste a seed to load someone else&apos;s progress and answers. Loading a seed replaces the current in-browser session.
+          </p>
+          <textarea class="share-seed-field" id="shareSeedInput" rows="6" spellcheck="false" placeholder="Paste seed here"></textarea>
+          <div class="share-block__actions">
+            <button class="secondary-button" id="loadSeedButton" type="button">Load seed</button>
+          </div>
+          <p class="share-status" id="shareImportStatus"></p>
+        </section>
+      </div>
     </section>
   </div>
 

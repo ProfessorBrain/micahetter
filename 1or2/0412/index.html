@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>1 or 2 | The Binary Medical Specialty Explorer</title>
+  <meta
+    name="description"
+    content="Answer binary questions to explore medical specialties that may fit your interests, workflow preferences, and tolerance for different practice environments."
+  >
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Manrope:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  >
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="app-chrome">
+      <div class="app-chrome__actions">
+        <button
+          class="rank-toggle-handle hidden"
+          id="rankToggleButton"
+          type="button"
+          aria-expanded="false"
+          aria-controls="rankPanel"
+          aria-label="Show specialty ranking"
+          title="Show specialty ranking"
+        >
+          <span aria-hidden="true">&rsaquo;</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="app-grid" id="appGrid">
+      <section class="quiz-panel" aria-labelledby="quizTitle">
+        <h2 class="sr-only" id="quizTitle">Medical specialty explorer</h2>
+
+        <section class="start-view" id="startView" aria-labelledby="startTitle">
+          <div class="start-view__copy">
+            <p class="start-view__intro">1 or 2? The Binary Medical Specialty Explorer</p>
+            <h1 id="startTitle">A short way to think through specialty fit.</h1>
+            <p class="start-view__lede">
+              There are 102 short A-or-B questions in total. You can answer one or keep going through the full set, and the ranking updates as you go.
+            </p>
+          </div>
+
+          <div class="start-view__actions">
+            <button class="secondary-button" id="startButton" type="button">Begin</button>
+            <button class="ghost-button" id="startInfoButton" type="button">About this quiz</button>
+          </div>
+        </section>
+
+        <section class="question-card hidden" id="questionView" aria-live="polite">
+          <div class="question-card__body">
+            <p class="question-card__category" id="questionCategory">Practice style</p>
+            <h3 id="questionText">Do you want long-term relationships with patients to be a major part of your work?</h3>
+            <p class="question-card__support" id="questionSupport">
+              Think about whether follow-up over months to years feels energizing, not just acceptable.
+            </p>
+          </div>
+
+          <div class="answer-grid" role="group" aria-label="Question responses">
+            <button class="answer-button answer-button--yes" id="answerYes" type="button" data-answer="yes" aria-keyshortcuts="1">
+              <span class="answer-button__value">Yes</span>
+              <span class="answer-button__hint">This fits me more often than not</span>
+            </button>
+            <button class="answer-button answer-button--no" id="answerNo" type="button" data-answer="no" aria-keyshortcuts="2">
+              <span class="answer-button__value">No</span>
+              <span class="answer-button__hint">I lean away from this</span>
+            </button>
+          </div>
+
+          <div class="question-actions">
+            <button class="secondary-button" id="backButton" type="button">Back</button>
+            <button class="ghost-button" id="skipButton" type="button" aria-keyshortcuts="0">Skip this question</button>
+          </div>
+
+          <p class="question-shortcuts">Keyboard: <kbd>1</kbd> for left, <kbd>2</kbd> for right, <kbd>0</kbd> to skip.</p>
+
+          <div class="progress-wrap hidden" id="progressWrap" aria-live="polite">
+            <div class="progress-copy">
+              <span id="progressLabel">Question 1 of 102</span>
+              <span id="progressPercent">0% complete</span>
+            </div>
+            <div class="progress-track" aria-hidden="true">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="results-view hidden" id="resultsView" aria-labelledby="resultsTitle">
+          <div class="results-view__head">
+            <div>
+              <p class="section-kicker">Results</p>
+              <h3 id="resultsTitle">Specialties suggested by your answers</h3>
+            </div>
+            <button class="secondary-button" id="retakeButton" type="button">Start again</button>
+          </div>
+
+          <div class="results-summary">
+            <p id="resultsSummaryText"></p>
+          </div>
+
+          <div class="results-list" id="resultsList"></div>
+
+          <div class="results-footnotes">
+            <p id="skippedSummary"></p>
+            <p>It may help to compare these results with clerkship exposure, mentor feedback, and the parts of medicine you would want to keep doing on an ordinary weekday.</p>
+          </div>
+        </section>
+      </section>
+
+      <aside class="rank-panel hidden" id="rankPanel" aria-labelledby="rankPanelTitle">
+        <div class="rank-panel__controls">
+          <button
+            class="ghost-button rank-panel__action"
+            id="infoToggle"
+            type="button"
+            aria-haspopup="dialog"
+            aria-controls="infoModal"
+          >
+            About
+          </button>
+          <button
+            class="ghost-button rank-panel__action"
+            id="settingsToggle"
+            type="button"
+            aria-haspopup="dialog"
+            aria-controls="settingsModal"
+          >
+            Settings
+          </button>
+          <button class="ghost-button hidden rank-panel__action" id="restartTop" type="button">Restart</button>
+        </div>
+
+        <div class="rank-panel__intro">
+          <div class="rank-panel__intro-head">
+            <div>
+              <p class="section-kicker">Current ranking</p>
+              <h2 id="rankPanelTitle">Specialty ranking</h2>
+            </div>
+            <button
+              class="rank-panel__toggle"
+              id="rankPanelToggle"
+              type="button"
+              aria-label="Hide specialty ranking"
+              title="Hide specialty ranking"
+            >
+              <span aria-hidden="true">&lsaquo;</span>
+            </button>
+          </div>
+          <p class="rank-panel__summary" id="rankSummary"></p>
+        </div>
+
+        <div class="rank-panel__leader hidden" id="rankLeader">
+          <p class="section-kicker">Current leader</p>
+          <h3 id="rankLeaderName"></h3>
+          <p class="rank-panel__leader-blurb" id="rankLeaderBlurb"></p>
+        </div>
+
+        <div class="rank-panel__list" id="rankList"></div>
+
+        <div class="rank-panel__detail hidden" id="rankDetail">
+          <p class="section-kicker" id="rankDetailLabel">What is shaping this</p>
+          <ul class="rank-panel__reasons" id="rankReasons"></ul>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <div class="info-modal hidden" id="infoModal" aria-hidden="true">
+    <div class="info-modal__backdrop" id="infoBackdrop"></div>
+    <section class="info-pane info-pane--modal" role="dialog" aria-modal="true" aria-labelledby="infoPaneTitle">
+      <div class="info-pane__topbar">
+        <div class="info-pane__intro">
+          <p class="section-kicker">About this quiz</p>
+          <h2 id="infoPaneTitle">A simple question-based way to reflect on specialty fit.</h2>
+          <p class="info-pane__lede">
+            This is meant for first- and second-year medical students who want a rough starting point before clinical experience begins to narrow the field.
+          </p>
+        </div>
+        <button class="ghost-button info-pane__close" id="closeInfoButton" type="button">Close</button>
+      </div>
+
+        <div class="info-pane__grid">
+          <div class="meta-block">
+            <span class="meta-block__label">How it works</span>
+            <p>There are 102 A-or-B questions. Each answer adjusts the running ranking based on continuity, pace, procedures, uncertainty, population, and work setting.</p>
+        </div>
+        <div class="meta-block">
+          <span class="meta-block__label">What you see</span>
+          <p>The specialty ranking updates as you answer more questions. You can stop early for a rough read or continue for a more stable one.</p>
+        </div>
+        <div class="info-panel__block info-panel__block--pane">
+          <p class="section-kicker">What it looks at</p>
+          <h3>What this quiz is measuring</h3>
+          <ul class="signal-list">
+            <li>Patient continuity versus episodic care</li>
+            <li>Procedures versus longitudinal management</li>
+            <li>Acute decision-making versus controlled pace</li>
+            <li>Breadth versus narrow domain focus</li>
+            <li>Diagnostic intensity, teamwork, and schedule shape</li>
+          </ul>
+        </div>
+        <div class="info-panel__block info-panel__block--pane">
+          <p class="section-kicker">Best Use</p>
+          <p class="support-copy">
+            Close results are common. They usually suggest a broader family of specialties rather than one clearly preferred field.
+          </p>
+          <p class="section-kicker section-kicker--spaced">Included Fields</p>
+          <p class="support-copy">
+            Internal Medicine, Family Medicine, Pediatrics, Medicine-Pediatrics, Emergency Medicine, General Surgery, Orthopedic Surgery, Anesthesiology, Psychiatry, Radiology, Neurology, Obstetrics &amp; Gynecology, Dermatology, Ophthalmology, Otolaryngology, Urology, Physical Medicine &amp; Rehabilitation, and Pathology.
+          </p>
+        </div>
+      </div>
+      <p class="info-pane__note">For reflection only. This is not career, residency, or medical advice.</p>
+    </section>
+  </div>
+
+  <div class="info-modal hidden" id="settingsModal" aria-hidden="true">
+    <div class="info-modal__backdrop" id="settingsBackdrop"></div>
+    <section class="info-pane info-pane--modal settings-pane" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+      <div class="info-pane__topbar">
+        <div class="info-pane__intro">
+          <p class="section-kicker">Settings</p>
+          <h2 id="settingsTitle">Question order</h2>
+          <p class="settings-pane__lede">
+            Choose whether the quiz uses the same question sequence each time or reshuffles the full bank.
+          </p>
+        </div>
+        <button class="ghost-button info-pane__close" id="closeSettingsButton" type="button">Close</button>
+      </div>
+
+      <div class="settings-options" role="radiogroup" aria-labelledby="settingsTitle">
+        <label class="settings-option" for="orderSequential">
+          <input class="settings-option__input" id="orderSequential" type="radio" name="questionOrder" value="sequential">
+          <span class="settings-option__card">
+            <span class="settings-option__title">In order</span>
+            <span class="settings-option__text">Use the same sequence each time, from the first question to the last.</span>
+          </span>
+        </label>
+
+        <label class="settings-option" for="orderRandom">
+          <input class="settings-option__input" id="orderRandom" type="radio" name="questionOrder" value="random">
+          <span class="settings-option__card">
+            <span class="settings-option__title">Randomized</span>
+            <span class="settings-option__text">Shuffle the full question bank each time a new quiz starts.</span>
+          </span>
+        </label>
+      </div>
+
+      <p class="settings-pane__note" id="settingsStatus"></p>
+    </section>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
