@@ -2490,6 +2490,7 @@ questions.push(
 
 const questionIndexById = Object.fromEntries(questions.map((question, index) => [question.id, index]));
 const QUESTION_ORDER_STORAGE_KEY = "1or2-question-order-mode";
+const FELLOWSHIP_DISPLAY_STORAGE_KEY = "1or2-fellowship-display-mode";
 const SHARE_SEED_VERSION = "v1";
 const RESPONSE_TO_CODE = {
   yes: "y",
@@ -2541,6 +2542,23 @@ function shuffleIndices(indices) {
 function buildQuestionOrder(mode) {
   const indices = questions.map((_, index) => index);
   return mode === "random" ? shuffleIndices(indices) : indices;
+}
+
+function loadFellowshipDisplayMode() {
+  try {
+    const storedMode = localStorage.getItem(FELLOWSHIP_DISPLAY_STORAGE_KEY);
+    return storedMode === "separate" ? "separate" : "integrated";
+  } catch {
+    return "integrated";
+  }
+}
+
+function saveFellowshipDisplayMode(mode) {
+  try {
+    localStorage.setItem(FELLOWSHIP_DISPLAY_STORAGE_KEY, mode);
+  } catch {
+    // Ignore storage failures in local file contexts.
+  }
 }
 
 function encodeResponseSequence(responses) {
@@ -2630,11 +2648,13 @@ function parseShareSeed(seedText) {
 }
 
 const initialOrderMode = loadOrderMode();
+const initialFellowshipDisplayMode = loadFellowshipDisplayMode();
 
 const state = {
   started: false,
   rankPanelCollapsed: true,
   orderMode: initialOrderMode,
+  fellowshipDisplayMode: initialFellowshipDisplayMode,
   questionOrder: buildQuestionOrder(initialOrderMode),
   currentIndex: 0,
   responses: Array(questions.length).fill(null),
@@ -2642,6 +2662,15 @@ const state = {
 
 let lastTrigger = null;
 let selectedExploreId = specialties[0].id;
+let exploreZoom = 1;
+let exploreDragState = null;
+let suppressExploreCanvasClick = false;
+
+const EXPLORE_ZOOM_MIN = 0.7;
+const EXPLORE_ZOOM_MAX = 2.2;
+const EXPLORE_ZOOM_STEP = 0.2;
+const EXPLORE_WHEEL_ZOOM_STEP = 0.12;
+const EXPLORE_DRAG_THRESHOLD = 4;
 
 const infoModal = document.getElementById("infoModal");
 const infoBackdrop = document.getElementById("infoBackdrop");
@@ -2653,6 +2682,8 @@ const settingsToggle = document.getElementById("settingsToggle");
 const closeSettingsButton = document.getElementById("closeSettingsButton");
 const settingsStatus = document.getElementById("settingsStatus");
 const questionOrderInputs = Array.from(document.querySelectorAll('input[name="questionOrder"]'));
+const fellowshipDisplayInputs = Array.from(document.querySelectorAll('input[name="fellowshipDisplay"]'));
+const resultsFellowshipDisplayInputs = Array.from(document.querySelectorAll('input[name="resultsFellowshipDisplay"]'));
 const shareModal = document.getElementById("shareModal");
 const shareBackdrop = document.getElementById("shareBackdrop");
 const shareToggle = document.getElementById("shareToggle");
@@ -2672,7 +2703,12 @@ const exploreBackdrop = document.getElementById("exploreBackdrop");
 const exploreToggle = document.getElementById("exploreToggle");
 const resultsExploreButton = document.getElementById("resultsExploreButton");
 const closeExploreButton = document.getElementById("closeExploreButton");
+const exploreCanvasShell = document.getElementById("exploreCanvasShell");
 const exploreCanvas = document.getElementById("exploreCanvas");
+const exploreZoomOutButton = document.getElementById("exploreZoomOut");
+const exploreZoomResetButton = document.getElementById("exploreZoomReset");
+const exploreZoomInButton = document.getElementById("exploreZoomIn");
+const exploreZoomValue = document.getElementById("exploreZoomValue");
 const exploreNodeType = document.getElementById("exploreNodeType");
 const exploreNodeTitle = document.getElementById("exploreNodeTitle");
 const exploreNodeBlurb = document.getElementById("exploreNodeBlurb");
@@ -2699,6 +2735,7 @@ const finishQuizButton = document.getElementById("finishQuizButton");
 const skipButton = document.getElementById("skipButton");
 const answerYes = document.getElementById("answerYes");
 const answerNo = document.getElementById("answerNo");
+const resultsTitle = document.getElementById("resultsTitle");
 const resultsSummaryText = document.getElementById("resultsSummaryText");
 const resultsList = document.getElementById("resultsList");
 const skippedSummary = document.getElementById("skippedSummary");
@@ -2715,6 +2752,7 @@ const rankDetail = document.getElementById("rankDetail");
 const rankDetailLabel = document.getElementById("rankDetailLabel");
 const rankReasons = document.getElementById("rankReasons");
 const rankPathDetail = document.getElementById("rankPathDetail");
+const rankPathTitle = document.getElementById("rankPathTitle");
 const rankPathList = document.getElementById("rankPathList");
 
 function syncModalBodyLock() {
@@ -2756,14 +2794,27 @@ function updateSettingsUI() {
     input.checked = input.value === state.orderMode;
   });
 
+  updateFellowshipDisplayControls();
+
   if (!state.started) {
-    settingsStatus.textContent = "This will be used the next time you begin the quiz.";
+    settingsStatus.textContent = "Question order is used when a quiz begins. Fellowship display can be changed any time.";
     return;
   }
 
-  settingsStatus.textContent = countAnswered() === 0
-    ? "This can take effect immediately because you have not answered a question yet."
-    : "Changes to question order will be used the next time you restart the quiz.";
+  const orderMessage = countAnswered() === 0
+    ? "Question order can still take effect immediately."
+    : "Question order changes will be used the next time you restart the quiz.";
+  settingsStatus.textContent = `${orderMessage} Fellowship display updates immediately.`;
+}
+
+function updateFellowshipDisplayControls() {
+  fellowshipDisplayInputs.forEach((input) => {
+    input.checked = input.value === state.fellowshipDisplayMode;
+  });
+
+  resultsFellowshipDisplayInputs.forEach((input) => {
+    input.checked = input.value === state.fellowshipDisplayMode;
+  });
 }
 
 function setSettingsModalOpen(isOpen, trigger = null) {
@@ -2888,6 +2939,128 @@ function setExploreModalOpen(isOpen, trigger = null, selectedId = null) {
   }
 }
 
+function clampExploreZoom(value) {
+  return Math.min(EXPLORE_ZOOM_MAX, Math.max(EXPLORE_ZOOM_MIN, value));
+}
+
+function syncExploreZoomControls() {
+  const zoom = Number(exploreZoom.toFixed(2));
+
+  exploreCanvas.style.width = `${Math.round(zoom * 100)}%`;
+  exploreCanvas.style.height = `${Math.round(zoom * 100)}%`;
+  exploreCanvas.style.minWidth = `${Math.round(900 * zoom)}px`;
+  exploreCanvas.style.minHeight = `${Math.round(620 * zoom)}px`;
+  exploreZoomValue.textContent = `${Math.round(zoom * 100)}%`;
+
+  exploreZoomOutButton.disabled = zoom <= EXPLORE_ZOOM_MIN + 0.01;
+  exploreZoomResetButton.disabled = Math.abs(zoom - 1) < 0.01;
+  exploreZoomInButton.disabled = zoom >= EXPLORE_ZOOM_MAX - 0.01;
+}
+
+function setExploreZoom(nextZoom, preserveCenter = true, anchorPoint = null) {
+  const previousWidth = exploreCanvasShell.scrollWidth || 1;
+  const previousHeight = exploreCanvasShell.scrollHeight || 1;
+  const shellRect = exploreCanvasShell.getBoundingClientRect();
+  const anchorOffsetX = anchorPoint
+    ? anchorPoint.clientX - shellRect.left
+    : exploreCanvasShell.clientWidth / 2;
+  const anchorOffsetY = anchorPoint
+    ? anchorPoint.clientY - shellRect.top
+    : exploreCanvasShell.clientHeight / 2;
+  const anchorXRatio = (exploreCanvasShell.scrollLeft + anchorOffsetX) / previousWidth;
+  const anchorYRatio = (exploreCanvasShell.scrollTop + anchorOffsetY) / previousHeight;
+
+  exploreZoom = clampExploreZoom(nextZoom);
+  syncExploreZoomControls();
+
+  if (!preserveCenter) {
+    return;
+  }
+
+  requestAnimationFrame(() => {
+    exploreCanvasShell.scrollLeft = (exploreCanvasShell.scrollWidth * anchorXRatio) - anchorOffsetX;
+    exploreCanvasShell.scrollTop = (exploreCanvasShell.scrollHeight * anchorYRatio) - anchorOffsetY;
+  });
+}
+
+function handleExploreWheel(event) {
+  if (exploreModal.classList.contains("hidden")) {
+    return;
+  }
+
+  event.preventDefault();
+  const direction = event.deltaY < 0 ? 1 : -1;
+  setExploreZoom(
+    exploreZoom + (direction * EXPLORE_WHEEL_ZOOM_STEP),
+    true,
+    { clientX: event.clientX, clientY: event.clientY }
+  );
+}
+
+function handleExplorePointerDown(event) {
+  if (event.button !== 0) {
+    return;
+  }
+
+  exploreDragState = {
+    pointerId: event.pointerId,
+    startX: event.clientX,
+    startY: event.clientY,
+    scrollLeft: exploreCanvasShell.scrollLeft,
+    scrollTop: exploreCanvasShell.scrollTop,
+    hasMoved: false,
+  };
+}
+
+function handleExplorePointerMove(event) {
+  if (!exploreDragState || event.pointerId !== exploreDragState.pointerId) {
+    return;
+  }
+
+  const deltaX = event.clientX - exploreDragState.startX;
+  const deltaY = event.clientY - exploreDragState.startY;
+
+  if (!exploreDragState.hasMoved && Math.hypot(deltaX, deltaY) >= EXPLORE_DRAG_THRESHOLD) {
+    exploreDragState.hasMoved = true;
+    suppressExploreCanvasClick = true;
+
+    if (!exploreCanvasShell.hasPointerCapture(event.pointerId)) {
+      exploreCanvasShell.setPointerCapture(event.pointerId);
+    }
+
+    exploreCanvasShell.classList.add("explore-canvas-shell--dragging");
+  }
+
+  if (!exploreDragState.hasMoved) {
+    return;
+  }
+
+  event.preventDefault();
+  exploreCanvasShell.scrollLeft = exploreDragState.scrollLeft - deltaX;
+  exploreCanvasShell.scrollTop = exploreDragState.scrollTop - deltaY;
+}
+
+function endExplorePointerDrag(event) {
+  if (!exploreDragState || event.pointerId !== exploreDragState.pointerId) {
+    return;
+  }
+
+  const shouldClearSuppressedClick = exploreDragState.hasMoved;
+
+  if (exploreCanvasShell.hasPointerCapture(event.pointerId)) {
+    exploreCanvasShell.releasePointerCapture(event.pointerId);
+  }
+
+  exploreCanvasShell.classList.remove("explore-canvas-shell--dragging");
+  exploreDragState = null;
+
+  if (shouldClearSuppressedClick) {
+    setTimeout(() => {
+      suppressExploreCanvasClick = false;
+    }, 150);
+  }
+}
+
 function applyOrderMode(mode) {
   if (mode !== "random" && mode !== "sequential") {
     return;
@@ -2903,6 +3076,25 @@ function applyOrderMode(mode) {
     if (state.started && !questionView.classList.contains("hidden")) {
       renderQuestion();
     }
+  }
+}
+
+function applyFellowshipDisplayMode(mode) {
+  if (mode !== "integrated" && mode !== "separate") {
+    return;
+  }
+
+  state.fellowshipDisplayMode = mode;
+  saveFellowshipDisplayMode(mode);
+  updateFellowshipDisplayControls();
+  updateSettingsUI();
+
+  if (state.started && state.currentIndex < questions.length) {
+    renderRankPanel();
+  }
+
+  if (state.started && state.currentIndex >= questions.length) {
+    showResults();
   }
 }
 
@@ -3031,6 +3223,7 @@ function getFellowshipScoreData(specialtyResults = getScoreData()) {
           matchedWeight += signal.weight;
           matchedSignalCount += 1;
           matchedSignals.push({
+            kind: "signal",
             weight: signal.weight,
             explanation: buildFellowshipSignalLine(signal.label),
           });
@@ -3040,16 +3233,20 @@ function getFellowshipScoreData(specialtyResults = getScoreData()) {
       const signalRatio = answeredSignalWeight > 0 ? matchedWeight / answeredSignalWeight : 0;
       const coverageRatio = totalSignalWeight > 0 ? answeredSignalWeight / totalSignalWeight : 0;
       const parentAdjusted = parent?.adjusted ?? 0;
+      const directAdjusted = answeredSignalWeight === 0
+        ? 0
+        : Math.min(1, signalRatio * (0.55 + coverageRatio * 0.45));
       const adjusted = answeredCount === 0 || answeredSignalWeight === 0
         ? 0
-        : Math.min(1, parentAdjusted * signalRatio * (0.55 + coverageRatio * 0.45));
+        : Math.min(1, parentAdjusted * directAdjusted);
 
       const reasons = [];
 
       if (parent && parent.raw > 0) {
         reasons.push({
+          kind: "home",
           weight: Math.max(1, Math.round(parent.normalized / 18)),
-          explanation: `${parent.name} is one of your stronger home specialties, which is where this path usually starts.`,
+          explanation: `${parent.name} is the home specialty for this path, so its specialty-level score gives useful context.`,
         });
       }
 
@@ -3068,6 +3265,7 @@ function getFellowshipScoreData(specialtyResults = getScoreData()) {
         answeredSignalWeight,
         matchedWeight,
         matchedSignalCount,
+        directAdjusted,
         adjusted,
         fitPercent: answeredCount === 0 ? 0 : Math.round(adjusted * 100),
         reasons,
@@ -3085,6 +3283,30 @@ function getFellowshipScoreData(specialtyResults = getScoreData()) {
   return ranked.map((path) => ({
     ...path,
     normalized: answeredCount === 0 ? 0 : Math.round((path.adjusted / topAdjusted) * 100),
+  }));
+}
+
+function getIndependentFellowshipScoreData(fellowshipResults = getFellowshipScoreData()) {
+  const answeredCount = countExplicitAnswers();
+  const ranked = [...fellowshipResults].sort((left, right) => {
+    if (right.directAdjusted !== left.directAdjusted) {
+      return right.directAdjusted - left.directAdjusted;
+    }
+
+    if (right.matchedWeight !== left.matchedWeight) {
+      return right.matchedWeight - left.matchedWeight;
+    }
+
+    return left.name.localeCompare(right.name);
+  });
+
+  const topAdjusted = Math.max(ranked[0]?.directAdjusted ?? 0, 0.0001);
+  return ranked.map((path) => ({
+    ...path,
+    adjusted: path.directAdjusted,
+    fitPercent: answeredCount === 0 ? 0 : Math.round(path.directAdjusted * 100),
+    normalized: answeredCount === 0 ? 0 : Math.round((path.directAdjusted / topAdjusted) * 100),
+    reasons: path.reasons.filter((reason) => reason.kind !== "home"),
   }));
 }
 
@@ -3141,61 +3363,311 @@ function buildExploreTextMarkup(label, x, y, className) {
   `;
 }
 
-function buildExploreLayoutData(specialtyResults, fellowshipResults) {
-  const maxChildren = Math.max(
-    0,
-    ...specialtyResults.map((item) => fellowshipResults.filter((path) => path.parentId === item.id).length)
-  );
-  const specialtyRing = 300;
-  const fellowshipRing = 500 + (Math.max(0, maxChildren - 4) * 16);
-  const width = Math.max(1560, (fellowshipRing * 2) + 340);
-  const height = Math.max(1160, (fellowshipRing * 2) + 260);
-  const centerX = width / 2;
-  const centerY = height / 2;
-  const specialtyNodes = specialtyResults.map((item, index) => {
-    const angle = (-Math.PI / 2) + ((Math.PI * 2 * index) / specialtyResults.length);
-    return {
-      ...item,
-      angle,
-      x: centerX + Math.cos(angle) * specialtyRing,
-      y: centerY + Math.sin(angle) * specialtyRing,
-      radius: 22 + (item.normalized * 0.05),
-    };
+function getExploreProfileKey(questionId, answer) {
+  return `${questionId}:${answer}`;
+}
+
+function addExploreProfileWeight(profile, key, weight) {
+  if (!weight || weight <= 0) {
+    return;
+  }
+
+  profile.set(key, (profile.get(key) ?? 0) + weight);
+}
+
+function getExploreEntityProfile(entity) {
+  const profile = new Map();
+
+  if (entity.kind === "specialty") {
+    questions.forEach((question) => {
+      addExploreProfileWeight(profile, getExploreProfileKey(question.id, "yes"), question.yes?.[entity.id]);
+      addExploreProfileWeight(profile, getExploreProfileKey(question.id, "no"), question.no?.[entity.id]);
+    });
+
+    return profile;
+  }
+
+  entity.signals?.forEach((signal) => {
+    addExploreProfileWeight(profile, getExploreProfileKey(signal.questionId, signal.answer), signal.weight);
   });
-  const specialtyPositionMap = Object.fromEntries(specialtyNodes.map((node) => [node.id, node]));
-  const fellowshipNodes = specialtyNodes.flatMap((specialtyNode) => {
-    const children = fellowshipResults.filter((path) => path.parentId === specialtyNode.id);
-    const spread = children.length <= 1 ? 0 : Math.min(0.68, (0.08 * children.length) + 0.04);
-    const step = children.length <= 1 ? 0 : (spread * 2) / (children.length - 1);
 
-    return children.map((path, index) => {
-      const angle = specialtyNode.angle - spread + (step * index);
-      const staggerAmount = children.length >= 5 ? 32 : 18;
-      const staggerOffset = children.length <= 2
-        ? 0
-        : (index % 2 === 0 ? -staggerAmount : staggerAmount);
-      const ring = fellowshipRing + staggerOffset;
+  return profile;
+}
 
-      return {
-        ...path,
-        angle,
-        x: centerX + Math.cos(angle) * ring,
-        y: centerY + Math.sin(angle) * ring,
-        radius: 12 + (path.normalized * 0.03),
-      };
+function getExploreProfileNorm(profile) {
+  let total = 0;
+  profile.forEach((weight) => {
+    total += weight * weight;
+  });
+
+  return Math.sqrt(total);
+}
+
+function getExploreProfileSimilarity(left, right) {
+  if (!left.profileNorm || !right.profileNorm) {
+    return 0;
+  }
+
+  const smaller = left.profile.size <= right.profile.size ? left.profile : right.profile;
+  const larger = smaller === left.profile ? right.profile : left.profile;
+  let dot = 0;
+
+  smaller.forEach((weight, key) => {
+    dot += weight * (larger.get(key) ?? 0);
+  });
+
+  return dot / (left.profileNorm * right.profileNorm);
+}
+
+function getStableHash(value) {
+  let hash = 2166136261;
+
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+
+  return hash >>> 0;
+}
+
+function getStableUnit(value) {
+  return getStableHash(value) / 4294967295;
+}
+
+function getExploreProfileProjection(profile, id) {
+  let x = 0;
+  let y = 0;
+
+  profile.forEach((weight, key) => {
+    const angle = getStableUnit(`profile:${key}`) * Math.PI * 2;
+    x += Math.cos(angle) * weight;
+    y += Math.sin(angle) * weight;
+  });
+
+  const magnitude = Math.hypot(x, y);
+
+  if (magnitude > 0) {
+    return { x: x / magnitude, y: y / magnitude };
+  }
+
+  const fallbackAngle = getStableUnit(`fallback:${id}`) * Math.PI * 2;
+  return { x: Math.cos(fallbackAngle), y: Math.sin(fallbackAngle) };
+}
+
+function getExploreSimilarityEdges(nodes, neighborLimit = 4, threshold = 0.22) {
+  const neighborsById = new Map(nodes.map((node) => [node.id, []]));
+
+  for (let leftIndex = 0; leftIndex < nodes.length; leftIndex += 1) {
+    for (let rightIndex = leftIndex + 1; rightIndex < nodes.length; rightIndex += 1) {
+      const left = nodes[leftIndex];
+      const right = nodes[rightIndex];
+      const similarity = getExploreProfileSimilarity(left, right);
+
+      if (similarity < threshold) {
+        continue;
+      }
+
+      neighborsById.get(left.id).push({ node: right, similarity });
+      neighborsById.get(right.id).push({ node: left, similarity });
+    }
+  }
+
+  const edgeMap = new Map();
+  nodes.forEach((node) => {
+    const neighbors = neighborsById.get(node.id)
+      .sort((left, right) => right.similarity - left.similarity)
+      .slice(0, neighborLimit);
+
+    neighbors.forEach(({ node: neighbor, similarity }) => {
+      const ids = [node.id, neighbor.id].sort();
+      const key = ids.join("::");
+      const existing = edgeMap.get(key);
+
+      if (!existing || similarity > existing.similarity) {
+        edgeMap.set(key, {
+          sourceId: ids[0],
+          targetId: ids[1],
+          similarity,
+          color: node.kind === "specialty" ? node.color : neighbor.color,
+        });
+      }
     });
   });
+
+  return [...edgeMap.values()].sort((left, right) => right.similarity - left.similarity);
+}
+
+function getExploreParentEdges(fellowshipNodes) {
+  return fellowshipNodes.map((node) => ({
+    sourceId: node.parentId,
+    targetId: node.id,
+    color: node.color,
+  }));
+}
+
+function runExploreForceLayout(nodes, similarityEdges, parentEdges, width, height) {
+  const nodeMap = Object.fromEntries(nodes.map((node) => [node.id, node]));
+  const layoutEdges = [
+    ...similarityEdges.map((edge) => ({
+      ...edge,
+      strength: 0.018 + (edge.similarity * 0.018),
+      targetDistance: 110 + ((1 - edge.similarity) * 260),
+    })),
+    ...parentEdges.map((edge) => ({
+      ...edge,
+      strength: 0.005,
+      targetDistance: 190,
+    })),
+  ];
+  const centerX = width / 2;
+  const centerY = height / 2;
+  const padding = 88;
+
+  nodes.forEach((node) => {
+    node.vx = 0;
+    node.vy = 0;
+  });
+
+  for (let iteration = 0; iteration < 180; iteration += 1) {
+    const alpha = 1 - (iteration / 180);
+
+    for (let leftIndex = 0; leftIndex < nodes.length; leftIndex += 1) {
+      for (let rightIndex = leftIndex + 1; rightIndex < nodes.length; rightIndex += 1) {
+        const left = nodes[leftIndex];
+        const right = nodes[rightIndex];
+        let dx = right.x - left.x;
+        let dy = right.y - left.y;
+        let distanceSquared = (dx * dx) + (dy * dy);
+
+        if (distanceSquared < 0.01) {
+          const angle = getStableUnit(`${left.id}:${right.id}`) * Math.PI * 2;
+          dx = Math.cos(angle);
+          dy = Math.sin(angle);
+          distanceSquared = 1;
+        }
+
+        const distance = Math.sqrt(distanceSquared);
+        const minDistance = left.radius + right.radius + 42;
+        const charge = (left.kind === "specialty" || right.kind === "specialty") ? 5200 : 3900;
+        const repulsion = Math.min(2.4, charge / distanceSquared) * alpha;
+        const overlapPush = distance < minDistance ? (minDistance - distance) * 0.08 : 0;
+        const force = repulsion + overlapPush;
+        const fx = (dx / distance) * force;
+        const fy = (dy / distance) * force;
+
+        left.vx -= fx;
+        left.vy -= fy;
+        right.vx += fx;
+        right.vy += fy;
+      }
+    }
+
+    layoutEdges.forEach((edge) => {
+      const source = nodeMap[edge.sourceId];
+      const target = nodeMap[edge.targetId];
+
+      if (!source || !target) {
+        return;
+      }
+
+      const dx = target.x - source.x;
+      const dy = target.y - source.y;
+      const distance = Math.max(1, Math.hypot(dx, dy));
+      const force = (distance - edge.targetDistance) * edge.strength * alpha;
+      const fx = (dx / distance) * force;
+      const fy = (dy / distance) * force;
+
+      source.vx += fx;
+      source.vy += fy;
+      target.vx -= fx;
+      target.vy -= fy;
+    });
+
+    nodes.forEach((node) => {
+      node.vx += (centerX - node.x) * 0.0012 * alpha;
+      node.vy += (centerY - node.y) * 0.0012 * alpha;
+      node.vx *= 0.76;
+      node.vy *= 0.76;
+      node.x = Math.min(width - padding, Math.max(padding, node.x + node.vx));
+      node.y = Math.min(height - padding, Math.max(padding, node.y + node.vy));
+    });
+  }
+
+  nodes.forEach((node) => {
+    delete node.vx;
+    delete node.vy;
+  });
+}
+
+function fitExploreNodesToCanvas(nodes, width, height) {
+  if (nodes.length === 0) {
+    return;
+  }
+
+  const padding = 96;
+  const minX = Math.min(...nodes.map((node) => node.x));
+  const maxX = Math.max(...nodes.map((node) => node.x));
+  const minY = Math.min(...nodes.map((node) => node.y));
+  const maxY = Math.max(...nodes.map((node) => node.y));
+  const currentWidth = Math.max(1, maxX - minX);
+  const currentHeight = Math.max(1, maxY - minY);
+  const scale = Math.min(
+    1.28,
+    (width - (padding * 2)) / currentWidth,
+    (height - (padding * 2)) / currentHeight
+  );
+  const sourceCenterX = (minX + maxX) / 2;
+  const sourceCenterY = (minY + maxY) / 2;
+  const targetCenterX = width / 2;
+  const targetCenterY = height / 2;
+
+  nodes.forEach((node) => {
+    node.x = targetCenterX + ((node.x - sourceCenterX) * scale);
+    node.y = targetCenterY + ((node.y - sourceCenterY) * scale);
+  });
+}
+
+function buildExploreLayoutData(specialtyResults, fellowshipResults) {
+  const width = 1680;
+  const height = 1180;
+  const centerX = width / 2;
+  const centerY = height / 2;
+  const projectionScaleX = width * 0.34;
+  const projectionScaleY = height * 0.34;
+  const nodes = [...specialtyResults, ...fellowshipResults].map((item) => {
+    const profile = getExploreEntityProfile(item);
+    const projection = getExploreProfileProjection(profile, item.id);
+    const jitterAngle = getStableUnit(`node:${item.id}`) * Math.PI * 2;
+    const jitterDistance = 24 + (getStableUnit(`distance:${item.id}`) * 42);
+
+    return {
+      ...item,
+      profile,
+      profileNorm: getExploreProfileNorm(profile),
+      x: centerX + (projection.x * projectionScaleX) + (Math.cos(jitterAngle) * jitterDistance),
+      y: centerY + (projection.y * projectionScaleY) + (Math.sin(jitterAngle) * jitterDistance),
+      radius: item.kind === "specialty"
+        ? 18 + (item.normalized * 0.06)
+        : 10 + (item.normalized * 0.035),
+    };
+  });
+  const specialtyNodes = nodes.filter((node) => node.kind === "specialty");
+  const fellowshipNodes = nodes.filter((node) => node.kind === "fellowship");
+  const similarityEdges = getExploreSimilarityEdges(nodes);
+  const parentEdges = getExploreParentEdges(fellowshipNodes);
+
+  runExploreForceLayout(nodes, similarityEdges, parentEdges, width, height);
+  fitExploreNodesToCanvas(nodes, width, height);
 
   return {
     width,
     height,
-    centerX,
-    centerY,
-    specialtyRing,
-    fellowshipRing,
+    nodes,
     specialtyNodes,
     fellowshipNodes,
-    specialtyPositionMap,
+    similarityEdges,
+    parentEdges,
+    nodeMap: Object.fromEntries(nodes.map((node) => [node.id, node])),
   };
 }
 
@@ -3205,7 +3677,11 @@ function getDefaultExploreSelection(specialtyResults) {
 
 function getExploreCollections() {
   const specialtyResults = getScoreData();
-  const fellowshipResults = getFellowshipScoreData(specialtyResults);
+  const baseFellowshipResults = getFellowshipScoreData(specialtyResults);
+  const fellowshipResults = state.fellowshipDisplayMode === "separate"
+    ? getIndependentFellowshipScoreData(baseFellowshipResults)
+    : baseFellowshipResults;
+
   return {
     specialtyResults,
     fellowshipResults,
@@ -3214,15 +3690,35 @@ function getExploreCollections() {
   };
 }
 
-function renderExploreInspector(selectedEntity, specialtyResults, fellowshipResults) {
+function getExploreNearbyNodes(selectedEntity, nodes, limit = 5) {
+  return nodes
+    .filter((node) => node.id !== selectedEntity.id)
+    .map((node) => ({
+      node,
+      similarity: getExploreProfileSimilarity(selectedEntity, node),
+    }))
+    .filter((match) => match.similarity > 0)
+    .sort((left, right) => {
+      if (right.similarity !== left.similarity) {
+        return right.similarity - left.similarity;
+      }
+
+      return left.node.name.localeCompare(right.node.name);
+    })
+    .slice(0, limit);
+}
+
+function renderExploreInspector(selectedEntity, nodes) {
   if (!selectedEntity) {
     return;
   }
 
-  const specialtyResultMap = Object.fromEntries(specialtyResults.map((item) => [item.id, item]));
+  const nearbyNodes = getExploreNearbyNodes(selectedEntity, nodes);
+  const nearbyMarkup = nearbyNodes.length > 0
+    ? nearbyNodes.map(({ node }) => createPathButton(node, true)).join("")
+    : '<p class="explore-inspector__empty">Nearby profiles will appear once the graph has enough profile overlap to compare.</p>';
 
   if (selectedEntity.kind === "specialty") {
-    const childPaths = getTopFellowshipsForSpecialty(selectedEntity.id, 6, fellowshipResults);
     exploreNodeType.textContent = "Specialty";
     exploreNodeTitle.textContent = selectedEntity.name;
     exploreNodeBlurb.textContent = selectedEntity.blurb;
@@ -3234,15 +3730,10 @@ function renderExploreInspector(selectedEntity, specialtyResults, fellowshipResu
       .slice(0, 3)
       .map((reason) => `<li>${reason.explanation}</li>`)
       .join("");
-    exploreNodeConnections.innerHTML = childPaths.length > 0
-      ? childPaths.map((path) => createPathButton(path, true)).join("")
-      : '<p class="explore-inspector__empty">Fellowship paths sharpen after a few more answers.</p>';
+    exploreNodeConnections.innerHTML = nearbyMarkup;
     return;
   }
 
-  const siblingPaths = fellowshipResults
-    .filter((path) => path.parentId === selectedEntity.parentId && path.id !== selectedEntity.id)
-    .slice(0, 4);
   exploreNodeType.textContent = "Fellowship path";
   exploreNodeTitle.textContent = selectedEntity.name;
   exploreNodeBlurb.textContent = selectedEntity.blurb;
@@ -3256,10 +3747,7 @@ function renderExploreInspector(selectedEntity, specialtyResults, fellowshipResu
     .slice(0, 3)
     .map((reason) => `<li>${reason.explanation}</li>`)
     .join("");
-  exploreNodeConnections.innerHTML = [
-    createPathButton(specialtyResultMap[selectedEntity.parentId], true),
-    ...siblingPaths.map((path) => createPathButton(path, true)),
-  ].join("");
+  exploreNodeConnections.innerHTML = nearbyMarkup;
 }
 
 function renderExploreModal() {
@@ -3274,46 +3762,76 @@ function renderExploreModal() {
   const {
     width,
     height,
-    centerX,
-    centerY,
-    specialtyRing,
-    fellowshipRing,
+    nodes,
     specialtyNodes,
     fellowshipNodes,
-    specialtyPositionMap,
+    similarityEdges,
+    parentEdges,
+    nodeMap,
   } = buildExploreLayoutData(specialtyResults, fellowshipResults);
+  const activeNode = nodeMap[selectedExploreId] || activeEntity;
+  const selectedSimilarIds = new Set(
+    similarityEdges
+      .filter((edge) => edge.sourceId === selectedExploreId || edge.targetId === selectedExploreId)
+      .flatMap((edge) => [edge.sourceId, edge.targetId])
+  );
   const isSelected = (node) => node.id === selectedExploreId;
   const isConnected = (node) => {
     if (node.id === selectedExploreId) {
       return true;
     }
 
-    if (node.kind === "fellowship") {
-      return node.parentId === selectedExploreId;
+    if (selectedSimilarIds.has(node.id)) {
+      return true;
     }
 
     const selectedFellowship = fellowshipResultMap[selectedExploreId];
     return selectedFellowship?.parentId === node.id;
   };
 
-  const backgroundMarkup = `
-    <circle class="explore-ring" cx="${centerX}" cy="${centerY}" r="${specialtyRing}"></circle>
-    <circle class="explore-ring explore-ring--outer" cx="${centerX}" cy="${centerY}" r="${fellowshipRing}"></circle>
-  `;
-  const linkMarkup = fellowshipNodes.map((node) => {
-    const parentNode = specialtyPositionMap[node.parentId];
-    const selected = isSelected(node) || node.parentId === selectedExploreId || fellowshipResultMap[selectedExploreId]?.parentId === node.parentId;
+  const parentLinkMarkup = parentEdges.map((edge) => {
+    const source = nodeMap[edge.sourceId];
+    const target = nodeMap[edge.targetId];
+    const selected = edge.targetId === selectedExploreId
+      || (edge.sourceId === selectedExploreId && selectedSimilarIds.has(edge.targetId));
+
+    if (!source || !target) {
+      return "";
+    }
+
     return `
       <line
-        class="explore-link ${selected ? "explore-link--selected" : ""}"
-        x1="${parentNode.x}"
-        y1="${parentNode.y}"
-        x2="${node.x}"
-        y2="${node.y}"
-        style="--link-color: ${node.color};"
+        class="explore-link explore-link--parent ${selected ? "explore-link--selected" : ""}"
+        x1="${source.x}"
+        y1="${source.y}"
+        x2="${target.x}"
+        y2="${target.y}"
+        style="--link-color: ${edge.color}; --link-opacity: ${selected ? 0.42 : 0.12};"
       ></line>
     `;
   }).join("");
+
+  const similarityLinkMarkup = similarityEdges.map((edge) => {
+    const source = nodeMap[edge.sourceId];
+    const target = nodeMap[edge.targetId];
+    const selected = edge.sourceId === selectedExploreId || edge.targetId === selectedExploreId;
+
+    if (!source || !target) {
+      return "";
+    }
+
+    return `
+      <line
+        class="explore-link explore-link--profile ${selected ? "explore-link--selected" : ""}"
+        x1="${source.x}"
+        y1="${source.y}"
+        x2="${target.x}"
+        y2="${target.y}"
+        style="--link-color: ${edge.color}; --link-opacity: ${selected ? 0.62 : 0.2};"
+      ></line>
+    `;
+  }).join("");
+
   const specialtyMarkup = specialtyNodes.map((node) => `
     <g
       class="explore-node explore-node--specialty ${isSelected(node) ? "explore-node--selected" : ""} ${isConnected(node) ? "explore-node--connected" : ""}"
@@ -3342,8 +3860,9 @@ function renderExploreModal() {
   `).join("");
 
   exploreCanvas.setAttribute("viewBox", `0 0 ${width} ${height}`);
-  exploreCanvas.innerHTML = `${backgroundMarkup}${linkMarkup}${specialtyMarkup}${fellowshipMarkup}`;
-  renderExploreInspector(activeEntity, specialtyResults, fellowshipResults);
+  exploreCanvas.innerHTML = `${parentLinkMarkup}${similarityLinkMarkup}${specialtyMarkup}${fellowshipMarkup}`;
+  syncExploreZoomControls();
+  renderExploreInspector(activeNode, nodes);
 }
 
 function syncRankPanelVisibility() {
@@ -3505,10 +4024,17 @@ function renderRankPanel() {
     rankDetail.classList.add("hidden");
   }
 
-  const leaderPaths = getTopFellowshipsForSpecialty(displayed[0].id, 3, fellowshipResults);
+  const leaderPaths = state.fellowshipDisplayMode === "separate"
+    ? getIndependentFellowshipScoreData(fellowshipResults)
+        .filter((path) => path.adjusted > 0 && path.matchedWeight > 0)
+        .slice(0, 3)
+    : getTopFellowshipsForSpecialty(displayed[0].id, 3, fellowshipResults);
 
   if (answeredCount >= 6 && leaderPaths.length > 0) {
     rankPathDetail.classList.remove("hidden");
+    rankPathTitle.textContent = state.fellowshipDisplayMode === "separate"
+      ? "Top fellowship paths"
+      : "Fellowship paths nearby";
     rankPathList.innerHTML = leaderPaths.map((path) => createPathButton(path, true)).join("");
   } else {
     rankPathDetail.classList.add("hidden");
@@ -3696,11 +4222,19 @@ function showResults() {
   const explicitAnswers = countExplicitAnswers();
   const skippedCount = countSkipped();
   const unansweredEverything = explicitAnswers === 0;
+  const showSeparateFellowships = state.fellowshipDisplayMode === "separate";
   const topResults = ranked.filter((item) => item.raw > 0).slice(0, 4);
   const displayedResults = topResults.length > 0 ? topResults : ranked.slice(0, 4);
-  const leadGap = displayedResults[1]
-    ? displayedResults[0].normalized - displayedResults[1].normalized
-    : displayedResults[0].normalized;
+  const independentFellowshipResults = getIndependentFellowshipScoreData(fellowshipResults);
+  const displayedFellowships = independentFellowshipResults
+    .filter((path) => path.adjusted > 0 && path.matchedWeight > 0)
+    .slice(0, 6);
+  const leadItems = showSeparateFellowships && displayedFellowships.length > 0
+    ? displayedFellowships
+    : displayedResults;
+  const leadGap = leadItems[1]
+    ? leadItems[0].normalized - leadItems[1].normalized
+    : leadItems[0].normalized;
   const confidence = getConfidenceLabel(leadGap, explicitAnswers);
 
   startView.classList.add("hidden");
@@ -3711,21 +4245,34 @@ function showResults() {
   restartTop.classList.remove("hidden");
   updateProgress();
   renderRankPanel();
+  updateFellowshipDisplayControls();
 
   const summaryBits = [];
-  if (displayedResults.length > 0) {
+  resultsTitle.textContent = showSeparateFellowships
+    ? "Fellowship paths suggested by your answers"
+    : "Specialties and fellowship paths suggested by your answers";
+
+  if (showSeparateFellowships && displayedFellowships.length > 0) {
+    summaryBits.push(`${displayedFellowships[0].name} had the strongest current fellowship-path signal`);
+  } else if (displayedResults.length > 0) {
     summaryBits.push(`${displayedResults[0].name} had the strongest current fit signal`);
   }
-  if (displayedResults.length === 2) {
+  if (showSeparateFellowships && displayedFellowships.length === 2) {
+    summaryBits.push(`${displayedFellowships[1].name} was close behind`);
+  } else if (!showSeparateFellowships && displayedResults.length === 2) {
     summaryBits.push(`${displayedResults[1].name} was close behind`);
   }
-  if (displayedResults.length >= 3) {
+  if (showSeparateFellowships && displayedFellowships.length >= 3) {
+    summaryBits.push(`${displayedFellowships[1].name} and ${displayedFellowships[2].name} were close behind`);
+  } else if (!showSeparateFellowships && displayedResults.length >= 3) {
     summaryBits.push(`${displayedResults[1].name} and ${displayedResults[2].name} were close behind`);
   }
 
   resultsSummaryText.textContent = unansweredEverything
     ? "You skipped every question, so there is no meaningful signal yet. Answer at least a few questions to generate real specialty and fellowship-path recommendations."
-    : `${summaryBits.join(", ")}. Signal strength: ${confidence}. These results are based on ${explicitAnswers} answered questions about continuity, pace, procedures, uncertainty, work setting, and the kinds of subspecialty branches those answers point toward.`;
+    : showSeparateFellowships && displayedFellowships.length === 0
+      ? `No fellowship path has enough direct signal yet. Signal strength: ${confidence}. These results are based on ${explicitAnswers} answered questions, but the answered items have not separated specific fellowship branches.`
+      : `${summaryBits.join(", ")}. Signal strength: ${confidence}. These results are based on ${explicitAnswers} answered questions about continuity, pace, procedures, uncertainty, work setting, and the kinds of subspecialty branches those answers point toward.`;
 
   skippedSummary.textContent = unansweredEverything
     ? "Retake the quiz and answer the questions that produce the strongest reaction. Even a partial set of real answers is more useful than skipping everything."
@@ -3736,9 +4283,41 @@ function showResults() {
 
   resultsList.innerHTML = unansweredEverything
     ? ""
-    : displayedResults
-        .map((result, index) => createResultCard(result, index + 1, getTopFellowshipsForSpecialty(result.id, explicitAnswers >= 14 ? 3 : 2, fellowshipResults), explicitAnswers))
-        .join("");
+    : showSeparateFellowships
+      ? createSeparatedFellowshipResults(displayedFellowships, explicitAnswers)
+      : displayedResults
+          .map((result, index) => createResultCard(result, index + 1, getTopFellowshipsForSpecialty(result.id, explicitAnswers >= 14 ? 3 : 2, fellowshipResults), explicitAnswers))
+          .join("");
+}
+
+function createSeparatedFellowshipResults(fellowshipMatches, answeredCount) {
+  if (fellowshipMatches.length > 0) {
+    return fellowshipMatches
+      .map((path, index) => createFellowshipResultCard(path, index + 1))
+      .join("");
+  }
+
+  if (answeredCount < 5) {
+    return `
+      <article class="match-card">
+        <div class="match-card__left">
+          <span class="match-card__score-label">Fellowship paths</span>
+          <h4>More answers will sharpen this view.</h4>
+          <p>Specific fellowship paths are available here once enough path-level signals have been answered.</p>
+        </div>
+      </article>
+    `;
+  }
+
+  return `
+    <article class="match-card">
+      <div class="match-card__left">
+        <span class="match-card__score-label">Fellowship paths</span>
+        <h4>No specific branch stands out yet.</h4>
+        <p>The specialty ranking still has useful signal, but no fellowship path has enough direct support from the answered questions.</p>
+      </div>
+    </article>
+  `;
 }
 
 function createResultCard(result, rank, fellowshipMatches, answeredCount) {
@@ -3788,6 +4367,38 @@ function createResultCard(result, rank, fellowshipMatches, answeredCount) {
         <ul>${reasonItems}</ul>
       </div>
       ${fellowshipMarkup}
+    </article>
+  `;
+}
+
+function createFellowshipResultCard(path, rank) {
+  const reasonItems = path.reasons.length > 0
+    ? path.reasons
+        .map((reason) => `<li>${reason.explanation}</li>`)
+        .join("")
+    : "<li>This fellowship path rose from a combination of its home specialty and nearby path-level signals.</li>";
+
+  return `
+    <article class="match-card">
+      <div class="match-card__top">
+        <div class="match-card__left">
+          <span class="match-card__score-label">Fellowship result ${rank}</span>
+          <h4>${path.name}</h4>
+          <p>${path.blurb}</p>
+          <p class="match-card__path-note">Home specialty: ${path.parentName}</p>
+        </div>
+        <div class="match-card__score" aria-label="Match strength for ${path.name}">
+          <span class="match-card__score-label">Signal</span>
+          <span class="match-card__score-value">${path.normalized}%</span>
+        </div>
+      </div>
+      <div class="match-card__why">
+        <span class="match-card__score-label">Why it was suggested</span>
+        <ul>${reasonItems}</ul>
+      </div>
+      <div class="match-card__paths">
+        ${createPathButton(path, true)}
+      </div>
     </article>
   `;
 }
@@ -3845,6 +4456,13 @@ function openExplore(trigger = null, selectedId = null) {
 }
 
 function handleExploreSelectionClick(event) {
+  if (event.currentTarget === exploreCanvas && suppressExploreCanvasClick) {
+    event.preventDefault();
+    event.stopPropagation();
+    suppressExploreCanvasClick = false;
+    return;
+  }
+
   const trigger = event.target.closest("[data-explore-id]");
 
   if (!trigger) {
@@ -3898,6 +4516,15 @@ closeShareButton.addEventListener("click", () => setShareModalOpen(false));
 shareBackdrop.addEventListener("click", () => setShareModalOpen(false));
 closeExploreButton.addEventListener("click", () => setExploreModalOpen(false));
 exploreBackdrop.addEventListener("click", () => setExploreModalOpen(false));
+exploreZoomOutButton.addEventListener("click", () => setExploreZoom(exploreZoom - EXPLORE_ZOOM_STEP));
+exploreZoomResetButton.addEventListener("click", () => setExploreZoom(1));
+exploreZoomInButton.addEventListener("click", () => setExploreZoom(exploreZoom + EXPLORE_ZOOM_STEP));
+exploreCanvasShell.addEventListener("wheel", handleExploreWheel, { passive: false });
+exploreCanvasShell.addEventListener("pointerdown", handleExplorePointerDown);
+exploreCanvasShell.addEventListener("pointermove", handleExplorePointerMove);
+exploreCanvasShell.addEventListener("pointerup", endExplorePointerDrag);
+exploreCanvasShell.addEventListener("pointercancel", endExplorePointerDrag);
+exploreCanvasShell.addEventListener("lostpointercapture", endExplorePointerDrag);
 copySeedButton.addEventListener("click", copyCurrentSeed);
 loadSeedButton.addEventListener("click", loadSeedFromInput);
 rankToggleButton.addEventListener("click", toggleRankPanel);
@@ -3925,6 +4552,12 @@ exploreCanvas.addEventListener("keydown", (event) => {
 });
 questionOrderInputs.forEach((input) => {
   input.addEventListener("change", () => applyOrderMode(input.value));
+});
+fellowshipDisplayInputs.forEach((input) => {
+  input.addEventListener("change", () => applyFellowshipDisplayMode(input.value));
+});
+resultsFellowshipDisplayInputs.forEach((input) => {
+  input.addEventListener("change", () => applyFellowshipDisplayMode(input.value));
 });
 
 document.addEventListener("keydown", (event) => {

@@ -2230,13 +2230,9 @@ function generalizedClonicStage_uV(tCh, meta, tonicEnd, clonicEnd){
   return y;
 }
 function generalizedConvulsiveEmg_uV(tCh, e, ev, meta, onsetDur, recruitEnd, tonicEnd, clonicEnd){
-  let ampBase = meta && meta.convulsiveEmgBase !== undefined ? meta.convulsiveEmgBase : 0;
-  if (!ampBase){
-    const uiLevel = clamp01(ev && ev.emgLevel !== undefined ? ev.emgLevel : DEFAULT_EMG_LEVEL);
-    const level = uiLevel * GENERALIZED_SEIZURE_EMG_UI_MAX;
-    const leadScale = (meta && meta.emgScale !== undefined ? meta.emgScale : genSzEmgScale(e)) * (meta && meta.emgGain !== undefined ? meta.emgGain : 1);
-    ampBase = leadScale * level * (85 + 275*level);
-  }
+  const ampBase = meta && meta.convulsiveEmgBase !== undefined
+    ? meta.convulsiveEmgBase
+    : ((meta && meta.emgScale !== undefined ? meta.emgScale : genSzEmgScale(e)) * (meta && meta.emgGain !== undefined ? meta.emgGain : 1));
   if (ampBase <= 0.001) return 0;
   let env = 0;
   if (tCh > onsetDur*0.35 && tCh < recruitEnd){
@@ -3027,15 +3023,7 @@ const THEME = {
 const renderCache = {
   sampleOffsets: null,
   sampleOffsetWidth: 0,
-  sampleOffsetSeconds: 0,
-  layoutKey: '',
-  rowMids: null,
-  strokeColors: null,
-  labelMetrics: new Map(),
-  lastDrawTime: 0,
-  drawMs: 0,
-  skippedDraws: 0,
-  denseUntil: 0
+  sampleOffsetSeconds: 0
 };
 
 function syncAppViewportHeight(){
@@ -3054,7 +3042,6 @@ function resize(){
   if (canvas.width !== nextWidth) canvas.width = nextWidth;
   if (canvas.height !== nextHeight) canvas.height = nextHeight;
   ctx.setTransform(dpr,0,0,dpr,0,0);
-  renderCache.layoutKey = '';
 }
 window.addEventListener('resize', resize);
 if (window.visualViewport){
@@ -3083,103 +3070,6 @@ function getSampleOffsets(width, secs){
     renderCache.sampleOffsetSeconds = secs;
   }
   return renderCache.sampleOffsets;
-}
-
-function getRenderLayout(pairs){
-  const labels = pairs.map(pair => pair.label).join('|');
-  const key = `${state.montage}|${canvas.clientWidth}|${canvas.clientHeight}|${labels}`;
-  if (renderCache.layoutKey !== key){
-    renderCache.layoutKey = key;
-    renderCache.rowMids = computeRowMids(pairs.length);
-    renderCache.strokeColors = pairs.map((pair, index) => groupColor(pair.label, index));
-  }
-  return {
-    yMids: renderCache.rowMids,
-    strokeColors: renderCache.strokeColors
-  };
-}
-
-function isComplexVisualRenderLoad(){
-  const clock = state.artClock || 0;
-  const rememberDenseTrace = ()=>{
-    renderCache.denseUntil = Math.max(renderCache.denseUntil || 0, clock + Math.max(1, state.seconds || 10) + 0.35);
-    return true;
-  };
-  if (state.focalSz && state.focalSz.active) return rememberDenseTrace();
-  if (state.fbtcSz && state.fbtcSz.active) return rememberDenseTrace();
-  if ((state.seizureEvents || []).some(ev => ev && !ev.done && ev.type === 'generalized' && clock >= ev.t0 && clock <= ev.t0 + ev.dur)) return rememberDenseTrace();
-  const emgLevel = Number(state.artifactConfig && state.artifactConfig.emgLevel);
-  if (state.opts && state.opts.emg && Number.isFinite(emgLevel) && emgLevel >= 0.50) return rememberDenseTrace();
-  if ((renderCache.denseUntil || 0) > clock) return true;
-  return false;
-}
-
-function clearRenderLoadMemory(){
-  renderCache.denseUntil = 0;
-  renderCache.drawMs = 0;
-  renderCache.skippedDraws = 0;
-  renderCache.lastDrawTime = 0;
-}
-
-function targetDrawIntervalSeconds(heavyVisualLoad){
-  if (!state.running || (state.annotations && state.annotations.drawing)) return 0;
-  const drawMs = renderCache.drawMs || 0;
-  if (drawMs > 34) return 1/24;
-  if (heavyVisualLoad || drawMs > 24) return 1/30;
-  return 0;
-}
-
-function shouldRenderFrame(now, heavyVisualLoad){
-  const interval = targetDrawIntervalSeconds(heavyVisualLoad);
-  if (!renderCache.lastDrawTime || interval <= 0) return true;
-  if ((now - renderCache.lastDrawTime) >= interval) return true;
-  renderCache.skippedDraws++;
-  return false;
-}
-
-function traceRenderStep(width, heavyVisualLoad){
-  const drawMs = renderCache.drawMs || 0;
-  let step = 1;
-  if (heavyVisualLoad && width > 720) step = 2;
-  if (drawMs > 28 && width > 900) step = Math.max(step, 2);
-  if (heavyVisualLoad && drawMs > 40 && width > 1100) step = 3;
-  return step;
-}
-
-function drawTracePair(ra, rb, yMid, traceScale, sampleOffsets, width, step){
-  const len = ra.length;
-  ctx.beginPath();
-  if (step <= 1){
-    for(let x=0;x<width;x++){
-      const idx=state.idx-sampleOffsets[x];
-      const j=((idx%len)+len)%len;
-      const uv=ra[j]-rb[j];
-      const y=yMid-(uv*traceScale);
-      if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
-    }
-    return;
-  }
-  let started = false;
-  for(let x=0;x<width;x+=step){
-    const end = Math.min(width, x + step);
-    let bestUv = 0;
-    let bestAbs = -1;
-    let bestX = x;
-    for(let bx=x; bx<end; bx++){
-      const idx=state.idx-sampleOffsets[bx];
-      const j=((idx%len)+len)%len;
-      const uv=ra[j]-rb[j];
-      const abs = Math.abs(uv);
-      if (abs > bestAbs){
-        bestAbs = abs;
-        bestUv = uv;
-        bestX = bx;
-      }
-    }
-    const y=yMid-(bestUv*traceScale);
-    if(!started){ ctx.moveTo(bestX,y); started = true; }
-    else ctx.lineTo(bestX,y);
-  }
 }
 
 function ensureAnnotationDefaults(){
@@ -3395,23 +3285,16 @@ function renderLabels(pairs, yMids, strokeColors){
     ctx.font = font;
     const xText = 8;
     const y = yMids[i];
-    const metricKey = `${font}|${label}`;
-    let metric = renderCache.labelMetrics.get(metricKey);
-    if (!metric){
-      const metrics = ctx.measureText(label);
-      const ascent = metrics.actualBoundingBoxAscent || 9;
-      const descent = metrics.actualBoundingBoxDescent || 3;
-      metric = {
-        textW: Math.ceil(metrics.width),
-        textH: ascent + descent
-      };
-      renderCache.labelMetrics.set(metricKey, metric);
-    }
+    const metrics = ctx.measureText(label);
+    const textW = Math.ceil(metrics.width);
+    const ascent = metrics.actualBoundingBoxAscent || 9;
+    const descent = metrics.actualBoundingBoxDescent || 3;
+    const textH = ascent + descent;
     const padX = 4, padY = 2;
     const rectX = xText - padX;
-    const rectY = y - metric.textH/2 - padY;
-    const rectW = metric.textW + 2*padX;
-    const rectH = metric.textH + 2*padY;
+    const rectY = y - textH/2 - padY;
+    const rectW = textW + 2*padX;
+    const rectH = textH + 2*padY;
     // Background highlight
     ctx.save();
     ctx.fillStyle = THEME.bg;
@@ -3809,13 +3692,11 @@ function step(){
       const inEducationalMode = !!((state.quiz && state.quiz.active) || (state.tutorial && state.tutorial.active));
       const educationalBias = currentEducationalBias();
       const seizureEvents = (state.seizureEvents && state.seizureEvents.length) ? state.seizureEvents : null;
-      const sleepFeatures = currentSleepFeatureConstraints();
-      const spindleMode = sleepFeatures ? (sleepFeatures.spindles || 'absent') : null;
-      const kcomplexMode = sleepFeatures ? (sleepFeatures.kcomplexes || 'absent') : null;
-      const activeGeneralizedEvents = [];
-      const activeAbsenceEvents = [];
       for(let n=0;n<samples;n++){
         state.pdrPhase += 2*Math.PI*state.pdrHz/Fs;
+        const sleepFeatures = currentSleepFeatureConstraints();
+        const spindleMode = sleepFeatures ? (sleepFeatures.spindles || 'absent') : null;
+        const kcomplexMode = sleepFeatures ? (sleepFeatures.kcomplexes || 'absent') : null;
         if (state.mode !== 'n2'){
           state.spindle.active = false;
           state.kcomplex.active = false;
@@ -3863,9 +3744,9 @@ function step(){
         const popArtifact = currentPopArtifact(state.artClock);
         const emgArtifact = currentEmgArtifact(state.artClock);
         const sampleClock = state.artClock;
-        activeGeneralizedEvents.length = 0;
-        activeAbsenceEvents.length = 0;
-        let ictalSimplify = !!((state.focalSz && state.focalSz.active) || (state.fbtcSz && state.fbtcSz.active));
+        const activeGeneralizedEvents = [];
+        const activeAbsenceEvents = [];
+        let ictalSimplify = !!(state.fbtcSz && state.fbtcSz.active);
         if (seizureEvents){
           for (const ev of seizureEvents){
             if (ev.done || sampleClock < ev.t0 || sampleClock > ev.t0 + ev.dur) continue;
@@ -3971,37 +3852,22 @@ function step(){
         if (typeof updateSeizureActionButtons === 'function') updateSeizureActionButtons();
       }
     }
-    const heavyVisualLoad = isComplexVisualRenderLoad();
-    if (!shouldRenderFrame(now, heavyVisualLoad)){
-      requestAnimationFrame(step);
-      return;
-    }
-    renderCache.lastDrawTime = now;
-    const drawStart = performance.now();
     const pairs=montagePairs(); drawGrid(pairs.length, state.seconds);
     const w=canvas.clientWidth;
-    const layout = getRenderLayout(pairs);
-    const yMids=layout.yMids;
+    const yMids=computeRowMids(pairs.length);
     const sampleOffsets = getSampleOffsets(w, state.seconds);
     const rowH = canvas.clientHeight / pairs.length;
     const traceScale = rowH / (4 * state.uvPerDiv);
-    const strokeColors = layout.strokeColors;
-    const stepPx = traceRenderStep(w, heavyVisualLoad);
-    ctx.lineCap = 'butt';
-    ctx.lineJoin = heavyVisualLoad ? 'miter' : 'round';
+    const strokeColors = pairs.map((pair, index) => groupColor(pair.label, index));
     for(let i=0;i<pairs.length;i++){
       const {a,b}=pairs[i]; const ra=state.buffer.get(a); const rb=state.buffer.get(b); if(!ra||!rb) continue;
-      const yMid=yMids[i]; ctx.strokeStyle=strokeColors[i]; ctx.lineWidth=1.2;
-      drawTracePair(ra, rb, yMid, traceScale, sampleOffsets, w, stepPx);
+      const yMid=yMids[i]; ctx.beginPath(); ctx.strokeStyle=strokeColors[i]; ctx.lineWidth=1.2;
+      for(let x=0;x<w;x++){ const idx=state.idx-sampleOffsets[x]; const len=ra.length; const j=((idx%len)+len)%len; const uv=ra[j]-rb[j]; const y=yMid-(uv*traceScale); if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); }
       ctx.stroke();
     }
     renderTutorialHighlights(pairs, yMids, rowH, w);
     renderLabels(pairs, yMids, strokeColors);
     renderAnnotations();
-    renderCache.drawMs = 0.82*(renderCache.drawMs || 0) + 0.18*(performance.now() - drawStart);
-    if (renderCache.drawMs > 24){
-      renderCache.denseUntil = Math.max(renderCache.denseUntil || 0, (state.artClock || 0) + Math.max(1, Math.min(state.seconds || 10, 3.0)));
-    }
     errBox.style.display='none';
   }catch(e){ console.error(e); errBox.textContent='Render error: '+e.message; errBox.style.display='block'; }
   requestAnimationFrame(step);
@@ -4465,7 +4331,6 @@ function regen(){
   ensureArtifactDefaults();
   clearEyeTransition();
   clearAnnotationStrokes();
-  clearRenderLoadMemory();
   state.artifactConfig.emgLevel = readEmgLevelFromUI();
   state.opts={ blink:$('blink')?.checked||false, rovingEyes:$('rovingEyes')?.checked||false, reading:$('reading')?.checked||false, ventilator:$('ventilator')?.checked||false, photicStim:$('photicStim')?.checked||false, chew:$('chew')?.checked||false, sweat:$('sweat')?.checked||false, breach:$('breach')?.checked||false, pop:$('pop')?.checked||false, emg:(state.artifactConfig.emgLevel > 0) };
   state.artifactConfig.photicHz = PHOTIC_STIM_RATE_SET.has(Number($('photicHzSel')?.value)) ? Number($('photicHzSel').value) : (state.artifactConfig.photicHz || 15);

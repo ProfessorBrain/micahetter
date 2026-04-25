@@ -105,6 +105,20 @@
             </div>
           </div>
 
+          <div class="results-display-toggle" aria-labelledby="resultsDisplayTitle">
+            <span class="results-display-toggle__label" id="resultsDisplayTitle">Fellowship display</span>
+            <div class="results-display-toggle__options" role="radiogroup" aria-labelledby="resultsDisplayTitle">
+              <label class="results-display-toggle__option" for="resultsFellowshipIntegrated">
+                <input id="resultsFellowshipIntegrated" type="radio" name="resultsFellowshipDisplay" value="integrated">
+                <span>Under specialties</span>
+              </label>
+              <label class="results-display-toggle__option" for="resultsFellowshipSeparated">
+                <input id="resultsFellowshipSeparated" type="radio" name="resultsFellowshipDisplay" value="separate">
+                <span>Separate ranking</span>
+              </label>
+            </div>
+          </div>
+
           <div class="results-summary">
             <p id="resultsSummaryText"></p>
           </div>
@@ -192,7 +206,7 @@
         </div>
 
         <div class="rank-panel__detail hidden" id="rankPathDetail">
-          <p class="section-kicker">Fellowship paths nearby</p>
+          <p class="section-kicker" id="rankPathTitle">Fellowship paths nearby</p>
           <div class="rank-panel__paths" id="rankPathList"></div>
         </div>
       </aside>
@@ -254,31 +268,55 @@
       <div class="info-pane__topbar">
         <div class="info-pane__intro">
           <p class="section-kicker">Settings</p>
-          <h2 id="settingsTitle">Question order</h2>
+          <h2 id="settingsTitle">Settings</h2>
           <p class="settings-pane__lede">
-            Choose whether the quiz uses the same question sequence each time or reshuffles the full bank.
+            Choose question order and how fellowship paths appear in the results.
           </p>
         </div>
         <button class="ghost-button info-pane__close" id="closeSettingsButton" type="button">Close</button>
       </div>
 
-      <div class="settings-options" role="radiogroup" aria-labelledby="settingsTitle">
-        <label class="settings-option" for="orderSequential">
-          <input class="settings-option__input" id="orderSequential" type="radio" name="questionOrder" value="sequential">
-          <span class="settings-option__card">
-            <span class="settings-option__title">In order</span>
-            <span class="settings-option__text">Use the same sequence each time, from the first question to the last.</span>
-          </span>
-        </label>
+      <section class="settings-section" aria-labelledby="questionOrderTitle">
+        <h3 class="settings-section__title" id="questionOrderTitle">Question order</h3>
+        <div class="settings-options" role="radiogroup" aria-labelledby="questionOrderTitle">
+          <label class="settings-option" for="orderSequential">
+            <input class="settings-option__input" id="orderSequential" type="radio" name="questionOrder" value="sequential">
+            <span class="settings-option__card">
+              <span class="settings-option__title">In order</span>
+              <span class="settings-option__text">Use the same sequence each time, from the first question to the last.</span>
+            </span>
+          </label>
 
-        <label class="settings-option" for="orderRandom">
-          <input class="settings-option__input" id="orderRandom" type="radio" name="questionOrder" value="random">
-          <span class="settings-option__card">
-            <span class="settings-option__title">Randomized</span>
-            <span class="settings-option__text">Shuffle the full question bank each time a new quiz starts.</span>
-          </span>
-        </label>
-      </div>
+          <label class="settings-option" for="orderRandom">
+            <input class="settings-option__input" id="orderRandom" type="radio" name="questionOrder" value="random">
+            <span class="settings-option__card">
+              <span class="settings-option__title">Randomized</span>
+              <span class="settings-option__text">Shuffle the full question bank each time a new quiz starts.</span>
+            </span>
+          </label>
+        </div>
+      </section>
+
+      <section class="settings-section" aria-labelledby="fellowshipDisplayTitle">
+        <h3 class="settings-section__title" id="fellowshipDisplayTitle">Fellowship display</h3>
+        <div class="settings-options" role="radiogroup" aria-labelledby="fellowshipDisplayTitle">
+          <label class="settings-option" for="fellowshipIntegrated">
+            <input class="settings-option__input" id="fellowshipIntegrated" type="radio" name="fellowshipDisplay" value="integrated">
+            <span class="settings-option__card">
+              <span class="settings-option__title">Under specialties</span>
+              <span class="settings-option__text">Show fellowship paths inside the specialty cards they branch from.</span>
+            </span>
+          </label>
+
+          <label class="settings-option" for="fellowshipSeparated">
+            <input class="settings-option__input" id="fellowshipSeparated" type="radio" name="fellowshipDisplay" value="separate">
+            <span class="settings-option__card">
+              <span class="settings-option__title">Separate ranking</span>
+              <span class="settings-option__text">Rank fellowship paths directly, regardless of which specialty contains them.</span>
+            </span>
+          </label>
+        </div>
+      </section>
 
       <p class="settings-pane__note" id="settingsStatus"></p>
     </section>
@@ -328,24 +366,30 @@
     <div class="info-modal__backdrop" id="exploreBackdrop"></div>
     <section class="info-pane info-pane--modal explore-pane" role="dialog" aria-modal="true" aria-labelledby="exploreTitle">
       <div class="info-pane__topbar">
-        <div class="info-pane__intro">
+        <div class="info-pane__intro info-pane__intro--compact">
           <p class="section-kicker">Explore</p>
-          <h2 id="exploreTitle">A map of specialties and fellowship paths.</h2>
-          <p class="share-pane__lede">
-            The inner ring shows specialties. The outer ring shows fellowship paths that branch out from them. Click any node to inspect the fit, the parent specialty, and nearby paths.
-          </p>
+          <h2 class="sr-only" id="exploreTitle">Explore specialties and fellowship paths</h2>
         </div>
         <button class="ghost-button info-pane__close" id="closeExploreButton" type="button">Close</button>
       </div>
 
       <div class="explore-layout">
         <section class="explore-canvas-wrap" aria-labelledby="exploreCanvasLabel">
-          <div class="explore-legend">
-            <span class="explore-legend__item"><span class="explore-legend__dot explore-legend__dot--specialty"></span> Specialty</span>
-            <span class="explore-legend__item"><span class="explore-legend__dot explore-legend__dot--fellowship"></span> Fellowship path</span>
+          <div class="explore-canvas-toolbar">
+            <div class="explore-legend">
+              <span class="explore-legend__item"><span class="explore-legend__dot explore-legend__dot--specialty"></span> Specialty</span>
+              <span class="explore-legend__item"><span class="explore-legend__dot explore-legend__dot--fellowship"></span> Fellowship path</span>
+            </div>
+            <div class="explore-zoom" aria-label="Explorer zoom controls">
+              <button class="explore-zoom__button" id="exploreZoomOut" type="button" aria-label="Zoom out">-</button>
+              <button class="explore-zoom__reset" id="exploreZoomReset" type="button" aria-label="Reset zoom">
+                <span id="exploreZoomValue">100%</span>
+              </button>
+              <button class="explore-zoom__button" id="exploreZoomIn" type="button" aria-label="Zoom in">+</button>
+            </div>
           </div>
           <p class="sr-only" id="exploreCanvasLabel">Network map of specialties and fellowship paths</p>
-          <div class="explore-canvas-shell">
+          <div class="explore-canvas-shell" id="exploreCanvasShell">
             <svg class="explore-canvas" id="exploreCanvas" viewBox="0 0 1280 920" aria-labelledby="exploreCanvasLabel"></svg>
           </div>
         </section>
@@ -372,7 +416,7 @@
           </div>
 
           <div class="explore-inspector__block">
-            <span class="meta-block__label">Connected paths</span>
+            <span class="meta-block__label">Nearby profiles</span>
             <div class="explore-chip-list" id="exploreNodeConnections"></div>
           </div>
         </aside>
