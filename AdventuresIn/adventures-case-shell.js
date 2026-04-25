@@ -19,6 +19,16 @@
       seriesId: 'neurology',
       label: 'Neurology',
       folder: '/cases/neurology/'
+    },
+    {
+      seriesId: 'surgery',
+      label: 'Surgery',
+      folder: '/cases/surgery/'
+    },
+    {
+      seriesId: 'pediatrics',
+      label: 'Pediatrics',
+      folder: '/cases/pediatrics/'
     }
   ];
   const EMBEDDED_FRAME = {

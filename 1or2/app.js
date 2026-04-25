@@ -1,4 +1,4 @@
-const specialties = [
+const rawSpecialties = [
   {
     id: "internal-medicine",
     name: "Internal Medicine",
@@ -90,6 +90,1469 @@ const specialties = [
     blurb: "Disease-focused diagnostic work behind the scenes with low patient-facing continuity.",
   },
 ];
+
+const specialtyVisuals = {
+  "internal-medicine": { shortLabel: "Internal Med", color: "#2d7d89" },
+  "family-medicine": { shortLabel: "Family Med", color: "#4d8d67" },
+  pediatrics: { shortLabel: "Pediatrics", color: "#4c9ad7" },
+  "emergency-medicine": { shortLabel: "Emergency", color: "#d96c58" },
+  "general-surgery": { shortLabel: "Gen Surgery", color: "#9a5a46" },
+  "orthopedic-surgery": { shortLabel: "Orthopedics", color: "#b66a4f" },
+  anesthesiology: { shortLabel: "Anesthesia", color: "#5d6bb0" },
+  psychiatry: { shortLabel: "Psychiatry", color: "#7d5b8d" },
+  radiology: { shortLabel: "Radiology", color: "#4d78bc" },
+  neurology: { shortLabel: "Neurology", color: "#5e6fd1" },
+  obgyn: { shortLabel: "OB/GYN", color: "#c7648d" },
+  dermatology: { shortLabel: "Dermatology", color: "#b88738" },
+  ophthalmology: { shortLabel: "Ophthalmology", color: "#2f8fa0" },
+  otolaryngology: { shortLabel: "ENT", color: "#aa7540" },
+  urology: { shortLabel: "Urology", color: "#3d8777" },
+  "physical-medicine-rehab": { shortLabel: "PM&R", color: "#5a9f8d" },
+  "med-peds": { shortLabel: "Med-Peds", color: "#47858b" },
+  pathology: { shortLabel: "Pathology", color: "#5f6774" },
+};
+
+const specialties = rawSpecialties.map((specialty) => ({
+  ...specialty,
+  kind: "specialty",
+  shortLabel: specialtyVisuals[specialty.id]?.shortLabel ?? specialty.name,
+  color: specialtyVisuals[specialty.id]?.color ?? "#2d7d89",
+}));
+
+function makeSignal(questionId, answer, weight, label) {
+  return { questionId, answer, weight, label };
+}
+
+function makeFellowshipPath(id, name, shortLabel, parentId, blurb, tags, signals) {
+  return { id, name, shortLabel, parentId, blurb, tags, signals };
+}
+
+const fellowshipPaths = [
+  {
+    id: "cardiology",
+    name: "Cardiology",
+    shortLabel: "Cardiology",
+    parentId: "internal-medicine",
+    blurb: "Cardiovascular disease with a mix of physiology, hospital complexity, longitudinal care, and procedural branches.",
+    tags: ["physiology", "hospital/clinic mix", "acuity"],
+    signals: [
+      { questionId: "physiology", answer: "yes", weight: 4, label: "physiology-heavy work" },
+      { questionId: "pathophysiology-draw", answer: "yes", weight: 3, label: "mechanism-driven reasoning" },
+      { questionId: "complex-hospitalized-adults", answer: "yes", weight: 3, label: "complex hospitalized adults" },
+      { questionId: "office-procedures-balance", answer: "yes", weight: 2, label: "clinic with procedures" },
+    ],
+  },
+  {
+    id: "pulmonary-critical-care",
+    name: "Pulmonary & Critical Care",
+    shortLabel: "Pulm/Crit",
+    parentId: "internal-medicine",
+    blurb: "Physiology, ICU care, complex adults, and a blend of continuity with higher-acuity hospital work.",
+    tags: ["critical care", "adults", "physiology"],
+    signals: [
+      { questionId: "physiology", answer: "yes", weight: 4, label: "real-time physiology" },
+      { questionId: "complex-hospitalized-adults", answer: "yes", weight: 3, label: "complex adult inpatient care" },
+      { questionId: "low-emergencies", answer: "no", weight: 3, label: "at least some real acuity" },
+      { questionId: "hospital-vs-office", answer: "yes", weight: 2, label: "hospital-based days" },
+    ],
+  },
+  {
+    id: "family-sports-medicine",
+    name: "Sports Medicine",
+    shortLabel: "Sports Med",
+    parentId: "family-medicine",
+    blurb: "Outpatient musculoskeletal care with procedures, recovery planning, and return-to-activity counseling.",
+    tags: ["outpatient", "MSK", "function"],
+    signals: [
+      { questionId: "sports-and-return", answer: "yes", weight: 4, label: "return-to-activity goals" },
+      { questionId: "function-rehab", answer: "yes", weight: 3, label: "function and mobility" },
+      { questionId: "outpatient-most-days", answer: "yes", weight: 3, label: "outpatient rhythm" },
+      { questionId: "clinic-with-procedures", answer: "yes", weight: 2, label: "clinic procedures" },
+    ],
+  },
+  {
+    id: "geriatrics",
+    name: "Geriatrics",
+    shortLabel: "Geriatrics",
+    parentId: "family-medicine",
+    blurb: "Continuity-heavy care for older adults with multimorbidity, caregiver relationships, and quality-of-life decisions.",
+    tags: ["continuity", "caregivers", "complexity"],
+    signals: [
+      { questionId: "continuity", answer: "yes", weight: 3, label: "long-term patient relationships" },
+      { questionId: "caregiver-role", answer: "yes", weight: 4, label: "working closely with caregivers" },
+      { questionId: "multimorbidity", answer: "yes", weight: 3, label: "many problems at once" },
+      { questionId: "disability-and-qol", answer: "yes", weight: 2, label: "quality of life and adaptation" },
+    ],
+  },
+  {
+    id: "neonatology",
+    name: "Neonatology",
+    shortLabel: "Neonatology",
+    parentId: "pediatrics",
+    blurb: "Acuity, physiology, families, and team-based care centered on critically ill newborns.",
+    tags: ["critical care", "newborns", "teams"],
+    signals: [
+      { questionId: "children-large-share", answer: "yes", weight: 4, label: "a strong pull toward kids" },
+      { questionId: "physiology", answer: "yes", weight: 3, label: "real-time physiology" },
+      { questionId: "regular-urgency", answer: "yes", weight: 3, label: "regular urgency" },
+      { questionId: "acute-teamwork", answer: "yes", weight: 2, label: "acute team-based care" },
+    ],
+  },
+  {
+    id: "pediatric-cardiology",
+    name: "Pediatric Cardiology",
+    shortLabel: "Peds Cards",
+    parentId: "pediatrics",
+    blurb: "Cardiovascular physiology, imaging, and longitudinal care focused on congenital and pediatric heart disease.",
+    tags: ["kids", "physiology", "longitudinal"],
+    signals: [
+      { questionId: "children-large-share", answer: "yes", weight: 4, label: "a large pediatric share" },
+      { questionId: "physiology", answer: "yes", weight: 3, label: "cardiovascular physiology" },
+      { questionId: "pathophysiology-draw", answer: "yes", weight: 3, label: "pathophysiology as a draw" },
+      { questionId: "visual-patterns", answer: "yes", weight: 2, label: "image-based pattern recognition" },
+    ],
+  },
+  {
+    id: "medical-toxicology",
+    name: "Medical Toxicology",
+    shortLabel: "Toxicology",
+    parentId: "emergency-medicine",
+    blurb: "Acuity, pathophysiology, and consult-style reasoning around overdoses, poisonings, and exposures.",
+    tags: ["acute", "consults", "pathophysiology"],
+    signals: [
+      { questionId: "acuity", answer: "yes", weight: 4, label: "high-pressure acute decisions" },
+      { questionId: "uncertainty-tolerance", answer: "yes", weight: 3, label: "working through uncertainty" },
+      { questionId: "pathophysiology-draw", answer: "yes", weight: 3, label: "mechanism-heavy thinking" },
+      { questionId: "consultant-expertise", answer: "yes", weight: 2, label: "focused consultant work" },
+    ],
+  },
+  {
+    id: "trauma-critical-care",
+    name: "Trauma & Critical Care",
+    shortLabel: "Trauma/Crit",
+    parentId: "general-surgery",
+    blurb: "Large operations, ICU complexity, and decisive team-based care around severe injury and surgical illness.",
+    tags: ["trauma", "OR", "ICU"],
+    signals: [
+      { questionId: "large-operations", answer: "yes", weight: 4, label: "large operative work" },
+      { questionId: "regular-urgency", answer: "yes", weight: 3, label: "urgent or high-pressure situations" },
+      { questionId: "acute-teamwork", answer: "yes", weight: 3, label: "tightly coordinated acute teams" },
+      { questionId: "hospital-vs-office", answer: "yes", weight: 2, label: "hospital-based work" },
+    ],
+  },
+  {
+    id: "surgical-oncology",
+    name: "Surgical Oncology",
+    shortLabel: "Surg Onc",
+    parentId: "general-surgery",
+    blurb: "Cancer-focused operative work with longer arcs of treatment planning and multidisciplinary care.",
+    tags: ["cancer", "OR", "continuity"],
+    signals: [
+      { questionId: "large-operations", answer: "yes", weight: 4, label: "large operations" },
+      { questionId: "long-term-trust", answer: "yes", weight: 2, label: "longer treatment relationships" },
+      { questionId: "focused-expertise", answer: "yes", weight: 3, label: "deep focused expertise" },
+      { questionId: "acute-teamwork", answer: "yes", weight: 2, label: "multidisciplinary team work" },
+    ],
+  },
+  {
+    id: "orthopedic-sports-medicine",
+    name: "Orthopedic Sports Medicine",
+    shortLabel: "Ortho Sports",
+    parentId: "orthopedic-surgery",
+    blurb: "Biomechanics, operative and nonoperative MSK care, and return-to-play or return-to-function decisions.",
+    tags: ["sports", "MSK", "procedures"],
+    signals: [
+      { questionId: "sports-and-return", answer: "yes", weight: 4, label: "return-to-sport work" },
+      { questionId: "musculoskeletal-interest", answer: "yes", weight: 4, label: "musculoskeletal problems" },
+      { questionId: "procedures", answer: "yes", weight: 2, label: "procedural work" },
+      { questionId: "mixed-clinic-procedures", answer: "yes", weight: 2, label: "clinic plus surgery" },
+    ],
+  },
+  {
+    id: "hand-surgery",
+    name: "Hand Surgery",
+    shortLabel: "Hand Surg",
+    parentId: "orthopedic-surgery",
+    blurb: "Fine technical work, anatomy, and function around intricate upper-extremity injuries and reconstruction.",
+    tags: ["fine motor", "anatomy", "function"],
+    signals: [
+      { questionId: "fine-motor-precision", answer: "yes", weight: 4, label: "very fine technical work" },
+      { questionId: "narrow-anatomy", answer: "yes", weight: 3, label: "narrow anatomic focus" },
+      { questionId: "manual-skill", answer: "yes", weight: 3, label: "hands-on technical skill" },
+      { questionId: "function-over-operation", answer: "no", weight: 1, label: "operative solutions still matter" },
+    ],
+  },
+  {
+    id: "pain-medicine",
+    name: "Pain Medicine",
+    shortLabel: "Pain Med",
+    parentId: "anesthesiology",
+    blurb: "Procedures, longitudinal pain care, communication, and a clinic-based workflow with intervention mixed in.",
+    tags: ["procedures", "continuity", "outpatient"],
+    signals: [
+      { questionId: "procedures", answer: "yes", weight: 3, label: "hands-on interventions" },
+      { questionId: "continuity", answer: "yes", weight: 3, label: "repeat follow-up over time" },
+      { questionId: "communication-over-procedures", answer: "yes", weight: 2, label: "talking through decisions" },
+      { questionId: "office-procedures-balance", answer: "yes", weight: 3, label: "office procedures as a balance" },
+    ],
+  },
+  {
+    id: "child-adolescent-psychiatry",
+    name: "Child & Adolescent Psychiatry",
+    shortLabel: "Child Psych",
+    parentId: "psychiatry",
+    blurb: "Development, caregiver systems, and longitudinal mental-health care centered on younger patients.",
+    tags: ["kids", "caregivers", "communication"],
+    signals: [
+      { questionId: "mental-health", answer: "yes", weight: 4, label: "mental health as a central focus" },
+      { questionId: "children-large-share", answer: "yes", weight: 4, label: "a large pediatric share" },
+      { questionId: "caregiver-role", answer: "yes", weight: 3, label: "working with caregivers" },
+      { questionId: "longer-conversations", answer: "yes", weight: 2, label: "longer visits and depth" },
+    ],
+  },
+  {
+    id: "consult-liaison-psychiatry",
+    name: "Consultation-Liaison Psychiatry",
+    shortLabel: "C-L Psych",
+    parentId: "psychiatry",
+    blurb: "Psychiatric expertise in the medical hospital, with complex adult illness, teams, and consultant-style work.",
+    tags: ["consults", "hospital", "complex adults"],
+    signals: [
+      { questionId: "mental-health", answer: "yes", weight: 4, label: "mental-health-focused work" },
+      { questionId: "consultant-expertise", answer: "yes", weight: 3, label: "consultant work" },
+      { questionId: "complex-hospitalized-adults", answer: "yes", weight: 3, label: "complex hospitalized adults" },
+      { questionId: "hospital-vs-office", answer: "yes", weight: 2, label: "hospital-based days" },
+    ],
+  },
+  {
+    id: "interventional-radiology",
+    name: "Interventional Radiology",
+    shortLabel: "IR",
+    parentId: "radiology",
+    blurb: "Image-guided procedures, devices, anatomy, and consultant-style procedural care.",
+    tags: ["images", "procedures", "consults"],
+    signals: [
+      { questionId: "images-and-data", answer: "yes", weight: 4, label: "interpreting images and data" },
+      { questionId: "procedures", answer: "yes", weight: 3, label: "wanting procedures" },
+      { questionId: "consultant-handoffs", answer: "yes", weight: 2, label: "consults and handoffs" },
+      { questionId: "immediate-physical-result", answer: "yes", weight: 2, label: "seeing an immediate result" },
+    ],
+  },
+  {
+    id: "neuroradiology",
+    name: "Neuroradiology",
+    shortLabel: "Neurorads",
+    parentId: "radiology",
+    blurb: "Central nervous system imaging with high diagnostic density, subtle patterns, and anatomic localization.",
+    tags: ["images", "brain", "diagnosis"],
+    signals: [
+      { questionId: "images-and-data", answer: "yes", weight: 4, label: "image-heavy work" },
+      { questionId: "subtle-patterns", answer: "yes", weight: 3, label: "subtle patterns and distinctions" },
+      { questionId: "anatomic-localization", answer: "yes", weight: 3, label: "anatomic localization" },
+      { questionId: "diagnostic-workup", answer: "yes", weight: 2, label: "figuring out what is going on" },
+    ],
+  },
+  {
+    id: "vascular-neurology",
+    name: "Vascular Neurology",
+    shortLabel: "Stroke",
+    parentId: "neurology",
+    blurb: "Localization, stroke systems, and faster neurologic decision-making around acute cerebrovascular disease.",
+    tags: ["stroke", "localization", "acuity"],
+    signals: [
+      { questionId: "anatomic-localization", answer: "yes", weight: 4, label: "careful localization" },
+      { questionId: "regular-urgency", answer: "yes", weight: 3, label: "urgent decision-making" },
+      { questionId: "hospital-vs-office", answer: "yes", weight: 2, label: "hospital-based work" },
+      { questionId: "diagnostic-puzzle", answer: "yes", weight: 2, label: "diagnostic puzzles that unfold" },
+    ],
+  },
+  {
+    id: "epilepsy",
+    name: "Epilepsy",
+    shortLabel: "Epilepsy",
+    parentId: "neurology",
+    blurb: "Localization, longitudinal neurologic care, and pattern-heavy thinking around seizures and EEGs.",
+    tags: ["continuity", "patterns", "localization"],
+    signals: [
+      { questionId: "anatomic-localization", answer: "yes", weight: 4, label: "precise localization" },
+      { questionId: "long-workups", answer: "yes", weight: 3, label: "longer diagnostic workups" },
+      { questionId: "continuity-follow-up", answer: "yes", weight: 3, label: "following patients over time" },
+      { questionId: "uncertainty-tolerance", answer: "yes", weight: 2, label: "staying with uncertainty" },
+    ],
+  },
+  {
+    id: "maternal-fetal-medicine",
+    name: "Maternal-Fetal Medicine",
+    shortLabel: "MFM",
+    parentId: "obgyn",
+    blurb: "High-risk obstetrics with hospital complexity, continuity, and time-sensitive maternal-fetal decisions.",
+    tags: ["pregnancy", "high risk", "continuity"],
+    signals: [
+      { questionId: "women-health", answer: "yes", weight: 4, label: "reproductive and gynecologic care" },
+      { questionId: "labor-delivery-draw", answer: "yes", weight: 3, label: "labor and delivery as a draw" },
+      { questionId: "complex-hospitalized-adults", answer: "yes", weight: 2, label: "complex inpatient care" },
+      { questionId: "treatment-over-time", answer: "yes", weight: 2, label: "seeing care play out over time" },
+    ],
+  },
+  {
+    id: "gynecologic-oncology",
+    name: "Gynecologic Oncology",
+    shortLabel: "Gyn Onc",
+    parentId: "obgyn",
+    blurb: "Cancer-focused OB/GYN with larger operations, continuity, and multidisciplinary planning.",
+    tags: ["cancer", "OR", "women's health"],
+    signals: [
+      { questionId: "women-health", answer: "yes", weight: 4, label: "a draw toward women's health" },
+      { questionId: "large-operations", answer: "yes", weight: 3, label: "larger operations" },
+      { questionId: "focused-expertise", answer: "yes", weight: 2, label: "focused expertise" },
+      { questionId: "long-term-trust", answer: "yes", weight: 2, label: "longer arcs of care" },
+    ],
+  },
+  {
+    id: "mohs-surgery",
+    name: "Mohs Surgery",
+    shortLabel: "Mohs",
+    parentId: "dermatology",
+    blurb: "Outpatient skin cancer surgery with close visual detail, procedure volume, and fine technical work.",
+    tags: ["outpatient", "fine detail", "procedures"],
+    signals: [
+      { questionId: "close-visual-detail", answer: "yes", weight: 4, label: "close visual detail" },
+      { questionId: "low-emergencies", answer: "yes", weight: 2, label: "a lower-emergency environment" },
+      { questionId: "fine-motor-precision", answer: "yes", weight: 3, label: "very fine technical work" },
+      { questionId: "focused-outpatient-procedures", answer: "yes", weight: 3, label: "focused outpatient procedures" },
+    ],
+  },
+  {
+    id: "retina",
+    name: "Retina",
+    shortLabel: "Retina",
+    parentId: "ophthalmology",
+    blurb: "Microsurgery, imaging, and urgent or longitudinal vision-threatening disease with highly visual work.",
+    tags: ["vision", "fine motor", "images"],
+    signals: [
+      { questionId: "preserve-vision", answer: "yes", weight: 4, label: "preserving or restoring vision" },
+      { questionId: "fine-motor-precision", answer: "yes", weight: 4, label: "very fine technical work" },
+      { questionId: "visual-patterns", answer: "yes", weight: 3, label: "visual pattern recognition" },
+      { questionId: "regular-urgency", answer: "yes", weight: 1, label: "some true urgency" },
+    ],
+  },
+  {
+    id: "head-neck-oncology",
+    name: "Head & Neck Oncology",
+    shortLabel: "Head/Neck Onc",
+    parentId: "otolaryngology",
+    blurb: "Complex head and neck surgery with anatomy, airway considerations, cancer care, and multidisciplinary planning.",
+    tags: ["head and neck", "cancer", "OR"],
+    signals: [
+      { questionId: "head-and-neck-interest", answer: "yes", weight: 4, label: "head and neck anatomy" },
+      { questionId: "large-operations", answer: "yes", weight: 3, label: "larger operations" },
+      { questionId: "acute-teamwork", answer: "yes", weight: 2, label: "tight team coordination" },
+      { questionId: "focused-expertise", answer: "yes", weight: 2, label: "narrow expertise" },
+    ],
+  },
+  {
+    id: "urologic-oncology",
+    name: "Urologic Oncology",
+    shortLabel: "Uro Onc",
+    parentId: "urology",
+    blurb: "GU cancer care with operative work, continuity, and a defined adult disease focus.",
+    tags: ["GU", "cancer", "OR"],
+    signals: [
+      { questionId: "urologic-problems", answer: "yes", weight: 4, label: "urologic problems as a draw" },
+      { questionId: "large-operations", answer: "yes", weight: 3, label: "larger operations" },
+      { questionId: "mostly-adults", answer: "yes", weight: 2, label: "mostly adult care" },
+      { questionId: "continuity-follow-up", answer: "yes", weight: 2, label: "following outcomes over time" },
+    ],
+  },
+  {
+    id: "spinal-cord-injury-medicine",
+    name: "Spinal Cord Injury Medicine",
+    shortLabel: "SCI Medicine",
+    parentId: "physical-medicine-rehab",
+    blurb: "Rehab teams, disability, longitudinal function, and hospital-to-community recovery around spinal cord injury.",
+    tags: ["rehab teams", "disability", "function"],
+    signals: [
+      { questionId: "rehab-team-draw", answer: "yes", weight: 4, label: "working with rehab teams" },
+      { questionId: "disability-and-qol", answer: "yes", weight: 4, label: "disability and quality of life" },
+      { questionId: "function-over-diagnosis", answer: "yes", weight: 3, label: "function over a single diagnosis" },
+      { questionId: "continuity-follow-up", answer: "yes", weight: 2, label: "longitudinal follow-up" },
+    ],
+  },
+  {
+    id: "pmr-sports-medicine",
+    name: "Sports Medicine",
+    shortLabel: "PM&R Sports",
+    parentId: "physical-medicine-rehab",
+    blurb: "Return-to-play, function, outpatient musculoskeletal care, and rehab-oriented procedural work.",
+    tags: ["sports", "function", "outpatient"],
+    signals: [
+      { questionId: "sports-and-return", answer: "yes", weight: 4, label: "return-to-activity questions" },
+      { questionId: "function-rehab", answer: "yes", weight: 4, label: "restoring function" },
+      { questionId: "outpatient-most-days", answer: "yes", weight: 2, label: "mostly outpatient days" },
+      { questionId: "office-procedures-balance", answer: "yes", weight: 2, label: "office procedures" },
+    ],
+  },
+  {
+    id: "adolescent-medicine",
+    name: "Adolescent Medicine",
+    shortLabel: "Adolescent Med",
+    parentId: "med-peds",
+    blurb: "Cross-age continuity, communication, and developmental care at the transition between pediatrics and adult medicine.",
+    tags: ["cross-age", "continuity", "communication"],
+    signals: [
+      { questionId: "adult-and-children", answer: "yes", weight: 4, label: "switching between adult and pediatric medicine" },
+      { questionId: "keep-adult-peds-open", answer: "yes", weight: 4, label: "keeping both age ranges open" },
+      { questionId: "continuity", answer: "yes", weight: 2, label: "long-term relationships" },
+      { questionId: "context-outside-clinic", answer: "yes", weight: 2, label: "life outside the clinic" },
+    ],
+  },
+  {
+    id: "hematopathology",
+    name: "Hematopathology",
+    shortLabel: "Hemepath",
+    parentId: "pathology",
+    blurb: "Microscopy, morphology, and disease classification centered on blood, marrow, and lymphoid disorders.",
+    tags: ["microscopy", "diagnosis", "hematology"],
+    signals: [
+      { questionId: "microscope-over-bedside", answer: "yes", weight: 4, label: "microscope or slides over bedside care" },
+      { questionId: "subtle-patterns", answer: "yes", weight: 3, label: "subtle patterns and distinctions" },
+      { questionId: "diagnostic-workup", answer: "yes", weight: 2, label: "figuring out what is going on" },
+      { questionId: "away-from-bedside", answer: "yes", weight: 2, label: "valuable work away from the bedside" },
+    ],
+  },
+  {
+    id: "cytopathology",
+    name: "Cytopathology",
+    shortLabel: "Cytopath",
+    parentId: "pathology",
+    blurb: "Cellular diagnosis with microscopy, sampling decisions, and close visual attention to subtle morphologic change.",
+    tags: ["microscopy", "visual detail", "diagnosis"],
+    signals: [
+      { questionId: "microscope-over-bedside", answer: "yes", weight: 4, label: "microscopy over bedside interaction" },
+      { questionId: "close-visual-detail", answer: "yes", weight: 3, label: "close visual detail" },
+      { questionId: "certainty-over-ambiguity", answer: "yes", weight: 2, label: "moving toward diagnostic certainty" },
+      { questionId: "away-from-bedside", answer: "yes", weight: 2, label: "indirect but important work" },
+    ],
+  },
+  makeFellowshipPath(
+    "gastroenterology",
+    "Gastroenterology",
+    "GI",
+    "internal-medicine",
+    "A mix of physiology, procedures, longitudinal care, and organ-focused expertise in the GI tract and liver.",
+    ["procedures", "continuity", "pathophysiology"],
+    [
+      makeSignal("pathophysiology-draw", "yes", 3, "mechanism-driven reasoning"),
+      makeSignal("procedures", "yes", 3, "wanting procedures in the work"),
+      makeSignal("continuity-follow-up", "yes", 3, "following chronic disease over time"),
+      makeSignal("focused-expertise", "yes", 2, "deep organ-system expertise"),
+    ]
+  ),
+  makeFellowshipPath(
+    "hematology-oncology",
+    "Hematology & Oncology",
+    "Hem/Onc",
+    "internal-medicine",
+    "Cancer and blood disorders with longitudinal relationships, mechanism-heavy thinking, and complex treatment planning.",
+    ["continuity", "complexity", "cancer"],
+    [
+      makeSignal("long-term-trust", "yes", 3, "longer arcs of patient trust"),
+      makeSignal("complex-hospitalized-adults", "yes", 3, "complex adult medical care"),
+      makeSignal("pathophysiology-draw", "yes", 3, "mechanism-heavy reasoning"),
+      makeSignal("focused-expertise", "yes", 2, "focused disease expertise"),
+    ]
+  ),
+  makeFellowshipPath(
+    "endocrinology",
+    "Endocrinology",
+    "Endocrine",
+    "internal-medicine",
+    "Longitudinal, physiology-rich care with a steadier pace and lots of chronic disease management.",
+    ["continuity", "physiology", "outpatient"],
+    [
+      makeSignal("physiology", "yes", 3, "physiology as a central draw"),
+      makeSignal("continuity", "yes", 3, "long-term follow-up"),
+      makeSignal("low-emergencies", "yes", 3, "a lower-emergency environment"),
+      makeSignal("outpatient-most-days", "yes", 2, "mostly outpatient days"),
+    ]
+  ),
+  makeFellowshipPath(
+    "nephrology",
+    "Nephrology",
+    "Nephrology",
+    "internal-medicine",
+    "Renal physiology, medically complex adults, and continuity across hospital and clinic settings.",
+    ["physiology", "complex adults", "hospital/clinic mix"],
+    [
+      makeSignal("physiology", "yes", 4, "renal physiology and stabilization"),
+      makeSignal("complex-hospitalized-adults", "yes", 3, "medically complex adults"),
+      makeSignal("continuity-follow-up", "yes", 3, "following chronic illness over time"),
+      makeSignal("hospital-vs-office", "yes", 2, "comfort with hospital-based work"),
+    ]
+  ),
+  makeFellowshipPath(
+    "rheumatology",
+    "Rheumatology",
+    "Rheum",
+    "internal-medicine",
+    "Longitudinal, puzzle-heavy care focused on chronic autoimmune and inflammatory disease.",
+    ["diagnosis", "continuity", "ambiguity"],
+    [
+      makeSignal("long-workups", "yes", 3, "slower diagnostic workups"),
+      makeSignal("uncertainty-tolerance", "yes", 3, "staying with ambiguity"),
+      makeSignal("continuity-follow-up", "yes", 3, "continuity over time"),
+      makeSignal("longer-conversations", "yes", 2, "longer visits and nuance"),
+    ]
+  ),
+  makeFellowshipPath(
+    "infectious-disease",
+    "Infectious Disease",
+    "ID",
+    "internal-medicine",
+    "Consult-heavy, diagnostic medicine built around pathophysiology, uncertainty, and medically complex adults.",
+    ["consults", "diagnosis", "pathophysiology"],
+    [
+      makeSignal("consultant-expertise", "yes", 3, "consult-style expertise"),
+      makeSignal("diagnostic-workup", "yes", 3, "figuring out what is going on"),
+      makeSignal("pathophysiology-draw", "yes", 3, "mechanism-heavy thinking"),
+      makeSignal("uncertainty-tolerance", "yes", 2, "tolerating uncertainty"),
+    ]
+  ),
+  makeFellowshipPath(
+    "addiction-medicine-family",
+    "Addiction Medicine",
+    "Addiction",
+    "family-medicine",
+    "Longitudinal outpatient care centered on behavior change, recovery, and broader life context.",
+    ["continuity", "behavior", "communication"],
+    [
+      makeSignal("mental-health", "yes", 3, "mental health and behavior as a central focus"),
+      makeSignal("longer-conversations", "yes", 3, "deeper visits and counseling"),
+      makeSignal("continuity-follow-up", "yes", 3, "following patients over time"),
+      makeSignal("context-outside-clinic", "yes", 2, "life outside the clinic matters"),
+    ]
+  ),
+  makeFellowshipPath(
+    "hospice-palliative-medicine-family",
+    "Hospice & Palliative Medicine",
+    "Palliative",
+    "family-medicine",
+    "Quality-of-life-centered care built around communication, symptoms, and longitudinal support through serious illness.",
+    ["quality of life", "communication", "continuity"],
+    [
+      makeSignal("disability-and-qol", "yes", 4, "quality of life and adaptation"),
+      makeSignal("longer-conversations", "yes", 3, "meaningful longer conversations"),
+      makeSignal("continuity-follow-up", "yes", 3, "following patients over time"),
+      makeSignal("low-emergencies", "yes", 2, "a less adrenaline-driven environment"),
+    ]
+  ),
+  makeFellowshipPath(
+    "sleep-medicine-family",
+    "Sleep Medicine",
+    "Sleep Med",
+    "family-medicine",
+    "A steadier outpatient field with physiology, focused expertise, and diagnostic workups that unfold over time.",
+    ["outpatient", "physiology", "focused expertise"],
+    [
+      makeSignal("low-emergencies", "yes", 3, "few true emergencies"),
+      makeSignal("long-workups", "yes", 3, "longer diagnostic workups"),
+      makeSignal("outpatient-most-days", "yes", 3, "mostly outpatient rhythm"),
+      makeSignal("focused-expertise", "yes", 2, "developing focused expertise"),
+    ]
+  ),
+  makeFellowshipPath(
+    "pediatric-critical-care",
+    "Pediatric Critical Care",
+    "PICU",
+    "pediatrics",
+    "High-acuity, physiology-heavy team care for critically ill children in the hospital.",
+    ["critical care", "kids", "physiology"],
+    [
+      makeSignal("children-large-share", "yes", 4, "a strong draw toward children"),
+      makeSignal("physiology", "yes", 3, "real-time physiology"),
+      makeSignal("regular-urgency", "yes", 3, "frequent urgency"),
+      makeSignal("acute-teamwork", "yes", 2, "coordinated acute teams"),
+    ]
+  ),
+  makeFellowshipPath(
+    "developmental-behavioral-pediatrics",
+    "Developmental-Behavioral Pediatrics",
+    "Dev-Beh Peds",
+    "pediatrics",
+    "Longitudinal pediatric care focused on development, family systems, behavior, and context outside the clinic room.",
+    ["development", "continuity", "caregivers"],
+    [
+      makeSignal("children-large-share", "yes", 4, "a large pediatric share"),
+      makeSignal("caregiver-role", "yes", 3, "working closely with caregivers"),
+      makeSignal("longer-conversations", "yes", 3, "longer visits and interpretation"),
+      makeSignal("context-outside-clinic", "yes", 2, "school, home, and daily context"),
+    ]
+  ),
+  makeFellowshipPath(
+    "pediatric-hematology-oncology",
+    "Pediatric Hematology-Oncology",
+    "Peds Hem/Onc",
+    "pediatrics",
+    "Longitudinal pediatric cancer and blood-disorder care with high complexity and close family relationships.",
+    ["kids", "cancer", "continuity"],
+    [
+      makeSignal("children-large-share", "yes", 4, "a strong pull toward kids"),
+      makeSignal("long-term-trust", "yes", 3, "longer arcs of trust"),
+      makeSignal("pathophysiology-draw", "yes", 3, "mechanism-heavy reasoning"),
+      makeSignal("continuity-follow-up", "yes", 2, "following treatment over time"),
+    ]
+  ),
+  makeFellowshipPath(
+    "pediatric-endocrinology",
+    "Pediatric Endocrinology",
+    "Peds Endocrine",
+    "pediatrics",
+    "Longitudinal pediatric physiology with a steadier clinic rhythm and lots of follow-up over time.",
+    ["kids", "continuity", "physiology"],
+    [
+      makeSignal("children-large-share", "yes", 4, "a large pediatric share"),
+      makeSignal("physiology", "yes", 3, "physiology as a draw"),
+      makeSignal("continuity", "yes", 3, "long-term follow-up"),
+      makeSignal("low-emergencies", "yes", 2, "lower-emergency pacing"),
+    ]
+  ),
+  makeFellowshipPath(
+    "emergency-medical-services",
+    "Emergency Medical Services",
+    "EMS",
+    "emergency-medicine",
+    "Systems-facing acute care focused on prehospital medicine, scene coordination, and fast operational decisions.",
+    ["systems", "acute care", "teams"],
+    [
+      makeSignal("acuity", "yes", 4, "high-pressure acute decisions"),
+      makeSignal("acute-teamwork", "yes", 3, "coordinated acute teams"),
+      makeSignal("consultant-expertise", "yes", 2, "being called for focused expertise"),
+      makeSignal("quick-decisions", "yes", 2, "acting with incomplete information"),
+    ]
+  ),
+  makeFellowshipPath(
+    "pediatric-emergency-medicine-em",
+    "Pediatric Emergency Medicine",
+    "Peds EM",
+    "emergency-medicine",
+    "Acute, shift-based emergency care centered on children, families, and undifferentiated pediatric presentations.",
+    ["kids", "acute care", "shift work"],
+    [
+      makeSignal("children-large-share", "yes", 4, "a strong pull toward children"),
+      makeSignal("acuity", "yes", 3, "acute decision-making"),
+      makeSignal("clear-shifts", "yes", 3, "clear shift structure"),
+      makeSignal("uncertainty-tolerance", "yes", 2, "working through uncertainty"),
+    ]
+  ),
+  makeFellowshipPath(
+    "sports-medicine-emergency",
+    "Sports Medicine",
+    "Sports Med",
+    "emergency-medicine",
+    "A more outpatient, musculoskeletal branch for people who like active patients, recovery goals, and procedures.",
+    ["sports", "outpatient", "MSK"],
+    [
+      makeSignal("sports-and-return", "yes", 4, "return-to-activity goals"),
+      makeSignal("function-rehab", "yes", 3, "function and mobility mattering"),
+      makeSignal("outpatient-most-days", "yes", 3, "mostly outpatient rhythm"),
+      makeSignal("clinic-with-procedures", "yes", 2, "clinic procedures"),
+    ]
+  ),
+  makeFellowshipPath(
+    "colorectal-surgery",
+    "Colorectal Surgery",
+    "Colorectal",
+    "general-surgery",
+    "Organ-focused surgery that mixes major operations, clinic follow-up, and longitudinal problem-solving.",
+    ["large operations", "continuity", "focused expertise"],
+    [
+      makeSignal("large-operations", "yes", 4, "larger operative work"),
+      makeSignal("continuity-follow-up", "yes", 3, "seeing patients over time"),
+      makeSignal("focused-expertise", "yes", 3, "focused expertise"),
+      makeSignal("mixed-clinic-procedures", "yes", 2, "clinic plus procedures"),
+    ]
+  ),
+  makeFellowshipPath(
+    "vascular-surgery",
+    "Vascular Surgery",
+    "Vascular",
+    "general-surgery",
+    "A physiology-rich surgical path with major operations, urgent disease, and immediate procedural results.",
+    ["physiology", "OR", "immediate results"],
+    [
+      makeSignal("physiology", "yes", 3, "physiology-heavy thinking"),
+      makeSignal("large-operations", "yes", 4, "larger operations"),
+      makeSignal("immediate-physical-result", "yes", 3, "seeing an immediate physical result"),
+      makeSignal("mostly-adults", "yes", 2, "mostly adult patients"),
+    ]
+  ),
+  makeFellowshipPath(
+    "transplant-surgery",
+    "Transplant Surgery",
+    "Transplant",
+    "general-surgery",
+    "High-complexity surgery with physiology, ICU-level thinking, and long longitudinal arcs before and after transplant.",
+    ["physiology", "complexity", "OR"],
+    [
+      makeSignal("physiology", "yes", 3, "real-time physiology"),
+      makeSignal("large-operations", "yes", 4, "major operations"),
+      makeSignal("hospital-vs-office", "yes", 3, "hospital-based work"),
+      makeSignal("acute-teamwork", "yes", 2, "coordinated multidisciplinary teams"),
+    ]
+  ),
+  makeFellowshipPath(
+    "breast-surgery",
+    "Breast Surgery",
+    "Breast Surg",
+    "general-surgery",
+    "Cancer-focused surgery with continuity, clinic discussions, and a more defined surgical domain.",
+    ["continuity", "women's health", "focused expertise"],
+    [
+      makeSignal("long-term-trust", "yes", 3, "longer arcs of trust"),
+      makeSignal("women-health", "yes", 2, "care tied to women's health"),
+      makeSignal("focused-expertise", "yes", 3, "deep domain expertise"),
+      makeSignal("mixed-clinic-procedures", "yes", 2, "clinic plus surgery"),
+    ]
+  ),
+  makeFellowshipPath(
+    "adult-reconstruction",
+    "Adult Reconstruction",
+    "Arthroplasty",
+    "orthopedic-surgery",
+    "Joint replacement and reconstructive orthopedics with biomechanics, procedures, and continuity around recovery.",
+    ["MSK", "procedures", "recovery"],
+    [
+      makeSignal("musculoskeletal-interest", "yes", 4, "musculoskeletal problems"),
+      makeSignal("mostly-adults", "yes", 3, "mostly adult patients"),
+      makeSignal("immediate-physical-result", "yes", 3, "seeing physical improvement"),
+      makeSignal("continuity-follow-up", "yes", 2, "following recovery over time"),
+    ]
+  ),
+  makeFellowshipPath(
+    "spine-surgery",
+    "Spine Surgery",
+    "Spine",
+    "orthopedic-surgery",
+    "A focused surgical path built around anatomy, large operations, and high-stakes function.",
+    ["anatomy", "large operations", "function"],
+    [
+      makeSignal("musculoskeletal-interest", "yes", 4, "musculoskeletal problems"),
+      makeSignal("narrow-anatomy", "yes", 3, "a narrow anatomic focus"),
+      makeSignal("large-operations", "yes", 3, "larger operations"),
+      makeSignal("fine-motor-precision", "yes", 2, "precise technical work"),
+    ]
+  ),
+  makeFellowshipPath(
+    "orthopedic-trauma",
+    "Orthopedic Trauma",
+    "Ortho Trauma",
+    "orthopedic-surgery",
+    "Acute musculoskeletal surgery built around urgent decisions, fractures, teams, and operative ownership.",
+    ["trauma", "MSK", "acute care"],
+    [
+      makeSignal("musculoskeletal-interest", "yes", 4, "musculoskeletal problems"),
+      makeSignal("regular-urgency", "yes", 3, "true urgency"),
+      makeSignal("acute-teamwork", "yes", 3, "tightly coordinated acute teams"),
+      makeSignal("hospital-vs-office", "yes", 2, "hospital-based work"),
+    ]
+  ),
+  makeFellowshipPath(
+    "foot-ankle-orthopedics",
+    "Foot & Ankle",
+    "Foot/Ankle",
+    "orthopedic-surgery",
+    "Focused MSK surgery with a narrower anatomic domain, clinic-to-OR balance, and procedural depth.",
+    ["MSK", "anatomy", "clinic/OR mix"],
+    [
+      makeSignal("musculoskeletal-interest", "yes", 4, "musculoskeletal problems"),
+      makeSignal("narrow-anatomy", "yes", 3, "narrow anatomic focus"),
+      makeSignal("mixed-clinic-procedures", "yes", 3, "clinic plus procedures"),
+      makeSignal("fine-motor-precision", "yes", 2, "precise technical work"),
+    ]
+  ),
+  makeFellowshipPath(
+    "critical-care-anesthesiology",
+    "Critical Care Medicine",
+    "Crit Care",
+    "anesthesiology",
+    "ICU-level physiology, acute team care, and hospital-based management of critically ill patients.",
+    ["critical care", "physiology", "hospital"],
+    [
+      makeSignal("physiology", "yes", 4, "real-time physiology"),
+      makeSignal("hospital-vs-office", "yes", 3, "hospital-based days"),
+      makeSignal("regular-urgency", "yes", 3, "time-sensitive care"),
+      makeSignal("acute-teamwork", "yes", 2, "acute team coordination"),
+    ]
+  ),
+  makeFellowshipPath(
+    "cardiac-anesthesiology",
+    "Adult Cardiothoracic Anesthesiology",
+    "Cardiac Anes",
+    "anesthesiology",
+    "A physiology-heavy anesthesia path built around cardiac cases, acute teams, and high-stakes intraoperative management.",
+    ["physiology", "OR", "acuity"],
+    [
+      makeSignal("physiology", "yes", 4, "hemodynamics and physiology"),
+      makeSignal("operating-room", "yes", 3, "the OR as a draw"),
+      makeSignal("acute-teamwork", "yes", 3, "coordinated operative teams"),
+      makeSignal("regular-urgency", "yes", 2, "true acuity"),
+    ]
+  ),
+  makeFellowshipPath(
+    "pediatric-anesthesiology",
+    "Pediatric Anesthesiology",
+    "Peds Anes",
+    "anesthesiology",
+    "Procedural physiology and perioperative care centered on children and pediatric surgical teams.",
+    ["kids", "OR", "physiology"],
+    [
+      makeSignal("children-large-share", "yes", 4, "a large pediatric share"),
+      makeSignal("physiology", "yes", 3, "real-time physiology"),
+      makeSignal("operating-room", "yes", 3, "operative environments"),
+      makeSignal("acute-teamwork", "yes", 2, "acute team-based care"),
+    ]
+  ),
+  makeFellowshipPath(
+    "regional-anesthesia-acute-pain",
+    "Regional Anesthesia & Acute Pain",
+    "Regional",
+    "anesthesiology",
+    "Procedural anesthesia with immediate results, ultrasound-guided skill, and perioperative problem-solving.",
+    ["procedures", "immediate results", "OR"],
+    [
+      makeSignal("procedures", "yes", 4, "hands-on interventions"),
+      makeSignal("immediate-physical-result", "yes", 3, "seeing a result right away"),
+      makeSignal("operating-room", "yes", 3, "the OR as a draw"),
+      makeSignal("fine-motor-precision", "yes", 2, "technical precision"),
+    ]
+  ),
+  makeFellowshipPath(
+    "addiction-psychiatry",
+    "Addiction Psychiatry",
+    "Addiction",
+    "psychiatry",
+    "Longitudinal psychiatry centered on recovery, behavior change, and difficult real-world context outside the clinic room.",
+    ["mental health", "recovery", "continuity"],
+    [
+      makeSignal("mental-health", "yes", 4, "mental health as a central focus"),
+      makeSignal("longer-conversations", "yes", 3, "deeper visits and counseling"),
+      makeSignal("continuity-follow-up", "yes", 3, "longitudinal follow-up"),
+      makeSignal("context-outside-clinic", "yes", 2, "life outside the clinic matters"),
+    ]
+  ),
+  makeFellowshipPath(
+    "forensic-psychiatry",
+    "Forensic Psychiatry",
+    "Forensic",
+    "psychiatry",
+    "Consultative psychiatric work at the boundary of medicine, systems, and high-stakes interpretation.",
+    ["consults", "analysis", "mental health"],
+    [
+      makeSignal("mental-health", "yes", 4, "mental-health-focused work"),
+      makeSignal("consultant-expertise", "yes", 3, "focused consultant expertise"),
+      makeSignal("longer-conversations", "yes", 2, "depth and interpretation in conversations"),
+      makeSignal("uncertainty-tolerance", "yes", 2, "tolerating ambiguity"),
+    ]
+  ),
+  makeFellowshipPath(
+    "geriatric-psychiatry",
+    "Geriatric Psychiatry",
+    "Geri Psych",
+    "psychiatry",
+    "Psychiatric care for older adults with multimorbidity, caregivers, and quality-of-life issues.",
+    ["older adults", "caregivers", "continuity"],
+    [
+      makeSignal("mental-health", "yes", 4, "mental health as a central focus"),
+      makeSignal("caregiver-role", "yes", 3, "working with caregivers"),
+      makeSignal("continuity-follow-up", "yes", 3, "longitudinal follow-up"),
+      makeSignal("disability-and-qol", "yes", 2, "quality of life and adaptation"),
+    ]
+  ),
+  makeFellowshipPath(
+    "breast-imaging",
+    "Breast Imaging",
+    "Breast Img",
+    "radiology",
+    "Visually precise imaging with outpatient workflows, subtle pattern recognition, and a focused women’s-health domain.",
+    ["images", "visual detail", "women's health"],
+    [
+      makeSignal("images-and-data", "yes", 4, "image-heavy work"),
+      makeSignal("close-visual-detail", "yes", 3, "close visual detail"),
+      makeSignal("women-health", "yes", 2, "women's health as a draw"),
+      makeSignal("focused-outpatient-procedures", "yes", 2, "focused outpatient workflows"),
+    ]
+  ),
+  makeFellowshipPath(
+    "pediatric-radiology",
+    "Pediatric Radiology",
+    "Peds Rads",
+    "radiology",
+    "Imaging-heavy pediatric diagnostics for people who like children but prefer a consultant-style, image-centered role.",
+    ["kids", "images", "consults"],
+    [
+      makeSignal("children-large-share", "yes", 4, "a strong pull toward children"),
+      makeSignal("images-and-data", "yes", 4, "interpreting images and structured data"),
+      makeSignal("diagnostic-workup", "yes", 2, "diagnostic reasoning"),
+      makeSignal("low-emergencies", "yes", 2, "a lower-emergency environment"),
+    ]
+  ),
+  makeFellowshipPath(
+    "musculoskeletal-radiology",
+    "Musculoskeletal Radiology",
+    "MSK Rads",
+    "radiology",
+    "A visually and anatomically focused imaging path centered on bones, joints, soft tissue, and procedures.",
+    ["MSK", "images", "anatomy"],
+    [
+      makeSignal("images-and-data", "yes", 4, "image-heavy work"),
+      makeSignal("musculoskeletal-interest", "yes", 3, "musculoskeletal problems"),
+      makeSignal("subtle-patterns", "yes", 3, "subtle patterns and distinctions"),
+      makeSignal("diagnostic-workup", "yes", 2, "figuring out what is going on"),
+    ]
+  ),
+  makeFellowshipPath(
+    "nuclear-radiology",
+    "Nuclear Radiology",
+    "Nuclear",
+    "radiology",
+    "Imaging and tracer-based diagnosis for people drawn to structured data, physiology, and focused expertise.",
+    ["images", "physiology", "data"],
+    [
+      makeSignal("images-and-data", "yes", 4, "image and data interpretation"),
+      makeSignal("pathophysiology-draw", "yes", 3, "mechanism-heavy thinking"),
+      makeSignal("focused-expertise", "yes", 3, "focused expertise"),
+      makeSignal("away-from-bedside", "yes", 2, "important work away from the bedside"),
+    ]
+  ),
+  makeFellowshipPath(
+    "movement-disorders",
+    "Movement Disorders",
+    "Movement",
+    "neurology",
+    "Longitudinal neurology centered on localization, careful phenotyping, and chronic disease over time.",
+    ["continuity", "localization", "chronic disease"],
+    [
+      makeSignal("anatomic-localization", "yes", 4, "careful localization"),
+      makeSignal("continuity-follow-up", "yes", 3, "following patients over time"),
+      makeSignal("long-workups", "yes", 3, "longer workups and nuance"),
+      makeSignal("uncertainty-tolerance", "yes", 2, "staying with uncertainty"),
+    ]
+  ),
+  makeFellowshipPath(
+    "neuromuscular-medicine-neurology",
+    "Neuromuscular Medicine",
+    "Neuromusc",
+    "neurology",
+    "Localization-heavy neurology focused on weakness, nerve and muscle disease, and diagnostic depth.",
+    ["localization", "function", "diagnosis"],
+    [
+      makeSignal("anatomic-localization", "yes", 4, "precise localization"),
+      makeSignal("function-rehab", "yes", 2, "function and disability mattering"),
+      makeSignal("diagnostic-workup", "yes", 3, "figuring out what is going on"),
+      makeSignal("continuity-follow-up", "yes", 2, "longitudinal follow-up"),
+    ]
+  ),
+  makeFellowshipPath(
+    "neurocritical-care",
+    "Neurocritical Care",
+    "Neurocrit",
+    "neurology",
+    "Acuity, hospital teams, physiology, and localization around neurologic emergencies.",
+    ["critical care", "localization", "acuity"],
+    [
+      makeSignal("anatomic-localization", "yes", 3, "careful localization"),
+      makeSignal("physiology", "yes", 3, "real-time physiology"),
+      makeSignal("hospital-vs-office", "yes", 3, "hospital-based work"),
+      makeSignal("regular-urgency", "yes", 3, "urgent decision-making"),
+    ]
+  ),
+  makeFellowshipPath(
+    "headache-medicine",
+    "Headache Medicine",
+    "Headache",
+    "neurology",
+    "Longitudinal, outpatient neurology for people who like chronic symptom patterns, nuance, and continuity.",
+    ["continuity", "outpatient", "diagnosis"],
+    [
+      makeSignal("continuity-follow-up", "yes", 3, "following patients over time"),
+      makeSignal("longer-conversations", "yes", 2, "deeper visits"),
+      makeSignal("uncertainty-tolerance", "yes", 2, "tolerating diagnostic ambiguity"),
+      makeSignal("low-emergencies", "yes", 3, "a lower-acuity environment"),
+    ]
+  ),
+  makeFellowshipPath(
+    "reproductive-endocrinology-infertility",
+    "Reproductive Endocrinology & Infertility",
+    "REI",
+    "obgyn",
+    "Physiology, continuity, and focused reproductive care with a steadier clinic pace and procedural elements.",
+    ["women's health", "physiology", "continuity"],
+    [
+      makeSignal("women-health", "yes", 4, "women's health as a core draw"),
+      makeSignal("pathophysiology-draw", "yes", 3, "mechanism-heavy reasoning"),
+      makeSignal("continuity-follow-up", "yes", 3, "longitudinal follow-up"),
+      makeSignal("low-emergencies", "yes", 2, "a steadier pace"),
+    ]
+  ),
+  makeFellowshipPath(
+    "urogynecology",
+    "Female Pelvic Medicine & Reconstructive Surgery",
+    "Urogyne",
+    "obgyn",
+    "A continuity-heavy surgical branch of OB/GYN built around pelvic floor problems, procedures, and function.",
+    ["women's health", "continuity", "procedures"],
+    [
+      makeSignal("women-health", "yes", 4, "women's health as a draw"),
+      makeSignal("continuity-follow-up", "yes", 3, "seeing patients over time"),
+      makeSignal("office-procedures-balance", "yes", 3, "office procedures as part of the work"),
+      makeSignal("focused-expertise", "yes", 2, "focused expertise"),
+    ]
+  ),
+  makeFellowshipPath(
+    "minimally-invasive-gynecologic-surgery",
+    "Minimally Invasive Gynecologic Surgery",
+    "MIGS",
+    "obgyn",
+    "Fine technical gynecologic surgery with a clinic-to-OR mix and a narrower procedural focus.",
+    ["women's health", "fine motor", "procedures"],
+    [
+      makeSignal("women-health", "yes", 4, "women's health as a core interest"),
+      makeSignal("fine-motor-precision", "yes", 3, "very fine technical work"),
+      makeSignal("focused-outpatient-procedures", "yes", 3, "focused outpatient procedures"),
+      makeSignal("mixed-clinic-procedures", "yes", 2, "mixing clinic and surgery"),
+    ]
+  ),
+  makeFellowshipPath(
+    "complex-family-planning",
+    "Complex Family Planning",
+    "Family Plan",
+    "obgyn",
+    "Outpatient-forward reproductive care with procedures, counseling, and meaningful conversations around time-sensitive decisions.",
+    ["women's health", "procedures", "communication"],
+    [
+      makeSignal("women-health", "yes", 4, "women's health as a central draw"),
+      makeSignal("focused-outpatient-procedures", "yes", 3, "outpatient procedures"),
+      makeSignal("longer-conversations", "yes", 2, "conversation and counseling"),
+      makeSignal("outpatient-most-days", "yes", 2, "mostly outpatient rhythm"),
+    ]
+  ),
+  makeFellowshipPath(
+    "dermatopathology-dermatology",
+    "Dermatopathology",
+    "Dermpath",
+    "dermatology",
+    "A skin-focused microscopy and diagnosis path for people drawn to visual detail and pattern recognition.",
+    ["microscopy", "visual detail", "diagnosis"],
+    [
+      makeSignal("microscope-over-bedside", "yes", 4, "microscopy over bedside work"),
+      makeSignal("close-visual-detail", "yes", 3, "close visual detail"),
+      makeSignal("visual-patterns", "yes", 3, "visual pattern recognition"),
+      makeSignal("away-from-bedside", "yes", 2, "indirect but important work"),
+    ]
+  ),
+  makeFellowshipPath(
+    "pediatric-dermatology",
+    "Pediatric Dermatology",
+    "Peds Derm",
+    "dermatology",
+    "Skin-focused care for children with continuity, caregivers, and a more developmental or family-centered context.",
+    ["kids", "continuity", "skin"],
+    [
+      makeSignal("children-large-share", "yes", 4, "a strong draw toward children"),
+      makeSignal("continuity-follow-up", "yes", 3, "following patients over time"),
+      makeSignal("close-visual-detail", "yes", 3, "close visual skin findings"),
+      makeSignal("caregiver-role", "yes", 2, "working with caregivers"),
+    ]
+  ),
+  makeFellowshipPath(
+    "cosmetic-dermatology",
+    "Cosmetic Dermatology",
+    "Cosmetic",
+    "dermatology",
+    "An outpatient procedural path centered on visible results, fine detail, and lower-acuity clinic work.",
+    ["outpatient", "procedures", "immediate results"],
+    [
+      makeSignal("focused-outpatient-procedures", "yes", 4, "focused outpatient procedures"),
+      makeSignal("close-visual-detail", "yes", 3, "close visual detail"),
+      makeSignal("immediate-physical-result", "yes", 3, "seeing visible results"),
+      makeSignal("low-emergencies", "yes", 2, "a lower-emergency environment"),
+    ]
+  ),
+  makeFellowshipPath(
+    "complex-medical-dermatology",
+    "Complex Medical Dermatology",
+    "Med Derm",
+    "dermatology",
+    "A more longitudinal and diagnostic branch of dermatology with chronic disease and nuanced treatment over time.",
+    ["diagnosis", "continuity", "skin"],
+    [
+      makeSignal("continuity-follow-up", "yes", 3, "following chronic disease over time"),
+      makeSignal("diagnostic-workup", "yes", 3, "diagnostic reasoning"),
+      makeSignal("close-visual-detail", "yes", 3, "close visual detail"),
+      makeSignal("low-emergencies", "yes", 2, "a steadier pace"),
+    ]
+  ),
+  makeFellowshipPath(
+    "cornea-external-disease",
+    "Cornea & External Disease",
+    "Cornea",
+    "ophthalmology",
+    "Vision-preserving clinic and microsurgery work with procedures, imaging, and longitudinal care.",
+    ["vision", "procedures", "continuity"],
+    [
+      makeSignal("preserve-vision", "yes", 4, "preserving or restoring vision"),
+      makeSignal("fine-motor-precision", "yes", 3, "very fine technical work"),
+      makeSignal("visual-patterns", "yes", 3, "visual pattern recognition"),
+      makeSignal("continuity-follow-up", "yes", 2, "following patients over time"),
+    ]
+  ),
+  makeFellowshipPath(
+    "glaucoma",
+    "Glaucoma",
+    "Glaucoma",
+    "ophthalmology",
+    "A highly focused ophthalmology path that combines procedures, subtle visual change, and continuity over time.",
+    ["vision", "subtle patterns", "continuity"],
+    [
+      makeSignal("preserve-vision", "yes", 4, "preserving vision"),
+      makeSignal("focused-outpatient-procedures", "yes", 3, "focused clinic procedures"),
+      makeSignal("continuity-follow-up", "yes", 3, "longitudinal follow-up"),
+      makeSignal("subtle-patterns", "yes", 2, "subtle visual distinctions"),
+    ]
+  ),
+  makeFellowshipPath(
+    "pediatric-ophthalmology",
+    "Pediatric Ophthalmology & Strabismus",
+    "Peds Ophtho",
+    "ophthalmology",
+    "Vision-centered work for children and families with continuity, development, and surgical or procedural care.",
+    ["kids", "vision", "caregivers"],
+    [
+      makeSignal("preserve-vision", "yes", 4, "vision as a strong draw"),
+      makeSignal("children-large-share", "yes", 4, "a large pediatric share"),
+      makeSignal("continuity-follow-up", "yes", 2, "longitudinal follow-up"),
+      makeSignal("caregiver-role", "yes", 2, "working with caregivers"),
+    ]
+  ),
+  makeFellowshipPath(
+    "oculoplastics",
+    "Oculofacial Plastic Surgery",
+    "Oculoplastics",
+    "ophthalmology",
+    "Highly precise periocular surgery with fine motor work, visible results, and a focused anatomic domain.",
+    ["fine motor", "anatomy", "immediate results"],
+    [
+      makeSignal("fine-motor-precision", "yes", 4, "very fine technical work"),
+      makeSignal("close-visual-detail", "yes", 3, "close visual and anatomic detail"),
+      makeSignal("focused-outpatient-procedures", "yes", 3, "focused outpatient procedures"),
+      makeSignal("immediate-physical-result", "yes", 2, "seeing visible results"),
+    ]
+  ),
+  makeFellowshipPath(
+    "neuro-ophthalmology",
+    "Neuro-Ophthalmology",
+    "Neuro-Oph",
+    "ophthalmology",
+    "A puzzle-heavy visual pathway that blends vision care, localization, and complex diagnostic workups.",
+    ["vision", "localization", "diagnosis"],
+    [
+      makeSignal("preserve-vision", "yes", 4, "vision as a core draw"),
+      makeSignal("anatomic-localization", "yes", 3, "careful localization"),
+      makeSignal("diagnostic-puzzle", "yes", 3, "diagnostic puzzles"),
+      makeSignal("long-workups", "yes", 2, "longer workups"),
+    ]
+  ),
+  makeFellowshipPath(
+    "otology-neurotology",
+    "Otology & Neurotology",
+    "Otology",
+    "otolaryngology",
+    "A highly focused ENT path built around hearing, skull base anatomy, and fine technical precision.",
+    ["sensory systems", "anatomy", "fine motor"],
+    [
+      makeSignal("sensory-systems", "yes", 3, "sensory systems as a draw"),
+      makeSignal("head-and-neck-interest", "yes", 3, "head and neck anatomy"),
+      makeSignal("fine-motor-precision", "yes", 3, "fine technical work"),
+      makeSignal("focused-expertise", "yes", 2, "narrow expertise"),
+    ]
+  ),
+  makeFellowshipPath(
+    "rhinology-skull-base",
+    "Rhinology & Skull Base Surgery",
+    "Rhinology",
+    "otolaryngology",
+    "Focused head-and-neck surgery with anatomy, precision, and a clinic-to-OR mix around sinonasal disease.",
+    ["anatomy", "procedures", "head and neck"],
+    [
+      makeSignal("head-and-neck-interest", "yes", 4, "head and neck anatomy"),
+      makeSignal("sensory-systems", "yes", 2, "ENT content as a draw"),
+      makeSignal("fine-motor-precision", "yes", 3, "precise technical work"),
+      makeSignal("mixed-clinic-procedures", "yes", 2, "clinic plus procedures"),
+    ]
+  ),
+  makeFellowshipPath(
+    "laryngology",
+    "Laryngology",
+    "Laryngology",
+    "otolaryngology",
+    "A focused airway and voice path that mixes procedures, clinic, and communication-heavy patient goals.",
+    ["voice", "airway", "procedures"],
+    [
+      makeSignal("head-and-neck-interest", "yes", 3, "head and neck anatomy"),
+      makeSignal("ent-content", "yes", 3, "ENT clinic content"),
+      makeSignal("focused-outpatient-procedures", "yes", 3, "focused outpatient procedures"),
+      makeSignal("longer-conversations", "yes", 2, "communication around voice and function"),
+    ]
+  ),
+  makeFellowshipPath(
+    "facial-plastic-reconstructive-surgery",
+    "Facial Plastic & Reconstructive Surgery",
+    "Facial Plast",
+    "otolaryngology",
+    "Fine technical head-and-neck surgery with visible results and a strong focus on form and function.",
+    ["fine motor", "head and neck", "immediate results"],
+    [
+      makeSignal("fine-motor-precision", "yes", 4, "very fine technical work"),
+      makeSignal("head-and-neck-interest", "yes", 3, "head and neck anatomy"),
+      makeSignal("immediate-physical-result", "yes", 3, "seeing a visible result"),
+      makeSignal("focused-outpatient-procedures", "yes", 2, "focused procedural workflows"),
+    ]
+  ),
+  makeFellowshipPath(
+    "endourology-stone-disease",
+    "Endourology & Stone Disease",
+    "Endourology",
+    "urology",
+    "A procedural urology path centered on stones, obstruction, endoscopic skill, and immediate results.",
+    ["GU", "procedures", "immediate results"],
+    [
+      makeSignal("urologic-problems", "yes", 4, "urologic problems as a draw"),
+      makeSignal("focused-outpatient-procedures", "yes", 3, "focused procedures"),
+      makeSignal("immediate-physical-result", "yes", 3, "seeing immediate physical results"),
+      makeSignal("procedures", "yes", 2, "hands-on interventions"),
+    ]
+  ),
+  makeFellowshipPath(
+    "male-infertility-andrology",
+    "Male Infertility & Andrology",
+    "Andrology",
+    "urology",
+    "A clinic-heavy, focused urology path with procedures, longer relationships, and reproductive problem-solving.",
+    ["GU", "continuity", "focused expertise"],
+    [
+      makeSignal("urologic-problems", "yes", 4, "urologic problems as a draw"),
+      makeSignal("longer-conversations", "yes", 2, "longer visits and decision-making"),
+      makeSignal("continuity-follow-up", "yes", 3, "following patients over time"),
+      makeSignal("focused-expertise", "yes", 2, "focused expertise"),
+    ]
+  ),
+  makeFellowshipPath(
+    "pediatric-urology",
+    "Pediatric Urology",
+    "Peds Uro",
+    "urology",
+    "A pediatric, reconstructive, and continuity-heavy branch of urology for people who like children and families.",
+    ["kids", "GU", "continuity"],
+    [
+      makeSignal("urologic-problems", "yes", 4, "urologic content as a draw"),
+      makeSignal("children-large-share", "yes", 4, "a strong pull toward children"),
+      makeSignal("continuity-follow-up", "yes", 2, "longitudinal follow-up"),
+      makeSignal("mixed-clinic-procedures", "yes", 2, "clinic plus procedures"),
+    ]
+  ),
+  makeFellowshipPath(
+    "reconstructive-urology",
+    "Reconstructive Urology",
+    "Recon Uro",
+    "urology",
+    "A focused reconstructive branch built around function, anatomy, procedures, and longer arcs of recovery.",
+    ["GU", "function", "procedures"],
+    [
+      makeSignal("urologic-problems", "yes", 4, "urologic problems as a draw"),
+      makeSignal("continuity-follow-up", "yes", 3, "following outcomes over time"),
+      makeSignal("focused-outpatient-procedures", "yes", 3, "focused procedural care"),
+      makeSignal("fine-motor-precision", "yes", 2, "precise technical work"),
+    ]
+  ),
+  makeFellowshipPath(
+    "brain-injury-medicine",
+    "Brain Injury Medicine",
+    "Brain Injury",
+    "physical-medicine-rehab",
+    "A rehabilitation path centered on disability, function, teams, and longer recovery arcs after neurologic injury.",
+    ["rehab", "disability", "teams"],
+    [
+      makeSignal("rehab-team-draw", "yes", 4, "working with rehab teams"),
+      makeSignal("disability-and-qol", "yes", 4, "disability and quality of life"),
+      makeSignal("function-over-diagnosis", "yes", 3, "function over a single diagnosis"),
+      makeSignal("hospital-vs-office", "yes", 2, "comfort with hospital-based recovery care"),
+    ]
+  ),
+  makeFellowshipPath(
+    "pediatric-rehabilitation-medicine",
+    "Pediatric Rehabilitation Medicine",
+    "Peds Rehab",
+    "physical-medicine-rehab",
+    "Function-focused rehab for children with longitudinal care, caregivers, and interdisciplinary teams.",
+    ["kids", "rehab", "continuity"],
+    [
+      makeSignal("function-rehab", "yes", 4, "restoring function"),
+      makeSignal("children-large-share", "yes", 4, "a large pediatric share"),
+      makeSignal("rehab-team-draw", "yes", 3, "rehab teams as a draw"),
+      makeSignal("continuity-follow-up", "yes", 2, "longitudinal follow-up"),
+    ]
+  ),
+  makeFellowshipPath(
+    "neuromuscular-medicine-pmr",
+    "Neuromuscular Medicine",
+    "Neuromusc",
+    "physical-medicine-rehab",
+    "A PM&R path for people drawn to localization, function, disability, and longitudinal neuromuscular disease.",
+    ["localization", "function", "continuity"],
+    [
+      makeSignal("function-rehab", "yes", 3, "restoring function"),
+      makeSignal("anatomic-localization", "yes", 3, "careful localization"),
+      makeSignal("long-workups", "yes", 3, "longer workups"),
+      makeSignal("continuity-follow-up", "yes", 2, "seeing patients over time"),
+    ]
+  ),
+  makeFellowshipPath(
+    "pain-medicine-pmr",
+    "Pain Medicine",
+    "Pain Med",
+    "physical-medicine-rehab",
+    "Procedural outpatient PM&R with continuity, symptom relief, and long-term function in mind.",
+    ["procedures", "continuity", "function"],
+    [
+      makeSignal("office-procedures-balance", "yes", 3, "office procedures as a balance"),
+      makeSignal("continuity-follow-up", "yes", 3, "longitudinal follow-up"),
+      makeSignal("communication-over-procedures", "yes", 2, "talking through decisions"),
+      makeSignal("function-rehab", "yes", 2, "function and mobility mattering"),
+    ]
+  ),
+  makeFellowshipPath(
+    "adult-congenital-heart-disease",
+    "Adult Congenital Heart Disease",
+    "ACHD",
+    "med-peds",
+    "A classic med-peds branch for people who like cardiology, continuity, and caring across pediatric-to-adult transition.",
+    ["cross-age", "cardiology", "continuity"],
+    [
+      makeSignal("keep-adult-peds-open", "yes", 4, "keeping both adult and pediatric medicine open"),
+      makeSignal("adult-and-children", "yes", 4, "switching between adult and pediatric care"),
+      makeSignal("physiology", "yes", 2, "cardiovascular physiology"),
+      makeSignal("continuity-follow-up", "yes", 2, "long-term follow-up"),
+    ]
+  ),
+  makeFellowshipPath(
+    "allergy-immunology-med-peds",
+    "Allergy & Immunology",
+    "A/I",
+    "med-peds",
+    "A cross-age, outpatient-focused path for people who like mechanism, continuity, and focused expertise.",
+    ["cross-age", "outpatient", "pathophysiology"],
+    [
+      makeSignal("keep-adult-peds-open", "yes", 4, "keeping both age ranges open"),
+      makeSignal("focused-expertise", "yes", 3, "focused expertise"),
+      makeSignal("pathophysiology-draw", "yes", 3, "mechanism-heavy reasoning"),
+      makeSignal("low-emergencies", "yes", 2, "a steadier outpatient pace"),
+    ]
+  ),
+  makeFellowshipPath(
+    "hospice-palliative-medicine-med-peds",
+    "Hospice & Palliative Medicine",
+    "Palliative",
+    "med-peds",
+    "A cross-age communication-heavy path centered on quality of life, serious illness, and continuity through change.",
+    ["cross-age", "quality of life", "communication"],
+    [
+      makeSignal("keep-adult-peds-open", "yes", 4, "keeping both adult and pediatric care open"),
+      makeSignal("disability-and-qol", "yes", 3, "quality of life and adaptation"),
+      makeSignal("longer-conversations", "yes", 3, "meaningful longer conversations"),
+      makeSignal("continuity-follow-up", "yes", 2, "following patients over time"),
+    ]
+  ),
+  makeFellowshipPath(
+    "sports-medicine-med-peds",
+    "Sports Medicine",
+    "Sports Med",
+    "med-peds",
+    "A cross-age outpatient path for people who like musculoskeletal care, recovery goals, and active patients.",
+    ["cross-age", "sports", "outpatient"],
+    [
+      makeSignal("adult-and-children", "yes", 4, "switching between adults and children"),
+      makeSignal("sports-and-return", "yes", 4, "return-to-activity goals"),
+      makeSignal("outpatient-most-days", "yes", 2, "mostly outpatient practice"),
+      makeSignal("office-procedures-balance", "yes", 2, "office procedures"),
+    ]
+  ),
+  makeFellowshipPath(
+    "dermatopathology-pathology",
+    "Dermatopathology",
+    "Dermpath",
+    "pathology",
+    "A visually precise skin pathology branch for people drawn to microscopy, pattern recognition, and focused diagnosis.",
+    ["microscopy", "visual detail", "skin"],
+    [
+      makeSignal("microscope-over-bedside", "yes", 4, "microscopy over bedside care"),
+      makeSignal("close-visual-detail", "yes", 3, "close visual detail"),
+      makeSignal("visual-patterns", "yes", 3, "visual pattern recognition"),
+      makeSignal("away-from-bedside", "yes", 2, "important indirect work"),
+    ]
+  ),
+  makeFellowshipPath(
+    "neuropathology",
+    "Neuropathology",
+    "Neuropath",
+    "pathology",
+    "Microscopy and disease classification centered on the brain, nerves, and nervous system structures.",
+    ["microscopy", "brain", "localization"],
+    [
+      makeSignal("microscope-over-bedside", "yes", 4, "microscopy as a draw"),
+      makeSignal("anatomic-localization", "yes", 3, "anatomic localization"),
+      makeSignal("subtle-patterns", "yes", 3, "subtle patterns and distinctions"),
+      makeSignal("away-from-bedside", "yes", 2, "valuable work away from the bedside"),
+    ]
+  ),
+  makeFellowshipPath(
+    "molecular-genetic-pathology",
+    "Molecular Genetic Pathology",
+    "Molecular",
+    "pathology",
+    "Data- and mechanism-heavy pathology for people who like subtle distinctions, classification, and disease pathways.",
+    ["molecular", "diagnosis", "pathophysiology"],
+    [
+      makeSignal("microscope-over-bedside", "yes", 3, "diagnostic work away from the bedside"),
+      makeSignal("subtle-patterns", "yes", 3, "fine distinctions"),
+      makeSignal("pathophysiology-draw", "yes", 3, "mechanism-heavy reasoning"),
+      makeSignal("away-from-bedside", "yes", 2, "indirect but central work"),
+    ]
+  ),
+  makeFellowshipPath(
+    "forensic-pathology",
+    "Forensic Pathology",
+    "Forensic",
+    "pathology",
+    "A highly focused pathology path for people drawn to diagnosis, systems-facing impact, and careful reconstruction of what happened.",
+    ["diagnosis", "focused expertise", "indirect impact"],
+    [
+      makeSignal("away-from-bedside", "yes", 3, "important work away from the bedside"),
+      makeSignal("diagnostic-workup", "yes", 3, "figuring out what happened"),
+      makeSignal("focused-expertise", "yes", 3, "focused expertise"),
+      makeSignal("certainty-over-ambiguity", "yes", 2, "moving toward diagnostic certainty"),
+    ]
+  ),
+];
+
+const specialtyById = Object.fromEntries(specialties.map((specialty) => [specialty.id, specialty]));
+const fellowshipPathsBySpecialtyId = fellowshipPaths.reduce((grouped, path) => {
+  if (!grouped[path.parentId]) {
+    grouped[path.parentId] = [];
+  }
+
+  grouped[path.parentId].push(path);
+  return grouped;
+}, {});
 
 const questions = [
   {
@@ -321,11 +1784,11 @@ const questions = [
   {
     id: "women-health",
     category: "Clinical population",
-    text: "Are reproductive health and care across pregnancy a meaningful draw for you?",
-    support: "This is not meant to force a choice, only to detect a clear pull toward OB/GYN-style work.",
+    text: "Would longitudinal menstrual, contraceptive, sexual, or gynecologic care feel meaningful to you?",
+    support: "This is about ongoing reproductive and gynecologic care, not just the acute pull of labor and delivery.",
     yes: {
       obgyn: 6,
-      "family-medicine": 1,
+      "family-medicine": 2,
     },
     no: {
       pathology: 1,
@@ -943,7 +2406,7 @@ questions.push(
   makeQuestion("caregiver-role", "Patient relationships", "Does working closely with caregivers sound like an important part of practice?", "Think about whether family and caregiver involvement feels central or secondary.", mergeWeights(p.familyY, p.childY), mergeWeights(p.behindY)),
   makeQuestion("longer-conversations", "Daily work style", "Do longer visits sound more appealing than rapid turnover?", "This is about pace and depth of interaction.", mergeWeights(p.commY, p.contY), mergeWeights(p.acuteY, p.shiftY)),
   makeQuestion("panel-management", "Workflow", "Would managing a panel of patients over time feel satisfying to you?", "Choose yes if continuity itself feels meaningful.", mergeWeights(p.contY, p.shiftN, p.prevY), mergeWeights(p.shiftY, p.behindY)),
-  makeQuestion("adult-and-children", "Population fit", "Does caring for both children and adults sound appealing?", "This helps separate combined or broader age-range interests from narrower population preferences.", mergeWeights(p.medpedsY, p.broadY), mergeWeights(p.narrowY)),
+  makeQuestion("adult-and-children", "Population fit", "Does switching between pediatric and adult medicine sound energizing rather than draining?", "This is about enjoying age-range variety itself, not just wanting to keep both doors open.", mergeWeights(p.medpedsY, p.broadY), mergeWeights(p.narrowY)),
   makeQuestion("routine-preventive-care", "Care philosophy", "Would you be comfortable if much of your work involved preventive care and chronic disease follow-up?", "Choose yes if that sounds meaningful, not just manageable.", mergeWeights(p.prevY, p.contY), mergeWeights(p.procY, p.acuteY)),
   makeQuestion("listening-as-tool", "Clinical interests", "Does careful listening feel like one of the most meaningful tools in medicine?", "This points toward specialties where conversation and interpretation matter a lot.", mergeWeights(p.commY, p.mentalY), mergeWeights(p.consultantY, p.manualY)),
   makeQuestion("broad-vs-narrow-alt", "Scope", "Would you rather stay broad than narrow quickly into one body system?", "This asks about the kind of scope you want over time.", mergeWeights(p.broadY), mergeWeights(p.narrowY)),
@@ -986,20 +2449,20 @@ questions.push(
   makeQuestion("interpretation-for-others", "Work role", "Does interpreting information for other clinicians sound as meaningful as direct bedside care?", "This points toward consultant and diagnostic fields.", mergeWeights(p.consultantY), mergeWeights(p.directY, p.contY)),
   makeQuestion("children-large-share", "Population fit", "Would you be happy if a large share of your practice involved children and adolescents?", "Choose yes only if that sounds like a real draw.", mergeWeights(p.childY, p.familyY), mergeWeights(p.adultY)),
   makeQuestion("mostly-adults", "Population fit", "Do you picture yourself caring mostly for adults rather than children?", "This helps separate adult-focused from child-focused practice.", mergeWeights(p.adultY, p.chronicY), mergeWeights(p.childY, p.medpedsY)),
-  makeQuestion("pregnancy-and-repro", "Clinical interests", "Are pregnancy, birth, and reproductive health especially interesting to you?", "Choose yes if this content stands out to you more than other areas.", mergeWeights(p.womenY, p.acuteY), mergeWeights(p.broadY)),
+  makeQuestion("pregnancy-and-repro", "Clinical interests", "Does the mix of clinic, procedures, and emergencies in OB/GYN sound appealing?", "Choose yes if that combination sounds more attractive than any single part of it on its own.", mergeWeights(p.womenY, p.outprocY, p.acuteY, p.orY), mergeWeights(p.broadY)),
   makeQuestion("conversation-based-care", "Clinical interests", "Would you be content spending a large part of the day in conversation-based care?", "This helps identify fields where communication is the main tool.", mergeWeights(p.mentalY, p.commY), mergeWeights(p.procY)),
   makeQuestion("recovery-over-stabilization", "Clinical interests", "Does recovery after injury or illness interest you more than acute stabilization?", "This distinguishes rehabilitation-oriented work from acute care.", mergeWeights(p.rehabY, p.lifeY), mergeWeights(p.acuteY)),
   makeQuestion("function-over-diagnosis", "Clinical interests", "Would helping patients improve function matter more to you than chasing a single diagnosis?", "Choose yes if day-to-day function feels especially meaningful.", mergeWeights(p.rehabY, p.contY), mergeWeights(p.diagY)),
   makeQuestion("musculoskeletal-interest", "Clinical interests", "Are bones, joints, muscles, and movement especially interesting to you?", "This can point toward musculoskeletal and rehab-oriented fields.", mergeWeights(p.orthoY, p.rehabY), mergeWeights(p.behindY)),
   makeQuestion("sensory-systems", "Clinical interests", "Do vision, hearing, voice, or other sensory systems especially interest you?", "Choose yes if these systems stand out to you more than others.", mergeWeights(p.ophthoY, p.entY), mergeWeights(p.broadY)),
-  makeQuestion("head-and-neck-interest", "Clinical interests", "Does head and neck anatomy feel more interesting than most other regions of the body?", "This can point toward focused anatomy-heavy specialties.", mergeWeights(p.entY), mergeWeights(p.broadY))
+  makeQuestion("head-and-neck-interest", "Clinical interests", "Does highly detailed head and neck anatomy feel especially intuitive or satisfying to you?", "This is about anatomic comfort and precision, not just tolerating ENT clinic topics.", mergeWeights(p.entY, p.narrowY), mergeWeights(p.broadY))
 );
 
 questions.push(
-  makeQuestion("genitourinary-interest", "Clinical interests", "Are urinary and male reproductive problems more interesting to you than most other clinical areas?", "Choose yes if this feels like a meaningful draw, not just something you could tolerate.", mergeWeights(p.uroY), mergeWeights(p.broadY)),
+  makeQuestion("genitourinary-interest", "Clinical interests", "Does genitourinary anatomy feel more intuitive or compelling to you than most other systems?", "This asks about a true organ-system pull, not just being okay with those complaints.", mergeWeights(p.uroY, p.narrowY), mergeWeights(p.broadY)),
   makeQuestion("complex-hospitalized-adults", "Population fit", "Would you enjoy caring for medically complex hospitalized adults?", "This points toward adult inpatient medicine and consultant-heavy roles.", mergeWeights(p.inpatientY, p.chronicY, p.adultY), mergeWeights(p.lifeY)),
   makeQuestion("disability-and-qol", "Clinical interests", "Are disability, adaptation, and quality of life central issues you would want to work with?", "This helps identify rehabilitation-oriented interests.", mergeWeights(p.rehabY, p.commY), mergeWeights(p.acuteY)),
-  makeQuestion("sports-and-return", "Clinical interests", "Do sports injuries and return-to-activity questions sound especially appealing?", "Choose yes if function, mechanics, and recovery stand out to you.", mergeWeights(p.orthoY, p.rehabY), mergeWeights(p.behindY)),
+  makeQuestion("sports-and-return", "Clinical interests", "Does helping people return to sport, work, or daily function after injury sound especially meaningful?", "Choose yes if recovery goals and rehab timelines matter as much as the injury itself.", mergeWeights(p.orthoY, p.rehabY, p.lifeY), mergeWeights(p.behindY)),
   makeQuestion("labor-delivery-draw", "Clinical interests", "Does labor and delivery sound more appealing than most other acute care settings?", "This helps detect a stronger draw toward obstetric work.", mergeWeights(p.womenY, p.acuteY, p.orY), mergeWeights(p.acuteN)),
   makeQuestion("keep-adult-peds-open", "Population fit", "Would it be important to you to keep both adult and pediatric medicine open?", "Choose yes if a split age range sounds like a real advantage.", mergeWeights(p.medpedsY, p.childY, p.adultY), mergeWeights(p.narrowY)),
   makeQuestion("predictability-priority", "Workflow", "Does schedule predictability matter more to you than occasional high-adrenaline work?", "This separates steadier outpatient fields from acute or call-heavy ones.", mergeWeights(p.lifeY), mergeWeights(p.acuteY, p.shiftY)),
@@ -1017,14 +2480,15 @@ questions.push(
   makeQuestion("fine-motor-precision", "Procedural identity", "Does very fine, precise technical work sound appealing?", "This points toward fields that rely on small-scale technical precision.", mergeWeights(p.ophthoY, p.manualY, p.entY), mergeWeights(p.procN)),
   makeQuestion("fracture-biomechanics", "Clinical interests", "Do fractures, joints, and biomechanics sound more compelling than most other surgical problems?", "Choose yes if this content feels particularly interesting.", mergeWeights(p.orthoY), mergeWeights(p.broadY)),
   makeQuestion("preserve-vision", "Clinical interests", "Does helping preserve or restore vision sound especially meaningful?", "This helps identify a stronger pull toward ophthalmology.", mergeWeights(p.ophthoY, p.visualY), mergeWeights(p.broadY)),
-  makeQuestion("ent-content", "Clinical interests", "Do ear, sinus, airway, and voice problems sound especially interesting?", "Choose yes if that content stands out to you more than other areas.", mergeWeights(p.entY), mergeWeights(p.broadY)),
-  makeQuestion("urologic-problems", "Clinical interests", "Do stones, obstruction, and other urologic problems sound especially interesting?", "This can point toward urology more than other procedural fields.", mergeWeights(p.uroY), mergeWeights(p.broadY)),
+  makeQuestion("ent-content", "Clinical interests", "Would you enjoy a practice centered on ear, sinus, airway, and voice complaints?", "Choose yes if that cluster of problems feels consistently interesting, not just tolerable.", mergeWeights(p.entY), mergeWeights(p.broadY)),
+  makeQuestion("urologic-problems", "Clinical interests", "Do kidney stones, obstruction, hematuria, and related urologic issues stand out to you?", "This asks whether those complaints feel genuinely interesting, not just manageable.", mergeWeights(p.uroY), mergeWeights(p.broadY)),
   makeQuestion("large-operations", "Procedural identity", "Would large operations appeal to you more than smaller procedures?", "Choose yes if bigger operative work sounds more appealing than fine or office-based procedures.", mergeWeights(p.orY, p.orthoY), mergeWeights(p.outprocY, p.ophthoY)),
   makeQuestion("focused-outpatient-procedures", "Workflow", "Would a mostly outpatient specialty with focused procedures suit you well?", "This points toward specialties with a tighter scope and more clinic-based procedures.", mergeWeights(p.outprocY, p.lifeY, p.narrowY), mergeWeights(p.inpatientY, p.shiftY)),
-  makeQuestion("body-region-expert", "Scope", "Would you enjoy becoming deeply expert in one body region?", "Choose yes if narrow anatomic mastery feels appealing.", mergeWeights(p.narrowY, p.ophthoY, p.entY, p.uroY, p.orthoY), mergeWeights(p.broadY)),
+  makeQuestion("body-region-expert", "Scope", "Would you enjoy refining the same focused set of problems and technical skills over time?", "Choose yes if depth-through-repetition sounds energizing rather than limiting.", mergeWeights(p.outprocY, p.ophthoY, p.entY, p.uroY, p.orthoY), mergeWeights(p.broadY)),
   makeQuestion("function-over-operation", "Clinical interests", "Does restoring movement or independence appeal more than removing disease or operating?", "This helps separate rehabilitation-oriented interests from operative ones.", mergeWeights(p.rehabY, p.contY), mergeWeights(p.orY, p.procY))
 );
 
+const questionIndexById = Object.fromEntries(questions.map((question, index) => [question.id, index]));
 const QUESTION_ORDER_STORAGE_KEY = "1or2-question-order-mode";
 const SHARE_SEED_VERSION = "v1";
 const RESPONSE_TO_CODE = {
@@ -1042,9 +2506,16 @@ const CODE_TO_RESPONSE = {
 
 function loadOrderMode() {
   try {
-    return localStorage.getItem(QUESTION_ORDER_STORAGE_KEY) === "random" ? "random" : "sequential";
+    const storedMode = localStorage.getItem(QUESTION_ORDER_STORAGE_KEY);
+
+    if (storedMode === "random" || storedMode === "sequential") {
+      return storedMode;
+    }
+
+    localStorage.setItem(QUESTION_ORDER_STORAGE_KEY, "random");
+    return "random";
   } catch {
-    return "sequential";
+    return "random";
   }
 }
 
@@ -1170,6 +2641,7 @@ const state = {
 };
 
 let lastTrigger = null;
+let selectedExploreId = specialties[0].id;
 
 const infoModal = document.getElementById("infoModal");
 const infoBackdrop = document.getElementById("infoBackdrop");
@@ -1195,6 +2667,19 @@ const shareCopyStatus = document.getElementById("shareCopyStatus");
 const shareSeedInput = document.getElementById("shareSeedInput");
 const loadSeedButton = document.getElementById("loadSeedButton");
 const shareImportStatus = document.getElementById("shareImportStatus");
+const exploreModal = document.getElementById("exploreModal");
+const exploreBackdrop = document.getElementById("exploreBackdrop");
+const exploreToggle = document.getElementById("exploreToggle");
+const resultsExploreButton = document.getElementById("resultsExploreButton");
+const closeExploreButton = document.getElementById("closeExploreButton");
+const exploreCanvas = document.getElementById("exploreCanvas");
+const exploreNodeType = document.getElementById("exploreNodeType");
+const exploreNodeTitle = document.getElementById("exploreNodeTitle");
+const exploreNodeBlurb = document.getElementById("exploreNodeBlurb");
+const exploreNodeScore = document.getElementById("exploreNodeScore");
+const exploreNodeParent = document.getElementById("exploreNodeParent");
+const exploreNodeNotes = document.getElementById("exploreNodeNotes");
+const exploreNodeConnections = document.getElementById("exploreNodeConnections");
 const rankToggleButton = document.getElementById("rankToggleButton");
 const appGrid = document.getElementById("appGrid");
 const startView = document.getElementById("startView");
@@ -1210,6 +2695,7 @@ const progressLabel = document.getElementById("progressLabel");
 const progressPercent = document.getElementById("progressPercent");
 const progressFill = document.getElementById("progressFill");
 const backButton = document.getElementById("backButton");
+const finishQuizButton = document.getElementById("finishQuizButton");
 const skipButton = document.getElementById("skipButton");
 const answerYes = document.getElementById("answerYes");
 const answerNo = document.getElementById("answerNo");
@@ -1228,12 +2714,15 @@ const rankLeaderBlurb = document.getElementById("rankLeaderBlurb");
 const rankDetail = document.getElementById("rankDetail");
 const rankDetailLabel = document.getElementById("rankDetailLabel");
 const rankReasons = document.getElementById("rankReasons");
+const rankPathDetail = document.getElementById("rankPathDetail");
+const rankPathList = document.getElementById("rankPathList");
 
 function syncModalBodyLock() {
   const modalOpen =
     !infoModal.classList.contains("hidden") ||
     !settingsModal.classList.contains("hidden") ||
-    !shareModal.classList.contains("hidden");
+    !shareModal.classList.contains("hidden") ||
+    !exploreModal.classList.contains("hidden");
   document.body.classList.toggle("modal-open", modalOpen);
 }
 
@@ -1243,6 +2732,8 @@ function setInfoModalOpen(isOpen, trigger = null) {
     settingsModal.setAttribute("aria-hidden", "true");
     shareModal.classList.add("hidden");
     shareModal.setAttribute("aria-hidden", "true");
+    exploreModal.classList.add("hidden");
+    exploreModal.setAttribute("aria-hidden", "true");
   }
 
   infoModal.classList.toggle("hidden", !isOpen);
@@ -1281,6 +2772,8 @@ function setSettingsModalOpen(isOpen, trigger = null) {
     infoModal.setAttribute("aria-hidden", "true");
     shareModal.classList.add("hidden");
     shareModal.setAttribute("aria-hidden", "true");
+    exploreModal.classList.add("hidden");
+    exploreModal.setAttribute("aria-hidden", "true");
     updateSettingsUI();
   }
 
@@ -1339,6 +2832,8 @@ function setShareModalOpen(isOpen, trigger = null) {
     infoModal.setAttribute("aria-hidden", "true");
     settingsModal.classList.add("hidden");
     settingsModal.setAttribute("aria-hidden", "true");
+    exploreModal.classList.add("hidden");
+    exploreModal.setAttribute("aria-hidden", "true");
     updateShareUI();
   }
 
@@ -1355,6 +2850,36 @@ function setShareModalOpen(isOpen, trigger = null) {
       shareSeedInput.focus();
     }
 
+    return;
+  }
+
+  if (lastTrigger instanceof HTMLElement) {
+    lastTrigger.focus();
+  }
+}
+
+function setExploreModalOpen(isOpen, trigger = null, selectedId = null) {
+  if (isOpen) {
+    infoModal.classList.add("hidden");
+    infoModal.setAttribute("aria-hidden", "true");
+    settingsModal.classList.add("hidden");
+    settingsModal.setAttribute("aria-hidden", "true");
+    shareModal.classList.add("hidden");
+    shareModal.setAttribute("aria-hidden", "true");
+  }
+
+  if (selectedId) {
+    selectedExploreId = selectedId;
+  }
+
+  exploreModal.classList.toggle("hidden", !isOpen);
+  exploreModal.setAttribute("aria-hidden", String(!isOpen));
+  syncModalBodyLock();
+
+  if (isOpen) {
+    lastTrigger = trigger ?? document.activeElement;
+    renderExploreModal();
+    closeExploreButton.focus();
     return;
   }
 
@@ -1405,6 +2930,7 @@ function applyImportedSession(seedPayload) {
   setInfoModalOpen(false);
   setSettingsModalOpen(false);
   setShareModalOpen(false);
+  setExploreModalOpen(false);
   shareSeedInput.value = "";
   startView.classList.add("hidden");
   progressWrap.classList.remove("hidden");
@@ -1468,6 +2994,356 @@ function loadSeedFromInput() {
       "error"
     );
   }
+}
+
+function buildFellowshipSignalLine(label) {
+  return `Your answers also leaned toward ${label}, which often supports this path.`;
+}
+
+function getFellowshipScoreData(specialtyResults = getScoreData()) {
+  const answeredCount = countExplicitAnswers();
+  const specialtyResultMap = Object.fromEntries(specialtyResults.map((item) => [item.id, item]));
+  const ranked = fellowshipPaths
+    .map((path) => {
+      const parent = specialtyResultMap[path.parentId];
+      const matchedSignals = [];
+      let matchedWeight = 0;
+      let answeredSignalWeight = 0;
+      let matchedSignalCount = 0;
+      const totalSignalWeight = path.signals.reduce((sum, signal) => sum + signal.weight, 0);
+
+      path.signals.forEach((signal) => {
+        const questionIndex = questionIndexById[signal.questionId];
+
+        if (questionIndex === undefined) {
+          return;
+        }
+
+        const response = state.responses[questionIndex];
+
+        if (response !== "yes" && response !== "no") {
+          return;
+        }
+
+        answeredSignalWeight += signal.weight;
+
+        if (response === signal.answer) {
+          matchedWeight += signal.weight;
+          matchedSignalCount += 1;
+          matchedSignals.push({
+            weight: signal.weight,
+            explanation: buildFellowshipSignalLine(signal.label),
+          });
+        }
+      });
+
+      const signalRatio = answeredSignalWeight > 0 ? matchedWeight / answeredSignalWeight : 0;
+      const coverageRatio = totalSignalWeight > 0 ? answeredSignalWeight / totalSignalWeight : 0;
+      const parentAdjusted = parent?.adjusted ?? 0;
+      const adjusted = answeredCount === 0 || answeredSignalWeight === 0
+        ? 0
+        : Math.min(1, parentAdjusted * signalRatio * (0.55 + coverageRatio * 0.45));
+
+      const reasons = [];
+
+      if (parent && parent.raw > 0) {
+        reasons.push({
+          weight: Math.max(1, Math.round(parent.normalized / 18)),
+          explanation: `${parent.name} is one of your stronger home specialties, which is where this path usually starts.`,
+        });
+      }
+
+      matchedSignals
+        .sort((left, right) => right.weight - left.weight)
+        .slice(0, 2)
+        .forEach((reason) => reasons.push(reason));
+
+      return {
+        ...path,
+        kind: "fellowship",
+        color: specialtyById[path.parentId]?.color ?? "#2d7d89",
+        parentName: specialtyById[path.parentId]?.name ?? "Specialty",
+        parentAdjusted,
+        signalRatio,
+        answeredSignalWeight,
+        matchedWeight,
+        matchedSignalCount,
+        adjusted,
+        fitPercent: answeredCount === 0 ? 0 : Math.round(adjusted * 100),
+        reasons,
+      };
+    })
+    .sort((left, right) => {
+      if (right.adjusted !== left.adjusted) {
+        return right.adjusted - left.adjusted;
+      }
+
+      return left.name.localeCompare(right.name);
+    });
+
+  const topAdjusted = Math.max(ranked[0]?.adjusted ?? 0, 0.0001);
+  return ranked.map((path) => ({
+    ...path,
+    normalized: answeredCount === 0 ? 0 : Math.round((path.adjusted / topAdjusted) * 100),
+  }));
+}
+
+function getTopFellowshipsForSpecialty(specialtyId, limit = 3, fellowshipResults = null) {
+  if (countExplicitAnswers() < 5) {
+    return [];
+  }
+
+  const source = fellowshipResults ?? getFellowshipScoreData();
+  return source
+    .filter((path) => path.parentId === specialtyId && path.parentAdjusted > 0.08 && path.matchedWeight > 0)
+    .slice(0, limit);
+}
+
+function createPathButton(path, compact = false) {
+  return `
+    <button class="path-pill ${compact ? "path-pill--compact" : ""}" type="button" data-explore-id="${path.id}">
+      <span class="path-pill__top">
+        <span class="path-pill__name">${path.name}</span>
+        <span class="path-pill__score">${path.fitPercent}%</span>
+      </span>
+      <span class="path-pill__meta">${compact ? "Open in explore" : `via ${path.parentName}`}</span>
+    </button>
+  `;
+}
+
+function splitExploreLabel(label) {
+  if (!label.includes(" ") || label.length <= 14) {
+    return [label];
+  }
+
+  const words = label.split(" ");
+
+  if (words.length === 2) {
+    return words;
+  }
+
+  const midpoint = Math.ceil(words.length / 2);
+  return [words.slice(0, midpoint).join(" "), words.slice(midpoint).join(" ")];
+}
+
+function buildExploreTextMarkup(label, x, y, className) {
+  const lines = splitExploreLabel(label);
+
+  if (lines.length === 1) {
+    return `<text class="${className}" x="${x}" y="${y}">${lines[0]}</text>`;
+  }
+
+  return `
+    <text class="${className}" x="${x}" y="${y}">
+      <tspan x="${x}" dy="0">${lines[0]}</tspan>
+      <tspan x="${x}" dy="1.12em">${lines[1]}</tspan>
+    </text>
+  `;
+}
+
+function buildExploreLayoutData(specialtyResults, fellowshipResults) {
+  const maxChildren = Math.max(
+    0,
+    ...specialtyResults.map((item) => fellowshipResults.filter((path) => path.parentId === item.id).length)
+  );
+  const specialtyRing = 300;
+  const fellowshipRing = 500 + (Math.max(0, maxChildren - 4) * 16);
+  const width = Math.max(1560, (fellowshipRing * 2) + 340);
+  const height = Math.max(1160, (fellowshipRing * 2) + 260);
+  const centerX = width / 2;
+  const centerY = height / 2;
+  const specialtyNodes = specialtyResults.map((item, index) => {
+    const angle = (-Math.PI / 2) + ((Math.PI * 2 * index) / specialtyResults.length);
+    return {
+      ...item,
+      angle,
+      x: centerX + Math.cos(angle) * specialtyRing,
+      y: centerY + Math.sin(angle) * specialtyRing,
+      radius: 22 + (item.normalized * 0.05),
+    };
+  });
+  const specialtyPositionMap = Object.fromEntries(specialtyNodes.map((node) => [node.id, node]));
+  const fellowshipNodes = specialtyNodes.flatMap((specialtyNode) => {
+    const children = fellowshipResults.filter((path) => path.parentId === specialtyNode.id);
+    const spread = children.length <= 1 ? 0 : Math.min(0.68, (0.08 * children.length) + 0.04);
+    const step = children.length <= 1 ? 0 : (spread * 2) / (children.length - 1);
+
+    return children.map((path, index) => {
+      const angle = specialtyNode.angle - spread + (step * index);
+      const staggerAmount = children.length >= 5 ? 32 : 18;
+      const staggerOffset = children.length <= 2
+        ? 0
+        : (index % 2 === 0 ? -staggerAmount : staggerAmount);
+      const ring = fellowshipRing + staggerOffset;
+
+      return {
+        ...path,
+        angle,
+        x: centerX + Math.cos(angle) * ring,
+        y: centerY + Math.sin(angle) * ring,
+        radius: 12 + (path.normalized * 0.03),
+      };
+    });
+  });
+
+  return {
+    width,
+    height,
+    centerX,
+    centerY,
+    specialtyRing,
+    fellowshipRing,
+    specialtyNodes,
+    fellowshipNodes,
+    specialtyPositionMap,
+  };
+}
+
+function getDefaultExploreSelection(specialtyResults) {
+  return specialtyResults[0]?.id ?? specialties[0].id;
+}
+
+function getExploreCollections() {
+  const specialtyResults = getScoreData();
+  const fellowshipResults = getFellowshipScoreData(specialtyResults);
+  return {
+    specialtyResults,
+    fellowshipResults,
+    specialtyResultMap: Object.fromEntries(specialtyResults.map((item) => [item.id, item])),
+    fellowshipResultMap: Object.fromEntries(fellowshipResults.map((item) => [item.id, item])),
+  };
+}
+
+function renderExploreInspector(selectedEntity, specialtyResults, fellowshipResults) {
+  if (!selectedEntity) {
+    return;
+  }
+
+  const specialtyResultMap = Object.fromEntries(specialtyResults.map((item) => [item.id, item]));
+
+  if (selectedEntity.kind === "specialty") {
+    const childPaths = getTopFellowshipsForSpecialty(selectedEntity.id, 6, fellowshipResults);
+    exploreNodeType.textContent = "Specialty";
+    exploreNodeTitle.textContent = selectedEntity.name;
+    exploreNodeBlurb.textContent = selectedEntity.blurb;
+    exploreNodeScore.textContent = `${selectedEntity.fitPercent}%`;
+    exploreNodeParent.textContent = "Standalone specialty";
+    exploreNodeNotes.innerHTML = (selectedEntity.reasons.length > 0
+      ? selectedEntity.reasons
+      : [{ explanation: "This node strengthens when your answers keep this home specialty consistently high across the question bank." }])
+      .slice(0, 3)
+      .map((reason) => `<li>${reason.explanation}</li>`)
+      .join("");
+    exploreNodeConnections.innerHTML = childPaths.length > 0
+      ? childPaths.map((path) => createPathButton(path, true)).join("")
+      : '<p class="explore-inspector__empty">Fellowship paths sharpen after a few more answers.</p>';
+    return;
+  }
+
+  const siblingPaths = fellowshipResults
+    .filter((path) => path.parentId === selectedEntity.parentId && path.id !== selectedEntity.id)
+    .slice(0, 4);
+  exploreNodeType.textContent = "Fellowship path";
+  exploreNodeTitle.textContent = selectedEntity.name;
+  exploreNodeBlurb.textContent = selectedEntity.blurb;
+  exploreNodeScore.textContent = `${selectedEntity.fitPercent}%`;
+  exploreNodeParent.textContent = selectedEntity.parentName;
+  exploreNodeNotes.innerHTML = (selectedEntity.reasons.length > 0
+    ? selectedEntity.reasons
+    : selectedEntity.signals
+        .slice(0, 3)
+        .map((signal) => ({ explanation: buildFellowshipSignalLine(signal.label) })))
+    .slice(0, 3)
+    .map((reason) => `<li>${reason.explanation}</li>`)
+    .join("");
+  exploreNodeConnections.innerHTML = [
+    createPathButton(specialtyResultMap[selectedEntity.parentId], true),
+    ...siblingPaths.map((path) => createPathButton(path, true)),
+  ].join("");
+}
+
+function renderExploreModal() {
+  const { specialtyResults, fellowshipResults, specialtyResultMap, fellowshipResultMap } = getExploreCollections();
+  const selectedEntity = specialtyResultMap[selectedExploreId] || fellowshipResultMap[selectedExploreId];
+
+  if (!selectedEntity) {
+    selectedExploreId = getDefaultExploreSelection(specialtyResults);
+  }
+
+  const activeEntity = specialtyResultMap[selectedExploreId] || fellowshipResultMap[selectedExploreId];
+  const {
+    width,
+    height,
+    centerX,
+    centerY,
+    specialtyRing,
+    fellowshipRing,
+    specialtyNodes,
+    fellowshipNodes,
+    specialtyPositionMap,
+  } = buildExploreLayoutData(specialtyResults, fellowshipResults);
+  const isSelected = (node) => node.id === selectedExploreId;
+  const isConnected = (node) => {
+    if (node.id === selectedExploreId) {
+      return true;
+    }
+
+    if (node.kind === "fellowship") {
+      return node.parentId === selectedExploreId;
+    }
+
+    const selectedFellowship = fellowshipResultMap[selectedExploreId];
+    return selectedFellowship?.parentId === node.id;
+  };
+
+  const backgroundMarkup = `
+    <circle class="explore-ring" cx="${centerX}" cy="${centerY}" r="${specialtyRing}"></circle>
+    <circle class="explore-ring explore-ring--outer" cx="${centerX}" cy="${centerY}" r="${fellowshipRing}"></circle>
+  `;
+  const linkMarkup = fellowshipNodes.map((node) => {
+    const parentNode = specialtyPositionMap[node.parentId];
+    const selected = isSelected(node) || node.parentId === selectedExploreId || fellowshipResultMap[selectedExploreId]?.parentId === node.parentId;
+    return `
+      <line
+        class="explore-link ${selected ? "explore-link--selected" : ""}"
+        x1="${parentNode.x}"
+        y1="${parentNode.y}"
+        x2="${node.x}"
+        y2="${node.y}"
+        style="--link-color: ${node.color};"
+      ></line>
+    `;
+  }).join("");
+  const specialtyMarkup = specialtyNodes.map((node) => `
+    <g
+      class="explore-node explore-node--specialty ${isSelected(node) ? "explore-node--selected" : ""} ${isConnected(node) ? "explore-node--connected" : ""}"
+      data-explore-id="${node.id}"
+      tabindex="0"
+      role="button"
+      aria-label="${node.name}"
+      style="--node-color: ${node.color}; --node-opacity: ${Math.max(0.38, node.normalized / 100)};"
+    >
+      <circle cx="${node.x}" cy="${node.y}" r="${node.radius}"></circle>
+      ${buildExploreTextMarkup(node.shortLabel, node.x, node.y + node.radius + 18, "explore-node__label explore-node__label--specialty")}
+    </g>
+  `).join("");
+  const fellowshipMarkup = fellowshipNodes.map((node) => `
+    <g
+      class="explore-node explore-node--fellowship ${isSelected(node) ? "explore-node--selected" : ""} ${isConnected(node) ? "explore-node--connected" : ""}"
+      data-explore-id="${node.id}"
+      tabindex="0"
+      role="button"
+      aria-label="${node.name}"
+      style="--node-color: ${node.color}; --node-opacity: ${Math.max(0.24, node.normalized / 100)};"
+    >
+      <circle cx="${node.x}" cy="${node.y}" r="${node.radius}"></circle>
+      ${buildExploreTextMarkup(node.shortLabel, node.x, node.y + node.radius + 16, "explore-node__label")}
+    </g>
+  `).join("");
+
+  exploreCanvas.setAttribute("viewBox", `0 0 ${width} ${height}`);
+  exploreCanvas.innerHTML = `${backgroundMarkup}${linkMarkup}${specialtyMarkup}${fellowshipMarkup}`;
+  renderExploreInspector(activeEntity, specialtyResults, fellowshipResults);
 }
 
 function syncRankPanelVisibility() {
@@ -1588,6 +3464,7 @@ function renderRankPanel() {
   const skippedCount = countSkipped();
   const stage = getRankingStage(answeredCount);
   const ranked = getScoreData();
+  const fellowshipResults = getFellowshipScoreData(ranked);
   const positiveRanked = ranked.filter((item) => item.raw > 0);
   const displayed = stage.maxItems === 0
     ? []
@@ -1601,6 +3478,7 @@ function renderRankPanel() {
     rankList.innerHTML = '<div class="rank-panel__empty">No ranking yet. Once you answer a question, the list will start to take shape here.</div>';
     rankLeader.classList.add("hidden");
     rankDetail.classList.add("hidden");
+    rankPathDetail.classList.add("hidden");
     return;
   }
 
@@ -1626,6 +3504,15 @@ function renderRankPanel() {
   } else {
     rankDetail.classList.add("hidden");
   }
+
+  const leaderPaths = getTopFellowshipsForSpecialty(displayed[0].id, 3, fellowshipResults);
+
+  if (answeredCount >= 6 && leaderPaths.length > 0) {
+    rankPathDetail.classList.remove("hidden");
+    rankPathList.innerHTML = leaderPaths.map((path) => createPathButton(path, true)).join("");
+  } else {
+    rankPathDetail.classList.add("hidden");
+  }
 }
 
 function showStartState() {
@@ -1639,6 +3526,7 @@ function showStartState() {
   restartTop.classList.add("hidden");
   setSettingsModalOpen(false);
   setShareModalOpen(false);
+  setExploreModalOpen(false);
   syncRankPanelVisibility();
   updateProgress();
 }
@@ -1650,6 +3538,7 @@ function startQuiz() {
   setInfoModalOpen(false);
   setSettingsModalOpen(false);
   setShareModalOpen(false);
+  setExploreModalOpen(false);
   startView.classList.add("hidden");
   progressWrap.classList.remove("hidden");
   restartTop.classList.remove("hidden");
@@ -1684,6 +3573,28 @@ function renderQuestion() {
   renderRankPanel();
 }
 
+function getDirectionalSpecialtySignal(question, specialtyId, response) {
+  if (response !== "yes" && response !== "no") {
+    return {
+      selectedWeight: 0,
+      oppositeWeight: 0,
+      earnedWeight: 0,
+      possibleWeight: 0,
+    };
+  }
+
+  const oppositeResponse = response === "yes" ? "no" : "yes";
+  const selectedWeight = question[response][specialtyId] || 0;
+  const oppositeWeight = question[oppositeResponse][specialtyId] || 0;
+
+  return {
+    selectedWeight,
+    oppositeWeight,
+    earnedWeight: Math.max(0, selectedWeight - oppositeWeight),
+    possibleWeight: Math.abs(selectedWeight - oppositeWeight),
+  };
+}
+
 function getScoreData() {
   const explicitAnswers = countExplicitAnswers();
   const scores = Object.fromEntries(specialties.map((specialty) => [specialty.id, 0]));
@@ -1698,21 +3609,20 @@ function getScoreData() {
     }
 
     specialties.forEach(({ id }) => {
-      const bestAvailableWeight = Math.max(question.yes[id] || 0, question.no[id] || 0);
+      const signal = getDirectionalSpecialtySignal(question, id, response);
 
-      if (bestAvailableWeight > 0) {
-        possibleScores[id] += bestAvailableWeight;
+      if (signal.possibleWeight > 0) {
+        possibleScores[id] += signal.possibleWeight;
         signalCounts[id] += 1;
       }
-    });
 
-    const weights = question[response];
-    Object.entries(weights).forEach(([specialtyId, value]) => {
-      scores[specialtyId] += value;
-      reasons[specialtyId].push({
-        weight: value,
-        explanation: buildReasonLine(question, response, value),
-      });
+      if (signal.earnedWeight > 0) {
+        scores[id] += signal.earnedWeight;
+        reasons[id].push({
+          weight: signal.earnedWeight,
+          explanation: buildReasonLine(question, response, signal.earnedWeight),
+        });
+      }
     });
   });
 
@@ -1782,6 +3692,7 @@ function getConfidenceLabel(scoreGap, answeredCount) {
 
 function showResults() {
   const ranked = getScoreData();
+  const fellowshipResults = getFellowshipScoreData(ranked);
   const explicitAnswers = countExplicitAnswers();
   const skippedCount = countSkipped();
   const unansweredEverything = explicitAnswers === 0;
@@ -1813,8 +3724,8 @@ function showResults() {
   }
 
   resultsSummaryText.textContent = unansweredEverything
-    ? "You skipped every question, so there is no meaningful signal yet. Answer at least a few questions to generate real specialty recommendations."
-    : `${summaryBits.join(", ")}. Signal strength: ${confidence}. These results are based on ${explicitAnswers} answered questions about continuity, pace, procedures, uncertainty, and work setting.`;
+    ? "You skipped every question, so there is no meaningful signal yet. Answer at least a few questions to generate real specialty and fellowship-path recommendations."
+    : `${summaryBits.join(", ")}. Signal strength: ${confidence}. These results are based on ${explicitAnswers} answered questions about continuity, pace, procedures, uncertainty, work setting, and the kinds of subspecialty branches those answers point toward.`;
 
   skippedSummary.textContent = unansweredEverything
     ? "Retake the quiz and answer the questions that produce the strongest reaction. Even a partial set of real answers is more useful than skipping everything."
@@ -1826,16 +3737,38 @@ function showResults() {
   resultsList.innerHTML = unansweredEverything
     ? ""
     : displayedResults
-        .map((result, index) => createResultCard(result, index + 1))
+        .map((result, index) => createResultCard(result, index + 1, getTopFellowshipsForSpecialty(result.id, explicitAnswers >= 14 ? 3 : 2, fellowshipResults), explicitAnswers))
         .join("");
 }
 
-function createResultCard(result, rank) {
+function createResultCard(result, rank, fellowshipMatches, answeredCount) {
   const reasonItems = result.reasons.length > 0
     ? result.reasons
         .map((reason) => `<li>${reason.explanation}</li>`)
         .join("")
     : "<li>Your non-skipped answers did not strongly separate this field from nearby options, so this appears as part of a broader fit cluster.</li>";
+  const fellowshipMarkup = answeredCount < 5
+    ? `
+      <div class="match-card__paths">
+        <span class="match-card__score-label">Fellowship paths</span>
+        <p class="match-card__path-note">These sharpen after a few more answers.</p>
+      </div>
+    `
+    : fellowshipMatches.length > 0
+      ? `
+        <div class="match-card__paths">
+          <span class="match-card__score-label">Fellowship paths nearby</span>
+          <div class="path-grid">
+            ${fellowshipMatches.map((path) => createPathButton(path)).join("")}
+          </div>
+        </div>
+      `
+      : `
+        <div class="match-card__paths">
+          <span class="match-card__score-label">Fellowship paths</span>
+          <p class="match-card__path-note">No specific fellowship branch stands out yet from your answered path-level questions.</p>
+        </div>
+      `;
 
   return `
     <article class="match-card">
@@ -1854,6 +3787,7 @@ function createResultCard(result, rank) {
         <span class="match-card__score-label">Why it was suggested</span>
         <ul>${reasonItems}</ul>
       </div>
+      ${fellowshipMarkup}
     </article>
   `;
 }
@@ -1878,6 +3812,12 @@ function handleBack() {
   renderQuestion();
 }
 
+function finishQuizEarly() {
+  state.responses = state.responses.map((response) => (response === null ? "skip" : response));
+  state.currentIndex = questions.length;
+  renderQuestion();
+}
+
 function restartQuiz() {
   state.started = false;
   state.rankPanelCollapsed = true;
@@ -1888,6 +3828,7 @@ function restartQuiz() {
   setInfoModalOpen(false);
   setSettingsModalOpen(false);
   setShareModalOpen(false);
+  setExploreModalOpen(false);
   showStartState();
 }
 
@@ -1896,10 +3837,34 @@ function toggleRankPanel() {
   syncRankPanelVisibility();
 }
 
+function openExplore(trigger = null, selectedId = null) {
+  const defaultSelection = countExplicitAnswers() > 0
+    ? getDefaultExploreSelection(getScoreData())
+    : specialties[0].id;
+  setExploreModalOpen(true, trigger, selectedId ?? defaultSelection);
+}
+
+function handleExploreSelectionClick(event) {
+  const trigger = event.target.closest("[data-explore-id]");
+
+  if (!trigger) {
+    return;
+  }
+
+  if (!exploreModal.classList.contains("hidden")) {
+    selectedExploreId = trigger.dataset.exploreId;
+    renderExploreModal();
+    return;
+  }
+
+  openExplore(trigger, trigger.dataset.exploreId);
+}
+
 answerYes.addEventListener("click", () => recordAnswer("yes"));
 answerNo.addEventListener("click", () => recordAnswer("no"));
 skipButton.addEventListener("click", () => recordAnswer("skip"));
 backButton.addEventListener("click", handleBack);
+finishQuizButton.addEventListener("click", finishQuizEarly);
 startButton.addEventListener("click", startQuiz);
 startInfoButton.addEventListener("click", () => {
   setInfoModalOpen(true, startInfoButton);
@@ -1916,8 +3881,14 @@ settingsToggle.addEventListener("click", () => {
 shareToggle.addEventListener("click", () => {
   setShareModalOpen(true, shareToggle);
 });
+exploreToggle.addEventListener("click", () => {
+  openExplore(exploreToggle);
+});
 resultsShareButton.addEventListener("click", () => {
   setShareModalOpen(true, resultsShareButton);
+});
+resultsExploreButton.addEventListener("click", () => {
+  openExplore(resultsExploreButton);
 });
 closeInfoButton.addEventListener("click", () => setInfoModalOpen(false));
 infoBackdrop.addEventListener("click", () => setInfoModalOpen(false));
@@ -1925,17 +3896,46 @@ closeSettingsButton.addEventListener("click", () => setSettingsModalOpen(false))
 settingsBackdrop.addEventListener("click", () => setSettingsModalOpen(false));
 closeShareButton.addEventListener("click", () => setShareModalOpen(false));
 shareBackdrop.addEventListener("click", () => setShareModalOpen(false));
+closeExploreButton.addEventListener("click", () => setExploreModalOpen(false));
+exploreBackdrop.addEventListener("click", () => setExploreModalOpen(false));
 copySeedButton.addEventListener("click", copyCurrentSeed);
 loadSeedButton.addEventListener("click", loadSeedFromInput);
 rankToggleButton.addEventListener("click", toggleRankPanel);
 rankPanelToggle.addEventListener("click", toggleRankPanel);
 restartTop.addEventListener("click", restartQuiz);
 retakeButton.addEventListener("click", restartQuiz);
+resultsList.addEventListener("click", handleExploreSelectionClick);
+rankPathList.addEventListener("click", handleExploreSelectionClick);
+exploreNodeConnections.addEventListener("click", handleExploreSelectionClick);
+exploreCanvas.addEventListener("click", handleExploreSelectionClick);
+exploreCanvas.addEventListener("keydown", (event) => {
+  if (event.key !== "Enter" && event.key !== " ") {
+    return;
+  }
+
+  const trigger = event.target.closest("[data-explore-id]");
+
+  if (!trigger) {
+    return;
+  }
+
+  event.preventDefault();
+  selectedExploreId = trigger.dataset.exploreId;
+  renderExploreModal();
+});
 questionOrderInputs.forEach((input) => {
   input.addEventListener("change", () => applyOrderMode(input.value));
 });
 
 document.addEventListener("keydown", (event) => {
+  if (!exploreModal.classList.contains("hidden")) {
+    if (event.key === "Escape") {
+      setExploreModalOpen(false);
+    }
+
+    return;
+  }
+
   if (!infoModal.classList.contains("hidden")) {
     if (event.key === "Escape") {
       setInfoModalOpen(false);

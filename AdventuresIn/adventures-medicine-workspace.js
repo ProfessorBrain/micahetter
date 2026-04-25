@@ -174,8 +174,6 @@
     emptyShelfTitle: document.querySelector("#emptyShelf .emptyListTitle"),
     emptyShelfCopy: document.querySelector("#emptyShelf .emptyListCopy"),
     collapsedSidebarCard: document.getElementById("collapsedSidebarCard"),
-    collapsedSeriesLabel: document.getElementById("collapsedSeriesLabel"),
-    collapsedCaseNumber: document.getElementById("collapsedCaseNumber"),
     viewerEmpty: document.getElementById("viewerEmpty"),
     viewerWelcome: document.getElementById("viewerWelcome"),
     viewerMessage: document.getElementById("viewerMessage"),
@@ -643,7 +641,7 @@
     const drawerOpen = document.body.classList.contains("drawerOpen");
     const collapsed = document.body.classList.contains("sidebarCollapsed");
     const expanded = mobile ? drawerOpen : !collapsed;
-    const collapsedLabel = mobile ? "Cases" : "Browse";
+    const collapsedLabel = mobile ? "Cases" : "\u2192";
     const collapsedVisible = mobile ? !drawerOpen : collapsed;
     const sidebarContentVisible = mobile ? drawerOpen : !collapsed;
 
@@ -653,6 +651,10 @@
     els.sidebarToggleButton.setAttribute("aria-expanded", expanded ? "true" : "false");
     els.collapsedSidebarToggleButton.textContent = collapsedLabel;
     els.collapsedSidebarToggleButton.setAttribute("aria-expanded", expanded ? "true" : "false");
+    els.collapsedSidebarToggleButton.setAttribute(
+      "aria-label",
+      mobile ? "Open case menu" : "Show Sidebar"
+    );
     syncRegionVisibility(els.sidebarContent, sidebarContentVisible, els.collapsedSidebarToggleButton);
     syncRegionVisibility(els.collapsedSidebarCard, collapsedVisible, els.sidebarToggleButton);
   }
@@ -663,8 +665,6 @@
     setActiveSpecialtyButton(def.id);
     renderCaseList(record);
 
-    els.collapsedSeriesLabel.textContent = def.shortCode;
-    els.collapsedCaseNumber.textContent = caseInfo ? String(caseInfo.n).padStart(2, "0") : "--";
     document.title = caseInfo
       ? "Adventures in Medicine - " + def.label + " - Case " + caseInfo.n + ": " + caseInfo.displayTitle
       : "Adventures in Medicine - " + def.label;
@@ -694,8 +694,6 @@
       ? "Adventures in Medicine - " + activeRecord.def.label
       : "Adventures in Medicine";
     setActiveSpecialtyButton(activeRecord ? activeRecord.def.id : null);
-    els.collapsedSeriesLabel.textContent = activeRecord ? activeRecord.def.shortCode : "AM";
-    els.collapsedCaseNumber.textContent = "--";
     if (!activeRecord) {
       els.caseList.innerHTML = "";
       els.emptyShelf.classList.add("isHidden");

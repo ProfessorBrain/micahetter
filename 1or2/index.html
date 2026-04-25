@@ -6,7 +6,7 @@
   <title>1 or 2 | The Binary Medical Specialty Explorer</title>
   <meta
     name="description"
-    content="Answer binary questions to explore medical specialties that may fit your interests, workflow preferences, and tolerance for different practice environments."
+    content="Answer binary questions to explore medical specialties and fellowship paths that may fit your interests, workflow preferences, and tolerance for different practice environments."
   >
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -40,11 +40,10 @@
 
         <section class="start-view" id="startView" aria-labelledby="startTitle">
           <div class="start-view__copy">
-            <p class="start-view__intro">1 or 2? The Binary Medical Specialty Explorer</p>
-            <h1 id="startTitle">A short way to think through specialty fit.</h1>
-            <p class="start-view__lede">
-              There are 102 short A-or-B questions in total. You can answer one or keep going through the full set, and the ranking updates as you go.
-            </p>
+            <h1 class="start-view__intro" id="startTitle">
+              <span class="start-view__mark">1 or 2?</span>
+              <span class="start-view__subtitle">The Binary Medical Specialty Explorer</span>
+            </h1>
           </div>
 
           <div class="start-view__actions">
@@ -76,6 +75,7 @@
 
           <div class="question-actions">
             <button class="secondary-button" id="backButton" type="button">Back</button>
+            <button class="ghost-button" id="finishQuizButton" type="button">See results now</button>
             <button class="ghost-button" id="skipButton" type="button" aria-keyshortcuts="0">Skip this question</button>
           </div>
 
@@ -96,9 +96,10 @@
           <div class="results-view__head">
             <div>
               <p class="section-kicker">Results</p>
-              <h3 id="resultsTitle">Specialties suggested by your answers</h3>
+              <h3 id="resultsTitle">Specialties and fellowship paths suggested by your answers</h3>
             </div>
             <div class="results-view__actions">
+              <button class="ghost-button" id="resultsExploreButton" type="button">Explore</button>
               <button class="ghost-button" id="resultsShareButton" type="button">Share</button>
               <button class="secondary-button" id="retakeButton" type="button">Start again</button>
             </div>
@@ -146,6 +147,15 @@
           >
             Share
           </button>
+          <button
+            class="ghost-button rank-panel__action"
+            id="exploreToggle"
+            type="button"
+            aria-haspopup="dialog"
+            aria-controls="exploreModal"
+          >
+            Explore
+          </button>
           <button class="ghost-button hidden rank-panel__action" id="restartTop" type="button">Restart</button>
         </div>
 
@@ -180,6 +190,11 @@
           <p class="section-kicker" id="rankDetailLabel">What is shaping this</p>
           <ul class="rank-panel__reasons" id="rankReasons"></ul>
         </div>
+
+        <div class="rank-panel__detail hidden" id="rankPathDetail">
+          <p class="section-kicker">Fellowship paths nearby</p>
+          <div class="rank-panel__paths" id="rankPathList"></div>
+        </div>
       </aside>
     </main>
   </div>
@@ -201,11 +216,11 @@
         <div class="info-pane__grid">
           <div class="meta-block">
             <span class="meta-block__label">How it works</span>
-            <p>There are 102 A-or-B questions. Each answer adjusts the running ranking based on continuity, pace, procedures, uncertainty, population, and work setting.</p>
+            <p>There are 102 A-or-B questions. Each answer adjusts the running ranking based on continuity, pace, procedures, uncertainty, population, and work setting, then uses that pattern to sketch nearby fellowship paths.</p>
         </div>
         <div class="meta-block">
           <span class="meta-block__label">What you see</span>
-          <p>The specialty ranking updates as you answer more questions. You can stop early for a rough read or continue for a more stable one.</p>
+          <p>The specialty ranking updates as you answer more questions. Fellowship paths sharpen underneath those specialties as your answers become more specific.</p>
         </div>
         <div class="info-panel__block info-panel__block--pane">
           <p class="section-kicker">What it looks at</p>
@@ -225,7 +240,7 @@
           </p>
           <p class="section-kicker section-kicker--spaced">Included Fields</p>
           <p class="support-copy">
-            Internal Medicine, Family Medicine, Pediatrics, Medicine-Pediatrics, Emergency Medicine, General Surgery, Orthopedic Surgery, Anesthesiology, Psychiatry, Radiology, Neurology, Obstetrics &amp; Gynecology, Dermatology, Ophthalmology, Otolaryngology, Urology, Physical Medicine &amp; Rehabilitation, and Pathology.
+            Internal Medicine, Family Medicine, Pediatrics, Medicine-Pediatrics, Emergency Medicine, General Surgery, Orthopedic Surgery, Anesthesiology, Psychiatry, Radiology, Neurology, Obstetrics &amp; Gynecology, Dermatology, Ophthalmology, Otolaryngology, Urology, Physical Medicine &amp; Rehabilitation, Pathology, and a broad set of 101 fellowship paths that sit within or alongside those homes.
           </p>
         </div>
       </div>
@@ -305,6 +320,62 @@
           </div>
           <p class="share-status" id="shareImportStatus"></p>
         </section>
+      </div>
+    </section>
+  </div>
+
+  <div class="info-modal hidden" id="exploreModal" aria-hidden="true">
+    <div class="info-modal__backdrop" id="exploreBackdrop"></div>
+    <section class="info-pane info-pane--modal explore-pane" role="dialog" aria-modal="true" aria-labelledby="exploreTitle">
+      <div class="info-pane__topbar">
+        <div class="info-pane__intro">
+          <p class="section-kicker">Explore</p>
+          <h2 id="exploreTitle">A map of specialties and fellowship paths.</h2>
+          <p class="share-pane__lede">
+            The inner ring shows specialties. The outer ring shows fellowship paths that branch out from them. Click any node to inspect the fit, the parent specialty, and nearby paths.
+          </p>
+        </div>
+        <button class="ghost-button info-pane__close" id="closeExploreButton" type="button">Close</button>
+      </div>
+
+      <div class="explore-layout">
+        <section class="explore-canvas-wrap" aria-labelledby="exploreCanvasLabel">
+          <div class="explore-legend">
+            <span class="explore-legend__item"><span class="explore-legend__dot explore-legend__dot--specialty"></span> Specialty</span>
+            <span class="explore-legend__item"><span class="explore-legend__dot explore-legend__dot--fellowship"></span> Fellowship path</span>
+          </div>
+          <p class="sr-only" id="exploreCanvasLabel">Network map of specialties and fellowship paths</p>
+          <div class="explore-canvas-shell">
+            <svg class="explore-canvas" id="exploreCanvas" viewBox="0 0 1280 920" aria-labelledby="exploreCanvasLabel"></svg>
+          </div>
+        </section>
+
+        <aside class="explore-inspector" aria-live="polite">
+          <p class="section-kicker" id="exploreNodeType">Specialty</p>
+          <h3 id="exploreNodeTitle">Internal Medicine</h3>
+          <p class="explore-inspector__lede" id="exploreNodeBlurb"></p>
+
+          <div class="explore-inspector__stats">
+            <div class="explore-stat">
+              <span class="meta-block__label">Current fit</span>
+              <strong id="exploreNodeScore">0%</strong>
+            </div>
+            <div class="explore-stat">
+              <span class="meta-block__label">Home specialty</span>
+              <strong id="exploreNodeParent">Standalone specialty</strong>
+            </div>
+          </div>
+
+          <div class="explore-inspector__block">
+            <span class="meta-block__label">What tends to pull this up</span>
+            <ul class="explore-note-list" id="exploreNodeNotes"></ul>
+          </div>
+
+          <div class="explore-inspector__block">
+            <span class="meta-block__label">Connected paths</span>
+            <div class="explore-chip-list" id="exploreNodeConnections"></div>
+          </div>
+        </aside>
       </div>
     </section>
   </div>

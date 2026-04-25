@@ -241,35 +241,7 @@ a {
   height: 100%;
   align-items: center;
   justify-content: flex-start;
-  flex-direction: column;
-  gap: 12px;
   padding: 18px 8px;
-}
-
-.collapsedSeries,
-.collapsedCase {
-  width: 100%;
-  display: inline-grid;
-  place-items: center;
-  border-radius: 20px;
-  border: 1px solid rgba(255, 181, 53, 0.22);
-  background:
-    linear-gradient(180deg, rgba(255, 214, 44, 0.12), rgba(255, 255, 255, 0.02) 24%, rgba(255, 255, 255, 0.01)),
-    rgba(0, 0, 0, 0.94);
-  color: var(--ink);
-  box-shadow: inset 0 0 0 1px rgba(255, 214, 44, 0.06);
-}
-
-.collapsedSeries {
-  min-height: 72px;
-  font-family: var(--font-display);
-  font-size: 1rem;
-}
-
-.collapsedCase {
-  min-height: 58px;
-  font-size: 1rem;
-  font-weight: 700;
 }
 
 .sidebarNavHeader,
@@ -670,8 +642,15 @@ iframe {
 }
 
 .viewerWelcomeTitle {
-  font-size: clamp(2.6rem, 5vw, 4.3rem);
-  line-height: 0.95;
+  margin: 0 0 18px;
+  line-height: 1;
+}
+
+.viewerWelcomeLogo {
+  display: block;
+  width: min(100%, 760px);
+  max-width: 100%;
+  height: auto;
 }
 
 .viewerWelcomeCopy {
@@ -736,6 +715,11 @@ body.sidebarCollapsed .sidebarContent {
 
 body.sidebarCollapsed .collapsedSidebarCard {
   display: flex;
+}
+
+body.sidebarCollapsed .collapsedToggleButton {
+  font-size: 1.35rem;
+  line-height: 1;
 }
 
 @media (max-width: 980px) {
@@ -833,13 +817,6 @@ body.sidebarCollapsed .collapsedSidebarCard {
     padding-inline: 16px;
   }
 
-  .collapsedSeries,
-  .collapsedCase {
-    width: auto;
-    min-height: 44px;
-    padding: 0 12px;
-  }
-
   .viewerWorkspace {
     background:
       radial-gradient(circle at top center, rgba(255, 45, 34, 0.06), transparent 18%),
@@ -864,7 +841,11 @@ body.sidebarCollapsed .collapsedSidebarCard {
   }
 
   .viewerWelcomeTitle {
-    font-size: clamp(2.2rem, 9vw, 3.1rem);
+    margin-bottom: 14px;
+  }
+
+  .viewerWelcomeLogo {
+    width: 100%;
   }
 
 }

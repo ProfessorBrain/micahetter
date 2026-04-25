@@ -1,0 +1,254 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="adventures-case-title" content="Under the Right Ribs" />
+  <meta name="adventures-case-subtitle" content="Biliary pain with an edge" />
+  <title>Adventures in Medicine - Surgery - Case 2</title>
+  <link rel="stylesheet" href="../../adventures-casebook.css" />
+  <script src="../../adventures-case-shell.js" defer></script>
+  <script src="../../adventures-casebook-runtime.js" defer></script>
+</head>
+<body>
+  <noscript>This case requires JavaScript in order to present its interactive choices.</noscript>
+  <main class="caseApp">
+    <div class="caseStage">
+      <div class="caseBannerWrap"><div class="caseBanner">ADVENTURES IN SURGERY</div></div>
+      <section class="caseFrame" aria-live="polite">
+        <h1 class="sceneTitle" id="sceneTitle"></h1>
+        <div class="sceneBody" id="sceneBody"></div>
+        <ul class="sceneBullets isHidden" id="sceneBullets"></ul>
+        <div class="sceneOptions" id="sceneOptions"></div>
+        <div class="sceneFooter"><button type="button" class="backButton" id="backButton" aria-label="Go back" disabled>&larr;</button></div>
+      </section>
+    </div>
+  </main>
+  <script id="adventures-casebook-data" type="application/json">
+{
+    "scenes":  {
+                   "start":  {
+                                 "title":  "Case 2: Under the Right Ribs",
+                                 "body":  [
+                                              "Devon, 47, comes in with right upper quadrant pain that started after dinner and stayed long enough to make him stop calling it indigestion.",
+                                              "He has had shorter episodes before, but this time there is fever, nausea, and a look on his face that suggests the pattern has shifted.",
+                                              "The key question is whether this is a straightforward gallbladder case, a biliary tree case, or a patient who will punish delay while everyone waits for the perfect distinction."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "next":  "step1",
+                                                     "label":  "Begin the case"
+                                                 }
+                                             ]
+                             },
+                   "step1":  {
+                                 "title":  "What deserves the first move?",
+                                 "body":  [
+                                              "He is not unstable, but he is febrile and more uncomfortable than he wants to admit. The pain is localizing now instead of drifting."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Start with sepsis-minded basics, RUQ exam, labs, and imaging while keeping both gallbladder and ductal disease active.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This keeps the time-sensitive operative or resuscitative pathway active before the case becomes falsely comfortable.",
+                                                                                   "The risk is that you move before every detail is polished, which is often the cost of good surgical timing."
+                                                                               ],
+                                                                      "title":  "You protect the highest-consequence surgical branch first."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Spend more time on broader abdominal differentials before you let the presentation become biliary by default.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "A cleaner first picture can improve every downstream decision, especially when several surgical pathways still compete.",
+                                                                                   "The risk is that refinement can become delay if the physiology is already asking for action."
+                                                                               ],
+                                                                      "title":  "You sharpen the anatomy before you escalate."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Treat symptoms first and see whether a calmer patient gives you a more trustworthy abdominal story before escalating.",
+                                                     "next":  "step2",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That protects against premature closure when medicine, trauma, and surgery still overlap.",
+                                                                                   "It becomes weaker only if broadness slows moves that would still be reasonable under uncertainty."
+                                                                               ],
+                                                                      "title":  "You widen the frame before you commit to one surgical story."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step2":  {
+                                 "title":  "Where do you narrow next?",
+                                 "body":  [
+                                              "Murphy-type tenderness is persuasive, but the rest of the picture still leaves room for cholangitis, hepatitis, pancreatitis, and nonbiliary mimics."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Let the localization and inflammatory picture push you toward early biliary imaging and surgical consultation.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This keeps the workup tied to anatomy and consequence rather than to a generic checklist.",
+                                                                                   "It fits best when the exam and history are specific enough to deserve that trust."
+                                                                               ],
+                                                                      "title":  "You let the bedside pattern drive the next diagnostic step."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Use the initial chemistry panel to decide whether the ductal side of the differential deserves to outrank the gallbladder side.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That can rescue the case from overconfidence in a subtle or misleading presentation.",
+                                                                                   "The risk is that a scan cannot replace bedside synthesis if the clinical question is still poorly framed."
+                                                                               ],
+                                                                      "title":  "You use imaging and objective data to challenge the first impression."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Reassess after fluids, analgesia, and antiemetics to decide whether the tenderness still carries the same urgency.",
+                                                     "next":  "step3",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "A cleaner second exam can be more revealing than a rushed first conclusion.",
+                                                                                   "It becomes weak only when reassessment is standing in for a decision no one wants to own."
+                                                                               ],
+                                                                      "title":  "You use serial reassessment and early treatment as part of the diagnostic tool."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step3":  {
+                                 "title":  "How do the first answers change the frame?",
+                                 "body":  [
+                                              "Labs and ultrasound start to organize the anatomy, but they may not fully settle whether this needs antibiotics, ERCP discussion, or a more direct trip toward cholecystectomy."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "At this point, you have enough to move from generic abdominal pain to active biliary disease planning.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "At this point, that is a reasonable move when the syndrome is leaning hard but not closed.",
+                                                                                   "It preserves momentum without overselling certainty."
+                                                                               ],
+                                                                      "title":  "You let the new data strengthen the leading pathway without pretending the case is finished."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Keep multiple biliary pathways alive because the management question is now as important as the label.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "That protects against finding one plausible answer and stopping while the physiology is still unsettled.",
+                                                                                   "The risk is that too much openness can flatten the hierarchy of what matters most right now."
+                                                                               ],
+                                                                      "title":  "You keep competing mechanisms alive because the consequences of narrowing too early are still real."
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Manage around unresolved acute biliary disease rather than around a single diagnosis you cannot yet completely prove.",
+                                                     "next":  "step4",
+                                                     "response":  {
+                                                                      "body":  [
+                                                                                   "This can be a strong surgery move when timing and disposition matter more tonight than a perfect name.",
+                                                                                   "It works best if the category actually changes what you monitor, consult, or prepare for."
+                                                                               ],
+                                                                      "title":  "You Treat this as an unresolved surgical syndrome rather than around a forced label."
+                                                                  }
+                                                 }
+                                             ]
+                             },
+                   "step4":  {
+                                 "title":  "How do you set the next step?",
+                                 "body":  [
+                                              "Devon wants to know whether this is a tonight problem or a sometime-this-month problem."
+                                          ],
+                                 "options":  [
+                                                 {
+                                                     "label":  "Set the next step around source control timing, antibiotics if indicated, and whether GI or surgery should move first.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You make the next step fit the remaining operative and physiologic risk.",
+                                                                      "body":  [
+                                                                                   "This plan follows the consequences still on the table rather than the apparent calm at the bedside.",
+                                                                                   "It is often the strongest close when the syndrome matters more than the patient\u0027s current comfort."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Biliary cases often become surgical because of tempo before they become tidy because of diagnosis."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "RUQ pain can still involve more than the gallbladder.",
+                                                                                                         "A patient can look stable and still need a same-admission plan.",
+                                                                                                         "In surgery, anatomy and timing often have to be decided in parallel."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Use observation and serial labs only if the patient\u0027s physiology and imaging still support a narrower pace.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You turn uncertainty into a structured surgical plan.",
+                                                                      "body":  [
+                                                                                   "This respects ambiguity without pretending it has already been solved.",
+                                                                                   "It fits best when observation, consultation, imaging, and serial exams each have a clear job."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Biliary cases often become surgical because of tempo before they become tidy because of diagnosis."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "RUQ pain can still involve more than the gallbladder.",
+                                                                                                         "A patient can look stable and still need a same-admission plan.",
+                                                                                                         "In surgery, anatomy and timing often have to be decided in parallel."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 },
+                                                 {
+                                                     "label":  "Let outpatient timing remain possible only if infection and obstruction have truly moved down the list rather than merely stayed unconfirmed.",
+                                                     "resetHistoryOnContinue":  true,
+                                                     "next":  "start",
+                                                     "response":  {
+                                                                      "title":  "You let stability matter, but only after it is earned.",
+                                                                      "body":  [
+                                                                                   "A calmer bedside picture can support a narrower plan if the physiology and trajectory truly allow it.",
+                                                                                   "The danger is mistaking temporary improvement for a durable safety margin."
+                                                                               ],
+                                                                      "continueLabel":  "Play the case again",
+                                                                      "reflection":  {
+                                                                                         "title":  "Clinical reflection",
+                                                                                         "body":  [
+                                                                                                      "Biliary cases often become surgical because of tempo before they become tidy because of diagnosis."
+                                                                                                  ],
+                                                                                         "bullets":  [
+                                                                                                         "RUQ pain can still involve more than the gallbladder.",
+                                                                                                         "A patient can look stable and still need a same-admission plan.",
+                                                                                                         "In surgery, anatomy and timing often have to be decided in parallel."
+                                                                                                     ]
+                                                                                     }
+                                                                  }
+                                                 }
+                                             ]
+                             }
+               },
+    "startScene":  "start",
+    "banner":  "ADVENTURES IN SURGERY",
+    "caseTitle":  "Under the Right Ribs"
+}
+  </script>
+</body>
+</html>
