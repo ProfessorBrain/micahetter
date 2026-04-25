@@ -337,7 +337,7 @@
           body: [
             "You are a medical student seeing Sam, 32, in an outpatient primary care clinic.",
             "Sam presents for a first visit with the chief complaint of feeling down. The task is not just to recognize depression, but to interview carefully, avoid premature closure, and notice what still needs to be ruled out before you finalize a plan.",
-            "Your choices shape what gets uncovered and what gets missed."
+            "Your choices affect what gets clarified and what gets missed."
           ],
           options: [
             { label: "Begin the encounter", next: "step1" }
@@ -349,7 +349,7 @@
           step: "Start with rapport before interpretation",
           meta: defaultMeta,
           body: [
-            "Sam is meeting you for the first time. The way you open the visit will shape trust and the quality of the history that follows."
+            "Sam is meeting you for the first time. The way you open the visit will affect trust and the quality of the history that follows."
           ],
           options: [
             { label: "Ask Sam what brought them into the office.", next: "step1A" },
@@ -386,7 +386,7 @@
         step1C: {
           eyebrow: "Step 1 feedback",
           title: "You labeled the problem too early.",
-          step: "Avoid diagnostic framing before the story",
+          step: "Avoid diagnostic wording before the history",
           meta: defaultMeta,
           body: [
             "You introduced yourself, but you also assumed a diagnosis from very little data.",
@@ -403,7 +403,7 @@
           meta: defaultMeta,
           body: [
             "Reviewing the chart is important, but doing it while greeting Sam risks signaling distraction.",
-            "You can recover, but the opening could have been cleaner."
+            "You can recover, but the opening could have been more direct."
           ],
           options: [
             { label: "Continue to Step 2", next: "step2" }
@@ -467,7 +467,7 @@
           step: "Do not put symptoms in the patient's mouth",
           meta: defaultMeta,
           body: [
-            "Leading with low energy before Sam has confirmed it can shape the answer and narrow the rest of the visit."
+            "Leading with low energy before Sam has confirmed it can affect the answer and narrow the rest of the visit."
           ],
           options: [
             { label: "Continue to Step 3", next: "step3" }
@@ -476,7 +476,7 @@
         step3: {
           eyebrow: "Step 3",
           title: "What is your next step?",
-          step: "Frame severity and functional impact",
+          step: "Assess severity and functional impact",
           meta: diagnosticMeta,
           body: [
             "Sam says, 'I've been feeling down for a while. It's affecting my concentration, and I'm tired most of the time.'",
@@ -495,7 +495,7 @@
           step: "Do not lose the overall syndrome",
           meta: diagnosticMeta,
           body: [
-            "Appetite and weight matter, but focusing on a single symptom now can make you lose the larger picture of duration and impairment."
+            "Appetite and weight matter, but focusing on a single symptom now can make you lose the larger presentation of duration and impairment."
           ],
           options: [
             { label: "Continue to Step 4", next: "step4" }
@@ -504,7 +504,7 @@
         step3B: {
           eyebrow: "Step 3 feedback",
           title: "This is the best next step.",
-          step: "Duration and function shape diagnosis",
+          step: "Duration and function affect diagnosis",
           meta: diagnosticMeta,
           body: [
             "Exactly. Duration and functional impact help distinguish a passing reaction from a depressive syndrome and set up the rest of the interview well."
@@ -608,7 +608,7 @@
           step: "Rule out common contributors before you close the loop",
           meta: diagnosticMeta,
           body: [
-            "By now you have a convincing depressive picture: low mood, low interest, sleep disturbance, appetite change, low energy, poor concentration, and clear functional decline.",
+            "By now you have a convincing depressive presentation: low mood, low interest, sleep disturbance, appetite change, low energy, poor concentration, and clear functional decline.",
             "You still need to decide how carefully you will evaluate contributors before finalizing the diagnosis."
           ],
           options: [
@@ -693,7 +693,7 @@
         },
         step6ProbeSI: {
           eyebrow: "Risk clarification",
-          title: "Now the risk picture is more accurate.",
+          title: "Now the risk presentation is more accurate.",
           step: "Specific questions change the assessment",
           meta: ["safety assessment", "suicidal ideation", "safety planning"],
           body: [
@@ -724,7 +724,7 @@
           meta: ["treatment discussion", "safety not assessed", "assessment incomplete"],
           body: [
             "You move into treatment preferences and next-step logistics without ever directly asking about thoughts of death or killing oneself.",
-            "The plan may sound thoughtful, but the risk picture is incomplete."
+            "The plan may sound thoughtful, but the risk presentation is incomplete."
           ],
           options: [
             { label: "Continue to treatment planning.", next: "step7" }
@@ -744,7 +744,7 @@
             ];
           } else if (state.safetyStatus === "deathwish") {
             introBody = [
-              "You have identified a death wish but you did not establish that suicidal ideation is absent. You know there is meaningful distress, but the risk picture is only partially defined.",
+              "You have identified a death wish but you did not establish that suicidal ideation is absent. You know there is meaningful distress, but the risk presentation is only partially defined.",
               state.ruleoutsDone
                 ? "You still need a treatment plan with explicit follow-up and ongoing check-ins."
                 : "You still need a treatment plan, but the assessment is incomplete both medically and from a risk standpoint."
@@ -823,7 +823,7 @@
           ],
           bullets: [
             "What you did well: you clarified death wish or suicidal ideation and did not leave the risk conversation vague.",
-            "What you missed: common medical contributors still matter, even when the story sounds highly psychiatric.",
+            "What you missed: common medical contributors still matter, even when the history sounds highly psychiatric.",
             "Teaching pearl: psychiatric care and medical ruleouts are not competing tasks. In many outpatient cases, they are both standard care."
           ],
           reflection: "A good psychiatric interview is stronger when it still behaves like good medicine.",
@@ -856,7 +856,7 @@
           step: "The most serious missed branch",
           meta: ["safety missed", "high-stakes consequence", "serious clinical error"],
           body: [
-            "Over the next few months, Sam's depression deepens. Because your visit never included a direct question about death wish, not wanting to be alive, or killing oneself, the risk picture remained invisible in the chart and in your plan.",
+            "Over the next few months, Sam's depression deepens. Because your visit never included a direct question about death wish, not wanting to be alive, or killing oneself, the risk presentation remained invisible in the chart and in your plan.",
             "One evening, after a particularly difficult day at work and an argument with a roommate, Sam attempts suicide and is brought to the emergency department."
           ],
           bullets: [
