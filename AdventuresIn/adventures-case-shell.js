@@ -462,6 +462,30 @@
         'opacity: 0.42;' +
         'border-color: rgba(255, 157, 23, 0.22);' +
       '}' +
+      '@media (max-height: 760px) and (min-width: 721px) {' +
+        'body.has-medicine-shell.medicineTwineCase {' +
+          'gap: 1rem !important;' +
+          'padding: 1.2rem 0.9rem 1.35rem !important;' +
+        '}' +
+        'body.has-medicine-shell.medicineTwineCase .medicineSeriesPill {' +
+          'padding: 0.55rem 1.25rem;' +
+          'font-size: clamp(0.96rem, 1.45vw, 1.18rem);' +
+        '}' +
+        'body.has-medicine-shell.medicineTwineCase tw-story {' +
+          'padding: 1.45rem 1.2rem 1.1rem !important;' +
+          'line-height: 1.62 !important;' +
+        '}' +
+        'body.has-medicine-shell.medicineTwineCase tw-story h1,' +
+        'body.has-medicine-shell.medicineTwineCase tw-story h2,' +
+        'body.has-medicine-shell.medicineTwineCase tw-story h3 {' +
+          'margin-bottom: 1rem !important;' +
+        '}' +
+        'body.has-medicine-shell.medicineTwineCase tw-passage tw-link,' +
+        'body.has-medicine-shell.medicineTwineCase tw-passage .enchantment-link {' +
+          'margin-top: 0.65rem !important;' +
+          'padding: 0.85rem 0.95rem !important;' +
+        '}' +
+      '}' +
       '@media (max-width: 720px) {' +
         'body.has-medicine-shell tw-story tw-passage { padding-top: 8.2em !important; }' +
         'body.has-medicine-shell tw-sidebar { top: 6.6rem !important; }' +
