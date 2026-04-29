@@ -30,8 +30,6 @@
 .tutorial-case-focus{margin:.2rem 0 .65rem;padding:.65rem .8rem;border-radius:10px;background:linear-gradient(180deg, #f4f9ff 0%, #eaf4ff 100%);border:1px solid #bdd5f7;box-shadow:0 1px 0 rgba(255,255,255,.8) inset;font-size:13px;line-height:1.5;color:#173a66;font-weight:600}
 .tutorial-controls{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.75rem}
 .tutorial-aux{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.55rem}
-.learning-eye-toggle{display:inline-flex;align-items:center;gap:.35rem;width:max-content;margin:.1rem 0 .2rem;padding:.28rem .62rem;border-radius:999px;border:1px solid rgba(0,0,0,.16);background:#fff;color:#244b2d;font-size:12px;line-height:1;box-shadow:0 1px 0 rgba(255,255,255,.8) inset}
-.learning-eye-toggle input{margin:0}
 .tutorial-choice-row{display:flex;flex-wrap:wrap;gap:.45rem;margin:.45rem 0 .6rem}
 .tutorial-choice{padding:.3rem .65rem;border-radius:999px;border:1px solid rgba(0,0,0,.18);background:#fff;cursor:pointer;font-size:12px}
 .tutorial-choice.active{background:#eef5ff;border-color:#6aa1ff}
@@ -308,17 +306,15 @@ button.options-strong:active{
 #pathologyModal .pathology-action:disabled{cursor:default;opacity:.65}
 #pathologyModal .pathology-action:disabled:hover{filter:none}
 #artifactsModal fieldset{margin:0}
-#artifactsModal .modal-card fieldset > div{min-width:0;width:min(100%, 28rem)}
-#artifactsModal .artifact-control-row{display:grid;grid-template-columns:minmax(8.8rem, max-content) minmax(12rem, 1fr);align-items:center;gap:.35rem .65rem}
-#artifactsModal .artifact-control-row > label:first-child{margin-right:0}
-#artifactsModal .artifact-lead{grid-column:2;display:grid;grid-template-columns:auto minmax(8.5rem, 1fr);align-items:center;gap:.35rem;font-size:var(--ui-label-size);white-space:nowrap}
-#artifactsModal .artifact-lead select{width:100%;min-width:0;max-width:none;min-height:2.2rem}
+#artifactsModal .modal-card fieldset > div{min-width:max-content}
+#artifactsModal .artifact-control-row{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap}
+#artifactsModal .artifact-control-row > label:first-child{margin-right:.2rem}
+#artifactsModal .artifact-lead{display:inline-flex;align-items:center;gap:.35rem;font-size:var(--ui-label-size);white-space:nowrap}
+#artifactsModal .artifact-lead select{width:auto;min-width:8.5rem;max-width:12rem;min-height:2.2rem}
 #artifactsModal .artifact-slider{display:inline-flex;align-items:center;gap:.45rem;font-size:var(--ui-label-size);white-space:nowrap}
-#artifactsModal .artifact-slider input[type="range"]{width:100%;min-width:8.5rem}
+#artifactsModal .artifact-slider input[type="range"]{width:min(11rem, 42vw)}
 #artifactsModal .artifact-slider output{min-width:2.5rem;text-align:right;font-variant-numeric:tabular-nums}
 @media (max-width: 760px){
-  #artifactsModal .artifact-control-row{grid-template-columns:1fr}
-  #artifactsModal .artifact-lead{grid-column:1}
   #artifactsModal .modal-card{
     left:.5rem !important;
     right:.5rem;
@@ -327,270 +323,6 @@ button.options-strong:active{
     width:auto;
     max-width:none;
     max-height:none;
-  }
-}
-</style>
-
-<style id="responsive-scaling-pass">
-*, *::before, *::after{box-sizing:border-box}
-html, body{max-width:100vw;overflow:hidden}
-#topbar{width:100%;max-width:100vw;overflow-x:hidden;scrollbar-width:none}
-#topbar::-webkit-scrollbar{display:none}
-#wrap{width:100%;max-width:100vw}
-#c{max-width:100%}
-#topbar > .ctrl,
-#rhythmFieldset .ctrl{min-width:0}
-#topbar > .ctrl select,
-#rhythmFieldset select{max-width:100%;min-width:0}
-#montageSel{max-width:min(18rem, 24vw)}
-#timebase{max-width:7.4rem}
-#sensitivity{max-width:7rem}
-#rhythmSel{max-width:9rem}
-#sleepSel{max-width:11rem}
-.topbar-speed{min-width:4.75rem;width:4.75rem;max-width:4.75rem}
-#pathologyModal .modal-card,
-#artifactsModal .modal-card,
-#aboutModal .modal-card,
-#tutorialSetupModal .modal-card{max-height:min(86dvh, calc(var(--app-height) - 1rem));overflow:auto}
-
-#topbar.topbar-wrap{
-  flex-wrap:wrap !important;
-  overflow-x:hidden !important;
-  align-items:flex-end;
-  gap:.4rem .55rem;
-  padding:.45rem .65rem;
-}
-#topbar.topbar-wrap > .ctrl{flex:0 1 auto;width:auto}
-#topbar.topbar-wrap > #rhythmFieldset{
-  flex:1 1 auto;
-  min-width:min(30rem, 100%);
-  order:1;
-}
-#topbar.topbar-wrap > #rhythmFieldset .mode-controls{
-  flex-wrap:wrap;
-  gap:.35rem .55rem;
-}
-#topbar.topbar-wrap > .topbar-separator{display:none}
-#topbar.topbar-wrap > .topbar-actions{
-  order:2;
-  flex:1 1 100%;
-  width:100%;
-  margin-left:0;
-  justify-content:flex-start;
-  align-items:flex-end;
-  flex-wrap:wrap;
-  gap:.35rem;
-}
-
-@media (min-width:1501px){
-  #topbar{flex-wrap:nowrap;align-items:flex-end}
-  #rhythmFieldset .mode-controls,
-  .topbar-actions{flex-wrap:nowrap}
-}
-
-@media (max-width:1500px) and (min-width:901px){
-  #topbar{
-    flex-wrap:wrap !important;
-    overflow-x:hidden !important;
-    align-items:flex-end;
-    gap:.4rem .55rem;
-    padding:.45rem .65rem;
-  }
-  #topbar > .ctrl{flex:0 1 auto;width:auto}
-  #montageSel{max-width:min(17rem, 42vw)}
-  #rhythmFieldset{
-    flex:1 1 auto;
-    min-width:min(30rem, 100%);
-    order:1;
-  }
-  #rhythmFieldset .mode-controls{
-    flex-wrap:wrap;
-    gap:.35rem .55rem;
-  }
-  .topbar-separator{display:none}
-  .topbar-actions{
-    order:2;
-    flex:1 1 100%;
-    width:100%;
-    margin-left:0;
-    justify-content:flex-start;
-    align-items:flex-end;
-    flex-wrap:wrap;
-    gap:.35rem;
-  }
-  #topbar button,
-  #topbar select{min-height:2rem}
-}
-
-@media (max-width:900px){
-  #topbar{
-    flex-wrap:wrap !important;
-    overflow-x:hidden !important;
-    overflow-y:visible;
-    align-items:stretch;
-    padding:.4rem .5rem;
-  }
-  #topbarToggle{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    min-height:2.15rem;
-    padding:.42rem .7rem;
-    flex:0 0 auto;
-  }
-  #topbar.topbar-mobile-collapsed{
-    min-height:3rem;
-    gap:0;
-    align-items:center;
-  }
-  #topbar.topbar-mobile-collapsed > :not(#topbarToggle){
-    display:none;
-  }
-  #topbar.topbar-mobile-expanded{
-    display:grid;
-    grid-template-columns:repeat(2, minmax(0, 1fr));
-    gap:.45rem;
-    align-items:end;
-    max-height:min(58dvh, 25rem);
-    overflow-y:auto;
-    overscroll-behavior:contain;
-  }
-  #topbar.topbar-mobile-expanded > #topbarToggle{
-    grid-column:1 / -1;
-    width:max-content;
-    margin:0;
-    align-self:start;
-  }
-  #topbar.topbar-mobile-expanded > .ctrl{
-    min-width:0;
-    width:100%;
-    flex:initial;
-  }
-  #topbar.topbar-mobile-expanded > .ctrl:first-of-type{
-    grid-column:1 / -1;
-  }
-  #topbar.topbar-mobile-expanded > .ctrl select{
-    width:100%;
-    max-width:none;
-  }
-  #topbar.topbar-mobile-expanded > .topbar-separator{
-    display:none;
-  }
-  #topbar.topbar-mobile-expanded > #rhythmFieldset{
-    grid-column:1 / -1;
-    width:100%;
-    min-width:0;
-    flex:initial;
-  }
-  #topbar.topbar-mobile-expanded > #rhythmFieldset .mode-controls{
-    display:grid;
-    grid-template-columns:repeat(2, minmax(0, 1fr));
-    gap:.4rem;
-    align-items:end;
-  }
-  #topbar.topbar-mobile-expanded > #rhythmFieldset .ctrl{
-    width:100%;
-    min-width:0;
-  }
-  #topbar.topbar-mobile-expanded > #rhythmFieldset .ctrl select{
-    width:100%;
-    max-width:none;
-  }
-  #topbar.topbar-mobile-expanded > #rhythmFieldset .pill{
-    grid-column:auto;
-    justify-self:start;
-    align-self:end;
-  }
-  #topbar.topbar-mobile-expanded > .topbar-actions{
-    grid-column:1 / -1;
-    display:grid;
-    grid-template-columns:repeat(auto-fit, minmax(4.5rem, max-content));
-    width:100%;
-    margin-left:0;
-    justify-content:start;
-    align-items:end;
-    gap:.4rem;
-  }
-  #quizPanel,
-  .tutorial-panel{
-    left:.5rem;
-    right:.5rem;
-    width:auto;
-    max-width:none;
-    top:auto;
-    bottom:.5rem;
-  }
-  #quizPanel{max-height:min(58dvh, 28rem)}
-  .tutorial-panel{max-height:min(62dvh, 32rem)}
-  #pathologyModal .modal-card,
-  #artifactsModal .modal-card,
-  #aboutModal .modal-card,
-  #tutorialSetupModal .modal-card{
-    width:min(96vw, 34rem);
-    max-width:96vw;
-    max-height:min(82dvh, calc(var(--app-height) - 1rem));
-  }
-  #artifactsModal .modal-card{
-    left:.5rem !important;
-    right:.5rem;
-    top:auto !important;
-    bottom:.5rem;
-    width:auto;
-    max-width:none;
-    overflow:auto;
-  }
-}
-
-@media (max-width:520px){
-  #topbar.topbar-mobile-expanded{
-    grid-template-columns:1fr;
-    max-height:min(64dvh, 28rem);
-  }
-  #topbar.topbar-mobile-expanded > .ctrl:first-of-type,
-  #topbar.topbar-mobile-expanded > #rhythmFieldset,
-  #topbar.topbar-mobile-expanded > .topbar-actions,
-  #topbar.topbar-mobile-expanded > #topbarToggle{
-    grid-column:1;
-  }
-  #topbar.topbar-mobile-expanded > #rhythmFieldset .mode-controls{
-    grid-template-columns:1fr;
-  }
-  #topbar.topbar-mobile-expanded > .topbar-actions{
-    grid-template-columns:repeat(auto-fit, minmax(4rem, max-content));
-  }
-  #topbar button{padding:.38rem .55rem}
-  .topbar-speed{min-width:4.5rem;width:4.5rem;max-width:4.5rem}
-  #pathologyModal .pathology-action-row{
-    display:grid;
-    grid-template-columns:1fr;
-    width:100%;
-  }
-  #pathologyModal .pathology-action,
-  #pathologyModal .pathology-duration,
-  #pathologyModal .pathology-slider,
-  #pathologyModal .pathology-focus{
-    width:100%;
-    min-width:0;
-  }
-  #pathologyModal .pathology-focus select{
-    width:100%;
-    max-width:none;
-  }
-  #pathologyModal .pathology-slider input[type="range"],
-  #artifactsModal .artifact-slider input[type="range"]{
-    min-width:0;
-  }
-  #artifactsModal .modal-card fieldset > div{
-    width:100%;
-  }
-  #artifactsModal .artifact-control-row{
-    grid-template-columns:1fr;
-  }
-  #artifactsModal .artifact-lead{
-    grid-column:1;
-  }
-  .modal-actions{
-    flex-wrap:wrap;
   }
 }
 </style>
@@ -649,7 +381,6 @@ html, body{max-width:100vw;overflow:hidden}
           </select>
         </div>
         <label class="pill"><input type="checkbox" id="eyesOpen"> Eyes open</label>
-        <label class="pill"><input type="checkbox" id="showEkg"> EKG</label>
       </div>
     </div>
     <div class="topbar-actions">
@@ -728,83 +459,28 @@ html, body{max-width:100vw;overflow:hidden}
       <fieldset>
         <legend>Artifacts</legend>
         <div style="display:flex;flex-direction:column;gap:.35rem;margin-top:.25rem">
+          <label><input id="blink" type="checkbox"> Eye blinks</label>
+          <label><input id="rovingEyes" type="checkbox"> Roving eye movements</label>
+          <label><input id="reading" type="checkbox"> Reading</label>
+          <label><input id="ventilator" type="checkbox"> Ventilator</label>
           <div class="artifact-control-row">
-            <label for="blink">Eye blinks</label>
-            <label class="artifact-slider" for="blink">
-              <input id="blink" type="range" min="0" max="100" step="1" value="0">
-              <output id="blinkValue" for="blink">0%</output>
-            </label>
-          </div>
-          <div class="artifact-control-row">
-            <label for="rovingEyes">Roving eye movements</label>
-            <label class="artifact-slider" for="rovingEyes">
-              <input id="rovingEyes" type="range" min="0" max="100" step="1" value="0">
-              <output id="rovingEyesValue" for="rovingEyes">0%</output>
-            </label>
-          </div>
-          <div class="artifact-control-row">
-            <label for="reading">Reading</label>
-            <label class="artifact-slider" for="reading">
-              <input id="reading" type="range" min="0" max="100" step="1" value="0">
-              <output id="readingValue" for="reading">0%</output>
-            </label>
-          </div>
-          <div class="artifact-control-row">
-            <label for="ventilator">Ventilator</label>
-            <label class="artifact-slider" for="ventilator">
-              <input id="ventilator" type="range" min="0" max="100" step="1" value="0">
-              <output id="ventilatorValue" for="ventilator">0%</output>
-            </label>
-          </div>
-          <div class="artifact-control-row">
-            <label for="photicStim">Photic stimulation</label>
-            <label class="artifact-slider" for="photicStim">
-              <input id="photicStim" type="range" min="0" max="100" step="1" value="0">
-              <output id="photicStimValue" for="photicStim">0%</output>
-            </label>
+            <label><input id="photicStim" type="checkbox"> Photic stimulation</label>
             <label class="artifact-lead" for="photicHzSel">
               <span>Rate</span>
               <select id="photicHzSel" aria-label="Photic stimulation rate"></select>
             </label>
           </div>
+          <label><input id="chew" type="checkbox"> Chewing</label>
+          <label><input id="sweat" type="checkbox"> Sweat</label>
           <div class="artifact-control-row">
-            <label for="chew">Chewing</label>
-            <label class="artifact-slider" for="chew">
-              <input id="chew" type="range" min="0" max="100" step="1" value="0">
-              <output id="chewValue" for="chew">0%</output>
-            </label>
-          </div>
-          <div class="artifact-control-row">
-            <label for="sweat">Sweat</label>
-            <label class="artifact-slider" for="sweat">
-              <input id="sweat" type="range" min="0" max="100" step="1" value="0">
-              <output id="sweatValue" for="sweat">0%</output>
-            </label>
-          </div>
-          <div class="artifact-control-row">
-            <label for="ekgArtifactSlider">EKG artifact</label>
-            <label class="artifact-slider" for="ekgArtifactSlider">
-              <input id="ekgArtifactSlider" type="range" min="0" max="100" step="1" value="0">
-              <output id="ekgArtifactValue" for="ekgArtifactSlider">0%</output>
-            </label>
-          </div>
-          <div class="artifact-control-row">
-            <label for="breach">Breach rhythm</label>
-            <label class="artifact-slider" for="breach">
-              <input id="breach" type="range" min="0" max="100" step="1" value="0">
-              <output id="breachValue" for="breach">0%</output>
-            </label>
+            <label><input id="breach" type="checkbox"> Breach rhythm</label>
             <label class="artifact-lead" for="breachLeadSel">
               <span>Lead</span>
               <select id="breachLeadSel"></select>
             </label>
           </div>
           <div class="artifact-control-row">
-            <label for="pop">Electrode pop</label>
-            <label class="artifact-slider" for="pop">
-              <input id="pop" type="range" min="0" max="100" step="1" value="0">
-              <output id="popValue" for="pop">0%</output>
-            </label>
+            <label><input id="pop" type="checkbox"> Electrode pop</label>
             <label class="artifact-lead" for="popLeadSel">
               <span>Lead</span>
               <select id="popLeadSel"></select>
@@ -988,8 +664,6 @@ const POP_LEAD_OPTIONS = [{value:'random', label:'Random'}].concat(
   POP_ELIGIBLE_ELECTRODES.map((name)=>({value:name, label:name}))
 );
 const POP_LEAD_SET = new Set(POP_ELIGIBLE_ELECTRODES);
-const EKG_ROW_PAIR = {a:'EKG', b:'EKG_REF', label:'EKG'};
-const EKG_DISPLAY_UV_RANGE = 760;
 const AVERAGE_ORDER = [
   "Fp1","F7","T3","T5",
   "Fp2","F8","T4","T6",
@@ -1880,8 +1554,6 @@ function photicStimLag(e){
 }
 function photicStimPathologyValue(clock, e){
   if (!(state.opts && state.opts.photicStim) || !AVG_ELECTRODE_SET.has(e)) return null;
-  const level = artifactLevel('photicStim');
-  if (level <= 0) return null;
   const cfg = state.photicStim || {active:false, t0:0, rateHz:15, driveAmp:38, harmonicAmp:12, flashAmp:15, envHz:0.08, phaseDrive:0, phaseHarm:0, phaseEnv:0, phaseFlash:0};
   if (!cfg.active) return null;
   const t = clock - cfg.t0;
@@ -1898,7 +1570,7 @@ function photicStimPathologyValue(clock, e){
   const flashComplex =
     1.05*Math.exp(-0.5*Math.pow((cyclePos - 0.08)/0.045, 2)) -
     0.30*Math.exp(-0.5*Math.pow((cyclePos - 0.24)/0.09, 2));
-  const overlay = level * regionW * env * (drive + cfg.flashAmp * flashComplex);
+  const overlay = regionW * env * (drive + cfg.flashAmp * flashComplex);
   const preserve = 0.26 + 0.34*(1-regionW);
   return {overlay, preserve};
 }
@@ -2130,18 +1802,18 @@ function schedulePop(now, immediate=false){
   const rng = state.rng || Math.random;
   const pool = POP_ELIGIBLE_ELECTRODES.length ? POP_ELIGIBLE_ELECTRODES : ['Fp1'];
   const selected = (state.artifactConfig && POP_LEAD_SET.has(state.artifactConfig.popLead)) ? state.artifactConfig.popLead : '';
-  const nextDelay = immediate ? (0.015 + 0.055*rng()) : (2.4 + 3.8*rng());
+  const nextDelay = immediate ? (0.04 + 0.14*rng()) : (2.8 + 5.2*rng());
   state.popEvent.active = false;
   state.popEvent.electrode = selected || pool[Math.floor(rng()*pool.length)];
   state.popEvent.t0 = now + nextDelay;
   state.popEvent.nextT = state.popEvent.t0;
   state.popEvent.polarity = rng() < 0.5 ? -1 : 1;
-  state.popEvent.amp = 420 + 360*rng();
-  state.popEvent.decayTau = 0.045 + 0.070*rng();
-  state.popEvent.recoveryTau = 0.20 + 0.34*rng();
-  state.popEvent.ringAmp = 0.08 + 0.10*rng();
-  state.popEvent.ringHz = 4.5 + 4.0*rng();
-  state.popEvent.dur = Math.max(0.48, state.popEvent.recoveryTau*2.7);
+  state.popEvent.amp = 140 + 190*rng();
+  state.popEvent.decayTau = 0.10 + 0.22*rng();
+  state.popEvent.recoveryTau = 0.42 + 0.82*rng();
+  state.popEvent.ringAmp = 0.04 + 0.08*rng();
+  state.popEvent.ringHz = 3.2 + 3.2*rng();
+  state.popEvent.dur = Math.max(0.65, state.popEvent.recoveryTau*3.2);
 }
 function syncPopGenerator(forceRestart=false){
   state.popEvent = state.popEvent || {active:false, t0:0, nextT:Infinity, electrode:'Fp1', polarity:1, amp:160, decayTau:0.18, recoveryTau:0.82, ringAmp:0.06, ringHz:4.2, dur:1.4};
@@ -2169,39 +1841,37 @@ function currentPopArtifact(clock){
     return null;
   }
   const sign = pop.polarity;
-  const peakT = 0.009;
+  const peakT = 0.015;
   const upstroke = Math.pow(Math.sin(0.5*Math.PI*Math.max(0, Math.min(1, x/peakT))), 0.72);
   const sharpDecayT = Math.max(0, x - peakT);
   const mainShape = x <= peakT
     ? upstroke
-    : (0.72*Math.exp(-sharpDecayT/0.020) + 0.28*Math.exp(-sharpDecayT/pop.decayTau));
+    : (0.82*Math.exp(-sharpDecayT/0.030) + 0.18*Math.exp(-sharpDecayT/pop.decayTau));
   const main = sign * pop.amp * mainShape;
-  const reboundT = Math.max(0, x - 0.046);
-  const rebound = -sign * 0.24*pop.amp * (1 - Math.exp(-reboundT/0.010)) * Math.exp(-reboundT/pop.recoveryTau);
-  const ring = sign * pop.ringAmp * pop.amp * Math.sin(2*Math.PI*pop.ringHz*x) * Math.exp(-x/0.18);
+  const reboundT = Math.max(0, x - 0.072);
+  const rebound = -sign * 0.18*pop.amp * (1 - Math.exp(-reboundT/0.016)) * Math.exp(-reboundT/pop.recoveryTau);
+  const ring = sign * pop.ringAmp * pop.amp * Math.sin(2*Math.PI*pop.ringHz*x) * Math.exp(-x/0.14);
   return {electrode: pop.electrode, value: main + rebound + ring};
 }
 const ZERO_EMG_WEIGHTS = Object.freeze({leftTemp:0, rightTemp:0, leftFront:0, rightFront:0, mid:0});
 function diffuseEmgLeadWeights(e){
-  if (/^F7$/.test(e)) return {leftTemp:1.00, rightTemp:0.10, leftFront:0.34, rightFront:0.06, mid:0.10};
-  if (/^T3$/.test(e)) return {leftTemp:0.92, rightTemp:0.10, leftFront:0.14, rightFront:0.05, mid:0.12};
-  if (/^T5$/.test(e)) return {leftTemp:0.72, rightTemp:0.08, leftFront:0.06, rightFront:0.03, mid:0.16};
-  if (/^Fp1$/.test(e)) return {leftTemp:0.28, rightTemp:0.06, leftFront:0.96, rightFront:0.08, mid:0.10};
-  if (/^F3$/.test(e)) return {leftTemp:0.24, rightTemp:0.06, leftFront:0.64, rightFront:0.08, mid:0.16};
-  if (/^C3$/.test(e)) return {leftTemp:0.26, rightTemp:0.05, leftFront:0.34, rightFront:0.07, mid:0.30};
-  if (/^P3$/.test(e)) return {leftTemp:0.18, rightTemp:0.04, leftFront:0.18, rightFront:0.05, mid:0.32};
-  if (/^O1$/.test(e)) return {leftTemp:0.13, rightTemp:0.03, leftFront:0.08, rightFront:0.03, mid:0.24};
-  if (/^F8$/.test(e)) return {leftTemp:0.10, rightTemp:1.00, leftFront:0.06, rightFront:0.34, mid:0.10};
-  if (/^T4$/.test(e)) return {leftTemp:0.10, rightTemp:0.92, leftFront:0.05, rightFront:0.14, mid:0.12};
-  if (/^T6$/.test(e)) return {leftTemp:0.08, rightTemp:0.72, leftFront:0.03, rightFront:0.06, mid:0.16};
-  if (/^Fp2$/.test(e)) return {leftTemp:0.06, rightTemp:0.28, leftFront:0.08, rightFront:0.96, mid:0.10};
-  if (/^F4$/.test(e)) return {leftTemp:0.06, rightTemp:0.24, leftFront:0.08, rightFront:0.64, mid:0.16};
-  if (/^C4$/.test(e)) return {leftTemp:0.05, rightTemp:0.26, leftFront:0.07, rightFront:0.34, mid:0.30};
-  if (/^P4$/.test(e)) return {leftTemp:0.04, rightTemp:0.18, leftFront:0.05, rightFront:0.18, mid:0.32};
-  if (/^O2$/.test(e)) return {leftTemp:0.03, rightTemp:0.13, leftFront:0.03, rightFront:0.08, mid:0.24};
-  if (/^Fz$/.test(e)) return {leftTemp:0.18, rightTemp:0.18, leftFront:0.42, rightFront:0.42, mid:0.28};
-  if (/^Cz$/.test(e)) return {leftTemp:0.12, rightTemp:0.12, leftFront:0.22, rightFront:0.22, mid:0.38};
-  if (/^Pz$/.test(e)) return {leftTemp:0.08, rightTemp:0.08, leftFront:0.12, rightFront:0.12, mid:0.34};
+  if (/^F7$/.test(e)) return {leftTemp:1.00, rightTemp:0.02, leftFront:0.28, rightFront:0.00, mid:0.00};
+  if (/^T3$/.test(e)) return {leftTemp:0.82, rightTemp:0.02, leftFront:0.05, rightFront:0.00, mid:0.00};
+  if (/^T5$/.test(e)) return {leftTemp:0.48, rightTemp:0.02, leftFront:0.00, rightFront:0.00, mid:0.00};
+  if (/^Fp1$/.test(e)) return {leftTemp:0.08, rightTemp:0.00, leftFront:0.86, rightFront:0.00, mid:0.00};
+  if (/^F3$/.test(e)) return {leftTemp:0.12, rightTemp:0.00, leftFront:0.42, rightFront:0.00, mid:0.02};
+  if (/^C3$/.test(e)) return {leftTemp:0.10, rightTemp:0.00, leftFront:0.18, rightFront:0.00, mid:0.04};
+  if (/^P3$/.test(e)) return {leftTemp:0.04, rightTemp:0.00, leftFront:0.05, rightFront:0.00, mid:0.02};
+  if (/^F8$/.test(e)) return {leftTemp:0.02, rightTemp:1.00, leftFront:0.00, rightFront:0.28, mid:0.00};
+  if (/^T4$/.test(e)) return {leftTemp:0.02, rightTemp:0.82, leftFront:0.00, rightFront:0.05, mid:0.00};
+  if (/^T6$/.test(e)) return {leftTemp:0.02, rightTemp:0.48, leftFront:0.00, rightFront:0.00, mid:0.00};
+  if (/^Fp2$/.test(e)) return {leftTemp:0.00, rightTemp:0.08, leftFront:0.00, rightFront:0.86, mid:0.00};
+  if (/^F4$/.test(e)) return {leftTemp:0.00, rightTemp:0.12, leftFront:0.00, rightFront:0.42, mid:0.02};
+  if (/^C4$/.test(e)) return {leftTemp:0.00, rightTemp:0.10, leftFront:0.00, rightFront:0.18, mid:0.04};
+  if (/^P4$/.test(e)) return {leftTemp:0.00, rightTemp:0.04, leftFront:0.00, rightFront:0.05, mid:0.02};
+  if (/^Fz$/.test(e)) return {leftTemp:0.00, rightTemp:0.00, leftFront:0.08, rightFront:0.08, mid:0.08};
+  if (/^Cz$/.test(e)) return {leftTemp:0.00, rightTemp:0.00, leftFront:0.03, rightFront:0.03, mid:0.06};
+  if (/^Pz$/.test(e)) return {leftTemp:0.00, rightTemp:0.00, leftFront:0.00, rightFront:0.00, mid:0.02};
   return ZERO_EMG_WEIGHTS;
 }
 function buildFocusedEmgWeights(resolvedLead){
@@ -2339,61 +2009,6 @@ function currentEmgArtifact(clock){
     rightTempPhase: emg.rightTempPhase, rightFrontPhase: emg.rightFrontPhase,
     commonCarrierPhase: emg.commonCarrierPhase
   };
-}
-
-function scheduleEkg(now, immediate=false){
-  state.ekg = {
-    active:true,
-    t0: immediate ? now : now + 0.18,
-    rateHz: 1.08 + 0.22*state.rng(),
-    phase: state.rng(),
-    pAmp: 22 + 6*state.rng(),
-    qAmp: -30 - 10*state.rng(),
-    rAmp: 255 + 55*state.rng(),
-    sAmp: -70 - 18*state.rng(),
-    tAmp: 58 + 16*state.rng()
-  };
-}
-function syncEkgGenerator(forceRestart=false){
-  if (!state.ekg) state.ekg = {active:false, t0:0, rateHz:1.18, phase:0, pAmp:24, qAmp:-34, rAmp:280, sAmp:-78, tAmp:64};
-  if (forceRestart || !state.ekg.active) scheduleEkg(state.artClock || 0, true);
-}
-function ekgWave_uV(clock){
-  const ekg = state.ekg || {active:false, t0:0, rateHz:1.18, phase:0, pAmp:24, qAmp:-34, rAmp:280, sAmp:-78, tAmp:64};
-  if (!ekg.active) return 0;
-  const localT = Math.max(0, clock - ekg.t0);
-  const rateHz = Math.max(1.0, Math.min(1.5, ekg.rateHz + 0.015*Math.sin(2*Math.PI*0.04*localT)));
-  const phase = (((localT * rateHz) + ekg.phase) % 1 + 1) % 1;
-  const g = (mu, sigma, amp)=> amp*Math.exp(-0.5*((phase-mu)/sigma)**2);
-  const p = g(0.160, 0.026, ekg.pAmp);
-  const q = g(0.338, 0.010, ekg.qAmp);
-  const r = g(0.365, 0.0065, ekg.rAmp);
-  const s = g(0.394, 0.013, ekg.sAmp);
-  const st = g(0.490, 0.045, 5);
-  const t = g(0.625, 0.082, ekg.tAmp);
-  const baseline = 2.0*Math.sin(2*Math.PI*0.18*localT + 0.4);
-  return p + q + r + s + st + t + baseline;
-}
-function ekgArtifactScale(e){
-  if (EAR_REFERENCE_ELECTRODES.has(e)) return 0;
-  const field = {
-    Fp1:0.72, F7:0.08, T3:0.44, T5:-0.18, O1:0.08,
-    Fp2:0.66, F8:0.12, T4:0.40, T6:-0.16, O2:0.06,
-    F3:0.50, C3:0.05, P3:-0.20,
-    F4:0.46, C4:0.07, P4:-0.18,
-    Fz:0.56, Cz:0.08, Pz:-0.14,
-    Oz:0.04
-  };
-  return field[e] || 0;
-}
-function ekgArtifactValue(e, ekgSample){
-  if (!(state.opts && state.opts.ekgArtifact)) return 0;
-  const scale = ekgArtifactScale(e);
-  if (scale === 0) return 0;
-  const level = Math.max(0, Math.min(1, Number(state.artifactConfig && state.artifactConfig.ekgLevel) || 0));
-  if (level <= 0) return 0;
-  const gain = 0.12 + 0.88*level;
-  return ekgSample * scale * gain;
 }
 
 
@@ -2900,8 +2515,6 @@ class Channel {
     const r = meta.region;
     const posterior = meta.posterior;
     const R = (opts && typeof opts.realism==='number') ? opts.realism : 1;
-    const levels = (opts && opts.artifactLevels) || {};
-    const level = (key)=> levels[key] || 0;
     // Non-linear mapping: bottom half linear, top half quadratic for extra punch
     const Rnl = (R <= 0.5) ? R : (0.5 + 2*Math.pow(R-0.5, 2));
     const S3 = Math.max(0, Math.min(3*Rnl, 3));
@@ -3124,7 +2737,7 @@ class Channel {
     }
     if (opts.blinkShape){
       const frontalBlinkScale = meta.blinkScale;
-      if (frontalBlinkScale > 0) y += level('blink') * frontalBlinkScale * (188 + 276*R) * opts.blinkShape;
+      if (frontalBlinkScale > 0) y += frontalBlinkScale * (188 + 276*R) * opts.blinkShape;
     }
     if (opts.eyeTransitionShape){
       const frontalBlinkScale = meta.blinkScale;
@@ -3134,22 +2747,21 @@ class Channel {
       const eyeW = rovingEyeLeadWeights(this.name);
       if (eyeW.horizontal || eyeW.vertical){
         const eyeSignal = eyeW.horizontal*opts.rovingEyeArtifact.horizontal + eyeW.vertical*opts.rovingEyeArtifact.vertical;
-        y += level('rovingEyes') * (58 + 126*R) * eyeSignal;
+        y += (58 + 126*R) * eyeSignal;
       }
     }
     if (opts.readingArtifact){
       const readW = meta.readingWeights;
       if (readW.horizontal || readW.frontal){
         const readSignal = readW.horizontal*opts.readingArtifact.horizontal + readW.frontal*opts.readingArtifact.frontal;
-        y += level('reading') * (66 + 132*R) * readSignal;
+        y += (66 + 132*R) * readSignal;
       }
     }
     if (opts.ventilatorArtifact){
       const ventW = ventilatorLeadWeights(this.name, opts.ventilatorArtifact.focusSide);
       if (ventW.burst || ventW.sway){
-        const ventLevel = level('ventilator');
-        y += ventLevel * (26 + 60*R) * ventW.sway * opts.ventilatorArtifact.sway;
-        y += ventLevel * (36 + 86*R) * ventW.burst * opts.ventilatorArtifact.burst;
+        y += (26 + 60*R) * ventW.sway * opts.ventilatorArtifact.sway;
+        y += (36 + 86*R) * ventW.burst * opts.ventilatorArtifact.burst;
       }
     }
     if (opts.chewArtifact){
@@ -3169,16 +2781,15 @@ class Channel {
           chewW.right * opts.chewArtifact.rightBurst * rightCarrier +
           chewW.broad * opts.chewArtifact.commonBurst * commonCarrier +
           0.24 * (chewW.left + chewW.right + chewW.broad) * (0.45*opts.chewArtifact.leftBurst + 0.45*opts.chewArtifact.rightBurst + 0.35*opts.chewArtifact.commonBurst) * commonCarrier;
-        const chewLevel = level('chew');
-        y += chewLevel * (22 + 58*R) * motion;
-        y += chewLevel * (42 + 128*R) * muscle;
+        y += (22 + 58*R) * motion;
+        y += (42 + 128*R) * muscle;
       }
     }
     if (opts.sweatArtifact){
       const sweatW = meta.sweatWeights;
       if (sweatW.common || sweatW.left || sweatW.right){
         const drift = sweatW.common*opts.sweatArtifact.common + sweatW.left*opts.sweatArtifact.left + sweatW.right*opts.sweatArtifact.right;
-        y += level('sweat') * (42 + 160*R) * drift;
+        y += (42 + 160*R) * drift;
       }
     }
     if (opts.breachArtifact){
@@ -3189,10 +2800,10 @@ class Channel {
           1.02*opts.breachArtifact.rhythm +
           0.34*opts.breachArtifact.beta +
           0.18*opts.breachArtifact.fast;
-        y += level('breach') * breachW * (28 + 92*R) * contour;
+        y += breachW * (28 + 92*R) * contour;
       }
     }
-    if (opts.popArtifact && opts.popArtifact.electrode === this.name) y += level('pop') * opts.popArtifact.value;
+    if (opts.popArtifact && opts.popArtifact.electrode === this.name) y += opts.popArtifact.value;
     if (opts.emgArtifact){
       const emgW = (opts.emgArtifact.weights && opts.emgArtifact.weights[this.name]) || meta.diffuseEmgWeights;
       if (emgW.leftTemp || emgW.rightTemp || emgW.leftFront || emgW.rightFront || emgW.mid){
@@ -3205,15 +2816,12 @@ class Channel {
         const leftFrontCarrier = roughBand(opts.emgArtifact.leftFrontF1, opts.emgArtifact.leftFrontF2, opts.emgArtifact.leftFrontPhase, opts.emgArtifact.commonCarrierPhase, this.phAlpha, this.phDelta);
         const rightFrontCarrier = roughBand(opts.emgArtifact.rightFrontF1, opts.emgArtifact.rightFrontF2, opts.emgArtifact.rightFrontPhase, opts.emgArtifact.commonCarrierPhase, this.phDelta, this.phBeta);
         const commonCarrier = roughBand(opts.emgArtifact.commonF1, opts.emgArtifact.commonF2, opts.emgArtifact.commonCarrierPhase, opts.emgArtifact.commonCarrierPhase + 1.4, this.phTheta, this.phAlpha);
-        const localDiffuseCarrier = roughBand(opts.emgArtifact.commonF1 + 5.5, opts.emgArtifact.commonF2 + 7.5, opts.emgArtifact.commonCarrierPhase + this.phBeta, opts.emgArtifact.commonCarrierPhase + this.phDelta, this.phAlpha, this.phTheta);
-        const localDiffusePower = Math.min(1.15, 0.28 + 0.26*(emgW.leftTemp + emgW.rightTemp + emgW.leftFront + emgW.rightFront + emgW.mid));
         const muscle =
           emgW.leftTemp * opts.emgArtifact.leftTemporalEnv * leftTempCarrier +
           emgW.rightTemp * opts.emgArtifact.rightTemporalEnv * rightTempCarrier +
           emgW.leftFront * opts.emgArtifact.leftFrontalEnv * leftFrontCarrier +
           emgW.rightFront * opts.emgArtifact.rightFrontalEnv * rightFrontCarrier +
-          emgW.mid * opts.emgArtifact.commonEnv * commonCarrier +
-          localDiffusePower * opts.emgArtifact.commonEnv * localDiffuseCarrier;
+          emgW.mid * opts.emgArtifact.commonEnv * commonCarrier;
         y += (28 + 104*R) * EMG_PWR * (opts.emgArtifact.level ?? 1) * muscle;
       }
     }
@@ -3236,8 +2844,8 @@ const state = {
   annotations: {enabled:false, drawing:false, pointerId:null, strokes:[]},
   realism: 0.75,
   speed: 1,
-  opts: {blink:false, rovingEyes:false, reading:false, ventilator:false, photicStim:false, chew:false, sweat:false, ekgArtifact:false, breach:false, pop:false, emg:false, ekgTrace:false},
-  artifactConfig: {photicHz:15, breachLead:'random', popLead:'random', emgLead:'diffuse', emgLevel:0, ekgLevel:0, blinkLevel:0, rovingEyesLevel:0, readingLevel:0, ventilatorLevel:0, photicStimLevel:0, chewLevel:0, sweatLevel:0, breachLevel:0, popLevel:0},
+  opts: {blink:false, rovingEyes:false, reading:false, ventilator:false, photicStim:false, chew:false, sweat:false, breach:false, pop:false, emg:false},
+  artifactConfig: {photicHz:15, breachLead:'random', popLead:'random', emgLead:'diffuse'},
   pathology: {encephalopathy:false, burstSuppression:false, gpd:false, lpd:false, bipds:false, interictal:false, interictalLead:'random', generalizedEmg:DEFAULT_EMG_LEVEL, focalSeizure:false, focalFocus:'random', fbtcSeizure:false, fbtcFocus:'random'},
   seizureDurations: {generalized:20, absence:10, focal:10, fbtc:20},
   seizureEvents: [],
@@ -3257,7 +2865,6 @@ const state = {
   ventilator: {active:false, t0:0, breathHz:0.20, phase:0, swayPhase:0, side:'L', burstAmp:1, swayAmp:1, hf1:22, hf2:31, hfPhase1:0, hfPhase2:0},
   chew: {active:false, t0:0, cycleHz:1.7, driftPhase:0, leftLag:0, leftAmp:1, rightAmp:1, commonAmp:0.8, hfLeft:32, hfRight:34, hfCommon:26, phaseLeft:0, phaseRight:0, phaseCommon:0},
   sweat: {active:false, t0:0, commonAmp:1, leftAmp:1, rightAmp:1, f1:0.06, f2:0.11, f3:0.18, leftFreq:0.04, rightFreq:0.04, envelopeFreq:0.025, phase1:0, phase2:0, phase3:0, leftPhase:0, rightPhase:0, envelopePhase:0},
-  ekg: {active:false, t0:0, rateHz:1.18, phase:0, pAmp:24, qAmp:-34, rAmp:280, sAmp:-78, tAmp:64},
   breach: {active:false, t0:0, lead:'Random', weights:{}, alphaHz:10.2, betaHz:18.5, fastHz:27.5, envHz:0.10, phaseAlpha:0, phaseBeta:0, phaseFast:0, envPhase:0},
   encephalopathy: {active:false, t0:0, thetaHz:4.8, thetaHz2:5.6, deltaHz:2.1, deltaHz2:1.4, firdaHz:2.4, mixHz:0.09, ampTheta:18, ampDelta:12, ampFirda:14, phaseTheta:0, phaseTheta2:0, phaseDelta:0, phaseDelta2:0, phaseMix:0, phaseFirda:0, burstPhase:0},
   burstSuppression: {active:false, t0:0, burstDur:0.95, suppressionDur:3.0, thetaHz:4.8, deltaHz:1.9, fastHz:11.0, spikeHz:13.5, ampTheta:64, ampDelta:52, ampFast:20, ampSpike:36, suppressNoise:2.6, suppressDrift:1.2, phaseTheta:0, phaseDelta:0, phaseFast:0, phaseSpike:0, phaseMix:0, phaseSupp:0},
@@ -3277,7 +2884,6 @@ const SENSITIVITY_VALUES = [3,5,7,10,15];
 const PLAYBACK_SPEED_VALUES = [0.25,0.5,1,1.5,2,4,8];
 const MIN_PLAYBACK_SPEED = 0.25;
 const MAX_PLAYBACK_SPEED = 8;
-const MAX_CANVAS_DPR = 2;
 const MIN_SEIZURE_DURATION = 10;
 const MAX_SEIZURE_DURATION = 99;
 const DEFAULT_SEIZURE_DURATIONS = { generalized:20, absence:10, focal:10, fbtc:20 };
@@ -3340,8 +2946,6 @@ function initChannels(){
   state.buffer.set("AVG", new Float32Array(Fs*state.seconds));
   // Linked-ear helper for midline referential channels.
   state.buffer.set("AAVG", new Float32Array(Fs*state.seconds));
-  state.buffer.set("EKG", new Float32Array(Fs*state.seconds));
-  state.buffer.set("EKG_REF", new Float32Array(Fs*state.seconds));
   state.idx = 0;
 }
 function resizeBuffersForSeconds(nextSeconds){
@@ -3402,15 +3006,14 @@ const MONTAGE_PAIR_MAP = {
 };
 
 function montagePairs(){
-  const base = MONTAGE_PAIR_MAP[state.montage] || MONTAGE_PAIR_MAP.bipolar_longitudinal;
-  return (state.opts && state.opts.ekgTrace) ? base.concat(EKG_ROW_PAIR) : base;
+  return MONTAGE_PAIR_MAP[state.montage] || MONTAGE_PAIR_MAP.bipolar_longitudinal;
 }
 
 /***********************
  * Renderer
  ***********************/
 const canvas=document.getElementById('c');
-const ctx=canvas.getContext('2d', {alpha:false, desynchronized:true}) || canvas.getContext('2d');
+const ctx=canvas.getContext('2d');
 const errBox=document.getElementById('err');
 const rootStyles = getComputedStyle(document.documentElement);
 const THEME = {
@@ -3430,18 +3033,9 @@ const renderCache = {
   strokeColors: null,
   labelMetrics: new Map(),
   lastDrawTime: 0,
-  frameMs: 0,
-  lastFrameMs: 0,
   drawMs: 0,
-  sampleMs: 0,
   skippedDraws: 0,
-  denseUntil: 0,
-  sampleOpts: null,
-  sampleArtifactLevels: null,
-  activeGeneralizedEvents: [],
-  activeAbsenceEvents: [],
-  traceTileCache: new Map(),
-  traceTileKey: ''
+  denseUntil: 0
 };
 
 function syncAppViewportHeight(){
@@ -3454,14 +3048,13 @@ function resize(){
   const rect = canvas.getBoundingClientRect();
   const cssWidth = Math.max(1, Math.round(rect.width || canvas.clientWidth || 1));
   const cssHeight = Math.max(1, Math.round(rect.height || canvas.clientHeight || 1));
-  const dpr = Math.max(1, Math.min(MAX_CANVAS_DPR, window.devicePixelRatio||1));
+  const dpr = Math.max(1, window.devicePixelRatio||1);
   const nextWidth = Math.max(1, Math.round(cssWidth * dpr));
   const nextHeight = Math.max(1, Math.round(cssHeight * dpr));
   if (canvas.width !== nextWidth) canvas.width = nextWidth;
   if (canvas.height !== nextHeight) canvas.height = nextHeight;
   ctx.setTransform(dpr,0,0,dpr,0,0);
   renderCache.layoutKey = '';
-  renderCache.traceTileKey = '';
 }
 window.addEventListener('resize', resize);
 if (window.visualViewport){
@@ -3523,26 +3116,16 @@ function isComplexVisualRenderLoad(){
 
 function clearRenderLoadMemory(){
   renderCache.denseUntil = 0;
-  renderCache.frameMs = 0;
-  renderCache.lastFrameMs = 0;
   renderCache.drawMs = 0;
-  renderCache.sampleMs = 0;
   renderCache.skippedDraws = 0;
   renderCache.lastDrawTime = 0;
-  renderCache.traceTileCache.clear();
-  renderCache.traceTileKey = '';
 }
 
 function targetDrawIntervalSeconds(heavyVisualLoad){
   if (!state.running || (state.annotations && state.annotations.drawing)) return 0;
   const drawMs = renderCache.drawMs || 0;
-  const frameMs = renderCache.frameMs || 0;
-  const lastFrameMs = renderCache.lastFrameMs || 0;
-  if (lastFrameMs > 85 || frameMs > 34) return 1/24;
-  if (lastFrameMs > 52 || frameMs > 27) return 1/30;
   if (drawMs > 34) return 1/24;
-  if (drawMs > 24) return 1/30;
-  if (heavyVisualLoad && drawMs > 18) return 1/45;
+  if (heavyVisualLoad || drawMs > 24) return 1/30;
   return 0;
 }
 
@@ -3555,194 +3138,48 @@ function shouldRenderFrame(now, heavyVisualLoad){
 }
 
 function traceRenderStep(width, heavyVisualLoad){
-  return 1;
+  const drawMs = renderCache.drawMs || 0;
+  let step = 1;
+  if (heavyVisualLoad && width > 720) step = 2;
+  if (drawMs > 28 && width > 900) step = Math.max(step, 2);
+  if (heavyVisualLoad && drawMs > 40 && width > 1100) step = 3;
+  return step;
 }
 
-function appendTracePairPath(targetCtx, ra, rb, yMid, traceScale, sampleOffsets, xStart, xEnd, step=1){
+function drawTracePair(ra, rb, yMid, traceScale, sampleOffsets, width, step){
   const len = ra.length;
-  const baseIdx = ((state.idx % len) + len) % len;
+  ctx.beginPath();
   if (step <= 1){
-    for(let x=xStart;x<xEnd;x++){
-      let j = baseIdx - sampleOffsets[x];
-      if (j < 0) j += len;
+    for(let x=0;x<width;x++){
+      const idx=state.idx-sampleOffsets[x];
+      const j=((idx%len)+len)%len;
       const uv=ra[j]-rb[j];
       const y=yMid-(uv*traceScale);
-      if(x===xStart) targetCtx.moveTo(x,y); else targetCtx.lineTo(x,y);
+      if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
     }
     return;
   }
   let started = false;
-  for(let x=xStart;x<xEnd;x+=step){
-    const sampleX = Math.min(xEnd - 1, x + Math.floor(step/2));
-    let j = baseIdx - sampleOffsets[sampleX];
-    if (j < 0) j += len;
-    const uv=ra[j]-rb[j];
-    const y=yMid-(uv*traceScale);
-    if(!started){ targetCtx.moveTo(sampleX,y); started = true; }
-    else targetCtx.lineTo(sampleX,y);
-  }
-}
-
-function drawTraceSegmentPair(targetCtx, ra, rb, yMid, traceScale, sampleOffsets, xStart, xEnd, step=1){
-  targetCtx.beginPath();
-  appendTracePairPath(targetCtx, ra, rb, yMid, traceScale, sampleOffsets, xStart, xEnd, step);
-}
-
-function drawTracePair(ra, rb, yMid, traceScale, sampleOffsets, width, step, targetCtx=ctx){
-  drawTraceSegmentPair(targetCtx, ra, rb, yMid, traceScale, sampleOffsets, 0, width, step);
-}
-
-function drawTracePairsBatched(pairs, yMids, strokeColors, sampleOffsets, width, rowH, traceScale){
-  const colorGroups = new Map();
-  for(let i=0;i<pairs.length;i++){
-    const color = strokeColors[i];
-    let group = colorGroups.get(color);
-    if (!group){
-      group = [];
-      colorGroups.set(color, group);
-    }
-    group.push(i);
-  }
-  ctx.lineCap = 'butt';
-  ctx.lineJoin = 'miter';
-  ctx.lineWidth = 1.2;
-  for (const [color, indices] of colorGroups){
-    ctx.beginPath();
-    ctx.strokeStyle = color;
-    for (const i of indices){
-      const {a,b}=pairs[i];
-      const ra=state.buffer.get(a);
-      const rb=state.buffer.get(b);
-      if(!ra||!rb) continue;
-      appendTracePairPath(ctx, ra, rb, yMids[i], traceScaleForPair(pairs[i], rowH, traceScale), sampleOffsets, 0, width, 1);
-    }
-    ctx.stroke();
-  }
-}
-
-function traceCanvasDpr(){
-  return Math.max(1, canvas.width / Math.max(1, canvas.clientWidth || 1));
-}
-
-function traceTileBaseKey(pairs, width, height){
-  const labels = pairs.map(pair => pair.label).join('|');
-  return [
-    width,
-    height,
-    traceCanvasDpr().toFixed(2),
-    state.seconds,
-    state.montage,
-    state.uvPerDiv,
-    labels
-  ].join('|');
-}
-
-function ensureTraceTile(tile, widthCss, heightCss, dpr){
-  const nextWidth = Math.max(1, Math.ceil(widthCss * dpr));
-  const nextHeight = Math.max(1, Math.ceil(heightCss * dpr));
-  if (!tile.canvas) tile.canvas = document.createElement('canvas');
-  if (tile.canvas.width !== nextWidth) tile.canvas.width = nextWidth;
-  if (tile.canvas.height !== nextHeight) tile.canvas.height = nextHeight;
-  if (!tile.ctx) tile.ctx = tile.canvas.getContext('2d', {alpha:true, desynchronized:true}) || tile.canvas.getContext('2d');
-  tile.ctx.setTransform(dpr,0,0,dpr,0,0);
-  tile.widthCss = widthCss;
-  tile.heightCss = heightCss;
-  return tile;
-}
-
-function appendTraceTimePath(targetCtx, ra, rb, yMid, traceScale, tileStart, tileWidthCss, tStart, tEnd, pxPerSec){
-  if (tEnd <= tStart) return;
-  const len = ra.length;
-  const xStart = Math.max(0, Math.floor((tStart - tileStart) * pxPerSec));
-  const xEnd = Math.min(tileWidthCss - 1, Math.ceil((tEnd - tileStart) * pxPerSec));
-  let started = false;
-  for(let x=xStart; x<=xEnd; x++){
-    const t = tileStart + x / pxPerSec;
-    const sampleOffset = Math.max(1, Math.round((state.artClock - t) * Fs));
-    let j = state.idx - sampleOffset;
-    j = ((j % len) + len) % len;
-    const uv = ra[j] - rb[j];
-    const y = yMid - (uv * traceScale);
-    if (!started){ targetCtx.moveTo(x,y); started = true; }
-    else targetCtx.lineTo(x,y);
-  }
-}
-
-function renderTraceTile(tileIndex, pairs, yMids, strokeColors, width, height, rowH, traceScale, pxPerSec, tileDuration){
-  const tileStart = tileIndex * tileDuration;
-  const tileEnd = tileStart + tileDuration;
-  const nowClock = state.artClock || 0;
-  const drawEnd = Math.min(tileEnd, nowClock - 1/Fs);
-  const drawStart = Math.max(tileStart, nowClock - (state.seconds || 10));
-  const tileWidthCss = Math.ceil(tileDuration * pxPerSec) + 3;
-  const dpr = traceCanvasDpr();
-  const tile = ensureTraceTile(renderCache.traceTileCache.get(tileIndex) || {}, tileWidthCss, height, dpr);
-  tile.ctx.clearRect(0,0,tileWidthCss,height);
-  tile.ctx.lineCap = 'butt';
-  tile.ctx.lineJoin = 'miter';
-  tile.ctx.lineWidth = 1.2;
-  if (drawEnd > drawStart){
-    const colorGroups = new Map();
-    for(let i=0;i<pairs.length;i++){
-      const color = strokeColors[i];
-      let group = colorGroups.get(color);
-      if (!group){
-        group = [];
-        colorGroups.set(color, group);
+  for(let x=0;x<width;x+=step){
+    const end = Math.min(width, x + step);
+    let bestUv = 0;
+    let bestAbs = -1;
+    let bestX = x;
+    for(let bx=x; bx<end; bx++){
+      const idx=state.idx-sampleOffsets[bx];
+      const j=((idx%len)+len)%len;
+      const uv=ra[j]-rb[j];
+      const abs = Math.abs(uv);
+      if (abs > bestAbs){
+        bestAbs = abs;
+        bestUv = uv;
+        bestX = bx;
       }
-      group.push(i);
     }
-    for (const [color, indices] of colorGroups){
-      tile.ctx.beginPath();
-      tile.ctx.strokeStyle = color;
-      for (const i of indices){
-        const {a,b}=pairs[i];
-        const ra=state.buffer.get(a);
-        const rb=state.buffer.get(b);
-        if(!ra||!rb) continue;
-        appendTraceTimePath(tile.ctx, ra, rb, yMids[i], traceScaleForPair(pairs[i], rowH, traceScale), tileStart, tileWidthCss, drawStart, drawEnd, pxPerSec);
-      }
-      tile.ctx.stroke();
-    }
+    const y=yMid-(bestUv*traceScale);
+    if(!started){ ctx.moveTo(bestX,y); started = true; }
+    else ctx.lineTo(bestX,y);
   }
-  tile.complete = tileEnd <= nowClock - 1/Fs;
-  renderCache.traceTileCache.set(tileIndex, tile);
-  return tile;
-}
-
-function drawTraceTiles(pairs, yMids, strokeColors, width, height, rowH, traceScale){
-  const seconds = Math.max(0.001, state.seconds || 10);
-  const nowClock = state.artClock || 0;
-  const viewStart = nowClock - seconds;
-  const pxPerSec = width / seconds;
-  const tileDuration = 0.5;
-  const baseKey = traceTileBaseKey(pairs, width, height);
-  if (renderCache.traceTileKey !== baseKey){
-    renderCache.traceTileCache.clear();
-    renderCache.traceTileKey = baseKey;
-  }
-
-  const firstTile = Math.floor(viewStart / tileDuration) - 1;
-  const lastTile = Math.floor(nowClock / tileDuration);
-  for (const key of Array.from(renderCache.traceTileCache.keys())){
-    if (key < firstTile - 1 || key > lastTile + 1) renderCache.traceTileCache.delete(key);
-  }
-
-  for(let tileIndex=firstTile; tileIndex<=lastTile; tileIndex++){
-    const tileStart = tileIndex * tileDuration;
-    const tileEnd = tileStart + tileDuration;
-    if (tileEnd < viewStart || tileStart > nowClock) continue;
-    let tile = renderCache.traceTileCache.get(tileIndex);
-    if (!tile || !tile.complete){
-      tile = renderTraceTile(tileIndex, pairs, yMids, strokeColors, width, height, rowH, traceScale, pxPerSec, tileDuration);
-    }
-    const x = (tileStart - viewStart) * pxPerSec;
-    ctx.drawImage(tile.canvas, x, 0, tile.widthCss, tile.heightCss);
-  }
-}
-
-function traceScaleForPair(pair, rowH, eegTraceScale){
-  return pair && pair.label === 'EKG' ? rowH / EKG_DISPLAY_UV_RANGE : eegTraceScale;
 }
 
 function ensureAnnotationDefaults(){
@@ -3881,6 +3318,7 @@ function renderAnnotations(){
 function drawGrid(rows, secs){
   const w = canvas.clientWidth, h = canvas.clientHeight;
   ctx.save();
+  ctx.clearRect(0,0,w,h);
   ctx.fillStyle = THEME.bg;
   ctx.fillRect(0,0,w,h);
 
@@ -3908,7 +3346,6 @@ function drawGrid(rows, secs){
 }
 
 function groupColor(label, index){
-  if (label === 'EKG') return THEME.traceRed;
   if (MIDLINE_LABEL_RE.test(label)) return THEME.traceBlack;
   if (state.montage==='bipolar_longitudinal') return (Math.floor(index/4)%2===1)?THEME.traceRed:THEME.traceBlue;
   if (state.montage==='bipolar_transverse'){
@@ -3976,8 +3413,10 @@ function renderLabels(pairs, yMids, strokeColors){
     const rectW = metric.textW + 2*padX;
     const rectH = metric.textH + 2*padY;
     // Background highlight
+    ctx.save();
     ctx.fillStyle = THEME.bg;
     ctx.fillRect(rectX, rectY, rectW, rectH);
+    ctx.restore();
     // Text
     ctx.fillStyle = strokeColors[i];
     ctx.fillText(label, xText, y);
@@ -4351,12 +3790,8 @@ let lastT=performance.now()/1000;
 function step(){
   try{
     const now=performance.now()/1000;
-    const rawDt = Math.max(0, now-lastT);
-    const dt=Math.min(0.05, rawDt);
+    const dt=Math.min(0.05, now-lastT);
     lastT=now;
-    const frameGapMs = rawDt * 1000;
-    renderCache.lastFrameMs = frameGapMs;
-    renderCache.frameMs = renderCache.frameMs ? (0.90*renderCache.frameMs + 0.10*frameGapMs) : frameGapMs;
     if(state.running){
       state.sampleCarry += dt*Fs*state.speed;
       const samples = Math.floor(state.sampleCarry);
@@ -4377,24 +3812,8 @@ function step(){
       const sleepFeatures = currentSleepFeatureConstraints();
       const spindleMode = sleepFeatures ? (sleepFeatures.spindles || 'absent') : null;
       const kcomplexMode = sleepFeatures ? (sleepFeatures.kcomplexes || 'absent') : null;
-      const activeGeneralizedEvents = renderCache.activeGeneralizedEvents || (renderCache.activeGeneralizedEvents = []);
-      const activeAbsenceEvents = renderCache.activeAbsenceEvents || (renderCache.activeAbsenceEvents = []);
-      const artifactLevels = renderCache.sampleArtifactLevels || (renderCache.sampleArtifactLevels = {});
-      artifactLevels.blink = artifactLevel('blink');
-      artifactLevels.rovingEyes = artifactLevel('rovingEyes');
-      artifactLevels.reading = artifactLevel('reading');
-      artifactLevels.ventilator = artifactLevel('ventilator');
-      artifactLevels.chew = artifactLevel('chew');
-      artifactLevels.sweat = artifactLevel('sweat');
-      artifactLevels.breach = artifactLevel('breach');
-      artifactLevels.pop = artifactLevel('pop');
-      const opts = renderCache.sampleOpts || (renderCache.sampleOpts = {artifactLevels});
-      opts.mode = state.mode;
-      opts.eyesOpen = state.eyesOpen;
-      opts.artifactLevels = artifactLevels;
-      opts.pdrHz = state.pdrHz;
-      opts.realism = state.realism;
-      const sampleStart = performance.now();
+      const activeGeneralizedEvents = [];
+      const activeAbsenceEvents = [];
       for(let n=0;n<samples;n++){
         state.pdrPhase += 2*Math.PI*state.pdrHz/Fs;
         if (state.mode !== 'n2'){
@@ -4458,24 +3877,17 @@ function step(){
             }
           }
         }
-        opts.blinkShape = blinkShape;
-        opts.eyeTransitionShape = eyeTransitionShape;
-        opts.rovingEyeArtifact = rovingEyeArtifact;
-        opts.readingArtifact = readingArtifact;
-        opts.ventilatorArtifact = ventilatorArtifact;
-        opts.chewArtifact = chewArtifact;
-        opts.sweatArtifact = sweatArtifact;
-        opts.breachArtifact = breachArtifact;
-        opts.popArtifact = popArtifact;
-        opts.emgArtifact = emgArtifact;
-        opts.pdrPhase = state.pdrPhase;
-        opts.clock = sampleClock;
-        opts.ictalSimplify = ictalSimplify;
-        opts.spindleEnv = state.spindle.active ? spindleEnvelope(state.artClock,state.spindle.t0,state.spindle.dur) : 0;
-        opts.kcShape = state.kcomplex.active ? kComplexShape(state.artClock,state.kcomplex.t0) : 0;
-        opts.vertex = state.vertex.active;
-        opts.vertexShape = state.vertex.active ? vertexShape(state.artClock,state.vertex.t0) : 0;
-        const ekgSample = ekgWave_uV(sampleClock);
+        const opts={
+          mode:state.mode, eyesOpen:state.eyesOpen,
+          blinkShape,eyeTransitionShape,rovingEyeArtifact,readingArtifact,ventilatorArtifact,chewArtifact,sweatArtifact,breachArtifact,popArtifact,emgArtifact,
+          pdrPhase:state.pdrPhase, pdrHz:state.pdrHz,
+          clock:sampleClock,
+          realism:state.realism,
+          ictalSimplify,
+          spindleEnv:state.spindle.active?spindleEnvelope(state.artClock,state.spindle.t0,state.spindle.dur):0,
+          kcShape:state.kcomplex.active?kComplexShape(state.artClock,state.kcomplex.t0):0,
+          vertex:state.vertex.active, vertexShape:state.vertex.active?vertexShape(state.artClock,state.vertex.t0):0
+        };
         let sum=0, cnt=0, refSum=0, refCnt=0;
         for(const e of ELECTRODES){
           const ch=state.channels.get(e);
@@ -4533,9 +3945,6 @@ function step(){
             const focalScale = (isDisplayScalp && educationalBias.focal && educationalBias.focal[e]!==undefined) ? educationalBias.focal[e] : 1;
             y *= diffuseScale * hemiScale * focalScale;
           }
-          if (state.opts && state.opts.ekgArtifact){
-            y += ekgArtifactValue(e, ekgSample);
-          }
           const buf=state.buffer.get(e);
           buf[state.idx%buf.length]=y;
           // contribute to AVG if scalp electrode (exclude ears and Oz)
@@ -4548,14 +3957,9 @@ function step(){
         const linkedEar = refCnt ? (refSum/refCnt) : 0;
         const linkedEarBuf = state.buffer.get("AAVG");
         if (linkedEarBuf) linkedEarBuf[state.idx%linkedEarBuf.length] = linkedEar;
-        const ekgBuf = state.buffer.get("EKG");
-        if (ekgBuf) ekgBuf[state.idx%ekgBuf.length] = ekgSample;
-        const ekgRefBuf = state.buffer.get("EKG_REF");
-        if (ekgRefBuf) ekgRefBuf[state.idx%ekgRefBuf.length] = 0;
         state.idx++;
         state.artClock+=1/Fs;
       }
-      renderCache.sampleMs = 0.82*(renderCache.sampleMs || 0) + 0.18*(performance.now() - sampleStart);
       // auto-uncheck and prune finished seizure events
       if (state.seizureEvents && state.seizureEvents.length){
         for (const ev of state.seizureEvents){
@@ -4582,12 +3986,14 @@ function step(){
     const rowH = canvas.clientHeight / pairs.length;
     const traceScale = rowH / (4 * state.uvPerDiv);
     const strokeColors = layout.strokeColors;
-    const visibleBufferPrimed = state.idx >= Math.max(1, Math.round(Fs * (state.seconds || 10)));
-    if (state.running && visibleBufferPrimed && !(state.annotations && state.annotations.drawing)){
-      drawTraceTiles(pairs, yMids, strokeColors, w, canvas.clientHeight, rowH, traceScale);
-    } else {
-      renderCache.traceTileKey = '';
-      drawTracePairsBatched(pairs, yMids, strokeColors, sampleOffsets, w, rowH, traceScale);
+    const stepPx = traceRenderStep(w, heavyVisualLoad);
+    ctx.lineCap = 'butt';
+    ctx.lineJoin = heavyVisualLoad ? 'miter' : 'round';
+    for(let i=0;i<pairs.length;i++){
+      const {a,b}=pairs[i]; const ra=state.buffer.get(a); const rb=state.buffer.get(b); if(!ra||!rb) continue;
+      const yMid=yMids[i]; ctx.strokeStyle=strokeColors[i]; ctx.lineWidth=1.2;
+      drawTracePair(ra, rb, yMid, traceScale, sampleOffsets, w, stepPx);
+      ctx.stroke();
     }
     renderTutorialHighlights(pairs, yMids, rowH, w);
     renderLabels(pairs, yMids, strokeColors);
@@ -4605,80 +4011,6 @@ function step(){
  * UI wiring
  ***********************/
 const $=id=>document.getElementById(id);
-const ARTIFACT_LEVEL_FIELDS = {
-  blink:'blinkLevel',
-  rovingEyes:'rovingEyesLevel',
-  reading:'readingLevel',
-  ventilator:'ventilatorLevel',
-  photicStim:'photicStimLevel',
-  chew:'chewLevel',
-  sweat:'sweatLevel',
-  breach:'breachLevel',
-  pop:'popLevel',
-  ekgArtifact:'ekgLevel'
-};
-const ARTIFACT_DEFAULT_LEVELS = {
-  blink:0.75,
-  rovingEyes:0.65,
-  reading:0.65,
-  ventilator:0.70,
-  photicStim:0.70,
-  chew:0.75,
-  sweat:0.70,
-  breach:0.75,
-  pop:0.80,
-  ekgArtifact:0.55
-};
-const ARTIFACT_SLIDER_CONFIG = {
-  blink:{input:'blink', output:'blinkValue'},
-  rovingEyes:{input:'rovingEyes', output:'rovingEyesValue'},
-  reading:{input:'reading', output:'readingValue'},
-  ventilator:{input:'ventilator', output:'ventilatorValue'},
-  photicStim:{input:'photicStim', output:'photicStimValue'},
-  chew:{input:'chew', output:'chewValue'},
-  sweat:{input:'sweat', output:'sweatValue'},
-  breach:{input:'breach', output:'breachValue'},
-  pop:{input:'pop', output:'popValue'}
-};
-function clampArtifactLevel(value){
-  const v = Number(value);
-  return Number.isFinite(v) ? Math.max(0, Math.min(1, v)) : 0;
-}
-function artifactLevelField(key){
-  return ARTIFACT_LEVEL_FIELDS[key] || `${key}Level`;
-}
-function artifactLevel(key){
-  const field = artifactLevelField(key);
-  return clampArtifactLevel(state.artifactConfig && state.artifactConfig[field]);
-}
-function artifactDefaultLevel(key){
-  return ARTIFACT_DEFAULT_LEVELS[key] ?? 0.70;
-}
-function setArtifactLevelActive(key, active, level){
-  state.opts = state.opts || {};
-  state.artifactConfig = state.artifactConfig || {};
-  state.opts[key] = !!active;
-  const field = artifactLevelField(key);
-  state.artifactConfig[field] = active ? clampArtifactLevel(level ?? artifactDefaultLevel(key)) : 0;
-}
-function readArtifactSliderLevel(key){
-  const cfg = ARTIFACT_SLIDER_CONFIG[key];
-  const input = cfg ? $(cfg.input) : null;
-  const raw = input ? Number(input.value) : 0;
-  return Number.isFinite(raw) ? Math.max(0, Math.min(1, raw / 100)) : 0;
-}
-function syncArtifactSliderUI(key){
-  const cfg = ARTIFACT_SLIDER_CONFIG[key];
-  if (!cfg) return;
-  const pct = Math.round(artifactLevel(key) * 100);
-  const input = $(cfg.input);
-  const output = $(cfg.output);
-  if (input) input.value = String(pct);
-  if (output) output.textContent = `${pct}%`;
-}
-function syncAllArtifactSliderUI(){
-  Object.keys(ARTIFACT_SLIDER_CONFIG).forEach(syncArtifactSliderUI);
-}
 function ensurePathologyDefaults(){
   state.pathology = {
     encephalopathy:false,
@@ -4702,24 +4034,13 @@ function ensurePathologyDefaults(){
   if (!FOCAL_SEIZURE_FOCUS_MAP.has(state.pathology.fbtcFocus)) state.pathology.fbtcFocus = 'random';
 }
 function ensureArtifactDefaults(){
-  const priorConfig = state.artifactConfig || {};
   state.artifactConfig = {
     photicHz:15,
     breachLead:'random',
     popLead:'random',
     emgLead:'diffuse',
     emgLevel:0,
-    ekgLevel:0,
-    blinkLevel:0,
-    rovingEyesLevel:0,
-    readingLevel:0,
-    ventilatorLevel:0,
-    photicStimLevel:0,
-    chewLevel:0,
-    sweatLevel:0,
-    breachLevel:0,
-    popLevel:0,
-    ...priorConfig
+    ...(state.artifactConfig || {})
   };
   if (!PHOTIC_STIM_RATE_SET.has(Number(state.artifactConfig.photicHz))) state.artifactConfig.photicHz = 15;
   if (!BREACH_RHYTHM_LEAD_MAP.has(state.artifactConfig.breachLead)) state.artifactConfig.breachLead = 'random';
@@ -4727,12 +4048,6 @@ function ensureArtifactDefaults(){
   if (!(state.artifactConfig.emgLead === 'diffuse' || EMG_LEAD_MAP.has(state.artifactConfig.emgLead))) state.artifactConfig.emgLead = 'diffuse';
   const emgLevel = Number(state.artifactConfig.emgLevel);
   state.artifactConfig.emgLevel = Number.isFinite(emgLevel) ? Math.max(0, Math.min(1, emgLevel)) : 0;
-  for (const [key, field] of Object.entries(ARTIFACT_LEVEL_FIELDS)){
-    const hadLevel = Object.prototype.hasOwnProperty.call(priorConfig, field);
-    const raw = Number(state.artifactConfig[field]);
-    state.artifactConfig[field] = Number.isFinite(raw) ? Math.max(0, Math.min(1, raw)) : 0;
-    if (!hadLevel && state.opts && state.opts[key]) state.artifactConfig[field] = artifactDefaultLevel(key);
-  }
 }
 function readEmgLevelFromUI(){
   const slider = $('emgSlider');
@@ -4745,20 +4060,6 @@ function syncEmgSliderUI(){
   const slider = $('emgSlider');
   const output = $('emgValue');
   const pct = Math.round((state.artifactConfig.emgLevel || 0) * 100);
-  if (slider) slider.value = String(pct);
-  if (output) output.textContent = `${pct}%`;
-}
-function readEkgArtifactLevelFromUI(){
-  const slider = $('ekgArtifactSlider');
-  const raw = slider ? Number(slider.value) : 0;
-  if (!Number.isFinite(raw)) return 0;
-  return Math.max(0, Math.min(1, raw / 100));
-}
-function syncEkgArtifactSliderUI(){
-  ensureArtifactDefaults();
-  const slider = $('ekgArtifactSlider');
-  const output = $('ekgArtifactValue');
-  const pct = Math.round((state.artifactConfig.ekgLevel || 0) * 100);
   if (slider) slider.value = String(pct);
   if (output) output.textContent = `${pct}%`;
 }
@@ -4896,30 +4197,19 @@ populateFocalFocusSelect();
 populateBreachLeadSelect();
 populatePopLeadSelect();
 populateEmgLeadSelect();
-syncAllArtifactSliderUI();
 syncEmgSliderUI();
-syncEkgArtifactSliderUI();
 const topbar = $('topbar');
 const topbarToggle = $('topbarToggle');
-const mobileTopbarQuery = window.matchMedia ? window.matchMedia('(max-width: 900px)') : null;
+const mobileTopbarQuery = window.matchMedia ? window.matchMedia('(max-width: 760px)') : null;
 function syncMobileTopbar(){
   if (!topbar || !topbarToggle) return;
   const mobile = !!(mobileTopbarQuery && mobileTopbarQuery.matches);
   const expanded = topbar.dataset.mobileExpanded === 'true';
-  topbar.classList.remove('topbar-wrap');
   topbar.classList.toggle('topbar-mobile-collapsed', mobile && !expanded);
   topbar.classList.toggle('topbar-mobile-expanded', mobile && expanded);
   topbarToggle.hidden = !mobile;
   topbarToggle.setAttribute('aria-expanded', mobile ? String(expanded) : 'true');
   topbarToggle.textContent = mobile && expanded ? 'Hide Controls' : 'Show Controls';
-  if (!mobile){
-    requestAnimationFrame(()=>{
-      topbar.classList.toggle('topbar-wrap', topbar.scrollWidth > topbar.clientWidth + 2);
-      requestAnimationFrame(resize);
-    });
-    return;
-  }
-  requestAnimationFrame(resize);
 }
 function setMobileTopbarExpanded(expanded){
   if (!topbar) return;
@@ -5129,40 +4419,25 @@ function applyDisplaySeedPayload(payload){
 
   setPlaybackRunning(controls.running !== false);
   state.opts = {
-    blink:false, rovingEyes:false, reading:false, ventilator:false, photicStim:false, chew:false, sweat:false, ekgArtifact:false, breach:false, pop:false, emg:false, ekgTrace:false,
+    blink:false, rovingEyes:false, reading:false, ventilator:false, photicStim:false, chew:false, sweat:false, breach:false, pop:false, emg:false,
     ...(payload.opts || {})
   };
-  const payloadArtifactConfig = payload.artifactConfig || {};
   state.artifactConfig = {
-    photicHz:15, breachLead:'random', popLead:'random', emgLead:'diffuse', emgLevel:0, ekgLevel:0,
-    blinkLevel:0, rovingEyesLevel:0, readingLevel:0, ventilatorLevel:0, photicStimLevel:0, chewLevel:0, sweatLevel:0, breachLevel:0, popLevel:0,
-    ...payloadArtifactConfig
+    photicHz:15, breachLead:'random', popLead:'random', emgLead:'diffuse', emgLevel:0,
+    ...(payload.artifactConfig || {})
   };
   state.pathology = {
     encephalopathy:false, burstSuppression:false, gpd:false, lpd:false, bipds:false,
     interictal:false, interictalLead:'random', generalizedEmg:DEFAULT_EMG_LEVEL, focalSeizure:false, focalFocus:'random', fbtcSeizure:false, fbtcFocus:'random',
     ...(payload.pathology || {})
   };
-  if (payload.pathology && payload.pathology.photicStim) {
-    state.opts.photicStim = true;
-    if (!Object.prototype.hasOwnProperty.call(payloadArtifactConfig, 'photicStimLevel')) {
-      state.artifactConfig.photicStimLevel = artifactDefaultLevel('photicStim');
-    }
-  }
+  if (payload.pathology && payload.pathology.photicStim) state.opts.photicStim = true;
   if (payload.pathology && PHOTIC_STIM_RATE_SET.has(Number(payload.pathology.photicHz))) state.artifactConfig.photicHz = Number(payload.pathology.photicHz);
   state.seizureDurations = {...DEFAULT_SEIZURE_DURATIONS, ...(payload.seizureDurations || {})};
   state.pathology.focalSeizure = false;
   state.pathology.fbtcSeizure = false;
   if (!Number.isFinite(Number(state.artifactConfig.emgLevel))){
     state.artifactConfig.emgLevel = state.opts.emg ? 0.45 : 0;
-  }
-  if (!Number.isFinite(Number(state.artifactConfig.ekgLevel))){
-    state.artifactConfig.ekgLevel = state.opts.ekgArtifact ? 0.45 : 0;
-  }
-  for (const [key, field] of Object.entries(ARTIFACT_LEVEL_FIELDS)){
-    if (!Object.prototype.hasOwnProperty.call(payloadArtifactConfig, field) && state.opts[key]){
-      state.artifactConfig[field] = artifactDefaultLevel(key);
-    }
   }
   ensureArtifactDefaults();
   ensurePathologyDefaults();
@@ -5191,12 +4466,8 @@ function regen(){
   clearEyeTransition();
   clearAnnotationStrokes();
   clearRenderLoadMemory();
-  for (const key of Object.keys(ARTIFACT_SLIDER_CONFIG)){
-    state.artifactConfig[artifactLevelField(key)] = readArtifactSliderLevel(key);
-  }
   state.artifactConfig.emgLevel = readEmgLevelFromUI();
-  state.artifactConfig.ekgLevel = readEkgArtifactLevelFromUI();
-  state.opts={ blink:artifactLevel('blink') > 0, rovingEyes:artifactLevel('rovingEyes') > 0, reading:artifactLevel('reading') > 0, ventilator:artifactLevel('ventilator') > 0, photicStim:artifactLevel('photicStim') > 0, chew:artifactLevel('chew') > 0, sweat:artifactLevel('sweat') > 0, ekgArtifact:(state.artifactConfig.ekgLevel > 0), breach:artifactLevel('breach') > 0, pop:artifactLevel('pop') > 0, emg:(state.artifactConfig.emgLevel > 0), ekgTrace:$('showEkg')?.checked||false };
+  state.opts={ blink:$('blink')?.checked||false, rovingEyes:$('rovingEyes')?.checked||false, reading:$('reading')?.checked||false, ventilator:$('ventilator')?.checked||false, photicStim:$('photicStim')?.checked||false, chew:$('chew')?.checked||false, sweat:$('sweat')?.checked||false, breach:$('breach')?.checked||false, pop:$('pop')?.checked||false, emg:(state.artifactConfig.emgLevel > 0) };
   state.artifactConfig.photicHz = PHOTIC_STIM_RATE_SET.has(Number($('photicHzSel')?.value)) ? Number($('photicHzSel').value) : (state.artifactConfig.photicHz || 15);
   state.artifactConfig.breachLead = BREACH_RHYTHM_LEAD_MAP.has($('breachLeadSel')?.value) ? $('breachLeadSel').value : (state.artifactConfig.breachLead || 'random');
   state.artifactConfig.popLead = POP_LEAD_SET.has($('popLeadSel')?.value) ? $('popLeadSel').value : (state.artifactConfig.popLead || 'random');
@@ -5212,7 +4483,6 @@ function regen(){
   syncVentilatorGenerator(true);
   syncChewGenerator(true);
   syncSweatGenerator(true);
-  syncEkgGenerator(true);
   syncBreachGenerator(true);
   syncEncephalopathyPathology(true);
   syncBurstSuppressionPathology(true);
@@ -5235,7 +4505,6 @@ function updateEyesOpenEnabled(){
 }
 function syncControlsFromState(){
   ensurePathologyDefaults();
-  ensureArtifactDefaults();
   reconcileModeControls();
   if ($('rhythmSel')) $('rhythmSel').value = state.rhythmOverride || '';
   if ($('sleepSel')) $('sleepSel').value = state.rhythmOverride ? '' : (state.sleepState || 'awake');
@@ -5253,10 +4522,16 @@ function syncControlsFromState(){
   populateEmgLeadSelect();
   if ($('eyesOpen')) $('eyesOpen').checked = currentEyesOpenSelection();
   syncGeneralizedSeizureEmgUI();
-  if ($('showEkg')) $('showEkg').checked = !!state.opts.ekgTrace;
-  syncAllArtifactSliderUI();
+  if ($('blink')) $('blink').checked = !!state.opts.blink;
+  if ($('rovingEyes')) $('rovingEyes').checked = !!state.opts.rovingEyes;
+  if ($('reading')) $('reading').checked = !!state.opts.reading;
+  if ($('ventilator')) $('ventilator').checked = !!state.opts.ventilator;
+  if ($('photicStim')) $('photicStim').checked = !!state.opts.photicStim;
+  if ($('chew')) $('chew').checked = !!state.opts.chew;
+  if ($('sweat')) $('sweat').checked = !!state.opts.sweat;
+  if ($('breach')) $('breach').checked = !!state.opts.breach;
+  if ($('pop')) $('pop').checked = !!state.opts.pop;
   syncEmgSliderUI();
-  syncEkgArtifactSliderUI();
   syncPlaybackSpeedUI();
   if ($('gpd')) $('gpd').checked = !!state.pathology.gpd;
   if ($('lpd')) $('lpd').checked = !!state.pathology.lpd;
@@ -5323,11 +4598,6 @@ if($('eyesOpen')) $('eyesOpen').addEventListener('change',()=>{
   if (changed && !state.running) setPlaybackRunning(true);
   updateEyesOpenEnabled();
 });
-if($('showEkg')) $('showEkg').addEventListener('change', ()=>{
-  state.opts = state.opts || {};
-  state.opts.ekgTrace = !!$('showEkg').checked;
-  if (state.opts.ekgTrace) syncEkgGenerator(true);
-});
 document.addEventListener('keydown', (e)=>{
   if (e.defaultPrevented) return;
   if (!(e.code === 'Space' || e.key === ' ' || e.key === 'Spacebar')) return;
@@ -5345,48 +4615,32 @@ function positionArtifactsPopup(){
   const card = artifactsModal.querySelector('.modal-card');
   if (!card) return;
   const btnRect = artifactsBtn.getBoundingClientRect();
-  const viewport = window.visualViewport;
-  const viewportWidth = Math.max(1, viewport ? viewport.width : window.innerWidth);
-  const viewportHeight = Math.max(1, viewport ? viewport.height : window.innerHeight);
-  const viewportLeft = viewport ? viewport.offsetLeft : 0;
-  const viewportTop = viewport ? viewport.offsetTop : 0;
   const gap = 8;
   const pad = 8;
-  const cardWidth = Math.min(card.offsetWidth || 0, viewportWidth - pad*2);
+  const cardWidth = Math.min(card.offsetWidth || 0, window.innerWidth - pad*2);
   const cardHeight = card.offsetHeight || 0;
-  const left = viewportLeft + Math.max(pad, Math.min(btnRect.right - cardWidth, viewportWidth - cardWidth - pad));
-  const top = viewportTop + Math.max(pad, Math.min(btnRect.bottom + gap, viewportHeight - cardHeight - pad));
+  const left = Math.max(pad, Math.min(btnRect.right - cardWidth, window.innerWidth - cardWidth - pad));
+  const top = Math.max(pad, Math.min(btnRect.bottom + gap, window.innerHeight - cardHeight - pad));
   artifactsModal.style.setProperty('--artifacts-left', `${left}px`);
   artifactsModal.style.setProperty('--artifacts-top', `${top}px`);
 }
-function syncArtifactGeneratorForKey(key, forceRestart=false){
-  if (key === 'blink') syncBlinkGenerator(forceRestart);
-  if (key === 'rovingEyes') syncRovingEyesGenerator(forceRestart);
-  if (key === 'reading') syncReadingGenerator(forceRestart);
-  if (key === 'ventilator') syncVentilatorGenerator(forceRestart);
-  if (key === 'photicStim') syncPhoticStimPathology(forceRestart);
-  if (key === 'chew') syncChewGenerator(forceRestart);
-  if (key === 'sweat') syncSweatGenerator(forceRestart);
-  if (key === 'breach') syncBreachGenerator(forceRestart);
-  if (key === 'pop') syncPopGenerator(forceRestart);
-}
-function bindArtifactSlider(key){
-  const cfg = ARTIFACT_SLIDER_CONFIG[key];
-  const input = cfg ? $(cfg.input) : null;
-  if (!input) return;
-  const applySlider = ()=>{
-    ensureArtifactDefaults();
-    const wasActive = !!(state.opts && state.opts[key]);
-    const previousLevel = artifactLevel(key);
-    state.artifactConfig[artifactLevelField(key)] = readArtifactSliderLevel(key);
+function bindArtifactToggle(id, key){
+  const el = $(id);
+  if (!el) return;
+  el.addEventListener('change', ()=>{
     state.opts = state.opts || {};
-    state.opts[key] = artifactLevel(key) > 0;
-    syncArtifactSliderUI(key);
-    if (state.opts[key] && (!wasActive || (key === 'pop' && artifactLevel(key) > previousLevel))) syncArtifactGeneratorForKey(key, true);
-    if (!state.opts[key]) syncArtifactGeneratorForKey(key, false);
-  };
-  input.addEventListener('input', applySlider);
-  input.addEventListener('change', applySlider);
+    state.opts[key] = !!el.checked;
+    if (key === 'blink') syncBlinkGenerator(true);
+    if (key === 'rovingEyes') syncRovingEyesGenerator(true);
+    if (key === 'reading') syncReadingGenerator(true);
+    if (key === 'ventilator') syncVentilatorGenerator(true);
+    if (key === 'photicStim') syncPhoticStimPathology(true);
+    if (key === 'chew') syncChewGenerator(true);
+    if (key === 'sweat') syncSweatGenerator(true);
+    if (key === 'breach') syncBreachGenerator(true);
+    if (key === 'pop') syncPopGenerator(true);
+    if (key === 'emg') syncEmgGenerator(true);
+  });
 }
 if (artifactsBtn && artifactsModal) {
   const openArtifacts = () => {
@@ -5399,26 +4653,16 @@ if (artifactsBtn && artifactsModal) {
   artifactsModal.addEventListener('click', (e) => { if (e.target === artifactsModal) closeArtifacts(); });
   document.addEventListener('keydown', (e) => { if (!artifactsModal.hidden && e.key === 'Escape') closeArtifacts(); });
   window.addEventListener('resize', positionArtifactsPopup);
-  if (window.visualViewport){
-    window.visualViewport.addEventListener('resize', positionArtifactsPopup);
-    window.visualViewport.addEventListener('scroll', positionArtifactsPopup);
-  }
 }
-Object.keys(ARTIFACT_SLIDER_CONFIG).forEach(bindArtifactSlider);
-const ekgArtifactSlider = $('ekgArtifactSlider');
-if (ekgArtifactSlider){
-  const applyEkgArtifactSlider = ()=>{
-    ensureArtifactDefaults();
-    const wasActive = !!(state.opts && state.opts.ekgArtifact);
-    state.artifactConfig.ekgLevel = readEkgArtifactLevelFromUI();
-    state.opts = state.opts || {};
-    state.opts.ekgArtifact = state.artifactConfig.ekgLevel > 0;
-    syncEkgArtifactSliderUI();
-    if (state.opts.ekgArtifact && !wasActive) syncEkgGenerator(true);
-  };
-  ekgArtifactSlider.addEventListener('input', applyEkgArtifactSlider);
-  ekgArtifactSlider.addEventListener('change', applyEkgArtifactSlider);
-}
+bindArtifactToggle('blink', 'blink');
+bindArtifactToggle('rovingEyes', 'rovingEyes');
+bindArtifactToggle('reading', 'reading');
+bindArtifactToggle('ventilator', 'ventilator');
+bindArtifactToggle('photicStim', 'photicStim');
+bindArtifactToggle('chew', 'chew');
+bindArtifactToggle('sweat', 'sweat');
+bindArtifactToggle('breach', 'breach');
+bindArtifactToggle('pop', 'pop');
 const emgSlider = $('emgSlider');
 if (emgSlider){
   const applyEmgSlider = ()=>{
@@ -5903,20 +5147,20 @@ function startQuiz(){
   }
 
   state.opts = state.opts || {};
-  for (const key of Object.keys(ARTIFACT_LEVEL_FIELDS)) setArtifactLevelActive(key, false);
-  setArtifactLevelActive('blink', artifact==='Eye blinks');
-  setArtifactLevelActive('reading', artifact==='Reading');
-  setArtifactLevelActive('ventilator', artifact==='Ventilator');
-  setArtifactLevelActive('chew', artifact==='Chewing');
-  setArtifactLevelActive('sweat', artifact==='Sweat');
+  state.opts.blink = (artifact==='Eye blinks');
+  state.opts.rovingEyes = false;
+  state.opts.reading = (artifact==='Reading');
+  state.opts.ventilator = (artifact==='Ventilator');
+  state.opts.photicStim = false;
+  state.opts.chew  = (artifact==='Chewing');
+  state.opts.sweat = (artifact==='Sweat');
+  state.opts.breach = false;
+  state.opts.pop   = false;
   state.opts.emg   = (artifact==='EMG');
-  setArtifactLevelActive('ekgArtifact', artifact==='EKG artifact');
   if (state.opts.emg){
     ensureArtifactDefaults();
     state.artifactConfig.emgLead = 'diffuse';
     state.artifactConfig.emgLevel = Math.max(state.artifactConfig.emgLevel || 0, DEFAULT_EMG_LEVEL);
-  } else {
-    state.artifactConfig.emgLevel = 0;
   }
   state.quiz.slowing = buildQuizSlowingConfig(rng, slowingDist, slowingTempo || 'Continuous');
   state.quiz.spikes = buildQuizSpikeConfig(rng, epileptiform);
@@ -5972,33 +5216,6 @@ function startQuiz(){
   if (pm) pm.hidden = true;
   regen();
   if (typeof updateModeButtons === 'function') updateModeButtons();
-}
-
-function educationalEyeToggleAllowedForSleep(sleep){
-  return sleep === 'Awake' || sleep === 'Drowsy';
-}
-function setEducationalEyesClosed(eyesClosed){
-  const nextEyesOpen = !eyesClosed;
-  const changed = requestEyesOpenChange(nextEyesOpen);
-  if (changed && !state.running) setPlaybackRunning(true);
-  updateEyesOpenEnabled();
-}
-function buildEyesClosedToggle(onChange){
-  const label = document.createElement('label');
-  label.className = 'learning-eye-toggle';
-  const checkbox = document.createElement('input');
-  checkbox.type = 'checkbox';
-  checkbox.checked = !currentEyesOpenSelection();
-  checkbox.addEventListener('change', ()=>{
-    setEducationalEyesClosed(checkbox.checked);
-    if (typeof onChange === 'function') onChange();
-  });
-  label.appendChild(checkbox);
-  label.appendChild(document.createTextNode(' Eyes closed'));
-  return label;
-}
-function quizStepCanToggleEyes(stepKey){
-  return !!(state.quiz && state.quiz.active && stepKey === 'background' && state.quiz.truth && educationalEyeToggleAllowedForSleep(state.quiz.truth.sleep));
 }
 
 function buildQuizUI(){
@@ -6061,9 +5278,6 @@ function buildQuizUI(){
     });
 
     s.appendChild(pills);
-    if (quizStepCanToggleEyes(step.key)){
-      s.appendChild(buildEyesClosedToggle());
-    }
     frag.appendChild(s);
   });
   stepsEl.replaceChildren(frag);
@@ -6508,16 +5722,8 @@ function tutorialCanAdvance(){
   if (state.tutorial.mode === 'guided') return true;
   return tutorialStepRevealed(step);
 }
-function tutorialCaseSleepLabel(caseData){
-  return (caseData && caseData.signal && caseData.signal.sleepDrive) || (caseData && caseData.truth && caseData.truth.sleep) || '';
-}
 function tutorialAuxCanToggleEyes(step, caseData){
-  if (!(step && caseData)) return false;
-  const sleep = tutorialCaseSleepLabel(caseData);
-  if (!educationalEyeToggleAllowedForSleep(sleep)) return false;
-  const isPosteriorBackgroundStep = step.key === 'background' || step.key === 'pdr';
-  const isReactivityStep = step.key === 'reactivity' && caseData.truth && caseData.truth.reactivity === 'present';
-  return isPosteriorBackgroundStep || isReactivityStep;
+  return !!(step && caseData && step.key === 'reactivity' && caseData.truth && caseData.truth.reactivity === 'present' && caseData.signal && caseData.signal.sleepDrive === 'Awake');
 }
 function renderTutorialUI(){
   if (!tutorialPanel) return;
@@ -6579,12 +5785,6 @@ function renderTutorialUI(){
     prompt.className = 'tutorial-prompt';
     prompt.textContent = step ? step.prompt : '';
     card.appendChild(prompt);
-    if (tutorialAuxCanToggleEyes(step, caseData)){
-      const aux = document.createElement('div');
-      aux.className = 'tutorial-aux';
-      aux.appendChild(buildEyesClosedToggle(()=> renderTutorialUI()));
-      card.appendChild(aux);
-    }
     if (step && step.options && state.tutorial.mode === 'interactive'){
       const row = document.createElement('div');
       row.className = 'tutorial-choice-row';
@@ -6618,6 +5818,21 @@ function renderTutorialUI(){
       explanation.textContent = tutorialExplanation(step, caseData);
       card.appendChild(explanation);
     }
+    if (tutorialAuxCanToggleEyes(step, caseData)){
+      const aux = document.createElement('div');
+      aux.className = 'tutorial-aux';
+      const toggle = document.createElement('button');
+      toggle.type = 'button';
+      toggle.textContent = currentEyesOpenSelection() ? 'Show Eyes Closed' : 'Show Eyes Open';
+      toggle.addEventListener('click', ()=>{
+        if (!state.running) setPlaybackRunning(true);
+        requestEyesOpenChange(!currentEyesOpenSelection());
+        updateEyesOpenEnabled();
+        renderTutorialUI();
+      });
+      aux.appendChild(toggle);
+      card.appendChild(aux);
+    }
     if (highlight && highlight.note){
       const note = document.createElement('div');
       note.className = 'tutorial-note';
@@ -6643,9 +5858,7 @@ function tutorialSetCommonSimulatorState(caseData){
   state.pathology.lpd = false;
   state.pathology.bipds = false;
   state.pathology.focalSeizure = false;
-  state.opts = {blink:false, rovingEyes:false, reading:false, ventilator:false, photicStim:false, chew:false, sweat:false, ekgArtifact:false, breach:false, pop:false, emg:false, ekgTrace:!!(state.opts && state.opts.ekgTrace)};
-  for (const key of Object.keys(ARTIFACT_LEVEL_FIELDS)) setArtifactLevelActive(key, false);
-  state.artifactConfig.emgLevel = 0;
+  state.opts = {blink:false, rovingEyes:false, reading:false, ventilator:false, photicStim:false, chew:false, sweat:false, breach:false, pop:false, emg:false};
   clearActiveTutorialSeizures();
   resetTutorialEducationalState();
 
@@ -6653,14 +5866,13 @@ function tutorialSetCommonSimulatorState(caseData){
   if (signal.initialEyesOpen !== undefined) state.eyesOpen = !!signal.initialEyesOpen;
   clearEyeTransition();
 
-  if (signal.artifact === 'Eye blinks') setArtifactLevelActive('blink', true);
-  if (signal.artifact === 'Roving eye movements') setArtifactLevelActive('rovingEyes', true);
-  if (signal.artifact === 'Reading') setArtifactLevelActive('reading', true);
-  if (signal.artifact === 'Ventilator') setArtifactLevelActive('ventilator', true);
-  if (signal.artifact === 'Chewing') setArtifactLevelActive('chew', true);
-  if (signal.artifact === 'Sweat') setArtifactLevelActive('sweat', true);
-  if (signal.artifact === 'Breach rhythm') setArtifactLevelActive('breach', true);
-  if (signal.artifact === 'EKG artifact') setArtifactLevelActive('ekgArtifact', true);
+  if (signal.artifact === 'Eye blinks') state.opts.blink = true;
+  if (signal.artifact === 'Roving eye movements') state.opts.rovingEyes = true;
+  if (signal.artifact === 'Reading') state.opts.reading = true;
+  if (signal.artifact === 'Ventilator') state.opts.ventilator = true;
+  if (signal.artifact === 'Chewing') state.opts.chew = true;
+  if (signal.artifact === 'Sweat') state.opts.sweat = true;
+  if (signal.artifact === 'Breach rhythm') state.opts.breach = true;
   if (signal.artifact === 'EMG'){
     state.opts.emg = true;
     ensureArtifactDefaults();

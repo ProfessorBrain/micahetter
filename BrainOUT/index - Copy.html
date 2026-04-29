@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BRAIN-out!</title>
   <link rel="icon" type="image/png" href="graphics/favicon.png">
   <link rel="apple-touch-icon" href="graphics/favicon.png">
@@ -13,8 +13,6 @@
       --panel-2: rgba(8, 15, 26, 0.96);
       --canvas-max-height: 600px;
       --desktop-playfield-width: 960px;
-      --mobile-question-top: 152px;
-      --mobile-question-bottom: calc(env(safe-area-inset-bottom, 0px) + 8px);
       --line: #79ddff;
       --line-soft: rgba(121, 221, 255, 0.14);
       --accent: #ff8469;
@@ -34,7 +32,6 @@
     html, body {
       margin: 0;
       min-height: 100%;
-      overflow-x: hidden;
       color: var(--text);
       background:
         radial-gradient(circle at top, rgba(93, 167, 255, 0.18), transparent 32%),
@@ -541,31 +538,6 @@
       max-height: none;
     }
 
-    body[data-device="mobile"] .app {
-      width: min(100% - 8px, 100%);
-      padding-top: max(8px, env(safe-area-inset-top, 0px));
-      padding-bottom: max(8px, env(safe-area-inset-bottom, 0px));
-    }
-
-    body[data-device="mobile"] .hero {
-      gap: 7px;
-      margin-bottom: 8px;
-    }
-
-    body[data-device="mobile"] .hero-actions {
-      gap: 5px;
-    }
-
-    body[data-device="mobile"] #startButton,
-    body[data-device="mobile"] #pauseButton,
-    body[data-device="mobile"] #settingsButton {
-      width: clamp(128px, 40vw, 164px);
-    }
-
-    body[data-device="mobile"] .game-column {
-      gap: 8px;
-    }
-
     body[data-device="mobile"] .shell,
     body[data-device="mobile"] .canvas-wrap {
       overflow: visible;
@@ -584,9 +556,6 @@
     body[data-device="mobile"] .hud-chip span {
       font-size: 0.52rem;
       letter-spacing: 0.1em;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
 
     body[data-device="mobile"] .hud-chip strong {
@@ -599,28 +568,19 @@
 
     body[data-device="mobile"] #questionOverlay {
       position: fixed;
-      inset: var(--mobile-question-top) 6px var(--mobile-question-bottom) 6px;
+      inset: var(--mobile-question-top, 152px) 6px calc(env(safe-area-inset-bottom, 0px) + 8px) 6px;
       padding: 8px;
       align-items: stretch;
       border-radius: 24px;
       z-index: 40;
-      overflow: hidden;
     }
 
     body[data-device="mobile"] .question-card {
       width: 100%;
       max-height: none;
       height: 100%;
-      min-height: 0;
       padding: 12px 14px;
       gap: 8px;
-      overflow-y: auto;
-      overscroll-behavior: contain;
-    }
-
-    body[data-device="mobile"] .question-card h2 {
-      font-size: 1.02rem;
-      line-height: 1.16;
     }
 
     body[data-device="mobile"] .question-card .question-meta {
@@ -633,20 +593,19 @@
     }
 
     body[data-device="mobile"] .question-card .answers {
-      min-height: 0;
       gap: 8px;
       margin-top: 0;
     }
 
     body[data-device="mobile"] .question-card .answers button {
-      min-height: 52px;
-      padding: 0.64rem 0.76rem;
-      font-size: 0.88rem;
+      min-height: 58px;
+      padding: 0.72rem 0.82rem;
+      font-size: 0.9rem;
       line-height: 1.28;
     }
 
     body[data-device="mobile"] .question-card .explanation-box {
-      max-height: 88px;
+      max-height: 96px;
     }
 
     .toast {
@@ -1119,76 +1078,6 @@
 
       .atlas-summary {
         grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-
-    @media (max-width: 380px), (max-height: 650px) {
-      body[data-device="mobile"] .brand-logo {
-        max-width: min(100%, 260px);
-        max-height: 48px;
-      }
-
-      body[data-device="mobile"] #startButton,
-      body[data-device="mobile"] #pauseButton,
-      body[data-device="mobile"] #settingsButton {
-        width: clamp(116px, 39vw, 144px);
-      }
-
-      body[data-device="mobile"] .hud {
-        gap: 4px;
-      }
-
-      body[data-device="mobile"] .hud-chip {
-        min-height: 42px;
-        padding: 5px 6px;
-        border-radius: 13px;
-      }
-
-      body[data-device="mobile"] .hud-chip::before {
-        border-radius: 12px;
-      }
-
-      body[data-device="mobile"] .hud-chip::after {
-        left: 8px;
-        right: 8px;
-        height: 9px;
-      }
-
-      body[data-device="mobile"] .hud-chip span {
-        font-size: 0.48rem;
-      }
-
-      body[data-device="mobile"] .hud-chip strong {
-        font-size: 0.76rem;
-      }
-
-      body[data-device="mobile"] #questionOverlay {
-        padding: 6px;
-        border-radius: 20px;
-      }
-
-      body[data-device="mobile"] .question-card {
-        padding: 10px 12px;
-        gap: 7px;
-      }
-
-      body[data-device="mobile"] .question-card .question-meta {
-        gap: 5px;
-      }
-
-      body[data-device="mobile"] .pill {
-        padding: 0.26rem 0.48rem;
-        font-size: 0.6rem;
-      }
-
-      body[data-device="mobile"] #questionStem {
-        font-size: 0.84rem;
-      }
-
-      body[data-device="mobile"] .question-card .answers button {
-        min-height: 46px;
-        padding: 0.56rem 0.66rem;
-        font-size: 0.84rem;
       }
     }
   </style>
@@ -2600,26 +2489,18 @@
       const appStyles = getComputedStyle(app);
       const paddingTop = parseFloat(appStyles.paddingTop) || 0;
       const paddingBottom = parseFloat(appStyles.paddingBottom) || 0;
-      const viewport = window.visualViewport || null;
-      const layoutHeight = window.innerHeight || document.documentElement.clientHeight || 0;
-      const viewportHeight = viewport ? viewport.height : layoutHeight;
-      const viewportTop = viewport ? viewport.offsetTop : 0;
-      const effectiveHeight = mode === "mobile" ? viewportHeight : layoutHeight;
       const aspectRatio = CANVAS.width / CANVAS.height;
       const heroHeight = hero ? hero.offsetHeight : 0;
       const hudHeight = hud ? hud.offsetHeight : 0;
       const hudBottom = hud ? hud.getBoundingClientRect().bottom : 0;
       const shellHeadHeight = shellHead ? shellHead.offsetHeight : 0;
       const footerHeight = footer ? footer.offsetHeight : 0;
-      const mobileControlsHeight = mode === "mobile" ? 0 : mobileControls ? mobileControls.offsetHeight : 0;
-      const buffer = mode === "desktop" ? 44 : 30;
-      const questionTop = Math.max(74, Math.round(hudBottom + viewportTop + 6));
-      const questionBottom = Math.max(8, Math.round(layoutHeight - viewportHeight - viewportTop + 8));
-      document.documentElement.style.setProperty("--mobile-question-top", `${questionTop}px`);
-      document.documentElement.style.setProperty("--mobile-question-bottom", `calc(env(safe-area-inset-bottom, 0px) + ${questionBottom}px)`);
+      const mobileControlsHeight = mode === "mobile" && mobileControls ? mobileControls.offsetHeight : 0;
+      const buffer = mode === "desktop" ? 44 : 72;
+      document.documentElement.style.setProperty("--mobile-question-top", `${Math.max(92, Math.round(hudBottom + 6))}px`);
       const availableHeight = clamp(
-        effectiveHeight - heroHeight - hudHeight - shellHeadHeight - footerHeight - mobileControlsHeight - paddingTop - paddingBottom - buffer,
-        mode === "desktop" ? 300 : 220,
+        window.innerHeight - heroHeight - hudHeight - shellHeadHeight - footerHeight - mobileControlsHeight - paddingTop - paddingBottom - buffer,
+        mode === "desktop" ? 300 : 240,
         mode === "desktop" ? 760 : 560
       );
 
@@ -4360,7 +4241,6 @@
       window.addEventListener("orientationchange", scheduleResponsiveLayout);
       if (window.visualViewport) {
         window.visualViewport.addEventListener("resize", scheduleResponsiveLayout);
-        window.visualViewport.addEventListener("scroll", scheduleResponsiveLayout);
       }
 
       document.addEventListener("keydown", (event) => {

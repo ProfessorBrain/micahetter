@@ -44,28 +44,10 @@
               <span class="start-view__mark">1 or 2?</span>
               <span class="start-view__subtitle">The Binary Medical Specialty Explorer</span>
             </h1>
-            <p class="start-view__lede">What would you like to do first?</p>
           </div>
 
-          <div class="start-choice-grid" aria-label="Choose a starting mode">
-            <button class="start-choice start-choice--questions" id="startButton" type="button">
-              <span class="start-choice__eyebrow">Answer questions</span>
-              <strong>Start the 1-or-2 quiz</strong>
-              <span>Answer as few or as many prompts as you want. The ranking updates as you go.</span>
-            </button>
-            <button class="start-choice" id="startExploreButton" type="button">
-              <span class="start-choice__eyebrow">Explore</span>
-              <strong>Browse the specialty map</strong>
-              <span>Look through specialties and fellowship paths without answering first.</span>
-            </button>
-            <button class="start-choice" id="startCompareButton" type="button">
-              <span class="start-choice__eyebrow">Compare</span>
-              <strong>Compare applicant data</strong>
-              <span>Compare inputs with NRMP matched-applicant averages.</span>
-            </button>
-          </div>
-
-          <div class="start-view__actions start-view__actions--subtle">
+          <div class="start-view__actions">
+            <button class="secondary-button" id="startButton" type="button">Begin</button>
             <button class="ghost-button" id="startInfoButton" type="button">About this quiz</button>
             <button class="ghost-button" id="startShareButton" type="button">Use a seed</button>
           </div>
@@ -148,118 +130,6 @@
             <p>It may help to compare these results with clerkship exposure, mentor feedback, and the parts of medicine you would want to keep doing on an ordinary weekday.</p>
           </div>
         </section>
-
-        <section class="compare-view hidden" id="compareView" aria-labelledby="compareViewTitle" aria-hidden="true">
-          <div class="compare-view__head">
-            <div>
-              <p class="section-kicker">Compare</p>
-              <h3 id="compareViewTitle">Applicant data comparison</h3>
-              <p class="compare-view__lede">
-                Adjust the fields below to see how an applicant profile lines up with NRMP matched U.S. MD senior averages.
-              </p>
-            </div>
-            <button class="ghost-button" id="closeCompareButton" type="button">Back</button>
-          </div>
-
-          <div class="compare-pane__body">
-            <div class="compare-controls">
-              <label class="compare-select-label" for="compareSpecialtySelect">
-                <span class="meta-block__label">Specialty data</span>
-                <select class="compare-select" id="compareSpecialtySelect"></select>
-              </label>
-
-              <div class="compare-input-grid" id="compareSliderGrid"></div>
-
-              <div class="compare-check-grid" aria-label="Applicant characteristics">
-                <label class="compare-check">
-                  <input id="compareAoa" type="checkbox" data-compare-check="aoa">
-                  <span>AOA</span>
-                </label>
-                <label class="compare-check">
-                  <input id="compareNih" type="checkbox" data-compare-check="nih">
-                  <span>Top 40 NIH-funded medical school</span>
-                </label>
-                <label class="compare-check">
-                  <input id="comparePhd" type="checkbox" data-compare-check="phd">
-                  <span>PhD</span>
-                </label>
-                <label class="compare-check">
-                  <input id="compareOtherGrad" type="checkbox" data-compare-check="otherGrad">
-                  <span>Other graduate degree</span>
-                </label>
-              </div>
-            </div>
-
-            <div class="compare-output" id="compareOutput" aria-live="polite"></div>
-          </div>
-
-          <p class="compare-pane__note">
-            This is a descriptive comparison, not individualized career, residency, or medical advice. NRMP reports residency specialty outcomes, so fellowship paths are compared against their closest available residency specialty table. Source: <a href="https://www.nrmp.org/wp-content/uploads/2026/03/Charting_Outcomes_MD_Seniors2024_revised-citation.pdf" target="_blank" rel="noreferrer">NRMP Charting Outcomes in the Match: U.S. MD Seniors, 2024</a>.
-          </p>
-        </section>
-
-        <section class="explore-view hidden" id="exploreView" aria-labelledby="exploreTitle" aria-hidden="true">
-          <div class="explore-view__head">
-            <div>
-              <p class="section-kicker">Explore</p>
-              <h3 id="exploreTitle">Specialty and fellowship map</h3>
-            </div>
-            <button class="ghost-button" id="closeExploreButton" type="button">Back</button>
-          </div>
-
-          <div class="explore-layout">
-            <section class="explore-canvas-wrap" aria-labelledby="exploreCanvasLabel">
-              <div class="explore-canvas-toolbar">
-                <div class="explore-legend">
-                  <span class="explore-legend__item"><span class="explore-legend__dot explore-legend__dot--specialty"></span> Specialty</span>
-                  <span class="explore-legend__item"><span class="explore-legend__dot explore-legend__dot--fellowship"></span> Fellowship path</span>
-                </div>
-                <div class="explore-zoom" aria-label="Explorer zoom controls">
-                  <button class="explore-zoom__button" id="exploreZoomOut" type="button" aria-label="Zoom out">-</button>
-                  <button class="explore-zoom__reset" id="exploreZoomReset" type="button" aria-label="Reset zoom">
-                    <span id="exploreZoomValue">100%</span>
-                  </button>
-                  <button class="explore-zoom__button" id="exploreZoomIn" type="button" aria-label="Zoom in">+</button>
-                </div>
-              </div>
-              <p class="sr-only" id="exploreCanvasLabel">Network map of specialties and fellowship paths</p>
-              <div class="explore-canvas-shell" id="exploreCanvasShell">
-                <svg class="explore-canvas" id="exploreCanvas" viewBox="0 0 1280 920" aria-labelledby="exploreCanvasLabel"></svg>
-              </div>
-            </section>
-
-            <aside class="explore-inspector" aria-live="polite">
-              <p class="section-kicker" id="exploreNodeType">Specialty</p>
-              <h3 id="exploreNodeTitle">Internal Medicine</h3>
-              <p class="explore-inspector__lede" id="exploreNodeBlurb"></p>
-
-              <div class="explore-inspector__stats">
-                <div class="explore-stat">
-                  <span class="meta-block__label">Current fit</span>
-                  <strong id="exploreNodeScore">0%</strong>
-                </div>
-                <div class="explore-stat">
-                  <span class="meta-block__label">Home specialty</span>
-                  <strong id="exploreNodeParent">Standalone specialty</strong>
-                </div>
-              </div>
-
-              <button class="ghost-button explore-inspector__compare" id="exploreCompareButton" type="button">
-                Compare applicant profile
-              </button>
-
-              <div class="explore-inspector__block">
-                <span class="meta-block__label">What tends to pull this up</span>
-                <ul class="explore-note-list" id="exploreNodeNotes"></ul>
-              </div>
-
-              <div class="explore-inspector__block">
-                <span class="meta-block__label">Nearby profiles</span>
-                <div class="explore-chip-list" id="exploreNodeConnections"></div>
-              </div>
-            </aside>
-          </div>
-        </section>
       </section>
 
       <aside class="rank-panel hidden" id="rankPanel" aria-labelledby="rankPanelTitle">
@@ -295,7 +165,8 @@
             class="ghost-button rank-panel__action"
             id="exploreToggle"
             type="button"
-            aria-controls="exploreView"
+            aria-haspopup="dialog"
+            aria-controls="exploreModal"
           >
             Explore
           </button>
@@ -383,7 +254,7 @@
           </p>
           <p class="section-kicker section-kicker--spaced">Included Fields</p>
           <p class="support-copy">
-            Internal Medicine, Family Medicine, Pediatrics, Medicine-Pediatrics, Emergency Medicine, General Surgery, Orthopedic Surgery, Anesthesiology, Psychiatry, Radiology, Neurology, Obstetrics &amp; Gynecology, Dermatology, Ophthalmology, Otolaryngology, Urology, Physical Medicine &amp; Rehabilitation, Pathology, and a broad set of fellowship paths that sit within or alongside those homes.
+            Internal Medicine, Family Medicine, Pediatrics, Medicine-Pediatrics, Emergency Medicine, General Surgery, Orthopedic Surgery, Anesthesiology, Psychiatry, Radiology, Neurology, Obstetrics &amp; Gynecology, Dermatology, Ophthalmology, Otolaryngology, Urology, Physical Medicine &amp; Rehabilitation, Pathology, and a broad set of 101 fellowship paths that sit within or alongside those homes.
           </p>
         </div>
       </div>
@@ -487,6 +358,68 @@
           </div>
           <p class="share-status" id="shareImportStatus"></p>
         </section>
+      </div>
+    </section>
+  </div>
+
+  <div class="info-modal hidden" id="exploreModal" aria-hidden="true">
+    <div class="info-modal__backdrop" id="exploreBackdrop"></div>
+    <section class="info-pane info-pane--modal explore-pane" role="dialog" aria-modal="true" aria-labelledby="exploreTitle">
+      <div class="info-pane__topbar">
+        <div class="info-pane__intro info-pane__intro--compact">
+          <p class="section-kicker">Explore</p>
+          <h2 class="sr-only" id="exploreTitle">Explore specialties and fellowship paths</h2>
+        </div>
+        <button class="ghost-button info-pane__close" id="closeExploreButton" type="button">Close</button>
+      </div>
+
+      <div class="explore-layout">
+        <section class="explore-canvas-wrap" aria-labelledby="exploreCanvasLabel">
+          <div class="explore-canvas-toolbar">
+            <div class="explore-legend">
+              <span class="explore-legend__item"><span class="explore-legend__dot explore-legend__dot--specialty"></span> Specialty</span>
+              <span class="explore-legend__item"><span class="explore-legend__dot explore-legend__dot--fellowship"></span> Fellowship path</span>
+            </div>
+            <div class="explore-zoom" aria-label="Explorer zoom controls">
+              <button class="explore-zoom__button" id="exploreZoomOut" type="button" aria-label="Zoom out">-</button>
+              <button class="explore-zoom__reset" id="exploreZoomReset" type="button" aria-label="Reset zoom">
+                <span id="exploreZoomValue">100%</span>
+              </button>
+              <button class="explore-zoom__button" id="exploreZoomIn" type="button" aria-label="Zoom in">+</button>
+            </div>
+          </div>
+          <p class="sr-only" id="exploreCanvasLabel">Network map of specialties and fellowship paths</p>
+          <div class="explore-canvas-shell" id="exploreCanvasShell">
+            <svg class="explore-canvas" id="exploreCanvas" viewBox="0 0 1280 920" aria-labelledby="exploreCanvasLabel"></svg>
+          </div>
+        </section>
+
+        <aside class="explore-inspector" aria-live="polite">
+          <p class="section-kicker" id="exploreNodeType">Specialty</p>
+          <h3 id="exploreNodeTitle">Internal Medicine</h3>
+          <p class="explore-inspector__lede" id="exploreNodeBlurb"></p>
+
+          <div class="explore-inspector__stats">
+            <div class="explore-stat">
+              <span class="meta-block__label">Current fit</span>
+              <strong id="exploreNodeScore">0%</strong>
+            </div>
+            <div class="explore-stat">
+              <span class="meta-block__label">Home specialty</span>
+              <strong id="exploreNodeParent">Standalone specialty</strong>
+            </div>
+          </div>
+
+          <div class="explore-inspector__block">
+            <span class="meta-block__label">What tends to pull this up</span>
+            <ul class="explore-note-list" id="exploreNodeNotes"></ul>
+          </div>
+
+          <div class="explore-inspector__block">
+            <span class="meta-block__label">Nearby profiles</span>
+            <div class="explore-chip-list" id="exploreNodeConnections"></div>
+          </div>
+        </aside>
       </div>
     </section>
   </div>

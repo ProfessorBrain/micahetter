@@ -130,7 +130,7 @@ function makeFellowshipPath(id, name, shortLabel, parentId, blurb, tags, signals
 const fellowshipPaths = [
   {
     id: "cardiology",
-    name: "Cardiovascular Disease",
+    name: "Cardiology",
     shortLabel: "Cardiology",
     parentId: "internal-medicine",
     blurb: "Cardiovascular disease with a mix of physiology, hospital complexity, longitudinal care, and procedural branches.",
@@ -144,7 +144,7 @@ const fellowshipPaths = [
   },
   {
     id: "pulmonary-critical-care",
-    name: "Pulmonary Disease and Critical Care Medicine",
+    name: "Pulmonary & Critical Care",
     shortLabel: "Pulm/Crit",
     parentId: "internal-medicine",
     blurb: "Physiology, ICU care, complex adults, and a blend of continuity with higher-acuity hospital work.",
@@ -172,7 +172,7 @@ const fellowshipPaths = [
   },
   {
     id: "geriatrics",
-    name: "Geriatric Medicine",
+    name: "Geriatrics",
     shortLabel: "Geriatrics",
     parentId: "family-medicine",
     blurb: "Continuity-heavy care for older adults with multimorbidity, caregiver relationships, and quality-of-life decisions.",
@@ -186,7 +186,7 @@ const fellowshipPaths = [
   },
   {
     id: "neonatology",
-    name: "Neonatal-Perinatal Medicine",
+    name: "Neonatology",
     shortLabel: "Neonatology",
     parentId: "pediatrics",
     blurb: "Acuity, physiology, families, and team-based care centered on critically ill newborns.",
@@ -298,7 +298,7 @@ const fellowshipPaths = [
   },
   {
     id: "child-adolescent-psychiatry",
-    name: "Child and Adolescent Psychiatry",
+    name: "Child & Adolescent Psychiatry",
     shortLabel: "Child Psych",
     parentId: "psychiatry",
     blurb: "Development, caregiver systems, and longitudinal mental-health care centered on younger patients.",
@@ -550,7 +550,7 @@ const fellowshipPaths = [
   ),
   makeFellowshipPath(
     "hematology-oncology",
-    "Hematology and Oncology",
+    "Hematology & Oncology",
     "Hem/Onc",
     "internal-medicine",
     "Cancer and blood disorders with longitudinal relationships, mechanism-heavy thinking, and complex treatment planning.",
@@ -564,7 +564,7 @@ const fellowshipPaths = [
   ),
   makeFellowshipPath(
     "endocrinology",
-    "Endocrinology, Diabetes, and Metabolism",
+    "Endocrinology",
     "Endocrine",
     "internal-medicine",
     "Longitudinal, physiology-rich care with a steadier pace and lots of chronic disease management.",
@@ -634,7 +634,7 @@ const fellowshipPaths = [
   ),
   makeFellowshipPath(
     "hospice-palliative-medicine-family",
-    "Hospice and Palliative Medicine",
+    "Hospice & Palliative Medicine",
     "Palliative",
     "family-medicine",
     "Quality-of-life-centered care built around communication, symptoms, and longitudinal support through serious illness.",
@@ -662,7 +662,7 @@ const fellowshipPaths = [
   ),
   makeFellowshipPath(
     "pediatric-critical-care",
-    "Pediatric Critical Care Medicine",
+    "Pediatric Critical Care",
     "PICU",
     "pediatrics",
     "High-acuity, physiology-heavy team care for critically ill children in the hospital.",
@@ -676,7 +676,7 @@ const fellowshipPaths = [
   ),
   makeFellowshipPath(
     "developmental-behavioral-pediatrics",
-    "Developmental and Behavioral Pediatrics",
+    "Developmental-Behavioral Pediatrics",
     "Dev-Beh Peds",
     "pediatrics",
     "Longitudinal pediatric care focused on development, family systems, behavior, and context outside the clinic room.",
@@ -690,7 +690,7 @@ const fellowshipPaths = [
   ),
   makeFellowshipPath(
     "pediatric-hematology-oncology",
-    "Pediatric Hematology/Oncology",
+    "Pediatric Hematology-Oncology",
     "Peds Hem/Onc",
     "pediatrics",
     "Longitudinal pediatric cancer and blood-disorder care with high complexity and close family relationships.",
@@ -760,7 +760,7 @@ const fellowshipPaths = [
   ),
   makeFellowshipPath(
     "colorectal-surgery",
-    "Colon and Rectal Surgery",
+    "Colorectal Surgery",
     "Colorectal",
     "general-surgery",
     "Organ-focused surgery that mixes major operations, clinic follow-up, and longitudinal problem-solving.",
@@ -973,7 +973,7 @@ const fellowshipPaths = [
     "Breast Imaging",
     "Breast Img",
     "radiology",
-    "Visually precise imaging with outpatient workflows, subtle pattern recognition, and a focused women's-health domain.",
+    "Visually precise imaging with outpatient workflows, subtle pattern recognition, and a focused women’s-health domain.",
     ["images", "visual detail", "women's health"],
     [
       makeSignal("images-and-data", "yes", 4, "image-heavy work"),
@@ -1082,7 +1082,7 @@ const fellowshipPaths = [
   ),
   makeFellowshipPath(
     "reproductive-endocrinology-infertility",
-    "Reproductive Endocrinology",
+    "Reproductive Endocrinology & Infertility",
     "REI",
     "obgyn",
     "Physiology, continuity, and focused reproductive care with a steadier clinic pace and procedural elements.",
@@ -1096,7 +1096,7 @@ const fellowshipPaths = [
   ),
   makeFellowshipPath(
     "urogynecology",
-    "Urogynecology and Reconstructive Pelvic Surgery",
+    "Female Pelvic Medicine & Reconstructive Surgery",
     "Urogyne",
     "obgyn",
     "A continuity-heavy surgical branch of OB/GYN built around pelvic floor problems, procedures, and function.",
@@ -1446,7 +1446,7 @@ const fellowshipPaths = [
   ),
   makeFellowshipPath(
     "allergy-immunology-med-peds",
-    "Allergy and Immunology",
+    "Allergy & Immunology",
     "A/I",
     "med-peds",
     "A cross-age, outpatient-focused path for people who like mechanism, continuity, and focused expertise.",
@@ -1460,7 +1460,7 @@ const fellowshipPaths = [
   ),
   makeFellowshipPath(
     "hospice-palliative-medicine-med-peds",
-    "Hospice and Palliative Medicine",
+    "Hospice & Palliative Medicine",
     "Palliative",
     "med-peds",
     "A cross-age communication-heavy path centered on quality of life, serious illness, and continuity through change.",
@@ -1542,384 +1542,6 @@ const fellowshipPaths = [
       makeSignal("certainty-over-ambiguity", "yes", 2, "moving toward diagnostic certainty"),
     ]
   ),
-  makeFellowshipPath(
-    "academic-general-pediatrics",
-    "Academic General Pediatrics",
-    "Academic Peds",
-    "pediatrics",
-    "Broad pediatric care with teaching, systems work, prevention, continuity, and family-centered communication.",
-    ["pediatrics", "academics", "continuity"],
-    [
-      makeSignal("children-large-share", "yes", 4, "a large pediatric share"),
-      makeSignal("routine-preventive-care", "yes", 3, "prevention and health maintenance"),
-      makeSignal("caregiver-role", "yes", 3, "working with caregivers"),
-      makeSignal("continuity-follow-up", "yes", 2, "following patients over time"),
-    ]
-  ),
-  makeFellowshipPath(
-    "advanced-heart-failure-transplant-cardiology",
-    "Advanced Heart Failure & Transplant Cardiology",
-    "Adv HF/Transplant",
-    "internal-medicine",
-    "High-complexity cardiovascular care with physiology, hospital medicine, longitudinal arcs, and transplant decision-making.",
-    ["cardiology", "transplant", "physiology"],
-    [
-      makeSignal("physiology", "yes", 4, "cardiovascular physiology"),
-      makeSignal("complex-hospitalized-adults", "yes", 4, "complex hospitalized adults"),
-      makeSignal("pathophysiology-draw", "yes", 3, "mechanism-heavy reasoning"),
-      makeSignal("treatment-over-time", "yes", 2, "seeing treatment decisions play out"),
-    ]
-  ),
-  makeFellowshipPath(
-    "bone-soft-tissue-pathology",
-    "Bone & Soft Tissue Pathology",
-    "Bone/Soft Tissue",
-    "pathology",
-    "Focused diagnostic pathology around musculoskeletal tumors and soft tissue disease patterns.",
-    ["pathology", "MSK", "diagnosis"],
-    [
-      makeSignal("microscope-over-bedside", "yes", 4, "microscopy over bedside care"),
-      makeSignal("musculoskeletal-interest", "yes", 3, "musculoskeletal problems"),
-      makeSignal("subtle-patterns", "yes", 3, "subtle visual distinctions"),
-      makeSignal("focused-expertise", "yes", 2, "deep focused expertise"),
-    ]
-  ),
-  makeFellowshipPath(
-    "cancer-rehabilitation",
-    "Cancer Rehabilitation",
-    "Cancer Rehab",
-    "physical-medicine-rehab",
-    "Function-focused rehabilitation for patients living with cancer, treatment effects, disability, and recovery goals.",
-    ["cancer", "rehab", "function"],
-    [
-      makeSignal("function-rehab", "yes", 4, "restoring function"),
-      makeSignal("disability-and-qol", "yes", 4, "quality of life and adaptation"),
-      makeSignal("recovery-over-stabilization", "yes", 3, "recovery after illness"),
-      makeSignal("long-term-trust", "yes", 2, "longer treatment relationships"),
-    ]
-  ),
-  makeFellowshipPath(
-    "child-abuse-pediatrics",
-    "Child Abuse",
-    "Child Abuse",
-    "pediatrics",
-    "Pediatric expertise at the intersection of medical evaluation, family systems, safety, and careful communication.",
-    ["pediatrics", "advocacy", "families"],
-    [
-      makeSignal("children-large-share", "yes", 4, "a large pediatric share"),
-      makeSignal("family-context", "yes", 3, "family and social context"),
-      makeSignal("caregiver-role", "yes", 3, "caregiver involvement"),
-      makeSignal("uncertainty-tolerance", "yes", 2, "working through uncertainty"),
-    ]
-  ),
-  makeFellowshipPath(
-    "clinical-cardiac-electrophysiology",
-    "Clinical Cardiac Electrophysiology",
-    "Cardiac EP",
-    "internal-medicine",
-    "A focused cardiology path around arrhythmias, procedures, devices, physiology, and precise pattern recognition.",
-    ["cardiology", "procedures", "physiology"],
-    [
-      makeSignal("physiology", "yes", 4, "cardiac physiology"),
-      makeSignal("procedures", "yes", 3, "procedural work"),
-      makeSignal("subtle-patterns", "yes", 3, "subtle pattern recognition"),
-      makeSignal("focused-expertise", "yes", 2, "narrow expertise"),
-    ]
-  ),
-  makeFellowshipPath(
-    "clinical-neurophysiology",
-    "Clinical Neurophysiology",
-    "Neurophys",
-    "neurology",
-    "Neurologic localization and interpretation-heavy work using EEG, EMG, and other physiologic data.",
-    ["neurology", "interpretation", "localization"],
-    [
-      makeSignal("anatomic-localization", "yes", 4, "anatomic localization"),
-      makeSignal("images-and-data", "yes", 3, "structured data interpretation"),
-      makeSignal("interpretation-over-procedures", "yes", 3, "interpretation-heavy work"),
-      makeSignal("subtle-patterns", "yes", 2, "subtle distinctions"),
-    ]
-  ),
-  makeFellowshipPath(
-    "clinical-ultrasound",
-    "Clinical Ultrasound",
-    "Ultrasound",
-    "emergency-medicine",
-    "Bedside imaging, procedures, acute diagnosis, and real-time decision support in emergency care.",
-    ["ultrasound", "acute care", "procedures"],
-    [
-      makeSignal("images-and-data", "yes", 4, "image interpretation"),
-      makeSignal("acuity", "yes", 3, "acute decision-making"),
-      makeSignal("procedures", "yes", 2, "hands-on procedures"),
-      makeSignal("quick-decisions", "yes", 2, "quick decisions with incomplete information"),
-    ]
-  ),
-  makeFellowshipPath(
-    "emergency-radiology",
-    "Emergency Radiology",
-    "Emergency Rads",
-    "radiology",
-    "Fast-paced image interpretation for acute presentations, trauma, and urgent diagnostic questions.",
-    ["radiology", "emergency", "images"],
-    [
-      makeSignal("images-and-data", "yes", 4, "image-heavy work"),
-      makeSignal("regular-urgency", "yes", 3, "urgent situations"),
-      makeSignal("consultant-handoffs", "yes", 2, "consultant handoffs"),
-      makeSignal("behind-the-scenes", "yes", 2, "central indirect care"),
-    ]
-  ),
-  makeFellowshipPath(
-    "global-emergency-medicine",
-    "Global Emergency Medicine",
-    "Global EM",
-    "emergency-medicine",
-    "Emergency care with systems thinking, resource-variable settings, population context, and acute problem solving.",
-    ["emergency", "global health", "systems"],
-    [
-      makeSignal("acuity", "yes", 3, "acute decision-making"),
-      makeSignal("breadth", "yes", 3, "broad clinical variety"),
-      makeSignal("community-generalist", "yes", 2, "community context"),
-      makeSignal("quick-decisions", "yes", 2, "acting with incomplete information"),
-    ]
-  ),
-  makeFellowshipPath(
-    "hematology",
-    "Hematology",
-    "Hematology",
-    "internal-medicine",
-    "Mechanism-heavy adult medicine focused on blood disorders, diagnostic reasoning, and longitudinal complexity.",
-    ["hematology", "diagnosis", "complexity"],
-    [
-      makeSignal("pathophysiology-draw", "yes", 4, "mechanism-heavy reasoning"),
-      makeSignal("diagnostic-workup", "yes", 3, "diagnostic workups"),
-      makeSignal("complex-hospitalized-adults", "yes", 2, "complex adults"),
-      makeSignal("continuity-follow-up", "yes", 2, "following patients over time"),
-    ]
-  ),
-  makeFellowshipPath(
-    "oncology",
-    "Oncology",
-    "Oncology",
-    "internal-medicine",
-    "Cancer medicine with longitudinal treatment planning, complex decisions, communication, and multidisciplinary care.",
-    ["oncology", "continuity", "complexity"],
-    [
-      makeSignal("long-term-trust", "yes", 4, "longer treatment relationships"),
-      makeSignal("complex-hospitalized-adults", "yes", 3, "complex adult illness"),
-      makeSignal("communication-over-procedures", "yes", 2, "talking through decisions"),
-      makeSignal("pathophysiology-draw", "yes", 2, "disease mechanism"),
-    ]
-  ),
-  makeFellowshipPath(
-    "interventional-cardiology",
-    "Interventional Cardiology",
-    "Interv Cards",
-    "internal-medicine",
-    "Procedure-forward cardiology with physiology, acute decisions, devices, and immediate physical results.",
-    ["cardiology", "procedures", "acuity"],
-    [
-      makeSignal("procedures", "yes", 4, "procedural work"),
-      makeSignal("physiology", "yes", 3, "cardiovascular physiology"),
-      makeSignal("immediate-physical-result", "yes", 3, "immediate physical results"),
-      makeSignal("regular-urgency", "yes", 2, "urgent situations"),
-    ]
-  ),
-  makeFellowshipPath(
-    "interventional-pulmonology",
-    "Interventional Pulmonology",
-    "Interv Pulm",
-    "internal-medicine",
-    "Airway, pleural, and thoracic procedures paired with pulmonary physiology and consultative expertise.",
-    ["pulmonary", "procedures", "consults"],
-    [
-      makeSignal("procedures", "yes", 4, "procedural work"),
-      makeSignal("physiology", "yes", 3, "pulmonary physiology"),
-      makeSignal("consultant-expertise", "yes", 3, "focused consultant expertise"),
-      makeSignal("hospital-vs-office", "yes", 2, "hospital-based work"),
-    ]
-  ),
-  makeFellowshipPath(
-    "medical-genetics",
-    "Medical Genetics",
-    "Genetics",
-    "med-peds",
-    "Cross-age diagnostic care centered on inherited disease, family context, counseling, and long diagnostic arcs.",
-    ["genetics", "families", "diagnosis"],
-    [
-      makeSignal("diagnostic-workup", "yes", 4, "figuring out what is going on"),
-      makeSignal("family-context", "yes", 3, "family context"),
-      makeSignal("adult-and-children", "yes", 3, "cross-age care"),
-      makeSignal("long-workups", "yes", 2, "longer diagnostic workups"),
-    ]
-  ),
-  makeFellowshipPath(
-    "pediatric-gastroenterology",
-    "Pediatric Gastroenterology",
-    "Peds GI",
-    "pediatrics",
-    "Pediatric digestive disease care with physiology, procedures, continuity, and family-centered management.",
-    ["pediatrics", "GI", "continuity"],
-    [
-      makeSignal("children-large-share", "yes", 4, "a large pediatric share"),
-      makeSignal("pathophysiology-draw", "yes", 3, "mechanism-heavy reasoning"),
-      makeSignal("clinic-with-procedures", "yes", 2, "clinic with procedures"),
-      makeSignal("continuity-follow-up", "yes", 2, "following patients over time"),
-    ]
-  ),
-  makeFellowshipPath(
-    "pediatric-hospital-medicine",
-    "Pediatric Hospital Medicine",
-    "Peds Hospital",
-    "pediatrics",
-    "Hospital-based pediatric care with acute teams, families, diagnostic breadth, and inpatient coordination.",
-    ["pediatrics", "hospital", "teams"],
-    [
-      makeSignal("children-large-share", "yes", 4, "a large pediatric share"),
-      makeSignal("hospital-vs-office", "yes", 3, "hospital-based work"),
-      makeSignal("acute-teamwork", "yes", 3, "team-based acute care"),
-      makeSignal("breadth", "yes", 2, "broad clinical variety"),
-    ]
-  ),
-  makeFellowshipPath(
-    "pediatric-infectious-diseases",
-    "Pediatric Infectious Diseases",
-    "Peds ID",
-    "pediatrics",
-    "Consultative pediatric diagnosis around infections, immune context, antimicrobials, and complex workups.",
-    ["pediatrics", "infection", "diagnosis"],
-    [
-      makeSignal("children-large-share", "yes", 4, "a large pediatric share"),
-      makeSignal("diagnostic-workup", "yes", 3, "diagnostic workups"),
-      makeSignal("consultant-expertise", "yes", 3, "focused consultant expertise"),
-      makeSignal("pathophysiology-draw", "yes", 2, "mechanism-heavy reasoning"),
-    ]
-  ),
-  makeFellowshipPath(
-    "pediatric-nephrology",
-    "Pediatric Nephrology",
-    "Peds Neph",
-    "pediatrics",
-    "Kidney physiology, chronic disease, inpatient consults, and longitudinal care for children and families.",
-    ["pediatrics", "kidney", "physiology"],
-    [
-      makeSignal("children-large-share", "yes", 4, "a large pediatric share"),
-      makeSignal("physiology", "yes", 3, "physiology-heavy work"),
-      makeSignal("continuity-follow-up", "yes", 3, "following patients over time"),
-      makeSignal("complex-hospitalized-adults", "yes", 1, "complex inpatient-style problems"),
-    ]
-  ),
-  makeFellowshipPath(
-    "pediatric-pulmonology",
-    "Pediatric Pulmonology",
-    "Peds Pulm",
-    "pediatrics",
-    "Pulmonary physiology, chronic respiratory disease, inpatient consults, and longitudinal pediatric care.",
-    ["pediatrics", "pulmonary", "physiology"],
-    [
-      makeSignal("children-large-share", "yes", 4, "a large pediatric share"),
-      makeSignal("physiology", "yes", 3, "pulmonary physiology"),
-      makeSignal("continuity-follow-up", "yes", 3, "following patients over time"),
-      makeSignal("hospital-vs-office", "yes", 1, "some hospital-based work"),
-    ]
-  ),
-  makeFellowshipPath(
-    "pediatric-rheumatology",
-    "Pediatric Rheumatology",
-    "Peds Rheum",
-    "pediatrics",
-    "Longitudinal pediatric immune and inflammatory disease care with diagnostic subtlety and family partnership.",
-    ["pediatrics", "rheumatology", "continuity"],
-    [
-      makeSignal("children-large-share", "yes", 4, "a large pediatric share"),
-      makeSignal("continuity-follow-up", "yes", 3, "following patients over time"),
-      makeSignal("diagnostic-workup", "yes", 3, "diagnostic workups"),
-      makeSignal("subtle-patterns", "yes", 2, "subtle patterns"),
-    ]
-  ),
-  makeFellowshipPath(
-    "pediatric-surgery",
-    "Pediatric Surgery",
-    "Peds Surgery",
-    "general-surgery",
-    "Operative care for infants, children, and adolescents with acuity, family communication, and technical skill.",
-    ["pediatrics", "OR", "surgery"],
-    [
-      makeSignal("children-large-share", "yes", 4, "a large pediatric share"),
-      makeSignal("operating-room", "yes", 4, "operating room energy"),
-      makeSignal("large-operations", "yes", 3, "larger operations"),
-      makeSignal("manual-skill", "yes", 2, "technical manual skill"),
-    ]
-  ),
-  makeFellowshipPath(
-    "pediatric-transplant-hepatology",
-    "Pediatric Transplant Hepatology",
-    "Peds Transplant Hep",
-    "pediatrics",
-    "Complex pediatric liver disease and transplant care with physiology, longitudinal follow-up, and hospital complexity.",
-    ["pediatrics", "transplant", "hepatology"],
-    [
-      makeSignal("children-large-share", "yes", 4, "a large pediatric share"),
-      makeSignal("complex-hospitalized-adults", "yes", 3, "complex inpatient-style problems"),
-      makeSignal("pathophysiology-draw", "yes", 3, "mechanism-heavy reasoning"),
-      makeSignal("treatment-over-time", "yes", 2, "seeing treatment decisions play out"),
-    ]
-  ),
-  makeFellowshipPath(
-    "pediatric-adolescent-gynecology",
-    "Pediatric and Adolescent Gynecology",
-    "Peds/Adol Gyn",
-    "obgyn",
-    "Gynecologic care for younger patients with communication, development, family context, and outpatient procedures.",
-    ["gynecology", "adolescents", "communication"],
-    [
-      makeSignal("women-health", "yes", 4, "gynecologic care"),
-      makeSignal("children-large-share", "yes", 3, "younger patients"),
-      makeSignal("longer-conversations", "yes", 3, "longer conversations"),
-      makeSignal("office-procedures-balance", "yes", 2, "office procedures"),
-    ]
-  ),
-  makeFellowshipPath(
-    "pulmonary-disease",
-    "Pulmonary Disease",
-    "Pulmonary",
-    "internal-medicine",
-    "Pulmonary physiology, chronic respiratory disease, consults, procedures, and clinic-hospital balance.",
-    ["pulmonary", "physiology", "consults"],
-    [
-      makeSignal("physiology", "yes", 4, "pulmonary physiology"),
-      makeSignal("continuity-follow-up", "yes", 3, "following patients over time"),
-      makeSignal("consultant-expertise", "yes", 2, "focused consultant work"),
-      makeSignal("clinic-with-procedures", "yes", 2, "clinic with procedures"),
-    ]
-  ),
-  makeFellowshipPath(
-    "surgical-critical-care",
-    "Surgical Critical Care",
-    "Surg Crit Care",
-    "general-surgery",
-    "High-acuity ICU care for surgical patients with urgent decisions, physiology, teams, and perioperative complexity.",
-    ["surgery", "critical care", "ICU"],
-    [
-      makeSignal("regular-urgency", "yes", 4, "urgent or high-pressure situations"),
-      makeSignal("physiology", "yes", 3, "real-time physiology"),
-      makeSignal("acute-teamwork", "yes", 3, "coordinated acute teams"),
-      makeSignal("hospital-vs-office", "yes", 2, "hospital-based work"),
-    ]
-  ),
-  makeFellowshipPath(
-    "thoracic-surgery",
-    "Thoracic Surgery",
-    "Thoracic Surg",
-    "general-surgery",
-    "Chest surgery with large operations, anatomy, cancer care, procedures, and perioperative ownership.",
-    ["surgery", "thoracic", "OR"],
-    [
-      makeSignal("operating-room", "yes", 4, "operating room energy"),
-      makeSignal("large-operations", "yes", 4, "large operations"),
-      makeSignal("narrow-anatomy", "yes", 2, "focused anatomy"),
-      makeSignal("acute-teamwork", "yes", 2, "team-based operative care"),
-    ]
-  ),
 ];
 
 const specialtyById = Object.fromEntries(specialties.map((specialty) => [specialty.id, specialty]));
@@ -1931,206 +1553,6 @@ const fellowshipPathsBySpecialtyId = fellowshipPaths.reduce((grouped, path) => {
   grouped[path.parentId].push(path);
   return grouped;
 }, {});
-
-const compareDataById = {
-  "anesthesiology": {
-    name: "Anesthesiology",
-    table: "AN-1",
-    matchedN: 1136,
-    unmatchedN: 191,
-    matched: { contiguousRanks: 13.7, step2: 252, research: 3.8, publications: 9.0, work: 2.0, volunteer: 4.3, aoa: 14.4, nih: 33.1, phd: 3.8, otherGrad: 17.2 },
-    unmatched: { contiguousRanks: 7.0, step2: 240, research: 3.1, publications: 5.4, work: 2.4, volunteer: 4.1, aoa: 0.5, nih: 24.1, phd: 1.6, otherGrad: 24.1 },
-  },
-  "dermatology": {
-    name: "Dermatology",
-    table: "DM-1",
-    matchedN: 314,
-    unmatchedN: 126,
-    matched: { contiguousRanks: 8.8, step2: 257, research: 6.4, publications: 27.7, work: 2.3, volunteer: 5.3, aoa: 41.1, nih: 41.7, phd: 9.8, otherGrad: 17.1 },
-    unmatched: { contiguousRanks: 4.5, step2: 250, research: 4.9, publications: 19.0, work: 2.5, volunteer: 5.6, aoa: 23.8, nih: 23.0, phd: 1.7, otherGrad: 17.2 },
-  },
-  "diagnostic-radiology": {
-    name: "Diagnostic Radiology",
-    table: "DR-1",
-    matchedN: 625,
-    unmatchedN: 86,
-    matched: { contiguousRanks: 13.8, step2: 256, research: 4.4, publications: 12.0, work: 1.9, volunteer: 3.9, aoa: 19.5, nih: 29.9, phd: 3.5, otherGrad: 19.3 },
-    unmatched: { contiguousRanks: 5.5, step2: 241, research: 3.6, publications: 8.0, work: 2.1, volunteer: 3.6, aoa: 4.7, nih: 23.3, phd: 2.6, otherGrad: 18.2 },
-  },
-  "emergency-medicine": {
-    name: "Emergency Medicine",
-    table: "EM-1",
-    matchedN: 1027,
-    unmatchedN: 20,
-    matched: { contiguousRanks: 15.4, step2: 248, research: 2.8, publications: 5.7, work: 2.2, volunteer: 4.4, aoa: 11.8, nih: 24.8, phd: 1.0, otherGrad: 19.9 },
-    unmatched: { contiguousRanks: 4.5, step2: 234, research: 2.3, publications: 5.0, work: 2.8, volunteer: 4.8, aoa: 0.0, nih: 15.0, phd: 5.0, otherGrad: 35.0 },
-  },
-  "family-medicine": {
-    name: "Family Medicine",
-    table: "FM-1",
-    matchedN: 1170,
-    unmatchedN: 12,
-    matched: { contiguousRanks: 13.5, step2: 244, research: 2.1, publications: 4.2, work: 1.8, volunteer: 4.6, aoa: 9.4, nih: 25.5, phd: 0.9, otherGrad: 17.0 },
-    unmatched: { contiguousRanks: 5.1, step2: 231, research: 1.8, publications: 1.4, work: 2.3, volunteer: 7.4, aoa: 0.0, nih: 16.7, phd: 0.0, otherGrad: 8.3 },
-  },
-  "general-surgery": {
-    name: "General Surgery",
-    table: "GS-1",
-    matchedN: 858,
-    unmatchedN: 181,
-    matched: { contiguousRanks: 14.1, step2: 253, research: 4.2, publications: 10.9, work: 2.0, volunteer: 4.5, aoa: 22.0, nih: 27.7, phd: 1.8, otherGrad: 21.7 },
-    unmatched: { contiguousRanks: 5.6, step2: 238, research: 3.7, publications: 7.3, work: 2.5, volunteer: 4.2, aoa: 2.8, nih: 16.6, phd: 1.2, otherGrad: 23.8 },
-  },
-  "internal-medicine": {
-    name: "Internal Medicine",
-    table: "IM-1",
-    matchedN: 3024,
-    unmatchedN: 64,
-    matched: { contiguousRanks: 13.2, step2: 251, research: 3.3, publications: 8.7, work: 1.8, volunteer: 4.2, aoa: 15.9, nih: 31.8, phd: 5.0, otherGrad: 19.0 },
-    unmatched: { contiguousRanks: 3.6, step2: 234, research: 3.3, publications: 6.2, work: 1.9, volunteer: 4.1, aoa: 4.7, nih: 21.9, phd: 4.8, otherGrad: 27.0 },
-  },
-  "internal-medicine-pediatrics": {
-    name: "Internal Medicine/Pediatrics",
-    table: "IP-1",
-    matchedN: 294,
-    unmatchedN: 46,
-    matched: { contiguousRanks: 11.3, step2: 253, research: 3.1, publications: 6.9, work: 1.7, volunteer: 5.1, aoa: 22.4, nih: 36.1, phd: 1.8, otherGrad: 24.8 },
-    unmatched: { contiguousRanks: 3.0, step2: 243, research: 2.6, publications: 6.2, work: 2.0, volunteer: 4.8, aoa: 6.5, nih: 17.4, phd: 4.5, otherGrad: 34.1 },
-  },
-  "interventional-radiology": {
-    name: "Interventional Radiology",
-    table: "IR-1",
-    matchedN: 117,
-    unmatchedN: 24,
-    matched: { contiguousRanks: 6.5, step2: 253, research: 4.7, publications: 15.8, work: 2.2, volunteer: 3.9, aoa: 17.9, nih: 31.6, phd: 2.8, otherGrad: 23.1 },
-    unmatched: { contiguousRanks: 2.9, step2: 245, research: 4.6, publications: 10.1, work: 3.1, volunteer: 15.6, aoa: 12.5, nih: 16.7, phd: 0.0, otherGrad: 30.4 },
-  },
-  "neurology": {
-    name: "Neurology",
-    table: "N-1",
-    matchedN: 488,
-    unmatchedN: 30,
-    matched: { contiguousRanks: 13.1, step2: 250, research: 3.5, publications: 8.8, work: 1.8, volunteer: 4.2, aoa: 12.5, nih: 26.8, phd: 4.7, otherGrad: 19.5 },
-    unmatched: { contiguousRanks: 4.1, step2: 236, research: 2.8, publications: 5.5, work: 1.8, volunteer: 3.9, aoa: 0.0, nih: 16.7, phd: 3.6, otherGrad: 14.3 },
-  },
-  "obstetrics-gynecology": {
-    name: "Obstetrics and Gynecology",
-    table: "OB-1",
-    matchedN: 925,
-    unmatchedN: 149,
-    matched: { contiguousRanks: 12.3, step2: 252, research: 3.8, publications: 9.0, work: 2.0, volunteer: 5.0, aoa: 22.1, nih: 28.5, phd: 1.4, otherGrad: 22.2 },
-    unmatched: { contiguousRanks: 7.2, step2: 244, research: 3.3, publications: 6.8, work: 2.1, volunteer: 5.0, aoa: 9.4, nih: 22.8, phd: 4.3, otherGrad: 24.6 },
-  },
-  "orthopaedic-surgery": {
-    name: "Orthopaedic Surgery",
-    table: "ORS-1",
-    matchedN: 587,
-    unmatchedN: 203,
-    matched: { contiguousRanks: 11.8, step2: 257, research: 8.1, publications: 23.8, work: 2.5, volunteer: 4.8, aoa: 34.2, nih: 33.0, phd: 1.3, otherGrad: 18.2 },
-    unmatched: { contiguousRanks: 6.3, step2: 246, research: 8.0, publications: 18.0, work: 2.4, volunteer: 4.8, aoa: 15.8, nih: 20.7, phd: 3.2, otherGrad: 24.7 },
-  },
-  "otolaryngology": {
-    name: "Otolaryngology",
-    table: "OTO-1",
-    matchedN: 268,
-    unmatchedN: 54,
-    matched: { contiguousRanks: 13.6, step2: 256, research: 7.1, publications: 20.0, work: 2.0, volunteer: 4.3, aoa: 33.6, nih: 36.6, phd: 2.8, otherGrad: 17.9 },
-    unmatched: { contiguousRanks: 7.2, step2: 251, research: 5.5, publications: 15.6, work: 2.4, volunteer: 6.7, aoa: 16.7, nih: 27.8, phd: 4.1, otherGrad: 24.5 },
-  },
-  "pathology": {
-    name: "Pathology",
-    table: "PTH-1",
-    matchedN: 213,
-    unmatchedN: 11,
-    matched: { contiguousRanks: 12.4, step2: 247, research: 3.1, publications: 8.4, work: 1.9, volunteer: 3.3, aoa: 8.9, nih: 32.4, phd: 21.4, otherGrad: 14.4 },
-    unmatched: { contiguousRanks: 6.5, step2: 232, research: 2.3, publications: 4.1, work: 3.2, volunteer: 4.7, aoa: 0.0, nih: 9.1, phd: 0.0, otherGrad: 20.0 },
-  },
-  "pediatrics": {
-    name: "Pediatrics",
-    table: "PD-1",
-    matchedN: 1216,
-    unmatchedN: 2,
-    matched: { contiguousRanks: 15.3, step2: 247, research: 2.6, publications: 6.4, work: 1.6, volunteer: 4.9, aoa: 13.4, nih: 28.7, phd: 3.1, otherGrad: 16.8 },
-    unmatched: { contiguousRanks: 2.0, step2: 233, research: 0.5, publications: 21.5, work: 0.5, volunteer: 6.0, aoa: 0.0, nih: 50.0, phd: 50.0, otherGrad: 0.0 },
-  },
-  "physical-medicine-rehabilitation": {
-    name: "Physical Medicine and Rehabilitation",
-    table: "PM-1",
-    matchedN: 231,
-    unmatchedN: 42,
-    matched: { contiguousRanks: 13.7, step2: 248, research: 3.4, publications: 8.6, work: 1.8, volunteer: 4.8, aoa: 13.9, nih: 22.1, phd: 1.9, otherGrad: 16.1 },
-    unmatched: { contiguousRanks: 5.1, step2: 236, research: 3.3, publications: 6.4, work: 2.2, volunteer: 4.9, aoa: 0.0, nih: 23.8, phd: 0.0, otherGrad: 12.5 },
-  },
-  "psychiatry": {
-    name: "Psychiatry",
-    table: "P-1",
-    matchedN: 1051,
-    unmatchedN: 123,
-    matched: { contiguousRanks: 11.5, step2: 246, research: 3.0, publications: 7.5, work: 1.9, volunteer: 4.5, aoa: 9.2, nih: 30.4, phd: 4.8, otherGrad: 20.5 },
-    unmatched: { contiguousRanks: 5.2, step2: 235, research: 3.1, publications: 4.6, work: 2.1, volunteer: 4.0, aoa: 1.6, nih: 26.0, phd: 2.7, otherGrad: 23.4 },
-  },
-  "vascular-surgery": {
-    name: "Vascular Surgery",
-    table: "VS-1",
-    matchedN: 64,
-    unmatchedN: 6,
-    matched: { contiguousRanks: 22.6, step2: 253, research: 4.6, publications: 12.8, work: 2.5, volunteer: 4.7, aoa: 14.1, nih: 37.5, phd: 1.7, otherGrad: 19.3 },
-    unmatched: { contiguousRanks: 11.8, step2: 246, research: 4.5, publications: 8.0, work: 2.8, volunteer: 4.0, aoa: 16.7, nih: 0.0, phd: 20.0, otherGrad: 0.0 },
-  },
-};
-
-const specialtyCompareMap = {
-  "anesthesiology": "anesthesiology",
-  "dermatology": "dermatology",
-  "emergency-medicine": "emergency-medicine",
-  "family-medicine": "family-medicine",
-  "general-surgery": "general-surgery",
-  "internal-medicine": "internal-medicine",
-  "med-peds": "internal-medicine-pediatrics",
-  "neurology": "neurology",
-  "obgyn": "obstetrics-gynecology",
-  "orthopedic-surgery": "orthopaedic-surgery",
-  "otolaryngology": "otolaryngology",
-  "pathology": "pathology",
-  "pediatrics": "pediatrics",
-  "physical-medicine-rehab": "physical-medicine-rehabilitation",
-  "psychiatry": "psychiatry",
-  "radiology": "diagnostic-radiology",
-};
-
-const fellowshipCompareMap = {
-  "interventional-radiology": "interventional-radiology",
-  "vascular-surgery": "vascular-surgery",
-};
-
-const compareSliderDefinitions = [
-  { key: "step2", label: "USMLE Step 2 CK score", min: 190, max: 280, step: 1, weight: 0.24 },
-  { key: "contiguousRanks", label: "Contiguous ranked programs", min: 0, max: 30, step: 1, weight: 0.28 },
-  { key: "research", label: "Research projects", min: 0, max: 20, step: 1, weight: 0.1 },
-  { key: "publications", label: "Abstracts, presentations, publications", min: 0, max: 60, step: 1, weight: 0.12 },
-  { key: "work", label: "Work experiences", min: 0, max: 10, step: 1, weight: 0.04 },
-  { key: "volunteer", label: "Volunteer experiences", min: 0, max: 15, step: 1, weight: 0.04 },
-];
-
-const compareCheckDefinitions = [
-  { key: "aoa", label: "AOA", weight: 0.07 },
-  { key: "nih", label: "Top 40 NIH-funded school", weight: 0.05 },
-  { key: "phd", label: "PhD", weight: 0.03 },
-  { key: "otherGrad", label: "Other graduate degree", weight: 0.03 },
-];
-
-const compareProfile = {
-  step2: 250,
-  contiguousRanks: 12,
-  research: 3,
-  publications: 8,
-  work: 2,
-  volunteer: 4,
-  aoa: false,
-  nih: false,
-  phd: false,
-  otherGrad: false,
-};
 
 const questions = [
   {
@@ -3240,21 +2662,15 @@ const state = {
 
 let lastTrigger = null;
 let selectedExploreId = specialties[0].id;
-let selectedCompareId = "internal-medicine";
 let exploreZoom = 1;
 let exploreDragState = null;
 let suppressExploreCanvasClick = false;
-let exploreResizeFrame = null;
 
-const EXPLORE_CANVAS_BASE_WIDTH = 1680;
-const EXPLORE_CANVAS_BASE_HEIGHT = 1180;
 const EXPLORE_ZOOM_MIN = 0.7;
 const EXPLORE_ZOOM_MAX = 2.2;
 const EXPLORE_ZOOM_STEP = 0.2;
 const EXPLORE_WHEEL_ZOOM_STEP = 0.12;
 const EXPLORE_DRAG_THRESHOLD = 4;
-let exploreCanvasBaseWidth = EXPLORE_CANVAS_BASE_WIDTH;
-let exploreCanvasBaseHeight = EXPLORE_CANVAS_BASE_HEIGHT;
 
 const infoModal = document.getElementById("infoModal");
 const infoBackdrop = document.getElementById("infoBackdrop");
@@ -3282,12 +2698,8 @@ const shareCopyStatus = document.getElementById("shareCopyStatus");
 const shareSeedInput = document.getElementById("shareSeedInput");
 const loadSeedButton = document.getElementById("loadSeedButton");
 const shareImportStatus = document.getElementById("shareImportStatus");
-const compareView = document.getElementById("compareView");
-const closeCompareButton = document.getElementById("closeCompareButton");
-const compareSpecialtySelect = document.getElementById("compareSpecialtySelect");
-const compareSliderGrid = document.getElementById("compareSliderGrid");
-const compareOutput = document.getElementById("compareOutput");
-const exploreView = document.getElementById("exploreView");
+const exploreModal = document.getElementById("exploreModal");
+const exploreBackdrop = document.getElementById("exploreBackdrop");
 const exploreToggle = document.getElementById("exploreToggle");
 const resultsExploreButton = document.getElementById("resultsExploreButton");
 const closeExploreButton = document.getElementById("closeExploreButton");
@@ -3304,13 +2716,10 @@ const exploreNodeScore = document.getElementById("exploreNodeScore");
 const exploreNodeParent = document.getElementById("exploreNodeParent");
 const exploreNodeNotes = document.getElementById("exploreNodeNotes");
 const exploreNodeConnections = document.getElementById("exploreNodeConnections");
-const exploreCompareButton = document.getElementById("exploreCompareButton");
 const rankToggleButton = document.getElementById("rankToggleButton");
 const appGrid = document.getElementById("appGrid");
 const startView = document.getElementById("startView");
 const startButton = document.getElementById("startButton");
-const startExploreButton = document.getElementById("startExploreButton");
-const startCompareButton = document.getElementById("startCompareButton");
 const startInfoButton = document.getElementById("startInfoButton");
 const progressWrap = document.getElementById("progressWrap");
 const questionView = document.getElementById("questionView");
@@ -3346,14 +2755,12 @@ const rankPathDetail = document.getElementById("rankPathDetail");
 const rankPathTitle = document.getElementById("rankPathTitle");
 const rankPathList = document.getElementById("rankPathList");
 
-let compareReturnView = "start";
-let exploreReturnView = "start";
-
 function syncModalBodyLock() {
   const modalOpen =
     !infoModal.classList.contains("hidden") ||
     !settingsModal.classList.contains("hidden") ||
-    !shareModal.classList.contains("hidden");
+    !shareModal.classList.contains("hidden") ||
+    !exploreModal.classList.contains("hidden");
   document.body.classList.toggle("modal-open", modalOpen);
 }
 
@@ -3363,6 +2770,8 @@ function setInfoModalOpen(isOpen, trigger = null) {
     settingsModal.setAttribute("aria-hidden", "true");
     shareModal.classList.add("hidden");
     shareModal.setAttribute("aria-hidden", "true");
+    exploreModal.classList.add("hidden");
+    exploreModal.setAttribute("aria-hidden", "true");
   }
 
   infoModal.classList.toggle("hidden", !isOpen);
@@ -3414,6 +2823,8 @@ function setSettingsModalOpen(isOpen, trigger = null) {
     infoModal.setAttribute("aria-hidden", "true");
     shareModal.classList.add("hidden");
     shareModal.setAttribute("aria-hidden", "true");
+    exploreModal.classList.add("hidden");
+    exploreModal.setAttribute("aria-hidden", "true");
     updateSettingsUI();
   }
 
@@ -3472,6 +2883,8 @@ function setShareModalOpen(isOpen, trigger = null) {
     infoModal.setAttribute("aria-hidden", "true");
     settingsModal.classList.add("hidden");
     settingsModal.setAttribute("aria-hidden", "true");
+    exploreModal.classList.add("hidden");
+    exploreModal.setAttribute("aria-hidden", "true");
     updateShareUI();
   }
 
@@ -3496,450 +2909,34 @@ function setShareModalOpen(isOpen, trigger = null) {
   }
 }
 
-function getCompareDataIdForEntity(entity) {
-  if (!entity) {
-    return null;
+function setExploreModalOpen(isOpen, trigger = null, selectedId = null) {
+  if (isOpen) {
+    infoModal.classList.add("hidden");
+    infoModal.setAttribute("aria-hidden", "true");
+    settingsModal.classList.add("hidden");
+    settingsModal.setAttribute("aria-hidden", "true");
+    shareModal.classList.add("hidden");
+    shareModal.setAttribute("aria-hidden", "true");
   }
-
-  if (compareDataById[entity.id]) {
-    return entity.id;
-  }
-
-  if (entity.kind === "specialty") {
-    return specialtyCompareMap[entity.id] || null;
-  }
-
-  if (entity.kind === "fellowship") {
-    return fellowshipCompareMap[entity.id] || specialtyCompareMap[entity.parentId] || null;
-  }
-
-  return null;
-}
-
-function getCompareDataIdForEntityId(entityId) {
-  if (compareDataById[entityId]) {
-    return entityId;
-  }
-
-  const specialty = specialtyById[entityId];
-
-  if (specialty) {
-    return getCompareDataIdForEntity(specialty);
-  }
-
-  const fellowship = fellowshipPaths.find((path) => path.id === entityId);
-
-  if (fellowship) {
-    return getCompareDataIdForEntity({ ...fellowship, kind: "fellowship" });
-  }
-
-  return null;
-}
-
-function createCompareButton(compareId, label = "Compare applicant profile") {
-  if (!compareId) {
-    return `<p class="match-card__path-note">NRMP comparison data is not available for this field in this document.</p>`;
-  }
-
-  return `<button class="ghost-button match-card__compare" type="button" data-compare-id="${compareId}">${label}</button>`;
-}
-
-function getCompareDataOptions() {
-  return Object.entries(compareDataById)
-    .map(([id, data]) => ({ id, name: data.name }))
-    .sort((left, right) => left.name.localeCompare(right.name));
-}
-
-function clamp(value, min, max) {
-  return Math.min(max, Math.max(min, value));
-}
-
-function ensureCompareControls() {
-  compareSpecialtySelect.innerHTML = getCompareDataOptions()
-    .map(({ id, name }) => `<option value="${id}">${name}</option>`)
-    .join("");
-
-  compareSliderGrid.innerHTML = compareSliderDefinitions.map((definition) => `
-    <label class="compare-slider" for="compare-${definition.key}">
-      <span class="compare-slider__top">
-        <span>${definition.label}</span>
-        <output id="compare-${definition.key}-value" for="compare-${definition.key}">${compareProfile[definition.key]}</output>
-      </span>
-      <input
-        id="compare-${definition.key}"
-        type="range"
-        min="${definition.min}"
-        max="${definition.max}"
-        step="${definition.step}"
-        value="${compareProfile[definition.key]}"
-        data-compare-slider="${definition.key}"
-      >
-    </label>
-  `).join("");
-}
-
-function syncCompareInputs() {
-  compareSliderDefinitions.forEach((definition) => {
-    const input = compareSliderGrid.querySelector(`[data-compare-slider="${definition.key}"]`);
-    const output = document.getElementById(`compare-${definition.key}-value`);
-
-    if (!input || !output) {
-      return;
-    }
-
-    input.value = compareProfile[definition.key];
-    output.textContent = compareProfile[definition.key];
-  });
-
-  compareCheckDefinitions.forEach((definition) => {
-    const input = compareView.querySelector(`[data-compare-check="${definition.key}"]`);
-
-    if (input) {
-      input.checked = Boolean(compareProfile[definition.key]);
-    }
-  });
-}
-
-function getContinuousMatchedAlignment(value, matchedMean, definition) {
-  const baseline = definition.min ?? 0;
-
-  if (value >= matchedMean) {
-    return 100;
-  }
-
-  if (matchedMean <= baseline) {
-    return value >= matchedMean ? 100 : 0;
-  }
-
-  return clamp(((value - baseline) / (matchedMean - baseline)) * 100, 0, 100);
-}
-
-function getCheckboxMatchedAlignment(isChecked, matchedPercent) {
-  return isChecked ? 100 : clamp(100 - matchedPercent, 0, 100);
-}
-
-function getMatchedAlignmentLabel(score) {
-  if (score >= 94) {
-    return "Very close to the reported matched average";
-  }
-
-  if (score >= 82) {
-    return "Strong alignment with the reported matched average";
-  }
-
-  if (score >= 68) {
-    return "Moderate alignment with the reported matched average";
-  }
-
-  if (score >= 50) {
-    return "Partial alignment with the reported matched average";
-  }
-
-  return "Limited alignment with the reported matched average";
-}
-
-function formatCompareValue(value) {
-  return Number.isInteger(value) ? String(value) : value.toFixed(1);
-}
-
-function getMarkerPosition(value, min, max) {
-  return `${clamp(((value - min) / (max - min)) * 100, 0, 100)}%`;
-}
-
-function renderCompareOutput() {
-  const data = compareDataById[selectedCompareId];
-
-  if (!data) {
-    compareOutput.innerHTML = `
-      <div class="compare-empty">
-        <h3>No comparison data available</h3>
-        <p>This specialty is not included in the provided NRMP Charting Outcomes document.</p>
-      </div>
-    `;
-    return;
-  }
-
-  compareSpecialtySelect.value = selectedCompareId;
-
-  const continuousMetrics = compareSliderDefinitions.map((definition) => {
-    const value = Number(compareProfile[definition.key]);
-    const matchedMean = data.matched[definition.key];
-    const unmatchedMean = data.unmatched[definition.key];
-    const alignment = getContinuousMatchedAlignment(value, matchedMean, definition);
-
-    return {
-      ...definition,
-      value,
-      matchedMean,
-      unmatchedMean,
-      meetsMatchedMean: value >= matchedMean,
-      alignment,
-    };
-  });
-
-  const checkMetrics = compareCheckDefinitions.map((definition) => {
-    const checked = Boolean(compareProfile[definition.key]);
-    const matchedPercent = data.matched[definition.key];
-    const unmatchedPercent = data.unmatched[definition.key];
-    const alignment = getCheckboxMatchedAlignment(checked, matchedPercent);
-
-    return {
-      ...definition,
-      checked,
-      matchedPercent,
-      unmatchedPercent,
-      alignment,
-    };
-  });
-
-  const weightedTotal = [...continuousMetrics, ...checkMetrics]
-    .reduce((total, metric) => total + (metric.alignment * metric.weight), 0);
-  const totalWeight = [...continuousMetrics, ...checkMetrics]
-    .reduce((total, metric) => total + metric.weight, 0);
-  const matchedAlignment = Math.round(weightedTotal / totalWeight);
-  const matchedShare = Math.round((data.matchedN / (data.matchedN + data.unmatchedN)) * 100);
-  const alignmentLabel = getMatchedAlignmentLabel(matchedAlignment);
-  const matchedMeanCount = continuousMetrics.filter((metric) => metric.meetsMatchedMean).length;
-  const matchedMeanSummary = `${matchedMeanCount} of ${continuousMetrics.length} numeric input${continuousMetrics.length === 1 ? "" : "s"} ${matchedMeanCount === 1 ? "is" : "are"} at or above the matched-applicant mean.`;
-
-  const metricMarkup = continuousMetrics.map((metric) => `
-    <div class="compare-metric">
-      <div class="compare-metric__head">
-        <span>${metric.label}</span>
-        <strong>You: ${formatCompareValue(metric.value)}</strong>
-      </div>
-      <div class="compare-bar" aria-hidden="true">
-        <span class="compare-bar__marker compare-bar__marker--unmatched" style="--x: ${getMarkerPosition(metric.unmatchedMean, metric.min, metric.max)}"></span>
-        <span class="compare-bar__marker compare-bar__marker--matched" style="--x: ${getMarkerPosition(metric.matchedMean, metric.min, metric.max)}"></span>
-        <span class="compare-bar__marker compare-bar__marker--user" style="--x: ${getMarkerPosition(metric.value, metric.min, metric.max)}"></span>
-      </div>
-      <div class="compare-metric__values">
-        <span>Matched mean ${formatCompareValue(metric.matchedMean)}</span>
-        <span>Unmatched mean ${formatCompareValue(metric.unmatchedMean)}</span>
-      </div>
-    </div>
-  `).join("");
-
-  const checkMarkup = checkMetrics.map((metric) => `
-    <div class="compare-check-result">
-      <span>${metric.label}</span>
-      <strong>You: ${metric.checked ? "Yes" : "No"}</strong>
-      <small>Matched ${formatCompareValue(metric.matchedPercent)}% &middot; unmatched ${formatCompareValue(metric.unmatchedPercent)}%</small>
-    </div>
-  `).join("");
-
-  compareOutput.innerHTML = `
-    <div class="compare-summary-card">
-      <span class="meta-block__label">Matched average alignment</span>
-      <strong>${matchedAlignment}%</strong>
-      <div class="compare-meter" aria-hidden="true">
-        <span style="width: ${matchedAlignment}%"></span>
-      </div>
-      <p>${alignmentLabel}. ${matchedMeanSummary} Numeric inputs cap at 100% once they meet or exceed the matched-applicant mean. This is descriptive alignment with summary statistics, not a predicted probability.</p>
-    </div>
-
-    <div class="compare-summary-grid">
-      <div class="compare-stat-card">
-        <span class="meta-block__label">2024 specialty match share</span>
-        <strong>${matchedShare}%</strong>
-        <p>${data.matchedN} matched and ${data.unmatchedN} did not match to this preferred specialty in the analyzed U.S. MD senior group.</p>
-      </div>
-    </div>
-
-    <div class="compare-legend" aria-hidden="true">
-      <span><i class="compare-dot compare-dot--user"></i>You</span>
-      <span><i class="compare-dot compare-dot--matched"></i>Matched mean</span>
-      <span><i class="compare-dot compare-dot--unmatched"></i>Unmatched mean</span>
-    </div>
-
-    <div class="compare-metric-list">${metricMarkup}</div>
-    <div class="compare-check-results">${checkMarkup}</div>
-  `;
-}
-
-function getActivePrimaryView() {
-  if (!exploreView.classList.contains("hidden")) {
-    return "explore";
-  }
-
-  if (!compareView.classList.contains("hidden")) {
-    return "compare";
-  }
-
-  if (!resultsView.classList.contains("hidden")) {
-    return "results";
-  }
-
-  if (!questionView.classList.contains("hidden")) {
-    return "question";
-  }
-
-  return "start";
-}
-
-function hideCompareView() {
-  compareView.classList.add("hidden");
-  compareView.setAttribute("aria-hidden", "true");
-}
-
-function hideExploreView() {
-  exploreView.classList.add("hidden");
-  exploreView.setAttribute("aria-hidden", "true");
-}
-
-function scrollPageToTop() {
-  requestAnimationFrame(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-  });
-}
-
-function showCompareView(trigger = null, compareId = null, preserveReturn = false) {
-  if (!preserveReturn) {
-    compareReturnView = getActivePrimaryView();
-  }
-
-  infoModal.classList.add("hidden");
-  infoModal.setAttribute("aria-hidden", "true");
-  settingsModal.classList.add("hidden");
-  settingsModal.setAttribute("aria-hidden", "true");
-  shareModal.classList.add("hidden");
-  shareModal.setAttribute("aria-hidden", "true");
-  hideExploreView();
-
-  if (compareId && compareDataById[compareId]) {
-    selectedCompareId = compareId;
-  }
-
-  state.rankPanelCollapsed = true;
-  ensureCompareControls();
-  syncCompareInputs();
-  renderCompareOutput();
-
-  startView.classList.add("hidden");
-  questionView.classList.add("hidden");
-  resultsView.classList.add("hidden");
-  progressWrap.classList.add("hidden");
-  compareView.classList.remove("hidden");
-  compareView.setAttribute("aria-hidden", "false");
-  syncModalBodyLock();
-  syncRankPanelVisibility();
-  scrollPageToTop();
-
-  lastTrigger = trigger ?? document.activeElement;
-  closeCompareButton.focus();
-}
-
-function showExploreView(trigger = null, selectedId = null, preserveReturn = false) {
-  if (!preserveReturn) {
-    exploreReturnView = getActivePrimaryView();
-  }
-
-  infoModal.classList.add("hidden");
-  infoModal.setAttribute("aria-hidden", "true");
-  settingsModal.classList.add("hidden");
-  settingsModal.setAttribute("aria-hidden", "true");
-  shareModal.classList.add("hidden");
-  shareModal.setAttribute("aria-hidden", "true");
 
   if (selectedId) {
     selectedExploreId = selectedId;
   }
 
-  state.rankPanelCollapsed = true;
-  startView.classList.add("hidden");
-  questionView.classList.add("hidden");
-  resultsView.classList.add("hidden");
-  progressWrap.classList.add("hidden");
-  hideCompareView();
-  exploreView.classList.remove("hidden");
-  exploreView.setAttribute("aria-hidden", "false");
-  renderExploreView();
+  exploreModal.classList.toggle("hidden", !isOpen);
+  exploreModal.setAttribute("aria-hidden", String(!isOpen));
   syncModalBodyLock();
-  syncRankPanelVisibility();
-  centerExploreCanvas();
-  scrollPageToTop();
 
-  lastTrigger = trigger ?? document.activeElement;
-  closeExploreButton.focus();
-}
-
-function returnFromCompareView() {
-  hideCompareView();
-
-  if (compareReturnView === "explore") {
-    showExploreView(null, selectedExploreId, true);
+  if (isOpen) {
+    lastTrigger = trigger ?? document.activeElement;
+    renderExploreModal();
+    closeExploreButton.focus();
     return;
   }
 
-  if (compareReturnView === "results" && state.started) {
-    showResults();
-    return;
+  if (lastTrigger instanceof HTMLElement) {
+    lastTrigger.focus();
   }
-
-  if (compareReturnView === "question" && state.started && state.currentIndex < questions.length) {
-    renderQuestion();
-    return;
-  }
-
-  showStartState();
-}
-
-function returnFromExploreView() {
-  hideExploreView();
-
-  if (exploreReturnView === "compare") {
-    showCompareView(null, selectedCompareId, true);
-    return;
-  }
-
-  if (exploreReturnView === "results" && state.started) {
-    showResults();
-    return;
-  }
-
-  if (exploreReturnView === "question" && state.started && state.currentIndex < questions.length) {
-    renderQuestion();
-    return;
-  }
-
-  showStartState();
-}
-
-function handleCompareInput(event) {
-  const sliderKey = event.target.dataset.compareSlider;
-  const checkKey = event.target.dataset.compareCheck;
-
-  if (sliderKey) {
-    compareProfile[sliderKey] = Number(event.target.value);
-    const output = document.getElementById(`compare-${sliderKey}-value`);
-
-    if (output) {
-      output.textContent = event.target.value;
-    }
-  }
-
-  if (checkKey) {
-    compareProfile[checkKey] = event.target.checked;
-  }
-
-  renderCompareOutput();
-}
-
-function handleCompareSelectionChange() {
-  selectedCompareId = compareSpecialtySelect.value;
-  renderCompareOutput();
-}
-
-function handleCompareTriggerClick(event) {
-  const trigger = event.target.closest("[data-compare-id]");
-
-  if (!trigger) {
-    return;
-  }
-
-  event.preventDefault();
-  event.stopPropagation();
-  showCompareView(trigger, trigger.dataset.compareId);
 }
 
 function clampExploreZoom(value) {
@@ -3948,28 +2945,16 @@ function clampExploreZoom(value) {
 
 function syncExploreZoomControls() {
   const zoom = Number(exploreZoom.toFixed(2));
-  const canvasWidth = Math.round(exploreCanvasBaseWidth * zoom);
-  const canvasHeight = Math.round(exploreCanvasBaseHeight * zoom);
 
-  exploreCanvas.style.width = `${canvasWidth}px`;
-  exploreCanvas.style.height = `${canvasHeight}px`;
-  exploreCanvas.style.minWidth = `${canvasWidth}px`;
-  exploreCanvas.style.minHeight = `${canvasHeight}px`;
+  exploreCanvas.style.width = `${Math.round(zoom * 100)}%`;
+  exploreCanvas.style.height = `${Math.round(zoom * 100)}%`;
+  exploreCanvas.style.minWidth = `${Math.round(900 * zoom)}px`;
+  exploreCanvas.style.minHeight = `${Math.round(620 * zoom)}px`;
   exploreZoomValue.textContent = `${Math.round(zoom * 100)}%`;
 
   exploreZoomOutButton.disabled = zoom <= EXPLORE_ZOOM_MIN + 0.01;
   exploreZoomResetButton.disabled = Math.abs(zoom - 1) < 0.01;
   exploreZoomInButton.disabled = zoom >= EXPLORE_ZOOM_MAX - 0.01;
-}
-
-function centerExploreCanvas() {
-  requestAnimationFrame(() => {
-    const maxScrollLeft = Math.max(0, exploreCanvasShell.scrollWidth - exploreCanvasShell.clientWidth);
-    const maxScrollTop = Math.max(0, exploreCanvasShell.scrollHeight - exploreCanvasShell.clientHeight);
-
-    exploreCanvasShell.scrollLeft = maxScrollLeft / 2;
-    exploreCanvasShell.scrollTop = maxScrollTop / 2;
-  });
 }
 
 function setExploreZoom(nextZoom, preserveCenter = true, anchorPoint = null) {
@@ -3998,29 +2983,8 @@ function setExploreZoom(nextZoom, preserveCenter = true, anchorPoint = null) {
   });
 }
 
-function resetExploreZoom() {
-  setExploreZoom(1, false);
-  centerExploreCanvas();
-}
-
-function handleExploreResize() {
-  if (exploreView.classList.contains("hidden")) {
-    return;
-  }
-
-  if (exploreResizeFrame) {
-    cancelAnimationFrame(exploreResizeFrame);
-  }
-
-  exploreResizeFrame = requestAnimationFrame(() => {
-    exploreResizeFrame = null;
-    syncExploreZoomControls();
-    centerExploreCanvas();
-  });
-}
-
 function handleExploreWheel(event) {
-  if (exploreView.classList.contains("hidden")) {
+  if (exploreModal.classList.contains("hidden")) {
     return;
   }
 
@@ -4158,8 +3122,7 @@ function applyImportedSession(seedPayload) {
   setInfoModalOpen(false);
   setSettingsModalOpen(false);
   setShareModalOpen(false);
-  hideCompareView();
-  hideExploreView();
+  setExploreModalOpen(false);
   shareSeedInput.value = "";
   startView.classList.add("hidden");
   progressWrap.classList.remove("hidden");
@@ -4665,8 +3628,8 @@ function fitExploreNodesToCanvas(nodes, width, height) {
 }
 
 function buildExploreLayoutData(specialtyResults, fellowshipResults) {
-  const width = EXPLORE_CANVAS_BASE_WIDTH;
-  const height = EXPLORE_CANVAS_BASE_HEIGHT;
+  const width = 1680;
+  const height = 1180;
   const centerX = width / 2;
   const centerY = height / 2;
   const projectionScaleX = width * 0.34;
@@ -4754,10 +3717,6 @@ function renderExploreInspector(selectedEntity, nodes) {
   const nearbyMarkup = nearbyNodes.length > 0
     ? nearbyNodes.map(({ node }) => createPathButton(node, true)).join("")
     : '<p class="explore-inspector__empty">Nearby profiles will appear once the graph has enough profile overlap to compare.</p>';
-  const compareId = getCompareDataIdForEntity(selectedEntity);
-
-  exploreCompareButton.classList.toggle("hidden", !compareId);
-  exploreCompareButton.dataset.compareId = compareId || "";
 
   if (selectedEntity.kind === "specialty") {
     exploreNodeType.textContent = "Specialty";
@@ -4791,7 +3750,7 @@ function renderExploreInspector(selectedEntity, nodes) {
   exploreNodeConnections.innerHTML = nearbyMarkup;
 }
 
-function renderExploreView() {
+function renderExploreModal() {
   const { specialtyResults, fellowshipResults, specialtyResultMap, fellowshipResultMap } = getExploreCollections();
   const selectedEntity = specialtyResultMap[selectedExploreId] || fellowshipResultMap[selectedExploreId];
 
@@ -4901,8 +3860,6 @@ function renderExploreView() {
   `).join("");
 
   exploreCanvas.setAttribute("viewBox", `0 0 ${width} ${height}`);
-  exploreCanvasBaseWidth = width;
-  exploreCanvasBaseHeight = height;
   exploreCanvas.innerHTML = `${parentLinkMarkup}${similarityLinkMarkup}${specialtyMarkup}${fellowshipMarkup}`;
   syncExploreZoomControls();
   renderExploreInspector(activeNode, nodes);
@@ -4910,12 +3867,11 @@ function renderExploreView() {
 
 function syncRankPanelVisibility() {
   const isResultsScreen = state.started && state.currentIndex >= questions.length;
-  const primaryToolActive = !compareView.classList.contains("hidden") || !exploreView.classList.contains("hidden");
-  const isAvailable = state.started && !isResultsScreen && !primaryToolActive;
+  const isAvailable = state.started && !isResultsScreen;
   const isVisible = isAvailable && !state.rankPanelCollapsed;
-  rankPanel.classList.toggle("hidden", !state.started || primaryToolActive);
+  rankPanel.classList.toggle("hidden", !state.started);
   rankPanel.classList.toggle("rank-panel--collapsed", state.started && !isVisible);
-  appGrid.classList.toggle("app-grid--with-rank-panel", state.started && !primaryToolActive);
+  appGrid.classList.toggle("app-grid--with-rank-panel", state.started);
   appGrid.classList.toggle("app-grid--ranked", isVisible);
   rankToggleButton.classList.toggle("hidden", !isAvailable || isVisible);
   rankToggleButton.setAttribute("aria-expanded", String(isVisible));
@@ -5096,11 +4052,9 @@ function showStartState() {
   restartTop.classList.add("hidden");
   setSettingsModalOpen(false);
   setShareModalOpen(false);
-  hideCompareView();
-  hideExploreView();
+  setExploreModalOpen(false);
   syncRankPanelVisibility();
   updateProgress();
-  scrollPageToTop();
 }
 
 function startQuiz() {
@@ -5110,14 +4064,12 @@ function startQuiz() {
   setInfoModalOpen(false);
   setSettingsModalOpen(false);
   setShareModalOpen(false);
-  hideCompareView();
-  hideExploreView();
+  setExploreModalOpen(false);
   startView.classList.add("hidden");
   progressWrap.classList.remove("hidden");
   restartTop.classList.remove("hidden");
   syncRankPanelVisibility();
   renderQuestion();
-  scrollPageToTop();
 }
 
 function renderQuestion() {
@@ -5142,14 +4094,9 @@ function renderQuestion() {
   backButton.style.opacity = state.currentIndex === 0 ? "0.5" : "1";
   syncCurrentResponseControls(currentResponse);
 
-  startView.classList.add("hidden");
-  progressWrap.classList.remove("hidden");
-  hideCompareView();
-  hideExploreView();
   questionView.classList.remove("hidden");
   resultsView.classList.add("hidden");
   renderRankPanel();
-  scrollPageToTop();
 }
 
 function getDirectionalSpecialtySignal(question, specialtyId, response) {
@@ -5293,15 +4240,12 @@ function showResults() {
   startView.classList.add("hidden");
   progressWrap.classList.remove("hidden");
   questionView.classList.add("hidden");
-  hideCompareView();
-  hideExploreView();
   resultsView.classList.remove("hidden");
   state.rankPanelCollapsed = true;
   restartTop.classList.remove("hidden");
   updateProgress();
   renderRankPanel();
   updateFellowshipDisplayControls();
-  scrollPageToTop();
 
   const summaryBits = [];
   resultsTitle.textContent = showSeparateFellowships
@@ -5377,7 +4321,6 @@ function createSeparatedFellowshipResults(fellowshipMatches, answeredCount) {
 }
 
 function createResultCard(result, rank, fellowshipMatches, answeredCount) {
-  const compareId = getCompareDataIdForEntity(result);
   const reasonItems = result.reasons.length > 0
     ? result.reasons
         .map((reason) => `<li>${reason.explanation}</li>`)
@@ -5423,16 +4366,12 @@ function createResultCard(result, rank, fellowshipMatches, answeredCount) {
         <span class="match-card__score-label">Why it was suggested</span>
         <ul>${reasonItems}</ul>
       </div>
-      <div class="match-card__actions">
-        ${createCompareButton(compareId)}
-      </div>
       ${fellowshipMarkup}
     </article>
   `;
 }
 
 function createFellowshipResultCard(path, rank) {
-  const compareId = getCompareDataIdForEntity(path);
   const reasonItems = path.reasons.length > 0
     ? path.reasons
         .map((reason) => `<li>${reason.explanation}</li>`)
@@ -5456,9 +4395,6 @@ function createFellowshipResultCard(path, rank) {
       <div class="match-card__why">
         <span class="match-card__score-label">Why it was suggested</span>
         <ul>${reasonItems}</ul>
-      </div>
-      <div class="match-card__actions">
-        ${createCompareButton(compareId)}
       </div>
       <div class="match-card__paths">
         ${createPathButton(path, true)}
@@ -5503,8 +4439,7 @@ function restartQuiz() {
   setInfoModalOpen(false);
   setSettingsModalOpen(false);
   setShareModalOpen(false);
-  hideCompareView();
-  hideExploreView();
+  setExploreModalOpen(false);
   showStartState();
 }
 
@@ -5517,7 +4452,7 @@ function openExplore(trigger = null, selectedId = null) {
   const defaultSelection = countExplicitAnswers() > 0
     ? getDefaultExploreSelection(getScoreData())
     : specialties[0].id;
-  showExploreView(trigger, selectedId ?? defaultSelection);
+  setExploreModalOpen(true, trigger, selectedId ?? defaultSelection);
 }
 
 function handleExploreSelectionClick(event) {
@@ -5534,9 +4469,9 @@ function handleExploreSelectionClick(event) {
     return;
   }
 
-  if (!exploreView.classList.contains("hidden")) {
+  if (!exploreModal.classList.contains("hidden")) {
     selectedExploreId = trigger.dataset.exploreId;
-    renderExploreView();
+    renderExploreModal();
     return;
   }
 
@@ -5549,12 +4484,6 @@ skipButton.addEventListener("click", () => recordAnswer("skip"));
 backButton.addEventListener("click", handleBack);
 finishQuizButton.addEventListener("click", finishQuizEarly);
 startButton.addEventListener("click", startQuiz);
-startExploreButton.addEventListener("click", () => {
-  openExplore(startExploreButton);
-});
-startCompareButton.addEventListener("click", () => {
-  showCompareView(startCompareButton);
-});
 startInfoButton.addEventListener("click", () => {
   setInfoModalOpen(true, startInfoButton);
 });
@@ -5585,10 +4514,10 @@ closeSettingsButton.addEventListener("click", () => setSettingsModalOpen(false))
 settingsBackdrop.addEventListener("click", () => setSettingsModalOpen(false));
 closeShareButton.addEventListener("click", () => setShareModalOpen(false));
 shareBackdrop.addEventListener("click", () => setShareModalOpen(false));
-closeCompareButton.addEventListener("click", returnFromCompareView);
-closeExploreButton.addEventListener("click", returnFromExploreView);
+closeExploreButton.addEventListener("click", () => setExploreModalOpen(false));
+exploreBackdrop.addEventListener("click", () => setExploreModalOpen(false));
 exploreZoomOutButton.addEventListener("click", () => setExploreZoom(exploreZoom - EXPLORE_ZOOM_STEP));
-exploreZoomResetButton.addEventListener("click", resetExploreZoom);
+exploreZoomResetButton.addEventListener("click", () => setExploreZoom(1));
 exploreZoomInButton.addEventListener("click", () => setExploreZoom(exploreZoom + EXPLORE_ZOOM_STEP));
 exploreCanvasShell.addEventListener("wheel", handleExploreWheel, { passive: false });
 exploreCanvasShell.addEventListener("pointerdown", handleExplorePointerDown);
@@ -5596,23 +4525,15 @@ exploreCanvasShell.addEventListener("pointermove", handleExplorePointerMove);
 exploreCanvasShell.addEventListener("pointerup", endExplorePointerDrag);
 exploreCanvasShell.addEventListener("pointercancel", endExplorePointerDrag);
 exploreCanvasShell.addEventListener("lostpointercapture", endExplorePointerDrag);
-window.addEventListener("resize", handleExploreResize);
 copySeedButton.addEventListener("click", copyCurrentSeed);
 loadSeedButton.addEventListener("click", loadSeedFromInput);
-compareSpecialtySelect.addEventListener("change", handleCompareSelectionChange);
-compareSliderGrid.addEventListener("input", handleCompareInput);
-compareView.querySelectorAll("[data-compare-check]").forEach((input) => {
-  input.addEventListener("change", handleCompareInput);
-});
 rankToggleButton.addEventListener("click", toggleRankPanel);
 rankPanelToggle.addEventListener("click", toggleRankPanel);
 restartTop.addEventListener("click", restartQuiz);
 retakeButton.addEventListener("click", restartQuiz);
 resultsList.addEventListener("click", handleExploreSelectionClick);
-resultsList.addEventListener("click", handleCompareTriggerClick);
 rankPathList.addEventListener("click", handleExploreSelectionClick);
 exploreNodeConnections.addEventListener("click", handleExploreSelectionClick);
-exploreCompareButton.addEventListener("click", handleCompareTriggerClick);
 exploreCanvas.addEventListener("click", handleExploreSelectionClick);
 exploreCanvas.addEventListener("keydown", (event) => {
   if (event.key !== "Enter" && event.key !== " ") {
@@ -5627,7 +4548,7 @@ exploreCanvas.addEventListener("keydown", (event) => {
 
   event.preventDefault();
   selectedExploreId = trigger.dataset.exploreId;
-  renderExploreView();
+  renderExploreModal();
 });
 questionOrderInputs.forEach((input) => {
   input.addEventListener("change", () => applyOrderMode(input.value));
@@ -5640,17 +4561,9 @@ resultsFellowshipDisplayInputs.forEach((input) => {
 });
 
 document.addEventListener("keydown", (event) => {
-  if (!compareView.classList.contains("hidden")) {
+  if (!exploreModal.classList.contains("hidden")) {
     if (event.key === "Escape") {
-      returnFromCompareView();
-    }
-
-    return;
-  }
-
-  if (!exploreView.classList.contains("hidden")) {
-    if (event.key === "Escape") {
-      returnFromExploreView();
+      setExploreModalOpen(false);
     }
 
     return;
