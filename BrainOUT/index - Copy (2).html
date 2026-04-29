@@ -598,25 +598,23 @@
     }
 
     body[data-device="mobile"] #questionOverlay {
-      inset: 0;
-      padding:
-        max(10px, env(safe-area-inset-top, 0px))
-        max(10px, env(safe-area-inset-right, 0px))
-        max(10px, env(safe-area-inset-bottom, 0px))
-        max(10px, env(safe-area-inset-left, 0px));
-      border-radius: 0;
+      position: fixed;
+      inset: var(--mobile-question-top) 6px var(--mobile-question-bottom) 6px;
+      padding: 8px;
+      align-items: stretch;
+      border-radius: 24px;
+      z-index: 40;
+      overflow: hidden;
     }
 
     body[data-device="mobile"] .question-card {
       width: 100%;
       max-height: none;
-      min-height: 100%;
-      height: auto;
+      height: 100%;
+      min-height: 0;
       padding: 12px 14px;
       gap: 8px;
-      display: flex;
-      flex-direction: column;
-      overflow: visible;
+      overflow-y: auto;
       overscroll-behavior: contain;
     }
 
@@ -629,28 +627,19 @@
       margin-bottom: 0;
     }
 
-    body[data-device="mobile"] .question-card .question-meta .pill:last-child {
-      display: none;
-    }
-
     body[data-device="mobile"] #questionStem {
       font-size: 0.9rem;
       line-height: 1.34;
     }
 
     body[data-device="mobile"] .question-card .answers {
-      flex: 0 0 auto;
       min-height: 0;
       gap: 8px;
       margin-top: 0;
-      overflow: visible;
-      overscroll-behavior: contain;
-      -webkit-overflow-scrolling: touch;
-      padding-right: 2px;
     }
 
     body[data-device="mobile"] .question-card .answers button {
-      min-height: clamp(44px, 7.2svh, 54px);
+      min-height: 52px;
       padding: 0.64rem 0.76rem;
       font-size: 0.88rem;
       line-height: 1.28;
@@ -658,18 +647,6 @@
 
     body[data-device="mobile"] .question-card .explanation-box {
       max-height: 88px;
-    }
-
-    body[data-device="mobile"] .question-card .button-row {
-      flex: 0 0 auto;
-    }
-
-    body[data-device="mobile"].question-open {
-      overflow: hidden;
-    }
-
-    body.question-open {
-      overflow: hidden;
     }
 
     .toast {
@@ -865,32 +842,17 @@
     }
 
     #questionOverlay {
-      position: fixed;
-      inset: 0;
-      align-items: stretch;
-      justify-content: center;
-      padding:
-        max(14px, env(safe-area-inset-top, 0px))
-        max(14px, env(safe-area-inset-right, 0px))
-        max(14px, env(safe-area-inset-bottom, 0px))
-        max(14px, env(safe-area-inset-left, 0px));
-      border-radius: 0;
-      overflow-y: auto;
-      overscroll-behavior: contain;
-      -webkit-overflow-scrolling: touch;
-      z-index: 80;
+      inset: 10px;
+      padding: 12px;
     }
 
     .question-card {
-      width: min(900px, 100%);
-      max-height: none;
-      min-height: 100%;
-      height: auto;
-      padding: 18px;
-      display: flex;
-      flex-direction: column;
+      width: min(860px, 100%);
+      max-height: 100%;
+      padding: 16px 18px;
+      display: grid;
       gap: 10px;
-      overflow: visible;
+      overflow: hidden;
     }
 
     .question-card h2,
@@ -945,12 +907,6 @@
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
       margin-top: 2px;
-      min-height: 0;
-      overflow: visible;
-      overscroll-behavior: contain;
-      -webkit-overflow-scrolling: touch;
-      padding-right: 3px;
-      align-content: start;
     }
 
     .answers button {
@@ -995,7 +951,6 @@
     .question-card .button-row {
       margin-top: 0;
       justify-content: flex-end;
-      flex: 0 0 auto;
     }
 
     .atlas-card,
@@ -1099,80 +1054,21 @@
       }
 
       #questionOverlay {
-        position: fixed;
-        inset: 0;
-        padding:
-          max(10px, env(safe-area-inset-top, 0px))
-          max(10px, env(safe-area-inset-right, 0px))
-          max(10px, env(safe-area-inset-bottom, 0px))
-          max(10px, env(safe-area-inset-left, 0px));
-        align-items: stretch;
-        border-radius: 0;
-        z-index: 80;
-        overflow-y: auto;
-        overscroll-behavior: contain;
-        -webkit-overflow-scrolling: touch;
+        inset: 8px;
+        padding: 10px;
       }
 
       .question-card {
-        width: 100%;
-        max-height: none;
-        min-height: 100%;
-        height: auto;
-        padding: 12px 14px;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        overflow: visible;
-      }
-
-      .question-card h2 {
-        font-size: 1.02rem;
-        line-height: 1.16;
-      }
-
-      #questionStem {
-        font-size: 0.9rem;
-        line-height: 1.34;
-      }
-
-      .question-card .question-meta {
-        margin-bottom: 0;
-      }
-
-      .question-card .question-meta .pill:last-child {
-        display: none;
+        padding: 14px;
+        overflow-y: auto;
       }
 
       .question-card .answers {
-        flex: 0 0 auto;
-        min-height: 0;
         grid-template-columns: 1fr;
-        gap: 8px;
-        margin-top: 0;
-        overflow: visible;
-        overscroll-behavior: contain;
-        -webkit-overflow-scrolling: touch;
-        padding-right: 2px;
       }
 
       .question-card .answers button {
-        min-height: clamp(44px, 7.2svh, 54px);
-        padding: 0.64rem 0.76rem;
-        font-size: 0.88rem;
-        line-height: 1.28;
-      }
-
-      .question-card .explanation-box {
-        max-height: 88px;
-      }
-
-      .question-card .button-row {
-        flex: 0 0 auto;
-      }
-
-      body.question-open {
-        overflow: hidden;
+        min-height: 64px;
       }
 
       .hud {
@@ -1268,7 +1164,7 @@
 
       body[data-device="mobile"] #questionOverlay {
         padding: 6px;
-        border-radius: 0;
+        border-radius: 20px;
       }
 
       body[data-device="mobile"] .question-card {
@@ -1293,67 +1189,6 @@
         min-height: 46px;
         padding: 0.56rem 0.66rem;
         font-size: 0.84rem;
-      }
-    }
-
-    @media (max-height: 560px) {
-      .question-card {
-        padding: 10px 12px;
-        gap: 7px;
-      }
-
-      body[data-device="mobile"] .question-card {
-        padding: 8px 10px;
-        gap: 6px;
-      }
-
-      .question-card h2 {
-        font-size: 0.98rem;
-      }
-
-      body[data-device="mobile"] .question-card h2 {
-        font-size: 0.92rem;
-      }
-
-      #questionStem {
-        font-size: 0.84rem;
-        line-height: 1.28;
-      }
-
-      body[data-device="mobile"] #questionStem {
-        font-size: 0.8rem;
-        line-height: 1.24;
-      }
-
-      .pill {
-        padding: 0.24rem 0.46rem;
-        font-size: 0.58rem;
-      }
-
-      body[data-device="mobile"] .pill {
-        padding: 0.2rem 0.42rem;
-        font-size: 0.54rem;
-      }
-
-      .question-card .answers {
-        gap: 7px;
-      }
-
-      .question-card .answers button {
-        min-height: 42px;
-        padding: 0.52rem 0.62rem;
-        font-size: 0.82rem;
-      }
-
-      body[data-device="mobile"] .question-card .answers button {
-        min-height: 40px;
-        padding: 0.48rem 0.58rem;
-        font-size: 0.78rem;
-      }
-
-      .question-card .explanation-box {
-        max-height: 72px;
-        padding: 0.72rem 0.82rem;
       }
     }
   </style>
@@ -2778,13 +2613,8 @@
       const footerHeight = footer ? footer.offsetHeight : 0;
       const mobileControlsHeight = mode === "mobile" ? 0 : mobileControls ? mobileControls.offsetHeight : 0;
       const buffer = mode === "desktop" ? 44 : 30;
+      const questionTop = Math.max(74, Math.round(hudBottom + viewportTop + 6));
       const questionBottom = Math.max(8, Math.round(layoutHeight - viewportHeight - viewportTop + 8));
-      let questionTop = Math.max(74, Math.round(hudBottom + viewportTop + 6));
-      if (mode === "mobile") {
-        const minimumQuestionHeight = Math.min(520, Math.max(330, viewportHeight * 0.78));
-        const latestReadableTop = Math.max(8, Math.round(layoutHeight - questionBottom - minimumQuestionHeight));
-        questionTop = Math.min(questionTop, latestReadableTop);
-      }
       document.documentElement.style.setProperty("--mobile-question-top", `${questionTop}px`);
       document.documentElement.style.setProperty("--mobile-question-bottom", `calc(env(safe-area-inset-bottom, 0px) + ${questionBottom}px)`);
       const availableHeight = clamp(
@@ -2945,10 +2775,6 @@
 
     function setBanner(title, subtitle, duration = 1800) {
       state.banner = { title, subtitle, until: nowMs() + duration };
-    }
-
-    function setQuestionOverlayOpen(open) {
-      document.body.classList.toggle("question-open", open);
     }
 
     function initPaddle() {
@@ -3248,7 +3074,6 @@
         ui.reviewOverlay.classList.add("hidden");
         ui.atlasOverlay.classList.add("hidden");
         ui.questionOverlay.classList.add("hidden");
-        setQuestionOverlayOpen(false);
         ui.startButton.textContent = "Play";
         if (musicTrack) {
           try {
@@ -3289,7 +3114,6 @@
         ui.questionOverlay.classList.add("hidden");
         ui.reviewOverlay.classList.add("hidden");
         ui.atlasOverlay.classList.add("hidden");
-        setQuestionOverlayOpen(false);
         ui.startButton.textContent = "Play";
         ui.shellTitle.textContent = "Ready Room";
         ui.shellSubtitle.textContent = "Open Settings to change mode, tier, and topic.";
@@ -3456,9 +3280,6 @@
       ui.questionAnswers.innerHTML = "";
       ui.questionExplanation.classList.add("hidden");
       ui.questionExplanation.innerHTML = "";
-      ui.questionOverlay.scrollTop = 0;
-      ui.questionAnswers.scrollTop = 0;
-      ui.questionExplanation.scrollTop = 0;
       ui.continueQuestionButton.classList.add("hidden");
       ui.skipQuestionButton.classList.remove("hidden");
       state.currentQuestionOrder = shuffleInPlace(question.choices.map((_, index) => index));
@@ -3468,9 +3289,7 @@
         button.addEventListener("click", () => answerQuestion(index));
         ui.questionAnswers.appendChild(button);
       });
-      setQuestionOverlayOpen(true);
       ui.questionOverlay.classList.remove("hidden");
-      scheduleResponsiveLayout();
     }
 
     function answerQuestion(index) {
@@ -3518,23 +3337,19 @@
       if (!state.currentQuestion) return;
       state.stats.skipped += 1;
       ui.questionOverlay.classList.add("hidden");
-      setQuestionOverlayOpen(false);
       state.currentQuestion = null;
       state.currentQuestionOrder = [];
       state.paused = false;
       state.pauseReason = "";
-      scheduleResponsiveLayout();
     }
 
     function closeQuestion() {
       ui.questionOverlay.classList.add("hidden");
-      setQuestionOverlayOpen(false);
       state.currentQuestion = null;
       state.currentQuestionOrder = [];
       state.paused = false;
       state.pauseReason = "";
       updateHud();
-      scheduleResponsiveLayout();
     }
 
     function openAtlas() {
