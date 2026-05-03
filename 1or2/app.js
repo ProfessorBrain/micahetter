@@ -1971,6 +1971,7 @@ const fellowshipPaths = [
 ];
 
 const specialtyById = Object.fromEntries(specialties.map((specialty) => [specialty.id, specialty]));
+const fellowshipPathById = Object.fromEntries(fellowshipPaths.map((path) => [path.id, path]));
 const fellowshipPathsBySpecialtyId = fellowshipPaths.reduce((grouped, path) => {
   if (!grouped[path.parentId]) {
     grouped[path.parentId] = [];
@@ -1979,6 +1980,79 @@ const fellowshipPathsBySpecialtyId = fellowshipPaths.reduce((grouped, path) => {
   grouped[path.parentId].push(path);
   return grouped;
 }, {});
+
+function normalizeFellowshipName(name) {
+  return name
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+const fellowshipParentIdsByName = fellowshipPaths.reduce((grouped, path) => {
+  const normalizedName = normalizeFellowshipName(path.name);
+
+  if (!grouped[normalizedName]) {
+    grouped[normalizedName] = new Set();
+  }
+
+  grouped[normalizedName].add(path.parentId);
+  return grouped;
+}, {});
+
+Object.keys(fellowshipParentIdsByName).forEach((name) => {
+  fellowshipParentIdsByName[name] = [...fellowshipParentIdsByName[name]];
+});
+
+const sharedExploreParentIdsByFellowshipId = {
+  "adult-congenital-heart-disease": ["internal-medicine", "pediatrics", "med-peds"],
+  "adolescent-medicine": ["pediatrics", "family-medicine", "internal-medicine", "med-peds"],
+  "addiction-medicine-family": ["family-medicine", "internal-medicine", "emergency-medicine", "pediatrics", "psychiatry", "preventive-medicine", "med-peds"],
+  "allergy-immunology-med-peds": ["internal-medicine", "pediatrics", "med-peds"],
+  "brain-injury-medicine": ["physical-medicine-rehab", "neurology", "psychiatry"],
+  "clinical-neurophysiology": ["neurology", "child-neurology"],
+  "critical-care-anesthesiology": ["anesthesiology", "internal-medicine", "emergency-medicine", "general-surgery"],
+  "dermatopathology-dermatology": ["dermatology", "pathology"],
+  "dermatopathology-pathology": ["dermatology", "pathology"],
+  "geriatrics": ["family-medicine", "internal-medicine"],
+  "hand-surgery": ["orthopedic-surgery", "plastic-surgery", "general-surgery"],
+  "hospice-palliative-medicine-family": ["family-medicine", "internal-medicine", "pediatrics", "psychiatry", "neurology", "emergency-medicine", "anesthesiology", "general-surgery", "radiology", "obgyn", "med-peds"],
+  "hospice-palliative-medicine-med-peds": ["family-medicine", "internal-medicine", "pediatrics", "psychiatry", "neurology", "emergency-medicine", "anesthesiology", "general-surgery", "radiology", "obgyn", "med-peds"],
+  "interventional-radiology": ["radiology", "interventional-radiology-integrated"],
+  "medical-genetics": ["med-peds", "pediatrics", "internal-medicine", "obgyn"],
+  "medical-toxicology": ["emergency-medicine", "internal-medicine", "pediatrics", "preventive-medicine"],
+  "neuro-ophthalmology": ["ophthalmology", "neurology"],
+  "neurocritical-care": ["neurology", "anesthesiology", "emergency-medicine", "internal-medicine"],
+  "neuromuscular-medicine-neurology": ["neurology", "physical-medicine-rehab"],
+  "neuromuscular-medicine-pmr": ["neurology", "physical-medicine-rehab"],
+  "pain-medicine": ["anesthesiology", "physical-medicine-rehab", "neurology", "psychiatry"],
+  "pain-medicine-pmr": ["anesthesiology", "physical-medicine-rehab", "neurology", "psychiatry"],
+  "pediatric-adolescent-gynecology": ["obgyn", "pediatrics"],
+  "pediatric-anesthesiology": ["anesthesiology", "pediatrics"],
+  "pediatric-dermatology": ["dermatology", "pediatrics"],
+  "pediatric-emergency-medicine-em": ["emergency-medicine", "pediatrics"],
+  "pediatric-ophthalmology": ["ophthalmology", "pediatrics"],
+  "pediatric-radiology": ["radiology", "pediatrics"],
+  "pediatric-rehabilitation-medicine": ["physical-medicine-rehab", "pediatrics"],
+  "pediatric-surgery": ["general-surgery", "pediatrics"],
+  "pediatric-urology": ["urology", "pediatrics"],
+  "pmr-sports-medicine": ["family-medicine", "emergency-medicine", "pediatrics", "internal-medicine", "physical-medicine-rehab", "med-peds"],
+  "sleep-medicine-family": ["family-medicine", "internal-medicine", "neurology", "psychiatry", "pediatrics", "otolaryngology", "med-peds"],
+  "sports-medicine-emergency": ["family-medicine", "emergency-medicine", "pediatrics", "internal-medicine", "physical-medicine-rehab", "med-peds"],
+  "sports-medicine-med-peds": ["family-medicine", "emergency-medicine", "pediatrics", "internal-medicine", "physical-medicine-rehab", "med-peds"],
+  "family-sports-medicine": ["family-medicine", "emergency-medicine", "pediatrics", "internal-medicine", "physical-medicine-rehab", "med-peds"],
+  "thoracic-surgery": ["general-surgery", "thoracic-surgery-integrated"],
+  "vascular-neurology": ["neurology", "emergency-medicine"],
+  "vascular-surgery": ["general-surgery", "vascular-surgery-integrated"],
+};
+
+function getExploreAccessibleParentIds(path) {
+  const duplicateParentIds = fellowshipParentIdsByName[normalizeFellowshipName(path.name)] ?? [];
+  const curatedParentIds = sharedExploreParentIdsByFellowshipId[path.id] ?? [];
+
+  return [...new Set([path.parentId, ...duplicateParentIds, ...curatedParentIds])]
+    .filter((parentId) => specialtyById[parentId]);
+}
 
 const compareDataById = {
   "anesthesiology": {
@@ -3571,6 +3645,7 @@ const state = {
 
 let lastTrigger = null;
 let selectedExploreId = specialties[0].id;
+let expandedExploreSpecialtyId = null;
 let selectedCompareId = "internal-medicine";
 let exploreZoom = 1;
 let exploreDragState = null;
@@ -4373,9 +4448,10 @@ function showCompareView(trigger = null, compareId = null, preserveReturn = fals
   closeCompareButton.focus();
 }
 
-function showExploreView(trigger = null, selectedId = null, preserveReturn = false) {
+function showExploreView(trigger = null, selectedId = null, preserveReturn = false, expandSelection = true) {
   if (!preserveReturn) {
     exploreReturnView = getActivePrimaryView();
+    expandedExploreSpecialtyId = null;
   }
 
   infoModal.classList.add("hidden");
@@ -4386,8 +4462,8 @@ function showExploreView(trigger = null, selectedId = null, preserveReturn = fal
   shareModal.setAttribute("aria-hidden", "true");
   hideCompareAboutModal();
 
-  if (selectedId) {
-    selectedExploreId = selectedId;
+  if (selectedId && !preserveReturn) {
+    setExploreSelection(selectedId, expandSelection);
   }
 
   state.rankPanelCollapsed = true;
@@ -5199,11 +5275,12 @@ function getExploreSimilarityEdges(nodes, neighborLimit = 5, threshold = 0.24) {
 }
 
 function getExploreParentEdges(fellowshipNodes) {
-  return fellowshipNodes.map((node) => ({
-    sourceId: node.parentId,
+  return fellowshipNodes.flatMap((node) => getExploreAccessibleParentIds(node).map((parentId) => ({
+    sourceId: parentId,
     targetId: node.id,
-    color: node.color,
-  }));
+    color: specialtyById[parentId]?.color ?? node.color,
+    isPrimary: parentId === node.parentId,
+  })));
 }
 
 function runExploreForceLayout(nodes, similarityEdges, parentEdges, width, height) {
@@ -5330,7 +5407,7 @@ function fitExploreNodesToCanvas(nodes, width, height) {
   });
 }
 
-function buildExploreLayoutData(specialtyResults, fellowshipResults) {
+function buildExploreLayoutData(specialtyResults, fellowshipResults, visibleFellowshipResults = []) {
   const width = EXPLORE_CANVAS_BASE_WIDTH;
   const height = EXPLORE_CANVAS_BASE_HEIGHT;
   const centerX = width / 2;
@@ -5366,7 +5443,7 @@ function buildExploreLayoutData(specialtyResults, fellowshipResults) {
 
     return createExploreNode(item, projection);
   });
-  const fellowshipNodes = fellowshipResults.map((item) => {
+  const fellowshipNodes = visibleFellowshipResults.map((item) => {
     const profile = getExploreEntityProfile(item);
     const profileProjection = getExploreProfileProjection(profile, item.id);
     const projection = blendExploreProjection(profileProjection, specialtyProjectionById[item.parentId], 0.72);
@@ -5394,6 +5471,60 @@ function buildExploreLayoutData(specialtyResults, fellowshipResults) {
 
 function getDefaultExploreSelection(specialtyResults) {
   return specialtyResults[0]?.id ?? specialties[0].id;
+}
+
+function getExploreSpecialtyIdForSelection(selectionId) {
+  if (specialtyById[selectionId]) {
+    return selectionId;
+  }
+
+  return fellowshipPathById[selectionId]?.parentId ?? null;
+}
+
+function setExploreSelection(selectionId, shouldExpand = true) {
+  selectedExploreId = selectionId;
+
+  if (!shouldExpand) {
+    expandedExploreSpecialtyId = null;
+    return;
+  }
+
+  const selectedFellowship = fellowshipPathById[selectionId];
+
+  if (
+    selectedFellowship
+    && expandedExploreSpecialtyId
+    && getExploreAccessibleParentIds(selectedFellowship).includes(expandedExploreSpecialtyId)
+  ) {
+    return;
+  }
+
+  expandedExploreSpecialtyId = getExploreSpecialtyIdForSelection(selectionId);
+}
+
+function getVisibleExploreFellowshipResults(fellowshipResults) {
+  if (!expandedExploreSpecialtyId) {
+    return [];
+  }
+
+  const visibleByName = new Map();
+  const addPath = (path) => {
+    const normalizedName = normalizeFellowshipName(path.name);
+
+    if (!visibleByName.has(normalizedName)) {
+      visibleByName.set(normalizedName, path);
+    }
+  };
+
+  fellowshipResults
+    .filter((path) => path.parentId === expandedExploreSpecialtyId)
+    .forEach(addPath);
+
+  fellowshipResults
+    .filter((path) => getExploreAccessibleParentIds(path).includes(expandedExploreSpecialtyId))
+    .forEach(addPath);
+
+  return [...visibleByName.values()];
 }
 
 function getExploreLocationNode(specialtyResults, nodeMap) {
@@ -5530,10 +5661,11 @@ function renderExploreView() {
   const selectedEntity = specialtyResultMap[selectedExploreId] || fellowshipResultMap[selectedExploreId];
 
   if (!selectedEntity) {
-    selectedExploreId = getDefaultExploreSelection(specialtyResults);
+    setExploreSelection(getDefaultExploreSelection(specialtyResults), false);
   }
 
   const activeEntity = specialtyResultMap[selectedExploreId] || fellowshipResultMap[selectedExploreId];
+  const visibleFellowshipResults = getVisibleExploreFellowshipResults(fellowshipResults);
   const {
     width,
     height,
@@ -5543,11 +5675,16 @@ function renderExploreView() {
     similarityEdges,
     parentEdges,
     nodeMap,
-  } = buildExploreLayoutData(specialtyResults, fellowshipResults);
+  } = buildExploreLayoutData(specialtyResults, fellowshipResults, visibleFellowshipResults);
   const activeNode = nodeMap[selectedExploreId] || activeEntity;
   const locationNode = getExploreLocationNode(specialtyResults, nodeMap);
   const selectedSimilarIds = new Set(
     similarityEdges
+      .filter((edge) => edge.sourceId === selectedExploreId || edge.targetId === selectedExploreId)
+      .flatMap((edge) => [edge.sourceId, edge.targetId])
+  );
+  const parentEdgeNodeIds = new Set(
+    parentEdges
       .filter((edge) => edge.sourceId === selectedExploreId || edge.targetId === selectedExploreId)
       .flatMap((edge) => [edge.sourceId, edge.targetId])
   );
@@ -5561,15 +5698,20 @@ function renderExploreView() {
       return true;
     }
 
+    if (parentEdgeNodeIds.has(node.id)) {
+      return true;
+    }
+
     const selectedFellowship = fellowshipResultMap[selectedExploreId];
-    return selectedFellowship?.parentId === node.id;
+    return selectedFellowship && getExploreAccessibleParentIds(selectedFellowship).includes(node.id);
   };
 
   const parentLinkMarkup = parentEdges.map((edge) => {
     const source = nodeMap[edge.sourceId];
     const target = nodeMap[edge.targetId];
-    const selected = edge.targetId === selectedExploreId
-      || (edge.sourceId === selectedExploreId && selectedSimilarIds.has(edge.targetId));
+    const selected = edge.sourceId === selectedExploreId
+      || edge.targetId === selectedExploreId
+      || edge.sourceId === expandedExploreSpecialtyId;
 
     if (!source || !target) {
       return "";
@@ -5577,12 +5719,12 @@ function renderExploreView() {
 
     return `
       <line
-        class="explore-link explore-link--parent ${selected ? "explore-link--selected" : ""}"
+        class="explore-link explore-link--parent ${edge.isPrimary ? "" : "explore-link--shared-parent"} ${selected ? "explore-link--selected" : ""}"
         x1="${source.x}"
         y1="${source.y}"
         x2="${target.x}"
         y2="${target.y}"
-        style="--link-color: ${edge.color}; --link-opacity: ${selected ? 0.42 : 0.08};"
+        style="--link-color: ${edge.color}; --link-opacity: ${selected ? (edge.isPrimary ? 0.54 : 0.36) : (edge.isPrimary ? 0.16 : 0.12)};"
       ></line>
     `;
   }).join("");
@@ -6292,7 +6434,7 @@ function openExplore(trigger = null, selectedId = null) {
   const defaultSelection = countExplicitAnswers() > 0
     ? getDefaultExploreSelection(getScoreData())
     : specialties[0].id;
-  showExploreView(trigger, selectedId ?? defaultSelection);
+  showExploreView(trigger, selectedId ?? defaultSelection, false, Boolean(selectedId));
 }
 
 function handleExploreSelectionClick(event) {
@@ -6310,7 +6452,7 @@ function handleExploreSelectionClick(event) {
   }
 
   if (!exploreView.classList.contains("hidden")) {
-    selectedExploreId = trigger.dataset.exploreId;
+    setExploreSelection(trigger.dataset.exploreId);
     renderExploreView();
     return;
   }
@@ -6405,7 +6547,7 @@ exploreCanvas.addEventListener("keydown", (event) => {
   }
 
   event.preventDefault();
-  selectedExploreId = trigger.dataset.exploreId;
+  setExploreSelection(trigger.dataset.exploreId);
   renderExploreView();
 });
 questionOrderInputs.forEach((input) => {
