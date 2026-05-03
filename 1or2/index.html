@@ -6,7 +6,7 @@
   <title>1 or 2 | The Binary Medical Specialty Explorer</title>
   <meta
     name="description"
-    content="Answer binary questions to explore medical specialties and fellowship paths that may fit your interests, workflow preferences, and tolerance for different practice environments."
+    content="Answer binary prompts to explore medical specialties and fellowship paths that may fit your interests, workflow preferences, and tolerance for different practice environments."
   >
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -49,9 +49,9 @@
 
           <div class="start-choice-grid" aria-label="Choose a starting mode">
             <button class="start-choice start-choice--questions" id="startButton" type="button">
-              <span class="start-choice__eyebrow">Answer questions</span>
-              <strong>Start the 1-or-2 quiz</strong>
-              <span>Answer as few or as many prompts as you want. The ranking updates as you go.</span>
+              <span class="start-choice__eyebrow">Answer prompts</span>
+              <strong>Build a specialty signal</strong>
+              <span>Answer one prompt or keep going. Each response makes the ranking more specific.</span>
             </button>
             <button class="start-choice" id="startExploreButton" type="button">
               <span class="start-choice__eyebrow">Explore</span>
@@ -80,7 +80,7 @@
             </p>
           </div>
 
-          <div class="answer-grid" role="group" aria-label="Question responses">
+          <div class="answer-grid" role="group" aria-label="Prompt responses">
             <button class="answer-button answer-button--yes" id="answerYes" type="button" data-answer="yes" aria-keyshortcuts="1">
               <span class="answer-button__value">Yes</span>
               <span class="answer-button__hint">This fits me more often than not</span>
@@ -93,16 +93,16 @@
 
           <div class="question-actions">
             <button class="secondary-button" id="backButton" type="button">Back</button>
-            <button class="ghost-button" id="finishQuizButton" type="button">See results now</button>
-            <button class="ghost-button" id="skipButton" type="button" aria-keyshortcuts="0">Skip this question</button>
+            <button class="ghost-button" id="finishQuizButton" type="button">Show current results</button>
+            <button class="ghost-button" id="skipButton" type="button" aria-keyshortcuts="0">Skip</button>
           </div>
 
           <p class="question-shortcuts">Keyboard: <kbd>1</kbd> for left, <kbd>2</kbd> for right, <kbd>0</kbd> to skip.</p>
 
           <div class="progress-wrap hidden" id="progressWrap" aria-live="polite">
             <div class="progress-copy">
-              <span id="progressLabel">Question 1 of 102</span>
-              <span id="progressPercent">0% complete</span>
+              <span id="progressLabel">No answers yet</span>
+              <span id="progressPercent">Broad signal</span>
             </div>
             <div class="progress-track" aria-hidden="true">
               <div class="progress-fill" id="progressFill"></div>
@@ -117,6 +117,7 @@
               <h3 id="resultsTitle">Specialties and fellowship paths suggested by your answers</h3>
             </div>
             <div class="results-view__actions">
+              <button class="ghost-button" id="continueQuizButton" type="button">Keep answering</button>
               <button class="ghost-button" id="resultsExploreButton" type="button">Explore</button>
               <button class="ghost-button" id="resultsShareButton" type="button">Share</button>
               <button class="secondary-button" id="retakeButton" type="button">Start again</button>
@@ -155,10 +156,21 @@
               <p class="section-kicker">Compare</p>
               <h3 id="compareViewTitle">Applicant data comparison</h3>
               <p class="compare-view__lede">
-                Adjust the fields below to see how an applicant profile lines up with NRMP matched U.S. MD senior averages.
+                Adjust the fields below to compare an applicant profile with the average U.S. MD senior who matched in the selected specialty.
               </p>
             </div>
-            <button class="ghost-button" id="closeCompareButton" type="button">Back</button>
+            <div class="compare-view__actions">
+              <button
+                class="ghost-button"
+                id="compareAboutButton"
+                type="button"
+                aria-haspopup="dialog"
+                aria-controls="compareAboutModal"
+              >
+                About this
+              </button>
+              <button class="ghost-button" id="closeCompareButton" type="button">Back</button>
+            </div>
           </div>
 
           <div class="compare-pane__body">
@@ -248,12 +260,12 @@
                 Compare applicant profile
               </button>
 
-              <div class="explore-inspector__block">
+              <div class="explore-inspector__block explore-inspector__block--notes">
                 <span class="meta-block__label">What tends to pull this up</span>
                 <ul class="explore-note-list" id="exploreNodeNotes"></ul>
               </div>
 
-              <div class="explore-inspector__block">
+              <div class="explore-inspector__block explore-inspector__block--nearby">
                 <span class="meta-block__label">Nearby profiles</span>
                 <div class="explore-chip-list" id="exploreNodeConnections"></div>
               </div>
@@ -359,11 +371,11 @@
         <div class="info-pane__grid">
           <div class="meta-block">
             <span class="meta-block__label">How it works</span>
-            <p>There are 102 A-or-B questions. Each answer adjusts the running ranking based on continuity, pace, procedures, uncertainty, population, and work setting, then uses that pattern to sketch nearby fellowship paths.</p>
+            <p>The app draws from a large bank of A-or-B prompts. You do not need to finish the bank; each answer adjusts the running ranking based on continuity, pace, procedures, uncertainty, population, and work setting.</p>
         </div>
         <div class="meta-block">
           <span class="meta-block__label">What you see</span>
-          <p>The specialty ranking updates as you answer more questions. Fellowship paths sharpen underneath those specialties as your answers become more specific.</p>
+          <p>The specialty ranking updates as you answer more prompts. Fellowship paths sharpen underneath those specialties as your pattern becomes more specific.</p>
         </div>
         <div class="info-panel__block info-panel__block--pane">
           <p class="section-kicker">What it looks at</p>
@@ -399,20 +411,20 @@
           <p class="section-kicker">Settings</p>
           <h2 id="settingsTitle">Settings</h2>
           <p class="settings-pane__lede">
-            Choose question order and how fellowship paths appear in the results.
+            Choose prompt order and how fellowship paths appear in the results.
           </p>
         </div>
         <button class="ghost-button info-pane__close" id="closeSettingsButton" type="button">Close</button>
       </div>
 
       <section class="settings-section" aria-labelledby="questionOrderTitle">
-        <h3 class="settings-section__title" id="questionOrderTitle">Question order</h3>
+        <h3 class="settings-section__title" id="questionOrderTitle">Prompt order</h3>
         <div class="settings-options" role="radiogroup" aria-labelledby="questionOrderTitle">
           <label class="settings-option" for="orderSequential">
             <input class="settings-option__input" id="orderSequential" type="radio" name="questionOrder" value="sequential">
             <span class="settings-option__card">
               <span class="settings-option__title">In order</span>
-              <span class="settings-option__text">Use the same sequence each time, from the first question to the last.</span>
+              <span class="settings-option__text">Use a consistent path through the prompt bank each time.</span>
             </span>
           </label>
 
@@ -420,7 +432,7 @@
             <input class="settings-option__input" id="orderRandom" type="radio" name="questionOrder" value="random">
             <span class="settings-option__card">
               <span class="settings-option__title">Randomized</span>
-              <span class="settings-option__text">Shuffle the full question bank each time a new quiz starts.</span>
+              <span class="settings-option__text">Shuffle the prompt bank when a new session starts.</span>
             </span>
           </label>
         </div>
@@ -459,7 +471,7 @@
           <p class="section-kicker">Share</p>
           <h2 id="shareTitle">Share or load a seed</h2>
           <p class="share-pane__lede">
-            A seed captures question order, progress, and answers so someone else can load the same session in this app.
+            A seed captures prompt order, current place, and answers so someone else can load the same session in this app.
           </p>
         </div>
         <button class="ghost-button info-pane__close" id="closeShareButton" type="button">Close</button>
@@ -479,7 +491,7 @@
         <section class="share-block">
           <span class="meta-block__label">Load a seed</span>
           <p class="share-block__text">
-            Paste a seed to load someone else&apos;s progress and answers. Loading a seed replaces the current in-browser session.
+            Paste a seed to load someone else&apos;s prompt order and answers. Loading a seed replaces the current in-browser session.
           </p>
           <textarea class="share-seed-field" id="shareSeedInput" rows="6" spellcheck="false" placeholder="Paste seed here"></textarea>
           <div class="share-block__actions">
@@ -488,6 +500,88 @@
           <p class="share-status" id="shareImportStatus"></p>
         </section>
       </div>
+    </section>
+  </div>
+
+  <div class="info-modal hidden" id="compareAboutModal" aria-hidden="true">
+    <div class="info-modal__backdrop" id="compareAboutBackdrop"></div>
+    <section class="info-pane info-pane--modal compare-about-pane" role="dialog" aria-modal="true" aria-labelledby="compareAboutTitle">
+      <div class="info-pane__topbar">
+        <div class="info-pane__intro">
+          <p class="section-kicker">About Compare</p>
+          <h2 id="compareAboutTitle">How to read the applicant comparison.</h2>
+          <p class="info-pane__lede">
+            This view is a descriptive reference against NRMP Charting Outcomes averages. It is meant to help you understand context, not estimate an individual probability of matching.
+          </p>
+        </div>
+        <button class="ghost-button info-pane__close" id="closeCompareAboutButton" type="button">Close</button>
+      </div>
+
+      <div class="info-pane__grid compare-about-grid">
+        <div class="meta-block">
+          <span class="meta-block__label">Data source</span>
+          <p>The comparison uses NRMP Charting Outcomes in the Match for U.S. MD seniors, 2024. Each specialty table reports averages among applicants who matched and applicants who did not match to their preferred specialty.</p>
+          <p>Only specialties with a Charting Outcomes table appear in the Compare dropdown. Fellowship paths are routed to the closest available residency specialty table when a direct fellowship-specific table does not exist.</p>
+        </div>
+
+        <div class="meta-block">
+          <span class="meta-block__label">What the radar shows</span>
+          <p>The dashed outline represents the average matched applicant in the selected specialty. The teal shape represents the values currently entered in the controls.</p>
+          <p>If the teal shape reaches the dashed outline on an axis, that input is at about the matched-applicant average. If it extends beyond the dashed outline, that input is above the matched-applicant average for that specialty.</p>
+        </div>
+
+        <div class="meta-block">
+          <span class="meta-block__label">Numeric inputs</span>
+          <p>The six numeric axes are Step 2 CK score, contiguous ranked programs, research projects, abstracts/presentations/publications, work experiences, and volunteer experiences.</p>
+          <p>For each axis, the entered value is compared with the matched-applicant mean for that specialty. The chart is scaled so values above the mean can still be seen, but very high values are capped visually so the radar remains readable.</p>
+        </div>
+
+        <div class="meta-block">
+          <span class="meta-block__label">Needed for 90% markers</span>
+          <p>The Step 2 CK and contiguous-rank sliders include a small 90% marker when the NRMP probability curve crosses 0.90 for the selected specialty. These markers are estimated from the plotted Charting Outcomes probability curves, not from a new prediction model.</p>
+          <p>If a marker is not shown for Step 2 CK, the published curve for that specialty did not reach 90% within the plotted score range. That does not mean matching is impossible or that one input controls the outcome; it only describes what that single NRMP curve displays.</p>
+        </div>
+
+        <div class="meta-block">
+          <span class="meta-block__label">Binary individuators</span>
+          <p>AOA, Top 40 NIH-funded medical school, PhD, and other graduate degree are combined into one radar axis called Binary Individuators.</p>
+          <p>That axis starts at 1 rather than 0 so the chart does not visually imply that having none of those traits is alarming. Checked items add points up to a total axis range of 1 to 5.</p>
+          <p>The added points are weighted by the specialty-specific gap between matched and unmatched applicants. A checkbox matters more when the matched percentage is meaningfully higher than the unmatched percentage in that specialty table.</p>
+        </div>
+
+        <div class="meta-block">
+          <span class="meta-block__label">Specialty match share</span>
+          <p>The match-share card shows the percentage of analyzed U.S. MD seniors in that specialty table who matched to their preferred specialty. It is calculated as matched applicants divided by matched plus unmatched applicants in the NRMP table.</p>
+          <p>This is not the same thing as an individual match probability. Applicant strategy, school context, specialty-specific advising, interview performance, signaling, program list construction, geography, and application quality can all matter.</p>
+        </div>
+
+        <div class="meta-block">
+          <span class="meta-block__label">How to use it</span>
+          <p>Use this as a context tool: “Do my inputs look broadly similar to the average matched applicant in this specialty?” It is most useful for noticing large gaps, not for interpreting small differences.</p>
+          <p>Meeting or exceeding every average does not guarantee a match. Falling below an average does not mean matching is impossible. Averages flatten very different applicant stories into one number.</p>
+        </div>
+
+        <div class="info-panel__block info-panel__block--pane">
+          <p class="section-kicker">Important cautions</p>
+          <h3>What this does not do</h3>
+          <ul class="signal-list">
+            <li>It does not predict whether you will match.</li>
+            <li>It does not account for application narrative, letters, clinical grades, away rotations, interview performance, signaling strategy, program geography, or advisor input.</li>
+            <li>It does not know whether a research project is deeply specialty-aligned, first-author, longitudinal, or only lightly connected.</li>
+            <li>It does not replace specialty advising, mentorship, residency program data, or official NRMP resources.</li>
+          </ul>
+        </div>
+
+        <div class="info-panel__block info-panel__block--pane">
+          <p class="section-kicker">Best reading</p>
+          <p class="support-copy">Look for broad alignment rather than precision. A profile that is close to the matched average across several axes is different from a profile that is far below on one or two major axes, but the chart should stay humble about what it can infer.</p>
+          <p class="support-copy">If something looks concerning, treat it as a prompt for a conversation with an advisor rather than as a verdict.</p>
+        </div>
+      </div>
+
+      <p class="info-pane__note">
+        For reflection only. This is not individualized career, residency, or medical advice.
+      </p>
     </section>
   </div>
 

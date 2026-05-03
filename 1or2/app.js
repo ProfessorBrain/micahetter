@@ -15,6 +15,11 @@ const rawSpecialties = [
     blurb: "Development-focused medicine built around children, families, communication, and continuity.",
   },
   {
+    id: "child-neurology",
+    name: "Child Neurology",
+    blurb: "Neurologic diagnosis and chronic disease care for children, with family-centered communication and developmental context.",
+  },
+  {
     id: "emergency-medicine",
     name: "Emergency Medicine",
     blurb: "Acute undifferentiated care, shift work, and fast decisions with high variety.",
@@ -25,9 +30,29 @@ const rawSpecialties = [
     blurb: "Procedure-heavy work centered on decisive action, operative ownership, and perioperative care.",
   },
   {
+    id: "neurological-surgery",
+    name: "Neurological Surgery",
+    blurb: "High-stakes operative care of the brain, spine, and nervous system, with anatomy, acuity, and technical precision at the center.",
+  },
+  {
     id: "orthopedic-surgery",
-    name: "Orthopedic Surgery",
+    name: "Orthopaedic Surgery",
     blurb: "Musculoskeletal surgery with strong mechanical reasoning, procedures, recovery-focused follow-up, and operative intensity.",
+  },
+  {
+    id: "plastic-surgery",
+    name: "Plastic Surgery",
+    blurb: "Reconstructive and aesthetic surgery that blends anatomy, fine technical work, visible outcomes, and longitudinal follow-up.",
+  },
+  {
+    id: "vascular-surgery-integrated",
+    name: "Vascular Surgery",
+    blurb: "Vascular disease care with procedures, physiology, longitudinal risk management, and urgent operative or endovascular decisions.",
+  },
+  {
+    id: "thoracic-surgery-integrated",
+    name: "Thoracic Surgery",
+    blurb: "Chest surgery involving large operations, anatomy, cancer care, perioperative ownership, and focused procedural expertise.",
   },
   {
     id: "anesthesiology",
@@ -41,8 +66,18 @@ const rawSpecialties = [
   },
   {
     id: "radiology",
-    name: "Radiology",
+    name: "Diagnostic Radiology",
     blurb: "Image-driven diagnostics with high pattern recognition, technology use, and less direct continuity.",
+  },
+  {
+    id: "interventional-radiology-integrated",
+    name: "Interventional Radiology",
+    blurb: "Image-guided procedures and consultative care, combining visual interpretation, technical skill, and minimally invasive treatment.",
+  },
+  {
+    id: "radiation-oncology",
+    name: "Radiation Oncology",
+    blurb: "Cancer-focused care that combines imaging, treatment planning, technology, longitudinal follow-up, and multidisciplinary decisions.",
   },
   {
     id: "neurology",
@@ -80,6 +115,11 @@ const rawSpecialties = [
     blurb: "Function-focused care centered on rehabilitation, musculoskeletal issues, procedures, and quality of life over time.",
   },
   {
+    id: "preventive-medicine",
+    name: "Preventive Medicine",
+    blurb: "Population health, prevention, systems thinking, and long-horizon risk reduction rather than one-patient-at-a-time acute care.",
+  },
+  {
     id: "med-peds",
     name: "Medicine-Pediatrics",
     blurb: "Combined adult and pediatric training with broad continuity and room for either primary care or hospital-based practice.",
@@ -95,12 +135,19 @@ const specialtyVisuals = {
   "internal-medicine": { shortLabel: "Internal Med", color: "#2d7d89" },
   "family-medicine": { shortLabel: "Family Med", color: "#4d8d67" },
   pediatrics: { shortLabel: "Pediatrics", color: "#4c9ad7" },
+  "child-neurology": { shortLabel: "Child Neuro", color: "#6677d6" },
   "emergency-medicine": { shortLabel: "Emergency", color: "#d96c58" },
   "general-surgery": { shortLabel: "Gen Surgery", color: "#9a5a46" },
-  "orthopedic-surgery": { shortLabel: "Orthopedics", color: "#b66a4f" },
+  "neurological-surgery": { shortLabel: "Neurosurgery", color: "#7657a8" },
+  "orthopedic-surgery": { shortLabel: "Orthopaedics", color: "#b66a4f" },
+  "plastic-surgery": { shortLabel: "Plastic Surg", color: "#c27963" },
+  "vascular-surgery-integrated": { shortLabel: "Vascular Surg", color: "#9b5f4a" },
+  "thoracic-surgery-integrated": { shortLabel: "Thoracic Surg", color: "#8f624c" },
   anesthesiology: { shortLabel: "Anesthesia", color: "#5d6bb0" },
   psychiatry: { shortLabel: "Psychiatry", color: "#7d5b8d" },
-  radiology: { shortLabel: "Radiology", color: "#4d78bc" },
+  radiology: { shortLabel: "Diag Rads", color: "#4d78bc" },
+  "interventional-radiology-integrated": { shortLabel: "IR", color: "#417fb5" },
+  "radiation-oncology": { shortLabel: "Rad Onc", color: "#7866b3" },
   neurology: { shortLabel: "Neurology", color: "#5e6fd1" },
   obgyn: { shortLabel: "OB/GYN", color: "#c7648d" },
   dermatology: { shortLabel: "Dermatology", color: "#b88738" },
@@ -108,6 +155,7 @@ const specialtyVisuals = {
   otolaryngology: { shortLabel: "ENT", color: "#aa7540" },
   urology: { shortLabel: "Urology", color: "#3d8777" },
   "physical-medicine-rehab": { shortLabel: "PM&R", color: "#5a9f8d" },
+  "preventive-medicine": { shortLabel: "Preventive", color: "#5f9465" },
   "med-peds": { shortLabel: "Med-Peds", color: "#47858b" },
   pathology: { shortLabel: "Pathology", color: "#5f6774" },
 };
@@ -1940,6 +1988,16 @@ const compareDataById = {
     unmatchedN: 191,
     matched: { contiguousRanks: 13.7, step2: 252, research: 3.8, publications: 9.0, work: 2.0, volunteer: 4.3, aoa: 14.4, nih: 33.1, phd: 3.8, otherGrad: 17.2 },
     unmatched: { contiguousRanks: 7.0, step2: 240, research: 3.1, publications: 5.4, work: 2.4, volunteer: 4.1, aoa: 0.5, nih: 24.1, phd: 1.6, otherGrad: 24.1 },
+    neededFor90: { step2: 251, contiguousRanks: 12.2 },
+  },
+  "child-neurology": {
+    name: "Child Neurology",
+    table: "CN-1",
+    matchedN: 115,
+    unmatchedN: 2,
+    matched: { contiguousRanks: 12.9, step2: 248, research: 3.0, publications: 9.8, work: 1.7, volunteer: 4.5, aoa: 13.9, nih: 30.4, phd: 13.4, otherGrad: 20.5 },
+    unmatched: { contiguousRanks: 8.5, step2: 230, research: 2.0, publications: 1.0, work: 0.5, volunteer: 3.5, aoa: 0.0, nih: 0.0, phd: 0.0, otherGrad: 0.0 },
+    neededFor90: { step2: 216, contiguousRanks: 3.9 },
   },
   "dermatology": {
     name: "Dermatology",
@@ -1948,6 +2006,7 @@ const compareDataById = {
     unmatchedN: 126,
     matched: { contiguousRanks: 8.8, step2: 257, research: 6.4, publications: 27.7, work: 2.3, volunteer: 5.3, aoa: 41.1, nih: 41.7, phd: 9.8, otherGrad: 17.1 },
     unmatched: { contiguousRanks: 4.5, step2: 250, research: 4.9, publications: 19.0, work: 2.5, volunteer: 5.6, aoa: 23.8, nih: 23.0, phd: 1.7, otherGrad: 17.2 },
+    neededFor90: { step2: null, contiguousRanks: 11.2 },
   },
   "diagnostic-radiology": {
     name: "Diagnostic Radiology",
@@ -1956,6 +2015,7 @@ const compareDataById = {
     unmatchedN: 86,
     matched: { contiguousRanks: 13.8, step2: 256, research: 4.4, publications: 12.0, work: 1.9, volunteer: 3.9, aoa: 19.5, nih: 29.9, phd: 3.5, otherGrad: 19.3 },
     unmatched: { contiguousRanks: 5.5, step2: 241, research: 3.6, publications: 8.0, work: 2.1, volunteer: 3.6, aoa: 4.7, nih: 23.3, phd: 2.6, otherGrad: 18.2 },
+    neededFor90: { step2: 258, contiguousRanks: 12.7 },
   },
   "emergency-medicine": {
     name: "Emergency Medicine",
@@ -1964,6 +2024,7 @@ const compareDataById = {
     unmatchedN: 20,
     matched: { contiguousRanks: 15.4, step2: 248, research: 2.8, publications: 5.7, work: 2.2, volunteer: 4.4, aoa: 11.8, nih: 24.8, phd: 1.0, otherGrad: 19.9 },
     unmatched: { contiguousRanks: 4.5, step2: 234, research: 2.3, publications: 5.0, work: 2.8, volunteer: 4.8, aoa: 0.0, nih: 15.0, phd: 5.0, otherGrad: 35.0 },
+    neededFor90: { step2: 174, contiguousRanks: 4.9 },
   },
   "family-medicine": {
     name: "Family Medicine",
@@ -1972,6 +2033,7 @@ const compareDataById = {
     unmatchedN: 12,
     matched: { contiguousRanks: 13.5, step2: 244, research: 2.1, publications: 4.2, work: 1.8, volunteer: 4.6, aoa: 9.4, nih: 25.5, phd: 0.9, otherGrad: 17.0 },
     unmatched: { contiguousRanks: 5.1, step2: 231, research: 1.8, publications: 1.4, work: 2.3, volunteer: 7.4, aoa: 0.0, nih: 16.7, phd: 0.0, otherGrad: 8.3 },
+    neededFor90: { step2: 168, contiguousRanks: 2.6 },
   },
   "general-surgery": {
     name: "General Surgery",
@@ -1980,6 +2042,7 @@ const compareDataById = {
     unmatchedN: 181,
     matched: { contiguousRanks: 14.1, step2: 253, research: 4.2, publications: 10.9, work: 2.0, volunteer: 4.5, aoa: 22.0, nih: 27.7, phd: 1.8, otherGrad: 21.7 },
     unmatched: { contiguousRanks: 5.6, step2: 238, research: 3.7, publications: 7.3, work: 2.5, volunteer: 4.2, aoa: 2.8, nih: 16.6, phd: 1.2, otherGrad: 23.8 },
+    neededFor90: { step2: 255, contiguousRanks: 12.6 },
   },
   "internal-medicine": {
     name: "Internal Medicine",
@@ -1988,6 +2051,7 @@ const compareDataById = {
     unmatchedN: 64,
     matched: { contiguousRanks: 13.2, step2: 251, research: 3.3, publications: 8.7, work: 1.8, volunteer: 4.2, aoa: 15.9, nih: 31.8, phd: 5.0, otherGrad: 19.0 },
     unmatched: { contiguousRanks: 3.6, step2: 234, research: 3.3, publications: 6.2, work: 1.9, volunteer: 4.1, aoa: 4.7, nih: 21.9, phd: 4.8, otherGrad: 27.0 },
+    neededFor90: { step2: 214, contiguousRanks: 4.6 },
   },
   "internal-medicine-pediatrics": {
     name: "Internal Medicine/Pediatrics",
@@ -1996,6 +2060,7 @@ const compareDataById = {
     unmatchedN: 46,
     matched: { contiguousRanks: 11.3, step2: 253, research: 3.1, publications: 6.9, work: 1.7, volunteer: 5.1, aoa: 22.4, nih: 36.1, phd: 1.8, otherGrad: 24.8 },
     unmatched: { contiguousRanks: 3.0, step2: 243, research: 2.6, publications: 6.2, work: 2.0, volunteer: 4.8, aoa: 6.5, nih: 17.4, phd: 4.5, otherGrad: 34.1 },
+    neededFor90: { step2: 245, contiguousRanks: 6.6 },
   },
   "interventional-radiology": {
     name: "Interventional Radiology",
@@ -2004,6 +2069,7 @@ const compareDataById = {
     unmatchedN: 24,
     matched: { contiguousRanks: 6.5, step2: 253, research: 4.7, publications: 15.8, work: 2.2, volunteer: 3.9, aoa: 17.9, nih: 31.6, phd: 2.8, otherGrad: 23.1 },
     unmatched: { contiguousRanks: 2.9, step2: 245, research: 4.6, publications: 10.1, work: 3.1, volunteer: 15.6, aoa: 12.5, nih: 16.7, phd: 0.0, otherGrad: 30.4 },
+    neededFor90: { step2: null, contiguousRanks: 5.6 },
   },
   "neurology": {
     name: "Neurology",
@@ -2012,6 +2078,16 @@ const compareDataById = {
     unmatchedN: 30,
     matched: { contiguousRanks: 13.1, step2: 250, research: 3.5, publications: 8.8, work: 1.8, volunteer: 4.2, aoa: 12.5, nih: 26.8, phd: 4.7, otherGrad: 19.5 },
     unmatched: { contiguousRanks: 4.1, step2: 236, research: 2.8, publications: 5.5, work: 1.8, volunteer: 3.9, aoa: 0.0, nih: 16.7, phd: 3.6, otherGrad: 14.3 },
+    neededFor90: { step2: 225, contiguousRanks: 6.1 },
+  },
+  "neurological-surgery": {
+    name: "Neurological Surgery",
+    table: "NS-1",
+    matchedN: 161,
+    unmatchedN: 71,
+    matched: { contiguousRanks: 16.7, step2: 255, research: 5.8, publications: 37.4, work: 2.2, volunteer: 4.2, aoa: 28.0, nih: 46.0, phd: 6.8, otherGrad: 25.9 },
+    unmatched: { contiguousRanks: 9.1, step2: 247, research: 5.5, publications: 31.8, work: 1.8, volunteer: 4.2, aoa: 14.1, nih: 25.4, phd: 7.9, otherGrad: 27.0 },
+    neededFor90: { step2: null, contiguousRanks: 16.6 },
   },
   "obstetrics-gynecology": {
     name: "Obstetrics and Gynecology",
@@ -2020,6 +2096,7 @@ const compareDataById = {
     unmatchedN: 149,
     matched: { contiguousRanks: 12.3, step2: 252, research: 3.8, publications: 9.0, work: 2.0, volunteer: 5.0, aoa: 22.1, nih: 28.5, phd: 1.4, otherGrad: 22.2 },
     unmatched: { contiguousRanks: 7.2, step2: 244, research: 3.3, publications: 6.8, work: 2.1, volunteer: 5.0, aoa: 9.4, nih: 22.8, phd: 4.3, otherGrad: 24.6 },
+    neededFor90: { step2: 260, contiguousRanks: 11.8 },
   },
   "orthopaedic-surgery": {
     name: "Orthopaedic Surgery",
@@ -2028,6 +2105,7 @@ const compareDataById = {
     unmatchedN: 203,
     matched: { contiguousRanks: 11.8, step2: 257, research: 8.1, publications: 23.8, work: 2.5, volunteer: 4.8, aoa: 34.2, nih: 33.0, phd: 1.3, otherGrad: 18.2 },
     unmatched: { contiguousRanks: 6.3, step2: 246, research: 8.0, publications: 18.0, work: 2.4, volunteer: 4.8, aoa: 15.8, nih: 20.7, phd: 3.2, otherGrad: 24.7 },
+    neededFor90: { step2: null, contiguousRanks: 13.3 },
   },
   "otolaryngology": {
     name: "Otolaryngology",
@@ -2036,6 +2114,7 @@ const compareDataById = {
     unmatchedN: 54,
     matched: { contiguousRanks: 13.6, step2: 256, research: 7.1, publications: 20.0, work: 2.0, volunteer: 4.3, aoa: 33.6, nih: 36.6, phd: 2.8, otherGrad: 17.9 },
     unmatched: { contiguousRanks: 7.2, step2: 251, research: 5.5, publications: 15.6, work: 2.4, volunteer: 6.7, aoa: 16.7, nih: 27.8, phd: 4.1, otherGrad: 24.5 },
+    neededFor90: { step2: null, contiguousRanks: 12.7 },
   },
   "pathology": {
     name: "Pathology",
@@ -2044,6 +2123,7 @@ const compareDataById = {
     unmatchedN: 11,
     matched: { contiguousRanks: 12.4, step2: 247, research: 3.1, publications: 8.4, work: 1.9, volunteer: 3.3, aoa: 8.9, nih: 32.4, phd: 21.4, otherGrad: 14.4 },
     unmatched: { contiguousRanks: 6.5, step2: 232, research: 2.3, publications: 4.1, work: 3.2, volunteer: 4.7, aoa: 0.0, nih: 9.1, phd: 0.0, otherGrad: 20.0 },
+    neededFor90: { step2: 217, contiguousRanks: 4.0 },
   },
   "pediatrics": {
     name: "Pediatrics",
@@ -2052,6 +2132,7 @@ const compareDataById = {
     unmatchedN: 2,
     matched: { contiguousRanks: 15.3, step2: 247, research: 2.6, publications: 6.4, work: 1.6, volunteer: 4.9, aoa: 13.4, nih: 28.7, phd: 3.1, otherGrad: 16.8 },
     unmatched: { contiguousRanks: 2.0, step2: 233, research: 0.5, publications: 21.5, work: 0.5, volunteer: 6.0, aoa: 0.0, nih: 50.0, phd: 50.0, otherGrad: 0.0 },
+    neededFor90: { step2: 190, contiguousRanks: 3.3 },
   },
   "physical-medicine-rehabilitation": {
     name: "Physical Medicine and Rehabilitation",
@@ -2060,6 +2141,16 @@ const compareDataById = {
     unmatchedN: 42,
     matched: { contiguousRanks: 13.7, step2: 248, research: 3.4, publications: 8.6, work: 1.8, volunteer: 4.8, aoa: 13.9, nih: 22.1, phd: 1.9, otherGrad: 16.1 },
     unmatched: { contiguousRanks: 5.1, step2: 236, research: 3.3, publications: 6.4, work: 2.2, volunteer: 4.9, aoa: 0.0, nih: 23.8, phd: 0.0, otherGrad: 12.5 },
+    neededFor90: { step2: 249, contiguousRanks: 11.3 },
+  },
+  "plastic-surgery": {
+    name: "Plastic Surgery",
+    table: "PS-1",
+    matchedN: 159,
+    unmatchedN: 48,
+    matched: { contiguousRanks: 13.6, step2: 256, research: 8.6, publications: 34.7, work: 2.7, volunteer: 5.0, aoa: 35.8, nih: 44.7, phd: 3.4, otherGrad: 24.0 },
+    unmatched: { contiguousRanks: 7.4, step2: 247, research: 9.2, publications: 26.3, work: 2.4, volunteer: 4.9, aoa: 18.8, nih: 31.3, phd: 2.1, otherGrad: 27.1 },
+    neededFor90: { step2: null, contiguousRanks: 13.0 },
   },
   "psychiatry": {
     name: "Psychiatry",
@@ -2068,6 +2159,16 @@ const compareDataById = {
     unmatchedN: 123,
     matched: { contiguousRanks: 11.5, step2: 246, research: 3.0, publications: 7.5, work: 1.9, volunteer: 4.5, aoa: 9.2, nih: 30.4, phd: 4.8, otherGrad: 20.5 },
     unmatched: { contiguousRanks: 5.2, step2: 235, research: 3.1, publications: 4.6, work: 2.1, volunteer: 4.0, aoa: 1.6, nih: 26.0, phd: 2.7, otherGrad: 23.4 },
+    neededFor90: { step2: 238, contiguousRanks: 8.4 },
+  },
+  "radiation-oncology": {
+    name: "Radiation Oncology",
+    table: "RO-1",
+    matchedN: 103,
+    unmatchedN: 3,
+    matched: { contiguousRanks: 16.1, step2: 252, research: 4.2, publications: 15.9, work: 1.6, volunteer: 3.9, aoa: 15.5, nih: 34.0, phd: 14.4, otherGrad: 16.8 },
+    unmatched: { contiguousRanks: 1.3, step2: 242, research: 2.0, publications: 13.5, work: 2.0, volunteer: 2.0, aoa: 0.0, nih: 33.3, phd: 100.0, otherGrad: 100.0 },
+    neededFor90: { step2: 214, contiguousRanks: 4.8 },
   },
   "vascular-surgery": {
     name: "Vascular Surgery",
@@ -2076,26 +2177,33 @@ const compareDataById = {
     unmatchedN: 6,
     matched: { contiguousRanks: 22.6, step2: 253, research: 4.6, publications: 12.8, work: 2.5, volunteer: 4.7, aoa: 14.1, nih: 37.5, phd: 1.7, otherGrad: 19.3 },
     unmatched: { contiguousRanks: 11.8, step2: 246, research: 4.5, publications: 8.0, work: 2.8, volunteer: 4.0, aoa: 16.7, nih: 0.0, phd: 20.0, otherGrad: 0.0 },
+    neededFor90: { step2: 252, contiguousRanks: 16.8 },
   },
 };
 
 const specialtyCompareMap = {
   "anesthesiology": "anesthesiology",
+  "child-neurology": "child-neurology",
   "dermatology": "dermatology",
   "emergency-medicine": "emergency-medicine",
   "family-medicine": "family-medicine",
   "general-surgery": "general-surgery",
   "internal-medicine": "internal-medicine",
+  "interventional-radiology-integrated": "interventional-radiology",
   "med-peds": "internal-medicine-pediatrics",
   "neurology": "neurology",
+  "neurological-surgery": "neurological-surgery",
   "obgyn": "obstetrics-gynecology",
   "orthopedic-surgery": "orthopaedic-surgery",
   "otolaryngology": "otolaryngology",
   "pathology": "pathology",
   "pediatrics": "pediatrics",
   "physical-medicine-rehab": "physical-medicine-rehabilitation",
+  "plastic-surgery": "plastic-surgery",
   "psychiatry": "psychiatry",
+  "radiation-oncology": "radiation-oncology",
   "radiology": "diagnostic-radiology",
+  "vascular-surgery-integrated": "vascular-surgery",
 };
 
 const fellowshipCompareMap = {
@@ -2103,8 +2211,14 @@ const fellowshipCompareMap = {
   "vascular-surgery": "vascular-surgery",
 };
 
+const fellowshipCompareSelectionMap = {
+  "interventional-radiology": "interventional-radiology-integrated",
+  "thoracic-surgery": "thoracic-surgery-integrated",
+  "vascular-surgery": "vascular-surgery-integrated",
+};
+
 const compareSliderDefinitions = [
-  { key: "step2", label: "USMLE Step 2 CK score", min: 190, max: 280, step: 1, weight: 0.24 },
+  { key: "step2", label: "USMLE Step 2 CK score", min: 140, max: 280, step: 1, weight: 0.24 },
   { key: "contiguousRanks", label: "Contiguous ranked programs", min: 0, max: 30, step: 1, weight: 0.28 },
   { key: "research", label: "Research projects", min: 0, max: 20, step: 1, weight: 0.1 },
   { key: "publications", label: "Abstracts, presentations, publications", min: 0, max: 60, step: 1, weight: 0.12 },
@@ -2112,11 +2226,13 @@ const compareSliderDefinitions = [
   { key: "volunteer", label: "Volunteer experiences", min: 0, max: 15, step: 1, weight: 0.04 },
 ];
 
+const compareNeededFor90Keys = new Set(["step2", "contiguousRanks"]);
+
 const compareCheckDefinitions = [
-  { key: "aoa", label: "AOA", weight: 0.07 },
-  { key: "nih", label: "Top 40 NIH-funded school", weight: 0.05 },
-  { key: "phd", label: "PhD", weight: 0.03 },
-  { key: "otherGrad", label: "Other graduate degree", weight: 0.03 },
+  { key: "aoa", label: "AOA" },
+  { key: "nih", label: "Top 40 NIH-funded school" },
+  { key: "phd", label: "PhD" },
+  { key: "otherGrad", label: "Other graduate degree" },
 ];
 
 const compareProfile = {
@@ -3066,6 +3182,220 @@ questions.push(
   makeQuestion("function-over-operation", "Clinical interests", "Does restoring movement or independence appeal more than removing disease or operating?", "This helps separate rehabilitation-oriented interests from operative ones.", mergeWeights(p.rehabY, p.contY), mergeWeights(p.orY, p.procY))
 );
 
+const nrmpMainMatchSpecialtySignals = {
+  "child-neurology": [
+    ["continuity", "yes", 4],
+    ["diagnostic-puzzle", "yes", 5],
+    ["family-context", "yes", 4],
+    ["children", "yes", 6],
+    ["ambiguity", "yes", 3],
+    ["function-rehab", "yes", 2],
+    ["caregiver-role", "yes", 4],
+    ["continuity-follow-up", "yes", 4],
+    ["panel-management", "yes", 3],
+    ["chronic-vs-episodic", "yes", 4],
+    ["diagnostic-workup", "yes", 4],
+    ["anatomic-localization", "yes", 5],
+    ["pathophysiology-draw", "yes", 4],
+    ["long-workups", "yes", 4],
+    ["children-large-share", "yes", 6],
+    ["mostly-adults", "no", 4],
+    ["treatment-over-time", "yes", 3],
+    ["disability-and-qol", "yes", 3],
+    ["rehab-team-draw", "yes", 2],
+    ["focused-expertise", "yes", 3],
+    ["visual-patterns", "yes", 2],
+    ["operating-room", "no", 3],
+    ["manual-skill", "no", 2],
+    ["procedures", "no", 2],
+  ],
+  "interventional-radiology-integrated": [
+    ["procedures", "yes", 5],
+    ["visual-patterns", "yes", 5],
+    ["behind-the-scenes", "yes", 3],
+    ["diagnostic-puzzle", "yes", 4],
+    ["physiology", "yes", 3],
+    ["narrow-anatomy", "yes", 3],
+    ["direct-patient-contact", "no", 2],
+    ["continuity", "no", 3],
+    ["shift-work", "yes", 2],
+    ["hands-doing-the-work", "yes", 5],
+    ["procedural-vs-medical", "yes", 5],
+    ["consultant-expertise", "yes", 5],
+    ["consultant-handoffs", "yes", 4],
+    ["subtle-patterns", "yes", 4],
+    ["images-and-data", "yes", 6],
+    ["away-from-bedside", "yes", 4],
+    ["close-visual-detail", "yes", 4],
+    ["interpretation-over-procedures", "no", 3],
+    ["interpretation-for-others", "yes", 4],
+    ["focused-expertise", "yes", 4],
+    ["immediate-physical-result", "yes", 4],
+    ["clinic-with-procedures", "yes", 4],
+    ["consults-over-panel", "yes", 4],
+    ["avoiding-large-panel", "yes", 4],
+    ["regular-urgency", "yes", 2],
+    ["hospital-vs-office", "yes", 3],
+  ],
+  "neurological-surgery": [
+    ["procedures", "yes", 6],
+    ["acuity", "yes", 5],
+    ["operating-room", "yes", 6],
+    ["manual-skill", "yes", 6],
+    ["physiology", "yes", 3],
+    ["narrow-anatomy", "yes", 4],
+    ["lifestyle-structure", "no", 4],
+    ["preventive-care", "no", 3],
+    ["miss-operating-room", "yes", 6],
+    ["hands-doing-the-work", "yes", 6],
+    ["procedural-vs-medical", "yes", 6],
+    ["regular-urgency", "yes", 5],
+    ["nights-weekends", "yes", 4],
+    ["acute-teamwork", "yes", 5],
+    ["perioperative-vs-clinic", "yes", 5],
+    ["quick-decisions", "yes", 4],
+    ["hospital-vs-office", "yes", 4],
+    ["call-worth-it", "yes", 5],
+    ["immediate-physical-result", "yes", 5],
+    ["anatomic-localization", "yes", 6],
+    ["pathophysiology-draw", "yes", 3],
+    ["focused-expertise", "yes", 4],
+    ["close-visual-detail", "yes", 3],
+    ["large-operations", "yes", 6],
+    ["low-emergencies", "no", 5],
+    ["function-over-operation", "no", 4],
+  ],
+  "plastic-surgery": [
+    ["continuity", "yes", 3],
+    ["direct-patient-contact", "yes", 3],
+    ["procedures", "yes", 5],
+    ["operating-room", "yes", 5],
+    ["manual-skill", "yes", 5],
+    ["visual-patterns", "yes", 3],
+    ["narrow-anatomy", "yes", 3],
+    ["miss-operating-room", "yes", 5],
+    ["hands-doing-the-work", "yes", 5],
+    ["procedural-vs-medical", "yes", 5],
+    ["clinic-with-procedures", "yes", 4],
+    ["immediate-physical-result", "yes", 5],
+    ["close-visual-detail", "yes", 4],
+    ["focused-expertise", "yes", 4],
+    ["fine-motor-precision", "yes", 5],
+    ["mixed-clinic-procedures", "yes", 4],
+    ["large-operations", "yes", 3],
+    ["body-region-expert", "yes", 3],
+    ["function-rehab", "yes", 2],
+    ["disability-and-qol", "yes", 2],
+    ["low-emergencies", "yes", 1],
+  ],
+  "preventive-medicine": [
+    ["continuity", "yes", 3],
+    ["breadth", "yes", 5],
+    ["direct-patient-contact", "yes", 2],
+    ["procedures", "no", 5],
+    ["acuity", "no", 6],
+    ["operating-room", "no", 6],
+    ["manual-skill", "no", 3],
+    ["preventive-care", "yes", 8],
+    ["routine-preventive-care", "yes", 8],
+    ["community-generalist", "yes", 7],
+    ["context-outside-clinic", "yes", 5],
+    ["broad-vs-narrow-alt", "yes", 4],
+    ["communication-over-procedures", "yes", 3],
+    ["panel-management", "yes", 3],
+    ["chronic-vs-episodic", "yes", 4],
+    ["clinic-vs-hospital", "yes", 4],
+    ["outpatient-most-days", "yes", 4],
+    ["low-emergencies", "yes", 6],
+    ["predictability-priority", "yes", 5],
+    ["hospital-vs-office", "no", 3],
+  ],
+  "radiation-oncology": [
+    ["continuity", "yes", 4],
+    ["direct-patient-contact", "yes", 3],
+    ["diagnostic-puzzle", "yes", 3],
+    ["visual-patterns", "yes", 4],
+    ["procedures", "no", 2],
+    ["acuity", "no", 3],
+    ["lifestyle-structure", "yes", 3],
+    ["long-term-trust", "yes", 5],
+    ["chronic-vs-episodic", "yes", 4],
+    ["communication-over-procedures", "yes", 3],
+    ["consultant-expertise", "yes", 4],
+    ["subtle-patterns", "yes", 4],
+    ["images-and-data", "yes", 5],
+    ["interpretation-over-procedures", "yes", 3],
+    ["pathophysiology-draw", "yes", 4],
+    ["focused-expertise", "yes", 4],
+    ["treatment-over-time", "yes", 5],
+    ["outpatient-most-days", "yes", 4],
+    ["low-emergencies", "yes", 4],
+    ["predictability-priority", "yes", 3],
+    ["conversation-based-care", "yes", 2],
+  ],
+  "thoracic-surgery-integrated": [
+    ["direct-patient-contact", "yes", 2],
+    ["procedures", "yes", 5],
+    ["acuity", "yes", 3],
+    ["operating-room", "yes", 6],
+    ["manual-skill", "yes", 5],
+    ["physiology", "yes", 3],
+    ["narrow-anatomy", "yes", 4],
+    ["miss-operating-room", "yes", 6],
+    ["hands-doing-the-work", "yes", 5],
+    ["procedural-vs-medical", "yes", 5],
+    ["regular-urgency", "yes", 3],
+    ["acute-teamwork", "yes", 4],
+    ["perioperative-vs-clinic", "yes", 5],
+    ["hospital-vs-office", "yes", 4],
+    ["call-worth-it", "yes", 4],
+    ["immediate-physical-result", "yes", 4],
+    ["pathophysiology-draw", "yes", 3],
+    ["focused-expertise", "yes", 4],
+    ["large-operations", "yes", 6],
+    ["low-emergencies", "no", 3],
+    ["function-over-operation", "no", 4],
+  ],
+  "vascular-surgery-integrated": [
+    ["continuity", "yes", 3],
+    ["direct-patient-contact", "yes", 3],
+    ["procedures", "yes", 5],
+    ["acuity", "yes", 4],
+    ["operating-room", "yes", 5],
+    ["manual-skill", "yes", 5],
+    ["physiology", "yes", 5],
+    ["narrow-anatomy", "yes", 3],
+    ["miss-operating-room", "yes", 5],
+    ["hands-doing-the-work", "yes", 5],
+    ["procedural-vs-medical", "yes", 5],
+    ["regular-urgency", "yes", 4],
+    ["acute-teamwork", "yes", 4],
+    ["perioperative-vs-clinic", "yes", 4],
+    ["hospital-vs-office", "yes", 4],
+    ["clinic-with-procedures", "yes", 3],
+    ["immediate-physical-result", "yes", 4],
+    ["pathophysiology-draw", "yes", 4],
+    ["focused-expertise", "yes", 3],
+    ["mostly-adults", "yes", 4],
+    ["complex-hospitalized-adults", "yes", 4],
+    ["wards-vs-clinic", "yes", 3],
+    ["large-operations", "yes", 4],
+    ["low-emergencies", "no", 3],
+  ],
+};
+
+const questionByIdForSpecialtySignals = Object.fromEntries(questions.map((question) => [question.id, question]));
+Object.entries(nrmpMainMatchSpecialtySignals).forEach(([specialtyId, signals]) => {
+  signals.forEach(([questionId, response, weight]) => {
+    const question = questionByIdForSpecialtySignals[questionId];
+    if (!question || (response !== "yes" && response !== "no")) {
+      return;
+    }
+
+    question[response][specialtyId] = (question[response][specialtyId] || 0) + weight;
+  });
+});
+
 const questionIndexById = Object.fromEntries(questions.map((question, index) => [question.id, index]));
 const QUESTION_ORDER_STORAGE_KEY = "1or2-question-order-mode";
 const FELLOWSHIP_DISPLAY_STORAGE_KEY = "1or2-fellowship-display-mode";
@@ -3145,7 +3475,7 @@ function encodeResponseSequence(responses) {
 
 function decodeResponseSequence(encodedResponses) {
   if (encodedResponses.length !== questions.length) {
-    throw new Error("The seed response list does not match this question set.");
+    throw new Error("The seed response list does not match this prompt set.");
   }
 
   return encodedResponses.split("").map((code) => {
@@ -3163,7 +3493,7 @@ function encodeQuestionOrder(questionOrder) {
 
 function decodeQuestionOrder(encodedOrder) {
   if (encodedOrder.length !== questions.length * 2) {
-    throw new Error("The seed question order does not match this question set.");
+    throw new Error("The seed prompt order does not match this prompt set.");
   }
 
   const decoded = [];
@@ -3172,14 +3502,14 @@ function decodeQuestionOrder(encodedOrder) {
     const value = Number.parseInt(encodedOrder.slice(index, index + 2), 36);
 
     if (!Number.isInteger(value) || value < 0 || value >= questions.length) {
-      throw new Error("The seed contains an invalid question order.");
+      throw new Error("The seed contains an invalid prompt order.");
     }
 
     decoded.push(value);
   }
 
   if (new Set(decoded).size !== questions.length) {
-    throw new Error("The seed question order is incomplete or duplicated.");
+    throw new Error("The seed prompt order is incomplete or duplicated.");
   }
 
   return decoded;
@@ -3214,7 +3544,7 @@ function parseShareSeed(seedText) {
   const currentIndex = Number.parseInt(currentIndexCode, 36);
 
   if (!Number.isInteger(currentIndex) || currentIndex < 0 || currentIndex > questions.length) {
-    throw new Error("This seed contains an invalid progress marker.");
+    throw new Error("This seed contains an invalid place marker.");
   }
 
   return {
@@ -3235,6 +3565,7 @@ const state = {
   fellowshipDisplayMode: initialFellowshipDisplayMode,
   questionOrder: buildQuestionOrder(initialOrderMode),
   currentIndex: 0,
+  resultsPreview: false,
   responses: Array(questions.length).fill(null),
 };
 
@@ -3246,8 +3577,8 @@ let exploreDragState = null;
 let suppressExploreCanvasClick = false;
 let exploreResizeFrame = null;
 
-const EXPLORE_CANVAS_BASE_WIDTH = 1680;
-const EXPLORE_CANVAS_BASE_HEIGHT = 1180;
+const EXPLORE_CANVAS_BASE_WIDTH = 1920;
+const EXPLORE_CANVAS_BASE_HEIGHT = 1220;
 const EXPLORE_ZOOM_MIN = 0.7;
 const EXPLORE_ZOOM_MAX = 2.2;
 const EXPLORE_ZOOM_STEP = 0.2;
@@ -3273,6 +3604,7 @@ const shareBackdrop = document.getElementById("shareBackdrop");
 const shareToggle = document.getElementById("shareToggle");
 const startShareButton = document.getElementById("startShareButton");
 const resultsShareButton = document.getElementById("resultsShareButton");
+const continueQuizButton = document.getElementById("continueQuizButton");
 const closeShareButton = document.getElementById("closeShareButton");
 const shareExportSection = document.getElementById("shareExportSection");
 const shareSummary = document.getElementById("shareSummary");
@@ -3283,6 +3615,10 @@ const shareSeedInput = document.getElementById("shareSeedInput");
 const loadSeedButton = document.getElementById("loadSeedButton");
 const shareImportStatus = document.getElementById("shareImportStatus");
 const compareView = document.getElementById("compareView");
+const compareAboutButton = document.getElementById("compareAboutButton");
+const compareAboutModal = document.getElementById("compareAboutModal");
+const compareAboutBackdrop = document.getElementById("compareAboutBackdrop");
+const closeCompareAboutButton = document.getElementById("closeCompareAboutButton");
 const closeCompareButton = document.getElementById("closeCompareButton");
 const compareSpecialtySelect = document.getElementById("compareSpecialtySelect");
 const compareSliderGrid = document.getElementById("compareSliderGrid");
@@ -3353,8 +3689,14 @@ function syncModalBodyLock() {
   const modalOpen =
     !infoModal.classList.contains("hidden") ||
     !settingsModal.classList.contains("hidden") ||
-    !shareModal.classList.contains("hidden");
+    !shareModal.classList.contains("hidden") ||
+    !compareAboutModal.classList.contains("hidden");
   document.body.classList.toggle("modal-open", modalOpen);
+}
+
+function hideCompareAboutModal() {
+  compareAboutModal.classList.add("hidden");
+  compareAboutModal.setAttribute("aria-hidden", "true");
 }
 
 function setInfoModalOpen(isOpen, trigger = null) {
@@ -3363,6 +3705,7 @@ function setInfoModalOpen(isOpen, trigger = null) {
     settingsModal.setAttribute("aria-hidden", "true");
     shareModal.classList.add("hidden");
     shareModal.setAttribute("aria-hidden", "true");
+    hideCompareAboutModal();
   }
 
   infoModal.classList.toggle("hidden", !isOpen);
@@ -3388,13 +3731,13 @@ function updateSettingsUI() {
   updateFellowshipDisplayControls();
 
   if (!state.started) {
-    settingsStatus.textContent = "Question order is used when a quiz begins. Fellowship display can be changed any time.";
+    settingsStatus.textContent = "Prompt order is used when a session begins. Fellowship display can be changed any time.";
     return;
   }
 
   const orderMessage = countAnswered() === 0
-    ? "Question order can still take effect immediately."
-    : "Question order changes will be used the next time you restart the quiz.";
+    ? "Prompt order can still take effect immediately."
+    : "Prompt order changes will be used the next time you restart the session.";
   settingsStatus.textContent = `${orderMessage} Fellowship display updates immediately.`;
 }
 
@@ -3414,6 +3757,7 @@ function setSettingsModalOpen(isOpen, trigger = null) {
     infoModal.setAttribute("aria-hidden", "true");
     shareModal.classList.add("hidden");
     shareModal.setAttribute("aria-hidden", "true");
+    hideCompareAboutModal();
     updateSettingsUI();
   }
 
@@ -3448,12 +3792,16 @@ function setStatusMessage(element, message, tone = "") {
 function buildShareSummary() {
   const answered = countExplicitAnswers();
   const skipped = countSkipped();
+  const answeredLabel = `${answered} answered prompt${answered === 1 ? "" : "s"}`;
+  const skippedLabel = skipped > 0
+    ? ` and ${skipped} skipped prompt${skipped === 1 ? "" : "s"}`
+    : "";
 
-  if (state.currentIndex >= questions.length) {
-    return `Complete session: ${answered} answered and ${skipped} skipped. Loading this seed opens the final results with the same answers.`;
+  if (isResultsActive()) {
+    return `Current results: ${answeredLabel}. Loading this seed restores the same answer pattern.`;
   }
 
-  return `Current progress: ${answered} answered and ${skipped} skipped. The next prompt is question ${Math.min(state.currentIndex + 1, questions.length)} of ${questions.length}.`;
+  return `Current signal: ${answeredLabel}${skippedLabel}. Loading this seed resumes from the same prompt order and place.`;
 }
 
 function updateShareUI() {
@@ -3472,6 +3820,7 @@ function setShareModalOpen(isOpen, trigger = null) {
     infoModal.setAttribute("aria-hidden", "true");
     settingsModal.classList.add("hidden");
     settingsModal.setAttribute("aria-hidden", "true");
+    hideCompareAboutModal();
     updateShareUI();
   }
 
@@ -3488,6 +3837,31 @@ function setShareModalOpen(isOpen, trigger = null) {
       shareSeedInput.focus();
     }
 
+    return;
+  }
+
+  if (lastTrigger instanceof HTMLElement) {
+    lastTrigger.focus();
+  }
+}
+
+function setCompareAboutModalOpen(isOpen, trigger = null) {
+  if (isOpen) {
+    infoModal.classList.add("hidden");
+    infoModal.setAttribute("aria-hidden", "true");
+    settingsModal.classList.add("hidden");
+    settingsModal.setAttribute("aria-hidden", "true");
+    shareModal.classList.add("hidden");
+    shareModal.setAttribute("aria-hidden", "true");
+  }
+
+  compareAboutModal.classList.toggle("hidden", !isOpen);
+  compareAboutModal.setAttribute("aria-hidden", String(!isOpen));
+  syncModalBodyLock();
+
+  if (isOpen) {
+    lastTrigger = trigger ?? document.activeElement;
+    closeCompareAboutButton.focus();
     return;
   }
 
@@ -3536,17 +3910,78 @@ function getCompareDataIdForEntityId(entityId) {
   return null;
 }
 
-function createCompareButton(compareId, label = "Compare applicant profile") {
-  if (!compareId) {
-    return `<p class="match-card__path-note">NRMP comparison data is not available for this field in this document.</p>`;
+function getSpecialtyOptionIdForCompareData(compareDataId) {
+  return specialties.find((specialty) => getCompareDataIdForEntity(specialty) === compareDataId)?.id ?? null;
+}
+
+function getCompareOptionIdForSelection(selectionId) {
+  if (specialtyById[selectionId]) {
+    return selectionId;
   }
 
-  return `<button class="ghost-button match-card__compare" type="button" data-compare-id="${compareId}">${label}</button>`;
+  const fellowship = fellowshipPaths.find((path) => path.id === selectionId);
+
+  if (fellowship) {
+    if (fellowshipCompareSelectionMap[fellowship.id]) {
+      return fellowshipCompareSelectionMap[fellowship.id];
+    }
+
+    const compareDataId = getCompareDataIdForEntity({ ...fellowship, kind: "fellowship" });
+    return getSpecialtyOptionIdForCompareData(compareDataId) ?? fellowship.parentId;
+  }
+
+  if (compareDataById[selectionId]) {
+    return getSpecialtyOptionIdForCompareData(selectionId) ?? selectionId;
+  }
+
+  return selectionId;
+}
+
+function isKnownCompareSelectionId(selectionId) {
+  return Boolean(
+    compareDataById[selectionId]
+    || specialtyById[selectionId]
+    || fellowshipPaths.some((path) => path.id === selectionId)
+  );
+}
+
+function getCompareSelectionLabel(selectionId) {
+  const optionId = getCompareOptionIdForSelection(selectionId);
+  const fellowship = fellowshipPaths.find((path) => path.id === selectionId);
+
+  return specialtyById[optionId]?.name
+    ?? compareDataById[selectionId]?.name
+    ?? fellowship?.name
+    ?? "Selected specialty";
+}
+
+function createCompareButton(selectionId, label = "Compare applicant profile") {
+  if (!selectionId) {
+    return "";
+  }
+
+  const optionId = getCompareOptionIdForSelection(selectionId);
+  const compareDataId = getCompareDataIdForEntityId(selectionId)
+    ?? getCompareDataIdForEntityId(optionId);
+
+  if (!compareDataId || !compareDataById[compareDataId]) {
+    return "";
+  }
+
+  return `<button class="ghost-button match-card__compare" type="button" data-compare-id="${selectionId}">${label}</button>`;
 }
 
 function getCompareDataOptions() {
-  return Object.entries(compareDataById)
-    .map(([id, data]) => ({ id, name: data.name }))
+  return specialties
+    .map((specialty) => {
+      const compareDataId = getCompareDataIdForEntity(specialty);
+      return {
+        id: specialty.id,
+        name: specialty.name,
+        hasCompareData: Boolean(compareDataId && compareDataById[compareDataId]),
+      };
+    })
+    .filter((option) => option.hasCompareData)
     .sort((left, right) => left.name.localeCompare(right.name));
 }
 
@@ -3565,15 +4000,20 @@ function ensureCompareControls() {
         <span>${definition.label}</span>
         <output id="compare-${definition.key}-value" for="compare-${definition.key}">${compareProfile[definition.key]}</output>
       </span>
-      <input
-        id="compare-${definition.key}"
-        type="range"
-        min="${definition.min}"
-        max="${definition.max}"
-        step="${definition.step}"
-        value="${compareProfile[definition.key]}"
-        data-compare-slider="${definition.key}"
-      >
+      <span class="compare-slider__range${compareNeededFor90Keys.has(definition.key) ? " compare-slider__range--with-marker" : ""}">
+        <input
+          id="compare-${definition.key}"
+          type="range"
+          min="${definition.min}"
+          max="${definition.max}"
+          step="${definition.step}"
+          value="${compareProfile[definition.key]}"
+          data-compare-slider="${definition.key}"
+        >
+        <span class="compare-slider__needed90 is-hidden" id="compare-${definition.key}-needed90" aria-hidden="true">
+          <span class="compare-slider__needed90-label"></span>
+        </span>
+      </span>
     </label>
   `).join("");
 }
@@ -3600,44 +4040,6 @@ function syncCompareInputs() {
   });
 }
 
-function getContinuousMatchedAlignment(value, matchedMean, definition) {
-  const baseline = definition.min ?? 0;
-
-  if (value >= matchedMean) {
-    return 100;
-  }
-
-  if (matchedMean <= baseline) {
-    return value >= matchedMean ? 100 : 0;
-  }
-
-  return clamp(((value - baseline) / (matchedMean - baseline)) * 100, 0, 100);
-}
-
-function getCheckboxMatchedAlignment(isChecked, matchedPercent) {
-  return isChecked ? 100 : clamp(100 - matchedPercent, 0, 100);
-}
-
-function getMatchedAlignmentLabel(score) {
-  if (score >= 94) {
-    return "Very close to the reported matched average";
-  }
-
-  if (score >= 82) {
-    return "Strong alignment with the reported matched average";
-  }
-
-  if (score >= 68) {
-    return "Moderate alignment with the reported matched average";
-  }
-
-  if (score >= 50) {
-    return "Partial alignment with the reported matched average";
-  }
-
-  return "Limited alignment with the reported matched average";
-}
-
 function formatCompareValue(value) {
   return Number.isInteger(value) ? String(value) : value.toFixed(1);
 }
@@ -3646,26 +4048,189 @@ function getMarkerPosition(value, min, max) {
   return `${clamp(((value - min) / (max - min)) * 100, 0, 100)}%`;
 }
 
+function getNeededFor90Text(definition, value) {
+  if (definition.key === "step2") {
+    return `90%: ${Math.round(value)}`;
+  }
+
+  return `90%: ${formatCompareValue(value)} ranks`;
+}
+
+function updateNeededFor90Markers(data) {
+  compareSliderDefinitions.forEach((definition) => {
+    const marker = document.getElementById(`compare-${definition.key}-needed90`);
+    const label = marker?.querySelector(".compare-slider__needed90-label");
+
+    if (!marker || !label) {
+      return;
+    }
+
+    marker.classList.add("is-hidden");
+
+    if (!compareNeededFor90Keys.has(definition.key) || !data?.neededFor90) {
+      return;
+    }
+
+    const value = data.neededFor90[definition.key];
+
+    if (!Number.isFinite(value)) {
+      return;
+    }
+
+    marker.style.setProperty("--x", getMarkerPosition(value, definition.min, definition.max));
+    label.textContent = getNeededFor90Text(definition, value);
+    marker.classList.remove("is-hidden");
+  });
+}
+
+function getRadarPoint(center, radius, axisIndex, axisCount, ratio) {
+  const angle = (-Math.PI / 2) + ((Math.PI * 2 * axisIndex) / axisCount);
+  const distance = radius * ratio;
+
+  return {
+    x: center + (Math.cos(angle) * distance),
+    y: center + (Math.sin(angle) * distance),
+  };
+}
+
+function getRadarPointString(metrics, valueAccessor, maxRatio = 1.35) {
+  const center = 150;
+  const radius = 94;
+
+  return metrics.map((metric, index) => {
+    const value = Math.max(metric.radarMin ?? 0, valueAccessor(metric));
+    const matchedMean = Math.max(0.01, metric.matchedMean);
+    const ratio = clamp(value / matchedMean, 0, maxRatio) / maxRatio;
+    const point = getRadarPoint(center, radius, index, metrics.length, ratio);
+
+    return `${point.x.toFixed(1)},${point.y.toFixed(1)}`;
+  }).join(" ");
+}
+
+function getRadarAxisLabel(label) {
+  return label
+    .replace("USMLE Step 2 CK score", "Step 2")
+    .replace("Contiguous ranked programs", "Ranked programs")
+    .replace("Abstracts, presentations, publications", "Publications")
+    .replace("Research projects", "Research")
+    .replace("Binary Individuators", "Binary individuators");
+}
+
+function getBinaryIndividuatorMetric(checkMetrics) {
+  const baseline = 1;
+  const positiveDeltas = checkMetrics.map((metric) => Math.max(0, metric.matchedPercent - metric.unmatchedPercent));
+  const totalPositiveDelta = positiveDeltas.reduce((total, delta) => total + delta, 0);
+  const availablePoints = 4;
+  const fallbackWeight = availablePoints / Math.max(1, checkMetrics.length);
+  const weightedMetrics = checkMetrics.map((metric, index) => ({
+    ...metric,
+    binaryWeight: totalPositiveDelta > 0
+      ? (positiveDeltas[index] / totalPositiveDelta) * availablePoints
+      : fallbackWeight,
+  }));
+
+  return {
+    key: "binaryIndividuators",
+    label: "Binary Individuators",
+    min: baseline,
+    max: baseline + availablePoints,
+    value: baseline + weightedMetrics.reduce((total, metric) => total + (metric.checked ? metric.binaryWeight : 0), 0),
+    matchedMean: baseline + weightedMetrics.reduce((total, metric) => total + ((metric.matchedPercent / 100) * metric.binaryWeight), 0),
+    unmatchedMean: baseline + weightedMetrics.reduce((total, metric) => total + ((metric.unmatchedPercent / 100) * metric.binaryWeight), 0),
+    meetsMatchedMean: false,
+    isBinaryIndividuator: true,
+    weightedMetrics,
+  };
+}
+
+function formatCompareMetricValue(metric, value) {
+  if (metric.isBinaryIndividuator) {
+    return `${formatCompareValue(value)} of ${formatCompareValue(metric.max)}`;
+  }
+
+  return formatCompareValue(value);
+}
+
+function renderMatchedAverageRadar(metrics) {
+  const center = 150;
+  const radius = 94;
+  const maxRatio = 1.35;
+  const axisCount = metrics.length;
+  const matchedRingRatio = 1 / maxRatio;
+  const gridRatios = [0.25, 0.5, 0.75, 1].map((ratio) => ratio / maxRatio);
+  const userPoints = getRadarPointString(metrics, (metric) => metric.value, maxRatio);
+  const matchedPoints = getRadarPointString(metrics, (metric) => metric.matchedMean, maxRatio);
+  const axisMarkup = metrics.map((metric, index) => {
+    const outerPoint = getRadarPoint(center, radius, index, axisCount, 1);
+    const labelPoint = getRadarPoint(center, radius + 26, index, axisCount, 1);
+    const anchor = Math.abs(labelPoint.x - center) < 10
+      ? "middle"
+      : labelPoint.x > center ? "start" : "end";
+
+    return `
+      <line class="compare-radar__axis" x1="${center}" y1="${center}" x2="${outerPoint.x.toFixed(1)}" y2="${outerPoint.y.toFixed(1)}"></line>
+      <text class="compare-radar__label" x="${labelPoint.x.toFixed(1)}" y="${labelPoint.y.toFixed(1)}" text-anchor="${anchor}">${getRadarAxisLabel(metric.label)}</text>
+    `;
+  }).join("");
+  const gridMarkup = gridRatios.map((ratio) => {
+    const points = metrics.map((_, index) => {
+      const point = getRadarPoint(center, radius, index, axisCount, ratio);
+      return `${point.x.toFixed(1)},${point.y.toFixed(1)}`;
+    }).join(" ");
+
+    return `<polygon class="compare-radar__grid" points="${points}"></polygon>`;
+  }).join("");
+  const matchedRingPoints = metrics.map((_, index) => {
+    const point = getRadarPoint(center, radius, index, axisCount, matchedRingRatio);
+    return `${point.x.toFixed(1)},${point.y.toFixed(1)}`;
+  }).join(" ");
+
+  return `
+    <div class="compare-radar-card">
+      <div class="compare-radar-card__copy">
+        <h4>How your inputs compare with the matched average</h4>
+      </div>
+      <figure class="compare-radar" aria-label="Radar chart comparing your inputs with matched-applicant averages">
+        <svg viewBox="0 0 300 300" role="img">
+          <title>Your profile inputs compared with matched-applicant averages</title>
+          <desc>The dashed polygon shows matched-applicant means. The filled teal polygon shows the user's current inputs, including a binary individuators axis scored from 1 to 5 using specialty-specific matched-minus-unmatched deltas and capped at 135 percent of the matched mean for each axis.</desc>
+          ${gridMarkup}
+          ${axisMarkup}
+          <polygon class="compare-radar__matched" points="${matchedPoints}"></polygon>
+          <polygon class="compare-radar__matched-ring" points="${matchedRingPoints}"></polygon>
+          <polygon class="compare-radar__user" points="${userPoints}"></polygon>
+        </svg>
+      </figure>
+    </div>
+  `;
+}
+
 function renderCompareOutput() {
-  const data = compareDataById[selectedCompareId];
+  const selectedOptionId = getCompareOptionIdForSelection(selectedCompareId);
+  const selectedName = getCompareSelectionLabel(selectedCompareId);
+  const selectedCompareDataId = getCompareDataIdForEntityId(selectedCompareId)
+    ?? getCompareDataIdForEntityId(selectedOptionId);
+  const data = selectedCompareDataId ? compareDataById[selectedCompareDataId] : null;
+
+  compareSpecialtySelect.value = selectedOptionId;
 
   if (!data) {
+    updateNeededFor90Markers(null);
     compareOutput.innerHTML = `
       <div class="compare-empty">
-        <h3>No comparison data available</h3>
-        <p>This specialty is not included in the provided NRMP Charting Outcomes document.</p>
+        <h3>${selectedName}</h3>
+        <p>NRMP Charting Outcomes 2024 does not include a U.S. MD senior comparison table for this field, so there is no matched-applicant radar chart to show here.</p>
       </div>
     `;
     return;
   }
 
-  compareSpecialtySelect.value = selectedCompareId;
+  updateNeededFor90Markers(data);
 
   const continuousMetrics = compareSliderDefinitions.map((definition) => {
     const value = Number(compareProfile[definition.key]);
     const matchedMean = data.matched[definition.key];
     const unmatchedMean = data.unmatched[definition.key];
-    const alignment = getContinuousMatchedAlignment(value, matchedMean, definition);
 
     return {
       ...definition,
@@ -3673,7 +4238,6 @@ function renderCompareOutput() {
       matchedMean,
       unmatchedMean,
       meetsMatchedMean: value >= matchedMean,
-      alignment,
     };
   });
 
@@ -3681,32 +4245,25 @@ function renderCompareOutput() {
     const checked = Boolean(compareProfile[definition.key]);
     const matchedPercent = data.matched[definition.key];
     const unmatchedPercent = data.unmatched[definition.key];
-    const alignment = getCheckboxMatchedAlignment(checked, matchedPercent);
 
     return {
       ...definition,
       checked,
       matchedPercent,
       unmatchedPercent,
-      alignment,
     };
   });
 
-  const weightedTotal = [...continuousMetrics, ...checkMetrics]
-    .reduce((total, metric) => total + (metric.alignment * metric.weight), 0);
-  const totalWeight = [...continuousMetrics, ...checkMetrics]
-    .reduce((total, metric) => total + metric.weight, 0);
-  const matchedAlignment = Math.round(weightedTotal / totalWeight);
+  const binaryIndividuatorMetric = getBinaryIndividuatorMetric(checkMetrics);
+  binaryIndividuatorMetric.meetsMatchedMean = binaryIndividuatorMetric.value >= binaryIndividuatorMetric.matchedMean;
+  const radarMetrics = [...continuousMetrics, binaryIndividuatorMetric];
   const matchedShare = Math.round((data.matchedN / (data.matchedN + data.unmatchedN)) * 100);
-  const alignmentLabel = getMatchedAlignmentLabel(matchedAlignment);
-  const matchedMeanCount = continuousMetrics.filter((metric) => metric.meetsMatchedMean).length;
-  const matchedMeanSummary = `${matchedMeanCount} of ${continuousMetrics.length} numeric input${continuousMetrics.length === 1 ? "" : "s"} ${matchedMeanCount === 1 ? "is" : "are"} at or above the matched-applicant mean.`;
 
-  const metricMarkup = continuousMetrics.map((metric) => `
+  const metricMarkup = radarMetrics.map((metric) => `
     <div class="compare-metric">
       <div class="compare-metric__head">
         <span>${metric.label}</span>
-        <strong>You: ${formatCompareValue(metric.value)}</strong>
+        <strong>You: ${formatCompareMetricValue(metric, metric.value)}</strong>
       </div>
       <div class="compare-bar" aria-hidden="true">
         <span class="compare-bar__marker compare-bar__marker--unmatched" style="--x: ${getMarkerPosition(metric.unmatchedMean, metric.min, metric.max)}"></span>
@@ -3714,29 +4271,14 @@ function renderCompareOutput() {
         <span class="compare-bar__marker compare-bar__marker--user" style="--x: ${getMarkerPosition(metric.value, metric.min, metric.max)}"></span>
       </div>
       <div class="compare-metric__values">
-        <span>Matched mean ${formatCompareValue(metric.matchedMean)}</span>
-        <span>Unmatched mean ${formatCompareValue(metric.unmatchedMean)}</span>
+        <span>Matched mean ${formatCompareMetricValue(metric, metric.matchedMean)}</span>
+        <span>Unmatched mean ${formatCompareMetricValue(metric, metric.unmatchedMean)}</span>
       </div>
-    </div>
-  `).join("");
-
-  const checkMarkup = checkMetrics.map((metric) => `
-    <div class="compare-check-result">
-      <span>${metric.label}</span>
-      <strong>You: ${metric.checked ? "Yes" : "No"}</strong>
-      <small>Matched ${formatCompareValue(metric.matchedPercent)}% &middot; unmatched ${formatCompareValue(metric.unmatchedPercent)}%</small>
     </div>
   `).join("");
 
   compareOutput.innerHTML = `
-    <div class="compare-summary-card">
-      <span class="meta-block__label">Matched average alignment</span>
-      <strong>${matchedAlignment}%</strong>
-      <div class="compare-meter" aria-hidden="true">
-        <span style="width: ${matchedAlignment}%"></span>
-      </div>
-      <p>${alignmentLabel}. ${matchedMeanSummary} Numeric inputs cap at 100% once they meet or exceed the matched-applicant mean. This is descriptive alignment with summary statistics, not a predicted probability.</p>
-    </div>
+    ${renderMatchedAverageRadar(radarMetrics)}
 
     <div class="compare-summary-grid">
       <div class="compare-stat-card">
@@ -3753,7 +4295,6 @@ function renderCompareOutput() {
     </div>
 
     <div class="compare-metric-list">${metricMarkup}</div>
-    <div class="compare-check-results">${checkMarkup}</div>
   `;
 }
 
@@ -3778,11 +4319,13 @@ function getActivePrimaryView() {
 }
 
 function hideCompareView() {
+  hideCompareAboutModal();
   compareView.classList.add("hidden");
   compareView.setAttribute("aria-hidden", "true");
 }
 
 function hideExploreView() {
+  document.body.classList.remove("explore-mode");
   exploreView.classList.add("hidden");
   exploreView.setAttribute("aria-hidden", "true");
 }
@@ -3804,10 +4347,11 @@ function showCompareView(trigger = null, compareId = null, preserveReturn = fals
   settingsModal.setAttribute("aria-hidden", "true");
   shareModal.classList.add("hidden");
   shareModal.setAttribute("aria-hidden", "true");
+  hideCompareAboutModal();
   hideExploreView();
 
-  if (compareId && compareDataById[compareId]) {
-    selectedCompareId = compareId;
+  if (compareId && isKnownCompareSelectionId(compareId)) {
+    selectedCompareId = getCompareOptionIdForSelection(compareId);
   }
 
   state.rankPanelCollapsed = true;
@@ -3840,12 +4384,14 @@ function showExploreView(trigger = null, selectedId = null, preserveReturn = fal
   settingsModal.setAttribute("aria-hidden", "true");
   shareModal.classList.add("hidden");
   shareModal.setAttribute("aria-hidden", "true");
+  hideCompareAboutModal();
 
   if (selectedId) {
     selectedExploreId = selectedId;
   }
 
   state.rankPanelCollapsed = true;
+  document.body.classList.add("explore-mode");
   startView.classList.add("hidden");
   questionView.classList.add("hidden");
   resultsView.classList.add("hidden");
@@ -4125,12 +4671,13 @@ function applyFellowshipDisplayMode(mode) {
   updateFellowshipDisplayControls();
   updateSettingsUI();
 
-  if (state.started && state.currentIndex < questions.length) {
-    renderRankPanel();
+  if (isResultsActive()) {
+    showResults();
+    return;
   }
 
-  if (state.started && state.currentIndex >= questions.length) {
-    showResults();
+  if (state.started && state.currentIndex < questions.length) {
+    renderRankPanel();
   }
 }
 
@@ -4142,7 +4689,7 @@ function syncCurrentResponseControls(response) {
   answerYes.setAttribute("aria-pressed", String(response === "yes"));
   answerNo.setAttribute("aria-pressed", String(response === "no"));
   skipButton.setAttribute("aria-pressed", String(response === "skip"));
-  skipButton.textContent = response === "skip" ? "Skipped" : "Skip this question";
+  skipButton.textContent = response === "skip" ? "Skipped" : "Skip";
 }
 
 function applyImportedSession(seedPayload) {
@@ -4151,6 +4698,7 @@ function applyImportedSession(seedPayload) {
   state.orderMode = seedPayload.orderMode;
   state.questionOrder = [...seedPayload.questionOrder];
   state.currentIndex = seedPayload.currentIndex;
+  state.resultsPreview = false;
   state.responses = [...seedPayload.responses];
   resultsList.innerHTML = "";
   restartTop.classList.remove("hidden");
@@ -4471,27 +5019,143 @@ function getStableUnit(value) {
   return getStableHash(value) / 4294967295;
 }
 
-function getExploreProfileProjection(profile, id) {
-  let x = 0;
-  let y = 0;
+function normalizeExploreVector(vector, fallbackId) {
+  const magnitude = Math.hypot(vector.x, vector.y);
 
-  profile.forEach((weight, key) => {
-    const angle = getStableUnit(`profile:${key}`) * Math.PI * 2;
-    x += Math.cos(angle) * weight;
-    y += Math.sin(angle) * weight;
-  });
-
-  const magnitude = Math.hypot(x, y);
-
-  if (magnitude > 0) {
-    return { x: x / magnitude, y: y / magnitude };
+  if (magnitude > 0.001) {
+    return { x: vector.x / magnitude, y: vector.y / magnitude };
   }
 
-  const fallbackAngle = getStableUnit(`fallback:${id}`) * Math.PI * 2;
+  const fallbackAngle = getStableUnit(`fallback:${fallbackId}`) * Math.PI * 2;
   return { x: Math.cos(fallbackAngle), y: Math.sin(fallbackAngle) };
 }
 
-function getExploreSimilarityEdges(nodes, neighborLimit = 4, threshold = 0.22) {
+function getExploreRuleVector(questionId, answer) {
+  const isYes = answer === "yes";
+  const direct = (yesVector, noVector = { x: -yesVector.x, y: -yesVector.y }) => (
+    isYes ? yesVector : noVector
+  );
+
+  if (["continuity-brief-encounters", "continuity-follow-up", "panel-management", "long-term-trust", "chronic-vs-episodic", "treatment-over-time", "panel-over-cases", "continuity"].includes(questionId)) {
+    return direct({ x: -0.78, y: 0.62 }, { x: 0.52, y: -0.34 });
+  }
+
+  if (["continuity-fresh-cases", "avoiding-large-panel", "clear-shifts"].includes(questionId)) {
+    return direct({ x: 0.46, y: -0.34 }, { x: -0.62, y: 0.5 });
+  }
+
+  if (["communication-over-procedures", "longer-conversations", "listening-as-tool", "context-outside-clinic", "conversation-based-care"].includes(questionId)) {
+    return direct({ x: -0.84, y: 0.48 }, { x: 0.72, y: -0.18 });
+  }
+
+  if (["caregiver-role", "children-large-share", "adult-and-children", "keep-adult-peds-open"].includes(questionId)) {
+    return direct({ x: -0.44, y: 0.48 }, { x: 0.12, y: -0.14 });
+  }
+
+  if (["mostly-adults", "complex-hospitalized-adults"].includes(questionId)) {
+    return direct({ x: -0.04, y: -0.34 }, { x: -0.22, y: 0.36 });
+  }
+
+  if (["routine-preventive-care", "community-generalist", "broad-vs-narrow-alt"].includes(questionId)) {
+    return direct({ x: -0.74, y: 0.58 }, { x: 0.64, y: -0.08 });
+  }
+
+  if (["miss-operating-room", "operating-room", "perioperative-vs-clinic", "acute-teamwork", "large-operations"].includes(questionId)) {
+    return direct({ x: 0.86, y: -0.68 }, { x: -0.34, y: 0.5 });
+  }
+
+  if (["hands-doing-the-work", "procedural-vs-medical", "immediate-physical-result", "manual-skill", "procedures"].includes(questionId)) {
+    return direct({ x: 0.88, y: -0.2 }, { x: -0.62, y: 0.34 });
+  }
+
+  if (["clinic-with-procedures", "office-procedures-balance", "mixed-clinic-procedures", "focused-outpatient-procedures", "fine-motor-precision"].includes(questionId)) {
+    return direct({ x: 0.78, y: 0.34 }, { x: -0.44, y: -0.02 });
+  }
+
+  if (["regular-urgency", "quick-decisions", "call-worth-it", "nights-weekends", "wards-vs-clinic", "hospital-vs-office"].includes(questionId)) {
+    return direct({ x: 0.26, y: -0.82 }, { x: -0.18, y: 0.72 });
+  }
+
+  if (["clinic-vs-hospital", "outpatient-most-days", "predictability-priority", "low-emergencies"].includes(questionId)) {
+    return direct({ x: -0.08, y: 0.86 }, { x: 0.24, y: -0.76 });
+  }
+
+  if (["consultant-expertise", "consultant-handoffs", "focused-expertise", "consults-over-panel", "interpretation-for-others"].includes(questionId)) {
+    return direct({ x: 0.42, y: -0.06 }, { x: -0.58, y: 0.5 });
+  }
+
+  if (["diagnostic-workup", "diagnostic-puzzle", "uncertainty-tolerance", "long-workups", "pathophysiology-draw", "physiology", "multimorbidity", "anatomic-localization"].includes(questionId)) {
+    return direct({ x: -0.2, y: -0.26 }, { x: 0.18, y: 0.28 });
+  }
+
+  if (["subtle-patterns", "images-and-data", "microscope-over-bedside", "close-visual-detail", "visual-patterns", "interpretation-over-procedures", "certainty-over-ambiguity", "away-from-bedside"].includes(questionId)) {
+    return direct({ x: 0.52, y: 0.04 }, { x: -0.44, y: 0.18 });
+  }
+
+  if (["pregnancy-and-repro", "labor-delivery-draw", "women-health"].includes(questionId)) {
+    return direct({ x: 0.46, y: -0.28 }, { x: -0.32, y: 0.22 });
+  }
+
+  if (["recovery-over-stabilization", "function-over-diagnosis", "function-over-operation", "function-rehab", "rehab-team-draw", "disability-and-qol", "sports-and-return", "musculoskeletal-interest", "fracture-biomechanics"].includes(questionId)) {
+    return direct({ x: 0.16, y: 0.78 }, { x: 0.36, y: -0.52 });
+  }
+
+  if (["sensory-systems", "head-and-neck-interest", "ent-content", "preserve-vision", "urologic-problems", "genitourinary-interest", "body-region-expert", "focused-outpatient-procedures"].includes(questionId)) {
+    return direct({ x: 0.7, y: 0.24 }, { x: -0.5, y: 0.08 });
+  }
+
+  return null;
+}
+
+function getExploreSemanticVector(profileKey) {
+  const [questionId, answer] = profileKey.split(":");
+
+  if (!questionId || !answer) {
+    return null;
+  }
+
+  return getExploreRuleVector(questionId, answer);
+}
+
+function blendExploreProjection(primary, secondary, primaryWeight = 0.72) {
+  if (!secondary) {
+    return primary;
+  }
+
+  return normalizeExploreVector({
+    x: (primary.x * primaryWeight) + (secondary.x * (1 - primaryWeight)),
+    y: (primary.y * primaryWeight) + (secondary.y * (1 - primaryWeight)),
+  }, "blend");
+}
+
+function getExploreProfileProjection(profile, id) {
+  let x = 0;
+  let y = 0;
+  let semanticWeight = 0;
+
+  profile.forEach((weight, key) => {
+    const semanticVector = getExploreSemanticVector(key);
+
+    if (semanticVector) {
+      x += semanticVector.x * weight;
+      y += semanticVector.y * weight;
+      semanticWeight += weight;
+      return;
+    }
+
+    const angle = getStableUnit(`profile:${key}`) * Math.PI * 2;
+    x += Math.cos(angle) * weight * 0.18;
+    y += Math.sin(angle) * weight * 0.18;
+  });
+
+  if (semanticWeight > 0 || Math.hypot(x, y) > 0.001) {
+    return normalizeExploreVector({ x, y }, id);
+  }
+
+  return normalizeExploreVector({ x: 0, y: 0 }, id);
+}
+
+function getExploreSimilarityEdges(nodes, neighborLimit = 5, threshold = 0.24) {
   const neighborsById = new Map(nodes.map((node) => [node.id, []]));
 
   for (let leftIndex = 0; leftIndex < nodes.length; leftIndex += 1) {
@@ -4621,8 +5285,10 @@ function runExploreForceLayout(nodes, similarityEdges, parentEdges, width, heigh
     });
 
     nodes.forEach((node) => {
-      node.vx += (centerX - node.x) * 0.0012 * alpha;
-      node.vy += (centerY - node.y) * 0.0012 * alpha;
+      node.vx += (centerX - node.x) * 0.0007 * alpha;
+      node.vy += (centerY - node.y) * 0.0007 * alpha;
+      node.vx += (node.anchorX - node.x) * (node.kind === "specialty" ? 0.006 : 0.0045) * alpha;
+      node.vy += (node.anchorY - node.y) * (node.kind === "specialty" ? 0.006 : 0.0045) * alpha;
       node.vx *= 0.76;
       node.vy *= 0.76;
       node.x = Math.min(width - padding, Math.max(padding, node.x + node.vx));
@@ -4669,27 +5335,45 @@ function buildExploreLayoutData(specialtyResults, fellowshipResults) {
   const height = EXPLORE_CANVAS_BASE_HEIGHT;
   const centerX = width / 2;
   const centerY = height / 2;
-  const projectionScaleX = width * 0.34;
-  const projectionScaleY = height * 0.34;
-  const nodes = [...specialtyResults, ...fellowshipResults].map((item) => {
+  const projectionScaleX = width * 0.38;
+  const projectionScaleY = height * 0.36;
+  const createExploreNode = (item, projection) => {
     const profile = getExploreEntityProfile(item);
-    const projection = getExploreProfileProjection(profile, item.id);
     const jitterAngle = getStableUnit(`node:${item.id}`) * Math.PI * 2;
     const jitterDistance = 24 + (getStableUnit(`distance:${item.id}`) * 42);
+    const anchorX = centerX + (projection.x * projectionScaleX);
+    const anchorY = centerY + (projection.y * projectionScaleY);
 
     return {
       ...item,
       profile,
       profileNorm: getExploreProfileNorm(profile),
-      x: centerX + (projection.x * projectionScaleX) + (Math.cos(jitterAngle) * jitterDistance),
-      y: centerY + (projection.y * projectionScaleY) + (Math.sin(jitterAngle) * jitterDistance),
+      projection,
+      anchorX,
+      anchorY,
+      x: anchorX + (Math.cos(jitterAngle) * jitterDistance),
+      y: anchorY + (Math.sin(jitterAngle) * jitterDistance),
       radius: item.kind === "specialty"
         ? 18 + (item.normalized * 0.06)
         : 10 + (item.normalized * 0.035),
     };
+  };
+  const specialtyProjectionById = {};
+  const specialtyNodes = specialtyResults.map((item) => {
+    const profile = getExploreEntityProfile(item);
+    const projection = getExploreProfileProjection(profile, item.id);
+    specialtyProjectionById[item.id] = projection;
+
+    return createExploreNode(item, projection);
   });
-  const specialtyNodes = nodes.filter((node) => node.kind === "specialty");
-  const fellowshipNodes = nodes.filter((node) => node.kind === "fellowship");
+  const fellowshipNodes = fellowshipResults.map((item) => {
+    const profile = getExploreEntityProfile(item);
+    const profileProjection = getExploreProfileProjection(profile, item.id);
+    const projection = blendExploreProjection(profileProjection, specialtyProjectionById[item.parentId], 0.72);
+
+    return createExploreNode(item, projection);
+  });
+  const nodes = [...specialtyNodes, ...fellowshipNodes];
   const similarityEdges = getExploreSimilarityEdges(nodes);
   const parentEdges = getExploreParentEdges(fellowshipNodes);
 
@@ -4710,6 +5394,20 @@ function buildExploreLayoutData(specialtyResults, fellowshipResults) {
 
 function getDefaultExploreSelection(specialtyResults) {
   return specialtyResults[0]?.id ?? specialties[0].id;
+}
+
+function getExploreLocationNode(specialtyResults, nodeMap) {
+  if (countExplicitAnswers() === 0) {
+    return null;
+  }
+
+  const currentSpecialty = specialtyResults.find((item) => item.raw > 0 && item.fitPercent > 0);
+
+  if (!currentSpecialty) {
+    return null;
+  }
+
+  return nodeMap[currentSpecialty.id] ?? null;
 }
 
 function getExploreCollections() {
@@ -4754,10 +5452,10 @@ function renderExploreInspector(selectedEntity, nodes) {
   const nearbyMarkup = nearbyNodes.length > 0
     ? nearbyNodes.map(({ node }) => createPathButton(node, true)).join("")
     : '<p class="explore-inspector__empty">Nearby profiles will appear once the graph has enough profile overlap to compare.</p>';
-  const compareId = getCompareDataIdForEntity(selectedEntity);
+  const compareId = selectedEntity.id;
 
-  exploreCompareButton.classList.toggle("hidden", !compareId);
-  exploreCompareButton.dataset.compareId = compareId || "";
+  exploreCompareButton.classList.remove("hidden");
+  exploreCompareButton.dataset.compareId = compareId;
 
   if (selectedEntity.kind === "specialty") {
     exploreNodeType.textContent = "Specialty";
@@ -4767,7 +5465,7 @@ function renderExploreInspector(selectedEntity, nodes) {
     exploreNodeParent.textContent = "Standalone specialty";
     exploreNodeNotes.innerHTML = (selectedEntity.reasons.length > 0
       ? selectedEntity.reasons
-      : [{ explanation: "This node strengthens when your answers keep this home specialty consistently high across the question bank." }])
+      : [{ explanation: "This node strengthens when your answers keep this home specialty consistently high across the prompt bank." }])
       .slice(0, 3)
       .map((reason) => `<li>${reason.explanation}</li>`)
       .join("");
@@ -4791,6 +5489,42 @@ function renderExploreInspector(selectedEntity, nodes) {
   exploreNodeConnections.innerHTML = nearbyMarkup;
 }
 
+function buildExploreLocationMarker(node, width, height) {
+  if (!node) {
+    return "";
+  }
+
+  const bubbleWidth = 124;
+  const bubbleHeight = 34;
+  const bubbleX = clamp(node.x - (bubbleWidth / 2), 20, width - bubbleWidth - 20);
+  const bubbleY = clamp(node.y - node.radius - 82, 20, height - bubbleHeight - 20);
+  const bubbleCenterX = bubbleX + (bubbleWidth / 2);
+  const bubbleBottomY = bubbleY + bubbleHeight;
+  const ringRadius = node.radius + 13;
+  const pinRadius = Math.max(5, Math.min(8, node.radius * 0.34));
+  const pointerStartY = node.y - node.radius - 9;
+
+  return `
+    <g class="explore-you-are-here" aria-hidden="true">
+      <circle class="explore-you-are-here__halo" cx="${node.x}" cy="${node.y}" r="${ringRadius}"></circle>
+      <circle class="explore-you-are-here__pin" cx="${node.x}" cy="${node.y}" r="${pinRadius}"></circle>
+      <path
+        class="explore-you-are-here__leader"
+        d="M ${node.x} ${pointerStartY} C ${node.x} ${pointerStartY - 18}, ${bubbleCenterX} ${bubbleBottomY + 18}, ${bubbleCenterX} ${bubbleBottomY}"
+      ></path>
+      <rect
+        class="explore-you-are-here__label-bg"
+        x="${bubbleX}"
+        y="${bubbleY}"
+        width="${bubbleWidth}"
+        height="${bubbleHeight}"
+        rx="${bubbleHeight / 2}"
+      ></rect>
+      <text class="explore-you-are-here__label" x="${bubbleCenterX}" y="${bubbleY + 22}">You are here</text>
+    </g>
+  `;
+}
+
 function renderExploreView() {
   const { specialtyResults, fellowshipResults, specialtyResultMap, fellowshipResultMap } = getExploreCollections();
   const selectedEntity = specialtyResultMap[selectedExploreId] || fellowshipResultMap[selectedExploreId];
@@ -4811,6 +5545,7 @@ function renderExploreView() {
     nodeMap,
   } = buildExploreLayoutData(specialtyResults, fellowshipResults);
   const activeNode = nodeMap[selectedExploreId] || activeEntity;
+  const locationNode = getExploreLocationNode(specialtyResults, nodeMap);
   const selectedSimilarIds = new Set(
     similarityEdges
       .filter((edge) => edge.sourceId === selectedExploreId || edge.targetId === selectedExploreId)
@@ -4847,7 +5582,7 @@ function renderExploreView() {
         y1="${source.y}"
         x2="${target.x}"
         y2="${target.y}"
-        style="--link-color: ${edge.color}; --link-opacity: ${selected ? 0.42 : 0.12};"
+        style="--link-color: ${edge.color}; --link-opacity: ${selected ? 0.42 : 0.08};"
       ></line>
     `;
   }).join("");
@@ -4868,7 +5603,7 @@ function renderExploreView() {
         y1="${source.y}"
         x2="${target.x}"
         y2="${target.y}"
-        style="--link-color: ${edge.color}; --link-opacity: ${selected ? 0.62 : 0.2};"
+        style="--link-color: ${edge.color}; --link-opacity: ${selected ? 0.62 : 0.13};"
       ></line>
     `;
   }).join("");
@@ -4899,17 +5634,22 @@ function renderExploreView() {
       ${buildExploreTextMarkup(node.shortLabel, node.x, node.y + node.radius + 16, "explore-node__label")}
     </g>
   `).join("");
+  const locationMarkup = buildExploreLocationMarker(locationNode, width, height);
 
   exploreCanvas.setAttribute("viewBox", `0 0 ${width} ${height}`);
   exploreCanvasBaseWidth = width;
   exploreCanvasBaseHeight = height;
-  exploreCanvas.innerHTML = `${parentLinkMarkup}${similarityLinkMarkup}${specialtyMarkup}${fellowshipMarkup}`;
+  exploreCanvas.innerHTML = `${parentLinkMarkup}${similarityLinkMarkup}${specialtyMarkup}${fellowshipMarkup}${locationMarkup}`;
   syncExploreZoomControls();
   renderExploreInspector(activeNode, nodes);
 }
 
+function isResultsActive() {
+  return state.started && (state.resultsPreview || state.currentIndex >= questions.length);
+}
+
 function syncRankPanelVisibility() {
-  const isResultsScreen = state.started && state.currentIndex >= questions.length;
+  const isResultsScreen = isResultsActive();
   const primaryToolActive = !compareView.classList.contains("hidden") || !exploreView.classList.contains("hidden");
   const isAvailable = state.started && !isResultsScreen && !primaryToolActive;
   const isVisible = isAvailable && !state.rankPanelCollapsed;
@@ -4940,25 +5680,43 @@ function countExplicitAnswers() {
   return state.responses.filter((response) => response === "yes" || response === "no").length;
 }
 
+function getSpecificityLabel(answeredCount) {
+  if (answeredCount === 0) {
+    return "Broad signal";
+  }
+
+  if (answeredCount < 6) {
+    return "Early signal";
+  }
+
+  if (answeredCount < 16) {
+    return "Taking shape";
+  }
+
+  if (answeredCount < 32) {
+    return "More specific";
+  }
+
+  return "Highly specific";
+}
+
 function updateProgress() {
-  const answered = countAnswered();
-  const percent = Math.round((answered / questions.length) * 100);
-  const displayIndex = Math.min(state.currentIndex + 1, questions.length);
+  const answered = countExplicitAnswers();
+  const specificityPercent = clamp(Math.round((answered / 40) * 100), 0, 100);
+  const answerNoun = answered === 1 ? "answer" : "answers";
 
-  progressLabel.textContent = answered === questions.length
-    ? "All questions complete"
-    : `Question ${displayIndex} of ${questions.length}`;
+  progressLabel.textContent = answered === 0
+    ? "No answers yet"
+    : `${answered} ${answerNoun} shaping the signal`;
 
-  progressPercent.textContent = `${percent}% complete`;
-  progressFill.style.width = `${percent}%`;
+  progressPercent.textContent = getSpecificityLabel(answered);
+  progressFill.style.width = `${specificityPercent}%`;
 }
 
 function getRankingStage(answeredCount) {
-  const answerRatio = answeredCount / questions.length;
-
   if (answeredCount === 0) {
     return {
-      summary: "Answer the first few questions to start forming a ranking.",
+      summary: "Answer any prompt to start forming a ranking.",
       maxItems: 0,
       showLeader: false,
       showReasons: false,
@@ -4967,25 +5725,25 @@ function getRankingStage(answeredCount) {
 
   if (answeredCount < 6) {
     return {
-      summary: "This is still very early. The order will move around quite a bit as more answers come in.",
+      summary: "This is a broad early signal. The order will move around as more answers come in.",
       maxItems: 4,
       showLeader: false,
       showReasons: false,
     };
   }
 
-  if (answerRatio < 0.2) {
+  if (answeredCount < 16) {
     return {
-      summary: "The ranking is starting to take shape. The top group is usually more useful than any one exact position at this stage.",
+      summary: "The ranking is starting to take shape. The top group is usually more useful than any one exact position right now.",
       maxItems: 5,
       showLeader: true,
       showReasons: false,
     };
   }
 
-  if (answerRatio < 0.5) {
+  if (answeredCount < 32) {
     return {
-      summary: "This is becoming more stable. Additional answers will mostly help separate closely related fields.",
+      summary: "More answers are adding specificity. Closely related fields may still trade places.",
       maxItems: 5,
       showLeader: true,
       showReasons: true,
@@ -4993,7 +5751,7 @@ function getRankingStage(answeredCount) {
   }
 
   return {
-    summary: "The ranking is fairly stable now. Remaining answers mostly refine the order and explanation.",
+    summary: "The signal is highly specific now. Additional answers can still refine close calls and fellowship paths.",
     maxItems: 6,
     showLeader: true,
     showReasons: true,
@@ -5034,11 +5792,11 @@ function renderRankPanel() {
     : (positiveRanked.length > 0 ? positiveRanked : ranked).slice(0, stage.maxItems);
 
   rankSummary.textContent = skippedCount > 0
-    ? `${stage.summary} ${skippedCount} question${skippedCount === 1 ? "" : "s"} skipped so far.`
+    ? `${stage.summary} Skipped prompts stay out of the signal.`
     : stage.summary;
 
   if (displayed.length === 0) {
-    rankList.innerHTML = '<div class="rank-panel__empty">No ranking yet. Once you answer a question, the list will start to take shape here.</div>';
+    rankList.innerHTML = '<div class="rank-panel__empty">No ranking yet. Once you answer a prompt, the list will start to take shape here.</div>';
     rankLeader.classList.add("hidden");
     rankDetail.classList.add("hidden");
     rankPathDetail.classList.add("hidden");
@@ -5057,11 +5815,11 @@ function renderRankPanel() {
 
   if (stage.showReasons && displayed[0].reasons.length > 0) {
     rankDetail.classList.remove("hidden");
-    rankDetailLabel.textContent = answeredCount >= Math.round(questions.length * 0.5)
+    rankDetailLabel.textContent = answeredCount >= 24
       ? "What is shaping the current leader"
       : "What is starting to shape the current leader";
     rankReasons.innerHTML = displayed[0].reasons
-      .slice(0, answeredCount >= Math.round(questions.length * 0.5) ? 3 : 2)
+      .slice(0, answeredCount >= 24 ? 3 : 2)
       .map((reason) => `<li>${reason.explanation}</li>`)
       .join("");
   } else {
@@ -5088,6 +5846,7 @@ function renderRankPanel() {
 function showStartState() {
   state.started = false;
   state.rankPanelCollapsed = true;
+  state.resultsPreview = false;
   state.questionOrder = buildQuestionOrder(state.orderMode);
   startView.classList.remove("hidden");
   progressWrap.classList.add("hidden");
@@ -5106,6 +5865,7 @@ function showStartState() {
 function startQuiz() {
   state.started = true;
   state.rankPanelCollapsed = true;
+  state.resultsPreview = false;
   state.questionOrder = buildQuestionOrder(state.orderMode);
   setInfoModalOpen(false);
   setSettingsModalOpen(false);
@@ -5128,10 +5888,12 @@ function renderQuestion() {
   updateProgress();
 
   if (state.currentIndex >= questions.length) {
+    state.resultsPreview = true;
     showResults();
     return;
   }
 
+  state.resultsPreview = false;
   const currentQuestionIndex = state.questionOrder[state.currentIndex];
   const currentQuestion = questions[currentQuestionIndex];
   const currentResponse = state.responses[currentQuestionIndex];
@@ -5270,6 +6032,7 @@ function getConfidenceLabel(scoreGap, answeredCount) {
 }
 
 function showResults() {
+  state.resultsPreview = true;
   const ranked = getScoreData();
   const fellowshipResults = getFellowshipScoreData(ranked);
   const explicitAnswers = countExplicitAnswers();
@@ -5301,6 +6064,7 @@ function showResults() {
   updateProgress();
   renderRankPanel();
   updateFellowshipDisplayControls();
+  continueQuizButton.classList.toggle("hidden", state.currentIndex >= questions.length);
   scrollPageToTop();
 
   const summaryBits = [];
@@ -5324,18 +6088,20 @@ function showResults() {
     summaryBits.push(`${displayedResults[1].name} and ${displayedResults[2].name} were close behind`);
   }
 
+  const answeredPromptLabel = `${explicitAnswers} answered prompt${explicitAnswers === 1 ? "" : "s"}`;
+
   resultsSummaryText.textContent = unansweredEverything
-    ? "You skipped every question, so there is no meaningful signal yet. Answer at least a few questions to generate real specialty and fellowship-path recommendations."
+    ? "There is no meaningful signal yet because no preference prompts were answered. Go back and answer one or a few prompts that produce a real reaction."
     : showSeparateFellowships && displayedFellowships.length === 0
-      ? `No fellowship path has enough direct signal yet. Signal strength: ${confidence}. These results are based on ${explicitAnswers} answered questions, but the answered items have not separated specific fellowship branches.`
-      : `${summaryBits.join(", ")}. Signal strength: ${confidence}. These results are based on ${explicitAnswers} answered questions about continuity, pace, procedures, uncertainty, work setting, and the kinds of subspecialty branches those answers point toward.`;
+      ? `No fellowship path has enough direct signal yet. Signal strength: ${confidence}. These results are based on ${answeredPromptLabel}, but the answered items have not separated specific fellowship branches.`
+      : `${summaryBits.join(", ")}. Signal strength: ${confidence}. These results are based on ${answeredPromptLabel} about continuity, pace, procedures, uncertainty, work setting, and the kinds of subspecialty branches those answers point toward.`;
 
   skippedSummary.textContent = unansweredEverything
-    ? "Retake the quiz and answer the questions that produce the strongest reaction. Even a partial set of real answers is more useful than skipping everything."
+    ? "No need to go through the whole bank; a few genuine answers are enough to start."
     :
     skippedCount > 0
-      ? `You skipped ${skippedCount} question${skippedCount === 1 ? "" : "s"}, so consider retaking later if the results feel too broad.`
-      : "You answered every question, which gives the result set a more stable signal.";
+      ? "Skipped prompts were left out of the signal. You can answer more later if the results feel too broad."
+      : "You can stop here or keep answering later if you want an even more specific read.";
 
   resultsList.innerHTML = unansweredEverything
     ? ""
@@ -5370,14 +6136,14 @@ function createSeparatedFellowshipResults(fellowshipMatches, answeredCount) {
       <div class="match-card__left">
         <span class="match-card__score-label">Fellowship paths</span>
         <h4>No specific branch stands out yet.</h4>
-        <p>The specialty ranking still has useful signal, but no fellowship path has enough direct support from the answered questions.</p>
+        <p>The specialty ranking still has useful signal, but no fellowship path has enough direct support from the answered prompts.</p>
       </div>
     </article>
   `;
 }
 
 function createResultCard(result, rank, fellowshipMatches, answeredCount) {
-  const compareId = getCompareDataIdForEntity(result);
+  const compareId = result.id;
   const reasonItems = result.reasons.length > 0
     ? result.reasons
         .map((reason) => `<li>${reason.explanation}</li>`)
@@ -5402,7 +6168,7 @@ function createResultCard(result, rank, fellowshipMatches, answeredCount) {
       : `
         <div class="match-card__paths">
           <span class="match-card__score-label">Fellowship paths</span>
-          <p class="match-card__path-note">No specific fellowship branch stands out yet from your answered path-level questions.</p>
+          <p class="match-card__path-note">No specific fellowship branch stands out yet from your answered path-level prompts.</p>
         </div>
       `;
 
@@ -5432,7 +6198,7 @@ function createResultCard(result, rank, fellowshipMatches, answeredCount) {
 }
 
 function createFellowshipResultCard(path, rank) {
-  const compareId = getCompareDataIdForEntity(path);
+  const compareId = path.id;
   const reasonItems = path.reasons.length > 0
     ? path.reasons
         .map((reason) => `<li>${reason.explanation}</li>`)
@@ -5488,8 +6254,16 @@ function handleBack() {
 }
 
 function finishQuizEarly() {
-  state.responses = state.responses.map((response) => (response === null ? "skip" : response));
-  state.currentIndex = questions.length;
+  state.resultsPreview = true;
+  showResults();
+}
+
+function continueQuiz() {
+  if (!state.started || state.currentIndex >= questions.length) {
+    return;
+  }
+
+  state.resultsPreview = false;
   renderQuestion();
 }
 
@@ -5497,6 +6271,7 @@ function restartQuiz() {
   state.started = false;
   state.rankPanelCollapsed = true;
   state.currentIndex = 0;
+  state.resultsPreview = false;
   state.questionOrder = buildQuestionOrder(state.orderMode);
   state.responses = Array(questions.length).fill(null);
   resultsList.innerHTML = "";
@@ -5579,12 +6354,16 @@ resultsShareButton.addEventListener("click", () => {
 resultsExploreButton.addEventListener("click", () => {
   openExplore(resultsExploreButton);
 });
+continueQuizButton.addEventListener("click", continueQuiz);
 closeInfoButton.addEventListener("click", () => setInfoModalOpen(false));
 infoBackdrop.addEventListener("click", () => setInfoModalOpen(false));
 closeSettingsButton.addEventListener("click", () => setSettingsModalOpen(false));
 settingsBackdrop.addEventListener("click", () => setSettingsModalOpen(false));
 closeShareButton.addEventListener("click", () => setShareModalOpen(false));
 shareBackdrop.addEventListener("click", () => setShareModalOpen(false));
+compareAboutButton.addEventListener("click", () => setCompareAboutModalOpen(true, compareAboutButton));
+closeCompareAboutButton.addEventListener("click", () => setCompareAboutModalOpen(false));
+compareAboutBackdrop.addEventListener("click", () => setCompareAboutModalOpen(false));
 closeCompareButton.addEventListener("click", returnFromCompareView);
 closeExploreButton.addEventListener("click", returnFromExploreView);
 exploreZoomOutButton.addEventListener("click", () => setExploreZoom(exploreZoom - EXPLORE_ZOOM_STEP));
@@ -5640,6 +6419,14 @@ resultsFellowshipDisplayInputs.forEach((input) => {
 });
 
 document.addEventListener("keydown", (event) => {
+  if (!compareAboutModal.classList.contains("hidden")) {
+    if (event.key === "Escape") {
+      setCompareAboutModalOpen(false);
+    }
+
+    return;
+  }
+
   if (!compareView.classList.contains("hidden")) {
     if (event.key === "Escape") {
       returnFromCompareView();
