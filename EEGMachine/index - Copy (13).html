@@ -41,14 +41,6 @@
 .topbar-mini-btn{width:2.2rem;min-width:2.2rem;padding:0;display:inline-flex;align-items:center;justify-content:center;overflow:hidden}
 .topbar-mini-btn img{display:block;width:1.35rem;height:1.35rem;object-fit:contain}
 .topbar-speed{min-width:5.55rem;width:5.55rem;padding-right:1.65rem;font-variant-numeric:tabular-nums}
-.topbar-rewind{min-width:4.1rem;width:4.1rem;max-width:4.1rem;padding-left:.45rem;padding-right:.45rem;font-variant-numeric:tabular-nums}
-.topbar-rewind.active{background:#eef6ff;border-color:#8fb8f3;color:#214f8f;box-shadow:0 0 0 1px rgba(57,113,191,.14) inset}
-.topbar-emoji-btn{width:2.35rem;min-width:2.35rem;padding:.35rem 0!important;display:inline-flex;align-items:center;justify-content:center;font-size:1.12rem!important;line-height:1}
-.topbar-menu-actions{display:flex;align-items:flex-end;gap:.35rem;flex:0 0 auto}
-.topbar-menu-divider{width:1px;height:2.55rem;flex:0 0 1px;align-self:center;background:linear-gradient(180deg, rgba(184,217,179,0), rgba(184,217,179,.98) 18%, rgba(184,217,179,.98) 82%, rgba(184,217,179,0))}
-.topbar-menu{position:fixed;left:var(--topbar-menu-left, .5rem);top:var(--topbar-menu-top, 4rem);z-index:10002;display:flex;flex-direction:column;gap:.35rem;width:max-content;max-width:min(88vw, 15rem);padding:.45rem;background:rgba(255,255,255,.97);border:1px solid var(--panel-border);border-radius:10px;box-shadow:0 10px 26px rgba(0,0,0,.16)}
-.topbar-menu[hidden]{display:none!important}
-.topbar-menu .options-strong{display:block;width:100%;min-width:8.5rem;text-align:left;padding:.5rem .7rem}
 .topbar-tool-btn.active{background:#fff0f0;border-color:#d38181;color:#9a1d1d;box-shadow:0 0 0 1px rgba(154,29,29,.12) inset}
 .quiz-step{margin:.6rem 0;border-top:1px dashed rgba(0,0,0,.15);padding-top:.5rem}
 .quiz-pills{display:flex;flex-wrap:wrap;gap:.4rem}
@@ -154,9 +146,7 @@ button.options-strong:active{
 #topbar{ align-items:center; gap:var(--topbar-gap); flex-wrap:nowrap; overflow-x:auto; overflow-y:hidden; }
 #topbar > .ctrl,
 #topbar > #rhythmFieldset,
-#topbar > .topbar-separator,
-#topbar > .topbar-menu-divider,
-#topbar > .topbar-menu-actions{ align-self:center; }
+#topbar > .topbar-separator{ align-self:center; }
 #topbar > .topbar-actions{ align-self:flex-end; }
 #topbar > .ctrl{ min-width:0; width:max-content; flex:0 0 auto; }
 #topbar > .ctrl select{ width:auto; }
@@ -166,9 +156,7 @@ button.options-strong:active{
 #rhythmFieldset .ctrl select{ width:auto; }
 #rhythmFieldset .pill{ margin:0; white-space:nowrap; }
 .topbar-actions{ margin-left:auto; display:flex; gap:.4rem; align-items:flex-end; flex-wrap:wrap; justify-content:flex-end; }
-.topbar-menu-actions{ order:0; }
-.topbar-menu-divider{ order:0; }
-#play, #penToolBtn, #clinicalMenuBtn, #learningMenuBtn, #aboutBtn{ white-space:nowrap; flex:0 0 auto; }
+#play, #penToolBtn, #artifactsBtn, #pathologyBtn, #quizBtnTop, #tutorialBtnTop{ white-space:nowrap; flex:0 0 auto; }
 #topbar select, #topbar label, #topbar button{ font-size:var(--ui-label-size); }
 #topbar button{ padding:.45rem .7rem; line-height:1.1; min-height:2.2rem; font:inherit; }
 #rhythmFieldset .pill{ align-self:flex-end; }
@@ -244,14 +232,6 @@ button.options-strong:active{
   #topbar.topbar-mobile-expanded > .topbar-separator{
     display:none;
   }
-  #topbar.topbar-mobile-expanded > .topbar-menu-actions{
-    flex:0 0 auto;
-    width:max-content;
-    align-self:end;
-  }
-  #topbar.topbar-mobile-expanded > .topbar-menu-divider{
-    display:block;
-  }
   #topbar.topbar-mobile-expanded > #rhythmFieldset .mode-controls{
     display:grid;
     grid-template-columns:repeat(2, minmax(0, 1fr));
@@ -285,8 +265,8 @@ button.options-strong:active{
 
 
 <style id="pathology-align-fix">
-#pathologyModal fieldset label, #artifactsModal fieldset label, #activationModal fieldset label{ margin-left:0 !important; }
-#pathologyModal .modal-card, #artifactsModal .modal-card, #activationModal .modal-card{width:fit-content;max-width:min(94vw, 29rem)}
+#pathologyModal fieldset label, #artifactsModal fieldset label{ margin-left:0 !important; }
+#pathologyModal .modal-card, #artifactsModal .modal-card{width:fit-content;max-width:min(94vw, 29rem)}
 #aboutModal .modal-card{width:min(92vw, 26rem);max-width:26rem}
 #aboutModal fieldset{margin-top:.8rem}
 #aboutModal .about-seed-help{margin:.15rem 0 .45rem;font-size:.83rem;line-height:1.35;color:#43524a}
@@ -304,11 +284,11 @@ button.options-strong:active{
 }
 #tutorialSetupModal .modal-card{width:min(92vw, 24rem);max-width:24rem}
 #tutorialCaseSelWrap[hidden]{display:none !important}
-#artifactsModal, #activationModal{background:transparent;align-items:flex-start;justify-content:flex-start}
-#artifactsModal .modal-card, #activationModal .modal-card{
+#artifactsModal{background:transparent;align-items:flex-start;justify-content:flex-start}
+#artifactsModal .modal-card{
   position:fixed;
-  top:var(--popup-top, 4.5rem);
-  left:var(--popup-left, auto);
+  top:var(--artifacts-top, 4.5rem);
+  left:var(--artifacts-left, auto);
   margin:0;
   max-height:none;
   overflow:visible;
@@ -317,9 +297,9 @@ button.options-strong:active{
 #pathologyModal .pathology-actions{display:flex;flex-direction:column;align-items:flex-start;gap:.35rem;margin-top:.35rem}
 #pathologyModal .pathology-action-row{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap}
 #pathologyModal .pathology-action{width:auto;min-width:12.75rem;max-width:100%;text-align:left;padding:.55rem .75rem;font:inherit;white-space:normal;line-height:1.2}
-#pathologyModal .pathology-duration, #activationModal .pathology-duration{display:inline-flex;align-items:center;gap:.35rem;font-size:var(--ui-label-size);white-space:nowrap}
-#pathologyModal .pathology-duration input, #activationModal .pathology-duration input{width:4.25rem;min-height:2.2rem;padding:.4rem .5rem;border:1px solid var(--panel-border);border-radius:6px;font:inherit}
-#pathologyModal .pathology-duration span, #activationModal .pathology-duration span{opacity:.8}
+#pathologyModal .pathology-duration{display:inline-flex;align-items:center;gap:.35rem;font-size:var(--ui-label-size);white-space:nowrap}
+#pathologyModal .pathology-duration input{width:4.25rem;min-height:2.2rem;padding:.4rem .5rem;border:1px solid var(--panel-border);border-radius:6px;font:inherit}
+#pathologyModal .pathology-duration span{opacity:.8}
 #pathologyModal .pathology-slider{display:inline-flex;align-items:center;gap:.4rem;font-size:var(--ui-label-size);white-space:nowrap}
 #pathologyModal .pathology-slider input[type="range"]{width:min(8.5rem, 34vw)}
 #pathologyModal .pathology-slider output{min-width:2.6rem;text-align:right;font-variant-numeric:tabular-nums}
@@ -327,23 +307,19 @@ button.options-strong:active{
 #pathologyModal .pathology-focus select{width:auto;min-width:8.75rem;max-width:12rem;min-height:2.2rem}
 #pathologyModal .pathology-action:disabled{cursor:default;opacity:.65}
 #pathologyModal .pathology-action:disabled:hover{filter:none}
-#artifactsModal fieldset, #activationModal fieldset{margin:0}
-#artifactsModal .modal-card fieldset > div, #activationModal .modal-card fieldset > div{min-width:0;width:min(100%, 28rem)}
-#artifactsModal .artifact-control-row, #activationModal .artifact-control-row{display:grid;grid-template-columns:minmax(8.8rem, max-content) minmax(12rem, 1fr);align-items:center;gap:.35rem .65rem}
-#artifactsModal .artifact-control-row > label:first-child, #activationModal .artifact-control-row > label:first-child{margin-right:0}
-#artifactsModal .artifact-lead, #activationModal .artifact-lead{grid-column:2;display:grid;grid-template-columns:auto minmax(8.5rem, 1fr);align-items:center;gap:.35rem;font-size:var(--ui-label-size);white-space:nowrap}
-#artifactsModal .artifact-lead select, #activationModal .artifact-lead select{width:100%;min-width:0;max-width:none;min-height:2.2rem}
-#artifactsModal .artifact-slider, #activationModal .artifact-slider{display:inline-flex;align-items:center;gap:.45rem;font-size:var(--ui-label-size);white-space:nowrap}
-#artifactsModal .artifact-slider input[type="range"], #activationModal .artifact-slider input[type="range"]{width:100%;min-width:8.5rem}
-#artifactsModal .artifact-slider output, #activationModal .artifact-slider output{min-width:2.5rem;text-align:right;font-variant-numeric:tabular-nums}
-#activationModal .activation-actions{display:flex;flex-direction:column;align-items:flex-start;gap:.45rem;margin-top:.2rem}
-#activationModal .activation-action-row{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap}
-#activationModal .activation-action{width:auto;min-width:12.75rem;max-width:100%;text-align:left;padding:.55rem .75rem;font:inherit;white-space:normal;line-height:1.2}
-#activationModal .activation-action:disabled{cursor:default;opacity:.65}
+#artifactsModal fieldset{margin:0}
+#artifactsModal .modal-card fieldset > div{min-width:0;width:min(100%, 28rem)}
+#artifactsModal .artifact-control-row{display:grid;grid-template-columns:minmax(8.8rem, max-content) minmax(12rem, 1fr);align-items:center;gap:.35rem .65rem}
+#artifactsModal .artifact-control-row > label:first-child{margin-right:0}
+#artifactsModal .artifact-lead{grid-column:2;display:grid;grid-template-columns:auto minmax(8.5rem, 1fr);align-items:center;gap:.35rem;font-size:var(--ui-label-size);white-space:nowrap}
+#artifactsModal .artifact-lead select{width:100%;min-width:0;max-width:none;min-height:2.2rem}
+#artifactsModal .artifact-slider{display:inline-flex;align-items:center;gap:.45rem;font-size:var(--ui-label-size);white-space:nowrap}
+#artifactsModal .artifact-slider input[type="range"]{width:100%;min-width:8.5rem}
+#artifactsModal .artifact-slider output{min-width:2.5rem;text-align:right;font-variant-numeric:tabular-nums}
 @media (max-width: 760px){
-  #artifactsModal .artifact-control-row, #activationModal .artifact-control-row{grid-template-columns:1fr}
-  #artifactsModal .artifact-lead, #activationModal .artifact-lead{grid-column:1}
-  #artifactsModal .modal-card, #activationModal .modal-card{
+  #artifactsModal .artifact-control-row{grid-template-columns:1fr}
+  #artifactsModal .artifact-lead{grid-column:1}
+  #artifactsModal .modal-card{
     left:.5rem !important;
     right:.5rem;
     top:auto;
@@ -372,10 +348,8 @@ html, body{max-width:100vw;overflow:hidden}
 #rhythmSel{max-width:9rem}
 #sleepSel{max-width:11rem}
 .topbar-speed{min-width:4.75rem;width:4.75rem;max-width:4.75rem}
-.topbar-rewind{min-width:4rem;width:4rem;max-width:4rem}
 #pathologyModal .modal-card,
 #artifactsModal .modal-card,
-#activationModal .modal-card,
 #aboutModal .modal-card,
 #tutorialSetupModal .modal-card{max-height:min(86dvh, calc(var(--app-height) - 1rem));overflow:auto}
 
@@ -387,8 +361,6 @@ html, body{max-width:100vw;overflow:hidden}
   padding:.45rem .65rem;
 }
 #topbar.topbar-wrap > .ctrl{flex:0 1 auto;width:auto}
-#topbar.topbar-wrap > .topbar-menu-actions{order:0}
-#topbar.topbar-wrap > .topbar-menu-divider{order:0}
 #topbar.topbar-wrap > #rhythmFieldset{
   flex:1 1 auto;
   min-width:min(30rem, 100%);
@@ -425,8 +397,6 @@ html, body{max-width:100vw;overflow:hidden}
     padding:.45rem .65rem;
   }
   #topbar > .ctrl{flex:0 1 auto;width:auto}
-  .topbar-menu-actions{order:0}
-  .topbar-menu-divider{order:0}
   #montageSel{max-width:min(17rem, 42vw)}
   #rhythmFieldset{
     flex:1 1 auto;
@@ -506,18 +476,6 @@ html, body{max-width:100vw;overflow:hidden}
   #topbar.topbar-mobile-expanded > .topbar-separator{
     display:none;
   }
-  #topbar.topbar-mobile-expanded > .topbar-menu-actions{
-    grid-column:1;
-    justify-self:start;
-    align-self:end;
-  }
-  #topbar.topbar-mobile-expanded > .topbar-menu-divider{
-    grid-column:2;
-    justify-self:start;
-    align-self:stretch;
-    height:auto;
-    min-height:2.2rem;
-  }
   #topbar.topbar-mobile-expanded > #rhythmFieldset{
     grid-column:1 / -1;
     width:100%;
@@ -566,15 +524,13 @@ html, body{max-width:100vw;overflow:hidden}
   .tutorial-panel{max-height:min(62dvh, 32rem)}
   #pathologyModal .modal-card,
   #artifactsModal .modal-card,
-  #activationModal .modal-card,
   #aboutModal .modal-card,
   #tutorialSetupModal .modal-card{
     width:min(96vw, 34rem);
     max-width:96vw;
     max-height:min(82dvh, calc(var(--app-height) - 1rem));
   }
-  #artifactsModal .modal-card,
-  #activationModal .modal-card{
+  #artifactsModal .modal-card{
     left:.5rem !important;
     right:.5rem;
     top:auto !important;
@@ -591,15 +547,10 @@ html, body{max-width:100vw;overflow:hidden}
     max-height:min(64dvh, 28rem);
   }
   #topbar.topbar-mobile-expanded > .ctrl:first-of-type,
-  #topbar.topbar-mobile-expanded > .topbar-menu-actions,
-  #topbar.topbar-mobile-expanded > .topbar-menu-divider,
   #topbar.topbar-mobile-expanded > #rhythmFieldset,
   #topbar.topbar-mobile-expanded > .topbar-actions,
   #topbar.topbar-mobile-expanded > #topbarToggle{
     grid-column:1;
-  }
-  #topbar.topbar-mobile-expanded > .topbar-menu-divider{
-    display:none;
   }
   #topbar.topbar-mobile-expanded > #rhythmFieldset .mode-controls{
     grid-template-columns:1fr;
@@ -609,7 +560,6 @@ html, body{max-width:100vw;overflow:hidden}
   }
   #topbar button{padding:.38rem .55rem}
   .topbar-speed{min-width:4.5rem;width:4.5rem;max-width:4.5rem}
-  .topbar-rewind{min-width:3.8rem;width:3.8rem;max-width:3.8rem}
   #pathologyModal .pathology-action-row{
     display:grid;
     grid-template-columns:1fr;
@@ -618,8 +568,7 @@ html, body{max-width:100vw;overflow:hidden}
   #pathologyModal .pathology-action,
   #pathologyModal .pathology-duration,
   #pathologyModal .pathology-slider,
-  #pathologyModal .pathology-focus,
-  #activationModal .pathology-duration{
+  #pathologyModal .pathology-focus{
     width:100%;
     min-width:0;
   }
@@ -628,183 +577,20 @@ html, body{max-width:100vw;overflow:hidden}
     max-width:none;
   }
   #pathologyModal .pathology-slider input[type="range"],
-  #artifactsModal .artifact-slider input[type="range"],
-  #activationModal .artifact-slider input[type="range"]{
+  #artifactsModal .artifact-slider input[type="range"]{
     min-width:0;
   }
-  #artifactsModal .modal-card fieldset > div,
-  #activationModal .modal-card fieldset > div{
+  #artifactsModal .modal-card fieldset > div{
     width:100%;
   }
-  #artifactsModal .artifact-control-row,
-  #activationModal .artifact-control-row{
+  #artifactsModal .artifact-control-row{
     grid-template-columns:1fr;
   }
-  #artifactsModal .artifact-lead,
-  #activationModal .artifact-lead{
+  #artifactsModal .artifact-lead{
     grid-column:1;
-  }
-  #activationModal .activation-action{
-    width:100%;
-    min-width:0;
   }
   .modal-actions{
     flex-wrap:wrap;
-  }
-}
-
-/* Keep educational panels away from the incoming right edge of the tracing. */
-#quizPanel,
-.tutorial-panel{
-  --education-panel-left:clamp(3.35rem, 4vw, 4.4rem);
-  left:var(--education-panel-left);
-  right:auto;
-  top:calc(var(--topbar-height, 64px) + .55rem);
-  bottom:auto;
-  width:min(30rem, 32vw);
-  max-width:calc(100vw - var(--education-panel-left) - .75rem);
-  max-height:calc(var(--app-height, 100dvh) - var(--topbar-height, 64px) - 1.1rem);
-  overflow:auto;
-}
-.tutorial-panel{
-  width:min(34rem, 36vw);
-  max-width:calc(100vw - var(--education-panel-left) - .75rem);
-}
-.education-collapse{
-  margin-left:auto;
-}
-#quizControls,
-.tutorial-controls{
-  position:sticky;
-  bottom:-.05rem;
-  z-index:2;
-  padding-top:.5rem;
-  padding-bottom:.1rem;
-  background:linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,.98) 28%, rgba(255,255,255,.98));
-}
-.education-restore-tab{
-  position:fixed;
-  left:clamp(3.35rem, 4vw, 4.4rem);
-  top:calc(var(--topbar-height, 64px) + .55rem);
-  z-index:9999;
-  box-shadow:0 6px 18px rgba(0,0,0,.14);
-  font-weight:700;
-}
-.education-restore-tab[hidden]{
-  display:none;
-}
-@media (max-width:900px){
-  #quizPanel,
-  .tutorial-panel{
-    --education-panel-left:3.25rem;
-    left:var(--education-panel-left);
-    right:auto;
-    top:calc(var(--topbar-height, 56px) + .5rem);
-    bottom:auto;
-    width:min(24rem, calc(100vw - var(--education-panel-left) - .5rem));
-    max-width:calc(100vw - var(--education-panel-left) - .5rem);
-    max-height:min(58dvh, calc(var(--app-height, 100dvh) - var(--topbar-height, 56px) - 1rem));
-  }
-  .education-restore-tab{
-    left:3.25rem;
-    top:calc(var(--topbar-height, 56px) + .5rem);
-  }
-}
-@media (max-width:520px){
-  #quizPanel,
-  .tutorial-panel{
-    --education-panel-left:3rem;
-    width:min(22rem, calc(100vw - var(--education-panel-left) - .5rem));
-    max-height:min(54dvh, calc(var(--app-height, 100dvh) - var(--topbar-height, 56px) - 1rem));
-  }
-  .education-restore-tab{
-    left:3rem;
-  }
-}
-</style>
-
-<style id="clinical-panel-layout">
-#pathologyModal,
-#artifactsModal,
-#activationModal{
-  background:transparent;
-  align-items:flex-start;
-  justify-content:flex-start;
-  pointer-events:none;
-  z-index:9998;
-}
-#pathologyModal .modal-card,
-#artifactsModal .modal-card,
-#activationModal .modal-card{
-  --clinical-panel-left:clamp(3.35rem, 4vw, 4.4rem);
-  position:fixed;
-  left:var(--clinical-panel-left) !important;
-  right:auto !important;
-  top:calc(var(--topbar-height, 64px) + .55rem) !important;
-  bottom:auto !important;
-  width:min(31rem, 34vw);
-  max-width:calc(100vw - var(--clinical-panel-left) - .75rem);
-  max-height:calc(var(--app-height, 100dvh) - var(--topbar-height, 64px) - 1.1rem) !important;
-  margin:0;
-  overflow:auto !important;
-  pointer-events:auto;
-  box-shadow:0 6px 18px rgba(0,0,0,.14);
-}
-#artifactsModal .modal-card{
-  width:min(32rem, 36vw);
-}
-#pathologyModal .modal-actions,
-#artifactsModal .modal-actions,
-#activationModal .modal-actions{
-  position:sticky;
-  bottom:-.05rem;
-  z-index:2;
-  padding-top:.5rem;
-  padding-bottom:.1rem;
-  background:linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,.98) 28%, rgba(255,255,255,.98));
-}
-.clinical-restore-tab{
-  left:clamp(3.35rem, 4vw, 4.4rem);
-}
-#pathologyRestoreTab{
-  top:calc(var(--topbar-height, 64px) + .55rem);
-}
-#artifactsRestoreTab{
-  top:calc(var(--topbar-height, 64px) + .55rem);
-}
-#activationRestoreTab{
-  top:calc(var(--topbar-height, 64px) + .55rem);
-}
-@media (max-width:900px){
-  #pathologyModal .modal-card,
-  #artifactsModal .modal-card,
-  #activationModal .modal-card{
-    --clinical-panel-left:3.25rem;
-    left:var(--clinical-panel-left) !important;
-    right:auto !important;
-    top:calc(var(--topbar-height, 56px) + .5rem) !important;
-    bottom:auto !important;
-    width:min(24rem, calc(100vw - var(--clinical-panel-left) - .5rem));
-    max-width:calc(100vw - var(--clinical-panel-left) - .5rem);
-    max-height:min(58dvh, calc(var(--app-height, 100dvh) - var(--topbar-height, 56px) - 1rem)) !important;
-  }
-  .clinical-restore-tab{
-    left:3.25rem;
-  }
-  #pathologyRestoreTab{top:calc(var(--topbar-height, 56px) + .5rem)}
-  #artifactsRestoreTab{top:calc(var(--topbar-height, 56px) + .5rem)}
-  #activationRestoreTab{top:calc(var(--topbar-height, 56px) + .5rem)}
-}
-@media (max-width:520px){
-  #pathologyModal .modal-card,
-  #artifactsModal .modal-card,
-  #activationModal .modal-card{
-    --clinical-panel-left:3rem;
-    width:min(22rem, calc(100vw - var(--clinical-panel-left) - .5rem));
-    max-height:min(54dvh, calc(var(--app-height, 100dvh) - var(--topbar-height, 56px) - 1rem)) !important;
-  }
-  .clinical-restore-tab{
-    left:3rem;
   }
 }
 </style>
@@ -813,11 +599,6 @@ html, body{max-width:100vw;overflow:hidden}
 <body>
   <div id="topbar">
     <button id="topbarToggle" type="button" aria-controls="topbar" aria-expanded="false">Show Controls</button>
-    <div class="topbar-menu-actions" aria-label="Primary menus">
-      <button id="clinicalMenuBtn" type="button" class="options-strong topbar-emoji-btn" aria-label="Look menu" title="Look" aria-haspopup="true" aria-expanded="false">👀</button>
-      <button id="learningMenuBtn" type="button" class="options-strong topbar-emoji-btn" aria-label="Learn menu" title="Learn" aria-haspopup="true" aria-expanded="false">🧠</button>
-    </div>
-    <div class="topbar-menu-divider" aria-hidden="true"></div>
     <div class="ctrl"><label>Montage</label>
       <select id="montageSel">
         <option value="bipolar_longitudinal" selected>Longitudinal bipolar</option>
@@ -882,21 +663,13 @@ html, body{max-width:100vw;overflow:hidden}
         <option value="4">4x</option>
         <option value="8">8x</option>
       </select>
-      <button id="rewindBtn" type="button" class="topbar-rewind" aria-label="Roll back trace 10 seconds" title="Roll back trace 10 seconds" hidden>-10s</button>
       <button id="penToolBtn" type="button" class="topbar-tool-btn" aria-pressed="false">🖊️</button>
+      <button id="pathologyBtn" class="options-strong">PATHOLOGY</button>
+      <button id="artifactsBtn" class="options-strong">Artifacts</button>
+      <button id="quizBtnTop" class="options-strong">Quiz</button>
+      <button id="tutorialBtnTop" class="options-strong">Tutorial</button>
       <button id="aboutBtn" class="topbar-mini-btn" aria-label="About"><img src="infoicon.png" alt="" aria-hidden="true"></button>
     </div>
-  </div>
-
-  <div id="clinicalMenu" class="topbar-menu" role="menu" hidden>
-    <button id="pathologyBtn" class="options-strong" role="menuitem">Pathology</button>
-    <button id="artifactsBtn" class="options-strong" role="menuitem">Artifacts</button>
-    <button id="activationBtn" class="options-strong" role="menuitem">Activation Procedures</button>
-  </div>
-
-  <div id="learningMenu" class="topbar-menu" role="menu" hidden>
-    <button id="tutorialBtnTop" class="options-strong" role="menuitem">Tutorial</button>
-    <button id="quizBtnTop" class="options-strong" role="menuitem">Quiz</button>
   </div>
 
   <!-- Options modal -->
@@ -984,45 +757,14 @@ html, body{max-width:100vw;overflow:hidden}
             </label>
           </div>
           <div class="artifact-control-row">
-            <label for="lambdaWaves">Lambda waves</label>
-            <label class="artifact-slider" for="lambdaWaves">
-              <input id="lambdaWaves" type="range" min="0" max="100" step="1" value="0">
-              <output id="lambdaWavesValue" for="lambdaWaves">0%</output>
+            <label for="photicStim">Photic stimulation</label>
+            <label class="artifact-slider" for="photicStim">
+              <input id="photicStim" type="range" min="0" max="100" step="1" value="0">
+              <output id="photicStimValue" for="photicStim">0%</output>
             </label>
-          </div>
-          <div class="artifact-control-row">
-            <label for="muRhythm">Mu rhythm</label>
-            <label class="artifact-slider" for="muRhythm">
-              <input id="muRhythm" type="range" min="0" max="100" step="1" value="0">
-              <output id="muRhythmValue" for="muRhythm">0%</output>
-            </label>
-          </div>
-          <div class="artifact-control-row">
-            <label for="sreda">SREDA</label>
-            <label class="artifact-slider" for="sreda">
-              <input id="sreda" type="range" min="0" max="100" step="1" value="0">
-              <output id="sredaValue" for="sreda">0%</output>
-            </label>
-          </div>
-          <div class="artifact-control-row">
-            <label for="positiveSpikes14And6">14-and-6 Hz positive spikes</label>
-            <label class="artifact-slider" for="positiveSpikes14And6">
-              <input id="positiveSpikes14And6" type="range" min="0" max="100" step="1" value="0">
-              <output id="positiveSpikes14And6Value" for="positiveSpikes14And6">0%</output>
-            </label>
-          </div>
-          <div class="artifact-control-row">
-            <label for="bets">BETS</label>
-            <label class="artifact-slider" for="bets">
-              <input id="bets" type="range" min="0" max="100" step="1" value="0">
-              <output id="betsValue" for="bets">0%</output>
-            </label>
-          </div>
-          <div class="artifact-control-row">
-            <label for="wicketSpikes">Wicket spikes</label>
-            <label class="artifact-slider" for="wicketSpikes">
-              <input id="wicketSpikes" type="range" min="0" max="100" step="1" value="0">
-              <output id="wicketSpikesValue" for="wicketSpikes">0%</output>
+            <label class="artifact-lead" for="photicHzSel">
+              <span>Rate</span>
+              <select id="photicHzSel" aria-label="Photic stimulation rate"></select>
             </label>
           </div>
           <div class="artifact-control-row">
@@ -1053,7 +795,7 @@ html, body{max-width:100vw;overflow:hidden}
               <output id="breachValue" for="breach">0%</output>
             </label>
             <label class="artifact-lead" for="breachLeadSel">
-              <span>Focus</span>
+              <span>Lead</span>
               <select id="breachLeadSel"></select>
             </label>
           </div>
@@ -1082,52 +824,10 @@ html, body{max-width:100vw;overflow:hidden}
         </div>
       </fieldset>
       <div class="modal-actions">
-        <button id="artifactsCollapse" class="education-collapse" type="button">Collapse</button>
         <button id="artifactsClose">Close</button>
       </div>
     </div>
   </div>
-  <button id="artifactsRestoreTab" class="education-restore-tab clinical-restore-tab" type="button" hidden>Show Artifacts</button>
-
-  <!-- Activation procedures modal -->
-  <div id="activationModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="activationTitle" hidden>
-    <div class="modal-card">
-      <h1 id="activationTitle">Activation Procedures</h1>
-      <fieldset>
-        <legend></legend>
-        <div style="display:flex;flex-direction:column;gap:.5rem;margin-top:.25rem">
-          <div class="artifact-control-row">
-            <label for="photicStim">Photic stimulation</label>
-            <label class="artifact-slider" for="photicStim">
-              <input id="photicStim" type="range" min="0" max="100" step="1" value="0">
-              <output id="photicStimValue" for="photicStim">0%</output>
-            </label>
-            <label class="artifact-lead" for="photicHzSel">
-              <span>Rate</span>
-              <select id="photicHzSel" aria-label="Photic stimulation rate"></select>
-            </label>
-          </div>
-          <div class="activation-actions">
-            <div class="activation-action-row">
-              <button id="absenceSz" type="button" class="activation-action">Hyperventilation</button>
-              <label class="pathology-duration" for="absenceSzDur">
-                <input id="absenceSzDur" type="number" min="10" max="99" step="1" value="10" inputmode="numeric">
-                <span>s</span>
-              </label>
-            </div>
-            <div class="activation-action-row">
-              <button id="noxiousStim" type="button" class="activation-action">Noxious stimulation</button>
-            </div>
-          </div>
-        </div>
-      </fieldset>
-      <div class="modal-actions">
-        <button id="activationCollapse" class="education-collapse" type="button">Collapse</button>
-        <button id="activationClose">Close</button>
-      </div>
-    </div>
-  </div>
-  <button id="activationRestoreTab" class="education-restore-tab clinical-restore-tab" type="button" hidden>Show Activation Procedures</button>
 
   <!-- Pathology modal -->
   <div id="pathologyModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="pathologyTitle" hidden>
@@ -1138,40 +838,33 @@ html, body{max-width:100vw;overflow:hidden}
         <div style="display:flex;flex-direction:column;gap:.35rem;margin-top:.25rem">
           <label><input id="encephalopathy" type="checkbox"> Encephalopathy</label>
           <label><input id="burstSuppression" type="checkbox"> Burst suppression</label>
-          <label><input id="firda" type="checkbox"> FIRDA</label>
-          <label><input id="tirda" type="checkbox"> TIRDA</label>
-          <label><input id="extremeDeltaBrush" type="checkbox"> Extreme delta brush</label>
-          <label><input id="alphaComa" type="checkbox"> Alpha coma</label>
-          <label><input id="hypsarrhythmia" type="checkbox"> Hypsarrhythmia</label>
           <label><input id="gpd" type="checkbox"> Generalized periodic discharges (GPDs)</label>
-          <div class="pathology-action-row">
-            <label><input id="lpd" type="checkbox"> Lateralized periodic discharges (LPDs)</label>
-            <label class="pathology-focus" for="lpdSideSel">
-              <span>Side</span>
-              <select id="lpdSideSel" aria-label="LPD laterality">
-                <option value="left">Left</option>
-                <option value="right">Right</option>
-              </select>
-            </label>
-          </div>
+          <label><input id="lpd" type="checkbox"> Lateralized periodic discharges (LPDs)</label>
           <div class="pathology-action-row">
             <label><input id="interictal" type="checkbox"> Interictal abnormalities</label>
             <label class="pathology-focus" for="interictalLeadSel">
-              <span>Focus</span>
-              <select id="interictalLeadSel" aria-label="Interictal abnormality focus"></select>
+              <span>Lead</span>
+              <select id="interictalLeadSel" aria-label="Interictal abnormality lead"></select>
             </label>
           </div>
           <div class="pathology-actions">
             <div class="pathology-action-row">
               <button id="genSz" type="button" class="pathology-action">Generalized seizure</button>
               <label class="pathology-duration" for="genSzDur">
-                <input id="genSzDur" type="number" min="10" max="99" step="1" value="10" inputmode="numeric">
+                <input id="genSzDur" type="number" min="10" max="99" step="1" value="20" inputmode="numeric">
                 <span>s</span>
               </label>
               <label class="pathology-slider" for="genSzEmg">
                 <span>EMG</span>
                 <input id="genSzEmg" type="range" min="0" max="100" step="1" value="65">
                 <output id="genSzEmgValue" for="genSzEmg">65%</output>
+              </label>
+            </div>
+            <div class="pathology-action-row">
+              <button id="absenceSz" type="button" class="pathology-action">Absence seizure</button>
+              <label class="pathology-duration" for="absenceSzDur">
+                <input id="absenceSzDur" type="number" min="10" max="99" step="1" value="10" inputmode="numeric">
+                <span>s</span>
               </label>
             </div>
             <div class="pathology-action-row">
@@ -1200,12 +893,10 @@ html, body{max-width:100vw;overflow:hidden}
         </div>
       </fieldset>
       <div class="modal-actions">
-        <button id="pathologyCollapse" class="education-collapse" type="button">Collapse</button>
         <button id="pathologyClose">Close</button>
       </div>
     </div>
   </div>
-  <button id="pathologyRestoreTab" class="education-restore-tab clinical-restore-tab" type="button" hidden>Show Pathology</button>
 
   <!-- Tutorial setup modal -->
   <div id="tutorialSetupModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="tutorialSetupTitle" hidden>
@@ -1248,10 +939,8 @@ html, body{max-width:100vw;overflow:hidden}
     <div id="quizControls">
       <button id="quizNew">New Case</button>
       <button id="quizEnd">End Quiz</button>
-      <button id="quizCollapse" class="education-collapse" type="button">Collapse</button>
     </div>
   </aside>
-  <button id="quizRestoreTab" class="education-restore-tab" type="button" hidden>Show Quiz</button>
 
   <aside id="tutorialPanel" class="tutorial-panel" aria-live="polite">
     <div class="tutorial-header">
@@ -1267,10 +956,8 @@ html, body{max-width:100vw;overflow:hidden}
       <button id="tutorialPlay">Pause Trace</button>
       <button id="tutorialNewCase">New Case</button>
       <button id="tutorialEnd">End Tutorial</button>
-      <button id="tutorialCollapse" class="education-collapse" type="button">Collapse</button>
     </div>
   </aside>
-  <button id="tutorialRestoreTab" class="education-restore-tab" type="button" hidden>Show Tutorial</button>
 
 
   <div id="wrap"><canvas id="c"></canvas>
@@ -1340,34 +1027,17 @@ const FOCAL_SEIZURE_FOCUS_MAP = new Map(
     {a, b, label:`${a}-${b}`}
   ])
 );
-const INTERICTAL_FOCUS_ELECTRODES = DISPLAY_ORDER.slice();
-function interictalGeometryForElectrode(name){
-  const chain = LONGITUDINAL_CHAINS.find(([, b])=> b === name) ||
-    LONGITUDINAL_CHAINS.find(([a, b])=> a === name || b === name);
-  if (!chain) return {a:name, b:name, primary:name, label:name};
-  return {a:chain[0], b:chain[1], primary:name, label:name};
-}
 const INTERICTAL_LEAD_OPTIONS = [{value:'random', label:'Random'}].concat(
-  INTERICTAL_FOCUS_ELECTRODES.map((name)=>({value:name, label:name}))
+  LONGITUDINAL_CHAINS.map(([a,b])=>({value:`${a}-${b}`, label:`${a}-${b}`}))
 );
 const INTERICTAL_LEAD_MAP = new Map(
-  INTERICTAL_FOCUS_ELECTRODES.map((name)=>[name, interictalGeometryForElectrode(name)])
+  LONGITUDINAL_CHAINS.map(([a,b])=>[
+    `${a}-${b}`,
+    {a, b, label:`${a}-${b}`}
+  ])
 );
-function normalizeInterictalLeadSelection(selection){
-  if (INTERICTAL_LEAD_MAP.has(selection)) return selection;
-  if (typeof selection === 'string' && selection.includes('-')){
-    const [, b] = selection.split('-');
-    if (INTERICTAL_LEAD_MAP.has(b)) return b;
-  }
-  return 'random';
-}
 const PHOTIC_STIM_RATE_OPTIONS = [2,4,6,8,10,12,14,15,16,18,20,25,30].map((hz)=>({value:String(hz), label:`${hz} Hz`}));
 const PHOTIC_STIM_RATE_SET = new Set(PHOTIC_STIM_RATE_OPTIONS.map((opt)=> Number(opt.value)));
-const LPD_SIDE_OPTIONS = [
-  {value:'left', label:'Left'},
-  {value:'right', label:'Right'}
-];
-const LPD_SIDE_SET = new Set(LPD_SIDE_OPTIONS.map((opt)=> opt.value));
 const EMG_LEAD_OPTIONS = [{value:'diffuse', label:'Diffuse'}, {value:'random', label:'Random'}].concat(
   LONGITUDINAL_CHAINS.map(([a,b])=>({value:`${a}-${b}`, label:`${a}-${b}`}))
 );
@@ -1377,26 +1047,15 @@ const EMG_LEAD_MAP = new Map(
     {a, b, label:`${a}-${b}`}
   ])
 );
-const BREACH_RHYTHM_FOCUS_ELECTRODES = DISPLAY_ORDER.slice();
-function breachRhythmGeometryForElectrode(name){
-  const chain = LONGITUDINAL_CHAINS.find(([a,b])=> a === name || b === name);
-  const neighbor = chain ? (chain[0] === name ? chain[1] : chain[0]) : name;
-  return {a:neighbor, b:name, primary:name, label:name};
-}
 const BREACH_RHYTHM_LEAD_OPTIONS = [{value:'random', label:'Random'}].concat(
-  BREACH_RHYTHM_FOCUS_ELECTRODES.map((name)=>({value:name, label:name}))
+  LONGITUDINAL_CHAINS.map(([a,b])=>({value:`${a}-${b}`, label:`${a}-${b}`}))
 );
 const BREACH_RHYTHM_LEAD_MAP = new Map(
-  BREACH_RHYTHM_FOCUS_ELECTRODES.map((name)=>[name, breachRhythmGeometryForElectrode(name)])
+  LONGITUDINAL_CHAINS.map(([a,b])=>[
+    `${a}-${b}`,
+    {a, b, label:`${a}-${b}`}
+  ])
 );
-function normalizeBreachRhythmLeadSelection(selection){
-  if (BREACH_RHYTHM_LEAD_MAP.has(selection)) return selection;
-  if (typeof selection === 'string' && selection.includes('-')){
-    const [, b] = selection.split('-');
-    if (BREACH_RHYTHM_LEAD_MAP.has(b)) return b;
-  }
-  return 'random';
-}
 const TRANSVERSE_CHAINS = [
   ["F7","Fp1"],["Fp1","Fp2"],["Fp2","F8"],
 
@@ -1861,12 +1520,12 @@ function scalpSide(name){
 }
 function resolveInterictalLeadSelection(selection){
   const rng = state.rng || Math.random;
-  const choice = normalizeInterictalLeadSelection(selection);
+  const choice = (selection && INTERICTAL_LEAD_MAP.has(selection)) ? selection : 'random';
   const picked = choice === 'random'
-    ? INTERICTAL_FOCUS_ELECTRODES[Math.floor(rng() * INTERICTAL_FOCUS_ELECTRODES.length)]
+    ? LONGITUDINAL_CHAINS[Math.floor(rng() * LONGITUDINAL_CHAINS.length)]
     : null;
   const spec = picked
-    ? INTERICTAL_LEAD_MAP.get(picked)
+    ? {a:picked[0], b:picked[1], label:`${picked[0]}-${picked[1]}`}
     : INTERICTAL_LEAD_MAP.get(choice);
   const a = scalpXY(spec.a);
   const b = scalpXY(spec.b);
@@ -2243,281 +1902,6 @@ function photicStimPathologyValue(clock, e){
   const preserve = 0.26 + 0.34*(1-regionW);
   return {overlay, preserve};
 }
-function scheduleNoxiousStimulation(now){
-  const rng = state.rng || Math.random;
-  state.noxiousStim = {
-    active:true,
-    t0:now,
-    dur:4.0 + 1.2*rng(),
-    amp:0.9 + 0.25*rng(),
-    phaseSlow:rng()*2*Math.PI,
-    phaseFast1:rng()*2*Math.PI,
-    phaseFast2:rng()*2*Math.PI,
-    phaseFast3:rng()*2*Math.PI
-  };
-}
-function syncNoxiousStimulation(active=false){
-  state.noxiousStim = {
-    active:false, t0:0, dur:4.2, amp:1,
-    phaseSlow:0, phaseFast1:0, phaseFast2:0, phaseFast3:0,
-    ...(state.noxiousStim || {})
-  };
-  if (!active) state.noxiousStim.active = false;
-}
-function noxiousStimScale(e){
-  if (EAR_REFERENCE_ELECTRODES.has(e)) return 0;
-  if (/^(Fp1|Fp2|F7|F8)$/.test(e)) return 1.00;
-  if (/^(F3|F4|Fz|T3|T4)$/.test(e)) return 0.78;
-  if (/^(C3|C4|Cz)$/.test(e)) return 0.58;
-  if (/^(P3|P4|Pz|T5|T6)$/.test(e)) return 0.36;
-  if (/^(O1|O2)$/.test(e)) return 0.22;
-  return 0.30;
-}
-function noxiousStimulationValue(clock, e){
-  const cfg = state.noxiousStim || {active:false};
-  if (!cfg.active || !AVG_ELECTRODE_SET.has(e)) return null;
-  const t = clock - cfg.t0;
-  if (t < 0 || t > cfg.dur) return null;
-  const scale = noxiousStimScale(e);
-  if (scale <= 0) return null;
-  const clamp01 = v => Math.max(0, Math.min(1, v));
-  const smooth = v => { const x = clamp01(v); return x*x*(3 - 2*x); };
-  const onsetGate = smooth(t / 0.08);
-  const arousalEnv = onsetGate * (1 - smooth((t - 2.7) / 1.4));
-  const movementEnv =
-    1.10*Math.exp(-0.5*((t - 0.16)/0.08)**2) -
-    0.62*Math.exp(-0.5*((t - 0.42)/0.18)**2) +
-    0.24*Math.exp(-0.5*((t - 0.92)/0.32)**2);
-  const side = /[1357z]$/.test(e) ? -1 : 1;
-  const movement = (54 + 18*scale) * cfg.amp * scale * side * movementEnv;
-  const fast =
-    Math.sin(2*Math.PI*22.5*t + cfg.phaseFast1) +
-    0.72*Math.sin(2*Math.PI*34.0*t + cfg.phaseFast2 + 0.25*side) +
-    0.36*Math.sin(2*Math.PI*47.0*t + cfg.phaseFast3 - 0.2*side);
-  const muscle = (18 + 42*scale) * cfg.amp * scale * arousalEnv * fast;
-  const reactivity = 7.5 * cfg.amp * (0.4 + 0.6*scale) * arousalEnv * Math.sin(2*Math.PI*9.5*t + cfg.phaseSlow + 0.18*side);
-  return {
-    overlay: movement + muscle + reactivity,
-    preserve: 1 - 0.44*arousalEnv*(0.45 + 0.55*scale)
-  };
-}
-function stableHashUnit(text){
-  let h = 2166136261;
-  const s = String(text || '');
-  for (let i=0; i<s.length; i++){
-    h ^= s.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  return ((h >>> 0) % 100000) / 100000;
-}
-function wrappedPhase(clock, period, phaseSec=0){
-  return (((clock + phaseSec) % period) + period) % period;
-}
-function transientGaussian(x, mu, sigma, amp=1){
-  return amp * Math.exp(-0.5 * Math.pow((x - mu) / sigma, 2));
-}
-function lambdaScale(e){
-  if (/^(O1|O2)$/.test(e)) return 1.00;
-  if (/^(P3|P4|Pz|T5|T6)$/.test(e)) return 0.46;
-  return 0;
-}
-function muScale(e){
-  if (/^(C3|C4)$/.test(e)) return 1.00;
-  if (/^Cz$/.test(e)) return 0.72;
-  if (/^(F3|F4|P3|P4)$/.test(e)) return 0.28;
-  return 0;
-}
-function posteriorTemporalScale(e){
-  if (/^(T5|T6)$/.test(e)) return 1.00;
-  if (/^(O1|O2|P3|P4)$/.test(e)) return 0.54;
-  if (/^(T3|T4)$/.test(e)) return 0.30;
-  return 0;
-}
-function temporalScale(e){
-  if (/^(T3|T4)$/.test(e)) return 1.00;
-  if (/^(F7|F8|T5|T6)$/.test(e)) return 0.72;
-  if (/^(F3|F4|C3|C4)$/.test(e)) return 0.24;
-  return 0;
-}
-function benignVariantArtifactValue(clock, e){
-  if (!AVG_ELECTRODE_SET.has(e) || !(state.opts && state.artifactConfig)) return 0;
-  let y = 0;
-
-  if (state.opts.lambdaWaves && currentEyesOpenSelection()){
-    const level = artifactLevel('lambdaWaves');
-    const scale = lambdaScale(e);
-    if (level > 0 && scale > 0){
-      const period = 1.28;
-      const pos = wrappedPhase(clock, period, 0.17);
-      if (pos < 0.26){
-        const sideBias = Math.floor((clock + 0.17) / period) % 2 === 0;
-        const side = /[135]$/.test(e) ? (sideBias ? 1 : 0.46) : (sideBias ? 0.46 : 1);
-        const sharp = transientGaussian(pos, 0.075, 0.022, 1.22) - transientGaussian(pos, 0.160, 0.060, 0.34);
-        // Negative occipital field renders as an upward transient in posterior longitudinal bipolar chains.
-        y -= level * scale * side * 74 * sharp;
-      }
-    }
-  }
-
-  if (state.opts.muRhythm){
-    const level = artifactLevel('muRhythm');
-    const scale = muScale(e);
-    if (level > 0 && scale > 0){
-      const phase = 2*Math.PI*(10.2*clock + stableHashUnit(e));
-      const arch = Math.sin(phase) + 0.30*Math.sin(2*phase + 0.65);
-      const envelope = 0.58 + 0.42*Math.pow(Math.max(0, Math.sin(2*Math.PI*0.18*clock + 1.1)), 2);
-      y += level * scale * 38 * envelope * arch;
-    }
-  }
-
-  if (state.opts.sreda){
-    const level = artifactLevel('sreda');
-    const scale = (/^(P3|P4|Pz|T5|T6)$/.test(e)) ? 1.00 : (/^(C3|C4|Cz|O1|O2)$/.test(e) ? 0.58 : 0.18);
-    if (level > 0 && scale > 0){
-      const train = wrappedPhase(clock, 15.5, 1.4);
-      if (train < 9.0){
-        const env = Math.sin(Math.PI * Math.min(1, train / 0.9)) * (train > 7.9 ? Math.max(0, (9.0 - train) / 1.1) : 1);
-        const phase = 2*Math.PI*(6.0*clock + 0.08*stableHashUnit(e));
-        y += level * scale * Math.max(0, env) * (58*Math.sin(phase) + 12*Math.sin(2*phase + 0.2));
-      }
-    }
-  }
-
-  if (state.opts.positiveSpikes14And6){
-    const level = artifactLevel('positiveSpikes14And6');
-    const scale = posteriorTemporalScale(e);
-    if (level > 0 && scale > 0){
-      const burst = wrappedPhase(clock, 3.7, 0.55 + stableHashUnit(e)*0.4);
-      if (burst < 0.82){
-        const f = (Math.floor(clock / 3.7) % 3 === 0) ? 6.6 : 14.0;
-        const env = Math.sin(Math.PI * burst / 0.82);
-        const cyc = (((burst * f) % 1) + 1) % 1;
-        const spike = -Math.pow(Math.max(0, Math.sin(2*Math.PI*cyc)), 8) + 0.28*Math.sin(2*Math.PI*cyc);
-        y += level * scale * 56 * env * spike;
-      }
-    }
-  }
-
-  if (state.opts.bets){
-    const level = artifactLevel('bets');
-    const scale = temporalScale(e);
-    if (level > 0 && scale > 0){
-      const pos = wrappedPhase(clock, 2.85 + 0.22*stableHashUnit(e), 0.75*stableHashUnit(e));
-      if (pos < 0.14){
-        const shape = transientGaussian(pos, 0.044, 0.014, 1.00) - transientGaussian(pos, 0.085, 0.030, 0.34);
-        const side = /[1357]$/.test(e) ? 1 : 0.82;
-        y += level * scale * side * 44 * shape;
-      }
-    }
-  }
-
-  if (state.opts.wicketSpikes){
-    const level = artifactLevel('wicketSpikes');
-    const scale = temporalScale(e);
-    if (level > 0 && scale > 0){
-      const train = wrappedPhase(clock, 5.6, 0.45 + stableHashUnit(e));
-      if (train < 1.05){
-        const env = Math.sin(Math.PI * train / 1.05);
-        const burstIndex = Math.floor((clock + 0.45) / 5.6);
-        const wicketHz = 6 + 5*stableHashUnit(`wicket-${burstIndex}`);
-        const phase = 2*Math.PI*(wicketHz*train + 0.1*stableHashUnit(e));
-        const wicket = Math.sin(phase) + 0.36*Math.sin(2*phase - 0.5);
-        y += level * scale * 82 * env * wicket;
-      }
-    }
-  }
-
-  return y;
-}
-function firdaScale(e){
-  if (/^(Fp1|Fp2|Fz)$/.test(e)) return 1.00;
-  if (/^(F3|F4|F7|F8)$/.test(e)) return 0.84;
-  if (/^(C3|C4|Cz|T3|T4)$/.test(e)) return 0.34;
-  return 0.08;
-}
-function tirdaScale(e){
-  if (/^(T3|T5|F7)$/.test(e)) return 1.00;
-  if (/^(F3|C3|P3)$/.test(e)) return 0.42;
-  if (/^(T4|T6|F8)$/.test(e)) return 0.36;
-  if (/^(F4|C4|P4)$/.test(e)) return 0.16;
-  return 0;
-}
-function extremeDeltaBrushScale(e){
-  if (/^(F3|F4|Fz|C3|C4|Cz)$/.test(e)) return 1.00;
-  if (/^(Fp1|Fp2|F7|F8|T3|T4|P3|P4|Pz)$/.test(e)) return 0.72;
-  if (/^(T5|T6|O1|O2)$/.test(e)) return 0.42;
-  return 0;
-}
-function extraPathologyValue(clock, e){
-  const pathology = state.pathology || {};
-  if (!AVG_ELECTRODE_SET.has(e)) return null;
-  let overlay = 0;
-  let preserve = 1;
-  let active = false;
-
-  if (pathology.firda){
-    const scale = firdaScale(e);
-    const burst = wrappedPhase(clock, 7.2, 0.4);
-    if (scale > 0 && burst < 3.2){
-      const env = Math.sin(Math.PI * burst / 3.2);
-      const wave = Math.sin(2*Math.PI*2.15*clock + 0.12*stableHashUnit(e)) + 0.18*Math.sin(2*Math.PI*4.3*clock);
-      overlay += scale * env * 95 * wave;
-      preserve *= 1 - 0.28*env*scale;
-      active = true;
-    }
-  }
-
-  if (pathology.tirda){
-    const scale = tirdaScale(e);
-    const burst = wrappedPhase(clock, 8.1, 1.1);
-    if (scale > 0 && burst < 4.6){
-      const env = Math.sin(Math.PI * burst / 4.6);
-      const wave = Math.sin(2*Math.PI*2.7*clock + 0.22*stableHashUnit(e));
-      overlay += scale * env * 112 * (wave + 0.15*Math.sin(2*Math.PI*5.4*clock));
-      preserve *= 1 - 0.18*env*scale;
-      active = true;
-    }
-  }
-
-  if (pathology.extremeDeltaBrush){
-    const scale = extremeDeltaBrushScale(e);
-    if (scale > 0){
-      const deltaPhase = 2*Math.PI*(1.45*clock + 0.04*stableHashUnit(e));
-      const delta = Math.sin(deltaPhase);
-      const crest = Math.pow(Math.max(0, delta), 1.7);
-      const beta = Math.sin(2*Math.PI*23.5*clock + 4*stableHashUnit(e)) + 0.46*Math.sin(2*Math.PI*31*clock + 2.4);
-      overlay += scale * (82*delta + 34*crest*beta);
-      preserve *= 0.56;
-      active = true;
-    }
-  }
-
-  if (pathology.alphaComa){
-    const scale = (/^(F3|F4|Fz|C3|C4|Cz)$/.test(e)) ? 1.00 : (/^(Fp1|Fp2|P3|P4|Pz|T3|T4)$/.test(e) ? 0.72 : 0.44);
-    const phase = 2*Math.PI*(10.4*clock + 0.025*stableHashUnit(e));
-    overlay += scale * (64*Math.sin(phase) + 8*Math.sin(2*phase));
-    preserve *= 0.24;
-    active = true;
-  }
-
-  if (pathology.hypsarrhythmia){
-    const h = stableHashUnit(e);
-    const slow =
-      135*Math.sin(2*Math.PI*(0.85 + 0.18*h)*clock + 6*h) +
-      92*Math.sin(2*Math.PI*(1.9 + 0.24*h)*clock + 3.5*h);
-    const pos = wrappedPhase(clock, 1.15 + 0.40*h, h);
-    let spike = 0;
-    if (pos < 0.19){
-      spike = transientGaussian(pos, 0.055, 0.018, 1.00) - transientGaussian(pos, 0.115, 0.040, 0.38);
-    }
-    const regional = /^(Fp1|Fp2|F3|F4|C3|C4|P3|P4|T3|T4|T5|T6)$/.test(e) ? 1.0 : 0.72;
-    overlay += regional * (slow + 160*spike);
-    preserve *= 0.10;
-    active = true;
-  }
-
-  return active ? {overlay, preserve:Math.max(0.02, preserve)} : null;
-}
 function resolveEmgLeadSelection(selection){
   const rng = state.rng || Math.random;
   if (selection === 'diffuse'){
@@ -2550,17 +1934,16 @@ function resolveEmgLeadSelection(selection){
 }
 function resolveBreachLeadSelection(selection){
   const rng = state.rng || Math.random;
-  const choice = normalizeBreachRhythmLeadSelection(selection);
+  const choice = (selection && BREACH_RHYTHM_LEAD_MAP.has(selection)) ? selection : 'random';
   const picked = choice === 'random'
-    ? BREACH_RHYTHM_FOCUS_ELECTRODES[Math.floor(rng() * BREACH_RHYTHM_FOCUS_ELECTRODES.length)]
+    ? LONGITUDINAL_CHAINS[Math.floor(rng() * LONGITUDINAL_CHAINS.length)]
     : null;
   const spec = picked
-    ? BREACH_RHYTHM_LEAD_MAP.get(picked)
+    ? {a:picked[0], b:picked[1], label:`${picked[0]}-${picked[1]}`}
     : BREACH_RHYTHM_LEAD_MAP.get(choice);
   const a = scalpXY(spec.a);
   const b = scalpXY(spec.b);
-  const focus = scalpXY(spec.primary || spec.b);
-  const center = [focus[0], focus[1]];
+  const center = [(a[0] + b[0]) * 0.5, (a[1] + b[1]) * 0.5];
   const vx = b[0] - a[0];
   const vy = b[1] - a[1];
   const len = Math.max(0.25, Math.hypot(vx, vy));
@@ -2569,7 +1952,6 @@ function resolveBreachLeadSelection(selection){
     label: spec.label,
     a: spec.a,
     b: spec.b,
-    primary: spec.primary || spec.b,
     center,
     axis: [vx / len, vy / len],
     halfSpan: Math.max(0.3, len * 0.5),
@@ -2599,7 +1981,6 @@ function buildBreachWeights(resolvedLead, orientation){
   const highElectrode = dir > 0 ? resolvedLead.b : resolvedLead.a;
   weights[lowElectrode] = Math.max(weights[lowElectrode] || 0, 0.60);
   weights[highElectrode] = Math.max(weights[highElectrode] || 0, 1.00);
-  if (resolvedLead.primary) weights[resolvedLead.primary] = Math.max(weights[resolvedLead.primary] || 0, 1.00);
   return weights;
 }
 function scheduleBreach(now, immediate=false){
@@ -3226,21 +2607,12 @@ function generalizedClonicStage_uV(tCh, meta, tonicEnd, clonicEnd){
   const period = 1/Math.max(2.4, Math.min(4.2, freq));
   const gap = 0.04 + 0.18*u;
   const cyc = (((phaseT + meta.cycleShift) % period) + period) % period;
+  if (cyc > period - gap) return -10 - 12*u;
   const ampSpike = 190 + 85*(1-u);
   const ampSlow  = 140 + 55*(1-u);
-  const activeEnd = Math.max(0.08, period - gap);
-  const rhythmic = (x)=>
-    clonicSpikeWave_uV(x, period, ampSpike, ampSlow) +
-    10*(1-u)*Math.sin(2*Math.PI*(7 - 2*u)*x + 0.35*meta.phase);
-  if (cyc <= activeEnd) return rhythmic(cyc);
-
-  const restDur = Math.max(0.001, period - activeEnd);
-  const x = clamp01((cyc - activeEnd) / restDur);
-  const edge = rhythmic(activeEnd);
-  const release = edge * Math.exp(-5.2*x);
-  const slowRelax = -(10 + 16*u) * Math.sin(Math.PI*x) * Math.exp(-1.15*x);
-  const lowRipple = (5 + 5*(1-u)) * Math.sin(2*Math.PI*(2.4 - 0.7*u)*(cyc - activeEnd) + 0.4*meta.phase) * Math.exp(-3.4*x);
-  return release + slowRelax + lowRipple;
+  let y = clonicSpikeWave_uV(cyc, period, ampSpike, ampSlow);
+  y += 10*(1-u)*Math.sin(2*Math.PI*(7 - 2*u)*cyc + 0.35*meta.phase);
+  return y;
 }
 function generalizedConvulsiveEmg_uV(tCh, e, ev, meta, onsetDur, recruitEnd, tonicEnd, clonicEnd){
   let ampBase = meta && meta.convulsiveEmgBase !== undefined ? meta.convulsiveEmgBase : 0;
@@ -3474,15 +2846,6 @@ function lpdLagRight(e){
   if (/^(Fp2)$/.test(e)) lag += 0.010;
   if (/^(.*1|F3|C3|P3|O1)$/.test(e)) lag += 0.034;
   return lag;
-}
-function lpdSideValue(side){
-  return LPD_SIDE_SET.has(side) ? side : 'left';
-}
-function lpdScaleForSide(e, side){
-  return lpdSideValue(side) === 'right' ? lpdScaleRight(e) : lpdScaleLeft(e);
-}
-function lpdLagForSide(e, side){
-  return lpdSideValue(side) === 'right' ? lpdLagRight(e) : lpdLagLeft(e);
 }
 
 
@@ -3873,12 +3236,10 @@ const state = {
   annotations: {enabled:false, drawing:false, pointerId:null, strokes:[]},
   realism: 0.75,
   speed: 1,
-  viewOffsetSec: 0,
-  rewind: {active:false, startedAt:0, fromOffset:0, toOffset:0, durationSec:0},
-  opts: {blink:false, rovingEyes:false, reading:false, ventilator:false, lambdaWaves:false, muRhythm:false, sreda:false, positiveSpikes14And6:false, bets:false, wicketSpikes:false, photicStim:false, chew:false, sweat:false, ekgArtifact:false, breach:false, pop:false, emg:false, ekgTrace:false},
-  artifactConfig: {photicHz:15, breachLead:'random', popLead:'random', emgLead:'diffuse', emgLevel:0, ekgLevel:0, blinkLevel:0, rovingEyesLevel:0, readingLevel:0, ventilatorLevel:0, lambdaWavesLevel:0, muRhythmLevel:0, sredaLevel:0, positiveSpikes14And6Level:0, betsLevel:0, wicketSpikesLevel:0, photicStimLevel:0, chewLevel:0, sweatLevel:0, breachLevel:0, popLevel:0},
-  pathology: {encephalopathy:false, burstSuppression:false, firda:false, tirda:false, extremeDeltaBrush:false, alphaComa:false, hypsarrhythmia:false, gpd:false, lpd:false, lpdSide:'left', bipds:false, interictal:false, interictalLead:'random', generalizedEmg:DEFAULT_EMG_LEVEL, focalSeizure:false, focalFocus:'random', fbtcSeizure:false, fbtcFocus:'random'},
-  seizureDurations: {generalized:10, absence:10, focal:10, fbtc:20},
+  opts: {blink:false, rovingEyes:false, reading:false, ventilator:false, photicStim:false, chew:false, sweat:false, ekgArtifact:false, breach:false, pop:false, emg:false, ekgTrace:false},
+  artifactConfig: {photicHz:15, breachLead:'random', popLead:'random', emgLead:'diffuse', emgLevel:0, ekgLevel:0, blinkLevel:0, rovingEyesLevel:0, readingLevel:0, ventilatorLevel:0, photicStimLevel:0, chewLevel:0, sweatLevel:0, breachLevel:0, popLevel:0},
+  pathology: {encephalopathy:false, burstSuppression:false, gpd:false, lpd:false, bipds:false, interictal:false, interictalLead:'random', generalizedEmg:DEFAULT_EMG_LEVEL, focalSeizure:false, focalFocus:'random', fbtcSeizure:false, fbtcFocus:'random'},
+  seizureDurations: {generalized:20, absence:10, focal:10, fbtc:20},
   seizureEvents: [],
   montage: 'bipolar_longitudinal',
   mode: 'awake',
@@ -3901,7 +3262,6 @@ const state = {
   encephalopathy: {active:false, t0:0, thetaHz:4.8, thetaHz2:5.6, deltaHz:2.1, deltaHz2:1.4, firdaHz:2.4, mixHz:0.09, ampTheta:18, ampDelta:12, ampFirda:14, phaseTheta:0, phaseTheta2:0, phaseDelta:0, phaseDelta2:0, phaseMix:0, phaseFirda:0, burstPhase:0},
   burstSuppression: {active:false, t0:0, burstDur:0.95, suppressionDur:3.0, thetaHz:4.8, deltaHz:1.9, fastHz:11.0, spikeHz:13.5, ampTheta:64, ampDelta:52, ampFast:20, ampSpike:36, suppressNoise:2.6, suppressDrift:1.2, phaseTheta:0, phaseDelta:0, phaseFast:0, phaseSpike:0, phaseMix:0, phaseSupp:0},
   photicStim: {active:false, t0:0, rateHz:15, driveAmp:38, harmonicAmp:12, flashAmp:15, envHz:0.08, phaseDrive:0, phaseHarm:0, phaseEnv:0, phaseFlash:0},
-  noxiousStim: {active:false, t0:0, dur:4.2, amp:1, phaseSlow:0, phaseFast1:0, phaseFast2:0, phaseFast3:0},
   interictalPathology: {active:false, t0:0, lead:'Random', weights:{}, lags:{}, interval:2.2, window:0.16, phaseShift:0, amp:190, slowAmp:62, plusAmp:12, fastPhase:0, doubletGap:0.045, doubletScale:0.32, clusterPeriod:10.0, clusterPhase:0, clusterFloor:0.36},
   popEvent: {active:false, t0:0, nextT:Infinity, electrode:'Fp1', polarity:1, amp:160, decayTau:0.35, recoveryTau:1.1, ringAmp:0.08, ringHz:3.0, dur:1.4},
   emg: {active:false, t0:0, focus:'Diffuse', weights:null, leftAmp:1, rightAmp:1, leftBurstHz:0.7, rightBurstHz:0.7, commonBurstHz:0.3, leftBurstPhase:0, rightBurstPhase:0, commonPhase:0, leftTempF1:30, leftTempF2:56, leftFrontF1:28, leftFrontF2:50, rightTempF1:30, rightTempF2:56, rightFrontF1:28, rightFrontF2:50, commonF1:34, commonF2:60, leftTempPhase:0, leftFrontPhase:0, rightTempPhase:0, rightFrontPhase:0, commonCarrierPhase:0},
@@ -3917,12 +3277,10 @@ const SENSITIVITY_VALUES = [3,5,7,10,15];
 const PLAYBACK_SPEED_VALUES = [0.25,0.5,1,1.5,2,4,8];
 const MIN_PLAYBACK_SPEED = 0.25;
 const MAX_PLAYBACK_SPEED = 8;
-const MAX_REWIND_SECONDS = 10;
-const REWIND_BUFFER_PAD_SECONDS = 0.75;
 const MAX_CANVAS_DPR = 2;
 const MIN_SEIZURE_DURATION = 10;
 const MAX_SEIZURE_DURATION = 99;
-const DEFAULT_SEIZURE_DURATIONS = { generalized:10, absence:10, focal:10, fbtc:20 };
+const DEFAULT_SEIZURE_DURATIONS = { generalized:20, absence:10, focal:10, fbtc:20 };
 function clampPlaybackSpeed(value){
   const v = Number(value);
   if (!Number.isFinite(v)) return 1;
@@ -3931,36 +3289,6 @@ function clampPlaybackSpeed(value){
 function formatPlaybackSpeed(value){
   const v = clampPlaybackSpeed(value);
   return Number.isInteger(v) ? `${v}x` : `${v.toFixed(2).replace(/0+$/,'').replace(/\.$/,'')}x`;
-}
-function bufferSecondsForDisplay(displaySeconds){
-  const visible = Math.max(1, Number(displaySeconds) || 10);
-  return visible + MAX_REWIND_SECONDS + REWIND_BUFFER_PAD_SECONDS;
-}
-function bufferSampleLengthForDisplay(displaySeconds){
-  return Math.max(1, Math.ceil(Fs * bufferSecondsForDisplay(displaySeconds)));
-}
-function availableRewindSeconds(){
-  const visible = Math.max(1, Number(state.seconds) || 10);
-  const generated = Math.max(0, Number(state.artClock) || 0);
-  const firstBuf = state.buffer && (state.buffer.get(ELECTRODES[0]) || state.buffer.get("AVG"));
-  const retained = firstBuf ? (firstBuf.length / Fs) : visible;
-  return Math.max(0, Math.min(MAX_REWIND_SECONDS, generated - visible, retained - visible - (1/Fs)));
-}
-function clampRewindOffset(value){
-  const v = Number(value);
-  if (!Number.isFinite(v) || v <= 0) return 0;
-  return Math.max(0, Math.min(MAX_REWIND_SECONDS, availableRewindSeconds(), v));
-}
-function currentRewindOffset(){
-  const clamped = clampRewindOffset(state.viewOffsetSec || 0);
-  if (clamped !== (state.viewOffsetSec || 0)) state.viewOffsetSec = clamped;
-  return clamped;
-}
-function currentDisplayClock(){
-  return Math.max(0, (Number(state.artClock) || 0) - currentRewindOffset());
-}
-function currentDisplaySampleIndex(){
-  return (Number(state.idx) || 0) - Math.round(currentRewindOffset() * Fs);
 }
 function reconcileModeControls(){
   if (RHYTHM_MODES.has(state.mode)) {
@@ -4004,29 +3332,26 @@ reconcileModeControls();
 
 function initChannels(){
   state.channels.clear(); state.buffer.clear();
-  const bufferLength = bufferSampleLengthForDisplay(state.seconds);
   ELECTRODES.forEach(e=>{
     state.channels.set(e, new Channel(e, state.rng));
-    state.buffer.set(e, new Float32Array(bufferLength));
+    state.buffer.set(e, new Float32Array(Fs*state.seconds));
   });
   // Synthetic buffer for average reference
-  state.buffer.set("AVG", new Float32Array(bufferLength));
+  state.buffer.set("AVG", new Float32Array(Fs*state.seconds));
   // Linked-ear helper for midline referential channels.
-  state.buffer.set("AAVG", new Float32Array(bufferLength));
-  state.buffer.set("EKG", new Float32Array(bufferLength));
-  state.buffer.set("EKG_REF", new Float32Array(bufferLength));
+  state.buffer.set("AAVG", new Float32Array(Fs*state.seconds));
+  state.buffer.set("EKG", new Float32Array(Fs*state.seconds));
+  state.buffer.set("EKG_REF", new Float32Array(Fs*state.seconds));
   state.idx = 0;
 }
 function resizeBuffersForSeconds(nextSeconds){
   const newSeconds = Math.max(1, Number(nextSeconds) || 10);
-  const newLen = bufferSampleLengthForDisplay(newSeconds);
+  const newLen = Math.max(1, Math.round(Fs * newSeconds));
   const firstBuf = state.buffer.get(ELECTRODES[0]) || state.buffer.get("AVG");
   if (!firstBuf || !state.buffer.size){
     state.seconds = newSeconds;
     initChannels();
     state.sampleCarry = 0;
-    state.viewOffsetSec = 0;
-    syncRewindUI();
     lastT = performance.now()/1000;
     return;
   }
@@ -4049,8 +3374,6 @@ function resizeBuffersForSeconds(nextSeconds){
   state.seconds = newSeconds;
   state.buffer = nextBuffer;
   state.sampleCarry = 0;
-  state.viewOffsetSec = clampRewindOffset(state.viewOffsetSec || 0);
-  syncRewindUI();
   lastT = performance.now()/1000;
 }
 
@@ -4125,9 +3448,6 @@ function syncAppViewportHeight(){
   const vv = window.visualViewport;
   const height = Math.max(1, Math.round(vv ? vv.height : window.innerHeight || document.documentElement.clientHeight || 0));
   document.documentElement.style.setProperty('--app-height', `${height}px`);
-  const topbarEl = document.getElementById('topbar');
-  const topbarHeight = Math.max(1, Math.round(topbarEl ? topbarEl.getBoundingClientRect().height : 64));
-  document.documentElement.style.setProperty('--topbar-height', `${topbarHeight}px`);
 }
 function resize(){
   syncAppViewportHeight();
@@ -4152,10 +3472,6 @@ if (typeof ResizeObserver === 'function'){
   const wrapEl = document.getElementById('wrap');
   if (wrapEl){
     new ResizeObserver(()=> resize()).observe(wrapEl);
-  }
-  const topbarEl = document.getElementById('topbar');
-  if (topbarEl){
-    new ResizeObserver(()=> resize()).observe(topbarEl);
   }
 }
 resize();
@@ -4191,7 +3507,7 @@ function getRenderLayout(pairs){
 }
 
 function isComplexVisualRenderLoad(){
-  const clock = currentDisplayClock();
+  const clock = state.artClock || 0;
   const rememberDenseTrace = ()=>{
     renderCache.denseUntil = Math.max(renderCache.denseUntil || 0, clock + Math.max(1, state.seconds || 10) + 0.35);
     return true;
@@ -4244,8 +3560,7 @@ function traceRenderStep(width, heavyVisualLoad){
 
 function appendTracePairPath(targetCtx, ra, rb, yMid, traceScale, sampleOffsets, xStart, xEnd, step=1){
   const len = ra.length;
-  const displayIdx = currentDisplaySampleIndex();
-  const baseIdx = ((displayIdx % len) + len) % len;
+  const baseIdx = ((state.idx % len) + len) % len;
   if (step <= 1){
     for(let x=xStart;x<xEnd;x++){
       let j = baseIdx - sampleOffsets[x];
@@ -4356,9 +3671,9 @@ function appendTraceTimePath(targetCtx, ra, rb, yMid, traceScale, tileStart, til
 function renderTraceTile(tileIndex, pairs, yMids, strokeColors, width, height, rowH, traceScale, pxPerSec, tileDuration){
   const tileStart = tileIndex * tileDuration;
   const tileEnd = tileStart + tileDuration;
-  const nowClock = currentDisplayClock();
+  const nowClock = state.artClock || 0;
   const drawEnd = Math.min(tileEnd, nowClock - 1/Fs);
-  const drawStart = Math.max(tileStart, 0, nowClock - (state.seconds || 10));
+  const drawStart = Math.max(tileStart, nowClock - (state.seconds || 10));
   const tileWidthCss = Math.ceil(tileDuration * pxPerSec) + 3;
   const dpr = traceCanvasDpr();
   const tile = ensureTraceTile(renderCache.traceTileCache.get(tileIndex) || {}, tileWidthCss, height, dpr);
@@ -4397,7 +3712,7 @@ function renderTraceTile(tileIndex, pairs, yMids, strokeColors, width, height, r
 
 function drawTraceTiles(pairs, yMids, strokeColors, width, height, rowH, traceScale){
   const seconds = Math.max(0.001, state.seconds || 10);
-  const nowClock = currentDisplayClock();
+  const nowClock = state.artClock || 0;
   const viewStart = nowClock - seconds;
   const pxPerSec = width / seconds;
   const tileDuration = 0.5;
@@ -4407,8 +3722,7 @@ function drawTraceTiles(pairs, yMids, strokeColors, width, height, rowH, traceSc
     renderCache.traceTileKey = baseKey;
   }
 
-  const firstVisibleTime = Math.max(0, viewStart);
-  const firstTile = Math.max(0, Math.floor(firstVisibleTime / tileDuration) - 1);
+  const firstTile = Math.floor(viewStart / tileDuration) - 1;
   const lastTile = Math.floor(nowClock / tileDuration);
   for (const key of Array.from(renderCache.traceTileCache.keys())){
     if (key < firstTile - 1 || key > lastTile + 1) renderCache.traceTileCache.delete(key);
@@ -4419,8 +3733,7 @@ function drawTraceTiles(pairs, yMids, strokeColors, width, height, rowH, traceSc
     const tileEnd = tileStart + tileDuration;
     if (tileEnd < viewStart || tileStart > nowClock) continue;
     let tile = renderCache.traceTileCache.get(tileIndex);
-    const needsCursorLimitedTile = tileEnd > nowClock - 1/Fs;
-    if (!tile || !tile.complete || needsCursorLimitedTile){
+    if (!tile || !tile.complete){
       tile = renderTraceTile(tileIndex, pairs, yMids, strokeColors, width, height, rowH, traceScale, pxPerSec, tileDuration);
     }
     const x = (tileStart - viewStart) * pxPerSec;
@@ -4485,7 +3798,7 @@ function annotationPointFromEvent(evt){
   const x = Math.max(0, Math.min(rect.width, evt.clientX - rect.left));
   const y = Math.max(0, Math.min(rect.height, evt.clientY - rect.top));
   const pxPerSec = rect.width / Math.max(.001, state.seconds || 10);
-  const sample = currentDisplaySampleIndex() - ((rect.width - x) / pxPerSec) * Fs;
+  const sample = state.idx - ((rect.width - x) / pxPerSec) * Fs;
   return {sample, yNorm:y / rect.height};
 }
 function appendAnnotationPoint(point, startStroke=false){
@@ -4511,7 +3824,7 @@ function appendAnnotationPoint(point, startStroke=false){
 }
 function pruneAnnotationStrokes(){
   ensureAnnotationDefaults();
-  const oldestVisibleSample = currentDisplaySampleIndex() - (Math.max(1, state.seconds || 10) * Fs) - 8;
+  const oldestVisibleSample = state.idx - (Math.max(1, state.seconds || 10) * Fs) - 8;
   state.annotations.strokes = state.annotations.strokes.filter((stroke)=>
     stroke && stroke.points && stroke.points.length && stroke.maxSample >= oldestVisibleSample
   );
@@ -4524,7 +3837,6 @@ function renderAnnotations(){
   const h = canvas.clientHeight;
   if (!w || !h) return;
   const pxPerSec = w / Math.max(.001, state.seconds || 10);
-  const displayIdx = currentDisplaySampleIndex();
   ctx.save();
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
@@ -4535,7 +3847,7 @@ function renderAnnotations(){
     let dotY = 0;
     ctx.beginPath();
     for (const point of stroke.points){
-      const x = w - ((displayIdx - point.sample) / Fs) * pxPerSec;
+      const x = w - ((state.idx - point.sample) / Fs) * pxPerSec;
       if (x < -18 || x > w + 18) continue;
       const y = Math.max(0, Math.min(h, point.yNorm * h));
       if (!started){
@@ -4573,7 +3885,7 @@ function drawGrid(rows, secs){
   ctx.fillRect(0,0,w,h);
 
   const pxPerSec = w / secs;
-  const nowT = currentDisplayClock();
+  const nowT = state.artClock || 0;
 
   // Minor every 0.2 s
   const minorSec = 0.2, minorPx = pxPerSec*minorSec, minorOffsetPx = (nowT % minorSec)*pxPerSec;
@@ -5045,7 +4357,6 @@ function step(){
     const frameGapMs = rawDt * 1000;
     renderCache.lastFrameMs = frameGapMs;
     renderCache.frameMs = renderCache.frameMs ? (0.90*renderCache.frameMs + 0.10*frameGapMs) : frameGapMs;
-    updateRewindAnimation(now);
     if(state.running){
       state.sampleCarry += dt*Fs*state.speed;
       const samples = Math.floor(state.sampleCarry);
@@ -5055,10 +4366,7 @@ function step(){
       const optionState = state.opts || {};
       const hasEncephalopathy = !!pathology.encephalopathy;
       const hasBurstSuppression = !!pathology.burstSuppression;
-      const hasExtraPathology = !!(pathology.firda || pathology.tirda || pathology.extremeDeltaBrush || pathology.alphaComa || pathology.hypsarrhythmia);
-      const hasBenignVariantArtifact = !!((optionState.lambdaWaves && currentEyesOpenSelection()) || optionState.muRhythm || optionState.sreda || optionState.positiveSpikes14And6 || optionState.bets || optionState.wicketSpikes);
       const hasPhoticStim = !!optionState.photicStim;
-      const hasNoxiousStim = !!(state.noxiousStim && state.noxiousStim.active);
       const hasGpd = !!pathology.gpd;
       const hasBipds = !!pathology.bipds;
       const hasLpd = !!pathology.lpd;
@@ -5076,12 +4384,6 @@ function step(){
       artifactLevels.rovingEyes = artifactLevel('rovingEyes');
       artifactLevels.reading = artifactLevel('reading');
       artifactLevels.ventilator = artifactLevel('ventilator');
-      artifactLevels.lambdaWaves = artifactLevel('lambdaWaves');
-      artifactLevels.muRhythm = artifactLevel('muRhythm');
-      artifactLevels.sreda = artifactLevel('sreda');
-      artifactLevels.positiveSpikes14And6 = artifactLevel('positiveSpikes14And6');
-      artifactLevels.bets = artifactLevel('bets');
-      artifactLevels.wicketSpikes = artifactLevel('wicketSpikes');
       artifactLevels.chew = artifactLevel('chew');
       artifactLevels.sweat = artifactLevel('sweat');
       artifactLevels.breach = artifactLevel('breach');
@@ -5179,10 +4481,6 @@ function step(){
           const ch=state.channels.get(e);
           const y0=ch.sample(sampleClock, opts);
           let y = y0;
-          if (hasBenignVariantArtifact) {
-            const benignVariant = benignVariantArtifactValue(sampleClock, e);
-            if (benignVariant) y += benignVariant;
-          }
           if (hasEncephalopathy) {
             const enceph = encephalopathyPathologyValue(sampleClock, e);
             if (enceph) y = y*enceph.preserve + enceph.overlay;
@@ -5195,14 +4493,6 @@ function step(){
             const photic = photicStimPathologyValue(sampleClock, e);
             if (photic) y = y*photic.preserve + photic.overlay;
           }
-          if (hasNoxiousStim) {
-            const noxious = noxiousStimulationValue(sampleClock, e);
-            if (noxious) y = y*noxious.preserve + noxious.overlay;
-          }
-          if (hasExtraPathology) {
-            const extraPath = extraPathologyValue(sampleClock, e);
-            if (extraPath) y = y*extraPath.preserve + extraPath.overlay;
-          }
           if (hasGpd) {
             y += gpdWave(sampleClock + gpdLag(e), rng) * gpdScale(e);
           }
@@ -5211,8 +4501,7 @@ function step(){
             y += lpdWave(sampleClock + lpdLagLeft(e), rng) * lpdScaleLeft(e);
             y += lpdWave(sampleClock + 0.31 + lpdLagRight(e), rng) * lpdScaleRight(e);
           } else if (hasLpd) {
-            const lpdSide = lpdSideValue(pathology.lpdSide);
-            y += lpdWave(sampleClock + lpdLagForSide(e, lpdSide), rng) * lpdScaleForSide(e, lpdSide);
+            y += lpdWave(sampleClock + lpdLagLeft(e), rng) * lpdScaleLeft(e);
           }
           if (hasInterictal) {
             y += interictalPathologyValue(sampleClock, e);
@@ -5267,10 +4556,6 @@ function step(){
         state.artClock+=1/Fs;
       }
       renderCache.sampleMs = 0.82*(renderCache.sampleMs || 0) + 0.18*(performance.now() - sampleStart);
-      if (state.noxiousStim && state.noxiousStim.active && state.artClock >= state.noxiousStim.t0 + state.noxiousStim.dur){
-        state.noxiousStim.active = false;
-        if (typeof updateActivationActionButtons === 'function') updateActivationActionButtons();
-      }
       // auto-uncheck and prune finished seizure events
       if (state.seizureEvents && state.seizureEvents.length){
         for (const ev of state.seizureEvents){
@@ -5281,10 +4566,6 @@ function step(){
         state.seizureEvents = state.seizureEvents.filter(ev => !ev.done);
         if (typeof updateSeizureActionButtons === 'function') updateSeizureActionButtons();
       }
-    }
-    if (!renderCache.nextRewindUiAt || now >= renderCache.nextRewindUiAt){
-      syncRewindUI();
-      renderCache.nextRewindUiAt = now + 0.5;
     }
     const heavyVisualLoad = isComplexVisualRenderLoad();
     if (!shouldRenderFrame(now, heavyVisualLoad)){
@@ -5301,7 +4582,8 @@ function step(){
     const rowH = canvas.clientHeight / pairs.length;
     const traceScale = rowH / (4 * state.uvPerDiv);
     const strokeColors = layout.strokeColors;
-    if (state.running && !(state.annotations && state.annotations.drawing)){
+    const visibleBufferPrimed = state.idx >= Math.max(1, Math.round(Fs * (state.seconds || 10)));
+    if (state.running && visibleBufferPrimed && !(state.annotations && state.annotations.drawing)){
       drawTraceTiles(pairs, yMids, strokeColors, w, canvas.clientHeight, rowH, traceScale);
     } else {
       renderCache.traceTileKey = '';
@@ -5323,86 +4605,11 @@ function step(){
  * UI wiring
  ***********************/
 const $=id=>document.getElementById(id);
-const topbarActionMenus = [
-  {button:$('clinicalMenuBtn'), menu:$('clinicalMenu')},
-  {button:$('learningMenuBtn'), menu:$('learningMenu')}
-].filter((entry)=> entry.button && entry.menu);
-function positionTopbarActionMenu(button, menu){
-  if (!button || !menu || menu.hidden) return;
-  const rect = button.getBoundingClientRect();
-  const viewport = window.visualViewport;
-  const viewportWidth = Math.max(1, viewport ? viewport.width : window.innerWidth);
-  const viewportHeight = Math.max(1, viewport ? viewport.height : window.innerHeight);
-  const viewportLeft = viewport ? viewport.offsetLeft : 0;
-  const viewportTop = viewport ? viewport.offsetTop : 0;
-  const pad = 8;
-  const gap = 8;
-  const menuWidth = Math.min(menu.offsetWidth || 0, viewportWidth - pad*2);
-  const menuHeight = Math.min(menu.offsetHeight || 0, viewportHeight - pad*2);
-  const left = viewportLeft + Math.max(pad, Math.min(rect.right - menuWidth, viewportWidth - menuWidth - pad));
-  const top = viewportTop + Math.max(pad, Math.min(rect.bottom + gap, viewportHeight - menuHeight - pad));
-  menu.style.setProperty('--topbar-menu-left', `${left}px`);
-  menu.style.setProperty('--topbar-menu-top', `${top}px`);
-}
-function closeTopbarActionMenus(exceptMenu=null){
-  for (const {button, menu} of topbarActionMenus){
-    if (menu === exceptMenu) continue;
-    menu.hidden = true;
-    button.setAttribute('aria-expanded', 'false');
-  }
-}
-function openTopbarActionMenu(button, menu){
-  closeTopbarActionMenus(menu);
-  menu.hidden = false;
-  button.setAttribute('aria-expanded', 'true');
-  positionTopbarActionMenu(button, menu);
-}
-function toggleTopbarActionMenu(button, menu){
-  if (!button || !menu) return;
-  if (menu.hidden) openTopbarActionMenu(button, menu);
-  else closeTopbarActionMenus();
-}
-topbarActionMenus.forEach(({button, menu})=>{
-  button.addEventListener('click', (e)=>{
-    e.stopPropagation();
-    toggleTopbarActionMenu(button, menu);
-  });
-});
-['pathologyBtn','artifactsBtn','activationBtn','quizBtnTop','tutorialBtnTop'].forEach((id)=>{
-  const action = $(id);
-  if (action) action.addEventListener('click', ()=> closeTopbarActionMenus());
-});
-document.addEventListener('click', (e)=>{
-  const target = e.target;
-  const insideMenu = topbarActionMenus.some(({button, menu})=>
-    (button && button.contains(target)) || (menu && menu.contains(target))
-  );
-  if (!insideMenu) closeTopbarActionMenus();
-});
-document.addEventListener('keydown', (e)=>{
-  if (e.key === 'Escape') closeTopbarActionMenus();
-});
-function repositionOpenTopbarActionMenus(){
-  for (const {button, menu} of topbarActionMenus){
-    if (!menu.hidden) positionTopbarActionMenu(button, menu);
-  }
-}
-window.addEventListener('resize', repositionOpenTopbarActionMenus);
-if (window.visualViewport){
-  window.visualViewport.addEventListener('resize', repositionOpenTopbarActionMenus);
-  window.visualViewport.addEventListener('scroll', repositionOpenTopbarActionMenus);
-}
 const ARTIFACT_LEVEL_FIELDS = {
   blink:'blinkLevel',
   rovingEyes:'rovingEyesLevel',
   reading:'readingLevel',
   ventilator:'ventilatorLevel',
-  lambdaWaves:'lambdaWavesLevel',
-  muRhythm:'muRhythmLevel',
-  sreda:'sredaLevel',
-  positiveSpikes14And6:'positiveSpikes14And6Level',
-  bets:'betsLevel',
-  wicketSpikes:'wicketSpikesLevel',
   photicStim:'photicStimLevel',
   chew:'chewLevel',
   sweat:'sweatLevel',
@@ -5415,12 +4622,6 @@ const ARTIFACT_DEFAULT_LEVELS = {
   rovingEyes:0.65,
   reading:0.65,
   ventilator:0.70,
-  lambdaWaves:0.70,
-  muRhythm:0.65,
-  sreda:0.70,
-  positiveSpikes14And6:0.70,
-  bets:0.70,
-  wicketSpikes:0.72,
   photicStim:0.70,
   chew:0.75,
   sweat:0.70,
@@ -5433,12 +4634,6 @@ const ARTIFACT_SLIDER_CONFIG = {
   rovingEyes:{input:'rovingEyes', output:'rovingEyesValue'},
   reading:{input:'reading', output:'readingValue'},
   ventilator:{input:'ventilator', output:'ventilatorValue'},
-  lambdaWaves:{input:'lambdaWaves', output:'lambdaWavesValue'},
-  muRhythm:{input:'muRhythm', output:'muRhythmValue'},
-  sreda:{input:'sreda', output:'sredaValue'},
-  positiveSpikes14And6:{input:'positiveSpikes14And6', output:'positiveSpikes14And6Value'},
-  bets:{input:'bets', output:'betsValue'},
-  wicketSpikes:{input:'wicketSpikes', output:'wicketSpikesValue'},
   photicStim:{input:'photicStim', output:'photicStimValue'},
   chew:{input:'chew', output:'chewValue'},
   sweat:{input:'sweat', output:'sweatValue'},
@@ -5488,14 +4683,8 @@ function ensurePathologyDefaults(){
   state.pathology = {
     encephalopathy:false,
     burstSuppression:false,
-    firda:false,
-    tirda:false,
-    extremeDeltaBrush:false,
-    alphaComa:false,
-    hypsarrhythmia:false,
     gpd:false,
     lpd:false,
-    lpdSide:'left',
     bipds:false,
     interictal:false,
     interictalLead:'random',
@@ -5506,8 +4695,7 @@ function ensurePathologyDefaults(){
     fbtcFocus:'random',
     ...(state.pathology || {})
   };
-  state.pathology.lpdSide = lpdSideValue(state.pathology.lpdSide);
-  state.pathology.interictalLead = normalizeInterictalLeadSelection(state.pathology.interictalLead);
+  if (!INTERICTAL_LEAD_MAP.has(state.pathology.interictalLead)) state.pathology.interictalLead = 'random';
   const generalizedEmg = Number(state.pathology.generalizedEmg);
   state.pathology.generalizedEmg = Number.isFinite(generalizedEmg) ? Math.max(0, Math.min(1, generalizedEmg)) : DEFAULT_EMG_LEVEL;
   if (!FOCAL_SEIZURE_FOCUS_MAP.has(state.pathology.focalFocus)) state.pathology.focalFocus = 'random';
@@ -5526,12 +4714,6 @@ function ensureArtifactDefaults(){
     rovingEyesLevel:0,
     readingLevel:0,
     ventilatorLevel:0,
-    lambdaWavesLevel:0,
-    muRhythmLevel:0,
-    sredaLevel:0,
-    positiveSpikes14And6Level:0,
-    betsLevel:0,
-    wicketSpikesLevel:0,
     photicStimLevel:0,
     chewLevel:0,
     sweatLevel:0,
@@ -5540,7 +4722,7 @@ function ensureArtifactDefaults(){
     ...priorConfig
   };
   if (!PHOTIC_STIM_RATE_SET.has(Number(state.artifactConfig.photicHz))) state.artifactConfig.photicHz = 15;
-  state.artifactConfig.breachLead = normalizeBreachRhythmLeadSelection(state.artifactConfig.breachLead);
+  if (!BREACH_RHYTHM_LEAD_MAP.has(state.artifactConfig.breachLead)) state.artifactConfig.breachLead = 'random';
   if (!POP_LEAD_SET.has(state.artifactConfig.popLead)) state.artifactConfig.popLead = 'random';
   if (!(state.artifactConfig.emgLead === 'diffuse' || EMG_LEAD_MAP.has(state.artifactConfig.emgLead))) state.artifactConfig.emgLead = 'diffuse';
   const emgLevel = Number(state.artifactConfig.emgLevel);
@@ -5656,7 +4838,7 @@ function populateInterictalLeadSelect(){
     sel.replaceChildren(frag);
   }
   ensurePathologyDefaults();
-  sel.value = normalizeInterictalLeadSelection(state.pathology.interictalLead);
+  sel.value = state.pathology.interictalLead || 'random';
 }
 function populatePhoticHzSelect(){
   const sel = $('photicHzSel');
@@ -5674,22 +4856,6 @@ function populatePhoticHzSelect(){
   ensureArtifactDefaults();
   sel.value = String(state.artifactConfig.photicHz || 15);
 }
-function populateLpdSideSelect(){
-  const sel = $('lpdSideSel');
-  if (!sel) return;
-  if (sel.options.length !== LPD_SIDE_OPTIONS.length){
-    const frag = document.createDocumentFragment();
-    LPD_SIDE_OPTIONS.forEach((opt)=>{
-      const el = document.createElement('option');
-      el.value = opt.value;
-      el.textContent = opt.label;
-      frag.appendChild(el);
-    });
-    sel.replaceChildren(frag);
-  }
-  ensurePathologyDefaults();
-  sel.value = state.pathology.lpdSide;
-}
 function populateBreachLeadSelect(){
   const sel = $('breachLeadSel');
   if (!sel) return;
@@ -5704,7 +4870,7 @@ function populateBreachLeadSelect(){
     sel.replaceChildren(frag);
   }
   ensureArtifactDefaults();
-  sel.value = normalizeBreachRhythmLeadSelection(state.artifactConfig.breachLead);
+  sel.value = state.artifactConfig.breachLead || 'random';
 }
 function populatePopLeadSelect(){
   const sel = $('popLeadSel');
@@ -5789,81 +4955,13 @@ function syncPlaybackSpeedUI(){
   if (speedSlider) speedSlider.value = speedString;
   if (speedValue) speedValue.textContent = formatPlaybackSpeed(speed);
 }
-function syncRewindUI(){
-  const rewindBtn = $('rewindBtn');
-  const offset = clampRewindOffset(state.viewOffsetSec || 0);
-  state.viewOffsetSec = offset;
-  if (!rewindBtn) return;
-  const rewinding = !!(state.rewind && state.rewind.active);
-  const available = availableRewindSeconds();
-  const canRewind = available >= 0.25 && offset < MAX_REWIND_SECONDS - 0.25;
-  rewindBtn.disabled = rewinding || !canRewind;
-  rewindBtn.classList.toggle('active', rewinding || offset > 0.05);
-  rewindBtn.setAttribute('aria-pressed', rewinding || offset > 0.05 ? 'true' : 'false');
-  rewindBtn.textContent = '-10s';
-  rewindBtn.title = rewinding
-    ? 'Rolling back 10 seconds'
-    : (offset > 0.05
-      ? `Trace is paused ${offset.toFixed(offset % 1 ? 1 : 0)} seconds back. Press Play to return live.`
-      : (canRewind ? 'Roll back trace 10 seconds' : 'Rewind is available after enough trace history is retained'));
-}
-function setRewindOffset(value, options={}){
-  if (state.rewind && state.rewind.active && !options.keepAnimation){
-    state.rewind.active = false;
-  }
-  state.viewOffsetSec = clampRewindOffset(value);
-  renderCache.traceTileCache.clear();
-  renderCache.traceTileKey = '';
-  syncRewindUI();
-}
-function updateRewindAnimation(now){
-  const rewind = state.rewind;
-  if (!(rewind && rewind.active)) return;
-  const duration = Math.max(0.15, Number(rewind.durationSec) || MAX_REWIND_SECONDS);
-  const elapsed = Math.max(0, now - (Number(rewind.startedAt) || now));
-  const progress = Math.min(1, elapsed / duration);
-  const eased = progress;
-  const from = Number(rewind.fromOffset) || 0;
-  const to = Number(rewind.toOffset) || 0;
-  state.viewOffsetSec = clampRewindOffset(from + (to - from) * eased);
-  if (progress >= 1){
-    rewind.active = false;
-    state.viewOffsetSec = clampRewindOffset(to);
-    setPlaybackRunning(false);
-  }
-  syncRewindUI();
-}
-function startTenSecondRollback(){
-  ensureAnnotationDefaults();
-  if (state.annotations.enabled) setPenToolEnabled(false, {resume:false});
-  const from = currentRewindOffset();
-  const available = availableRewindSeconds();
-  const to = Math.min(MAX_REWIND_SECONDS, available, from + MAX_REWIND_SECONDS);
-  if (to <= from + 0.05){
-    syncRewindUI();
-    return;
-  }
-  state.rewind = {
-    active:true,
-    startedAt:performance.now()/1000,
-    fromOffset:from,
-    toOffset:to,
-    durationSec:Math.max(0.15, to - from)
-  };
-  setPlaybackRunning(false);
-  syncRewindUI();
-}
 function applyPlaybackSpeed(value){
   state.speed = clampPlaybackSpeed(value);
   syncPlaybackSpeedUI();
 }
 function setPlaybackRunning(running){
-  if (running){
-    if (state.rewind && state.rewind.active) state.rewind.active = false;
-  }
   state.running = !!running;
   syncPlaybackButtons();
-  syncRewindUI();
 }
 function togglePlayback(){
   ensureAnnotationDefaults();
@@ -6031,17 +5129,17 @@ function applyDisplaySeedPayload(payload){
 
   setPlaybackRunning(controls.running !== false);
   state.opts = {
-    blink:false, rovingEyes:false, reading:false, ventilator:false, lambdaWaves:false, muRhythm:false, sreda:false, positiveSpikes14And6:false, bets:false, wicketSpikes:false, photicStim:false, chew:false, sweat:false, ekgArtifact:false, breach:false, pop:false, emg:false, ekgTrace:false,
+    blink:false, rovingEyes:false, reading:false, ventilator:false, photicStim:false, chew:false, sweat:false, ekgArtifact:false, breach:false, pop:false, emg:false, ekgTrace:false,
     ...(payload.opts || {})
   };
   const payloadArtifactConfig = payload.artifactConfig || {};
   state.artifactConfig = {
     photicHz:15, breachLead:'random', popLead:'random', emgLead:'diffuse', emgLevel:0, ekgLevel:0,
-    blinkLevel:0, rovingEyesLevel:0, readingLevel:0, ventilatorLevel:0, lambdaWavesLevel:0, muRhythmLevel:0, sredaLevel:0, positiveSpikes14And6Level:0, betsLevel:0, wicketSpikesLevel:0, photicStimLevel:0, chewLevel:0, sweatLevel:0, breachLevel:0, popLevel:0,
+    blinkLevel:0, rovingEyesLevel:0, readingLevel:0, ventilatorLevel:0, photicStimLevel:0, chewLevel:0, sweatLevel:0, breachLevel:0, popLevel:0,
     ...payloadArtifactConfig
   };
   state.pathology = {
-    encephalopathy:false, burstSuppression:false, firda:false, tirda:false, extremeDeltaBrush:false, alphaComa:false, hypsarrhythmia:false, gpd:false, lpd:false, lpdSide:'left', bipds:false,
+    encephalopathy:false, burstSuppression:false, gpd:false, lpd:false, bipds:false,
     interictal:false, interictalLead:'random', generalizedEmg:DEFAULT_EMG_LEVEL, focalSeizure:false, focalFocus:'random', fbtcSeizure:false, fbtcFocus:'random',
     ...(payload.pathology || {})
   };
@@ -6098,13 +5196,13 @@ function regen(){
   }
   state.artifactConfig.emgLevel = readEmgLevelFromUI();
   state.artifactConfig.ekgLevel = readEkgArtifactLevelFromUI();
-  state.opts={ blink:artifactLevel('blink') > 0, rovingEyes:artifactLevel('rovingEyes') > 0, reading:artifactLevel('reading') > 0, ventilator:artifactLevel('ventilator') > 0, lambdaWaves:artifactLevel('lambdaWaves') > 0, muRhythm:artifactLevel('muRhythm') > 0, sreda:artifactLevel('sreda') > 0, positiveSpikes14And6:artifactLevel('positiveSpikes14And6') > 0, bets:artifactLevel('bets') > 0, wicketSpikes:artifactLevel('wicketSpikes') > 0, photicStim:artifactLevel('photicStim') > 0, chew:artifactLevel('chew') > 0, sweat:artifactLevel('sweat') > 0, ekgArtifact:(state.artifactConfig.ekgLevel > 0), breach:artifactLevel('breach') > 0, pop:artifactLevel('pop') > 0, emg:(state.artifactConfig.emgLevel > 0), ekgTrace:$('showEkg')?.checked||false };
+  state.opts={ blink:artifactLevel('blink') > 0, rovingEyes:artifactLevel('rovingEyes') > 0, reading:artifactLevel('reading') > 0, ventilator:artifactLevel('ventilator') > 0, photicStim:artifactLevel('photicStim') > 0, chew:artifactLevel('chew') > 0, sweat:artifactLevel('sweat') > 0, ekgArtifact:(state.artifactConfig.ekgLevel > 0), breach:artifactLevel('breach') > 0, pop:artifactLevel('pop') > 0, emg:(state.artifactConfig.emgLevel > 0), ekgTrace:$('showEkg')?.checked||false };
   state.artifactConfig.photicHz = PHOTIC_STIM_RATE_SET.has(Number($('photicHzSel')?.value)) ? Number($('photicHzSel').value) : (state.artifactConfig.photicHz || 15);
-  state.artifactConfig.breachLead = normalizeBreachRhythmLeadSelection($('breachLeadSel')?.value || state.artifactConfig.breachLead);
+  state.artifactConfig.breachLead = BREACH_RHYTHM_LEAD_MAP.has($('breachLeadSel')?.value) ? $('breachLeadSel').value : (state.artifactConfig.breachLead || 'random');
   state.artifactConfig.popLead = POP_LEAD_SET.has($('popLeadSel')?.value) ? $('popLeadSel').value : (state.artifactConfig.popLead || 'random');
   state.artifactConfig.emgLead = ($('emgLeadSel')?.value === 'diffuse' || EMG_LEAD_MAP.has($('emgLeadSel')?.value)) ? $('emgLeadSel').value : (state.artifactConfig.emgLead || 'diffuse');
   state.montage=$('montageSel')?$('montageSel').value:state.montage;
-  state.pdrHz=9.0 + 1.8*state.rng(); state.pdrPhase=0; state.artClock=0; state.sampleCarry=0; state.viewOffsetSec=0; state.rewind={active:false, startedAt:0, fromOffset:0, toOffset:0, durationSec:0};
+  state.pdrHz=9.0 + 1.8*state.rng(); state.pdrPhase=0; state.artClock=0; state.sampleCarry=0;
   resetSleepTransientState(0);
   reseedSleepTransientTargets(state.mode);
   lastT=performance.now()/1000; initChannels();
@@ -6119,12 +5217,9 @@ function regen(){
   syncEncephalopathyPathology(true);
   syncBurstSuppressionPathology(true);
   syncPhoticStimPathology(true);
-  syncNoxiousStimulation(false);
   syncInterictalPathology(true);
   syncPopGenerator(true);
   syncEmgGenerator(true);
-  primeTutorialBaselineDisplay(bufferSecondsForDisplay(state.seconds) - REWIND_BUFFER_PAD_SECONDS);
-  syncRewindUI();
 }
 function updateEyesOpenEnabled(){
   const dis=(state.mode==='n1'||state.mode==='n2'||state.mode==='sws'||state.mode==='rem');
@@ -6149,7 +5244,6 @@ function syncControlsFromState(){
   syncSeizureDurationInput('absenceSzDur', 'absence');
   syncSeizureDurationInput('focalSzDur', 'focal');
   syncSeizureDurationInput('fbtcSzDur', 'fbtc');
-  populateLpdSideSelect();
   populateInterictalLeadSelect();
   populatePhoticHzSelect();
   populateFocalFocusSelect();
@@ -6164,21 +5258,13 @@ function syncControlsFromState(){
   syncEmgSliderUI();
   syncEkgArtifactSliderUI();
   syncPlaybackSpeedUI();
-  syncRewindUI();
   if ($('gpd')) $('gpd').checked = !!state.pathology.gpd;
   if ($('lpd')) $('lpd').checked = !!state.pathology.lpd;
-  if ($('lpdSideSel')) $('lpdSideSel').value = lpdSideValue(state.pathology.lpdSide);
   if ($('encephalopathy')) $('encephalopathy').checked = !!state.pathology.encephalopathy;
   if ($('burstSuppression')) $('burstSuppression').checked = !!state.pathology.burstSuppression;
-  if ($('firda')) $('firda').checked = !!state.pathology.firda;
-  if ($('tirda')) $('tirda').checked = !!state.pathology.tirda;
-  if ($('extremeDeltaBrush')) $('extremeDeltaBrush').checked = !!state.pathology.extremeDeltaBrush;
-  if ($('alphaComa')) $('alphaComa').checked = !!state.pathology.alphaComa;
-  if ($('hypsarrhythmia')) $('hypsarrhythmia').checked = !!state.pathology.hypsarrhythmia;
   if ($('interictal')) $('interictal').checked = !!state.pathology.interictal;
   updatePenToolUI();
   if (typeof updateSeizureActionButtons === 'function') updateSeizureActionButtons();
-  if (typeof updateActivationActionButtons === 'function') updateActivationActionButtons();
 }
 if($('play')) $('play').addEventListener('click', togglePlayback);
 if($('penToolBtn')) $('penToolBtn').addEventListener('click', togglePenTool);
@@ -6254,74 +5340,11 @@ document.addEventListener('keydown', (e)=>{
 const artifactsBtn = $('artifactsBtn');
 const artifactsModal = document.getElementById('artifactsModal');
 const artifactsClose = document.getElementById('artifactsClose');
-const artifactsCollapse = document.getElementById('artifactsCollapse');
-const artifactsRestoreTab = document.getElementById('artifactsRestoreTab');
-const activationBtn = $('activationBtn');
-const activationModal = document.getElementById('activationModal');
-const activationClose = document.getElementById('activationClose');
-const activationCollapse = document.getElementById('activationCollapse');
-const activationRestoreTab = document.getElementById('activationRestoreTab');
-function setPanelAndRestoreVisibility(modal, restoreTab, visible, collapsed=false){
-  if (modal) modal.hidden = !visible;
-  if (restoreTab) restoreTab.hidden = !collapsed;
-}
-function openActivationPanel(){
-  closePathologyPanel();
-  closeArtifactsPanel();
-  updateActivationActionButtons();
-  setPanelAndRestoreVisibility(activationModal, activationRestoreTab, true, false);
-}
-function closeActivationPanel(){
-  setPanelAndRestoreVisibility(activationModal, activationRestoreTab, false, false);
-}
-function collapseActivationPanel(){
-  setPanelAndRestoreVisibility(activationModal, activationRestoreTab, false, true);
-}
-function openArtifactsPanel(){
-  closePathologyPanel();
-  closeActivationPanel();
-  setPanelAndRestoreVisibility(artifactsModal, artifactsRestoreTab, true, false);
-}
-function closeArtifactsPanel(){
-  setPanelAndRestoreVisibility(artifactsModal, artifactsRestoreTab, false, false);
-}
-function collapseArtifactsPanel(){
-  setPanelAndRestoreVisibility(artifactsModal, artifactsRestoreTab, false, true);
-}
-function openPathologyPanel(){
-  const modal = document.getElementById('pathologyModal');
-  const restore = document.getElementById('pathologyRestoreTab');
-  closeArtifactsPanel();
-  closeActivationPanel();
-  setPanelAndRestoreVisibility(modal, restore, true, false);
-}
-function closePathologyPanel(){
-  const modal = document.getElementById('pathologyModal');
-  const restore = document.getElementById('pathologyRestoreTab');
-  setPanelAndRestoreVisibility(modal, restore, false, false);
-}
-function collapsePathologyPanel(){
-  const modal = document.getElementById('pathologyModal');
-  const restore = document.getElementById('pathologyRestoreTab');
-  setPanelAndRestoreVisibility(modal, restore, false, true);
-}
-function closeClinicalPanels(){
-  closePathologyPanel();
-  closeArtifactsPanel();
-  closeActivationPanel();
-}
-window.openPathologyPanel = openPathologyPanel;
-window.closePathologyPanel = closePathologyPanel;
-window.closeActivationPanel = closeActivationPanel;
-window.closeClinicalPanels = closeClinicalPanels;
 function positionArtifactsPopup(){
   if (!artifactsBtn || !artifactsModal || artifactsModal.hidden) return;
   const card = artifactsModal.querySelector('.modal-card');
   if (!card) return;
-  const anchor = (artifactsBtn.offsetParent !== null && artifactsBtn.getClientRects().length)
-    ? artifactsBtn
-    : ($('clinicalMenuBtn') || artifactsBtn);
-  const btnRect = anchor.getBoundingClientRect();
+  const btnRect = artifactsBtn.getBoundingClientRect();
   const viewport = window.visualViewport;
   const viewportWidth = Math.max(1, viewport ? viewport.width : window.innerWidth);
   const viewportHeight = Math.max(1, viewport ? viewport.height : window.innerHeight);
@@ -6333,30 +5356,8 @@ function positionArtifactsPopup(){
   const cardHeight = card.offsetHeight || 0;
   const left = viewportLeft + Math.max(pad, Math.min(btnRect.right - cardWidth, viewportWidth - cardWidth - pad));
   const top = viewportTop + Math.max(pad, Math.min(btnRect.bottom + gap, viewportHeight - cardHeight - pad));
-  artifactsModal.style.setProperty('--popup-left', `${left}px`);
-  artifactsModal.style.setProperty('--popup-top', `${top}px`);
-}
-function positionActivationPopup(){
-  if (!activationBtn || !activationModal || activationModal.hidden) return;
-  const card = activationModal.querySelector('.modal-card');
-  if (!card) return;
-  const anchor = (activationBtn.offsetParent !== null && activationBtn.getClientRects().length)
-    ? activationBtn
-    : ($('clinicalMenuBtn') || activationBtn);
-  const btnRect = anchor.getBoundingClientRect();
-  const viewport = window.visualViewport;
-  const viewportWidth = Math.max(1, viewport ? viewport.width : window.innerWidth);
-  const viewportHeight = Math.max(1, viewport ? viewport.height : window.innerHeight);
-  const viewportLeft = viewport ? viewport.offsetLeft : 0;
-  const viewportTop = viewport ? viewport.offsetTop : 0;
-  const gap = 8;
-  const pad = 8;
-  const cardWidth = Math.min(card.offsetWidth || 0, viewportWidth - pad*2);
-  const cardHeight = card.offsetHeight || 0;
-  const left = viewportLeft + Math.max(pad, Math.min(btnRect.right - cardWidth, viewportWidth - cardWidth - pad));
-  const top = viewportTop + Math.max(pad, Math.min(btnRect.bottom + gap, viewportHeight - cardHeight - pad));
-  activationModal.style.setProperty('--popup-left', `${left}px`);
-  activationModal.style.setProperty('--popup-top', `${top}px`);
+  artifactsModal.style.setProperty('--artifacts-left', `${left}px`);
+  artifactsModal.style.setProperty('--artifacts-top', `${top}px`);
 }
 function syncArtifactGeneratorForKey(key, forceRestart=false){
   if (key === 'blink') syncBlinkGenerator(forceRestart);
@@ -6389,23 +5390,19 @@ function bindArtifactSlider(key){
 }
 if (artifactsBtn && artifactsModal) {
   const openArtifacts = () => {
-    openArtifactsPanel();
+    artifactsModal.hidden = false;
+    requestAnimationFrame(positionArtifactsPopup);
   };
+  const closeArtifacts = () => { artifactsModal.hidden = true; };
   artifactsBtn.addEventListener('click', (e) => { e.stopPropagation(); openArtifacts(); });
-  artifactsClose?.addEventListener('click', closeArtifactsPanel);
-  artifactsCollapse?.addEventListener('click', collapseArtifactsPanel);
-  artifactsRestoreTab?.addEventListener('click', openArtifactsPanel);
-  document.addEventListener('keydown', (e) => { if (!artifactsModal.hidden && e.key === 'Escape') closeArtifactsPanel(); });
-}
-if (activationBtn && activationModal) {
-  const openActivation = () => {
-    openActivationPanel();
-  };
-  activationBtn.addEventListener('click', (e) => { e.stopPropagation(); openActivation(); });
-  activationClose?.addEventListener('click', closeActivationPanel);
-  activationCollapse?.addEventListener('click', collapseActivationPanel);
-  activationRestoreTab?.addEventListener('click', openActivationPanel);
-  document.addEventListener('keydown', (e) => { if (!activationModal.hidden && e.key === 'Escape') closeActivationPanel(); });
+  artifactsClose?.addEventListener('click', closeArtifacts);
+  artifactsModal.addEventListener('click', (e) => { if (e.target === artifactsModal) closeArtifacts(); });
+  document.addEventListener('keydown', (e) => { if (!artifactsModal.hidden && e.key === 'Escape') closeArtifacts(); });
+  window.addEventListener('resize', positionArtifactsPopup);
+  if (window.visualViewport){
+    window.visualViewport.addEventListener('resize', positionArtifactsPopup);
+    window.visualViewport.addEventListener('scroll', positionArtifactsPopup);
+  }
 }
 Object.keys(ARTIFACT_SLIDER_CONFIG).forEach(bindArtifactSlider);
 const ekgArtifactSlider = $('ekgArtifactSlider');
@@ -6450,7 +5447,7 @@ const breachLeadSel = $('breachLeadSel');
 if (breachLeadSel){
   breachLeadSel.addEventListener('change', ()=>{
     ensureArtifactDefaults();
-    state.artifactConfig.breachLead = normalizeBreachRhythmLeadSelection(breachLeadSel.value);
+    state.artifactConfig.breachLead = BREACH_RHYTHM_LEAD_MAP.has(breachLeadSel.value) ? breachLeadSel.value : 'random';
     populateBreachLeadSelect();
     if (state.opts && state.opts.breach) syncBreachGenerator(true);
   });
@@ -6493,11 +5490,6 @@ if (speedSlider) {
   });
 }
 syncPlaybackSpeedUI();
-const rewindBtn = $('rewindBtn');
-if (rewindBtn){
-  rewindBtn.addEventListener('click', startTenSecondRollback);
-}
-syncRewindUI();
 
 const optionsClose = document.getElementById('optionsClose');
 if (optBtn && optionsModal) {
@@ -6555,7 +5547,7 @@ if (aboutSeedApply){
     }
   });
 }
-if($('timebase')) $('timebase').addEventListener('change',()=>{ resizeBuffersForSeconds(secondsFromTimebase($('timebase').value)); setRewindOffset(0); });
+if($('timebase')) $('timebase').addEventListener('change',()=>{ resizeBuffersForSeconds(secondsFromTimebase($('timebase').value)); });
 if($('sensitivity')) $('sensitivity').addEventListener('change',()=>{ applySensitivityValue($('sensitivity').value); syncControlsFromState(); });
 
 /***********************
@@ -6590,18 +5582,10 @@ requestAnimationFrame(step);
 const pathologyBtn = $('pathologyBtn');
 const pathologyModal = document.getElementById('pathologyModal');
 const pathologyClose = document.getElementById('pathologyClose');
-const pathologyCollapse = document.getElementById('pathologyCollapse');
-const pathologyRestoreTab = document.getElementById('pathologyRestoreTab');
 const encephalopathyBox = $('encephalopathy');
 const burstSuppressionBox = $('burstSuppression');
-const firdaBox = $('firda');
-const tirdaBox = $('tirda');
-const extremeDeltaBrushBox = $('extremeDeltaBrush');
-const alphaComaBox = $('alphaComa');
-const hypsarrhythmiaBox = $('hypsarrhythmia');
 const gpdBox = $('gpd');
 const lpdBox = $('lpd');
-const lpdSideSel = $('lpdSideSel');
 const interictalBox = $('interictal');
 const interictalLeadSel = $('interictalLeadSel');
 const quizBtnTop = $('quizBtnTop');
@@ -6626,7 +5610,7 @@ function updateSeizureActionButtons(){
   const absenceActive = !!((state.seizureEvents||[]).some(ev => !ev.done && ev.type==='absence'));
   if (absenceBtn){
     absenceBtn.disabled = absenceActive;
-    absenceBtn.textContent = absenceActive ? 'Hyperventilation running...' : 'Hyperventilation';
+    absenceBtn.textContent = absenceActive ? 'Absence seizure running...' : 'Absence seizure';
   }
   if (absenceSzDurInput) absenceSzDurInput.disabled = absenceActive;
   const focalActive = !!(state.focalSz && state.focalSz.active);
@@ -6647,22 +5631,11 @@ function updateSeizureActionButtons(){
   if (fbtcFocusInput) fbtcFocusInput.disabled = fbtcActive;
 }
 window.updateSeizureActionButtons = updateSeizureActionButtons;
-function updateActivationActionButtons(){
-  const noxiousBtn = $('noxiousStim');
-  const noxiousActive = !!(state.noxiousStim && state.noxiousStim.active);
-  if (noxiousBtn){
-    noxiousBtn.disabled = noxiousActive;
-    noxiousBtn.textContent = noxiousActive ? 'Noxious stimulation running...' : 'Noxious stimulation';
-  }
-  updateSeizureActionButtons();
-}
-window.updateActivationActionButtons = updateActivationActionButtons;
-if (pathologyBtn && pathologyModal) pathologyBtn.addEventListener('click', ()=>{ openPathologyPanel(); });
-if (pathologyClose) pathologyClose.addEventListener('click', closePathologyPanel);
-if (pathologyCollapse) pathologyCollapse.addEventListener('click', collapsePathologyPanel);
-if (pathologyRestoreTab) pathologyRestoreTab.addEventListener('click', openPathologyPanel);
+if (pathologyBtn && pathologyModal) pathologyBtn.addEventListener('click', ()=>{ pathologyModal.hidden = false; });
+if (pathologyClose) pathologyClose.addEventListener('click', ()=>{ pathologyModal.hidden = true; });
 if (pathologyModal) {
-  window.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && !pathologyModal.hidden) closePathologyPanel(); });
+  pathologyModal.addEventListener('click', (e)=>{ if(e.target===pathologyModal) pathologyModal.hidden = true; });
+  window.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && !pathologyModal.hidden) pathologyModal.hidden = true; });
 }
 if (gpdBox) {
   gpdBox.checked = !!(state.pathology && state.pathology.gpd);
@@ -6686,35 +5659,12 @@ if (burstSuppressionBox) {
     syncBurstSuppressionPathology(true);
   });
 }
-function wirePathologyToggle(box, key){
-  if (!box) return;
-  ensurePathologyDefaults();
-  box.checked = !!(state.pathology && state.pathology[key]);
-  box.addEventListener('change', ()=>{
-    ensurePathologyDefaults();
-    state.pathology[key] = !!box.checked;
-  });
-}
-wirePathologyToggle(firdaBox, 'firda');
-wirePathologyToggle(tirdaBox, 'tirda');
-wirePathologyToggle(extremeDeltaBrushBox, 'extremeDeltaBrush');
-wirePathologyToggle(alphaComaBox, 'alphaComa');
-wirePathologyToggle(hypsarrhythmiaBox, 'hypsarrhythmia');
 if (lpdBox) {
   lpdBox.checked = !!(state.pathology && state.pathology.lpd);
   lpdBox.addEventListener('change', ()=>{
-    ensurePathologyDefaults();
     state.pathology.lpd = lpdBox.checked;
     // The manual Pathology control represents unilateral LPDs, so clear any stale bilateral state.
     state.pathology.bipds = false;
-  });
-}
-if (lpdSideSel) {
-  populateLpdSideSelect();
-  lpdSideSel.addEventListener('change', ()=>{
-    ensurePathologyDefaults();
-    state.pathology.lpdSide = lpdSideValue(lpdSideSel.value);
-    populateLpdSideSelect();
   });
 }
 if (interictalBox) {
@@ -6735,12 +5685,11 @@ const focalSzFocusInput = $('focalSzFocus');
 const fbtcSzBtn = $('fbtcSz');
 const fbtcSzDurInput = $('fbtcSzDur');
 const fbtcSzFocusInput = $('fbtcSzFocus');
-const noxiousStimBtn = $('noxiousStim');
 if (interictalLeadSel) {
   populateInterictalLeadSelect();
   interictalLeadSel.addEventListener('change', ()=>{
     ensurePathologyDefaults();
-    state.pathology.interictalLead = normalizeInterictalLeadSelection(interictalLeadSel.value);
+    state.pathology.interictalLead = INTERICTAL_LEAD_MAP.has(interictalLeadSel.value) ? interictalLeadSel.value : 'random';
     populateInterictalLeadSelect();
     if (state.pathology.interictal) syncInterictalPathology(true);
   });
@@ -6758,7 +5707,7 @@ if (genSzEmgInput) {
   genSzEmgInput.addEventListener('change', syncGenSzEmg);
 }
 if (absenceSzDurInput) {
-  ['change','blur'].forEach(evt => absenceSzDurInput.addEventListener(evt, ()=>{ syncSeizureDurationInput('absenceSzDur', 'absence'); updateActivationActionButtons(); }));
+  ['change','blur'].forEach(evt => absenceSzDurInput.addEventListener(evt, ()=>{ syncSeizureDurationInput('absenceSzDur', 'absence'); updateSeizureActionButtons(); }));
 }
 if (focalSzDurInput) {
   ['change','blur'].forEach(evt => focalSzDurInput.addEventListener(evt, ()=>{ syncSeizureDurationInput('focalSzDur', 'focal'); updateSeizureActionButtons(); }));
@@ -6792,7 +5741,7 @@ if (genSzBtn){
       state.seizureEvents.push(makeGeneralizedSeizureEvent(state.artClock, duration, state.pathology.generalizedEmg));
     }
     updateSeizureActionButtons();
-    closePathologyPanel();
+    if (pathologyModal) pathologyModal.hidden = true;
   });
 }
 if (absenceSzBtn){
@@ -6802,17 +5751,8 @@ if (absenceSzBtn){
       const duration = syncSeizureDurationInput('absenceSzDur', 'absence');
       state.seizureEvents.push(makeAbsenceSeizureEvent(state.artClock, duration));
     }
-    updateActivationActionButtons();
-    closeActivationPanel();
-  });
-}
-if (noxiousStimBtn){
-  noxiousStimBtn.addEventListener('click', ()=>{
-    if (!(state.noxiousStim && state.noxiousStim.active)){
-      scheduleNoxiousStimulation(state.artClock || 0);
-    }
-    updateActivationActionButtons();
-    closeActivationPanel();
+    updateSeizureActionButtons();
+    if (pathologyModal) pathologyModal.hidden = true;
   });
 }
 if (fbtcSzBtn){
@@ -6825,11 +5765,10 @@ if (fbtcSzBtn){
       window.armFbtcSeizure(duration, state.pathology.fbtcFocus);
     }
     updateSeizureActionButtons();
-    closePathologyPanel();
+    if (pathologyModal) pathologyModal.hidden = true;
   });
 }
 updateSeizureActionButtons();
-updateActivationActionButtons();
 if (quizBtnTop){
   quizBtnTop.addEventListener('click', ()=>{
     if (state.tutorial && state.tutorial.active){
@@ -6840,7 +5779,7 @@ if (quizBtnTop){
     } else {
       startQuiz();
     }
-    closePathologyPanel();
+    if (pathologyModal) pathologyModal.hidden = true;
   });
 }
 if (tutorialBtnTop){
@@ -6851,7 +5790,7 @@ if (tutorialBtnTop){
       if (state.quiz && state.quiz.active) endQuiz();
       openTutorialSetup();
     }
-    closePathologyPanel();
+    if (pathologyModal) pathologyModal.hidden = true;
   });
 }
 
@@ -6879,38 +5818,8 @@ state.quiz = {
   answered:{},
   order:[],
   questionKeys:[],
-  snapshot:null,
-  panelCollapsed:false
+  snapshot:null
 };
-
-function syncEducationPanelVisibility(){
-  const quizPanel = document.getElementById('quizPanel');
-  const quizRestore = document.getElementById('quizRestoreTab');
-  const quizVisible = !!(state.quiz && state.quiz.active && !state.quiz.panelCollapsed);
-  const quizCollapsed = !!(state.quiz && state.quiz.active && state.quiz.panelCollapsed);
-  if (quizPanel) quizPanel.style.display = quizVisible ? 'block' : 'none';
-  if (quizRestore) quizRestore.hidden = !quizCollapsed;
-
-  const tutorialPanelEl = document.getElementById('tutorialPanel');
-  const tutorialRestore = document.getElementById('tutorialRestoreTab');
-  const tutorialActive = !!(state.tutorial && state.tutorial.active && state.tutorial.currentCase);
-  const tutorialVisible = tutorialActive && !state.tutorial.panelCollapsed;
-  const tutorialCollapsed = tutorialActive && !!state.tutorial.panelCollapsed;
-  if (tutorialPanelEl) tutorialPanelEl.style.display = tutorialVisible ? 'block' : 'none';
-  if (tutorialRestore) tutorialRestore.hidden = !tutorialCollapsed;
-}
-
-function setQuizPanelCollapsed(collapsed){
-  if (!(state.quiz && state.quiz.active)) return;
-  state.quiz.panelCollapsed = !!collapsed;
-  syncEducationPanelVisibility();
-}
-
-function setTutorialPanelCollapsed(collapsed){
-  if (!(state.tutorial && state.tutorial.active)) return;
-  state.tutorial.panelCollapsed = !!collapsed;
-  syncEducationPanelVisibility();
-}
 
 function randChoice(rng, arr){ return arr[Math.floor(rng()*arr.length)] }
 
@@ -6941,7 +5850,6 @@ function startQuiz(){
   state.quiz.active   = true;
   state.quiz.stepIndex= 0;
   state.quiz.answered = {};
-  state.quiz.panelCollapsed = false;
   state.quiz.bias     = {leftScale:1,rightScale:1,diffuseScale:1,focal:{}};
 
   // Random ground truth
@@ -6979,14 +5887,8 @@ function startQuiz(){
 
   state.pathology.encephalopathy = false;
   state.pathology.burstSuppression = false;
-  state.pathology.firda = false;
-  state.pathology.tirda = false;
-  state.pathology.extremeDeltaBrush = false;
-  state.pathology.alphaComa = false;
-  state.pathology.hypsarrhythmia = false;
   state.pathology.gpd   = (periodic==='GPDs');
   state.pathology.lpd   = (periodic==='LPDs');
-  state.pathology.lpdSide = rng() < 0.5 ? 'left' : 'right';
   state.pathology.bipds = false;
   state.pathology.focalSeizure = false;
   state.pathology.fbtcSeizure = false;
@@ -7061,13 +5963,13 @@ function startQuiz(){
 
   // Show panel & hide rhythm/state controls
   const panel = document.getElementById('quizPanel');
-  if (panel) panel.style.zIndex='9999';
-  syncEducationPanelVisibility();
+  if (panel){ panel.style.display='block'; panel.style.zIndex='9999'; }
   const rf = document.getElementById('rhythmFieldset');
   if (rf) rf.style.display='none';
 
   // Close the pathology modal if open and regenerate signals
-  closeClinicalPanels();
+  const pm = document.getElementById('pathologyModal');
+  if (pm) pm.hidden = true;
   regen();
   if (typeof updateModeButtons === 'function') updateModeButtons();
 }
@@ -7221,7 +6123,6 @@ function endQuiz(){
   state.quiz.active = false;
   state.quiz.answered = {};
   state.quiz.questionKeys = [];
-  state.quiz.panelCollapsed = false;
   state.quiz.slowing = buildQuizSlowingConfig(state.rng || Math.random, 'None', 'Continuous');
   state.quiz.spikes = buildQuizSpikeConfig(state.rng || Math.random, 'none');
   state.seizureEvents = [];
@@ -7235,7 +6136,6 @@ function endQuiz(){
   }
   const panel = document.getElementById('quizPanel');
   if (panel){ panel.style.display='none'; }
-  syncEducationPanelVisibility();
   const rf = document.getElementById('rhythmFieldset');
   if (rf) rf.style.display='block';
   const banner = document.getElementById('quizBanner');
@@ -7255,10 +6155,6 @@ if (_qn){
 }
 const _qe = document.getElementById('quizEnd');
 if (_qe) _qe.addEventListener('click', endQuiz);
-const _qc = document.getElementById('quizCollapse');
-if (_qc) _qc.addEventListener('click', ()=> setQuizPanelCollapsed(true));
-const _qr = document.getElementById('quizRestoreTab');
-if (_qr) _qr.addEventListener('click', ()=> setQuizPanelCollapsed(false));
 
 // Pathology modal buttons are already wired above
 
@@ -7294,7 +6190,6 @@ function createTutorialState(){
     currentCase:null,
     responses:{},
     snapshot:null,
-    panelCollapsed:false,
     caseCursor:0,
     slowing:buildQuizSlowingConfig(rng, 'None', 'Continuous'),
     spikes:buildQuizSpikeConfig(rng, 'none'),
@@ -7321,8 +6216,6 @@ const tutorialNextBtn = document.getElementById('tutorialNext');
 const tutorialPlayBtn = document.getElementById('tutorialPlay');
 const tutorialNewCaseBtn = document.getElementById('tutorialNewCase');
 const tutorialEndBtn = document.getElementById('tutorialEnd');
-const tutorialCollapseBtn = document.getElementById('tutorialCollapse');
-const tutorialRestoreTab = document.getElementById('tutorialRestoreTab');
 
 const TUTORIAL_OPTIONS = {
   background:['delta','theta','alpha','beta','Unable to determine'],
@@ -7556,22 +6449,7 @@ function renderTutorialHighlights(pairs, yMids, rowH, canvasWidth){
   const windowSec = Math.max(0.5, Math.min(state.seconds, Number(spec.windowSec) || 2.5));
   const offsetSec = Math.max(0, Math.min(Math.max(0, state.seconds - windowSec), Number(spec.offsetSecFromRight) || 0));
   const desiredWidthPx = windowSec * pxPerSec;
-  let desiredRightX = Math.min(canvasWidth, canvasWidth - offsetSec * pxPerSec);
-  if (tutorialPanel && tutorialPanel.style.display !== 'none'){
-    const canvasRect = canvas.getBoundingClientRect();
-    const panelRect = tutorialPanel.getBoundingClientRect();
-    const panelOverlapsCanvas =
-      panelRect.right > canvasRect.left &&
-      panelRect.left < canvasRect.right &&
-      panelRect.bottom > canvasRect.top &&
-      panelRect.top < canvasRect.bottom;
-    if (panelOverlapsCanvas){
-      const gutter = 18;
-      const adjacentLeft = Math.max(0, Math.min(canvasWidth, panelRect.right - canvasRect.left + gutter));
-      const clampedLeft = Math.min(Math.max(0, adjacentLeft), Math.max(0, canvasWidth - desiredWidthPx));
-      desiredRightX = Math.min(canvasWidth, clampedLeft + desiredWidthPx);
-    }
-  }
+  const desiredRightX = Math.min(canvasWidth, canvasWidth - offsetSec * pxPerSec);
   const xRange = resolveTutorialHighlightWindow(canvasWidth, desiredWidthPx, desiredRightX);
   if (!xRange || xRange.x2 <= xRange.x1) return;
   const {x1, x2} = xRange;
@@ -7644,8 +6522,7 @@ function tutorialAuxCanToggleEyes(step, caseData){
 function renderTutorialUI(){
   if (!tutorialPanel) return;
   const active = !!(state.tutorial && state.tutorial.active && state.tutorial.currentCase);
-  tutorialPanel.style.display = active && !state.tutorial.panelCollapsed ? 'block' : 'none';
-  syncEducationPanelVisibility();
+  tutorialPanel.style.display = active ? 'block' : 'none';
   if (!active){
     if (tutorialMeta) tutorialMeta.replaceChildren();
     if (tutorialCaseSummary) tutorialCaseSummary.replaceChildren();
@@ -7762,17 +6639,11 @@ function tutorialSetCommonSimulatorState(caseData){
   const rng = state.rng || Math.random;
   state.pathology.encephalopathy = false;
   state.pathology.burstSuppression = false;
-  state.pathology.firda = false;
-  state.pathology.tirda = false;
-  state.pathology.extremeDeltaBrush = false;
-  state.pathology.alphaComa = false;
-  state.pathology.hypsarrhythmia = false;
   state.pathology.gpd = false;
   state.pathology.lpd = false;
-  state.pathology.lpdSide = lpdSideValue(signal.lpdSide || 'left');
   state.pathology.bipds = false;
   state.pathology.focalSeizure = false;
-  state.opts = {blink:false, rovingEyes:false, reading:false, ventilator:false, lambdaWaves:false, muRhythm:false, sreda:false, positiveSpikes14And6:false, bets:false, wicketSpikes:false, photicStim:false, chew:false, sweat:false, ekgArtifact:false, breach:false, pop:false, emg:false, ekgTrace:!!(state.opts && state.opts.ekgTrace)};
+  state.opts = {blink:false, rovingEyes:false, reading:false, ventilator:false, photicStim:false, chew:false, sweat:false, ekgArtifact:false, breach:false, pop:false, emg:false, ekgTrace:!!(state.opts && state.opts.ekgTrace)};
   for (const key of Object.keys(ARTIFACT_LEVEL_FIELDS)) setArtifactLevelActive(key, false);
   state.artifactConfig.emgLevel = 0;
   clearActiveTutorialSeizures();
@@ -7798,10 +6669,7 @@ function tutorialSetCommonSimulatorState(caseData){
   }
 
   if (signal.periodic === 'GPDs') state.pathology.gpd = true;
-  if (signal.periodic === 'LPDs') {
-    state.pathology.lpd = true;
-    state.pathology.lpdSide = lpdSideValue(signal.lpdSide || state.pathology.lpdSide);
-  }
+  if (signal.periodic === 'LPDs') state.pathology.lpd = true;
   if (signal.periodic === 'BIPDs') state.pathology.bipds = true;
 
   state.tutorial.slowing = buildQuizSlowingConfig(rng, signal.slowingDist || 'None', signal.slowingTempo || 'Continuous');
@@ -7836,45 +6704,13 @@ function primeTutorialBaselineDisplay(seconds){
   const primeSeconds = Math.max(0, Math.min(state.seconds, Number(seconds) || state.seconds));
   const sampleCount = Math.max(0, Math.round(primeSeconds * Fs));
   if (!sampleCount) return;
-  const rng = state.rng || Math.random;
-  const pathology = state.pathology || {};
-  const optionState = state.opts || {};
-  const hasEncephalopathy = !!pathology.encephalopathy;
-  const hasBurstSuppression = !!pathology.burstSuppression;
-  const hasExtraPathology = !!(pathology.firda || pathology.tirda || pathology.extremeDeltaBrush || pathology.alphaComa || pathology.hypsarrhythmia);
-  const hasBenignVariantArtifact = !!((optionState.lambdaWaves && currentEyesOpenSelection()) || optionState.muRhythm || optionState.sreda || optionState.positiveSpikes14And6 || optionState.bets || optionState.wicketSpikes);
-  const hasPhoticStim = !!optionState.photicStim;
-  const hasGpd = !!pathology.gpd;
-  const hasBipds = !!pathology.bipds;
-  const hasLpd = !!pathology.lpd;
-  const hasInterictal = !!pathology.interictal;
-  const inEducationalMode = !!((state.quiz && state.quiz.active) || (state.tutorial && state.tutorial.active));
   const educationalBias = currentEducationalBias();
-  const artifactLevels = {
-    blink: artifactLevel('blink'),
-    rovingEyes: artifactLevel('rovingEyes'),
-    reading: artifactLevel('reading'),
-    ventilator: artifactLevel('ventilator'),
-    lambdaWaves: artifactLevel('lambdaWaves'),
-    muRhythm: artifactLevel('muRhythm'),
-    sreda: artifactLevel('sreda'),
-    positiveSpikes14And6: artifactLevel('positiveSpikes14And6'),
-    bets: artifactLevel('bets'),
-    wicketSpikes: artifactLevel('wicketSpikes'),
-    chew: artifactLevel('chew'),
-    sweat: artifactLevel('sweat'),
-    breach: artifactLevel('breach'),
-    pop: artifactLevel('pop')
-  };
   for (let i=0; i<sampleCount; i++){
-    state.pdrPhase += 2*Math.PI*state.pdrHz/Fs;
     const sampleClock = state.artClock;
     const opts = {
       mode:state.mode,
       eyesOpen:state.eyesOpen,
-      artifactLevels,
       blinkShape:currentBlinkShape(sampleClock),
-      eyeTransitionShape:currentEyeTransitionShape(sampleClock),
       rovingEyeArtifact:currentRovingEyeArtifact(sampleClock),
       readingArtifact:currentReadingArtifact(sampleClock),
       ventilatorArtifact:currentVentilatorArtifact(sampleClock),
@@ -7892,49 +6728,11 @@ function primeTutorialBaselineDisplay(seconds){
       vertex:false,
       vertexShape:0
     };
-    const ekgSample = ekgWave_uV(sampleClock);
     let sum = 0, cnt = 0, refSum = 0, refCnt = 0;
     for (const e of ELECTRODES){
       const ch = state.channels.get(e);
       if (!ch) continue;
       let y = ch.sample(sampleClock, opts);
-      if (hasBenignVariantArtifact) {
-        const benignVariant = benignVariantArtifactValue(sampleClock, e);
-        if (benignVariant) y += benignVariant;
-      }
-      if (hasEncephalopathy) {
-        const enceph = encephalopathyPathologyValue(sampleClock, e);
-        if (enceph) y = y*enceph.preserve + enceph.overlay;
-      }
-      if (hasBurstSuppression) {
-        const burstSupp = burstSuppressionPathologyValue(sampleClock, e);
-        if (burstSupp) y = y*burstSupp.preserve + burstSupp.overlay;
-      }
-      if (hasPhoticStim) {
-        const photic = photicStimPathologyValue(sampleClock, e);
-        if (photic) y = y*photic.preserve + photic.overlay;
-      }
-      if (hasExtraPathology) {
-        const extraPath = extraPathologyValue(sampleClock, e);
-        if (extraPath) y = y*extraPath.preserve + extraPath.overlay;
-      }
-      if (hasGpd) {
-        y += gpdWave(sampleClock + gpdLag(e), rng) * gpdScale(e);
-      }
-      if (hasBipds) {
-        y += lpdWave(sampleClock + lpdLagLeft(e), rng) * lpdScaleLeft(e);
-        y += lpdWave(sampleClock + 0.31 + lpdLagRight(e), rng) * lpdScaleRight(e);
-      } else if (hasLpd) {
-        const lpdSide = lpdSideValue(pathology.lpdSide);
-        y += lpdWave(sampleClock + lpdLagForSide(e, lpdSide), rng) * lpdScaleForSide(e, lpdSide);
-      }
-      if (hasInterictal) {
-        y += interictalPathologyValue(sampleClock, e);
-      }
-      if (inEducationalMode){
-        y = applyQuizSlowing(y, sampleClock, e);
-        y += quizEpileptiformValue(sampleClock, e);
-      }
       if (educationalBias){
         const isDisplayScalp = AVG_ELECTRODE_SET.has(e);
         const L = /^(Fp1|F3|C3|P3|O1|F7|T3|T5|Fz|Cz|Pz)$/.test(e);
@@ -7944,9 +6742,6 @@ function primeTutorialBaselineDisplay(seconds){
         const diffuseScale = isDisplayScalp ? (educationalBias.diffuseScale ?? 1) : 1;
         const focalScale = (isDisplayScalp && educationalBias.focal && educationalBias.focal[e]!==undefined) ? educationalBias.focal[e] : 1;
         y *= diffuseScale * hemiScale * focalScale;
-      }
-      if (state.opts && state.opts.ekgArtifact){
-        y += ekgArtifactValue(e, ekgSample);
       }
       const buf = state.buffer.get(e);
       if (!buf) continue;
@@ -7958,16 +6753,10 @@ function primeTutorialBaselineDisplay(seconds){
     if (avgBuf) avgBuf[state.idx % avgBuf.length] = cnt ? (sum / cnt) : 0;
     const linkedEarBuf = state.buffer.get('AAVG');
     if (linkedEarBuf) linkedEarBuf[state.idx % linkedEarBuf.length] = refCnt ? (refSum / refCnt) : 0;
-    const ekgBuf = state.buffer.get('EKG');
-    if (ekgBuf) ekgBuf[state.idx % ekgBuf.length] = ekgSample;
-    const ekgRefBuf = state.buffer.get('EKG_REF');
-    if (ekgRefBuf) ekgRefBuf[state.idx % ekgRefBuf.length] = 0;
     state.idx++;
     state.artClock += 1/Fs;
   }
   state.sampleCarry = 0;
-  renderCache.traceTileCache.clear();
-  renderCache.traceTileKey = '';
   lastT = performance.now()/1000;
 }
 function armTutorialSeizure(caseData){
@@ -7975,7 +6764,7 @@ function armTutorialSeizure(caseData){
   const duration = clampSeizureDuration(signal.seizureDuration || DEFAULT_SEIZURE_DURATIONS.generalized, signal.seizureDuration || DEFAULT_SEIZURE_DURATIONS.generalized);
   const leadIn = Math.max(0.8, Math.min(4.0, Number(signal.seizureLeadIn) || 2.2));
   const hasSeizure = signal.seizure === 'Generalized seizure' || signal.seizure === 'Absence seizure' || signal.seizure === 'Focal seizure';
-  if (hasSeizure && state.idx < Math.max(1, Math.round(Fs * (state.seconds || 10)))){
+  if (hasSeizure){
     primeTutorialBaselineDisplay(signal.baselinePrimeSeconds || state.seconds);
   }
   const startAt = state.artClock + leadIn;
@@ -8006,7 +6795,8 @@ function applyTutorialCase(caseData){
   syncControlsFromState();
   updateEyesOpenEnabled();
   updateSeizureActionButtons();
-  closeClinicalPanels();
+  if (pathologyModal) pathologyModal.hidden = true;
+  if (artifactsModal) artifactsModal.hidden = true;
   const optionsModal = document.getElementById('optionsModal');
   if (optionsModal) optionsModal.hidden = true;
   if (TUTORIAL_SETUP_MODAL) TUTORIAL_SETUP_MODAL.hidden = true;
@@ -8022,7 +6812,8 @@ function startNextTutorialCase(){
 }
 function openTutorialSetup(){
   if (!TUTORIAL_SETUP_MODAL) return;
-  closeClinicalPanels();
+  if (pathologyModal) pathologyModal.hidden = true;
+  if (artifactsModal) artifactsModal.hidden = true;
   const optionsModal = document.getElementById('optionsModal');
   if (optionsModal) optionsModal.hidden = true;
   if (tutorialModeSel) tutorialModeSel.value = (state.tutorial && state.tutorial.mode) || 'guided';
@@ -8037,7 +6828,6 @@ function startTutorial(mode){
     state.tutorial.snapshot = createQuizSnapshot();
   }
   state.tutorial.active = true;
-  state.tutorial.panelCollapsed = false;
   state.tutorial.mode = mode || (tutorialModeSel ? tutorialModeSel.value : 'guided') || 'guided';
   state.tutorial.caseMode = (tutorialCaseModeSel ? tutorialCaseModeSel.value : state.tutorial.caseMode) || 'ordered';
   state.tutorial.selectedCaseId = tutorialResolveSelectedCaseId(tutorialCaseSel ? tutorialCaseSel.value : state.tutorial.selectedCaseId);
@@ -8061,11 +6851,9 @@ function endTutorial(){
   state.tutorial.stepIndex = 0;
   state.tutorial.responses = {};
   state.tutorial.caseFocusOpen = false;
-  state.tutorial.panelCollapsed = false;
   resetTutorialEducationalState();
   clearActiveTutorialSeizures();
   if (tutorialPanel) tutorialPanel.style.display = 'none';
-  syncEducationPanelVisibility();
   if (TUTORIAL_SETUP_MODAL) TUTORIAL_SETUP_MODAL.hidden = true;
   const rf = document.getElementById('rhythmFieldset');
   if (rf) rf.style.display = 'block';
@@ -8328,7 +7116,7 @@ TUTORIAL_CASE_LIBRARY.gpd_case = {
 TUTORIAL_CASE_LIBRARY.lpd_left = {
   title:'Left Lateralized Periodic Discharges',
   summary:'Left-sided periodic discharges on an awake background.',
-  signal:{sleepDrive:'Awake', backgroundDrive:'alpha', artifact:'None', slowingDist:'None', slowingTempo:'Continuous', periodic:'LPDs', lpdSide:'left', epileptiformOverlay:'none', seizure:'None', spindles:'absent', kcomplexes:'absent'},
+  signal:{sleepDrive:'Awake', backgroundDrive:'alpha', artifact:'None', slowingDist:'None', slowingTempo:'Continuous', periodic:'LPDs', epileptiformOverlay:'none', seizure:'None', spindles:'absent', kcomplexes:'absent'},
   truth:{background:'alpha', symmetry:'asymmetric', pdr:'Present and normal', reactivity:'present', sleep:'Awake', artifact:'None', epileptiform:'LPDs', seizure:'None'},
   stepNotes:{
     background:'An awake alpha background is still present in the unaffected posterior channels.',
@@ -8458,8 +7246,6 @@ if (tutorialNextBtn) tutorialNextBtn.addEventListener('click', tutorialGoNext);
 if (tutorialPlayBtn) tutorialPlayBtn.addEventListener('click', togglePlayback);
 if (tutorialNewCaseBtn) tutorialNewCaseBtn.addEventListener('click', ()=> startNextTutorialCase());
 if (tutorialEndBtn) tutorialEndBtn.addEventListener('click', endTutorial);
-if (tutorialCollapseBtn) tutorialCollapseBtn.addEventListener('click', ()=> setTutorialPanelCollapsed(true));
-if (tutorialRestoreTab) tutorialRestoreTab.addEventListener('click', ()=> setTutorialPanelCollapsed(false));
 syncPlaybackButtons();
 updateModeButtons();
 </script>
@@ -8988,8 +7774,7 @@ updateModeButtons();
         armFocalSeizure(duration);
         if (typeof window.updateSeizureActionButtons === 'function') window.updateSeizureActionButtons();
         const pathologyModal = document.getElementById('pathologyModal');
-        if (typeof window.closePathologyPanel === 'function') window.closePathologyPanel();
-        else if (pathologyModal) pathologyModal.hidden = true;
+        if (pathologyModal) pathologyModal.hidden = true;
       });
   }
 
