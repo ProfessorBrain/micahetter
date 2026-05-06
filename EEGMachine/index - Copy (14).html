@@ -121,10 +121,8 @@ button.options-strong:active{
     /* Intro modal */
     .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.25);z-index:5}
     .modal[hidden]{display:none}
-    .modal-card{position:relative;background:#fff;border:1px solid var(--panel-border);border-radius:12px;box-shadow:0 12px 28px rgba(0,0,0,.18);max-width:42rem;width:min(94vw,42rem);max-height:min(86dvh,42rem);overflow:auto;padding:clamp(.9rem, 2vw, 1.2rem) clamp(1rem, 2.4vw, 1.3rem)}
+    .modal-card{background:#fff;border:1px solid var(--panel-border);border-radius:12px;box-shadow:0 12px 28px rgba(0,0,0,.18);max-width:42rem;width:min(94vw,42rem);max-height:min(86dvh,42rem);overflow:auto;padding:clamp(.9rem, 2vw, 1.2rem) clamp(1rem, 2.4vw, 1.3rem)}
     .modal-card h1{margin:0 0 .25rem 0;font-size:clamp(1.15rem, 1.1vw + .8rem, 1.5rem)}
-    .modal-card > h1{padding-right:2rem}
-    .modal-x{position:absolute;top:.45rem;right:.45rem;z-index:4;display:inline-flex;align-items:center;justify-content:center;width:1.65rem;height:1.65rem;min-height:0;padding:0;border-radius:999px;font-size:1.05rem;line-height:1;font-weight:700;background:rgba(255,255,255,.92);box-shadow:0 1px 4px rgba(0,0,0,.10)}
     .modal-card p{margin:.25rem 0;line-height:1.35}
     .modal-card .sub{opacity:.8;font-size:var(--ui-label-size)}
     .modal-actions{display:flex;justify-content:flex-end;gap:.5rem;margin-top:.75rem}
@@ -327,8 +325,6 @@ button.options-strong:active{
 #pathologyModal .pathology-slider output{min-width:2.6rem;text-align:right;font-variant-numeric:tabular-nums}
 #pathologyModal .pathology-focus{display:inline-flex;align-items:center;gap:.35rem;font-size:var(--ui-label-size);white-space:nowrap}
 #pathologyModal .pathology-focus select{width:auto;min-width:8.75rem;max-width:12rem;min-height:2.2rem}
-.lead-focus-native{position:absolute!important;width:1px!important;height:1px!important;min-width:0!important;max-width:1px!important;min-height:0!important;margin:0!important;padding:0!important;border:0!important;opacity:0!important;pointer-events:none!important}
-.lead-focus-button{min-width:4.8rem;max-width:7rem;min-height:2.15rem;padding:.35rem .55rem;text-align:center;overflow:hidden;text-overflow:ellipsis}
 #pathologyModal .pathology-action:disabled{cursor:default;opacity:.65}
 #pathologyModal .pathology-action:disabled:hover{filter:none}
 #artifactsModal fieldset, #activationModal fieldset{margin:0}
@@ -344,25 +340,6 @@ button.options-strong:active{
 #activationModal .activation-action-row{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap}
 #activationModal .activation-action{width:auto;min-width:12.75rem;max-width:100%;text-align:left;padding:.55rem .75rem;font:inherit;white-space:normal;line-height:1.2}
 #activationModal .activation-action:disabled{cursor:default;opacity:.65}
-#leadFocusModal{z-index:10030;background:rgba(16,40,24,.22)}
-#leadFocusModal .lead-focus-card{width:min(92vw,23rem);max-width:23rem;padding:.75rem .85rem .85rem;overflow:visible}
-.lead-focus-heading{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-bottom:.25rem}
-.lead-focus-heading h1{margin:0;padding-right:2rem;font-size:1.05rem}
-.lead-focus-sub{font-size:.82rem;color:#45584d;margin:0 0 .45rem}
-.lead-focus-map{position:relative;width:100%;aspect-ratio:1 / 1.04;border:1px solid var(--panel-border);border-radius:12px;background:radial-gradient(circle at 50% 46%, #fff 0 42%, #f8faf8 63%, #eef7eb 100%);overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.75)}
-.lead-focus-head{position:absolute;left:12%;right:12%;top:5%;bottom:5%;border:2.5px solid #121812;border-radius:50%;background:radial-gradient(circle at 48% 40%, rgba(255,255,255,.94), rgba(255,255,255,.72) 62%, rgba(255,255,255,.18));z-index:0}
-.lead-focus-ear{position:absolute;top:43%;width:4.5%;height:15%;border:2px solid #121812;background:#fff;border-radius:999px;z-index:0}
-.lead-focus-ear.left{left:9.4%}
-.lead-focus-ear.right{right:9.4%}
-.lead-focus-nasion,.lead-focus-inion{position:absolute;left:50%;transform:translateX(-50%);width:12%;height:7%;border:2px solid #121812;background:#fff;z-index:0}
-.lead-focus-nasion{top:1.5%;border-bottom:0;border-radius:999px 999px 0 0}
-.lead-focus-inion{bottom:1.5%;border-top:0;border-radius:0 0 999px 999px}
-.lead-focus-electrode{position:absolute;z-index:2;left:calc(var(--x) * 1%);top:calc(var(--y) * 1%);transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;width:clamp(1.55rem,5.2vw,2.15rem);height:clamp(1.55rem,5.2vw,2.15rem);padding:0;border-radius:999px;border:1px solid rgba(34,81,49,.55);background:rgba(255,255,255,.86);color:#14221a;font-size:clamp(.58rem,1.8vw,.72rem);font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,.10);line-height:1}
-.lead-focus-electrode:hover{filter:none;background:#fff8e8;border-color:#f59e0b}
-.lead-focus-electrode.active{background:#ffedd5;border-color:#f97316;color:#7c2d12;box-shadow:0 0 0 3px rgba(249,115,22,.22),0 1px 5px rgba(0,0,0,.16)}
-.lead-focus-electrode[hidden]{display:none}
-.lead-focus-footer{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-top:.55rem}
-.lead-focus-footer .active{background:#ffedd5;border-color:#f97316;color:#7c2d12}
 @media (max-width: 760px){
   #artifactsModal .artifact-control-row, #activationModal .artifact-control-row{grid-template-columns:1fr}
   #artifactsModal .artifact-lead, #activationModal .artifact-lead{grid-column:1}
@@ -650,10 +627,6 @@ html, body{max-width:100vw;overflow:hidden}
     width:100%;
     max-width:none;
   }
-  .lead-focus-button{
-    width:100%;
-    max-width:none;
-  }
   #pathologyModal .pathology-slider input[type="range"],
   #artifactsModal .artifact-slider input[type="range"],
   #activationModal .artifact-slider input[type="range"]{
@@ -693,8 +666,6 @@ html, body{max-width:100vw;overflow:hidden}
   max-height:calc(var(--app-height, 100dvh) - var(--topbar-height, 64px) - 1.1rem);
   overflow:auto;
 }
-.education-panel-x{top:.45rem;right:.45rem}
-#quizPanel > h2{padding-right:2rem}
 .tutorial-panel{
   width:min(34rem, 36vw);
   max-width:calc(100vw - var(--education-panel-left) - .75rem);
@@ -782,56 +753,6 @@ html, body{max-width:100vw;overflow:hidden}
 #artifactsModal .modal-card{
   width:min(32rem, 36vw);
 }
-#activationModal .modal-card{
-  width:min(24rem, 30vw);
-  overflow-x:hidden !important;
-  overflow-y:auto !important;
-}
-#activationModal .modal-card fieldset > div{
-  width:100%;
-  max-width:100%;
-}
-#activationModal fieldset{
-  min-width:0;
-}
-#activationModal .artifact-control-row{
-  grid-template-columns:minmax(0, 1fr);
-  width:100%;
-  max-width:100%;
-}
-#activationModal .artifact-control-row > label:first-child{
-  min-width:0;
-  white-space:normal;
-}
-#activationModal .artifact-slider{
-  width:100%;
-  min-width:0;
-}
-#activationModal .artifact-slider input[type="range"]{
-  flex:1 1 7rem;
-  min-width:0;
-}
-#activationModal .artifact-slider output{
-  flex:0 0 auto;
-}
-#activationModal .artifact-lead{
-  grid-column:1;
-  grid-template-columns:auto minmax(0, 8rem);
-  justify-self:start;
-  max-width:100%;
-}
-#activationModal .artifact-lead select{
-  width:auto;
-  max-width:8rem;
-}
-#activationModal .activation-action-row{
-  width:100%;
-  min-width:0;
-}
-#activationModal .activation-action{
-  flex:1 1 10rem;
-  min-width:0;
-}
 #pathologyModal .modal-actions,
 #artifactsModal .modal-actions,
 #activationModal .modal-actions{
@@ -867,9 +788,6 @@ html, body{max-width:100vw;overflow:hidden}
     max-width:calc(100vw - var(--clinical-panel-left) - .5rem);
     max-height:min(58dvh, calc(var(--app-height, 100dvh) - var(--topbar-height, 56px) - 1rem)) !important;
   }
-  #activationModal .modal-card{
-    width:min(21.5rem, calc(100vw - var(--clinical-panel-left) - .5rem));
-  }
   .clinical-restore-tab{
     left:3.25rem;
   }
@@ -885,22 +803,8 @@ html, body{max-width:100vw;overflow:hidden}
     width:min(22rem, calc(100vw - var(--clinical-panel-left) - .5rem));
     max-height:min(54dvh, calc(var(--app-height, 100dvh) - var(--topbar-height, 56px) - 1rem)) !important;
   }
-  #activationModal .modal-card{
-    width:min(20.5rem, calc(100vw - var(--clinical-panel-left) - .5rem));
-  }
   .clinical-restore-tab{
     left:3rem;
-  }
-}
-@media (max-width:940px) and (orientation:landscape) and (max-height:560px){
-  #wrap{
-    overflow-x:hidden;
-    overflow-y:auto;
-    -webkit-overflow-scrolling:touch;
-  }
-  #c{
-    height:max(100%, 760px);
-    min-height:760px;
   }
 }
 </style>
@@ -998,7 +902,6 @@ html, body{max-width:100vw;overflow:hidden}
   <!-- Options modal -->
   <div id="optionsModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="optionsTitle" hidden>
     <div class="modal-card">
-      <button id="optionsX" class="modal-x" type="button" aria-label="Close">×</button>
       <h1 id="optionsTitle">Options</h1>
       <fieldset>
         <legend>Playback speed</legend>
@@ -1023,7 +926,6 @@ html, body{max-width:100vw;overflow:hidden}
 
   <div id="aboutModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="aboutTitle" hidden>
     <div class="modal-card">
-      <button id="aboutX" class="modal-x" type="button" aria-label="Close">×</button>
       <h1 id="aboutTitle">About</h1>
       <p>Created by Micah Etter, MD</p>
       <p>Version 0.3</p>
@@ -1049,7 +951,6 @@ html, body{max-width:100vw;overflow:hidden}
   <!-- Artifacts modal -->
   <div id="artifactsModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="artifactsTitle" hidden>
     <div class="modal-card">
-      <button id="artifactsX" class="modal-x" type="button" aria-label="Close">×</button>
       <h1 id="artifactsTitle">Artifacts</h1>
       <fieldset>
         <legend>Artifacts</legend>
@@ -1151,11 +1052,10 @@ html, body{max-width:100vw;overflow:hidden}
               <input id="breach" type="range" min="0" max="100" step="1" value="0">
               <output id="breachValue" for="breach">0%</output>
             </label>
-            <div class="artifact-lead lead-focus-control">
+            <label class="artifact-lead" for="breachLeadSel">
               <span>Focus</span>
-              <select id="breachLeadSel" class="lead-focus-native" aria-label="Breach rhythm focus" tabindex="-1"></select>
-              <button id="breachLeadFocusBtn" type="button" class="lead-focus-button" data-focus-select="breachLeadSel" aria-haspopup="dialog">Click to Select</button>
-            </div>
+              <select id="breachLeadSel"></select>
+            </label>
           </div>
           <div class="artifact-control-row">
             <label for="pop">Electrode pop</label>
@@ -1163,17 +1063,20 @@ html, body{max-width:100vw;overflow:hidden}
               <input id="pop" type="range" min="0" max="100" step="1" value="0">
               <output id="popValue" for="pop">0%</output>
             </label>
-            <div class="artifact-lead lead-focus-control">
-              <span>Focus</span>
-              <select id="popLeadSel" class="lead-focus-native" aria-label="Electrode pop focus" tabindex="-1"></select>
-              <button id="popLeadFocusBtn" type="button" class="lead-focus-button" data-focus-select="popLeadSel" aria-haspopup="dialog">Click to Select</button>
-            </div>
+            <label class="artifact-lead" for="popLeadSel">
+              <span>Lead</span>
+              <select id="popLeadSel"></select>
+            </label>
           </div>
           <div class="artifact-control-row">
             <label for="emgSlider">EMG</label>
             <label class="artifact-slider" for="emgSlider">
               <input id="emgSlider" type="range" min="0" max="100" step="1" value="0">
               <output id="emgValue" for="emgSlider">0%</output>
+            </label>
+            <label class="artifact-lead" for="emgLeadSel">
+              <span>Lead</span>
+              <select id="emgLeadSel"></select>
             </label>
           </div>
         </div>
@@ -1189,7 +1092,6 @@ html, body{max-width:100vw;overflow:hidden}
   <!-- Activation procedures modal -->
   <div id="activationModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="activationTitle" hidden>
     <div class="modal-card">
-      <button id="activationX" class="modal-x" type="button" aria-label="Close">×</button>
       <h1 id="activationTitle">Activation Procedures</h1>
       <fieldset>
         <legend></legend>
@@ -1230,73 +1132,20 @@ html, body{max-width:100vw;overflow:hidden}
   <!-- Pathology modal -->
   <div id="pathologyModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="pathologyTitle" hidden>
     <div class="modal-card">
-      <button id="pathologyX" class="modal-x" type="button" aria-label="Close">×</button>
       <h1 id="pathologyTitle">Pathology</h1>
       <fieldset>
         <legend></legend>
         <div style="display:flex;flex-direction:column;gap:.35rem;margin-top:.25rem">
+          <label><input id="encephalopathy" type="checkbox"> Encephalopathy</label>
+          <label><input id="burstSuppression" type="checkbox"> Burst suppression</label>
+          <label><input id="firda" type="checkbox"> FIRDA</label>
+          <label><input id="tirda" type="checkbox"> TIRDA</label>
+          <label><input id="extremeDeltaBrush" type="checkbox"> Extreme delta brush</label>
+          <label><input id="alphaComa" type="checkbox"> Alpha coma</label>
+          <label><input id="hypsarrhythmia" type="checkbox"> Hypsarrhythmia</label>
+          <label><input id="gpd" type="checkbox"> Generalized periodic discharges (GPDs)</label>
           <div class="pathology-action-row">
-            <span>Encephalopathy</span>
-            <label class="pathology-slider" for="encephalopathy">
-              <input id="encephalopathy" type="range" min="0" max="100" step="1" value="0">
-              <output id="encephalopathyValue" for="encephalopathy">0%</output>
-            </label>
-          </div>
-          <div class="pathology-action-row">
-            <span>Burst suppression</span>
-            <label class="pathology-slider" for="burstSuppression">
-              <input id="burstSuppression" type="range" min="0" max="100" step="1" value="0">
-              <output id="burstSuppressionValue" for="burstSuppression">0%</output>
-            </label>
-          </div>
-          <div class="pathology-action-row">
-            <span>FIRDA</span>
-            <label class="pathology-slider" for="firda">
-              <input id="firda" type="range" min="0" max="100" step="1" value="0">
-              <output id="firdaValue" for="firda">0%</output>
-            </label>
-          </div>
-          <div class="pathology-action-row">
-            <span>TIRDA</span>
-            <label class="pathology-slider" for="tirda">
-              <input id="tirda" type="range" min="0" max="100" step="1" value="0">
-              <output id="tirdaValue" for="tirda">0%</output>
-            </label>
-          </div>
-          <div class="pathology-action-row">
-            <span>Extreme delta brush</span>
-            <label class="pathology-slider" for="extremeDeltaBrush">
-              <input id="extremeDeltaBrush" type="range" min="0" max="100" step="1" value="0">
-              <output id="extremeDeltaBrushValue" for="extremeDeltaBrush">0%</output>
-            </label>
-          </div>
-          <div class="pathology-action-row">
-            <span>Alpha coma</span>
-            <label class="pathology-slider" for="alphaComa">
-              <input id="alphaComa" type="range" min="0" max="100" step="1" value="0">
-              <output id="alphaComaValue" for="alphaComa">0%</output>
-            </label>
-          </div>
-          <div class="pathology-action-row">
-            <span>Hypsarrhythmia</span>
-            <label class="pathology-slider" for="hypsarrhythmia">
-              <input id="hypsarrhythmia" type="range" min="0" max="100" step="1" value="0">
-              <output id="hypsarrhythmiaValue" for="hypsarrhythmia">0%</output>
-            </label>
-          </div>
-          <div class="pathology-action-row">
-            <span>Generalized periodic discharges (GPDs)</span>
-            <label class="pathology-slider" for="gpd">
-              <input id="gpd" type="range" min="0" max="100" step="1" value="0">
-              <output id="gpdValue" for="gpd">0%</output>
-            </label>
-          </div>
-          <div class="pathology-action-row">
-            <span>Lateralized periodic discharges (LPDs)</span>
-            <label class="pathology-slider" for="lpd">
-              <input id="lpd" type="range" min="0" max="100" step="1" value="0">
-              <output id="lpdValue" for="lpd">0%</output>
-            </label>
+            <label><input id="lpd" type="checkbox"> Lateralized periodic discharges (LPDs)</label>
             <label class="pathology-focus" for="lpdSideSel">
               <span>Side</span>
               <select id="lpdSideSel" aria-label="LPD laterality">
@@ -1306,16 +1155,11 @@ html, body{max-width:100vw;overflow:hidden}
             </label>
           </div>
           <div class="pathology-action-row">
-            <span>Interictal abnormalities</span>
-            <label class="pathology-slider" for="interictal">
-              <input id="interictal" type="range" min="0" max="100" step="1" value="0">
-              <output id="interictalValue" for="interictal">0%</output>
-            </label>
-            <div class="pathology-focus lead-focus-control">
+            <label><input id="interictal" type="checkbox"> Interictal abnormalities</label>
+            <label class="pathology-focus" for="interictalLeadSel">
               <span>Focus</span>
-              <select id="interictalLeadSel" class="lead-focus-native" aria-label="Interictal abnormality focus" tabindex="-1"></select>
-              <button id="interictalLeadFocusBtn" type="button" class="lead-focus-button" data-focus-select="interictalLeadSel" aria-haspopup="dialog">Click to Select</button>
-            </div>
+              <select id="interictalLeadSel" aria-label="Interictal abnormality focus"></select>
+            </label>
           </div>
           <div class="pathology-actions">
             <div class="pathology-action-row">
@@ -1336,11 +1180,10 @@ html, body{max-width:100vw;overflow:hidden}
                 <input id="focalSzDur" type="number" min="10" max="99" step="1" value="10" inputmode="numeric">
                 <span>s</span>
               </label>
-              <div class="pathology-focus lead-focus-control">
+              <label class="pathology-focus" for="focalSzFocus">
                 <span>Focus</span>
-                <select id="focalSzFocus" class="lead-focus-native" aria-label="Focal seizure focus" tabindex="-1"></select>
-                <button id="focalSzFocusBtn" type="button" class="lead-focus-button" data-focus-select="focalSzFocus" aria-haspopup="dialog">Click to Select</button>
-              </div>
+                <select id="focalSzFocus" aria-label="Focal seizure focus"></select>
+              </label>
             </div>
             <div class="pathology-action-row">
               <button id="fbtcSz" type="button" class="pathology-action">Focal to bilateral tonic-clonic seizure</button>
@@ -1348,11 +1191,10 @@ html, body{max-width:100vw;overflow:hidden}
                 <input id="fbtcSzDur" type="number" min="10" max="99" step="1" value="20" inputmode="numeric">
                 <span>s</span>
               </label>
-              <div class="pathology-focus lead-focus-control">
+              <label class="pathology-focus" for="fbtcSzFocus">
                 <span>Focus</span>
-                <select id="fbtcSzFocus" class="lead-focus-native" aria-label="Focal to bilateral tonic-clonic seizure focus" tabindex="-1"></select>
-                <button id="fbtcSzFocusBtn" type="button" class="lead-focus-button" data-focus-select="fbtcSzFocus" aria-haspopup="dialog">Click to Select</button>
-              </div>
+                <select id="fbtcSzFocus" aria-label="Focal to bilateral tonic-clonic seizure focus"></select>
+              </label>
             </div>
           </div>
         </div>
@@ -1365,50 +1207,9 @@ html, body{max-width:100vw;overflow:hidden}
   </div>
   <button id="pathologyRestoreTab" class="education-restore-tab clinical-restore-tab" type="button" hidden>Show Pathology</button>
 
-  <div id="leadFocusModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="leadFocusTitle" hidden>
-    <div class="modal-card lead-focus-card">
-      <button id="leadFocusClose" type="button" class="modal-x" aria-label="Close focus selector">×</button>
-      <div class="lead-focus-heading">
-        <h1 id="leadFocusTitle">Choose focus</h1>
-      </div>
-      <p id="leadFocusSub" class="lead-focus-sub">Click a lead on the montage.</p>
-      <div class="lead-focus-map" aria-label="Clickable EEG lead focus montage">
-        <div class="lead-focus-nasion" aria-hidden="true"></div>
-        <div class="lead-focus-inion" aria-hidden="true"></div>
-        <div class="lead-focus-ear left" aria-hidden="true"></div>
-        <div class="lead-focus-ear right" aria-hidden="true"></div>
-        <div class="lead-focus-head" aria-hidden="true"></div>
-        <button type="button" class="lead-focus-electrode" data-electrode="Fp1" style="--x:39;--y:16">Fp1</button>
-        <button type="button" class="lead-focus-electrode" data-electrode="Fp2" style="--x:61;--y:16">Fp2</button>
-        <button type="button" class="lead-focus-electrode" data-electrode="F7" style="--x:25;--y:30">F7</button>
-        <button type="button" class="lead-focus-electrode" data-electrode="F3" style="--x:38;--y:31">F3</button>
-        <button type="button" class="lead-focus-electrode" data-electrode="Fz" style="--x:50;--y:32">Fz</button>
-        <button type="button" class="lead-focus-electrode" data-electrode="F4" style="--x:62;--y:31">F4</button>
-        <button type="button" class="lead-focus-electrode" data-electrode="F8" style="--x:75;--y:30">F8</button>
-        <button type="button" class="lead-focus-electrode" data-electrode="T3" style="--x:24;--y:49">T3</button>
-        <button type="button" class="lead-focus-electrode" data-electrode="C3" style="--x:38;--y:49">C3</button>
-        <button type="button" class="lead-focus-electrode" data-electrode="Cz" style="--x:50;--y:49">Cz</button>
-        <button type="button" class="lead-focus-electrode" data-electrode="C4" style="--x:62;--y:49">C4</button>
-        <button type="button" class="lead-focus-electrode" data-electrode="T4" style="--x:76;--y:49">T4</button>
-        <button type="button" class="lead-focus-electrode" data-electrode="T5" style="--x:28;--y:68">T5</button>
-        <button type="button" class="lead-focus-electrode" data-electrode="P3" style="--x:39;--y:66">P3</button>
-        <button type="button" class="lead-focus-electrode" data-electrode="Pz" style="--x:50;--y:66">Pz</button>
-        <button type="button" class="lead-focus-electrode" data-electrode="P4" style="--x:61;--y:66">P4</button>
-        <button type="button" class="lead-focus-electrode" data-electrode="T6" style="--x:72;--y:68">T6</button>
-        <button type="button" class="lead-focus-electrode" data-electrode="O1" style="--x:41;--y:83">O1</button>
-        <button type="button" class="lead-focus-electrode" data-electrode="O2" style="--x:59;--y:83">O2</button>
-      </div>
-      <div class="lead-focus-footer">
-        <button id="leadFocusRandom" type="button">Random</button>
-        <span id="leadFocusCurrent" class="lead-focus-sub"></span>
-      </div>
-    </div>
-  </div>
-
   <!-- Tutorial setup modal -->
   <div id="tutorialSetupModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="tutorialSetupTitle" hidden>
     <div class="modal-card">
-      <button id="tutorialSetupX" class="modal-x" type="button" aria-label="Close">×</button>
       <h1 id="tutorialSetupTitle">Tutorial Setup</h1>
       <fieldset>
         <legend>Mode</legend>
@@ -1442,7 +1243,6 @@ html, body{max-width:100vw;overflow:hidden}
 
   <div id="quizBanner">Correct! New quiz ready.</div>
   <aside id="quizPanel" aria-live="polite">
-    <button id="quizPanelX" class="modal-x education-panel-x" type="button" aria-label="Hide quiz panel">×</button>
     <h2>EEG Quiz</h2>
     <div id="quizSteps"></div>
     <div id="quizControls">
@@ -1454,7 +1254,6 @@ html, body{max-width:100vw;overflow:hidden}
   <button id="quizRestoreTab" class="education-restore-tab" type="button" hidden>Show Quiz</button>
 
   <aside id="tutorialPanel" class="tutorial-panel" aria-live="polite">
-    <button id="tutorialPanelX" class="modal-x education-panel-x" type="button" aria-label="Hide tutorial panel">×</button>
     <div class="tutorial-header">
       <h2>Tutorial Mode</h2>
       <div id="tutorialMeta" class="tutorial-meta"></div>
@@ -1502,9 +1301,6 @@ const POP_LEAD_OPTIONS = [{value:'random', label:'Random'}].concat(
   POP_ELIGIBLE_ELECTRODES.map((name)=>({value:name, label:name}))
 );
 const POP_LEAD_SET = new Set(POP_ELIGIBLE_ELECTRODES);
-function normalizePopLeadSelection(selection){
-  return POP_LEAD_SET.has(selection) ? selection : 'random';
-}
 const EKG_ROW_PAIR = {a:'EKG', b:'EKG_REF', label:'EKG'};
 const EKG_DISPLAY_UV_RANGE = 760;
 const AVERAGE_ORDER = [
@@ -1535,27 +1331,15 @@ const SCALP_XY = {
   O1: [-1.2,-2.6], O2:[ 1.2,-2.6],
   A1:[-3.5,-0.4], A2:[ 3.5,-0.4]
 };
-const FOCAL_SEIZURE_FOCUS_ELECTRODES = DISPLAY_ORDER.slice();
-function focalSeizureGeometryForElectrode(name){
-  const chain = LONGITUDINAL_CHAINS.find(([a,b])=> a === name || b === name);
-  const neighbor = chain ? (chain[0] === name ? chain[1] : chain[0]) : name;
-  return {a:neighbor, b:name, primary:name, label:name};
-}
 const FOCAL_SEIZURE_FOCUS_OPTIONS = [{value:'random', label:'Random'}].concat(
-  FOCAL_SEIZURE_FOCUS_ELECTRODES.map((name)=>({value:name, label:name}))
+  LONGITUDINAL_CHAINS.map(([a,b])=>({value:`${a}-${b}`, label:`${a}-${b}`}))
 );
 const FOCAL_SEIZURE_FOCUS_MAP = new Map(
-  FOCAL_SEIZURE_FOCUS_ELECTRODES.map((name)=>[name, focalSeizureGeometryForElectrode(name)])
+  LONGITUDINAL_CHAINS.map(([a,b])=>[
+    `${a}-${b}`,
+    {a, b, label:`${a}-${b}`}
+  ])
 );
-function normalizeFocalSeizureFocusSelection(selection){
-  if (FOCAL_SEIZURE_FOCUS_MAP.has(selection)) return selection;
-  if (typeof selection === 'string' && selection.includes('-')){
-    const [a, b] = selection.split('-');
-    if (FOCAL_SEIZURE_FOCUS_MAP.has(b)) return b;
-    if (FOCAL_SEIZURE_FOCUS_MAP.has(a)) return a;
-  }
-  return 'random';
-}
 const INTERICTAL_FOCUS_ELECTRODES = DISPLAY_ORDER.slice();
 function interictalGeometryForElectrode(name){
   const chain = LONGITUDINAL_CHAINS.find(([, b])=> b === name) ||
@@ -1584,6 +1368,15 @@ const LPD_SIDE_OPTIONS = [
   {value:'right', label:'Right'}
 ];
 const LPD_SIDE_SET = new Set(LPD_SIDE_OPTIONS.map((opt)=> opt.value));
+const EMG_LEAD_OPTIONS = [{value:'diffuse', label:'Diffuse'}, {value:'random', label:'Random'}].concat(
+  LONGITUDINAL_CHAINS.map(([a,b])=>({value:`${a}-${b}`, label:`${a}-${b}`}))
+);
+const EMG_LEAD_MAP = new Map(
+  LONGITUDINAL_CHAINS.map(([a,b])=>[
+    `${a}-${b}`,
+    {a, b, label:`${a}-${b}`}
+  ])
+);
 const BREACH_RHYTHM_FOCUS_ELECTRODES = DISPLAY_ORDER.slice();
 function breachRhythmGeometryForElectrode(name){
   const chain = LONGITUDINAL_CHAINS.find(([a,b])=> a === name || b === name);
@@ -2166,7 +1959,7 @@ function syncInterictalPathology(forceRestart=false){
     ...(state.interictalPathology || {})
   };
   ensurePathologyDefaults();
-  if (interictalLevel() <= 0){
+  if (!(state.pathology && state.pathology.interictal)){
     state.interictalPathology.active = false;
     return;
   }
@@ -2206,7 +1999,7 @@ function syncEncephalopathyPathology(forceRestart=false){
     ...(state.encephalopathy || {})
   };
   ensurePathologyDefaults();
-  if (encephalopathyLevel() <= 0){
+  if (!(state.pathology && state.pathology.encephalopathy)){
     state.encephalopathy.active = false;
     return;
   }
@@ -2238,15 +2031,8 @@ function encephalopathyLag(e){
   if (/z$/.test(e)) lag -= 0.003;
   return lag;
 }
-function encephalopathyLevel(){
-  const pathology = state.pathology || {};
-  const raw = Number(pathology.encephalopathyLevel);
-  if (Number.isFinite(raw)) return clamp01(raw);
-  return pathology.encephalopathy ? 1 : 0;
-}
 function encephalopathyPathologyValue(clock, e){
-  const level = encephalopathyLevel();
-  if (level <= 0 || !AVG_ELECTRODE_SET.has(e)) return null;
+  if (!(state.pathology && state.pathology.encephalopathy) || !AVG_ELECTRODE_SET.has(e)) return null;
   const cfg = state.encephalopathy || {
     active:false, t0:0, thetaHz:4.8, thetaHz2:5.6, deltaHz:2.1, deltaHz2:1.4, firdaHz:2.4, mixHz:0.09,
     ampTheta:30, ampDelta:22, ampFirda:24, phaseTheta:0, phaseTheta2:0, phaseDelta:0, phaseDelta2:0, phaseMix:0, phaseFirda:0, burstPhase:0
@@ -2272,10 +2058,9 @@ function encephalopathyPathologyValue(clock, e){
   const polymorph = disorganized + 4.6*Math.sin(2*Math.PI*(6.1 + 0.25*Math.sin(2*Math.PI*0.012*tt))*tt + cfg.phaseTheta2);
   const firdaGate = Math.pow(Math.max(0, Math.sin(2*Math.PI*0.085*tt + cfg.burstPhase)), 2.6);
   const firda = frontalW * firdaGate * cfg.ampFirda * Math.sin(2*Math.PI*cfg.firdaHz*tt + cfg.phaseFirda);
-  const overlay = level * regionW * (1.06*polymorph + 1.18*firda);
+  const overlay = regionW * (1.06*polymorph + 1.18*firda);
   const preserveBase = 0.05 + 0.05*(1-regionW);
-  const preserveFull = Math.max(0.02, preserveBase - 0.02*frontalW);
-  const preserve = 1 - level * (1 - preserveFull);
+  const preserve = Math.max(0.02, preserveBase - 0.02*frontalW);
   return {overlay, preserve};
 }
 function scheduleBurstSuppressionPathology(now, immediate=false){
@@ -2314,7 +2099,7 @@ function syncBurstSuppressionPathology(forceRestart=false){
     ...(state.burstSuppression || {})
   };
   ensurePathologyDefaults();
-  if (burstSuppressionLevel() <= 0){
+  if (!(state.pathology && state.pathology.burstSuppression)){
     state.burstSuppression.active = false;
     return;
   }
@@ -2339,15 +2124,8 @@ function burstSuppressionLag(e){
   if (/z$/.test(e)) lag -= 0.002;
   return lag;
 }
-function burstSuppressionLevel(){
-  const pathology = state.pathology || {};
-  const raw = Number(pathology.burstSuppressionLevel);
-  if (Number.isFinite(raw)) return clamp01(raw);
-  return pathology.burstSuppression ? 1 : 0;
-}
 function burstSuppressionPathologyValue(clock, e){
-  const level = burstSuppressionLevel();
-  if (level <= 0 || !AVG_ELECTRODE_SET.has(e)) return null;
+  if (!(state.pathology && state.pathology.burstSuppression) || !AVG_ELECTRODE_SET.has(e)) return null;
   const cfg = state.burstSuppression || {
     active:false, t0:0,
     burstDur:0.95, suppressionDur:3.0,
@@ -2375,20 +2153,18 @@ function burstSuppressionPathologyValue(clock, e){
     const spikes = cfg.ampSpike * (Math.pow(Math.max(0, spikeCarrier), 6) - 0.32*Math.pow(Math.max(0, -spikeCarrier), 4));
     const mix = 0.58 + 0.16*Math.sin(2*Math.PI*0.35*tt + cfg.phaseMix);
     const burst = mix*(theta + 0.42*fast + spikes) + (1-mix)*(delta + 0.28*theta + spikes);
-    const preserveFull = 0.08 + 0.02*(1-regionW);
     return {
-      overlay: level * regionW * env * burst,
-      preserve: 1 - level * (1 - preserveFull)
+      overlay: regionW * env * burst,
+      preserve: 0.08 + 0.02*(1-regionW)
     };
   }
   const suppressPos = (cyclePos - cfg.burstDur) / Math.max(0.001, cfg.suppressionDur);
   const suppressTail = Math.max(0, 1 - suppressPos);
   const drift = cfg.suppressDrift * Math.sin(2*Math.PI*0.32*tt + cfg.phaseSupp + 0.5*sidePhase);
   const tinyFast = 0.6 * cfg.suppressNoise * Math.sin(2*Math.PI*6.4*tt + cfg.phaseFast);
-  const preserveFull = 0.025 + 0.015*suppressTail;
   return {
-    overlay: level * regionW * (0.24*suppressTail*drift + tinyFast),
-    preserve: 1 - level * (1 - preserveFull)
+    overlay: regionW * (0.24*suppressTail*drift + tinyFast),
+    preserve: 0.025 + 0.015*suppressTail
   };
 }
 function schedulePhoticStimPathology(now, immediate=false){
@@ -2673,62 +2449,58 @@ function extremeDeltaBrushScale(e){
   return 0;
 }
 function extraPathologyValue(clock, e){
+  const pathology = state.pathology || {};
   if (!AVG_ELECTRODE_SET.has(e)) return null;
   let overlay = 0;
   let preserve = 1;
   let active = false;
 
-  const firdaLevelValue = pathologyLevel('firda');
-  if (firdaLevelValue > 0){
+  if (pathology.firda){
     const scale = firdaScale(e);
     const burst = wrappedPhase(clock, 7.2, 0.4);
     if (scale > 0 && burst < 3.2){
       const env = Math.sin(Math.PI * burst / 3.2);
       const wave = Math.sin(2*Math.PI*2.15*clock + 0.12*stableHashUnit(e)) + 0.18*Math.sin(2*Math.PI*4.3*clock);
-      overlay += firdaLevelValue * scale * env * 95 * wave;
-      preserve *= 1 - firdaLevelValue*0.28*env*scale;
+      overlay += scale * env * 95 * wave;
+      preserve *= 1 - 0.28*env*scale;
       active = true;
     }
   }
 
-  const tirdaLevelValue = pathologyLevel('tirda');
-  if (tirdaLevelValue > 0){
+  if (pathology.tirda){
     const scale = tirdaScale(e);
     const burst = wrappedPhase(clock, 8.1, 1.1);
     if (scale > 0 && burst < 4.6){
       const env = Math.sin(Math.PI * burst / 4.6);
       const wave = Math.sin(2*Math.PI*2.7*clock + 0.22*stableHashUnit(e));
-      overlay += tirdaLevelValue * scale * env * 112 * (wave + 0.15*Math.sin(2*Math.PI*5.4*clock));
-      preserve *= 1 - tirdaLevelValue*0.18*env*scale;
+      overlay += scale * env * 112 * (wave + 0.15*Math.sin(2*Math.PI*5.4*clock));
+      preserve *= 1 - 0.18*env*scale;
       active = true;
     }
   }
 
-  const extremeDeltaBrushLevelValue = pathologyLevel('extremeDeltaBrush');
-  if (extremeDeltaBrushLevelValue > 0){
+  if (pathology.extremeDeltaBrush){
     const scale = extremeDeltaBrushScale(e);
     if (scale > 0){
       const deltaPhase = 2*Math.PI*(1.45*clock + 0.04*stableHashUnit(e));
       const delta = Math.sin(deltaPhase);
       const crest = Math.pow(Math.max(0, delta), 1.7);
       const beta = Math.sin(2*Math.PI*23.5*clock + 4*stableHashUnit(e)) + 0.46*Math.sin(2*Math.PI*31*clock + 2.4);
-      overlay += extremeDeltaBrushLevelValue * scale * (82*delta + 34*crest*beta);
-      preserve *= 1 - extremeDeltaBrushLevelValue*(1 - 0.56);
+      overlay += scale * (82*delta + 34*crest*beta);
+      preserve *= 0.56;
       active = true;
     }
   }
 
-  const alphaComaLevelValue = pathologyLevel('alphaComa');
-  if (alphaComaLevelValue > 0){
+  if (pathology.alphaComa){
     const scale = (/^(F3|F4|Fz|C3|C4|Cz)$/.test(e)) ? 1.00 : (/^(Fp1|Fp2|P3|P4|Pz|T3|T4)$/.test(e) ? 0.72 : 0.44);
     const phase = 2*Math.PI*(10.4*clock + 0.025*stableHashUnit(e));
-    overlay += alphaComaLevelValue * scale * (64*Math.sin(phase) + 8*Math.sin(2*phase));
-    preserve *= 1 - alphaComaLevelValue*(1 - 0.24);
+    overlay += scale * (64*Math.sin(phase) + 8*Math.sin(2*phase));
+    preserve *= 0.24;
     active = true;
   }
 
-  const hypsarrhythmiaLevelValue = pathologyLevel('hypsarrhythmia');
-  if (hypsarrhythmiaLevelValue > 0){
+  if (pathology.hypsarrhythmia){
     const h = stableHashUnit(e);
     const slow =
       135*Math.sin(2*Math.PI*(0.85 + 0.18*h)*clock + 6*h) +
@@ -2739,12 +2511,42 @@ function extraPathologyValue(clock, e){
       spike = transientGaussian(pos, 0.055, 0.018, 1.00) - transientGaussian(pos, 0.115, 0.040, 0.38);
     }
     const regional = /^(Fp1|Fp2|F3|F4|C3|C4|P3|P4|T3|T4|T5|T6)$/.test(e) ? 1.0 : 0.72;
-    overlay += hypsarrhythmiaLevelValue * regional * (slow + 160*spike);
-    preserve *= 1 - hypsarrhythmiaLevelValue*(1 - 0.10);
+    overlay += regional * (slow + 160*spike);
+    preserve *= 0.10;
     active = true;
   }
 
   return active ? {overlay, preserve:Math.max(0.02, preserve)} : null;
+}
+function resolveEmgLeadSelection(selection){
+  const rng = state.rng || Math.random;
+  if (selection === 'diffuse'){
+    return {mode:'diffuse', label:'Diffuse'};
+  }
+  const choice = (selection && EMG_LEAD_MAP.has(selection)) ? selection : 'random';
+  const picked = choice === 'random'
+    ? LONGITUDINAL_CHAINS[Math.floor(rng() * LONGITUDINAL_CHAINS.length)]
+    : null;
+  const spec = picked
+    ? {a:picked[0], b:picked[1], label:`${picked[0]}-${picked[1]}`}
+    : EMG_LEAD_MAP.get(choice);
+  const a = scalpXY(spec.a);
+  const b = scalpXY(spec.b);
+  const center = [(a[0] + b[0]) * 0.5, (a[1] + b[1]) * 0.5];
+  const vx = b[0] - a[0];
+  const vy = b[1] - a[1];
+  const len = Math.max(0.25, Math.hypot(vx, vy));
+  const focusSide = center[0] < -0.25 ? 'L' : (center[0] > 0.25 ? 'R' : 'M');
+  return {
+    mode:'focused',
+    label: spec.label,
+    a: spec.a,
+    b: spec.b,
+    center,
+    axis: [vx / len, vy / len],
+    halfSpan: Math.max(0.3, len * 0.5),
+    focusSide
+  };
 }
 function resolveBreachLeadSelection(selection){
   const rng = state.rng || Math.random;
@@ -3021,17 +2823,60 @@ function diffuseEmgLeadWeights(e){
   if (/^Pz$/.test(e)) return {leftTemp:0.08, rightTemp:0.08, leftFront:0.12, rightFront:0.12, mid:0.34};
   return ZERO_EMG_WEIGHTS;
 }
+function buildFocusedEmgWeights(resolvedLead){
+  const weights = {};
+  for (const name of DISPLAY_ORDER){
+    const base = diffuseEmgLeadWeights(name);
+    const basePower = base.leftTemp + base.rightTemp + base.leftFront + base.rightFront + base.mid;
+    if (basePower <= 0) continue;
+    const p = scalpXY(name);
+    const dx = p[0] - resolvedLead.center[0];
+    const dy = p[1] - resolvedLead.center[1];
+    const d = Math.hypot(dx, dy);
+    const radial = Math.exp(-0.5 * Math.pow(d / 1.02, 2));
+    const along = Math.abs((dx * resolvedLead.axis[0] + dy * resolvedLead.axis[1]) / resolvedLead.halfSpan);
+    const lineSupport = along <= 1 ? 1 : Math.exp(-0.5 * Math.pow((along - 1) / 0.9, 2));
+    const side = scalpSide(name);
+    const sideFactor = resolvedLead.focusSide === 'M'
+      ? (side === 'M' ? 1 : 0.68)
+      : (side === resolvedLead.focusSide ? 1 : (side === 'M' ? 0.42 : 0.12));
+    let scalar = radial * lineSupport * sideFactor;
+    if (name === resolvedLead.a || name === resolvedLead.b) scalar = Math.max(scalar, 1.28);
+    else if (d < 0.82) scalar = Math.max(scalar, 0.86);
+    if (scalar <= 0.035) continue;
+    weights[name] = {
+      leftTemp: base.leftTemp * scalar,
+      rightTemp: base.rightTemp * scalar,
+      leftFront: base.leftFront * scalar,
+      rightFront: base.rightFront * scalar,
+      mid: base.mid * scalar
+    };
+  }
+  return weights;
+}
 function scheduleEmg(now, immediate=false){
   state.emg = state.emg || {};
   const rng = state.rng || Math.random;
   const startDelay = immediate ? (0.03 + 0.08*rng()) : (0.08 + 0.16*rng());
+  const resolvedFocus = resolveEmgLeadSelection((state.artifactConfig && state.artifactConfig.emgLead) || 'diffuse');
   state.emg.active = true;
   state.emg.t0 = now + startDelay;
-  state.emg.focus = 'Diffuse';
-  state.emg.weights = null;
+  state.emg.focus = resolvedFocus.label;
+  state.emg.weights = resolvedFocus.mode === 'focused' ? buildFocusedEmgWeights(resolvedFocus) : null;
   state.emg.leftAmp = 0.85 + 0.40*rng();
   state.emg.rightAmp = 0.85 + 0.40*rng();
-  if (rng() < 0.5) state.emg.leftAmp *= 1.18;
+  if (resolvedFocus.mode === 'focused'){
+    if (resolvedFocus.focusSide === 'L'){
+      state.emg.leftAmp *= 1.26;
+      state.emg.rightAmp *= 0.44;
+    } else if (resolvedFocus.focusSide === 'R'){
+      state.emg.rightAmp *= 1.26;
+      state.emg.leftAmp *= 0.44;
+    } else {
+      state.emg.leftAmp *= 0.94;
+      state.emg.rightAmp *= 0.94;
+    }
+  } else if (rng() < 0.5) state.emg.leftAmp *= 1.18;
   else state.emg.rightAmp *= 1.18;
   state.emg.leftBurstHz = 0.55 + 0.40*rng();
   state.emg.rightBurstHz = 0.55 + 0.40*rng();
@@ -4032,7 +3877,7 @@ const state = {
   rewind: {active:false, startedAt:0, fromOffset:0, toOffset:0, durationSec:0},
   opts: {blink:false, rovingEyes:false, reading:false, ventilator:false, lambdaWaves:false, muRhythm:false, sreda:false, positiveSpikes14And6:false, bets:false, wicketSpikes:false, photicStim:false, chew:false, sweat:false, ekgArtifact:false, breach:false, pop:false, emg:false, ekgTrace:false},
   artifactConfig: {photicHz:15, breachLead:'random', popLead:'random', emgLead:'diffuse', emgLevel:0, ekgLevel:0, blinkLevel:0, rovingEyesLevel:0, readingLevel:0, ventilatorLevel:0, lambdaWavesLevel:0, muRhythmLevel:0, sredaLevel:0, positiveSpikes14And6Level:0, betsLevel:0, wicketSpikesLevel:0, photicStimLevel:0, chewLevel:0, sweatLevel:0, breachLevel:0, popLevel:0},
-  pathology: {encephalopathy:false, encephalopathyLevel:0, burstSuppression:false, burstSuppressionLevel:0, firda:false, firdaLevel:0, tirda:false, tirdaLevel:0, extremeDeltaBrush:false, extremeDeltaBrushLevel:0, alphaComa:false, alphaComaLevel:0, hypsarrhythmia:false, hypsarrhythmiaLevel:0, gpd:false, gpdLevel:0, lpd:false, lpdLevel:0, lpdSide:'left', bipds:false, interictal:false, interictalLevel:0, interictalLead:'random', generalizedEmg:DEFAULT_EMG_LEVEL, focalSeizure:false, focalFocus:'random', fbtcSeizure:false, fbtcFocus:'random'},
+  pathology: {encephalopathy:false, burstSuppression:false, firda:false, tirda:false, extremeDeltaBrush:false, alphaComa:false, hypsarrhythmia:false, gpd:false, lpd:false, lpdSide:'left', bipds:false, interictal:false, interictalLead:'random', generalizedEmg:DEFAULT_EMG_LEVEL, focalSeizure:false, focalFocus:'random', fbtcSeizure:false, fbtcFocus:'random'},
   seizureDurations: {generalized:10, absence:10, focal:10, fbtc:20},
   seizureEvents: [],
   montage: 'bipolar_longitudinal',
@@ -5097,8 +4942,7 @@ function interictalSharpWave_uV(pos, cfg){
   return spike + slow + plus;
 }
 function interictalPathologyValue(clock, e){
-  const level = interictalLevel();
-  if (level <= 0 || !AVG_ELECTRODE_SET.has(e)) return 0;
+  if (!(state.pathology && state.pathology.interictal) || !AVG_ELECTRODE_SET.has(e)) return 0;
   const cfg = state.interictalPathology || {
     active:false, t0:0, weights:{}, lags:{}, interval:2.2, window:0.16, phaseShift:0,
     amp:190, slowAmp:62, plusAmp:12, fastPhase:0, doubletGap:0.045, doubletScale:0.32,
@@ -5121,7 +4965,7 @@ function interictalPathologyValue(clock, e){
     const slow2 = -cfg.doubletScale * cfg.slowAmp * 0.55 * slow_uV(Math.max(0, p2 - 0.016));
     y += spike2 + slow2;
   }
-  return level * w * clusterEnv * y;
+  return w * clusterEnv * y;
 }
 function quizSpikeLeadWeight(e, cfg){
   if (!cfg || cfg.type === 'none' || !AVG_ELECTRODE_SET.has(e)) return 0;
@@ -5209,18 +5053,16 @@ function step(){
       const rng = state.rng;
       const pathology = state.pathology || {};
       const optionState = state.opts || {};
-      const hasEncephalopathy = encephalopathyLevel() > 0;
-      const hasBurstSuppression = burstSuppressionLevel() > 0;
-      const hasExtraPathology = pathologyLevel('firda') > 0 || pathologyLevel('tirda') > 0 || pathologyLevel('extremeDeltaBrush') > 0 || pathologyLevel('alphaComa') > 0 || pathologyLevel('hypsarrhythmia') > 0;
+      const hasEncephalopathy = !!pathology.encephalopathy;
+      const hasBurstSuppression = !!pathology.burstSuppression;
+      const hasExtraPathology = !!(pathology.firda || pathology.tirda || pathology.extremeDeltaBrush || pathology.alphaComa || pathology.hypsarrhythmia);
       const hasBenignVariantArtifact = !!((optionState.lambdaWaves && currentEyesOpenSelection()) || optionState.muRhythm || optionState.sreda || optionState.positiveSpikes14And6 || optionState.bets || optionState.wicketSpikes);
       const hasPhoticStim = !!optionState.photicStim;
       const hasNoxiousStim = !!(state.noxiousStim && state.noxiousStim.active);
-      const gpdLevelValue = pathologyLevel('gpd');
-      const hasGpd = gpdLevelValue > 0;
+      const hasGpd = !!pathology.gpd;
       const hasBipds = !!pathology.bipds;
-      const lpdLevelValue = pathologyLevel('lpd');
-      const hasLpd = lpdLevelValue > 0;
-      const hasInterictal = interictalLevel() > 0;
+      const hasLpd = !!pathology.lpd;
+      const hasInterictal = !!pathology.interictal;
       const inEducationalMode = !!((state.quiz && state.quiz.active) || (state.tutorial && state.tutorial.active));
       const educationalBias = currentEducationalBias();
       const seizureEvents = (state.seizureEvents && state.seizureEvents.length) ? state.seizureEvents : null;
@@ -5362,7 +5204,7 @@ function step(){
             if (extraPath) y = y*extraPath.preserve + extraPath.overlay;
           }
           if (hasGpd) {
-            y += gpdLevelValue * gpdWave(sampleClock + gpdLag(e), rng) * gpdScale(e);
+            y += gpdWave(sampleClock + gpdLag(e), rng) * gpdScale(e);
           }
           if (hasBipds) {
             // Bilateral independent periodic discharges: render both hemispheres as independent generators.
@@ -5370,7 +5212,7 @@ function step(){
             y += lpdWave(sampleClock + 0.31 + lpdLagRight(e), rng) * lpdScaleRight(e);
           } else if (hasLpd) {
             const lpdSide = lpdSideValue(pathology.lpdSide);
-            y += lpdLevelValue * lpdWave(sampleClock + lpdLagForSide(e, lpdSide), rng) * lpdScaleForSide(e, lpdSide);
+            y += lpdWave(sampleClock + lpdLagForSide(e, lpdSide), rng) * lpdScaleForSide(e, lpdSide);
           }
           if (hasInterictal) {
             y += interictalPathologyValue(sampleClock, e);
@@ -5603,24 +5445,6 @@ const ARTIFACT_SLIDER_CONFIG = {
   breach:{input:'breach', output:'breachValue'},
   pop:{input:'pop', output:'popValue'}
 };
-const PATHOLOGY_LEVEL_FIELDS = {
-  firda:'firdaLevel',
-  tirda:'tirdaLevel',
-  extremeDeltaBrush:'extremeDeltaBrushLevel',
-  alphaComa:'alphaComaLevel',
-  hypsarrhythmia:'hypsarrhythmiaLevel',
-  gpd:'gpdLevel',
-  lpd:'lpdLevel'
-};
-const PATHOLOGY_SLIDER_CONFIG = {
-  firda:{input:'firda', output:'firdaValue'},
-  tirda:{input:'tirda', output:'tirdaValue'},
-  extremeDeltaBrush:{input:'extremeDeltaBrush', output:'extremeDeltaBrushValue'},
-  alphaComa:{input:'alphaComa', output:'alphaComaValue'},
-  hypsarrhythmia:{input:'hypsarrhythmia', output:'hypsarrhythmiaValue'},
-  gpd:{input:'gpd', output:'gpdValue'},
-  lpd:{input:'lpd', output:'lpdValue'}
-};
 function clampArtifactLevel(value){
   const v = Number(value);
   return Number.isFinite(v) ? Math.max(0, Math.min(1, v)) : 0;
@@ -5661,69 +5485,33 @@ function syncAllArtifactSliderUI(){
   Object.keys(ARTIFACT_SLIDER_CONFIG).forEach(syncArtifactSliderUI);
 }
 function ensurePathologyDefaults(){
-  const priorPathology = state.pathology || {};
-  const hadEncephalopathyLevel = Object.prototype.hasOwnProperty.call(priorPathology, 'encephalopathyLevel');
-  const hadBurstSuppressionLevel = Object.prototype.hasOwnProperty.call(priorPathology, 'burstSuppressionLevel');
-  const hadInterictalLevel = Object.prototype.hasOwnProperty.call(priorPathology, 'interictalLevel');
-  const hadPathologyLevels = {};
-  for (const [key, field] of Object.entries(PATHOLOGY_LEVEL_FIELDS)){
-    hadPathologyLevels[key] = Object.prototype.hasOwnProperty.call(priorPathology, field);
-  }
   state.pathology = {
     encephalopathy:false,
-    encephalopathyLevel:0,
     burstSuppression:false,
-    burstSuppressionLevel:0,
     firda:false,
-    firdaLevel:0,
     tirda:false,
-    tirdaLevel:0,
     extremeDeltaBrush:false,
-    extremeDeltaBrushLevel:0,
     alphaComa:false,
-    alphaComaLevel:0,
     hypsarrhythmia:false,
-    hypsarrhythmiaLevel:0,
     gpd:false,
-    gpdLevel:0,
     lpd:false,
-    lpdLevel:0,
     lpdSide:'left',
     bipds:false,
     interictal:false,
-    interictalLevel:0,
     interictalLead:'random',
     generalizedEmg:DEFAULT_EMG_LEVEL,
     focalSeizure:false,
     focalFocus:'random',
     fbtcSeizure:false,
     fbtcFocus:'random',
-    ...priorPathology
+    ...(state.pathology || {})
   };
-  let encephalopathyLevelValue = Number(state.pathology.encephalopathyLevel);
-  if (!hadEncephalopathyLevel && state.pathology.encephalopathy) encephalopathyLevelValue = 1;
-  state.pathology.encephalopathyLevel = Number.isFinite(encephalopathyLevelValue) ? clamp01(encephalopathyLevelValue) : 0;
-  state.pathology.encephalopathy = state.pathology.encephalopathyLevel > 0;
-  let burstSuppressionLevelValue = Number(state.pathology.burstSuppressionLevel);
-  if (!hadBurstSuppressionLevel && state.pathology.burstSuppression) burstSuppressionLevelValue = 1;
-  state.pathology.burstSuppressionLevel = Number.isFinite(burstSuppressionLevelValue) ? clamp01(burstSuppressionLevelValue) : 0;
-  state.pathology.burstSuppression = state.pathology.burstSuppressionLevel > 0;
-  let interictalLevelValue = Number(state.pathology.interictalLevel);
-  if (!hadInterictalLevel && state.pathology.interictal) interictalLevelValue = 1;
-  state.pathology.interictalLevel = Number.isFinite(interictalLevelValue) ? clamp01(interictalLevelValue) : 0;
-  state.pathology.interictal = state.pathology.interictalLevel > 0;
-  for (const [key, field] of Object.entries(PATHOLOGY_LEVEL_FIELDS)){
-    let levelValue = Number(state.pathology[field]);
-    if (!hadPathologyLevels[key] && state.pathology[key]) levelValue = 1;
-    state.pathology[field] = Number.isFinite(levelValue) ? clamp01(levelValue) : 0;
-    state.pathology[key] = state.pathology[field] > 0;
-  }
   state.pathology.lpdSide = lpdSideValue(state.pathology.lpdSide);
   state.pathology.interictalLead = normalizeInterictalLeadSelection(state.pathology.interictalLead);
   const generalizedEmg = Number(state.pathology.generalizedEmg);
   state.pathology.generalizedEmg = Number.isFinite(generalizedEmg) ? Math.max(0, Math.min(1, generalizedEmg)) : DEFAULT_EMG_LEVEL;
-  state.pathology.focalFocus = normalizeFocalSeizureFocusSelection(state.pathology.focalFocus);
-  state.pathology.fbtcFocus = normalizeFocalSeizureFocusSelection(state.pathology.fbtcFocus);
+  if (!FOCAL_SEIZURE_FOCUS_MAP.has(state.pathology.focalFocus)) state.pathology.focalFocus = 'random';
+  if (!FOCAL_SEIZURE_FOCUS_MAP.has(state.pathology.fbtcFocus)) state.pathology.fbtcFocus = 'random';
 }
 function ensureArtifactDefaults(){
   const priorConfig = state.artifactConfig || {};
@@ -5753,8 +5541,8 @@ function ensureArtifactDefaults(){
   };
   if (!PHOTIC_STIM_RATE_SET.has(Number(state.artifactConfig.photicHz))) state.artifactConfig.photicHz = 15;
   state.artifactConfig.breachLead = normalizeBreachRhythmLeadSelection(state.artifactConfig.breachLead);
-  state.artifactConfig.popLead = normalizePopLeadSelection(state.artifactConfig.popLead);
-  state.artifactConfig.emgLead = 'diffuse';
+  if (!POP_LEAD_SET.has(state.artifactConfig.popLead)) state.artifactConfig.popLead = 'random';
+  if (!(state.artifactConfig.emgLead === 'diffuse' || EMG_LEAD_MAP.has(state.artifactConfig.emgLead))) state.artifactConfig.emgLead = 'diffuse';
   const emgLevel = Number(state.artifactConfig.emgLevel);
   state.artifactConfig.emgLevel = Number.isFinite(emgLevel) ? Math.max(0, Math.min(1, emgLevel)) : 0;
   for (const [key, field] of Object.entries(ARTIFACT_LEVEL_FIELDS)){
@@ -5806,107 +5594,21 @@ function syncGeneralizedSeizureEmgUI(){
   if (slider) slider.value = String(pct);
   if (output) output.textContent = `${pct}%`;
 }
-function readEncephalopathyLevelFromUI(){
-  const slider = $('encephalopathy');
-  const raw = slider ? Number(slider.value) : 0;
-  if (!Number.isFinite(raw)) return 0;
-  return clamp01(raw / 100);
-}
-function syncEncephalopathySliderUI(){
-  ensurePathologyDefaults();
-  const slider = $('encephalopathy');
-  const output = $('encephalopathyValue');
-  const pct = Math.round(encephalopathyLevel() * 100);
-  if (slider) slider.value = String(pct);
-  if (output) output.textContent = `${pct}%`;
-}
-function readBurstSuppressionLevelFromUI(){
-  const slider = $('burstSuppression');
-  const raw = slider ? Number(slider.value) : 0;
-  if (!Number.isFinite(raw)) return 0;
-  return clamp01(raw / 100);
-}
-function syncBurstSuppressionSliderUI(){
-  ensurePathologyDefaults();
-  const slider = $('burstSuppression');
-  const output = $('burstSuppressionValue');
-  const pct = Math.round(burstSuppressionLevel() * 100);
-  if (slider) slider.value = String(pct);
-  if (output) output.textContent = `${pct}%`;
-}
-function interictalLevel(){
-  const pathology = state.pathology || {};
-  const raw = Number(pathology.interictalLevel);
-  if (Number.isFinite(raw)) return clamp01(raw);
-  return pathology.interictal ? 1 : 0;
-}
-function readInterictalLevelFromUI(){
-  const slider = $('interictal');
-  const raw = slider ? Number(slider.value) : 0;
-  if (!Number.isFinite(raw)) return 0;
-  return clamp01(raw / 100);
-}
-function syncInterictalSliderUI(){
-  ensurePathologyDefaults();
-  const slider = $('interictal');
-  const output = $('interictalValue');
-  const pct = Math.round(interictalLevel() * 100);
-  if (slider) slider.value = String(pct);
-  if (output) output.textContent = `${pct}%`;
-}
-function pathologyLevelField(key){
-  return PATHOLOGY_LEVEL_FIELDS[key] || `${key}Level`;
-}
-function pathologyLevel(key){
-  const pathology = state.pathology || {};
-  const raw = Number(pathology[pathologyLevelField(key)]);
-  if (Number.isFinite(raw)) return clamp01(raw);
-  return pathology[key] ? 1 : 0;
-}
-function readPathologyLevelFromUI(key){
-  const cfg = PATHOLOGY_SLIDER_CONFIG[key];
-  const slider = cfg ? $(cfg.input) : null;
-  const raw = slider ? Number(slider.value) : 0;
-  if (!Number.isFinite(raw)) return 0;
-  return clamp01(raw / 100);
-}
-function syncPathologyLevelSliderUI(key){
-  ensurePathologyDefaults();
-  const cfg = PATHOLOGY_SLIDER_CONFIG[key];
-  if (!cfg) return;
-  const slider = $(cfg.input);
-  const output = $(cfg.output);
-  const pct = Math.round(pathologyLevel(key) * 100);
-  if (slider) slider.value = String(pct);
-  if (output) output.textContent = `${pct}%`;
-}
-function syncAllPathologyLevelSliderUI(){
-  Object.keys(PATHOLOGY_SLIDER_CONFIG).forEach(syncPathologyLevelSliderUI);
-}
-function setPathologyLevelFromUI(key){
-  ensurePathologyDefaults();
-  const field = pathologyLevelField(key);
-  const level = readPathologyLevelFromUI(key);
-  state.pathology[field] = level;
-  state.pathology[key] = level > 0;
-  if (key === 'lpd' && state.pathology.lpd){
-    // The manual LPD slider represents unilateral LPDs, so clear any stale bilateral state.
-    state.pathology.bipds = false;
+function populateEmgLeadSelect(){
+  const sel = $('emgLeadSel');
+  if (!sel) return;
+  if (sel.options.length !== EMG_LEAD_OPTIONS.length){
+    const frag = document.createDocumentFragment();
+    EMG_LEAD_OPTIONS.forEach((opt)=>{
+      const el = document.createElement('option');
+      el.value = opt.value;
+      el.textContent = opt.label;
+      frag.appendChild(el);
+    });
+    sel.replaceChildren(frag);
   }
-  syncPathologyLevelSliderUI(key);
-}
-function focusOptionLabel(options, value){
-  const match = options.find((opt)=> opt.value === value);
-  return match ? match.label : 'Random';
-}
-function syncLeadFocusButton(selectId, options){
-  const sel = $(selectId);
-  const btn = document.querySelector(`[data-focus-select="${selectId}"]`);
-  if (!sel || !btn) return;
-  const label = focusOptionLabel(options, sel.value || 'random');
-  btn.textContent = (sel.value || 'random') === 'random' ? 'Click to Select' : label;
-  btn.title = `Focus: ${label}`;
-  btn.setAttribute('aria-label', `Choose focus, current ${label}`);
+  ensureArtifactDefaults();
+  sel.value = state.artifactConfig.emgLead || 'diffuse';
 }
 function populateFocalFocusSelect(){
   const sel = $('focalSzFocus');
@@ -5922,8 +5624,7 @@ function populateFocalFocusSelect(){
     sel.replaceChildren(frag);
   }
   ensurePathologyDefaults();
-  sel.value = normalizeFocalSeizureFocusSelection(state.pathology.focalFocus);
-  syncLeadFocusButton('focalSzFocus', FOCAL_SEIZURE_FOCUS_OPTIONS);
+  sel.value = state.pathology.focalFocus || 'random';
 }
 function populateFbtcFocusSelect(){
   const sel = $('fbtcSzFocus');
@@ -5939,8 +5640,7 @@ function populateFbtcFocusSelect(){
     sel.replaceChildren(frag);
   }
   ensurePathologyDefaults();
-  sel.value = normalizeFocalSeizureFocusSelection(state.pathology.fbtcFocus);
-  syncLeadFocusButton('fbtcSzFocus', FOCAL_SEIZURE_FOCUS_OPTIONS);
+  sel.value = state.pathology.fbtcFocus || 'random';
 }
 function populateInterictalLeadSelect(){
   const sel = $('interictalLeadSel');
@@ -5957,7 +5657,6 @@ function populateInterictalLeadSelect(){
   }
   ensurePathologyDefaults();
   sel.value = normalizeInterictalLeadSelection(state.pathology.interictalLead);
-  syncLeadFocusButton('interictalLeadSel', INTERICTAL_LEAD_OPTIONS);
 }
 function populatePhoticHzSelect(){
   const sel = $('photicHzSel');
@@ -6006,7 +5705,6 @@ function populateBreachLeadSelect(){
   }
   ensureArtifactDefaults();
   sel.value = normalizeBreachRhythmLeadSelection(state.artifactConfig.breachLead);
-  syncLeadFocusButton('breachLeadSel', BREACH_RHYTHM_LEAD_OPTIONS);
 }
 function populatePopLeadSelect(){
   const sel = $('popLeadSel');
@@ -6022,8 +5720,7 @@ function populatePopLeadSelect(){
     sel.replaceChildren(frag);
   }
   ensureArtifactDefaults();
-  sel.value = normalizePopLeadSelection(state.artifactConfig.popLead);
-  syncLeadFocusButton('popLeadSel', POP_LEAD_OPTIONS);
+  sel.value = state.artifactConfig.popLead || 'random';
 }
 ensurePathologyDefaults();
 ensureArtifactDefaults();
@@ -6032,6 +5729,7 @@ populatePhoticHzSelect();
 populateFocalFocusSelect();
 populateBreachLeadSelect();
 populatePopLeadSelect();
+populateEmgLeadSelect();
 syncAllArtifactSliderUI();
 syncEmgSliderUI();
 syncEkgArtifactSliderUI();
@@ -6343,26 +6041,10 @@ function applyDisplaySeedPayload(payload){
     ...payloadArtifactConfig
   };
   state.pathology = {
-    encephalopathy:false, encephalopathyLevel:0, burstSuppression:false, burstSuppressionLevel:0, firda:false, firdaLevel:0, tirda:false, tirdaLevel:0, extremeDeltaBrush:false, extremeDeltaBrushLevel:0, alphaComa:false, alphaComaLevel:0, hypsarrhythmia:false, hypsarrhythmiaLevel:0, gpd:false, gpdLevel:0, lpd:false, lpdLevel:0, lpdSide:'left', bipds:false,
-    interictal:false, interictalLevel:0, interictalLead:'random', generalizedEmg:DEFAULT_EMG_LEVEL, focalSeizure:false, focalFocus:'random', fbtcSeizure:false, fbtcFocus:'random',
+    encephalopathy:false, burstSuppression:false, firda:false, tirda:false, extremeDeltaBrush:false, alphaComa:false, hypsarrhythmia:false, gpd:false, lpd:false, lpdSide:'left', bipds:false,
+    interictal:false, interictalLead:'random', generalizedEmg:DEFAULT_EMG_LEVEL, focalSeizure:false, focalFocus:'random', fbtcSeizure:false, fbtcFocus:'random',
     ...(payload.pathology || {})
   };
-  if (payload.pathology && payload.pathology.encephalopathy && !Object.prototype.hasOwnProperty.call(payload.pathology, 'encephalopathyLevel')) {
-    state.pathology.encephalopathyLevel = 1;
-  }
-  if (payload.pathology && payload.pathology.burstSuppression && !Object.prototype.hasOwnProperty.call(payload.pathology, 'burstSuppressionLevel')) {
-    state.pathology.burstSuppressionLevel = 1;
-  }
-  if (payload.pathology && payload.pathology.interictal && !Object.prototype.hasOwnProperty.call(payload.pathology, 'interictalLevel')) {
-    state.pathology.interictalLevel = 1;
-  }
-  if (payload.pathology){
-    for (const [key, field] of Object.entries(PATHOLOGY_LEVEL_FIELDS)){
-      if (payload.pathology[key] && !Object.prototype.hasOwnProperty.call(payload.pathology, field)){
-        state.pathology[field] = 1;
-      }
-    }
-  }
   if (payload.pathology && payload.pathology.photicStim) {
     state.opts.photicStim = true;
     if (!Object.prototype.hasOwnProperty.call(payloadArtifactConfig, 'photicStimLevel')) {
@@ -6414,25 +6096,13 @@ function regen(){
   for (const key of Object.keys(ARTIFACT_SLIDER_CONFIG)){
     state.artifactConfig[artifactLevelField(key)] = readArtifactSliderLevel(key);
   }
-  ensurePathologyDefaults();
-  state.pathology.encephalopathyLevel = readEncephalopathyLevelFromUI();
-  state.pathology.encephalopathy = state.pathology.encephalopathyLevel > 0;
-  state.pathology.burstSuppressionLevel = readBurstSuppressionLevelFromUI();
-  state.pathology.burstSuppression = state.pathology.burstSuppressionLevel > 0;
-  state.pathology.interictalLevel = readInterictalLevelFromUI();
-  state.pathology.interictal = state.pathology.interictalLevel > 0;
-  for (const key of Object.keys(PATHOLOGY_SLIDER_CONFIG)){
-    const field = pathologyLevelField(key);
-    state.pathology[field] = readPathologyLevelFromUI(key);
-    state.pathology[key] = state.pathology[field] > 0;
-  }
   state.artifactConfig.emgLevel = readEmgLevelFromUI();
   state.artifactConfig.ekgLevel = readEkgArtifactLevelFromUI();
   state.opts={ blink:artifactLevel('blink') > 0, rovingEyes:artifactLevel('rovingEyes') > 0, reading:artifactLevel('reading') > 0, ventilator:artifactLevel('ventilator') > 0, lambdaWaves:artifactLevel('lambdaWaves') > 0, muRhythm:artifactLevel('muRhythm') > 0, sreda:artifactLevel('sreda') > 0, positiveSpikes14And6:artifactLevel('positiveSpikes14And6') > 0, bets:artifactLevel('bets') > 0, wicketSpikes:artifactLevel('wicketSpikes') > 0, photicStim:artifactLevel('photicStim') > 0, chew:artifactLevel('chew') > 0, sweat:artifactLevel('sweat') > 0, ekgArtifact:(state.artifactConfig.ekgLevel > 0), breach:artifactLevel('breach') > 0, pop:artifactLevel('pop') > 0, emg:(state.artifactConfig.emgLevel > 0), ekgTrace:$('showEkg')?.checked||false };
   state.artifactConfig.photicHz = PHOTIC_STIM_RATE_SET.has(Number($('photicHzSel')?.value)) ? Number($('photicHzSel').value) : (state.artifactConfig.photicHz || 15);
   state.artifactConfig.breachLead = normalizeBreachRhythmLeadSelection($('breachLeadSel')?.value || state.artifactConfig.breachLead);
-  state.artifactConfig.popLead = normalizePopLeadSelection($('popLeadSel')?.value || state.artifactConfig.popLead);
-  state.artifactConfig.emgLead = 'diffuse';
+  state.artifactConfig.popLead = POP_LEAD_SET.has($('popLeadSel')?.value) ? $('popLeadSel').value : (state.artifactConfig.popLead || 'random');
+  state.artifactConfig.emgLead = ($('emgLeadSel')?.value === 'diffuse' || EMG_LEAD_MAP.has($('emgLeadSel')?.value)) ? $('emgLeadSel').value : (state.artifactConfig.emgLead || 'diffuse');
   state.montage=$('montageSel')?$('montageSel').value:state.montage;
   state.pdrHz=9.0 + 1.8*state.rng(); state.pdrPhase=0; state.artClock=0; state.sampleCarry=0; state.viewOffsetSec=0; state.rewind={active:false, startedAt:0, fromOffset:0, toOffset:0, durationSec:0};
   resetSleepTransientState(0);
@@ -6486,19 +6156,26 @@ function syncControlsFromState(){
   populateFbtcFocusSelect();
   populateBreachLeadSelect();
   populatePopLeadSelect();
+  populateEmgLeadSelect();
   if ($('eyesOpen')) $('eyesOpen').checked = currentEyesOpenSelection();
   syncGeneralizedSeizureEmgUI();
-  syncEncephalopathySliderUI();
-  syncBurstSuppressionSliderUI();
-  syncInterictalSliderUI();
-  syncAllPathologyLevelSliderUI();
   if ($('showEkg')) $('showEkg').checked = !!state.opts.ekgTrace;
   syncAllArtifactSliderUI();
   syncEmgSliderUI();
   syncEkgArtifactSliderUI();
   syncPlaybackSpeedUI();
   syncRewindUI();
+  if ($('gpd')) $('gpd').checked = !!state.pathology.gpd;
+  if ($('lpd')) $('lpd').checked = !!state.pathology.lpd;
   if ($('lpdSideSel')) $('lpdSideSel').value = lpdSideValue(state.pathology.lpdSide);
+  if ($('encephalopathy')) $('encephalopathy').checked = !!state.pathology.encephalopathy;
+  if ($('burstSuppression')) $('burstSuppression').checked = !!state.pathology.burstSuppression;
+  if ($('firda')) $('firda').checked = !!state.pathology.firda;
+  if ($('tirda')) $('tirda').checked = !!state.pathology.tirda;
+  if ($('extremeDeltaBrush')) $('extremeDeltaBrush').checked = !!state.pathology.extremeDeltaBrush;
+  if ($('alphaComa')) $('alphaComa').checked = !!state.pathology.alphaComa;
+  if ($('hypsarrhythmia')) $('hypsarrhythmia').checked = !!state.pathology.hypsarrhythmia;
+  if ($('interictal')) $('interictal').checked = !!state.pathology.interictal;
   updatePenToolUI();
   if (typeof updateSeizureActionButtons === 'function') updateSeizureActionButtons();
   if (typeof updateActivationActionButtons === 'function') updateActivationActionButtons();
@@ -6577,13 +6254,11 @@ document.addEventListener('keydown', (e)=>{
 const artifactsBtn = $('artifactsBtn');
 const artifactsModal = document.getElementById('artifactsModal');
 const artifactsClose = document.getElementById('artifactsClose');
-const artifactsX = document.getElementById('artifactsX');
 const artifactsCollapse = document.getElementById('artifactsCollapse');
 const artifactsRestoreTab = document.getElementById('artifactsRestoreTab');
 const activationBtn = $('activationBtn');
 const activationModal = document.getElementById('activationModal');
 const activationClose = document.getElementById('activationClose');
-const activationX = document.getElementById('activationX');
 const activationCollapse = document.getElementById('activationCollapse');
 const activationRestoreTab = document.getElementById('activationRestoreTab');
 function setPanelAndRestoreVisibility(modal, restoreTab, visible, collapsed=false){
@@ -6718,7 +6393,6 @@ if (artifactsBtn && artifactsModal) {
   };
   artifactsBtn.addEventListener('click', (e) => { e.stopPropagation(); openArtifacts(); });
   artifactsClose?.addEventListener('click', closeArtifactsPanel);
-  artifactsX?.addEventListener('click', closeArtifactsPanel);
   artifactsCollapse?.addEventListener('click', collapseArtifactsPanel);
   artifactsRestoreTab?.addEventListener('click', openArtifactsPanel);
   document.addEventListener('keydown', (e) => { if (!artifactsModal.hidden && e.key === 'Escape') closeArtifactsPanel(); });
@@ -6729,7 +6403,6 @@ if (activationBtn && activationModal) {
   };
   activationBtn.addEventListener('click', (e) => { e.stopPropagation(); openActivation(); });
   activationClose?.addEventListener('click', closeActivationPanel);
-  activationX?.addEventListener('click', closeActivationPanel);
   activationCollapse?.addEventListener('click', collapseActivationPanel);
   activationRestoreTab?.addEventListener('click', openActivationPanel);
   document.addEventListener('keydown', (e) => { if (!activationModal.hidden && e.key === 'Escape') closeActivationPanel(); });
@@ -6764,6 +6437,15 @@ if (emgSlider){
   emgSlider.addEventListener('input', applyEmgSlider);
   emgSlider.addEventListener('change', applyEmgSlider);
 }
+const emgLeadSel = $('emgLeadSel');
+if (emgLeadSel){
+  emgLeadSel.addEventListener('change', ()=>{
+    ensureArtifactDefaults();
+    state.artifactConfig.emgLead = (emgLeadSel.value === 'diffuse' || EMG_LEAD_MAP.has(emgLeadSel.value)) ? emgLeadSel.value : 'diffuse';
+    populateEmgLeadSelect();
+    if (state.opts && state.opts.emg) syncEmgGenerator(true);
+  });
+}
 const breachLeadSel = $('breachLeadSel');
 if (breachLeadSel){
   breachLeadSel.addEventListener('change', ()=>{
@@ -6777,7 +6459,7 @@ const popLeadSel = $('popLeadSel');
 if (popLeadSel){
   popLeadSel.addEventListener('change', ()=>{
     ensureArtifactDefaults();
-    state.artifactConfig.popLead = normalizePopLeadSelection(popLeadSel.value);
+    state.artifactConfig.popLead = POP_LEAD_SET.has(popLeadSel.value) ? popLeadSel.value : 'random';
     populatePopLeadSelect();
     if (state.opts && state.opts.pop) syncPopGenerator(true);
   });
@@ -6791,102 +6473,6 @@ if (photicHzSel){
     populatePhoticHzSelect();
     if (state.opts && state.opts.photicStim) syncPhoticStimPathology(true);
   });
-}
-const LEAD_FOCUS_PICKER_CONFIG = {
-  breachLeadSel: {
-    title:'Breach rhythm focus',
-    options:BREACH_RHYTHM_LEAD_OPTIONS,
-    normalize:normalizeBreachRhythmLeadSelection
-  },
-  popLeadSel: {
-    title:'Electrode pop focus',
-    options:POP_LEAD_OPTIONS,
-    normalize:normalizePopLeadSelection
-  },
-  interictalLeadSel: {
-    title:'Interictal abnormality focus',
-    options:INTERICTAL_LEAD_OPTIONS,
-    normalize:normalizeInterictalLeadSelection
-  },
-  focalSzFocus: {
-    title:'Focal seizure focus',
-    options:FOCAL_SEIZURE_FOCUS_OPTIONS,
-    normalize:normalizeFocalSeizureFocusSelection
-  },
-  fbtcSzFocus: {
-    title:'Focal to bilateral tonic-clonic focus',
-    options:FOCAL_SEIZURE_FOCUS_OPTIONS,
-    normalize:normalizeFocalSeizureFocusSelection
-  }
-};
-const leadFocusModal = $('leadFocusModal');
-const leadFocusTitle = $('leadFocusTitle');
-const leadFocusSub = $('leadFocusSub');
-const leadFocusClose = $('leadFocusClose');
-const leadFocusRandom = $('leadFocusRandom');
-const leadFocusCurrent = $('leadFocusCurrent');
-let activeLeadFocusSelectId = '';
-function leadFocusCurrentValue(selectId){
-  const cfg = LEAD_FOCUS_PICKER_CONFIG[selectId];
-  const sel = $(selectId);
-  if (!cfg || !sel) return 'random';
-  return cfg.normalize ? cfg.normalize(sel.value || 'random') : (sel.value || 'random');
-}
-function renderLeadFocusPicker(){
-  if (!activeLeadFocusSelectId) return;
-  const cfg = LEAD_FOCUS_PICKER_CONFIG[activeLeadFocusSelectId];
-  if (!cfg) return;
-  const selected = leadFocusCurrentValue(activeLeadFocusSelectId);
-  const allowed = new Set(cfg.options.map((opt)=> opt.value));
-  if (leadFocusTitle) leadFocusTitle.textContent = cfg.title;
-  if (leadFocusSub) leadFocusSub.textContent = 'Click a lead on the montage, or use Random.';
-  if (leadFocusCurrent) leadFocusCurrent.textContent = `Current: ${focusOptionLabel(cfg.options, selected)}`;
-  if (leadFocusRandom) leadFocusRandom.classList.toggle('active', selected === 'random');
-  document.querySelectorAll('#leadFocusModal .lead-focus-electrode').forEach((btn)=>{
-    const electrode = btn.dataset.electrode || '';
-    const isAllowed = allowed.has(electrode);
-    btn.hidden = !isAllowed;
-    btn.classList.toggle('active', selected === electrode);
-    btn.setAttribute('aria-pressed', selected === electrode ? 'true' : 'false');
-  });
-}
-function openLeadFocusPicker(selectId){
-  if (!leadFocusModal || !LEAD_FOCUS_PICKER_CONFIG[selectId]) return;
-  activeLeadFocusSelectId = selectId;
-  renderLeadFocusPicker();
-  leadFocusModal.hidden = false;
-  const selectedButton = leadFocusModal.querySelector('.lead-focus-electrode.active') || leadFocusRandom || leadFocusClose;
-  selectedButton?.focus?.();
-}
-function closeLeadFocusPicker(){
-  if (leadFocusModal) leadFocusModal.hidden = true;
-  activeLeadFocusSelectId = '';
-}
-function commitLeadFocusSelection(value){
-  const selectId = activeLeadFocusSelectId;
-  const cfg = LEAD_FOCUS_PICKER_CONFIG[selectId];
-  const sel = $(selectId);
-  if (!cfg || !sel) return;
-  const next = cfg.normalize ? cfg.normalize(value) : value;
-  sel.value = next;
-  sel.dispatchEvent(new Event('change', {bubbles:true}));
-  syncLeadFocusButton(selectId, cfg.options);
-  closeLeadFocusPicker();
-}
-document.querySelectorAll('.lead-focus-button[data-focus-select]').forEach((btn)=>{
-  btn.addEventListener('click', ()=>{
-    if (btn.disabled) return;
-    openLeadFocusPicker(btn.dataset.focusSelect || '');
-  });
-});
-document.querySelectorAll('#leadFocusModal .lead-focus-electrode').forEach((btn)=>{
-  btn.addEventListener('click', ()=> commitLeadFocusSelection(btn.dataset.electrode || 'random'));
-});
-if (leadFocusRandom) leadFocusRandom.addEventListener('click', ()=> commitLeadFocusSelection('random'));
-if (leadFocusClose) leadFocusClose.addEventListener('click', closeLeadFocusPicker);
-if (leadFocusModal) {
-  leadFocusModal.addEventListener('click', (e)=>{ if (e.target === leadFocusModal) closeLeadFocusPicker(); });
-  window.addEventListener('keydown', (e)=>{ if (e.key === 'Escape' && !leadFocusModal.hidden) closeLeadFocusPicker(); });
 }
 const optBtn = $('optionsBtn');
 const optionsModal = document.getElementById('optionsModal');
@@ -6914,20 +6500,17 @@ if (rewindBtn){
 syncRewindUI();
 
 const optionsClose = document.getElementById('optionsClose');
-const optionsX = document.getElementById('optionsX');
 if (optBtn && optionsModal) {
   const openOptions = () => { optionsModal.hidden = false; };
   const closeOptions = () => { optionsModal.hidden = true; };
   optBtn.addEventListener('click', (e) => { e.stopPropagation(); openOptions(); });
   optionsClose?.addEventListener('click', closeOptions);
-  optionsX?.addEventListener('click', closeOptions);
   optionsModal.addEventListener('click', (e) => { if (e.target === optionsModal) closeOptions(); });
   document.addEventListener('keydown', (e) => { if (!optionsModal.hidden && e.key === 'Escape') closeOptions(); });
 }
 const aboutBtn = $('aboutBtn');
 const aboutModal = document.getElementById('aboutModal');
 const aboutClose = document.getElementById('aboutClose');
-const aboutX = document.getElementById('aboutX');
 const aboutSeedText = $('aboutSeedText');
 const aboutSeedCurrent = $('aboutSeedCurrent');
 const aboutSeedApply = $('aboutSeedApply');
@@ -6950,7 +6533,6 @@ if (aboutBtn && aboutModal) {
   const closeAbout = () => { aboutModal.hidden = true; };
   aboutBtn.addEventListener('click', (e) => { e.stopPropagation(); openAbout(); });
   aboutClose?.addEventListener('click', closeAbout);
-  aboutX?.addEventListener('click', closeAbout);
   aboutModal.addEventListener('click', (e) => { if (e.target === aboutModal) closeAbout(); });
   document.addEventListener('keydown', (e) => { if (!aboutModal.hidden && e.key === 'Escape') closeAbout(); });
 }
@@ -7008,13 +6590,19 @@ requestAnimationFrame(step);
 const pathologyBtn = $('pathologyBtn');
 const pathologyModal = document.getElementById('pathologyModal');
 const pathologyClose = document.getElementById('pathologyClose');
-const pathologyX = document.getElementById('pathologyX');
 const pathologyCollapse = document.getElementById('pathologyCollapse');
 const pathologyRestoreTab = document.getElementById('pathologyRestoreTab');
-const encephalopathySlider = $('encephalopathy');
-const burstSuppressionSlider = $('burstSuppression');
+const encephalopathyBox = $('encephalopathy');
+const burstSuppressionBox = $('burstSuppression');
+const firdaBox = $('firda');
+const tirdaBox = $('tirda');
+const extremeDeltaBrushBox = $('extremeDeltaBrush');
+const alphaComaBox = $('alphaComa');
+const hypsarrhythmiaBox = $('hypsarrhythmia');
+const gpdBox = $('gpd');
+const lpdBox = $('lpd');
 const lpdSideSel = $('lpdSideSel');
-const interictalSlider = $('interictal');
+const interictalBox = $('interictal');
 const interictalLeadSel = $('interictalLeadSel');
 const quizBtnTop = $('quizBtnTop');
 const tutorialBtnTop = $('tutorialBtnTop');
@@ -7049,8 +6637,6 @@ function updateSeizureActionButtons(){
   if (focalSzDurInput) focalSzDurInput.disabled = focalActive;
   const focalFocusInput = $('focalSzFocus');
   if (focalFocusInput) focalFocusInput.disabled = focalActive;
-  const focalFocusBtn = $('focalSzFocusBtn');
-  if (focalFocusBtn) focalFocusBtn.disabled = focalActive;
   const fbtcActive = !!(state.fbtcSz && state.fbtcSz.active);
   if (fbtcBtn){
     fbtcBtn.disabled = fbtcActive;
@@ -7059,8 +6645,6 @@ function updateSeizureActionButtons(){
   if (fbtcSzDurInput) fbtcSzDurInput.disabled = fbtcActive;
   const fbtcFocusInput = $('fbtcSzFocus');
   if (fbtcFocusInput) fbtcFocusInput.disabled = fbtcActive;
-  const fbtcFocusBtn = $('fbtcSzFocusBtn');
-  if (fbtcFocusBtn) fbtcFocusBtn.disabled = fbtcActive;
 }
 window.updateSeizureActionButtons = updateSeizureActionButtons;
 function updateActivationActionButtons(){
@@ -7075,50 +6659,56 @@ function updateActivationActionButtons(){
 window.updateActivationActionButtons = updateActivationActionButtons;
 if (pathologyBtn && pathologyModal) pathologyBtn.addEventListener('click', ()=>{ openPathologyPanel(); });
 if (pathologyClose) pathologyClose.addEventListener('click', closePathologyPanel);
-if (pathologyX) pathologyX.addEventListener('click', closePathologyPanel);
 if (pathologyCollapse) pathologyCollapse.addEventListener('click', collapsePathologyPanel);
 if (pathologyRestoreTab) pathologyRestoreTab.addEventListener('click', openPathologyPanel);
 if (pathologyModal) {
   window.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && !pathologyModal.hidden) closePathologyPanel(); });
 }
-if (encephalopathySlider) {
-  syncEncephalopathySliderUI();
-  const applyEncephalopathySlider = ()=>{
+if (gpdBox) {
+  gpdBox.checked = !!(state.pathology && state.pathology.gpd);
+  gpdBox.addEventListener('change', ()=>{
+    state.pathology.gpd = gpdBox.checked;
+  });
+}
+if (encephalopathyBox) {
+  encephalopathyBox.checked = !!(state.pathology && state.pathology.encephalopathy);
+  encephalopathyBox.addEventListener('change', ()=>{
     ensurePathologyDefaults();
-    const wasActive = encephalopathyLevel() > 0;
-    state.pathology.encephalopathyLevel = readEncephalopathyLevelFromUI();
-    state.pathology.encephalopathy = state.pathology.encephalopathyLevel > 0;
-    syncEncephalopathySliderUI();
-    if (state.pathology.encephalopathy && !wasActive) syncEncephalopathyPathology(true);
-    if (!state.pathology.encephalopathy) syncEncephalopathyPathology(false);
-  };
-  encephalopathySlider.addEventListener('input', applyEncephalopathySlider);
-  encephalopathySlider.addEventListener('change', applyEncephalopathySlider);
+    state.pathology.encephalopathy = encephalopathyBox.checked;
+    syncEncephalopathyPathology(true);
+  });
 }
-if (burstSuppressionSlider) {
-  syncBurstSuppressionSliderUI();
-  const applyBurstSuppressionSlider = ()=>{
+if (burstSuppressionBox) {
+  burstSuppressionBox.checked = !!(state.pathology && state.pathology.burstSuppression);
+  burstSuppressionBox.addEventListener('change', ()=>{
     ensurePathologyDefaults();
-    const wasActive = burstSuppressionLevel() > 0;
-    state.pathology.burstSuppressionLevel = readBurstSuppressionLevelFromUI();
-    state.pathology.burstSuppression = state.pathology.burstSuppressionLevel > 0;
-    syncBurstSuppressionSliderUI();
-    if (state.pathology.burstSuppression && !wasActive) syncBurstSuppressionPathology(true);
-    if (!state.pathology.burstSuppression) syncBurstSuppressionPathology(false);
-  };
-  burstSuppressionSlider.addEventListener('input', applyBurstSuppressionSlider);
-  burstSuppressionSlider.addEventListener('change', applyBurstSuppressionSlider);
+    state.pathology.burstSuppression = burstSuppressionBox.checked;
+    syncBurstSuppressionPathology(true);
+  });
 }
-function bindPathologyLevelSlider(key){
-  const cfg = PATHOLOGY_SLIDER_CONFIG[key];
-  const slider = cfg ? $(cfg.input) : null;
-  if (!slider) return;
-  syncPathologyLevelSliderUI(key);
-  const apply = ()=> setPathologyLevelFromUI(key);
-  slider.addEventListener('input', apply);
-  slider.addEventListener('change', apply);
+function wirePathologyToggle(box, key){
+  if (!box) return;
+  ensurePathologyDefaults();
+  box.checked = !!(state.pathology && state.pathology[key]);
+  box.addEventListener('change', ()=>{
+    ensurePathologyDefaults();
+    state.pathology[key] = !!box.checked;
+  });
 }
-Object.keys(PATHOLOGY_SLIDER_CONFIG).forEach(bindPathologyLevelSlider);
+wirePathologyToggle(firdaBox, 'firda');
+wirePathologyToggle(tirdaBox, 'tirda');
+wirePathologyToggle(extremeDeltaBrushBox, 'extremeDeltaBrush');
+wirePathologyToggle(alphaComaBox, 'alphaComa');
+wirePathologyToggle(hypsarrhythmiaBox, 'hypsarrhythmia');
+if (lpdBox) {
+  lpdBox.checked = !!(state.pathology && state.pathology.lpd);
+  lpdBox.addEventListener('change', ()=>{
+    ensurePathologyDefaults();
+    state.pathology.lpd = lpdBox.checked;
+    // The manual Pathology control represents unilateral LPDs, so clear any stale bilateral state.
+    state.pathology.bipds = false;
+  });
+}
 if (lpdSideSel) {
   populateLpdSideSelect();
   lpdSideSel.addEventListener('change', ()=>{
@@ -7127,19 +6717,13 @@ if (lpdSideSel) {
     populateLpdSideSelect();
   });
 }
-if (interictalSlider) {
-  syncInterictalSliderUI();
-  const applyInterictalSlider = ()=>{
+if (interictalBox) {
+  interictalBox.checked = !!(state.pathology && state.pathology.interictal);
+  interictalBox.addEventListener('change', ()=>{
     ensurePathologyDefaults();
-    const wasActive = interictalLevel() > 0;
-    state.pathology.interictalLevel = readInterictalLevelFromUI();
-    state.pathology.interictal = state.pathology.interictalLevel > 0;
-    syncInterictalSliderUI();
-    if (state.pathology.interictal && !wasActive) syncInterictalPathology(true);
-    if (!state.pathology.interictal) syncInterictalPathology(false);
-  };
-  interictalSlider.addEventListener('input', applyInterictalSlider);
-  interictalSlider.addEventListener('change', applyInterictalSlider);
+    state.pathology.interictal = interictalBox.checked;
+    syncInterictalPathology(true);
+  });
 }
 const genSzBtn = $('genSz');
 const genSzDurInput = $('genSzDur');
@@ -7158,7 +6742,7 @@ if (interictalLeadSel) {
     ensurePathologyDefaults();
     state.pathology.interictalLead = normalizeInterictalLeadSelection(interictalLeadSel.value);
     populateInterictalLeadSelect();
-    if (interictalLevel() > 0) syncInterictalPathology(true);
+    if (state.pathology.interictal) syncInterictalPathology(true);
   });
 }
 if (genSzDurInput) {
@@ -7186,7 +6770,7 @@ if (focalSzFocusInput) {
   populateFocalFocusSelect();
   focalSzFocusInput.addEventListener('change', ()=>{
     ensurePathologyDefaults();
-    state.pathology.focalFocus = normalizeFocalSeizureFocusSelection(focalSzFocusInput.value);
+    state.pathology.focalFocus = FOCAL_SEIZURE_FOCUS_MAP.has(focalSzFocusInput.value) ? focalSzFocusInput.value : 'random';
     populateFocalFocusSelect();
   });
 }
@@ -7194,7 +6778,7 @@ if (fbtcSzFocusInput) {
   populateFbtcFocusSelect();
   fbtcSzFocusInput.addEventListener('change', ()=>{
     ensurePathologyDefaults();
-    state.pathology.fbtcFocus = normalizeFocalSeizureFocusSelection(fbtcSzFocusInput.value);
+    state.pathology.fbtcFocus = FOCAL_SEIZURE_FOCUS_MAP.has(fbtcSzFocusInput.value) ? fbtcSzFocusInput.value : 'random';
     populateFbtcFocusSelect();
   });
 }
@@ -7394,27 +6978,16 @@ function startQuiz(){
   applyQuizModeFromTruth(sleep, background);
 
   state.pathology.encephalopathy = false;
-  state.pathology.encephalopathyLevel = 0;
   state.pathology.burstSuppression = false;
-  state.pathology.burstSuppressionLevel = 0;
   state.pathology.firda = false;
-  state.pathology.firdaLevel = 0;
   state.pathology.tirda = false;
-  state.pathology.tirdaLevel = 0;
   state.pathology.extremeDeltaBrush = false;
-  state.pathology.extremeDeltaBrushLevel = 0;
   state.pathology.alphaComa = false;
-  state.pathology.alphaComaLevel = 0;
   state.pathology.hypsarrhythmia = false;
-  state.pathology.hypsarrhythmiaLevel = 0;
-  state.pathology.gpdLevel = periodic === 'GPDs' ? 1 : 0;
-  state.pathology.gpd = state.pathology.gpdLevel > 0;
-  state.pathology.lpdLevel = periodic === 'LPDs' ? 1 : 0;
-  state.pathology.lpd = state.pathology.lpdLevel > 0;
+  state.pathology.gpd   = (periodic==='GPDs');
+  state.pathology.lpd   = (periodic==='LPDs');
   state.pathology.lpdSide = rng() < 0.5 ? 'left' : 'right';
   state.pathology.bipds = false;
-  state.pathology.interictal = false;
-  state.pathology.interictalLevel = 0;
   state.pathology.focalSeizure = false;
   state.pathology.fbtcSeizure = false;
   state.seizureEvents = [];
@@ -7684,8 +7257,6 @@ const _qe = document.getElementById('quizEnd');
 if (_qe) _qe.addEventListener('click', endQuiz);
 const _qc = document.getElementById('quizCollapse');
 if (_qc) _qc.addEventListener('click', ()=> setQuizPanelCollapsed(true));
-const _qx = document.getElementById('quizPanelX');
-if (_qx) _qx.addEventListener('click', ()=> setQuizPanelCollapsed(true));
 const _qr = document.getElementById('quizRestoreTab');
 if (_qr) _qr.addEventListener('click', ()=> setQuizPanelCollapsed(false));
 
@@ -7739,7 +7310,6 @@ const tutorialCaseModeSel = document.getElementById('tutorialCaseModeSel');
 const tutorialCaseSelWrap = document.getElementById('tutorialCaseSelWrap');
 const tutorialCaseSel = document.getElementById('tutorialCaseSel');
 const tutorialSetupClose = document.getElementById('tutorialSetupClose');
-const tutorialSetupX = document.getElementById('tutorialSetupX');
 const tutorialStartBtn = document.getElementById('tutorialStartBtn');
 const tutorialPanel = document.getElementById('tutorialPanel');
 const tutorialMeta = document.getElementById('tutorialMeta');
@@ -8191,27 +7761,16 @@ function tutorialSetCommonSimulatorState(caseData){
   const signal = caseData.signal || {};
   const rng = state.rng || Math.random;
   state.pathology.encephalopathy = false;
-  state.pathology.encephalopathyLevel = 0;
   state.pathology.burstSuppression = false;
-  state.pathology.burstSuppressionLevel = 0;
   state.pathology.firda = false;
-  state.pathology.firdaLevel = 0;
   state.pathology.tirda = false;
-  state.pathology.tirdaLevel = 0;
   state.pathology.extremeDeltaBrush = false;
-  state.pathology.extremeDeltaBrushLevel = 0;
   state.pathology.alphaComa = false;
-  state.pathology.alphaComaLevel = 0;
   state.pathology.hypsarrhythmia = false;
-  state.pathology.hypsarrhythmiaLevel = 0;
   state.pathology.gpd = false;
-  state.pathology.gpdLevel = 0;
   state.pathology.lpd = false;
-  state.pathology.lpdLevel = 0;
   state.pathology.lpdSide = lpdSideValue(signal.lpdSide || 'left');
   state.pathology.bipds = false;
-  state.pathology.interictal = false;
-  state.pathology.interictalLevel = 0;
   state.pathology.focalSeizure = false;
   state.opts = {blink:false, rovingEyes:false, reading:false, ventilator:false, lambdaWaves:false, muRhythm:false, sreda:false, positiveSpikes14And6:false, bets:false, wicketSpikes:false, photicStim:false, chew:false, sweat:false, ekgArtifact:false, breach:false, pop:false, emg:false, ekgTrace:!!(state.opts && state.opts.ekgTrace)};
   for (const key of Object.keys(ARTIFACT_LEVEL_FIELDS)) setArtifactLevelActive(key, false);
@@ -8238,12 +7797,8 @@ function tutorialSetCommonSimulatorState(caseData){
     state.artifactConfig.emgLevel = Math.max(state.artifactConfig.emgLevel || 0, DEFAULT_EMG_LEVEL);
   }
 
-  if (signal.periodic === 'GPDs') {
-    state.pathology.gpdLevel = 1;
-    state.pathology.gpd = true;
-  }
+  if (signal.periodic === 'GPDs') state.pathology.gpd = true;
   if (signal.periodic === 'LPDs') {
-    state.pathology.lpdLevel = 1;
     state.pathology.lpd = true;
     state.pathology.lpdSide = lpdSideValue(signal.lpdSide || state.pathology.lpdSide);
   }
@@ -8284,17 +7839,15 @@ function primeTutorialBaselineDisplay(seconds){
   const rng = state.rng || Math.random;
   const pathology = state.pathology || {};
   const optionState = state.opts || {};
-  const hasEncephalopathy = encephalopathyLevel() > 0;
-  const hasBurstSuppression = burstSuppressionLevel() > 0;
-  const hasExtraPathology = pathologyLevel('firda') > 0 || pathologyLevel('tirda') > 0 || pathologyLevel('extremeDeltaBrush') > 0 || pathologyLevel('alphaComa') > 0 || pathologyLevel('hypsarrhythmia') > 0;
+  const hasEncephalopathy = !!pathology.encephalopathy;
+  const hasBurstSuppression = !!pathology.burstSuppression;
+  const hasExtraPathology = !!(pathology.firda || pathology.tirda || pathology.extremeDeltaBrush || pathology.alphaComa || pathology.hypsarrhythmia);
   const hasBenignVariantArtifact = !!((optionState.lambdaWaves && currentEyesOpenSelection()) || optionState.muRhythm || optionState.sreda || optionState.positiveSpikes14And6 || optionState.bets || optionState.wicketSpikes);
   const hasPhoticStim = !!optionState.photicStim;
-  const gpdLevelValue = pathologyLevel('gpd');
-  const hasGpd = gpdLevelValue > 0;
+  const hasGpd = !!pathology.gpd;
   const hasBipds = !!pathology.bipds;
-  const lpdLevelValue = pathologyLevel('lpd');
-  const hasLpd = lpdLevelValue > 0;
-  const hasInterictal = interictalLevel() > 0;
+  const hasLpd = !!pathology.lpd;
+  const hasInterictal = !!pathology.interictal;
   const inEducationalMode = !!((state.quiz && state.quiz.active) || (state.tutorial && state.tutorial.active));
   const educationalBias = currentEducationalBias();
   const artifactLevels = {
@@ -8366,14 +7919,14 @@ function primeTutorialBaselineDisplay(seconds){
         if (extraPath) y = y*extraPath.preserve + extraPath.overlay;
       }
       if (hasGpd) {
-        y += gpdLevelValue * gpdWave(sampleClock + gpdLag(e), rng) * gpdScale(e);
+        y += gpdWave(sampleClock + gpdLag(e), rng) * gpdScale(e);
       }
       if (hasBipds) {
         y += lpdWave(sampleClock + lpdLagLeft(e), rng) * lpdScaleLeft(e);
         y += lpdWave(sampleClock + 0.31 + lpdLagRight(e), rng) * lpdScaleRight(e);
       } else if (hasLpd) {
         const lpdSide = lpdSideValue(pathology.lpdSide);
-        y += lpdLevelValue * lpdWave(sampleClock + lpdLagForSide(e, lpdSide), rng) * lpdScaleForSide(e, lpdSide);
+        y += lpdWave(sampleClock + lpdLagForSide(e, lpdSide), rng) * lpdScaleForSide(e, lpdSide);
       }
       if (hasInterictal) {
         y += interictalPathologyValue(sampleClock, e);
@@ -8887,9 +8440,6 @@ TUTORIAL_CASE_LIBRARY.focal_seizure = {
 if (tutorialSetupClose && TUTORIAL_SETUP_MODAL){
   tutorialSetupClose.addEventListener('click', ()=>{ TUTORIAL_SETUP_MODAL.hidden = true; });
 }
-if (tutorialSetupX && TUTORIAL_SETUP_MODAL){
-  tutorialSetupX.addEventListener('click', ()=>{ TUTORIAL_SETUP_MODAL.hidden = true; });
-}
 if (tutorialStartBtn){
   tutorialStartBtn.addEventListener('click', ()=> startTutorial());
 }
@@ -8909,8 +8459,6 @@ if (tutorialPlayBtn) tutorialPlayBtn.addEventListener('click', togglePlayback);
 if (tutorialNewCaseBtn) tutorialNewCaseBtn.addEventListener('click', ()=> startNextTutorialCase());
 if (tutorialEndBtn) tutorialEndBtn.addEventListener('click', endTutorial);
 if (tutorialCollapseBtn) tutorialCollapseBtn.addEventListener('click', ()=> setTutorialPanelCollapsed(true));
-const tutorialPanelX = document.getElementById('tutorialPanelX');
-if (tutorialPanelX) tutorialPanelX.addEventListener('click', ()=> setTutorialPanelCollapsed(true));
 if (tutorialRestoreTab) tutorialRestoreTab.addEventListener('click', ()=> setTutorialPanelCollapsed(false));
 syncPlaybackButtons();
 updateModeButtons();
@@ -9168,7 +8716,7 @@ updateModeButtons();
       (/^Fp2|^F4|^C4|^P4|^O2|^F8|^T4|^T6|^A2$/.test(name) ? 'R' : 'M');
   }
   function resolveFocalFocusSelection(selection){
-    const choice = normalizeFocalSeizureFocusSelection(selection);
+    const choice = (selection && FOCAL_SEIZURE_FOCUS_MAP.has(selection)) ? selection : 'random';
     const rng = state.rng || Math.random;
     if (choice === 'random'){
       const sideLeft = rng() < 0.5;
@@ -9179,15 +8727,13 @@ updateModeButtons();
       };
     }
     const spec = FOCAL_SEIZURE_FOCUS_MAP.get(choice);
-    const primary = spec.primary || spec.b || spec.a;
     const aSide = sideForElectrode(spec.a);
     const bSide = sideForElectrode(spec.b);
-    const primarySide = sideForElectrode(primary);
-    const focusSide = primarySide !== 'M' ? primarySide : ((aSide === bSide) ? aSide : 'M');
+    const focusSide = (aSide === bSide) ? aSide : 'M';
     return {
       label: spec.label,
       focusSide,
-      focus: scalpXY(primary) || avgXY([spec.a, spec.b])
+      focus: avgXY([spec.a, spec.b])
     };
   }
   // Setup per-channel seizure params on trigger
