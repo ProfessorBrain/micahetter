@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" type="image/png" href="favicon.png" />
 <title>🧠🩸 ICH Calculators: One-Stop Shop 🧠🩸</title>
 <style>
   :root {
@@ -17,8 +18,9 @@
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
   html, body { margin:0; padding:0; min-width:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji"; background: var(--bg); color:#111; line-height: 1.45; overflow-x:hidden; }
-  button, input { max-width:100%; font: inherit; }
+  button, input, select { max-width:100%; font: inherit; }
   input[type="number"] { width: 100%; min-height:42px; border:1px solid var(--border); border-radius: 8px; padding: 9px 10px; }
+  select { width:100%; min-height:42px; border:1px solid var(--border); border-radius:8px; padding:8px 10px; background:#fff; color:#111; }
   input[type="range"].num-slider { width:100%; height:28px; accent-color:var(--accent); cursor:pointer; }
   input[type="checkbox"], input[type="radio"] { accent-color: var(--accent); }
   .container { width:min(calc(100% - 24px), 880px); margin: 32px auto; }
@@ -55,9 +57,11 @@
   .btn:active { transform: translateY(1px); }
   .btn-outline { background: #fff; color:#111; border:1px solid var(--border); }
   .result { margin-top: 10px; }
-  .result-card { display:flex; align-items:baseline; flex-wrap:wrap; gap:6px 14px; padding:12px 14px; border:1px solid #c7d2fe; border-left:5px solid var(--accent); border-radius:8px; background:#eef2ff; box-shadow: inset 0 1px 0 rgba(255,255,255,.65); }
+  .result-card { display:flex; align-items:baseline; flex-wrap:wrap; gap:6px 14px; min-width:0; padding:12px 14px; border:1px solid #c7d2fe; border-left:5px solid var(--accent); border-radius:8px; background:#eef2ff; box-shadow: inset 0 1px 0 rgba(255,255,255,.65); overflow-wrap:anywhere; }
   .result-card [aria-live="polite"], .result-card #volOut { color:#312e81; font-size:22px; font-weight:850; line-height:1.15; }
   .result-card .muted { color:#3730a3; font-size:13px; line-height:1.3; }
+  .result-card ul { margin:0; padding-left:18px; color:#312e81; font-size:13px; line-height:1.35; }
+  .result-card li + li { margin-top:3px; }
   .danger { color: var(--danger); font-weight: 800; }
   .tag { display:inline-block; padding:2px 8px; border-radius:9999px; border:1px solid var(--border); font-size:12px; line-height:1.3; }
   .warn { background:#fffbeb; border-color:#f59e0b; }
@@ -108,8 +112,8 @@
         <div class="field" style="margin-bottom:12px;">
           <label>Vertical</label>
           <div class="segmented" role="radiogroup" aria-label="Vertical measurement mode">
-            <label><input type="radio" name="verticalMode" value="slice" /><span>Slice mode</span></label>
-            <label><input type="radio" name="verticalMode" value="direct" checked /><span>Direct Measurement</span></label>
+            <label><input type="radio" name="verticalMode" value="round" checked /><span>Round/ellipsoid</span></label>
+            <label><input type="radio" name="verticalMode" value="irregular" /><span>Irregular-shape</span></label>
           </div>
         </div>
         <div class="grid-3">
@@ -119,23 +123,23 @@
             <label for="wid">Width (cm)</label>
             <input id="wid" type="number" min="0" step="0.1" />
           </div>
-          <div class="field" id="sliceVerticalFields">
+          <div class="field is-hidden" id="sliceVerticalFields">
             <label for="s75">Slices ≥75%</label>
             <input id="s75" type="number" min="0" step="1" />
             <label for="s2575">Slices 25–75%</label>
             <input id="s2575" type="number" min="0" step="1" />
           </div>
-          <div class="field" id="sliceThicknessFields">
+          <div class="field is-hidden" id="sliceThicknessFields">
             <label for="thk">Thickness (cm)</label>
             <input id="thk" type="number" min="0" step="0.1" />
           </div>
-          <div class="field is-hidden" id="directVerticalFields">
+          <div class="field" id="directVerticalFields">
             <label for="verticalDirect">Vertical (cm)</label>
             <input id="verticalDirect" type="number" min="0" step="0.1" />
           </div>
         </div>
         <div class="result result-card"><span id="volOut" class="danger" aria-live="polite"></span></div>
-        <div class="muted" id="volFormula">Formula: A×B×(slice-count×thickness)/2, where slice-count = (slices ≥75%) + 0.5×(slices 25–75%).</div>
+        <div class="muted" id="volFormula">Formula: π×A×B×C/6, using the direct vertical measurement in cm.</div>
       </div>
 
       <div class="hr"></div>
@@ -220,31 +224,179 @@
       </div>
     </section>
 
-    <!-- SeLECT 2.0 Score -->
-    <section class="panel stack" id="select20">
-      <h2>SeLECT 2.0 Score</h2>
-      <div class="grid-3">
+    <!-- CAVE Score -->
+    <section class="panel stack" id="cave">
+      <h2>CAVE Score</h2>
+      <div class="grid-2">
         <div class="field">
-          <label>NIHSS Score Range</label>
-          <label><input type="radio" name="nihss" value="0" checked /> NIHSS &lt; 4 (0 pts)</label>
-          <label><input type="radio" name="nihss" value="1" /> NIHSS 4–10 (1 pt)</label>
-          <label><input type="radio" name="nihss" value="2" /> NIHSS ≥11 (2 pts)</label>
+          <label><input id="caveCortical" type="checkbox" /> Cortical involvement</label>
+          <label><input id="caveAge65" type="checkbox" /> Age &lt;65 years</label>
         </div>
         <div class="field">
-          <label><input id="laa" type="checkbox" /> Large-Artery Atherosclerosis (1 pt)</label>
-          <label><input id="cortical" type="checkbox" /> Cortical Involvement (2 pts)</label>
-          <label><input id="mca" type="checkbox" /> MCA Territory Involvement (1 pt)</label>
-        </div>
-        <div class="field">
-          <label>Acute Seizure Type</label>
-          <label><input type="radio" name="asz" value="0" checked /> No seizure (0 pts)</label>
-          <label><input type="radio" name="asz" value="3" /> Short seizure (3 pts)</label>
-          <label><input type="radio" name="asz" value="7" /> Status epilepticus (7 pts)</label>
+          <label><input id="caveVol10" type="checkbox" /> Hematoma volume &gt;10 mL</label>
+          <label><input id="caveEarlySeizure" type="checkbox" /> Early seizure within 7 days</label>
         </div>
       </div>
       <div class="result result-card">
-        <div id="selectOut" aria-live="polite"></div>
-        <div id="selectInterp" class="muted"></div>
+        <div id="caveOut" aria-live="polite"></div>
+        <div id="caveInterp" class="muted"></div>
+      </div>
+    </section>
+
+    <!-- Modified Graeb Score -->
+    <section class="panel stack" id="modified-graeb">
+      <h2>Modified Graeb Score</h2>
+      <div class="grid-2" id="graebGrid"></div>
+      <div class="result result-card">
+        <div id="graebOut" aria-live="polite"></div>
+        <div id="graebInterp" class="muted"></div>
+      </div>
+    </section>
+
+    <!-- Hematoma Expansion Risk -->
+    <section class="panel stack" id="expansion-risk">
+      <h2>Hematoma Expansion Risk</h2>
+      <div class="grid-2" id="expansionGrid"></div>
+      <div class="result result-card">
+        <div id="expansionOut" aria-live="polite"></div>
+        <div id="expansionInterp" class="muted"></div>
+      </div>
+    </section>
+
+    <!-- SMASH-U -->
+    <section class="panel stack" id="smashu">
+      <h2>SMASH-U Classifier</h2>
+      <div class="field">
+        <label for="smashuSelect">Likely etiology</label>
+        <select id="smashuSelect">
+          <option value="structural">S - Structural vascular lesion</option>
+          <option value="medication">M - Medication-related</option>
+          <option value="amyloid">A - Amyloid angiopathy</option>
+          <option value="systemic">S - Systemic disease/other</option>
+          <option value="hypertension">H - Hypertension</option>
+          <option value="undetermined">U - Undetermined</option>
+        </select>
+      </div>
+      <div class="result result-card">
+        <div id="smashuOut" aria-live="polite"></div>
+        <div id="smashuInterp" class="muted"></div>
+      </div>
+    </section>
+
+    <!-- Boston Criteria 2.0 CAA Features -->
+    <section class="panel stack" id="caa">
+      <h2>Boston Criteria 2.0 CAA Features</h2>
+      <div class="grid-2">
+        <div class="field">
+          <label>Required clinical context</label>
+          <label><input id="caaAge50" type="checkbox" /> Age >=50 years</label>
+          <label><input id="caaPresentation" type="checkbox" /> Spontaneous ICH, TFNE, convexity SAH, or cognitive impairment/dementia</label>
+          <label><input id="caaNoDeep" type="checkbox" /> No deep hemorrhagic lesions on T2*/SWI</label>
+          <label><input id="caaNoOtherCause" type="checkbox" /> No other cause of hemorrhagic lesions identified</label>
+        </div>
+        <div class="field">
+          <label for="caaLobarCount">Strictly lobar hemorrhagic lesion count</label>
+          <input id="caaLobarCount" type="number" min="0" step="1" />
+          <div class="muted">Count lobar ICH, lobar microbleeds, cortical superficial siderosis foci, and convexity SAH. Multiple distinct foci can count separately.</div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="field">
+          <label>Lobar hemorrhagic feature checklist</label>
+          <label><input id="caaLobarIch" type="checkbox" /> Strictly lobar ICH</label>
+          <label><input id="caaLobarMicrobleed" type="checkbox" /> Strictly lobar cerebral microbleed(s)</label>
+          <label><input id="caaCss" type="checkbox" /> Cortical superficial siderosis</label>
+          <label><input id="caaConvexitySah" type="checkbox" /> Convexity subarachnoid hemorrhage</label>
+        </div>
+        <div class="field">
+          <label>White matter feature checklist</label>
+          <label><input id="caaCsoPvs" type="checkbox" /> Severe centrum semiovale perivascular spaces (&gt;20 in one hemisphere)</label>
+          <label><input id="caaMultispotWmh" type="checkbox" /> Multispot WMH pattern (&gt;10 bilateral subcortical FLAIR spots)</label>
+        </div>
+      </div>
+      <div class="result result-card">
+        <div id="caaOut" aria-live="polite"></div>
+        <div id="caaInterp" class="muted"></div>
+      </div>
+    </section>
+
+    <!-- Max-ICH -->
+    <section class="panel stack" id="maxich">
+      <h2>Max-ICH Score</h2>
+      <div class="grid-3">
+        <div class="field">
+          <label>NIHSS</label>
+          <label><input type="radio" name="maxNihss" value="0" checked /> 0-6 (0 pts)</label>
+          <label><input type="radio" name="maxNihss" value="1" /> 7-13 (1 pt)</label>
+          <label><input type="radio" name="maxNihss" value="2" /> 14-20 (2 pts)</label>
+          <label><input type="radio" name="maxNihss" value="3" /> ≥21 (3 pts)</label>
+        </div>
+        <div class="field">
+          <label>Age</label>
+          <label><input type="radio" name="maxAge" value="0" checked /> ≤69 (0 pts)</label>
+          <label><input type="radio" name="maxAge" value="1" /> 70-74 (1 pt)</label>
+          <label><input type="radio" name="maxAge" value="2" /> 75-79 (2 pts)</label>
+          <label><input type="radio" name="maxAge" value="3" /> ≥80 (3 pts)</label>
+        </div>
+        <div class="field">
+          <label>Hematoma origin</label>
+          <label><input type="radio" name="maxLocation" value="lobar" checked /> Lobar: volume ≥30 mL (+1)</label>
+          <label><input type="radio" name="maxLocation" value="nonlobar" /> Non-lobar: volume ≥10 mL (+1)</label>
+          <label><input id="maxSecondVolume" type="checkbox" /> Additional large simultaneous ICH (+1)</label>
+          <label><input id="maxIvh" type="checkbox" /> IVH (+1)</label>
+          <label><input id="maxAnticoagulant" type="checkbox" /> Oral anticoagulants (+1)</label>
+        </div>
+      </div>
+      <div class="result result-card">
+        <div id="maxIchOut" aria-live="polite"></div>
+        <div id="maxIchInterp" class="muted"></div>
+      </div>
+    </section>
+
+    <!-- ICH-GS -->
+    <section class="panel stack" id="ichgs">
+      <h2>ICH-GS</h2>
+      <div class="grid-3">
+        <div class="field">
+          <label>Age</label>
+          <label><input type="radio" name="ichgsAge" value="1" checked /> &lt;45 years (1 pt)</label>
+          <label><input type="radio" name="ichgsAge" value="2" /> 45-64 years (2 pts)</label>
+          <label><input type="radio" name="ichgsAge" value="3" /> ≥65 years (3 pts)</label>
+        </div>
+        <div class="field">
+          <label>Location</label>
+          <label><input type="radio" name="ichgsLocation" value="supratentorial" checked /> Supratentorial (1 pt)</label>
+          <label><input type="radio" name="ichgsLocation" value="infratentorial" /> Infratentorial (2 pts)</label>
+        </div>
+        <div class="field">
+          <label>Shared inputs</label>
+          <label><input id="ichgsIvh" type="checkbox" /> Intraventricular extension</label>
+          <div class="muted">Uses shared GCS and the live hematoma volume.</div>
+        </div>
+      </div>
+      <div class="result result-card">
+        <div id="ichgsOut" aria-live="polite"></div>
+        <div id="ichgsInterp" class="muted"></div>
+      </div>
+    </section>
+
+    <!-- Reversal -->
+    <section class="panel stack" id="reversal">
+      <h2>Reversal?</h2>
+      <div class="field">
+        <label for="reversalMed">Medication/exposure</label>
+        <select id="reversalMed">
+          <option value="antiplatelet">Antiplatelet agents: aspirin, clopidogrel, ticagrelor</option>
+          <option value="heparin">Full dose heparin infusion</option>
+          <option value="warfarin">Warfarin</option>
+          <option value="tpa">Alteplase / Tenecteplase (tPA)</option>
+          <option value="dabigatran">Dabigatran within 48 hours</option>
+          <option value="doac">Other DOACs within 48 hours: apixaban, rivaroxaban, edoxaban</option>
+        </select>
+      </div>
+      <div class="result result-card">
+        <div id="reversalOut" aria-live="polite"></div>
+        <div id="reversalInterp" class="muted"></div>
       </div>
     </section>
 
@@ -330,6 +482,7 @@
     verticalDirect: { max: 20, label: "Vertical" },
     fAge: { max: 120, label: "Age" },
     fVol: { max: 200, label: "Hematoma volume" },
+    caaLobarCount: { max: 20, label: "Strictly lobar hemorrhagic lesions" },
   };
 
   function setupNumberSliders() {
@@ -374,7 +527,7 @@
   setupNumberSliders();
 
   function getVerticalMode() {
-    return checkedValue("verticalMode", "direct");
+    return checkedValue("verticalMode", "round");
   }
 
   function calcSliceVertical({ slicesFull, slicesPartial, thickness }) {
@@ -382,8 +535,10 @@
     return sliceCount * thickness;
   }
 
-  function calcVolume({ length, width, vertical }) {
-    return (length * width * vertical) / 2;
+  function calcVolume({ length, width, vertical, mode = "round" }) {
+    return mode === "round"
+      ? (Math.PI * length * width * vertical) / 6
+      : (length * width * vertical) / 2;
   }
 
   function calcICHScore({ gcs, volumeAtLeast30, ivh, infratentorial, ageAtLeast80 }) {
@@ -403,8 +558,59 @@
     return agePoints + volumePoints + locationPoints + gcsPoints + cognitivePoints;
   }
 
-  function calcSelectScore({ nihss, largeArtery, cortical, mca, seizure }) {
-    return nihss + (largeArtery ? 1 : 0) + (cortical ? 2 : 0) + (mca ? 1 : 0) + seizure;
+  function calcCaveScore({ cortical, ageUnder65, volumeOver10, earlySeizure }) {
+    return (cortical ? 1 : 0) + (ageUnder65 ? 1 : 0) + (volumeOver10 ? 1 : 0) + (earlySeizure ? 1 : 0);
+  }
+
+  function calcCAAFeatures({ ageAtLeast50, compatiblePresentation, noDeepHemorrhagicLesions, noOtherCause, lobarHemorrhagicLesionCount, whiteMatterFeatureCount }) {
+    const missing = [];
+    if (!ageAtLeast50) missing.push("age >=50 years");
+    if (!compatiblePresentation) missing.push("compatible presentation");
+    if (!noDeepHemorrhagicLesions) missing.push("absence of deep hemorrhagic lesions");
+    if (!noOtherCause) missing.push("absence of another explanatory cause");
+    if (missing.length) {
+      return {
+        classification: "Criteria not met",
+        detail: `Missing required Boston 2.0 context: ${missing.join(", ")}.`,
+      };
+    }
+
+    if (lobarHemorrhagicLesionCount >= 2 || (lobarHemorrhagicLesionCount >= 1 && whiteMatterFeatureCount >= 1)) {
+      return {
+        classification: "Probable CAA",
+        detail: "Meets MRI-based Boston criteria 2.0 pattern for probable CAA.",
+      };
+    }
+
+    if (lobarHemorrhagicLesionCount >= 1 || whiteMatterFeatureCount >= 1) {
+      return {
+        classification: "Possible CAA",
+        detail: "Meets MRI-based Boston criteria 2.0 pattern for possible CAA.",
+      };
+    }
+
+    return {
+      classification: "Criteria not met",
+      detail: "No qualifying strictly lobar hemorrhagic lesion or white matter feature selected.",
+    };
+  }
+
+  function calcMaxICHScore({ nihssPoints, agePoints, location, volume, additionalVolumePoint, ivh, anticoagulant }) {
+    const volumePoint = volume === null ? 0
+      : location === "lobar" ? (volume >= 30 ? 1 : 0)
+      : (volume >= 10 ? 1 : 0);
+    return nihssPoints + agePoints + volumePoint + (additionalVolumePoint ? 1 : 0) + (ivh ? 1 : 0) + (anticoagulant ? 1 : 0);
+  }
+
+  function calcICHGSScore({ agePoints, gcs, location, volume, ivh }) {
+    const gcsPoints = gcs >= 13 ? 1 : gcs >= 9 ? 2 : 3;
+    const locationPoints = location === "infratentorial" ? 2 : 1;
+    let volumePoints = 1;
+    if (volume !== null) {
+      if (location === "infratentorial") volumePoints = volume > 20 ? 3 : volume >= 10 ? 2 : 1;
+      else volumePoints = volume > 70 ? 3 : volume >= 40 ? 2 : 1;
+    }
+    return agePoints + gcsPoints + locationPoints + volumePoints + (ivh ? 2 : 1);
   }
 
   function readVolumeInputs() {
@@ -412,12 +618,13 @@
     const values = {
       length: toNonNegativeNumber(len),
       width: toNonNegativeNumber(wid),
-      vertical: mode === "slice"
+      mode,
+      vertical: mode === "irregular"
         ? null
         : toNonNegativeNumber(verticalDirect),
     };
 
-    if (mode === "slice") {
+    if (mode === "irregular") {
       const sliceValues = {
         slicesFull: toNonNegativeNumber(s75),
         slicesPartial: toNonNegativeNumber(s2575),
@@ -432,6 +639,7 @@
 
   let fVolAutoSynced = true;
   let syncingFuncVolume = false;
+  let currentVolumeML = null;
 
   function syncFuncVolumeFromHematoma(vol) {
     if (!fVolAutoSynced && fVol.value.trim() !== "") return;
@@ -455,29 +663,37 @@
   function updateVolume() {
     const values = readVolumeInputs();
     if (!values) {
+      currentVolumeML = null;
       volOut.textContent = "Enter all volume inputs.";
       vol30.checked = false;
       updateICHScore();
+      updateCAVEVolume();
+      updateMaxICHScore();
+      updateICHGSScore();
       clearAutoSyncedFuncVolume();
       return;
     }
 
     const vol = calcVolume(values);
+    currentVolumeML = vol;
     volOut.textContent = `Vol: ${vol.toFixed(2)} mL`;
     vol30.checked = vol >= 30;
     updateICHScore();
+    updateCAVEVolume();
+    updateMaxICHScore();
+    updateICHGSScore();
     syncFuncVolumeFromHematoma(vol);
   }
 
   function updateVerticalMode() {
     const mode = getVerticalMode();
-    const isSliceMode = mode === "slice";
-    sliceVerticalFields.classList.toggle("is-hidden", !isSliceMode);
-    sliceThicknessFields.classList.toggle("is-hidden", !isSliceMode);
-    directVerticalFields.classList.toggle("is-hidden", isSliceMode);
-    volFormula.textContent = isSliceMode
+    const isIrregular = mode === "irregular";
+    sliceVerticalFields.classList.toggle("is-hidden", !isIrregular);
+    sliceThicknessFields.classList.toggle("is-hidden", !isIrregular);
+    directVerticalFields.classList.toggle("is-hidden", isIrregular);
+    volFormula.textContent = isIrregular
       ? "Formula: A×B×(slice-count×thickness)/2, where slice-count = (slices ≥75%) + 0.5×(slices 25–75%)."
-      : "Formula: A×B×vertical/2, using the direct vertical measurement in cm.";
+      : "Formula: π×A×B×C/6, using the direct vertical measurement in cm.";
   }
 
   document.querySelectorAll('input[name="verticalMode"]').forEach((input) => {
@@ -531,6 +747,7 @@
     gcsVal2.textContent = r.sum;
     updateICHScore();
     updateFUNCScore();
+    updateICHGSScore();
     closeModal();
   });
   btnCloseGCS.addEventListener("click", closeModal);
@@ -593,26 +810,32 @@
   [fAge, fVol, fCog].forEach((input) => input.addEventListener("change", updateFUNCScore));
   document.querySelectorAll('input[name="fLoc"]').forEach((input) => input.addEventListener("change", updateFUNCScore));
   updateFUNCScore();
-  updateVolume();
 
-  // SeLECT 2.0
-  function updateSeLECTScore() {
-    const total = calcSelectScore({
-      nihss: parseInt(checkedValue("nihss", "0"), 10),
-      largeArtery: $("laa").checked,
-      cortical: $("cortical").checked,
-      mca: $("mca").checked,
-      seizure: parseInt(checkedValue("asz", "0"), 10),
+  // CAVE Score
+  const caveCortical = $("caveCortical"), caveAge65 = $("caveAge65"), caveVol10 = $("caveVol10"), caveEarlySeizure = $("caveEarlySeizure");
+
+  function updateCAVEScore() {
+    const score = calcCaveScore({
+      cortical: caveCortical.checked,
+      ageUnder65: caveAge65.checked,
+      volumeOver10: caveVol10.checked,
+      earlySeizure: caveEarlySeizure.checked,
     });
-    $("selectOut").textContent = `SeLECT 2.0 Score: ${total}`;
-    $("selectInterp").textContent = "Higher scores indicate higher late-seizure risk; use the published SeLECT 2.0 chart for time-specific estimates.";
+    $("caveOut").textContent = `CAVE Score: ${score}`;
+    const risk = score <= 1 ? "lower late-seizure risk (~6.7%)"
+      : score === 2 ? "intermediate late-seizure risk (~14.8%)"
+      : "higher late-seizure risk (~47.4%)";
+    $("caveInterp").textContent = risk;
   }
 
-  ["nihss", "asz"].forEach((name) => {
-    document.querySelectorAll(`input[name="${name}"]`).forEach((input) => input.addEventListener("change", updateSeLECTScore));
-  });
-  [$("laa"), $("cortical"), $("mca")].forEach((input) => input.addEventListener("change", updateSeLECTScore));
-  updateSeLECTScore();
+  function updateCAVEVolume() {
+    if (currentVolumeML === null) return;
+    caveVol10.checked = currentVolumeML > 10;
+    updateCAVEScore();
+  }
+
+  [caveCortical, caveAge65, caveVol10, caveEarlySeizure].forEach((input) => input.addEventListener("change", updateCAVEScore));
+  updateCAVEScore();
 
   function renderCheckboxItems(container, items) {
     items.forEach((item) => {
@@ -632,6 +855,214 @@
   function checkedItemScore(items) {
     return items.reduce((score, item) => score + ($(item.id).checked ? item.points : 0), 0);
   }
+
+  const graebItems = [
+    { id: "graeb_fourth", label: "Fourth ventricle", max: 4 },
+    { id: "graeb_third", label: "Third ventricle", max: 4 },
+    { id: "graeb_right_lateral", label: "Right lateral ventricle", max: 4 },
+    { id: "graeb_left_lateral", label: "Left lateral ventricle", max: 4 },
+    { id: "graeb_right_occipital", label: "Right occipital horn", max: 2 },
+    { id: "graeb_left_occipital", label: "Left occipital horn", max: 2 },
+    { id: "graeb_right_temporal", label: "Right temporal horn", max: 2 },
+    { id: "graeb_left_temporal", label: "Left temporal horn", max: 2 },
+  ];
+
+  function renderGraebItems() {
+    const grid = $("graebGrid");
+    graebItems.forEach((item) => {
+      const wrap = document.createElement("div");
+      const select = document.createElement("select");
+      const expandedLabel = document.createElement("label");
+      const expanded = document.createElement("input");
+
+      wrap.className = "field";
+      select.id = item.id;
+      select.setAttribute("aria-label", item.label);
+      for (let point = 0; point <= item.max; point += 1) {
+        const option = document.createElement("option");
+        option.value = String(point);
+        option.textContent = `${point} point${point === 1 ? "" : "s"}`;
+        select.appendChild(option);
+      }
+
+      expanded.id = `${item.id}_expanded`;
+      expanded.type = "checkbox";
+      expandedLabel.append(expanded, " Expanded (+1)");
+      wrap.append(item.label, select, expandedLabel);
+      grid.appendChild(wrap);
+    });
+  }
+
+  function updateGraebScore() {
+    const score = graebItems.reduce((total, item) => {
+      const base = parseInt($(item.id).value || "0", 10);
+      const expansion = $(`${item.id}_expanded`).checked ? 1 : 0;
+      return total + base + expansion;
+    }, 0);
+    $("graebOut").textContent = `Modified Graeb Score: ${score} / 32`;
+    $("graebInterp").textContent = "Higher scores indicate greater intraventricular hemorrhage burden and ventricular expansion.";
+  }
+
+  renderGraebItems();
+  graebItems.forEach((item) => {
+    $(item.id).addEventListener("change", updateGraebScore);
+    $(`${item.id}_expanded`).addEventListener("change", updateGraebScore);
+  });
+  updateGraebScore();
+
+  const expansionItems = [
+    { id: "exp_time", label: "Time from onset <2.5 hours", points: 1 },
+    { id: "exp_anticoag", label: "Anticoagulant use", points: 1 },
+    { id: "exp_blend", label: "Blend sign", points: 1 },
+    { id: "exp_hypodensity", label: "Any hypodensity", points: 1 },
+    { id: "exp_spot", label: "CTA spot sign", points: 1 },
+    { id: "exp_multi_spot", label: "Multiple spot signs", points: 1 },
+  ];
+  renderCheckboxItems($("expansionGrid"), expansionItems);
+
+  function updateExpansionRisk() {
+    const score = checkedItemScore(expansionItems);
+    const label = score <= 1 ? "Low" : score <= 3 ? "Moderate" : "High";
+    $("expansionOut").textContent = `Hematoma Expansion Risk: ${label}`;
+    $("expansionInterp").textContent = `${score} of ${expansionItems.length} risk criteria present.`;
+  }
+
+  expansionItems.forEach((item) => $(item.id).addEventListener("change", updateExpansionRisk));
+  updateExpansionRisk();
+
+  const smashuDefinitions = {
+    structural: ["S - Structural vascular lesion", "Image/pathology evidence of vascular malformation or related structural lesion at the hemorrhage site."],
+    medication: ["M - Medication-related", "Warfarin with elevated INR, recent DOAC exposure, therapeutic heparin, or systemic thrombolysis."],
+    amyloid: ["A - Amyloid angiopathy", "Typically lobar/cortical-subcortical hemorrhage in an older patient when other causes are less likely."],
+    systemic: ["S - Systemic disease/other", "Systemic disease or other cause such as thrombocytopenia, liver disease, tumor, or other non-hypertensive/non-medication etiology."],
+    hypertension: ["H - Hypertension", "Deep or infratentorial hemorrhage and/or pre-ICH hypertension history or antihypertensive use."],
+    undetermined: ["U - Undetermined", "No clear etiology after available clinical and imaging evaluation."],
+  };
+
+  function updateSMASHU() {
+    const [title, detail] = smashuDefinitions[$("smashuSelect").value];
+    $("smashuOut").textContent = title;
+    $("smashuInterp").textContent = detail;
+  }
+
+  $("smashuSelect").addEventListener("change", updateSMASHU);
+  updateSMASHU();
+
+  const caaLobarFeatureIds = ["caaLobarIch", "caaLobarMicrobleed", "caaCss", "caaConvexitySah"];
+  const caaWhiteMatterFeatureIds = ["caaCsoPvs", "caaMultispotWmh"];
+  const caaInputs = ["caaAge50", "caaPresentation", "caaNoDeep", "caaNoOtherCause", "caaLobarCount", ...caaLobarFeatureIds, ...caaWhiteMatterFeatureIds];
+
+  function checkedCount(ids) {
+    return ids.reduce((sum, id) => sum + ($(id).checked ? 1 : 0), 0);
+  }
+
+  function readCAAFeatureState() {
+    const manualCount = toNonNegativeNumber($("caaLobarCount"));
+    const checklistMinimum = checkedCount(caaLobarFeatureIds);
+    return {
+      ageAtLeast50: $("caaAge50").checked,
+      compatiblePresentation: $("caaPresentation").checked,
+      noDeepHemorrhagicLesions: $("caaNoDeep").checked,
+      noOtherCause: $("caaNoOtherCause").checked,
+      lobarHemorrhagicLesionCount: Math.max(Math.floor(manualCount ?? 0), checklistMinimum),
+      whiteMatterFeatureCount: checkedCount(caaWhiteMatterFeatureIds),
+    };
+  }
+
+  function updateCAAFeatures() {
+    const state = readCAAFeatureState();
+    const result = calcCAAFeatures(state);
+    $("caaOut").textContent = `Boston 2.0: ${result.classification}`;
+    $("caaInterp").textContent = `${result.detail} Lobar hemorrhagic lesions counted: ${state.lobarHemorrhagicLesionCount}; white matter features: ${state.whiteMatterFeatureCount}.`;
+  }
+
+  caaInputs.forEach((id) => {
+    const input = $(id);
+    input.addEventListener("input", updateCAAFeatures);
+    input.addEventListener("change", updateCAAFeatures);
+  });
+  updateCAAFeatures();
+
+  function updateMaxICHScore() {
+    const location = checkedValue("maxLocation", "lobar");
+    const score = calcMaxICHScore({
+      nihssPoints: parseInt(checkedValue("maxNihss", "0"), 10),
+      agePoints: parseInt(checkedValue("maxAge", "0"), 10),
+      location,
+      volume: currentVolumeML,
+      additionalVolumePoint: $("maxSecondVolume").checked,
+      ivh: $("maxIvh").checked,
+      anticoagulant: $("maxAnticoagulant").checked,
+    });
+    const threshold = location === "lobar" ? "lobar volume ≥30 mL" : "non-lobar volume ≥10 mL";
+    const volumeText = currentVolumeML === null ? `Enter hematoma volume to include ${threshold}.` : `Volume point uses ${threshold}.`;
+    $("maxIchOut").textContent = `Max-ICH Score: ${score} / 10`;
+    $("maxIchInterp").textContent = `${volumeText} Higher scores indicate higher risk of unfavorable long-term outcome.`;
+  }
+
+  ["maxNihss", "maxAge", "maxLocation"].forEach((name) => {
+    document.querySelectorAll(`input[name="${name}"]`).forEach((input) => input.addEventListener("change", updateMaxICHScore));
+  });
+  [$("maxSecondVolume"), $("maxIvh"), $("maxAnticoagulant")].forEach((input) => input.addEventListener("change", updateMaxICHScore));
+  updateMaxICHScore();
+
+  function updateICHGSScore() {
+    const location = checkedValue("ichgsLocation", "supratentorial");
+    const score = calcICHGSScore({
+      agePoints: parseInt(checkedValue("ichgsAge", "1"), 10),
+      gcs: gcsState.sum,
+      location,
+      volume: currentVolumeML,
+      ivh: $("ichgsIvh").checked,
+    });
+    const volumeText = currentVolumeML === null ? "Enter hematoma volume to include the volume category." : `Volume category uses ${currentVolumeML.toFixed(2)} mL.`;
+    $("ichgsOut").textContent = `ICH-GS: ${score} / 13`;
+    $("ichgsInterp").textContent = `${volumeText} Higher scores indicate higher 30-day mortality probability and lower chance of good functional outcome.`;
+  }
+
+  ["ichgsAge", "ichgsLocation"].forEach((name) => {
+    document.querySelectorAll(`input[name="${name}"]`).forEach((input) => input.addEventListener("change", updateICHGSScore));
+  });
+  $("ichgsIvh").addEventListener("change", updateICHGSScore);
+  updateICHGSScore();
+
+  const reversalRecommendations = {
+    antiplatelet: {
+      title: "Antiplatelet agents",
+      items: ["Single dose of DDAVP.", "Only transfuse platelets for patients undergoing neurosurgery."],
+    },
+    heparin: {
+      title: "Full dose heparin infusion",
+      items: ["Protamine sulfate 1 mg/100u of heparin given in the previous 2-3 hours, max 50 mg.", "If aPTT remains elevated, repeat at 0.5 mg/100u."],
+    },
+    warfarin: {
+      title: "Warfarin",
+      items: ["Goal INR <1.4.", "Vitamin K 10 mg IV.", "4-factor PCC (Kcentra) 50u/kg.", "INR every 6-8 hours; repeat if necessary."],
+    },
+    tpa: {
+      title: "Alteplase / Tenecteplase (tPA)",
+      items: ["Goal fibrinogen >150.", "Cryoprecipitate 10u.", "Monitor fibrinogen Q2-Q4.", "Consider tranexamic acid 1g once."],
+    },
+    dabigatran: {
+      title: "Dabigatran within 48 hours",
+      items: ["Idarucizumab 5g IV in two divided doses.", "Repeat dose if not stable on follow-up CT.", "Dialysis for renal failure or overdose."],
+    },
+    doac: {
+      title: "Other DOACs within 48 hours",
+      items: ["Apixaban, rivaroxaban, or edoxaban exposure.", "4-factor PCC (Kcentra) 50u/kg.", "Repeat dose if not stable on follow-up CT."],
+    },
+  };
+
+  function updateReversal() {
+    const recommendation = reversalRecommendations[$("reversalMed").value];
+    $("reversalOut").textContent = recommendation.title;
+    $("reversalInterp").innerHTML = `<ul>${recommendation.items.map((item) => `<li>${item}</li>`).join("")}</ul>`;
+  }
+
+  $("reversalMed").addEventListener("change", updateReversal);
+  updateReversal();
+
+  updateVolume();
 
   const hasItems = [
     { id: "has_htn", label: "Uncontrolled Hypertension (SBP >160)", points: 1 },
@@ -702,19 +1133,26 @@
     };
 
     check("Slice vertical", almost(calcSliceVertical({ slicesFull: 2, slicesPartial: 2, thickness: 0.5 }), 1.5));
-    check("Volume", almost(calcVolume({ length: 4, width: 3, vertical: 1.5 }), 9));
+    check("Round volume", almost(calcVolume({ length: 4, width: 3, vertical: 2, mode: "round" }), (Math.PI * 4 * 3 * 2) / 6));
+    check("Irregular volume", almost(calcVolume({ length: 4, width: 3, vertical: 1.5, mode: "irregular" }), 9));
     check("ICH max", calcICHScore({ gcs: 4, volumeAtLeast30: true, ivh: true, infratentorial: true, ageAtLeast80: true }) === 6);
     check("FUNC best", calcFuncScore({ age: 65, volume: 25, location: "lobar", gcs: 15, cognitiveImpairment: false }) === 11);
     check("FUNC low", calcFuncScore({ age: 82, volume: 40, location: "deep", gcs: 7, cognitiveImpairment: true }) === 3);
-    check("SeLECT max", calcSelectScore({ nihss: 2, largeArtery: true, cortical: true, mca: true, seizure: 7 }) === 13);
+    check("CAVE max", calcCaveScore({ cortical: true, ageUnder65: true, volumeOver10: true, earlySeizure: true }) === 4);
+    check("CAA possible", calcCAAFeatures({ ageAtLeast50: true, compatiblePresentation: true, noDeepHemorrhagicLesions: true, noOtherCause: true, lobarHemorrhagicLesionCount: 1, whiteMatterFeatureCount: 0 }).classification === "Possible CAA");
+    check("CAA probable", calcCAAFeatures({ ageAtLeast50: true, compatiblePresentation: true, noDeepHemorrhagicLesions: true, noOtherCause: true, lobarHemorrhagicLesionCount: 1, whiteMatterFeatureCount: 1 }).classification === "Probable CAA");
+    check("CAA gated", calcCAAFeatures({ ageAtLeast50: false, compatiblePresentation: true, noDeepHemorrhagicLesions: true, noOtherCause: true, lobarHemorrhagicLesionCount: 2, whiteMatterFeatureCount: 0 }).classification === "Criteria not met");
+    check("Max-ICH", calcMaxICHScore({ nihssPoints: 3, agePoints: 3, location: "lobar", volume: 30, additionalVolumePoint: true, ivh: true, anticoagulant: true }) === 10);
+    check("ICH-GS max", calcICHGSScore({ agePoints: 3, gcs: 3, location: "infratentorial", volume: 21, ivh: true }) === 13);
+    check("Modified Graeb max", graebItems.reduce((sum, item) => sum + item.max + 1, 0) === 32);
     check("HAS-BLED max", hasItems.reduce((sum, item) => sum + item.points, 0) === 9);
     check("CHA2DS2-VASc weights", chadItems.filter((item) => ["chad_chf", "chad_age75", "chad_stroke"].includes(item.id)).reduce((sum, item) => sum + item.points, 0) === 5);
 
     if (failures.length) throw new Error(`Self-tests failed: ${failures.join("; ")}`);
-    return { passed: true, checks: 8 };
+    return { passed: true, checks: 15 };
   }
 
-  window.ICHCalc = { calcVolume, calcSliceVertical, calcICHScore, calcFuncScore, calcSelectScore, runSelfTests };
+  window.ICHCalc = { calcVolume, calcSliceVertical, calcICHScore, calcFuncScore, calcCaveScore, calcCAAFeatures, calcMaxICHScore, calcICHGSScore, runSelfTests };
   window.runICHCalcSelfTests = runSelfTests;
 
   if (new URLSearchParams(window.location.search).has("test")) {
