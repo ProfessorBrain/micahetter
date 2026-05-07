@@ -22,6 +22,8 @@
   input[type="number"] { width: 100%; min-height:42px; border:1px solid var(--border); border-radius: 8px; padding: 9px 10px; }
   select { width:100%; min-height:42px; border:1px solid var(--border); border-radius:8px; padding:8px 10px; background:#fff; color:#111; }
   input[type="range"].num-slider { width:100%; height:28px; accent-color:var(--accent); cursor:pointer; }
+  input[type="range"].num-slider::-webkit-slider-thumb { width:20px; height:20px; cursor:grab; }
+  input[type="range"].num-slider::-moz-range-thumb { width:20px; height:20px; cursor:grab; }
   input[type="checkbox"], input[type="radio"] { accent-color: var(--accent); }
   .container { width:min(calc(100% - 24px), 880px); margin: 32px auto; }
   h1 { text-align:center; color:#1f2937; margin: 0 0 6px; font-size: clamp(24px, 6vw, 30px); line-height:1.15; text-wrap:balance; }
@@ -259,13 +261,6 @@
           <label><input id="caaNoOtherCause" type="checkbox" /> No other cause of hemorrhagic lesions identified</label>
         </div>
         <div class="field">
-          <label for="caaLobarCount">Strictly lobar hemorrhagic lesion count</label>
-          <input id="caaLobarCount" type="number" min="0" step="1" />
-          <div class="muted">Count lobar ICH, lobar microbleeds, cortical superficial siderosis foci, and convexity SAH. Multiple distinct foci can count separately.</div>
-        </div>
-      </div>
-      <div class="grid-2">
-        <div class="field">
           <label>Lobar hemorrhagic feature checklist</label>
           <label><input id="caaLobarIch" type="checkbox" /> Strictly lobar ICH</label>
           <label><input id="caaLobarMicrobleed" type="checkbox" /> Strictly lobar cerebral microbleed(s)</label>
@@ -309,7 +304,7 @@
       <div class="grid-2">
         <div class="field">
           <label for="fAge">Age (years)</label>
-          <input id="fAge" type="number" min="0" step="1" />
+          <input id="fAge" type="number" min="18" max="100" step="1" value="18" />
         </div>
         <div class="field">
           <label for="fVol">Hematoma Volume (mL)</label>
@@ -485,9 +480,8 @@
     s2575: { max: 15, label: "Slices 25 to 75%" },
     thk: { min: 0.1, max: 1.0, label: "Thickness" },
     verticalDirect: { min: 0.1, max: 15, label: "Vertical" },
-    fAge: { max: 120, label: "Age" },
+    fAge: { min: 18, max: 100, label: "Age" },
     fVol: { max: 200, label: "Hematoma volume" },
-    caaLobarCount: { max: 20, label: "Strictly lobar hemorrhagic lesions" },
   };
 
   function setupNumberSliders() {
@@ -955,21 +949,19 @@
 
   const caaLobarFeatureIds = ["caaLobarIch", "caaLobarMicrobleed", "caaCss", "caaConvexitySah"];
   const caaWhiteMatterFeatureIds = ["caaCsoPvs", "caaMultispotWmh"];
-  const caaInputs = ["caaAge50", "caaPresentation", "caaNoDeep", "caaNoOtherCause", "caaLobarCount", ...caaLobarFeatureIds, ...caaWhiteMatterFeatureIds];
+  const caaInputs = ["caaAge50", "caaPresentation", "caaNoDeep", "caaNoOtherCause", ...caaLobarFeatureIds, ...caaWhiteMatterFeatureIds];
 
   function checkedCount(ids) {
     return ids.reduce((sum, id) => sum + ($(id).checked ? 1 : 0), 0);
   }
 
   function readCAAFeatureState() {
-    const manualCount = toNonNegativeNumber($("caaLobarCount"));
-    const checklistMinimum = checkedCount(caaLobarFeatureIds);
     return {
       ageAtLeast50: $("caaAge50").checked,
       compatiblePresentation: $("caaPresentation").checked,
       noDeepHemorrhagicLesions: $("caaNoDeep").checked,
       noOtherCause: $("caaNoOtherCause").checked,
-      lobarHemorrhagicLesionCount: Math.max(Math.floor(manualCount ?? 0), checklistMinimum),
+      lobarHemorrhagicLesionCount: checkedCount(caaLobarFeatureIds),
       whiteMatterFeatureCount: checkedCount(caaWhiteMatterFeatureIds),
     };
   }
@@ -1085,10 +1077,10 @@
   function updateHASBLED() {
     const score = checkedItemScore(hasItems);
     $("hasOut").textContent = `HAS-BLED Score: ${score}`;
-    const annualBleedRisk = ["~1.13%", "~1.02%", "~1.88%", "~3.74%", "~8.70%", "~12.50%"];
-    const risk = annualBleedRisk[score] ?? "insufficient original-study data; likely very high";
+    const annualBleedRisk = ["~0.9%", "~3.4%", "~4.1%", "~5.8%", "~8.9%", "~9.1%"];
+    const risk = annualBleedRisk[score] ?? ">10%; limited data for scores above 5";
     const caution = score >= 3 ? "High risk; correct modifiable risk factors and monitor closely." : "Reassess modifiable risk factors.";
-    $("hasInterp").textContent = `Estimated annual major bleeding risk: ${risk}. ${caution}`;
+    $("hasInterp").textContent = `Estimated 1-year major bleeding risk: ${risk}. ${caution}`;
   }
 
   hasItems.forEach((item) => $(item.id).addEventListener("change", updateHASBLED));
