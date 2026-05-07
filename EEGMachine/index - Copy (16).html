@@ -38,7 +38,6 @@
 .tutorial-choice.correct{background:#e7f8ea;border-color:#4db569}
 .tutorial-choice.wrong{background:#fde7ea;border-color:#e05757}
 .tutorial-choice.neutral{background:#f0f2f4;border-color:#97a6b3;color:#465562}
-.tutorial-reveal{margin:.2rem 0 .6rem;padding:.38rem .7rem;border-radius:8px;border:1px solid #bfd6f6;background:linear-gradient(180deg,#f5faff,#e5f0ff);color:#183e67;font-weight:800;font-size:12px}
 .topbar-mini-btn{width:2.2rem;min-width:2.2rem;padding:0;display:inline-flex;align-items:center;justify-content:center;overflow:hidden}
 .topbar-mini-btn img{display:block;width:1.35rem;height:1.35rem;object-fit:contain}
 .topbar-speed{min-width:5.55rem;width:5.55rem;padding-right:1.65rem;font-variant-numeric:tabular-nums}
@@ -61,7 +60,7 @@
 .quiz-pill.active{background:#eef5ff;border-color:#6aa1ff}
 .quiz-pill.correct{background:#e7f8ea;border-color:#4db569}
 .quiz-pill.wrong{background:#fde7ea;border-color:#e05757}
-#quizBanner{position:absolute;top:10px;right:50%;transform:translateX(50%);background:#0c8;color:#fff;padding:.5rem .8rem;border-radius:.6rem;display:none;box-shadow:0 8px 24px rgba(0,0,0,.2);font-weight:700; z-index:10000;max-width:min(42rem, calc(100vw - 1rem));text-align:center;line-height:1.25;white-space:normal;}
+#quizBanner{position:absolute;top:10px;right:50%;transform:translateX(50%);background:#0c8;color:#fff;padding:.5rem .8rem;border-radius:.6rem;display:none;box-shadow:0 8px 24px rgba(0,0,0,.2);font-weight:700; z-index:10000;}
 #quizControls{display:flex;gap:.5rem;margin-top:.6rem;flex-wrap:wrap}
 
 /* Stronger Options button */
@@ -136,8 +135,8 @@ button.options-strong:active{
   </style>
 
 <style id="quiz-style-patch">
-.quiz-pill.correct { font-weight: 700; color: #146a31; }
-.quiz-pill.wrong { color: #9b2525; }
+.quiz-pill.correct { font-weight: 700; color: #0a0; }
+.quiz-pill.wrong { color: #b00; text-decoration: line-through; }
 </style>
 
 
@@ -146,28 +145,14 @@ button.options-strong:active{
 #quizPanel .panel-title{ font-size: 14px; }
 .quiz-step{ margin:6px 10px; }
 .quiz-step > div:first-child{ font-weight:600; margin-bottom:4px; font-size:13px; }
-.quiz-pills{ display:grid; grid-template-columns:repeat(auto-fit,minmax(9.5rem,1fr)); gap:6px; }
-.quiz-subrow{ display:grid; grid-template-columns:minmax(4.6rem,auto) minmax(0,1fr); gap:6px; margin-top:6px; align-items:start; }
-.quiz-subrow.no-label{ grid-template-columns:1fr; }
-.quiz-subrow-label{ min-width:0; font-size:12px; font-weight:700; opacity:.72; padding-top:7px; }
-.quiz-subrow-options{ display:grid; grid-template-columns:repeat(auto-fit,minmax(8.25rem,1fr)); gap:6px; }
-.quiz-pill{ display:inline-flex; align-items:center; justify-content:flex-start; gap:.45rem; min-height:2rem; padding:.34rem .5rem; border-radius:7px; border:1px solid rgba(112,163,105,.62); background:linear-gradient(180deg,#fff,#f7fbf5); color:#183523; font-size:var(--ui-label-size); text-align:left; line-height:1.2; white-space:normal; }
-.quiz-pill::before{ content:""; width:.82rem; height:.82rem; flex:0 0 .82rem; border:1.5px solid rgba(67,128,73,.78); border-radius:3px; background:#fff; box-shadow:0 1px 2px rgba(0,0,0,.08) inset; }
-.quiz-pill.active{ border-color:#3f873f; background:#eef8ed; box-shadow:0 0 0 2px rgba(63,135,63,.13) inset; }
-.quiz-pill.active::before{ background:linear-gradient(180deg,#2a9b45,#187434); border-color:#17622e; box-shadow:inset 0 0 0 2px #fff; }
-.quiz-pill.correct{ font-weight:700; color:#146a31; border-color:#3f9a5a; background:#e8f8eb; }
-.quiz-pill.wrong{ color:#9b2525; border-color:#d77272; background:#fff0f0; }
+.quiz-pills{ display:flex; flex-wrap:wrap; gap:8px; }
+.quiz-subrow{ display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; align-items:flex-start; }
+.quiz-subrow-label{ min-width:5.5rem; font-size:12px; font-weight:600; opacity:.72; padding-top:4px; }
+.quiz-pill{ padding:2px 10px; border-radius:16px; border:1px solid rgba(0,0,0,.15); background:#f6f7f8; font-size:var(--ui-label-size); }
+.quiz-pill.active{ box-shadow:0 0 0 2px rgba(0,0,0,.08) inset; }
+.quiz-pill.correct{ font-weight:700; color:#0a0; }
+.quiz-pill.wrong{ color:#b00; text-decoration:line-through; }
 .quiz-pill.neutral{ color:#4e5a67; border-color:rgba(0,0,0,.28); background:#f0f2f4; }
-.quiz-pill.wrong.active::before{ background:linear-gradient(180deg,#d95b5b,#a83232); border-color:#9b2525; }
-.quiz-pill.neutral.active::before{ background:linear-gradient(180deg,#98a6b3,#6f7f8f); border-color:#596672; }
-.quiz-summary{margin:.75rem .35rem .35rem;padding:.75rem .85rem;border:1px solid #bdd5f7;border-radius:10px;background:linear-gradient(180deg,#f7fbff,#edf6ff);box-shadow:0 1px 0 rgba(255,255,255,.9) inset;font-size:13px;line-height:1.45;color:#18324a}
-.quiz-summary[hidden]{display:none!important}
-.quiz-summary h3{margin:0 0 .45rem;font-size:15px}
-.quiz-summary p{margin:.35rem 0}
-.quiz-summary .quiz-report-line{padding:.3rem 0;border-top:1px solid rgba(92,139,184,.22)}
-.quiz-summary .quiz-report-line:first-of-type{border-top:0}
-.quiz-summary .quiz-report-label{font-weight:700;color:#244e78}
-.quiz-summary-actions{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.7rem}
 </style>
 
 
@@ -186,9 +171,6 @@ button.options-strong:active{
 #rhythmFieldset .ctrl{ min-width:0; width:max-content; flex:0 0 auto; }
 #rhythmFieldset .ctrl select{ width:auto; }
 #rhythmFieldset .pill{ margin:0; white-space:nowrap; }
-#rhythmFieldset.education-ekg-only .education-hideable{display:none!important}
-#rhythmFieldset.education-ekg-only .mode-controls{align-items:flex-end;gap:0}
-#rhythmFieldset.education-ekg-only .topbar-ekg-control{margin:0}
 .topbar-actions{ margin-left:auto; display:flex; gap:.4rem; align-items:flex-end; flex-wrap:wrap; justify-content:flex-end; }
 .topbar-menu-actions{ order:0; }
 .topbar-menu-divider{ order:0; }
@@ -992,336 +974,6 @@ html, body{max-width:100vw;overflow:hidden}
     left:3rem;
   }
 }
-#tutorialSetupModal{
-  background:transparent;
-  align-items:flex-start;
-  justify-content:flex-start;
-  pointer-events:none;
-  z-index:9998;
-}
-#tutorialSetupModal .modal-card,
-.tutorial-panel{
-  --tutorial-panel-left:clamp(3.35rem, 4vw, 4.4rem);
-  --tutorial-panel-bg:linear-gradient(180deg, rgba(255,255,255,.98), rgba(247,253,245,.965));
-  --tutorial-panel-border:rgba(112,163,105,.68);
-  left:var(--tutorial-panel-left) !important;
-  right:auto !important;
-  top:calc(var(--topbar-height, 64px) + .55rem) !important;
-  bottom:auto !important;
-  margin:0;
-  border:1px solid var(--tutorial-panel-border);
-  border-left:4px solid rgba(52,128,59,.82);
-  border-radius:14px;
-  background:var(--tutorial-panel-bg);
-  box-shadow:0 12px 30px rgba(13,45,21,.17);
-  color:#132419;
-}
-#tutorialSetupModal .modal-card{
-  position:fixed;
-  width:min(24rem, 30vw);
-  max-width:calc(100vw - var(--tutorial-panel-left) - .75rem);
-  max-height:calc(var(--app-height, 100dvh) - var(--topbar-height, 64px) - 1.1rem) !important;
-  overflow:auto;
-  pointer-events:auto;
-  padding:.95rem 1rem 1rem;
-}
-#tutorialSetupModal .modal-card h1,
-.tutorial-panel h2{
-  margin:0;
-  color:#102216;
-  font-weight:800;
-  letter-spacing:-.02em;
-}
-#tutorialSetupModal .modal-card h1{
-  padding-right:2rem;
-  font-size:1.22rem;
-}
-#tutorialSetupModal fieldset{
-  margin:.8rem 0 0;
-  padding:.62rem .7rem .7rem;
-  border:1px solid rgba(151,197,145,.72);
-  border-radius:12px;
-  background:rgba(255,255,255,.58);
-}
-#tutorialSetupModal legend{
-  padding:0 .35rem;
-  font-weight:750;
-  color:#315d39;
-}
-#tutorialSetupModal select{
-  width:100%;
-  min-width:0;
-}
-.tutorial-panel{
-  width:min(32rem, 34vw);
-  max-width:calc(100vw - var(--tutorial-panel-left) - .75rem);
-  max-height:calc(var(--app-height, 100dvh) - var(--topbar-height, 64px) - 1.1rem);
-  padding:.85rem .9rem .75rem;
-  overflow-x:hidden;
-  overflow-y:auto;
-}
-.tutorial-panel::before{
-  content:"";
-  position:absolute;
-  inset:0 0 auto 0;
-  height:3px;
-  border-radius:14px 14px 0 0;
-  background:linear-gradient(90deg, rgba(52,128,59,.95), rgba(143,190,89,.70), rgba(52,128,59,0));
-  pointer-events:none;
-}
-.tutorial-header{
-  display:grid;
-  grid-template-columns:minmax(0, 1fr);
-  align-items:center;
-  gap:.45rem;
-  margin:0;
-  padding:0 2rem .65rem 0;
-  border-bottom:1px solid rgba(151,197,145,.62);
-}
-.tutorial-panel h2{
-  display:flex;
-  align-items:center;
-  gap:.5rem;
-  min-width:0;
-  font-size:1.12rem;
-  white-space:nowrap;
-}
-.tutorial-panel h2::before{
-  content:"Learn";
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  min-height:1.35rem;
-  padding:.12rem .45rem;
-  border-radius:999px;
-  border:1px solid rgba(112,163,105,.58);
-  background:#f2faef;
-  color:#35673c;
-  font-size:.68rem;
-  line-height:1;
-  letter-spacing:.08em;
-  text-transform:uppercase;
-  flex:0 0 auto;
-}
-.tutorial-meta{
-  align-items:center;
-  justify-content:flex-start;
-  margin:0;
-  min-width:0;
-}
-.tutorial-toggle{
-  min-height:1.85rem;
-  padding:.28rem .7rem;
-  border-color:rgba(84,139,207,.45);
-  background:linear-gradient(180deg,#fff,#f1f7ff);
-  color:#214e83;
-  font-weight:750;
-  box-shadow:0 1px 0 rgba(255,255,255,.8) inset;
-}
-.tutorial-toggle.active{
-  background:linear-gradient(180deg,#e9f3ff,#dbeaff);
-  border-color:#7fabee;
-  color:#173e70;
-}
-.tutorial-case-focus{
-  margin:.7rem 0 .6rem;
-  padding:.68rem .78rem;
-  border-radius:12px;
-  background:linear-gradient(180deg,#eef7ff 0%,#e6f1ff 100%);
-  border:1px solid #aecbef;
-  box-shadow:0 1px 0 rgba(255,255,255,.85) inset,0 4px 12px rgba(60,103,148,.08);
-  color:#183e67;
-  font-weight:750;
-}
-.tutorial-progress{
-  display:grid;
-  gap:.38rem;
-  margin:.7rem 0 .65rem;
-  padding:.55rem .65rem;
-  border:1px solid rgba(151,197,145,.56);
-  border-radius:12px;
-  background:rgba(255,255,255,.58);
-  color:#405347;
-  opacity:1;
-}
-.tutorial-progress-label{
-  display:flex;
-  justify-content:space-between;
-  gap:.7rem;
-  font-size:.78rem;
-  font-weight:750;
-}
-.tutorial-progress-track{
-  height:.42rem;
-  border-radius:999px;
-  overflow:hidden;
-  background:#dfefdb;
-  box-shadow:inset 0 1px 2px rgba(21,74,31,.12);
-}
-.tutorial-progress-fill{
-  display:block;
-  height:100%;
-  width:0;
-  border-radius:999px;
-  background:linear-gradient(90deg,#34783b,#85b94d);
-  transition:width .18s ease;
-}
-.tutorial-step-card{
-  position:relative;
-  margin:.65rem 0 .25rem;
-  padding:.75rem .82rem .85rem;
-  border:1px solid rgba(151,197,145,.62);
-  border-radius:14px;
-  background:linear-gradient(180deg,rgba(255,255,255,.86),rgba(248,253,247,.86));
-  box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 6px 16px rgba(18,74,28,.07);
-}
-#tutorialBody{
-  padding-bottom:3.25rem;
-}
-.tutorial-step-card::before{
-  content:"";
-  position:absolute;
-  left:0;
-  top:.8rem;
-  bottom:.8rem;
-  width:3px;
-  border-radius:0 999px 999px 0;
-  background:linear-gradient(180deg,#34783b,#8fbe59);
-}
-.tutorial-step-kicker{
-  display:inline-flex;
-  align-items:center;
-  width:max-content;
-  margin-bottom:.35rem;
-  padding:.16rem .48rem;
-  border-radius:999px;
-  background:#edf7e9;
-  border:1px solid rgba(151,197,145,.62);
-  color:#3e6a43;
-  font-size:.72rem;
-  font-weight:800;
-  letter-spacing:.04em;
-  text-transform:uppercase;
-}
-.tutorial-step-title{
-  margin-bottom:.32rem;
-  color:#102216;
-  font-size:1rem;
-  font-weight:800;
-}
-.tutorial-prompt{
-  margin-bottom:.55rem;
-  color:#25372b;
-  font-size:.86rem;
-  line-height:1.45;
-}
-.tutorial-answer{
-  margin:.55rem 0 .62rem;
-  padding:.58rem .68rem;
-  border-radius:12px;
-  background:linear-gradient(180deg,#edf6ff,#e5f0ff);
-  border:1px solid #bfd6f6;
-  color:#183e67;
-  font-weight:720;
-}
-.tutorial-explanation{
-  padding:.1rem 0 .1rem .7rem;
-  border-left:3px solid rgba(52,128,59,.55);
-  color:#22332a;
-  font-size:.86rem;
-  line-height:1.48;
-}
-.tutorial-note{
-  margin-top:.6rem;
-  padding:.48rem .58rem;
-  border-radius:10px;
-  background:#fffaf0;
-  border:1px solid rgba(216,177,88,.45);
-  color:#66522d;
-  font-size:.78rem;
-}
-.tutorial-choice-row{
-  gap:.4rem;
-  margin:.5rem 0 .6rem;
-}
-.tutorial-choice{
-  border-color:rgba(112,163,105,.52);
-  background:linear-gradient(180deg,#fff,#f7fbf5);
-  color:#1d3324;
-  font-weight:700;
-}
-.tutorial-choice.active{
-  background:#eef6ff;
-  border-color:#83ade8;
-}
-.tutorial-reveal{
-  margin:.2rem 0 .65rem;
-  border-color:#bfd6f6;
-  background:linear-gradient(180deg,#f5faff,#e5f0ff);
-  color:#183e67;
-  font-weight:800;
-}
-.tutorial-reveal:hover,
-.tutorial-reveal:focus-visible{
-  background:linear-gradient(180deg,#edf6ff,#dceaff);
-  border-color:#8fb8f3;
-}
-.learning-eye-toggle{
-  border-color:rgba(112,163,105,.55);
-  background:linear-gradient(180deg,#fff,#f7fbf5);
-  font-weight:700;
-}
-.tutorial-controls{
-  position:relative;
-  bottom:auto;
-  gap:.45rem;
-  margin:.75rem -.2rem 0;
-  padding:.7rem .2rem .1rem;
-  border-top:1px solid rgba(151,197,145,.58);
-  background:linear-gradient(180deg,rgba(247,253,245,0),rgba(247,253,245,.98) 25%,rgba(247,253,245,.98));
-}
-.tutorial-controls button{
-  border-color:rgba(112,163,105,.58);
-  background:linear-gradient(180deg,#fff,#f7fbf5);
-  font-weight:700;
-}
-.tutorial-controls button:disabled{
-  opacity:.48;
-  cursor:default;
-}
-#tutorialCollapse{
-  margin-left:auto;
-}
-#tutorialRestoreTab{
-  left:clamp(3.35rem, 4vw, 4.4rem);
-  top:calc(var(--topbar-height, 64px) + .55rem);
-}
-@media (max-width:900px){
-  #tutorialSetupModal .modal-card,
-  .tutorial-panel{
-    --tutorial-panel-left:3.25rem;
-    left:var(--tutorial-panel-left) !important;
-    top:calc(var(--topbar-height, 56px) + .5rem) !important;
-    width:min(24rem, calc(100vw - var(--tutorial-panel-left) - .5rem));
-    max-width:calc(100vw - var(--tutorial-panel-left) - .5rem);
-    max-height:min(58dvh, calc(var(--app-height, 100dvh) - var(--topbar-height, 56px) - 1rem)) !important;
-  }
-  #tutorialRestoreTab{
-    left:3.25rem;
-    top:calc(var(--topbar-height, 56px) + .5rem);
-  }
-}
-@media (max-width:520px){
-  #tutorialSetupModal .modal-card,
-  .tutorial-panel{
-    --tutorial-panel-left:3rem;
-    width:min(22rem, calc(100vw - var(--tutorial-panel-left) - .5rem));
-    max-height:min(54dvh, calc(var(--app-height, 100dvh) - var(--topbar-height, 56px) - 1rem)) !important;
-  }
-  #tutorialRestoreTab{
-    left:3rem;
-  }
-}
 @media (max-width:940px) and (orientation:landscape) and (max-height:560px){
   #wrap{
     overflow-x:hidden;
@@ -1371,7 +1023,7 @@ html, body{max-width:100vw;overflow:hidden}
     <div class="topbar-separator" aria-hidden="true"></div>
     <div id="rhythmFieldset" role="group" aria-label="Rhythm and state controls">
       <div class="mode-controls">
-        <div class="ctrl education-hideable">
+        <div class="ctrl">
           <label for="rhythmSel">Rhythm</label>
           <select id="rhythmSel">
             <option value="">State-driven</option>
@@ -1381,7 +1033,7 @@ html, body{max-width:100vw;overflow:hidden}
             <option value="beta">Beta</option>
           </select>
         </div>
-        <div class="ctrl education-hideable">
+        <div class="ctrl">
           <label for="sleepSel">Sleep / State</label>
           <select id="sleepSel">
             <option value="">Rhythm-driven</option>
@@ -1393,8 +1045,8 @@ html, body{max-width:100vw;overflow:hidden}
             <option value="rem">REM Sleep</option>
           </select>
         </div>
-        <label class="pill topbar-eyes-control"><input type="checkbox" id="eyesOpen"> Eyes open</label>
-        <label class="pill topbar-ekg-control"><input type="checkbox" id="showEkg"> EKG</label>
+        <label class="pill"><input type="checkbox" id="eyesOpen"> Eyes open</label>
+        <label class="pill"><input type="checkbox" id="showEkg"> EKG</label>
       </div>
     </div>
     <div class="topbar-actions">
@@ -1838,6 +1490,15 @@ html, body{max-width:100vw;overflow:hidden}
       <button id="tutorialSetupX" class="modal-x" type="button" aria-label="Close">×</button>
       <h1 id="tutorialSetupTitle">Tutorial Setup</h1>
       <fieldset>
+        <legend>Mode</legend>
+        <div class="ctrl" style="min-width:0">
+          <select id="tutorialModeSel" aria-label="Tutorial mode">
+            <option value="guided" selected>Guided walkthrough</option>
+            <option value="interactive">Interactive questions</option>
+          </select>
+        </div>
+      </fieldset>
+      <fieldset>
         <legend>Cases</legend>
         <div class="ctrl" style="min-width:0">
           <select id="tutorialCaseModeSel" aria-label="Tutorial case order">
@@ -1863,9 +1524,7 @@ html, body{max-width:100vw;overflow:hidden}
     <button id="quizPanelX" class="modal-x education-panel-x" type="button" aria-label="Hide quiz panel">×</button>
     <h2>EEG Quiz</h2>
     <div id="quizSteps"></div>
-    <div id="quizSummary" class="quiz-summary" hidden></div>
     <div id="quizControls">
-      <button id="quizSubmit">Submit</button>
       <button id="quizNew">New Case</button>
       <button id="quizEnd">End Quiz</button>
       <button id="quizCollapse" class="education-collapse" type="button">Collapse</button>
@@ -5423,22 +5082,6 @@ function buildQuizQuestionKeys(order){
   }
   return keys;
 }
-function quizQuestionLabelForKey(key, order){
-  for (const step of order || []){
-    if (step.group && Array.isArray(step.parts)){
-      const part = step.parts.find((item)=> item && item.key === key);
-      if (part) return `${step.group}: ${part.label || key}`;
-    } else if (step && step.key === key){
-      return step.label || key;
-    }
-  }
-  return key;
-}
-function quizMissingAnswerMessage(missingKeys){
-  const labels = (missingKeys || []).map((key)=> quizQuestionLabelForKey(key, state.quiz.order));
-  if (!labels.length) return 'Complete the missing quiz section before submitting.';
-  return `Missing: ${labels.join(', ')}.`;
-}
 function deriveQuizBackgroundForSleep(rng, sleep){
   switch (sleep){
     case 'Awake': return rng() < 0.68 ? 'alpha' : 'beta';
@@ -7761,13 +7404,10 @@ state.quiz = {
   stepIndex:0,
   truth:{},
   answered:{},
-  responses:{},
   order:[],
   questionKeys:[],
   snapshot:null,
-  panelCollapsed:false,
-  completed:false,
-  submitted:false
+  panelCollapsed:false
 };
 
 function syncEducationPanelVisibility(){
@@ -7801,54 +7441,9 @@ function setTutorialPanelCollapsed(collapsed){
 
 function randChoice(rng, arr){ return arr[Math.floor(rng()*arr.length)] }
 
-const QUIZ_ARTIFACT_OPTIONS = [
-  'None',
-  'Eye blinks',
-  'Roving eye movements',
-  'Reading',
-  'Ventilator',
-  'Chewing',
-  'Sweat',
-  'EMG',
-  'EKG artifact',
-  'Breach rhythm',
-  'Electrode pop'
-];
-const QUIZ_ARTIFACT_CASES = QUIZ_ARTIFACT_OPTIONS.filter((item)=> item !== 'None');
-const QUIZ_ARTIFACT_LEVEL_KEYS = {
-  'Eye blinks':'blink',
-  'Roving eye movements':'rovingEyes',
-  'Reading':'reading',
-  'Ventilator':'ventilator',
-  'Chewing':'chew',
-  'Sweat':'sweat',
-  'EKG artifact':'ekgArtifact',
-  'Breach rhythm':'breach',
-  'Electrode pop':'pop'
-};
-const QUIZ_EPILEPTIFORM_OPTIONS = ['None','Generalized discharges','Focal discharges'];
-function quizEpileptiformTruth(periodic, overlayType){
-  if (overlayType === 'generalized') return 'Generalized discharges';
-  if (overlayType === 'focal') return 'Focal discharges';
-  return 'None';
-}
-function applyQuizArtifactTruth(artifact){
-  state.opts = state.opts || {};
-  for (const key of Object.keys(ARTIFACT_LEVEL_FIELDS)) setArtifactLevelActive(key, false);
-  const levelKey = QUIZ_ARTIFACT_LEVEL_KEYS[artifact];
-  if (levelKey) setArtifactLevelActive(levelKey, true);
-  state.opts.emg = artifact === 'EMG';
-  ensureArtifactDefaults();
-  state.artifactConfig.emgLead = 'diffuse';
-  state.artifactConfig.emgLevel = state.opts.emg ? Math.max(state.artifactConfig.emgLevel || 0, DEFAULT_EMG_LEVEL) : 0;
-  if (artifact === 'Reading') state.eyesOpen = true;
-  if (artifact === 'Breach rhythm') state.artifactConfig.breachLead = 'random';
-  if (artifact === 'Electrode pop') state.artifactConfig.popLead = 'random';
-}
-
 const QUIZ_SPEC_BASE = [
   {key:'background',   label:'Background rhythm',        options:['delta','theta','alpha','beta']},
-  {key:'artifact',     label:'Artifact',                 options:QUIZ_ARTIFACT_OPTIONS},
+  {key:'artifact',     label:'Artifact',                 options:['None','Eye blinks','Chewing','Sweat','EMG']},
   {key:'symmetry',     label:'Symmetry',                 options:['symmetric','asymmetric']},
   {key:'amplitude',    label:'Amplitude pattern',        options:['Normal','diffuse attenuation','focal attenuation']},
   {group:'Slowing',    parts:[
@@ -7857,122 +7452,8 @@ const QUIZ_SPEC_BASE = [
   ]},
   {key:'periodic',     label:'Periodic / Rhythmic',      options:['None','GPDs','LPDs']},
   {key:'sleep',        label:'Sleep',                    options:['Awake','Drowsy','Stage 1','Stage 2','SWS','REM','Unable to determine']},
-  {key:'epileptiform', label:'Epileptiform discharges',  options:QUIZ_EPILEPTIFORM_OPTIONS}
+  {key:'epileptiform', label:'Epileptiform discharges',  options:['none','generalized','focal']}
 ];
-
-function quizSleepDisplayName(sleep){
-  return ({
-    'Awake':'awake',
-    'Drowsy':'drowsy',
-    'Stage 1':'stage 1 sleep',
-    'Stage 2':'stage 2 sleep',
-    'SWS':'slow wave sleep',
-    'REM':'REM sleep',
-    'Unable to determine':'unable to determine'
-  })[sleep] || (sleep || 'unknown state');
-}
-function quizReportSleepValue(truth){
-  const selected = state.quiz && state.quiz.responses ? state.quiz.responses.sleep : '';
-  return selected === 'Unable to determine' ? selected : truth.sleep;
-}
-function quizReportValue(value){
-  return (value === undefined || value === null || value === '') ? 'None' : String(value);
-}
-function quizArtifactReport(truth){
-  const artifact = quizReportValue(truth.artifact);
-  return artifact === 'None' ? 'No dominant artifact identified.' : `Dominant artifact pattern: ${artifact}.`;
-}
-function quizSlowingDistributionLabel(dist){
-  if (dist === 'Focal - Left') return 'left focal';
-  if (dist === 'Focal - Right') return 'right focal';
-  if (dist === 'Generalized') return 'generalized';
-  return String(dist || 'no');
-}
-function quizSlowingReport(truth){
-  if (truth.slowingDist === 'None') return 'No focal or generalized slowing.';
-  const tempo = truth.slowingTempo ? `${String(truth.slowingTempo).toLowerCase()} ` : '';
-  return `${tempo}${quizSlowingDistributionLabel(truth.slowingDist)} slowing is present.`;
-}
-function quizPeriodicEpileptiformReport(truth){
-  if (truth.periodic && truth.periodic !== 'None') return `${truth.periodic} are present.`;
-  if (truth.epileptiform && truth.epileptiform !== 'None') return `${truth.epileptiform} are present.`;
-  return 'No epileptiform discharges or periodic patterns.';
-}
-function quizSleepReport(truth){
-  const reportSleep = quizReportSleepValue(truth);
-  const sleep = quizSleepDisplayName(reportSleep);
-  if (reportSleep === 'Unable to determine') return 'Unable to determine.';
-  if (reportSleep === 'Stage 2'){
-    return `${sleep}; sleep spindles ${truth.spindles}, K-complexes ${truth.kcomplexes}.`;
-  }
-  return sleep;
-}
-function quizImpressionReport(truth){
-  const reportSleep = quizReportSleepValue(truth);
-  const sleepPhrase = reportSleep === 'Unable to determine' ? 'EEG' : `${quizSleepDisplayName(reportSleep)} EEG`;
-  const findings = [];
-  if (truth.amplitude === 'diffuse attenuation') findings.push('diffuse attenuation');
-  if (truth.amplitude === 'focal attenuation') findings.push('focal attenuation with asymmetry');
-  if (truth.slowingDist && truth.slowingDist !== 'None') findings.push(`${quizSlowingDistributionLabel(truth.slowingDist)} slowing`);
-  if (truth.periodic && truth.periodic !== 'None') findings.push(truth.periodic);
-  else if (truth.epileptiform && truth.epileptiform !== 'None') findings.push(String(truth.epileptiform).toLowerCase());
-  if (truth.artifact && truth.artifact !== 'None') findings.push(`superimposed ${String(truth.artifact).toLowerCase()}`);
-  if (reportSleep === 'Unable to determine') findings.push('sleep/state unable to determine');
-  if (!findings.length){
-    return `${sleepPhrase} with ${truth.background} background, symmetric organization, normal amplitude, and no epileptiform discharges.`;
-  }
-  return `${sleepPhrase} with ${findings.join(', ')}.`;
-}
-function appendQuizReportLine(parent, label, value){
-  const line = document.createElement('p');
-  line.className = 'quiz-report-line';
-  const strong = document.createElement('span');
-  strong.className = 'quiz-report-label';
-  strong.textContent = `${label}: `;
-  line.appendChild(strong);
-  line.appendChild(document.createTextNode(value));
-  parent.appendChild(line);
-}
-function hideQuizSummary(){
-  const summary = $('quizSummary');
-  if (!summary) return;
-  summary.hidden = true;
-  summary.replaceChildren();
-  const newBtn = $('quizNew');
-  if (newBtn) newBtn.textContent = 'New Case';
-  const submitBtn = $('quizSubmit');
-  if (submitBtn) submitBtn.hidden = false;
-}
-function showQuizCompletionSummary(){
-  const summary = $('quizSummary');
-  if (!summary || !(state.quiz && state.quiz.truth)) return;
-  const truth = state.quiz.truth;
-  const title = document.createElement('h3');
-  title.textContent = 'Quiz Complete';
-  const prompt = document.createElement('p');
-  prompt.textContent = 'Your completed read is summarized below. Continue with a new case, or end the quiz.';
-  summary.replaceChildren(title, prompt);
-  appendQuizReportLine(summary, 'Background', `${truth.background} background rhythm.`);
-  appendQuizReportLine(summary, 'Symmetry / Amplitude', `${truth.symmetry}; ${truth.amplitude}.`);
-  appendQuizReportLine(summary, 'Slowing', quizSlowingReport(truth));
-  appendQuizReportLine(summary, 'Epileptiform / Periodic', quizPeriodicEpileptiformReport(truth));
-  appendQuizReportLine(summary, 'Artifact', quizArtifactReport(truth));
-  appendQuizReportLine(summary, 'Sleep', quizSleepReport(truth));
-  appendQuizReportLine(summary, 'Impression', quizImpressionReport(truth));
-  const newBtn = $('quizNew');
-  if (newBtn) newBtn.textContent = 'Continue';
-  const submitBtn = $('quizSubmit');
-  if (submitBtn) submitBtn.hidden = true;
-  summary.hidden = false;
-  if (typeof summary.scrollIntoView === 'function') summary.scrollIntoView({block:'nearest'});
-}
-
-function setEducationTopbarMode(active){
-  const rf = document.getElementById('rhythmFieldset');
-  if (!rf) return;
-  rf.style.display = '';
-  rf.classList.toggle('education-ekg-only', !!active);
-}
 
 function startQuiz(){
   const rng = state.rng;
@@ -7982,62 +7463,35 @@ function startQuiz(){
   clearQuizBannerTimer();
   const banner = document.getElementById('quizBanner');
   if (banner) banner.style.display = 'none';
-  hideQuizSummary();
 
   // Reset quiz state
   state.quiz.active   = true;
   state.quiz.stepIndex= 0;
   state.quiz.answered = {};
-  state.quiz.responses = {};
   state.quiz.panelCollapsed = false;
-  state.quiz.completed = false;
-  state.quiz.submitted = false;
   state.quiz.bias     = {leftScale:1,rightScale:1,diffuseScale:1,focal:{}};
 
   // Random ground truth
-  let sleep      = randChoice(rng, ['Awake','Drowsy','Stage 1','Stage 2','SWS','REM']);
-  const artifact   = (rng()<0.32) ? randChoice(rng, QUIZ_ARTIFACT_CASES) : 'None';
-  if (artifact === 'Eye blinks' || artifact === 'Reading' || artifact === 'Chewing' || artifact === 'EMG') sleep = 'Awake';
-  if (artifact === 'Roving eye movements') sleep = 'Drowsy';
-  const artifactCase = artifact !== 'None';
-  const sleepArchitectureCase = sleep === 'Stage 2' || sleep === 'SWS' || sleep === 'REM';
+  const sleep      = randChoice(rng, ['Awake','Drowsy','Stage 1','Stage 2','SWS','REM']);
   const background = deriveQuizBackgroundForSleep(rng, sleep);
-  let symmetry   = 'symmetric';
-  const allowExtraCerebralAbnormality = !sleepArchitectureCase && (!artifactCase || rng() < 0.30);
-  let amplitude  = 'Normal';
-  if (!sleepArchitectureCase && (!artifactCase || rng() < 0.25)){
-    const ampRoll = rng();
-    amplitude = ampRoll < 0.62 ? 'Normal' : (ampRoll < 0.82 ? 'diffuse attenuation' : 'focal attenuation');
-  }
+  const artifact   = (rng()<0.25) ? randChoice(rng, ['Eye blinks','Chewing','Sweat','EMG']) : 'None';
+  let symmetry   = randChoice(rng, ['symmetric','asymmetric']);
+  const amplitude  = randChoice(rng, ['Normal','diffuse attenuation','focal attenuation']);
   let focalAttenuationTarget = '';
   if (amplitude === 'focal attenuation'){
     symmetry = 'asymmetric';
     focalAttenuationTarget = randChoice(rng, ['F7','T3','T5','F8','T4','T6','F3','C3','P3','F4','C4','P4','O1','O2']);
   }
-  let slowingDist = (allowExtraCerebralAbnormality && rng() >= 0.45) ? randChoice(rng, ['Generalized','Focal - Left','Focal - Right']) : 'None';
+  const slowingDist = (rng()<0.34) ? 'None' : randChoice(rng, ['Generalized','Focal - Left','Focal - Right']);
   const slowingTempo = slowingDist === 'None' ? '' : randChoice(rng, ['Intermittent','Continuous']);
-  const periodic   = (allowExtraCerebralAbnormality && rng()<0.22) ? randChoice(rng, ['GPDs','LPDs']) : 'None';
-  const lpdSideTruth = rng() < 0.5 ? 'left' : 'right';
-  if (periodic === 'LPDs' && (slowingDist === 'Focal - Left' || slowingDist === 'Focal - Right')){
-    slowingDist = lpdSideTruth === 'left' ? 'Focal - Left' : 'Focal - Right';
-  }
-  if (periodic === 'GPDs' && (slowingDist === 'Focal - Left' || slowingDist === 'Focal - Right') && rng() < 0.65){
-    slowingDist = 'Generalized';
-  }
-  const epileptiformOverlay = (periodic === 'None' && allowExtraCerebralAbnormality && rng() < 0.38) ? randChoice(rng, ['generalized','focal']) : 'none';
-  const epileptiform = quizEpileptiformTruth(periodic, epileptiformOverlay);
-  if (slowingDist === 'Focal - Left' || slowingDist === 'Focal - Right' || periodic === 'LPDs'){
-    symmetry = 'asymmetric';
-  }
+  const periodic   = (rng()<0.30) ? randChoice(rng, ['GPDs','LPDs']) : 'None';
+  let epileptiform = randChoice(rng, ['none','generalized','focal']);
+  if (periodic !== 'None' && rng() < 0.70) epileptiform = 'none';
 
   let spindles='absent', kcomplexes='absent';
   if (sleep==='Stage 2'){
     spindles   = rng()<0.7 ? 'present' : 'absent';
     kcomplexes = rng()<0.7 ? 'present' : 'absent';
-    if (spindles === 'absent' && kcomplexes === 'absent'){
-      if (rng() < 0.5) spindles = 'present';
-      else kcomplexes = 'present';
-    }
   }
 
   state.quiz.truth = {
@@ -8068,7 +7522,7 @@ function startQuiz(){
   state.pathology.gpd = state.pathology.gpdLevel > 0;
   state.pathology.lpdLevel = periodic === 'LPDs' ? 1 : 0;
   state.pathology.lpd = state.pathology.lpdLevel > 0;
-  state.pathology.lpdSide = lpdSideTruth;
+  state.pathology.lpdSide = rng() < 0.5 ? 'left' : 'right';
   state.pathology.bipds = false;
   state.pathology.interictal = false;
   state.pathology.interictalLevel = 0;
@@ -8084,10 +7538,34 @@ function startQuiz(){
     delete state.fbtcSz;
   }
 
-  applyQuizArtifactTruth(artifact);
+  state.opts = state.opts || {};
+  for (const key of Object.keys(ARTIFACT_LEVEL_FIELDS)) setArtifactLevelActive(key, false);
+  setArtifactLevelActive('blink', artifact==='Eye blinks');
+  setArtifactLevelActive('reading', artifact==='Reading');
+  setArtifactLevelActive('ventilator', artifact==='Ventilator');
+  setArtifactLevelActive('chew', artifact==='Chewing');
+  setArtifactLevelActive('sweat', artifact==='Sweat');
+  state.opts.emg   = (artifact==='EMG');
+  setArtifactLevelActive('ekgArtifact', artifact==='EKG artifact');
+  if (state.opts.emg){
+    ensureArtifactDefaults();
+    state.artifactConfig.emgLead = 'diffuse';
+    state.artifactConfig.emgLevel = Math.max(state.artifactConfig.emgLevel || 0, DEFAULT_EMG_LEVEL);
+  } else {
+    state.artifactConfig.emgLevel = 0;
+  }
   state.quiz.slowing = buildQuizSlowingConfig(rng, slowingDist, slowingTempo || 'Continuous');
-  state.quiz.spikes = buildQuizSpikeConfig(rng, epileptiformOverlay);
+  state.quiz.spikes = buildQuizSpikeConfig(rng, epileptiform);
 
+  if (symmetry==='asymmetric'){
+    const bias = (amplitude === 'focal attenuation') ? (0.60 + 0.14*rng()) : (0.7 + 0.25*rng());
+    let attenuatedSide = rng()<0.5 ? 'L' : 'R';
+    if (amplitude === 'focal attenuation' && focalAttenuationTarget){
+      attenuatedSide = /^(F7|T3|T5|F3|C3|P3|O1)$/.test(focalAttenuationTarget) ? 'L' : 'R';
+    }
+    if (attenuatedSide === 'L') state.quiz.bias.leftScale = bias;
+    else state.quiz.bias.rightScale = bias;
+  }
   if (amplitude==='diffuse attenuation'){
     state.quiz.bias.diffuseScale = 0.52 + 0.16*rng();
   }
@@ -8123,7 +7601,8 @@ function startQuiz(){
   const panel = document.getElementById('quizPanel');
   if (panel) panel.style.zIndex='9999';
   syncEducationPanelVisibility();
-  setEducationTopbarMode(true);
+  const rf = document.getElementById('rhythmFieldset');
+  if (rf) rf.style.display='none';
 
   // Close the pathology modal if open and regenerate signals
   closeClinicalPanels();
@@ -8154,6 +7633,10 @@ function buildEyesClosedToggle(onChange){
   label.appendChild(document.createTextNode(' Eyes closed'));
   return label;
 }
+function quizStepCanToggleEyes(stepKey){
+  return !!(state.quiz && state.quiz.active && stepKey === 'background' && state.quiz.truth && educationalEyeToggleAllowedForSleep(state.quiz.truth.sleep));
+}
+
 function buildQuizUI(){
   const stepsEl = document.getElementById('quizSteps');
   if (!stepsEl) return;
@@ -8172,25 +7655,20 @@ function buildQuizUI(){
       step.parts.forEach((row, rIndex)=>{ 
         const rowWrap = document.createElement('div');
         rowWrap.className = 'quiz-subrow';
-        if (!row.label) rowWrap.classList.add('no-label');
         if (row.label){
           const rowLabel = document.createElement('div');
           rowLabel.className = 'quiz-subrow-label';
           rowLabel.textContent = row.label;
           rowWrap.appendChild(rowLabel);
         }
-        const optionsWrap = document.createElement('div');
-        optionsWrap.className = 'quiz-subrow-options';
         row.options.forEach(opt=>{
           const b = document.createElement('button');
           b.type = 'button';
           b.className='quiz-pill';
-          b.setAttribute('aria-pressed', 'false');
           b.textContent = opt;
           b.addEventListener('click', ()=> onAnswer(row.key, opt, b));
-          optionsWrap.appendChild(b);
+          rowWrap.appendChild(b);
         });
-        rowWrap.appendChild(optionsWrap);
         container.appendChild(rowWrap);
       });
 
@@ -8213,40 +7691,30 @@ function buildQuizUI(){
       const b = document.createElement('button');
       b.type = 'button';
       b.className='quiz-pill';
-      b.setAttribute('aria-pressed', 'false');
       b.textContent = opt;
       b.addEventListener('click', ()=> onAnswer(step.key, opt, b));
       pills.appendChild(b);
     });
 
     s.appendChild(pills);
+    if (quizStepCanToggleEyes(step.key)){
+      s.appendChild(buildEyesClosedToggle());
+    }
     frag.appendChild(s);
   });
   stepsEl.replaceChildren(frag);
 }
 
 function onAnswer(key, val, btn){
-  if (state.quiz && state.quiz.completed){
-    state.quiz.completed = false;
-    hideQuizSummary();
-  }
-  state.quiz.submitted = false;
-  state.quiz.responses[key] = val;
-  const banner = document.getElementById('quizBanner');
-  if (banner) banner.style.display = 'none';
-  clearQuizBannerTimer();
   // toggle active visual
-  Array.from(btn.parentElement.children).forEach((el)=>{
-    el.classList.remove('active', 'correct', 'wrong', 'neutral');
-    el.setAttribute('aria-pressed', 'false');
-  });
+  Array.from(btn.parentElement.children).forEach(el=>el.classList.remove('active', 'correct', 'wrong', 'neutral'));
   btn.classList.add('active');
-  btn.setAttribute('aria-pressed', 'true');
 
   const isNeutral = (key === 'sleep' && val === 'Unable to determine');
   if (isNeutral){
     btn.classList.add('neutral');
     state.quiz.answered[key] = null;
+    checkWin();
     return;
   }
 
@@ -8259,60 +7727,39 @@ function onAnswer(key, val, btn){
 
   btn.classList.add(isCorrect ? 'correct' : 'wrong');
   state.quiz.answered[key] = isCorrect;
+
+  checkWin();
 }
 
-function showQuizBanner(message, durationMs){
-  const banner = document.getElementById('quizBanner');
-  if (!banner) return;
-  clearQuizBannerTimer();
-  banner.textContent = message;
-  banner.style.display='block';
-  state.quizBannerTimer = setTimeout(()=>{
-    banner.style.display='none';
-    state.quizBannerTimer = null;
-  }, durationMs || 1800);
-}
-
-function submitQuiz(){
-  if (!(state.quiz && state.quiz.active)) return;
+function checkWin(){
   const keys = (state.quiz.questionKeys && state.quiz.questionKeys.length)
     ? state.quiz.questionKeys
     : buildQuizQuestionKeys(state.quiz.order);
   const allAnswered = keys.length > 0 && keys.every((key) => key in state.quiz.answered);
-  state.quiz.submitted = true;
-  if (!allAnswered){
-    const missingKeys = keys.filter((key) => !(key in state.quiz.answered));
-    const message = quizMissingAnswerMessage(missingKeys);
-    showQuizBanner(message, Math.min(6500, Math.max(2800, 1700 + message.length * 55)));
-    return;
-  }
+  if (!allAnswered) return;
 
   const scoredKeys = keys.filter((key) => state.quiz.answered[key] !== null);
   const allCorrect  = scoredKeys.every((key) => state.quiz.answered[key] === true);
+  const banner = document.getElementById('quizBanner');
 
-  clearQuizBannerTimer();
-  if (allCorrect){
-    state.quiz.completed = true;
-    showQuizCompletionSummary();
-    showQuizBanner('Quiz complete - review your report.');
-    return;
+  if (banner){
+    clearQuizBannerTimer();
+    banner.textContent = allCorrect ? 'Correct! New quiz ready.' : 'Not quite - answer all correctly.';
+    banner.style.display='block';
+    state.quizBannerTimer = setTimeout(()=>{
+      banner.style.display='none';
+      state.quizBannerTimer = null;
+      if (allCorrect) startQuiz();
+    }, 1600);
   }
-
-  state.quiz.completed = false;
-  hideQuizSummary();
-  showQuizBanner('Not quite - review the highlighted answers, then submit again.');
 }
 
 function endQuiz(){
   clearQuizBannerTimer();
   state.quiz.active = false;
   state.quiz.answered = {};
-  state.quiz.responses = {};
   state.quiz.questionKeys = [];
   state.quiz.panelCollapsed = false;
-  state.quiz.completed = false;
-  state.quiz.submitted = false;
-  hideQuizSummary();
   state.quiz.slowing = buildQuizSlowingConfig(state.rng || Math.random, 'None', 'Continuous');
   state.quiz.spikes = buildQuizSpikeConfig(state.rng || Math.random, 'none');
   state.seizureEvents = [];
@@ -8327,7 +7774,8 @@ function endQuiz(){
   const panel = document.getElementById('quizPanel');
   if (panel){ panel.style.display='none'; }
   syncEducationPanelVisibility();
-  setEducationTopbarMode(false);
+  const rf = document.getElementById('rhythmFieldset');
+  if (rf) rf.style.display='block';
   const banner = document.getElementById('quizBanner');
   if (banner) banner.style.display='none';
   restoreQuizSnapshot(state.quiz.snapshot);
@@ -8343,8 +7791,6 @@ if (_qn){
   _qn.innerText = 'New Case'; 
   _qn.addEventListener('click', ()=> startQuiz()); 
 }
-const _qs = document.getElementById('quizSubmit');
-if (_qs) _qs.addEventListener('click', submitQuiz);
 const _qe = document.getElementById('quizEnd');
 if (_qe) _qe.addEventListener('click', endQuiz);
 const _qc = document.getElementById('quizCollapse');
@@ -8399,6 +7845,7 @@ function createTutorialState(){
 state.tutorial = state.tutorial || createTutorialState();
 
 const TUTORIAL_SETUP_MODAL = document.getElementById('tutorialSetupModal');
+const tutorialModeSel = document.getElementById('tutorialModeSel');
 const tutorialCaseModeSel = document.getElementById('tutorialCaseModeSel');
 const tutorialCaseSelWrap = document.getElementById('tutorialCaseSelWrap');
 const tutorialCaseSel = document.getElementById('tutorialCaseSel');
@@ -8563,7 +8010,9 @@ function tutorialCurrentResponse(stepKey){
 }
 function tutorialStepRevealed(step){
   if (!step) return false;
+  if (step.key === 'finalImpression') return true;
   if (!(state.tutorial && state.tutorial.active)) return false;
+  if (state.tutorial.mode === 'guided') return true;
   const response = tutorialCurrentResponse(step.key);
   return !!(response && response.revealed);
 }
@@ -8718,6 +8167,8 @@ function tutorialAnswerBanner(step, caseData){
 function tutorialCanAdvance(){
   const step = currentTutorialStep();
   if (!step) return false;
+  if (step.key === 'finalImpression') return true;
+  if (state.tutorial.mode === 'guided') return true;
   return tutorialStepRevealed(step);
 }
 function tutorialCaseSleepLabel(caseData){
@@ -8767,20 +8218,7 @@ function renderTutorialUI(){
     tutorialMeta.replaceChildren(frag);
   }
   if (tutorialProgress){
-    const label = document.createElement('div');
-    label.className = 'tutorial-progress-label';
-    const count = document.createElement('span');
-    count.textContent = `Step ${stepNumber} of ${TUTORIAL_STEPS.length}`;
-    const name = document.createElement('span');
-    name.textContent = step ? step.title : '';
-    label.append(count, name);
-    const track = document.createElement('div');
-    track.className = 'tutorial-progress-track';
-    const fill = document.createElement('span');
-    fill.className = 'tutorial-progress-fill';
-    fill.style.width = `${Math.max(0, Math.min(100, (stepNumber / Math.max(1, TUTORIAL_STEPS.length)) * 100))}%`;
-    track.appendChild(fill);
-    tutorialProgress.replaceChildren(label, track);
+    tutorialProgress.textContent = `Step ${stepNumber} of ${TUTORIAL_STEPS.length}: ${step ? step.title : ''}`;
   }
   if (tutorialCaseSummary){
     if (caseData.summary && state.tutorial.caseFocusOpen){
@@ -8831,16 +8269,7 @@ function renderTutorialUI(){
       });
       card.appendChild(row);
     }
-    const stepRevealed = step ? tutorialStepRevealed(step) : false;
-    if (step && !stepRevealed){
-      const reveal = document.createElement('button');
-      reveal.type = 'button';
-      reveal.className = 'tutorial-reveal';
-      reveal.textContent = 'Reveal Best Answer';
-      reveal.addEventListener('click', ()=> onTutorialReveal(step.key));
-      card.appendChild(reveal);
-    }
-    if (step && stepRevealed){
+    if (step && (state.tutorial.mode === 'guided' || tutorialStepRevealed(step))){
       const answerText = tutorialAnswerBanner(step, caseData);
       if (answerText){
         const answer = document.createElement('div');
@@ -9119,7 +8548,8 @@ function armTutorialSeizure(caseData){
 }
 function applyTutorialCase(caseData){
   if (tutorialPanel) tutorialPanel.style.display = 'block';
-  setEducationTopbarMode(true);
+  const rf = document.getElementById('rhythmFieldset');
+  if (rf) rf.style.display = 'none';
   state.tutorial.lastCaseId = caseData.caseId || null;
   state.tutorial.caseFocusOpen = false;
   state.tutorial.currentCase = caseData;
@@ -9153,19 +8583,20 @@ function openTutorialSetup(){
   closeClinicalPanels();
   const optionsModal = document.getElementById('optionsModal');
   if (optionsModal) optionsModal.hidden = true;
+  if (tutorialModeSel) tutorialModeSel.value = (state.tutorial && state.tutorial.mode) || 'guided';
   if (tutorialCaseModeSel) tutorialCaseModeSel.value = (state.tutorial && state.tutorial.caseMode) || 'ordered';
   populateTutorialCaseSelect((state.tutorial && state.tutorial.selectedCaseId) || '');
   syncTutorialSetupCaseControls();
   TUTORIAL_SETUP_MODAL.hidden = false;
 }
-function startTutorial(){
+function startTutorial(mode){
   if (state.quiz && state.quiz.active) endQuiz();
   if (!(state.tutorial && state.tutorial.active)){
     state.tutorial.snapshot = createQuizSnapshot();
   }
   state.tutorial.active = true;
   state.tutorial.panelCollapsed = false;
-  state.tutorial.mode = 'guided';
+  state.tutorial.mode = mode || (tutorialModeSel ? tutorialModeSel.value : 'guided') || 'guided';
   state.tutorial.caseMode = (tutorialCaseModeSel ? tutorialCaseModeSel.value : state.tutorial.caseMode) || 'ordered';
   state.tutorial.selectedCaseId = tutorialResolveSelectedCaseId(tutorialCaseSel ? tutorialCaseSel.value : state.tutorial.selectedCaseId);
   state.tutorial.responses = {};
@@ -9194,7 +8625,8 @@ function endTutorial(){
   if (tutorialPanel) tutorialPanel.style.display = 'none';
   syncEducationPanelVisibility();
   if (TUTORIAL_SETUP_MODAL) TUTORIAL_SETUP_MODAL.hidden = true;
-  setEducationTopbarMode(false);
+  const rf = document.getElementById('rhythmFieldset');
+  if (rf) rf.style.display = 'block';
   restoreQuizSnapshot(state.tutorial.snapshot);
   state.tutorial.snapshot = null;
   syncControlsFromState();
@@ -9212,15 +8644,6 @@ function onTutorialAnswer(stepKey, value){
   state.tutorial.responses[stepKey] = {
     selected:value,
     correct:value === truth,
-    revealed:false
-  };
-  renderTutorialUI();
-}
-function onTutorialReveal(stepKey){
-  if (!(state.tutorial && state.tutorial.active)) return;
-  const existing = tutorialCurrentResponse(stepKey) || {};
-  state.tutorial.responses[stepKey] = {
-    ...existing,
     revealed:true
   };
   renderTutorialUI();
