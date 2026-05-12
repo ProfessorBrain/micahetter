@@ -2291,10 +2291,8 @@ const fellowshipCompareSelectionMap = {
   "vascular-surgery": "vascular-surgery-integrated",
 };
 
-const step2CkPassingScore = 218;
-
 const compareSliderDefinitions = [
-  { key: "step2", label: "USMLE Step 2 CK score", min: step2CkPassingScore, max: 280, step: 1, weight: 0.24 },
+  { key: "step2", label: "USMLE Step 2 CK score", min: 140, max: 280, step: 1, weight: 0.24 },
   { key: "contiguousRanks", label: "Contiguous ranked programs", min: 0, max: 30, step: 1, weight: 0.28 },
   { key: "research", label: "Research projects", min: 0, max: 20, step: 1, weight: 0.1 },
   { key: "publications", label: "Abstracts, presentations, publications", min: 0, max: 60, step: 1, weight: 0.12 },
@@ -2328,8 +2326,8 @@ const questions = [
   {
     id: "continuity",
     category: "Patient relationships",
-    text: "Do you want to be the doctor who knows patients over months to years?",
-    support: "This is the broad relationship question: whether repeated visits and accumulated context feel central to good work.",
+    text: "Do you want long-term relationships with patients to be a major part of your work?",
+    support: "Think about whether repeated follow-up over months to years feels energizing, not just acceptable.",
     yes: {
       "family-medicine": 4,
       "internal-medicine": 4,
@@ -2384,8 +2382,8 @@ const questions = [
   {
     id: "acuity",
     category: "Pace and urgency",
-    text: "Do you want acute, time-pressured decisions to be a recurring part of your normal week?",
-    support: "This is about regular exposure to urgency, not just the ability to handle an occasional emergency.",
+    text: "Do you want frequent acute, time-pressured decision-making to be part of your normal week?",
+    support: "Imagine whether being regularly pulled toward urgent action feels engaging or draining.",
     yes: {
       "emergency-medicine": 5,
       anesthesiology: 4,
@@ -2410,8 +2408,8 @@ const questions = [
   {
     id: "breadth",
     category: "Scope",
-    text: "Do you prefer holding a broad clinical map rather than living mostly inside one defined domain?",
-    support: "Choose yes if wide variety feels more appealing than a sharply bounded specialty identity.",
+    text: "Do you prefer being a broad generalist over spending most of your time in one tighter clinical domain?",
+    support: "Choose yes if you like wide clinical variety more than a sharply bounded specialty identity.",
     yes: {
       "family-medicine": 5,
       "internal-medicine": 4,
@@ -2462,8 +2460,8 @@ const questions = [
   {
     id: "diagnostic-puzzle",
     category: "Thinking style",
-    text: "Are you especially drawn to cases where the diagnosis is not obvious at first?",
-    support: "This favors specialties where pattern recognition, synthesis, and clinical detective work matter a lot.",
+    text: "Are you especially drawn to diagnostic puzzles even when the answer may take time to unfold?",
+    support: "This favors specialties where pattern recognition, synthesis, and ambiguity tolerance matter a lot.",
     yes: {
       neurology: 6,
       "internal-medicine": 4,
@@ -2486,8 +2484,8 @@ const questions = [
   {
     id: "operating-room",
     category: "Environment",
-    text: "Does the operating room itself feel like an environment you would want to return to often?",
-    support: "Answer yes if a tightly coordinated procedural space feels like a draw rather than a tradeoff.",
+    text: "Does the operating room sound more energizing than the clinic?",
+    support: "Answer yes if a tightly coordinated procedural environment feels like a draw rather than a tradeoff.",
     yes: {
       "general-surgery": 5,
       anesthesiology: 5,
@@ -2510,8 +2508,8 @@ const questions = [
   {
     id: "shift-work",
     category: "Schedule shape",
-    text: "Do defined shifts sound better than work that follows you between visits?",
-    support: "This asks about handoff structure and boundaries, not whether one model is easier.",
+    text: "Would you rather work defined shifts than carry a large outpatient panel over time?",
+    support: "This asks about your preferred structure, not whether one model is easier.",
     yes: {
       "emergency-medicine": 5,
       anesthesiology: 3,
@@ -2535,8 +2533,8 @@ const questions = [
   {
     id: "family-context",
     category: "Population fit",
-    text: "Do family dynamics and social context make clinical problems more interesting to you?",
-    support: "Choose yes if the people and systems around the patient feel clinically meaningful rather than peripheral.",
+    text: "Do you enjoy working closely with family dynamics and the broader context around a patient?",
+    support: "Choose yes if caregiver relationships and family systems feel meaningful rather than peripheral.",
     yes: {
       pediatrics: 5,
       psychiatry: 3,
@@ -2568,7 +2566,7 @@ const questions = [
   {
     id: "mental-health",
     category: "Clinical interests",
-    text: "Would mental health, behavior, and meaning-making be enough to hold your attention for years?",
+    text: "Would you be happy spending a large part of your career focused on mental health and behavior?",
     support: "Answer yes only if that focus feels genuinely central to your interest in medicine.",
     yes: {
       psychiatry: 7,
@@ -2584,8 +2582,8 @@ const questions = [
   {
     id: "visual-patterns",
     category: "Sensory fit",
-    text: "Are you naturally drawn to diagnosis through visual patterns?",
-    support: "Think about whether imaging, skin findings, slides, or visual data feel like satisfying clinical evidence.",
+    text: "Are you naturally drawn to image-based or visually pattern-driven diagnosis?",
+    support: "Think about whether you like identifying what matters from imaging, skin findings, slides, or visual data.",
     yes: {
       radiology: 6,
       dermatology: 5,
@@ -2626,8 +2624,8 @@ const questions = [
   {
     id: "lifestyle-structure",
     category: "Workflow",
-    text: "Does a steady appointment-based rhythm matter a lot to you?",
-    support: "Pick yes if a controlled cadence and fewer abrupt schedule changes are especially important.",
+    text: "Does a relatively predictable outpatient rhythm matter a lot to you?",
+    support: "Pick yes if controlled cadence and fewer abrupt schedule changes are especially important.",
     yes: {
       dermatology: 5,
       psychiatry: 2,
@@ -2652,7 +2650,7 @@ const questions = [
   {
     id: "physiology",
     category: "Core interests",
-    text: "Do real-time physiology and stabilization feel especially compelling?",
+    text: "Do moment-to-moment physiology and immediate clinical stabilization feel especially compelling?",
     support: "This favors specialties that spend a lot of time managing what is happening right now in the body.",
     yes: {
       anesthesiology: 6,
@@ -2675,8 +2673,8 @@ const questions = [
   {
     id: "children",
     category: "Population fit",
-    text: "Do you strongly prefer pediatric patients as your primary population?",
-    support: "Say yes only if children and adolescents feel like the population you would actively choose most of the time.",
+    text: "Do you strongly prefer working with children over primarily working with adults?",
+    support: "Say yes only if this is a real attraction, not just something you could tolerate.",
     yes: {
       pediatrics: 7,
       "family-medicine": 1,
@@ -2696,8 +2694,8 @@ const questions = [
   {
     id: "manual-skill",
     category: "Procedural identity",
-    text: "Would you like technical skill with your hands to be one of the main ways you add value?",
-    support: "This includes operating, airway work, image-guided procedures, and other practiced physical skills.",
+    text: "Would you like technical manual skill to be a core part of how you add value?",
+    support: "This includes operating, airway work, procedures, and other hands-on technical performance.",
     yes: {
       "general-surgery": 5,
       anesthesiology: 4,
@@ -2722,8 +2720,8 @@ const questions = [
   {
     id: "ambiguity",
     category: "Tolerance for uncertainty",
-    text: "Are you comfortable staying with uncertainty while a workup unfolds over hours, days, or visits?",
-    support: "This asks about patience with unresolved diagnostic information, not rapid action in emergencies.",
+    text: "Are you comfortable living with substantial diagnostic uncertainty during the workup process?",
+    support: "Some fields regularly start with incomplete information and move before the picture is clean.",
     yes: {
       "emergency-medicine": 4,
       "internal-medicine": 3,
@@ -2748,8 +2746,8 @@ const questions = [
   {
     id: "preventive-care",
     category: "Care philosophy",
-    text: "Does long-horizon prevention feel like meaningful medical work to you?",
-    support: "This catches interest in keeping people well, not only treating acute illness once it appears.",
+    text: "Does preventive care and long-horizon health maintenance feel central to what you want to do?",
+    support: "This catches interest in the slower work of keeping people well, not only treating acute illness.",
     yes: {
       "family-medicine": 5,
       pediatrics: 4,
@@ -2771,8 +2769,8 @@ const questions = [
   {
     id: "function-rehab",
     category: "Clinical interests",
-    text: "Are you especially drawn to the process of rebuilding function after illness or injury?",
-    support: "This focuses on rehabilitation as a longitudinal process, not just the final goal of independence.",
+    text: "Are you especially drawn to helping patients regain function, mobility, or independence after illness or injury?",
+    support: "This can point toward specialties centered on recovery, rehabilitation, and long-term function.",
     yes: {
       "physical-medicine-rehab": 7,
       "orthopedic-surgery": 3,
@@ -2789,7 +2787,7 @@ const questions = [
   {
     id: "narrow-anatomy",
     category: "Scope",
-    text: "Would deep expertise in one smaller anatomic area feel satisfying rather than limiting?",
+    text: "Would you enjoy becoming an expert in one smaller part of the body rather than working across many organ systems?",
     support: "This can point toward specialties with a narrower anatomic focus and a more tightly defined scope.",
     yes: {
       ophthalmology: 4,
@@ -3169,60 +3167,60 @@ const p = {
 };
 
 questions.push(
-  makeQuestion("continuity-brief-encounters", "Patient relationships", "Would a day built mostly around first-and-only encounters feel too thin to you?", "Choose yes if episodic work would feel incomplete even when the cases are clinically interesting.", mergeWeights(p.contY, p.directY), mergeWeights(p.contN, p.shiftY)),
-  makeQuestion("continuity-follow-up", "Patient relationships", "After an initial visit, do you want outcome feedback weeks or months later?", "This asks whether knowing what happened next is satisfying in itself.", mergeWeights(p.contY, p.prevY), mergeWeights(p.contN, p.behindY)),
-  makeQuestion("continuity-fresh-cases", "Patient relationships", "Would a constant stream of new problems energize you more than familiar follow-up?", "Say yes if novelty and turnover sound more energizing than relationship depth.", mergeWeights(p.contN, p.shiftY), mergeWeights(p.contY)),
-  makeQuestion("communication-over-procedures", "Daily work style", "Would shared decision-making conversations be more satisfying than procedural work?", "This separates conversation-heavy care from hands-on technical care.", mergeWeights(p.commY, p.mentalY), mergeWeights(p.procY, p.manualY)),
-  makeQuestion("caregiver-role", "Patient relationships", "Would coordinating decisions with parents, caregivers, or family members feel like a valuable part of care?", "This is about shared decision-making with people around the patient, not just social context.", mergeWeights(p.familyY, p.childY), mergeWeights(p.behindY)),
-  makeQuestion("longer-conversations", "Daily work style", "Do you prefer visits with enough time to explore nuance?", "This is about pace and depth of interaction rather than relationship length alone.", mergeWeights(p.commY, p.contY), mergeWeights(p.acuteY, p.shiftY)),
-  makeQuestion("panel-management", "Workflow", "Would the responsibility of keeping track of an ongoing patient panel feel satisfying?", "Think about labs, messages, refills, prevention, and follow-up tasks, not only visit-to-visit relationships.", mergeWeights(p.contY, p.shiftN, p.prevY), mergeWeights(p.shiftY, p.behindY)),
-  makeQuestion("adult-and-children", "Population fit", "Does switching back and forth between adult and pediatric reasoning sound energizing?", "This is about enjoying the cognitive gear-shift between age groups.", mergeWeights(p.medpedsY, p.broadY), mergeWeights(p.narrowY)),
-  makeQuestion("routine-preventive-care", "Care philosophy", "Would the quieter work of screening follow-through, risk reduction, and maintenance visits feel worthwhile?", "This is about finding meaning in routine longitudinal upkeep, beyond dramatic diagnoses or procedures.", mergeWeights(p.prevY, p.contY), mergeWeights(p.procY, p.acuteY)),
-  makeQuestion("listening-as-tool", "Clinical interests", "Does careful listening feel like an active clinical tool to you?", "This points toward specialties where conversation, interpretation, and trust are central.", mergeWeights(p.commY, p.mentalY), mergeWeights(p.consultantY, p.manualY)),
-  makeQuestion("broad-vs-narrow-alt", "Scope", "Would you rather keep a wide clinical lens than narrow quickly into one body system?", "This asks about the kind of scope you want over time.", mergeWeights(p.broadY), mergeWeights(p.narrowY)),
-  makeQuestion("context-outside-clinic", "Patient relationships", "Does understanding school, work, home, mobility, or daily routines feel clinically important to you?", "This asks whether real-life context should shape the medical plan.", mergeWeights(p.familyY, p.commY), mergeWeights(p.behindY)),
-  makeQuestion("long-term-trust", "Patient relationships", "Would losing the chance to earn trust over repeated visits feel like a major drawback?", "Say yes if the therapeutic bond itself would feel like a real loss.", mergeWeights(p.contY), mergeWeights(p.contN)),
-  makeQuestion("chronic-vs-episodic", "Workflow", "Do you like adjusting a plan across multiple visits for a chronic condition?", "This separates iterative long-term management from solving a single episode and moving on.", mergeWeights(p.chronicY, p.contY), mergeWeights(p.acuteY, p.shiftY)),
-  makeQuestion("community-generalist", "Scope", "Does broad community practice appeal more than referral-only expertise?", "Choose yes if wide day-to-day variety sounds better than a tightly bounded niche.", mergeWeights(p.broadY, p.prevY), mergeWeights(p.narrowY, p.consultantY)),
+  makeQuestion("continuity-brief-encounters", "Patient relationships", "Would a specialty built mostly around brief one-time encounters feel unsatisfying to you?", "Choose yes if you want follow-up and familiarity to be part of the work.", mergeWeights(p.contY, p.directY), mergeWeights(p.contN, p.shiftY)),
+  makeQuestion("continuity-follow-up", "Patient relationships", "Do you want to know how patients are doing months after you first meet them?", "This asks whether longer follow-up feels meaningful, not just acceptable.", mergeWeights(p.contY, p.prevY), mergeWeights(p.contN, p.behindY)),
+  makeQuestion("continuity-fresh-cases", "Patient relationships", "Would seeing a steady stream of new cases appeal more than building longer relationships?", "Say yes if novelty and turnover sound more energizing than follow-up.", mergeWeights(p.contN, p.shiftY), mergeWeights(p.contY)),
+  makeQuestion("communication-over-procedures", "Daily work style", "Would you rather spend more time talking through decisions than doing procedures?", "This separates conversation-heavy work from hands-on technical work.", mergeWeights(p.commY, p.mentalY), mergeWeights(p.procY, p.manualY)),
+  makeQuestion("caregiver-role", "Patient relationships", "Does working closely with caregivers sound like an important part of practice?", "Think about whether family and caregiver involvement feels central or secondary.", mergeWeights(p.familyY, p.childY), mergeWeights(p.behindY)),
+  makeQuestion("longer-conversations", "Daily work style", "Do longer visits sound more appealing than rapid turnover?", "This is about pace and depth of interaction.", mergeWeights(p.commY, p.contY), mergeWeights(p.acuteY, p.shiftY)),
+  makeQuestion("panel-management", "Workflow", "Would managing a panel of patients over time feel satisfying to you?", "Choose yes if continuity itself feels meaningful.", mergeWeights(p.contY, p.shiftN, p.prevY), mergeWeights(p.shiftY, p.behindY)),
+  makeQuestion("adult-and-children", "Population fit", "Does switching between pediatric and adult medicine sound energizing rather than draining?", "This is about enjoying age-range variety itself, not just wanting to keep both doors open.", mergeWeights(p.medpedsY, p.broadY), mergeWeights(p.narrowY)),
+  makeQuestion("routine-preventive-care", "Care philosophy", "Would you be comfortable if much of your work involved preventive care and chronic disease follow-up?", "Choose yes if that sounds meaningful, not just manageable.", mergeWeights(p.prevY, p.contY), mergeWeights(p.procY, p.acuteY)),
+  makeQuestion("listening-as-tool", "Clinical interests", "Does careful listening feel like one of the most meaningful tools in medicine?", "This points toward specialties where conversation and interpretation matter a lot.", mergeWeights(p.commY, p.mentalY), mergeWeights(p.consultantY, p.manualY)),
+  makeQuestion("broad-vs-narrow-alt", "Scope", "Would you rather stay broad than narrow quickly into one body system?", "This asks about the kind of scope you want over time.", mergeWeights(p.broadY), mergeWeights(p.narrowY)),
+  makeQuestion("context-outside-clinic", "Patient relationships", "Does understanding a patient's life outside the clinic sound important to you?", "Think about family, school, work, and daily function.", mergeWeights(p.familyY, p.commY), mergeWeights(p.behindY)),
+  makeQuestion("long-term-trust", "Patient relationships", "Would it matter to you if a specialty offered very little chance to build long-term trust with patients?", "Say yes if that would feel like a real loss.", mergeWeights(p.contY), mergeWeights(p.contN)),
+  makeQuestion("chronic-vs-episodic", "Workflow", "Are you comfortable following the same chronic problem over years rather than solving a short episode and moving on?", "This separates longitudinal management from episodic care.", mergeWeights(p.chronicY, p.contY), mergeWeights(p.acuteY, p.shiftY)),
+  makeQuestion("community-generalist", "Scope", "Does community-based general medical practice appeal to you more than highly specialized referral work?", "Choose yes if broad day-to-day variety sounds better than a tightly bounded niche.", mergeWeights(p.broadY, p.prevY), mergeWeights(p.narrowY, p.consultantY)),
   makeQuestion("miss-operating-room", "Environment", "Would you miss the operating room if it were not part of your future work?", "This catches whether surgery feels like an important part of your identity.", mergeWeights(p.orY, p.procY), mergeWeights(p.orN, p.commY)),
-  makeQuestion("hands-doing-the-work", "Procedural identity", "When you imagine being fully engaged, are you physically doing the task rather than mainly advising?", "Think about whether hands-on execution itself is motivating.", mergeWeights(p.manualY, p.procY), mergeWeights(p.procN, p.commY)),
-  makeQuestion("procedural-vs-medical", "Procedural identity", "When a condition has both procedural and medical options, are you drawn to performing the intervention?", "This helps separate procedure-forward work from longitudinal medical management.", mergeWeights(p.procY, p.manualY), mergeWeights(p.chronicY, p.contY)),
-  makeQuestion("regular-urgency", "Pace and urgency", "Do you want high-pressure situations to show up often enough to shape the job?", "Choose yes if time-sensitive decision-making feels energizing as a recurring feature.", mergeWeights(p.acuteY), mergeWeights(p.acuteN)),
-  makeQuestion("nights-weekends", "Schedule shape", "Would nights, weekends, or unpredictable call be acceptable if the work fit?", "This asks about tolerance for irregular schedules rather than interest in acuity itself.", mergeWeights(p.acuteY, p.shiftY), mergeWeights(p.lifeY, p.shiftN)),
-  makeQuestion("acute-teamwork", "Environment", "Do you like the idea of rapid team coordination around procedures or operations?", "This points toward team-based acute or operative settings.", mergeWeights(p.orY, p.physY), mergeWeights(p.contY, p.commY)),
-  makeQuestion("perioperative-vs-clinic", "Environment", "Would the before-during-after arc of procedures interest you more than routine clinic follow-up?", "This distinguishes perioperative ownership from office-based continuity.", mergeWeights(p.orY, p.physY), mergeWeights(p.contY, p.lifeY)),
-  makeQuestion("quick-decisions", "Tolerance for uncertainty", "Can you act before everything is known when a time-sensitive decision is needed?", "Choose yes if incomplete information is acceptable when waiting would be worse.", mergeWeights(p.acuteY, p.ambigY), mergeWeights(p.diagY, p.lifeY)),
-  makeQuestion("hospital-vs-office", "Work environment", "Do admissions, rounds, consults, and inpatient teams sound appealing?", "This asks whether hospital-based work has its own pull for you.", mergeWeights(p.inpatientY, p.acuteY), mergeWeights(p.lifeY, p.outprocY)),
-  makeQuestion("clinic-vs-hospital", "Work environment", "Would you rather anchor your practice in clinic even if you occasionally go to the hospital or OR?", "Choose yes if clinic is the home base you would want most often.", mergeWeights(p.lifeY, p.outprocY), mergeWeights(p.inpatientY, p.orY)),
-  makeQuestion("clinic-with-procedures", "Workflow", "Would adding minor procedures to clinic days make clinic feel more satisfying?", "This separates clinic that includes hands-on work from purely conversational outpatient care.", mergeWeights(p.outprocY, p.procY), mergeWeights(p.commY, p.consultantY)),
-  makeQuestion("call-worth-it", "Schedule shape", "Could a demanding call schedule still feel worth it for the right kind of work?", "Say yes if schedule demands would not be a major deterrent when the content fits.", mergeWeights(p.orY, p.acuteY), mergeWeights(p.lifeY, p.shiftN))
+  makeQuestion("hands-doing-the-work", "Procedural identity", "Do you picture yourself feeling most engaged when your hands are doing the work?", "Think about manual and technical work, not just occasional procedures.", mergeWeights(p.manualY, p.procY), mergeWeights(p.procN, p.commY)),
+  makeQuestion("procedural-vs-medical", "Procedural identity", "Does fixing a problem procedurally sound more appealing than managing it medically over time?", "This helps separate procedural fields from longitudinal medical management.", mergeWeights(p.procY, p.manualY), mergeWeights(p.chronicY, p.contY)),
+  makeQuestion("regular-urgency", "Pace and urgency", "Do you want regular exposure to urgent or high-pressure situations?", "Choose yes if time-sensitive decision-making feels energizing.", mergeWeights(p.acuteY), mergeWeights(p.acuteN)),
+  makeQuestion("nights-weekends", "Schedule shape", "Would frequent nights, weekends, or unpredictable call feel acceptable if the work fit?", "This asks about tolerance for irregular schedules.", mergeWeights(p.acuteY, p.shiftY), mergeWeights(p.lifeY, p.shiftN)),
+  makeQuestion("acute-teamwork", "Environment", "Do you like the idea of working in tightly coordinated teams around acute procedures or operations?", "This points toward team-based acute or operative settings.", mergeWeights(p.orY, p.physY), mergeWeights(p.contY, p.commY)),
+  makeQuestion("perioperative-vs-clinic", "Environment", "Would perioperative care feel more interesting than clinic follow-up?", "This distinguishes OR-adjacent work from office-based continuity.", mergeWeights(p.orY, p.physY), mergeWeights(p.contY, p.lifeY)),
+  makeQuestion("quick-decisions", "Tolerance for uncertainty", "Are you comfortable making decisions quickly when information is incomplete?", "Choose yes if acting before the full picture is available feels acceptable.", mergeWeights(p.acuteY, p.ambigY), mergeWeights(p.diagY, p.lifeY)),
+  makeQuestion("hospital-vs-office", "Work environment", "Do hospital-based days sound more appealing than office-based days?", "This looks at the setting you can see yourself in most often.", mergeWeights(p.inpatientY, p.acuteY), mergeWeights(p.lifeY, p.outprocY)),
+  makeQuestion("clinic-vs-hospital", "Work environment", "Would mostly clinic-based days suit you better than time in the hospital or OR?", "Choose yes if a steadier outpatient rhythm sounds better.", mergeWeights(p.lifeY, p.outprocY), mergeWeights(p.inpatientY, p.orY)),
+  makeQuestion("clinic-with-procedures", "Workflow", "Would you like clinic days that still include procedures?", "This helps separate outpatient procedural fields from purely medical or purely operative ones.", mergeWeights(p.outprocY, p.procY), mergeWeights(p.commY, p.consultantY)),
+  makeQuestion("call-worth-it", "Schedule shape", "Would a call-heavy specialty still feel worth it if the content matched your interests?", "Say yes if schedule demands would not be a major deterrent.", mergeWeights(p.orY, p.acuteY), mergeWeights(p.lifeY, p.shiftN))
 );
 
 questions.push(
   makeQuestion("immediate-physical-result", "Procedural identity", "Do you like the idea of seeing an immediate physical result from what you do?", "This points toward specialties where the effect of treatment is often visible right away.", mergeWeights(p.manualY, p.procY), mergeWeights(p.chronicY, p.commY)),
   makeQuestion("consultant-expertise", "Work role", "Would you be comfortable being asked for expertise rather than being the main ongoing doctor?", "Choose yes if a consultant role sounds meaningful, not distant.", mergeWeights(p.consultantY, p.diagY), mergeWeights(p.contY, p.prevY)),
   makeQuestion("consultant-handoffs", "Work role", "Does a specialty built around consultants, procedures, and handoffs sound appealing?", "This can separate continuity-heavy work from consultative or procedural roles.", mergeWeights(p.consultantY, p.orY, p.shiftY), mergeWeights(p.contY, p.familyY)),
-  makeQuestion("diagnostic-workup", "Thinking style", "Would you enjoy work where much of the value is figuring out what is going on?", "Choose yes if diagnostic reasoning itself is a major draw.", mergeWeights(p.diagY), mergeWeights(p.commY)),
-  makeQuestion("subtle-patterns", "Thinking style", "Do small differences that change the diagnosis catch your attention?", "This often aligns with visually precise and diagnostic fields.", mergeWeights(p.visualY, p.diagY), mergeWeights(p.commY)),
-  makeQuestion("images-and-data", "Thinking style", "Would long stretches of interpreting images, waveforms, tests, or structured data appeal to you?", "This looks at comfort with data-heavy work even when direct patient interaction is limited.", mergeWeights(p.visualY, p.consultantY), mergeWeights(p.directY)),
+  makeQuestion("diagnostic-workup", "Thinking style", "Would you enjoy specialties where a large part of the work is figuring out what is going on?", "Choose yes if diagnostic reasoning is a major draw.", mergeWeights(p.diagY), mergeWeights(p.commY)),
+  makeQuestion("subtle-patterns", "Thinking style", "Do subtle patterns and fine distinctions catch your attention quickly?", "This often aligns with visually precise and diagnostic fields.", mergeWeights(p.visualY, p.diagY), mergeWeights(p.commY)),
+  makeQuestion("images-and-data", "Thinking style", "Would you enjoy spending a lot of time interpreting images or other structured data?", "This looks at comfort with image- and data-heavy work.", mergeWeights(p.visualY, p.consultantY), mergeWeights(p.directY)),
   makeQuestion("microscope-over-bedside", "Work environment", "Would tissue, slides, or microscopic detail interest you more than bedside interaction?", "This helps separate pathology-style work from bedside-heavy fields.", mergeWeights(p.behindY, p.visualY), mergeWeights(p.directY, p.contY)),
-  makeQuestion("uncertainty-tolerance", "Tolerance for uncertainty", "Do you have patience for ambiguous cases that require serial reassessment?", "Choose yes if ambiguity feels workable when you can keep gathering data over time.", mergeWeights(p.ambigY, p.diagY), mergeWeights(p.ambigN)),
-  makeQuestion("anatomic-localization", "Thinking style", "Does mapping symptoms to anatomy sound interesting to you?", "This can fit fields that rely on precise structural reasoning.", mergeWeights(p.diagY, p.narrowY, p.ophthoY, p.entY), mergeWeights(p.broadY)),
-  makeQuestion("multimorbidity", "Clinical interests", "Do several interacting medical problems seem more interesting than one well-defined issue?", "Choose yes if complexity across systems feels engaging.", mergeWeights(p.chronicY, p.broadY), mergeWeights(p.narrowY)),
-  makeQuestion("pathophysiology-draw", "Core interests", "Would mechanism and physiology be a major draw in your daily work?", "This points toward fields centered on how disease processes behave.", mergeWeights(p.physY, p.diagY), mergeWeights(p.commY)),
-  makeQuestion("focused-expertise", "Scope", "Would you like being called specifically for deep expertise?", "This separates consultant and narrower roles from broad panel-based work.", mergeWeights(p.consultantY, p.narrowY), mergeWeights(p.broadY, p.contY)),
+  makeQuestion("uncertainty-tolerance", "Tolerance for uncertainty", "Can you tolerate not knowing the answer right away while you keep gathering information?", "Choose yes if uncertainty itself does not feel draining.", mergeWeights(p.ambigY, p.diagY), mergeWeights(p.ambigN)),
+  makeQuestion("anatomic-localization", "Thinking style", "Does careful anatomic localization sound interesting to you?", "This can fit fields that rely on precise structural reasoning.", mergeWeights(p.diagY, p.narrowY, p.ophthoY, p.entY), mergeWeights(p.broadY)),
+  makeQuestion("multimorbidity", "Clinical interests", "Do medically complex patients with several problems at once seem more interesting than a narrow, well-defined issue?", "Choose yes if complexity across systems feels engaging.", mergeWeights(p.chronicY, p.broadY), mergeWeights(p.narrowY)),
+  makeQuestion("pathophysiology-draw", "Core interests", "Would thinking through pathophysiology be a major draw in your daily work?", "This points toward fields centered on mechanism, physiology, and reasoning.", mergeWeights(p.physY, p.diagY), mergeWeights(p.commY)),
+  makeQuestion("focused-expertise", "Scope", "Would you prefer to be the person others call for focused expertise?", "This separates consultant and narrower roles from broad panel-based work.", mergeWeights(p.consultantY, p.narrowY), mergeWeights(p.broadY, p.contY)),
   makeQuestion("away-from-bedside", "Work environment", "Would you be comfortable doing valuable work that happens mostly away from the bedside?", "Choose yes if indirect but important work sounds satisfying.", mergeWeights(p.behindY, p.consultantY), mergeWeights(p.directY, p.contY)),
-  makeQuestion("close-visual-detail", "Sensory fit", "Does sustained close-up visual or anatomic detail feel satisfying rather than tiring?", "This often points toward visually precise specialties.", mergeWeights(p.visualY, p.narrowY), mergeWeights(p.broadY)),
-  makeQuestion("certainty-over-ambiguity", "Tolerance for uncertainty", "Do you prefer fields where evidence usually converges toward a clean answer?", "This helps separate lower-ambiguity diagnostic work from uncertainty-heavy environments.", mergeWeights(p.ambigN, p.visualY), mergeWeights(p.ambigY, p.acuteY)),
-  makeQuestion("long-workups", "Thinking style", "Do slower diagnostic workups sound better than quick decisions under pressure?", "Choose yes if deeper reasoning over time sounds more appealing.", mergeWeights(p.diagY, p.chronicY), mergeWeights(p.acuteY)),
+  makeQuestion("close-visual-detail", "Sensory fit", "Does close attention to small visual or anatomic detail sound satisfying?", "This often points toward visually precise specialties.", mergeWeights(p.visualY, p.narrowY), mergeWeights(p.broadY)),
+  makeQuestion("certainty-over-ambiguity", "Tolerance for uncertainty", "Would you rather work in fields that often move toward diagnostic certainty than fields that live with ambiguity?", "This helps separate lower-ambiguity diagnostic work from uncertainty-heavy environments.", mergeWeights(p.ambigN, p.visualY), mergeWeights(p.ambigY, p.acuteY)),
+  makeQuestion("long-workups", "Thinking style", "Do longer diagnostic workups sound more interesting than quick decisions under pressure?", "Choose yes if slower, deeper reasoning sounds more appealing.", mergeWeights(p.diagY, p.chronicY), mergeWeights(p.acuteY)),
   makeQuestion("interpretation-over-procedures", "Thinking style", "Would careful interpretation appeal to you more than hands-on procedures?", "This asks where you want most of your effort to go.", mergeWeights(p.visualY, p.consultantY), mergeWeights(p.manualY)),
   makeQuestion("interpretation-for-others", "Work role", "Does interpreting information for other clinicians sound as meaningful as direct bedside care?", "This points toward consultant and diagnostic fields.", mergeWeights(p.consultantY), mergeWeights(p.directY, p.contY)),
-  makeQuestion("children-large-share", "Population fit", "Would you be happy if most of your week involved children, adolescents, and their families?", "Choose yes only if pediatric care sounds like a day-to-day draw, not just a tolerable rotation.", mergeWeights(p.childY, p.familyY), mergeWeights(p.adultY)),
-  makeQuestion("mostly-adults", "Population fit", "Do you want adult medicine to be your default clinical frame?", "This helps separate adult-focused practice from child-focused or cross-age practice.", mergeWeights(p.adultY, p.chronicY), mergeWeights(p.childY, p.medpedsY)),
+  makeQuestion("children-large-share", "Population fit", "Would you be happy if a large share of your practice involved children and adolescents?", "Choose yes only if that sounds like a real draw.", mergeWeights(p.childY, p.familyY), mergeWeights(p.adultY)),
+  makeQuestion("mostly-adults", "Population fit", "Do you picture yourself caring mostly for adults rather than children?", "This helps separate adult-focused from child-focused practice.", mergeWeights(p.adultY, p.chronicY), mergeWeights(p.childY, p.medpedsY)),
   makeQuestion("pregnancy-and-repro", "Clinical interests", "Does the mix of clinic, procedures, and emergencies in OB/GYN sound appealing?", "Choose yes if that combination sounds more attractive than any single part of it on its own.", mergeWeights(p.womenY, p.outprocY, p.acuteY, p.orY), mergeWeights(p.broadY)),
   makeQuestion("conversation-based-care", "Clinical interests", "Would you be content spending a large part of the day in conversation-based care?", "This helps identify fields where communication is the main tool.", mergeWeights(p.mentalY, p.commY), mergeWeights(p.procY)),
-  makeQuestion("recovery-over-stabilization", "Clinical interests", "Does the recovery phase after injury or illness interest you more than the initial rescue?", "This distinguishes rehabilitation and recovery arcs from acute stabilization.", mergeWeights(p.rehabY, p.lifeY), mergeWeights(p.acuteY)),
-  makeQuestion("function-over-diagnosis", "Clinical interests", "Would improving day-to-day function matter more to you than naming the exact diagnosis?", "Choose yes if practical ability and quality of life feel like the central endpoint.", mergeWeights(p.rehabY, p.contY), mergeWeights(p.diagY)),
+  makeQuestion("recovery-over-stabilization", "Clinical interests", "Does recovery after injury or illness interest you more than acute stabilization?", "This distinguishes rehabilitation-oriented work from acute care.", mergeWeights(p.rehabY, p.lifeY), mergeWeights(p.acuteY)),
+  makeQuestion("function-over-diagnosis", "Clinical interests", "Would helping patients improve function matter more to you than chasing a single diagnosis?", "Choose yes if day-to-day function feels especially meaningful.", mergeWeights(p.rehabY, p.contY), mergeWeights(p.diagY)),
   makeQuestion("musculoskeletal-interest", "Clinical interests", "Are bones, joints, muscles, and movement especially interesting to you?", "This can point toward musculoskeletal and rehab-oriented fields.", mergeWeights(p.orthoY, p.rehabY), mergeWeights(p.behindY)),
   makeQuestion("sensory-systems", "Clinical interests", "Do vision, hearing, voice, or other sensory systems especially interest you?", "Choose yes if these systems stand out to you more than others.", mergeWeights(p.ophthoY, p.entY), mergeWeights(p.broadY)),
   makeQuestion("head-and-neck-interest", "Clinical interests", "Does highly detailed head and neck anatomy feel especially intuitive or satisfying to you?", "This is about anatomic comfort and precision, not just tolerating ENT clinic topics.", mergeWeights(p.entY, p.narrowY), mergeWeights(p.broadY))
@@ -3232,29 +3230,29 @@ questions.push(
   makeQuestion("genitourinary-interest", "Clinical interests", "Does genitourinary anatomy feel more intuitive or compelling to you than most other systems?", "This asks about a true organ-system pull, not just being okay with those complaints.", mergeWeights(p.uroY, p.narrowY), mergeWeights(p.broadY)),
   makeQuestion("complex-hospitalized-adults", "Population fit", "Would you enjoy caring for medically complex hospitalized adults?", "This points toward adult inpatient medicine and consultant-heavy roles.", mergeWeights(p.inpatientY, p.chronicY, p.adultY), mergeWeights(p.lifeY)),
   makeQuestion("disability-and-qol", "Clinical interests", "Are disability, adaptation, and quality of life central issues you would want to work with?", "This helps identify rehabilitation-oriented interests.", mergeWeights(p.rehabY, p.commY), mergeWeights(p.acuteY)),
-  makeQuestion("sports-and-return", "Clinical interests", "Does helping people return to sport, work, or daily routines after injury sound especially meaningful?", "Choose yes if recovery goals and return-to-activity decisions are the interesting part.", mergeWeights(p.orthoY, p.rehabY, p.lifeY), mergeWeights(p.behindY)),
+  makeQuestion("sports-and-return", "Clinical interests", "Does helping people return to sport, work, or daily function after injury sound especially meaningful?", "Choose yes if recovery goals and rehab timelines matter as much as the injury itself.", mergeWeights(p.orthoY, p.rehabY, p.lifeY), mergeWeights(p.behindY)),
   makeQuestion("labor-delivery-draw", "Clinical interests", "Does labor and delivery sound more appealing than most other acute care settings?", "This helps detect a stronger draw toward obstetric work.", mergeWeights(p.womenY, p.acuteY, p.orY), mergeWeights(p.acuteN)),
   makeQuestion("keep-adult-peds-open", "Population fit", "Would it be important to you to keep both adult and pediatric medicine open?", "Choose yes if a split age range sounds like a real advantage.", mergeWeights(p.medpedsY, p.childY, p.adultY), mergeWeights(p.narrowY)),
-  makeQuestion("predictability-priority", "Workflow", "Would you trade some adrenaline and variety for a more forecastable week?", "This separates predictable rhythm from acute or call-heavy work.", mergeWeights(p.lifeY), mergeWeights(p.acuteY, p.shiftY)),
-  makeQuestion("outpatient-most-days", "Work environment", "Would you prefer most workdays to be scheduled clinic visits and outpatient follow-up?", "Choose yes if outpatient cadence feels like the setting where you would do your best work.", mergeWeights(p.lifeY, p.contY), mergeWeights(p.inpatientY, p.acuteY)),
-  makeQuestion("wards-vs-clinic", "Work environment", "Do inpatient services such as wards, consults, or hospital call feel like the setting where you think best?", "This asks about hospital-based reasoning and team flow, not just disliking clinic.", mergeWeights(p.inpatientY, p.acuteY), mergeWeights(p.lifeY)),
-  makeQuestion("treatment-over-time", "Patient relationships", "Do you want feedback loops where you can see whether your treatment choices helped?", "Choose yes if observing response to treatment is part of what makes the work meaningful.", mergeWeights(p.contY, p.chronicY), mergeWeights(p.shiftY, p.behindY)),
-  makeQuestion("office-procedures-balance", "Workflow", "Does a practice built around scheduled office-based interventions sound appealing?", "This points toward outpatient procedure volume rather than occasional procedures during clinic.", mergeWeights(p.outprocY, p.lifeY), mergeWeights(p.inpatientY)),
-  makeQuestion("consults-over-panel", "Work role", "Would carrying your own panel feel less appealing than stepping in for defined clinical problems?", "This isolates panel ownership and follow-up burden from the appeal of expertise itself.", mergeWeights(p.consultantY, p.inpatientY), mergeWeights(p.contY, p.prevY)),
-  makeQuestion("clear-shifts", "Schedule shape", "Is handing off work at the end of a defined shift appealing to you?", "This tests whether clear start-and-stop boundaries feel like a meaningful advantage.", mergeWeights(p.shiftY), mergeWeights(p.shiftN, p.contY)),
-  makeQuestion("low-emergencies", "Pace and urgency", "Would you prefer a field where true emergencies are the exception rather than the rhythm?", "Choose yes if lower-acuity pacing sounds better than recurring adrenaline.", mergeWeights(p.acuteN, p.lifeY), mergeWeights(p.acuteY)),
+  makeQuestion("predictability-priority", "Workflow", "Does schedule predictability matter more to you than occasional high-adrenaline work?", "This separates steadier outpatient fields from acute or call-heavy ones.", mergeWeights(p.lifeY), mergeWeights(p.acuteY, p.shiftY)),
+  makeQuestion("outpatient-most-days", "Work environment", "Would you rather spend most days in outpatient practice than in the hospital?", "Choose yes if clinic rhythm fits you better than inpatient flow.", mergeWeights(p.lifeY, p.contY), mergeWeights(p.inpatientY, p.acuteY)),
+  makeQuestion("wards-vs-clinic", "Work environment", "Do wards, consult services, or hospital call sound more appealing than clinic flow?", "This helps separate inpatient from outpatient preferences.", mergeWeights(p.inpatientY, p.acuteY), mergeWeights(p.lifeY)),
+  makeQuestion("treatment-over-time", "Patient relationships", "Do you want to see how treatment decisions play out over time?", "Choose yes if follow-up itself feels meaningful.", mergeWeights(p.contY, p.chronicY), mergeWeights(p.shiftY, p.behindY)),
+  makeQuestion("office-procedures-balance", "Workflow", "Would a specialty with office procedures feel like a good balance for you?", "This often points toward outpatient procedural fields.", mergeWeights(p.outprocY, p.lifeY), mergeWeights(p.inpatientY)),
+  makeQuestion("consults-over-panel", "Work role", "Would you enjoy consult work more than managing a full outpatient panel?", "Choose yes if focused expertise sounds better than being the main continuity doctor.", mergeWeights(p.consultantY, p.inpatientY), mergeWeights(p.contY, p.prevY)),
+  makeQuestion("clear-shifts", "Schedule shape", "Would clear start-and-stop work shifts be a real advantage for you?", "This helps separate shift-based work from continuity-heavy roles.", mergeWeights(p.shiftY), mergeWeights(p.shiftN, p.contY)),
+  makeQuestion("low-emergencies", "Pace and urgency", "Would you prefer a field where true emergencies are relatively uncommon?", "Choose yes if a lower-acuity environment sounds better.", mergeWeights(p.acuteN, p.lifeY), mergeWeights(p.acuteY)),
   makeQuestion("rehab-team-draw", "Environment", "Does working with PT, OT, speech therapy, or rehab teams sound appealing?", "This can point toward rehabilitation-focused practice.", mergeWeights(p.rehabY, p.commY), mergeWeights(p.consultantY)),
-  makeQuestion("mixed-clinic-procedures", "Workflow", "Would alternating clinic evaluation with OR or procedure days appeal more than staying in one setting?", "This asks about variety across settings, not just whether procedures exist.", mergeWeights(p.outprocY, p.orY, p.contY), mergeWeights(p.shiftY)),
-  makeQuestion("avoiding-large-panel", "Workflow", "Would the administrative responsibility of a large continuity panel be something you would rather avoid?", "Choose yes if inbox, follow-up, and panel ownership feel like a burden rather than a draw.", mergeWeights(p.shiftY, p.consultantY, p.behindY), mergeWeights(p.contY)),
-  makeQuestion("panel-over-cases", "Workflow", "Do you prefer being responsible for an ongoing population rather than a queue of independent encounters?", "This separates panel ownership from case-by-case work.", mergeWeights(p.contY, p.prevY), mergeWeights(p.shiftY, p.acuteY)),
+  makeQuestion("mixed-clinic-procedures", "Workflow", "Would you like a specialty that mixes clinic with procedures or surgery rather than only one setting?", "This often fits surgical subspecialties and outpatient procedural fields.", mergeWeights(p.outprocY, p.orY, p.contY), mergeWeights(p.shiftY)),
+  makeQuestion("avoiding-large-panel", "Workflow", "Would avoiding a large continuity panel be a meaningful advantage for you?", "Choose yes if you do not want most of your work tied to ongoing panel management.", mergeWeights(p.shiftY, p.consultantY, p.behindY), mergeWeights(p.contY)),
+  makeQuestion("panel-over-cases", "Workflow", "Would you rather manage a panel over time than move from case to case?", "This separates continuity-heavy work from episodic work.", mergeWeights(p.contY, p.prevY), mergeWeights(p.shiftY, p.acuteY)),
   makeQuestion("fine-motor-precision", "Procedural identity", "Does very fine, precise technical work sound appealing?", "This points toward fields that rely on small-scale technical precision.", mergeWeights(p.ophthoY, p.manualY, p.entY), mergeWeights(p.procN)),
   makeQuestion("fracture-biomechanics", "Clinical interests", "Do fractures, joints, and biomechanics sound more compelling than most other surgical problems?", "Choose yes if this content feels particularly interesting.", mergeWeights(p.orthoY), mergeWeights(p.broadY)),
   makeQuestion("preserve-vision", "Clinical interests", "Does helping preserve or restore vision sound especially meaningful?", "This helps identify a stronger pull toward ophthalmology.", mergeWeights(p.ophthoY, p.visualY), mergeWeights(p.broadY)),
   makeQuestion("ent-content", "Clinical interests", "Would you enjoy a practice centered on ear, sinus, airway, and voice complaints?", "Choose yes if that cluster of problems feels consistently interesting, not just tolerable.", mergeWeights(p.entY), mergeWeights(p.broadY)),
   makeQuestion("urologic-problems", "Clinical interests", "Do kidney stones, obstruction, hematuria, and related urologic issues stand out to you?", "This asks whether those complaints feel genuinely interesting, not just manageable.", mergeWeights(p.uroY), mergeWeights(p.broadY)),
   makeQuestion("large-operations", "Procedural identity", "Would large operations appeal to you more than smaller procedures?", "Choose yes if bigger operative work sounds more appealing than fine or office-based procedures.", mergeWeights(p.orY, p.orthoY), mergeWeights(p.outprocY, p.ophthoY)),
-  makeQuestion("focused-outpatient-procedures", "Workflow", "Would a narrow outpatient procedural niche sound better than broad inpatient care?", "This points toward tight-scope procedural fields with a clinic-based rhythm.", mergeWeights(p.outprocY, p.lifeY, p.narrowY), mergeWeights(p.inpatientY, p.shiftY)),
-  makeQuestion("body-region-expert", "Scope", "Would mastering a compact anatomic or problem set through repetition feel rewarding?", "Choose yes if depth through repetition sounds energizing rather than limiting.", mergeWeights(p.outprocY, p.ophthoY, p.entY, p.uroY, p.orthoY), mergeWeights(p.broadY)),
+  makeQuestion("focused-outpatient-procedures", "Workflow", "Would a mostly outpatient specialty with focused procedures suit you well?", "This points toward specialties with a tighter scope and more clinic-based procedures.", mergeWeights(p.outprocY, p.lifeY, p.narrowY), mergeWeights(p.inpatientY, p.shiftY)),
+  makeQuestion("body-region-expert", "Scope", "Would you enjoy refining the same focused set of problems and technical skills over time?", "Choose yes if depth-through-repetition sounds energizing rather than limiting.", mergeWeights(p.outprocY, p.ophthoY, p.entY, p.uroY, p.orthoY), mergeWeights(p.broadY)),
   makeQuestion("function-over-operation", "Clinical interests", "Does restoring movement or independence appeal more than removing disease or operating?", "This helps separate rehabilitation-oriented interests from operative ones.", mergeWeights(p.rehabY, p.contY), mergeWeights(p.orY, p.procY))
 );
 
@@ -4127,10 +4125,6 @@ function getMarkerPosition(value, min, max) {
 
 function getNeededFor90Text(definition, value) {
   if (definition.key === "step2") {
-    if (value < step2CkPassingScore) {
-      return "Step 2 pass is associated with >90% match rate";
-    }
-
     return `90%: ${Math.round(value)}`;
   }
 
@@ -4147,8 +4141,6 @@ function updateNeededFor90Markers(data) {
     }
 
     marker.classList.add("is-hidden");
-    marker.classList.remove("compare-slider__needed90--passing");
-    marker.classList.remove("compare-slider__needed90--unreached");
 
     if (!compareNeededFor90Keys.has(definition.key) || !data?.neededFor90) {
       return;
@@ -4157,25 +4149,10 @@ function updateNeededFor90Markers(data) {
     const value = data.neededFor90[definition.key];
 
     if (!Number.isFinite(value)) {
-      if (definition.key === "step2" && value === null) {
-        marker.style.setProperty("--x", "0%");
-        label.textContent = "No >90% match rate association with Step 2 score";
-        marker.classList.add("compare-slider__needed90--unreached");
-        marker.classList.remove("is-hidden");
-      }
-
       return;
     }
 
-    const markerValue = definition.key === "step2" && value < step2CkPassingScore
-      ? step2CkPassingScore
-      : value;
-
-    if (definition.key === "step2" && value < step2CkPassingScore) {
-      marker.classList.add("compare-slider__needed90--passing");
-    }
-
-    marker.style.setProperty("--x", getMarkerPosition(markerValue, definition.min, definition.max));
+    marker.style.setProperty("--x", getMarkerPosition(value, definition.min, definition.max));
     label.textContent = getNeededFor90Text(definition, value);
     marker.classList.remove("is-hidden");
   });
@@ -4357,41 +4334,23 @@ function renderCompareOutput() {
   const radarMetrics = [...continuousMetrics, binaryIndividuatorMetric];
   const matchedShare = Math.round((data.matchedN / (data.matchedN + data.unmatchedN)) * 100);
 
-  const metricMarkup = continuousMetrics.map((metric) => {
-    const isEditableSlider = compareSliderDefinitions.some((definition) => definition.key === metric.key);
-    const sliderAttributes = isEditableSlider
-      ? `data-compare-slider="${metric.key}"`
-      : `disabled aria-disabled="true" title="Adjusted with the checkboxes above"`;
-    const sliderStep = isEditableSlider ? metric.step : 0.01;
-    const sliderValue = clamp(metric.value, metric.min, metric.max);
-
-    return `
-    <label class="compare-metric${isEditableSlider ? "" : " compare-metric--readonly"}">
+  const metricMarkup = radarMetrics.map((metric) => `
+    <div class="compare-metric">
       <div class="compare-metric__head">
         <span>${metric.label}</span>
         <strong>You: ${formatCompareMetricValue(metric, metric.value)}</strong>
       </div>
-      <div class="compare-bar">
+      <div class="compare-bar" aria-hidden="true">
         <span class="compare-bar__marker compare-bar__marker--unmatched" style="--x: ${getMarkerPosition(metric.unmatchedMean, metric.min, metric.max)}"></span>
         <span class="compare-bar__marker compare-bar__marker--matched" style="--x: ${getMarkerPosition(metric.matchedMean, metric.min, metric.max)}"></span>
-        <input
-          class="compare-bar__slider${isEditableSlider ? "" : " compare-bar__slider--readonly"}"
-          type="range"
-          min="${metric.min}"
-          max="${metric.max}"
-          step="${sliderStep}"
-          value="${sliderValue}"
-          ${sliderAttributes}
-          aria-label="${isEditableSlider ? `Adjust ${metric.label}` : `${metric.label} score from selected binary individuators`}"
-        >
+        <span class="compare-bar__marker compare-bar__marker--user" style="--x: ${getMarkerPosition(metric.value, metric.min, metric.max)}"></span>
       </div>
       <div class="compare-metric__values">
-        <span>Unmatched mean ${formatCompareMetricValue(metric, metric.unmatchedMean)}</span>
         <span>Matched mean ${formatCompareMetricValue(metric, metric.matchedMean)}</span>
+        <span>Unmatched mean ${formatCompareMetricValue(metric, metric.unmatchedMean)}</span>
       </div>
-    </label>
-  `;
-  }).join("");
+    </div>
+  `).join("");
 
   compareOutput.innerHTML = `
     ${renderMatchedAverageRadar(radarMetrics)}
@@ -4585,50 +4544,6 @@ function handleCompareInput(event) {
     compareProfile[checkKey] = event.target.checked;
   }
 
-  syncCompareInputs();
-  renderCompareOutput();
-}
-
-function syncCompareSliderControl(sliderKey) {
-  const input = compareSliderGrid.querySelector(`[data-compare-slider="${sliderKey}"]`);
-  const output = document.getElementById(`compare-${sliderKey}-value`);
-
-  if (input) {
-    input.value = compareProfile[sliderKey];
-  }
-
-  if (output) {
-    output.textContent = compareProfile[sliderKey];
-  }
-}
-
-function handleCompareMetricSliderInput(event) {
-  const sliderKey = event.target.dataset.compareSlider;
-
-  if (!sliderKey) {
-    return;
-  }
-
-  compareProfile[sliderKey] = Number(event.target.value);
-  syncCompareSliderControl(sliderKey);
-
-  const definition = compareSliderDefinitions.find((item) => item.key === sliderKey);
-  const valueLabel = event.target.closest(".compare-metric")?.querySelector(".compare-metric__head strong");
-
-  if (definition && valueLabel) {
-    valueLabel.textContent = `You: ${formatCompareMetricValue(definition, compareProfile[sliderKey])}`;
-  }
-}
-
-function handleCompareMetricSliderCommit(event) {
-  const sliderKey = event.target.dataset.compareSlider;
-
-  if (!sliderKey) {
-    return;
-  }
-
-  compareProfile[sliderKey] = Number(event.target.value);
-  syncCompareInputs();
   renderCompareOutput();
 }
 
@@ -5323,11 +5238,6 @@ function getExploreSimilarityEdges(nodes, neighborLimit = 5, threshold = 0.24) {
     for (let rightIndex = leftIndex + 1; rightIndex < nodes.length; rightIndex += 1) {
       const left = nodes[leftIndex];
       const right = nodes[rightIndex];
-
-      if (left.kind === right.kind) {
-        continue;
-      }
-
       const similarity = getExploreProfileSimilarity(left, right);
 
       if (similarity < threshold) {
@@ -5349,14 +5259,13 @@ function getExploreSimilarityEdges(nodes, neighborLimit = 5, threshold = 0.24) {
       const ids = [node.id, neighbor.id].sort();
       const key = ids.join("::");
       const existing = edgeMap.get(key);
-      const specialtyNode = node.kind === "specialty" ? node : neighbor;
 
       if (!existing || similarity > existing.similarity) {
         edgeMap.set(key, {
           sourceId: ids[0],
           targetId: ids[1],
           similarity,
-          color: specialtyNode.color,
+          color: node.kind === "specialty" ? node.color : neighbor.color,
         });
       }
     });
@@ -5804,7 +5713,7 @@ function renderExploreView() {
       || edge.targetId === selectedExploreId
       || edge.sourceId === expandedExploreSpecialtyId;
 
-    if (!source || !target || source.kind === target.kind) {
+    if (!source || !target) {
       return "";
     }
 
@@ -5825,7 +5734,7 @@ function renderExploreView() {
     const target = nodeMap[edge.targetId];
     const selected = edge.sourceId === selectedExploreId || edge.targetId === selectedExploreId;
 
-    if (!source || !target || source.kind === target.kind) {
+    if (!source || !target) {
       return "";
     }
 
@@ -6613,8 +6522,6 @@ copySeedButton.addEventListener("click", copyCurrentSeed);
 loadSeedButton.addEventListener("click", loadSeedFromInput);
 compareSpecialtySelect.addEventListener("change", handleCompareSelectionChange);
 compareSliderGrid.addEventListener("input", handleCompareInput);
-compareOutput.addEventListener("input", handleCompareMetricSliderInput);
-compareOutput.addEventListener("change", handleCompareMetricSliderCommit);
 compareView.querySelectorAll("[data-compare-check]").forEach((input) => {
   input.addEventListener("change", handleCompareInput);
 });
