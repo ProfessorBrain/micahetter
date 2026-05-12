@@ -192,7 +192,7 @@ button.options-strong:active{
 .topbar-actions{ margin-left:auto; display:flex; gap:.4rem; align-items:flex-end; flex-wrap:wrap; justify-content:flex-end; }
 .topbar-menu-actions{ order:0; }
 .topbar-menu-divider{ order:0; }
-#play, #penToolBtn, #clinicalMenuBtn, #learningMenuBtn, #eegMenuBtn, #aboutBtn{ white-space:nowrap; flex:0 0 auto; }
+#play, #penToolBtn, #clinicalMenuBtn, #learningMenuBtn, #aboutBtn{ white-space:nowrap; flex:0 0 auto; }
 #topbar select, #topbar label, #topbar button{ font-size:var(--ui-label-size); }
 #topbar button{ padding:.45rem .7rem; line-height:1.1; min-height:2.2rem; font:inherit; }
 #rhythmFieldset .pill{ align-self:flex-end; }
@@ -1362,544 +1362,6 @@ html, body{max-width:100vw;overflow:hidden}
 }
 </style>
 
-<style id="topbar-single-row-responsive">
-@media (max-width:1500px) and (min-width:1121px){
-  #topbar{
-    flex-wrap:nowrap !important;
-    overflow-x:hidden !important;
-    overflow-y:hidden;
-    align-items:flex-end;
-    gap:clamp(.28rem, .55vw, .48rem);
-    padding:.36rem .5rem;
-  }
-  #topbar > .ctrl,
-  #topbar > #rhythmFieldset,
-  #topbar > .topbar-actions{
-    min-width:0;
-  }
-  #topbar > .ctrl{
-    flex:0 1 auto;
-    width:auto;
-  }
-  #topbar .ctrl label{
-    font-size:.7rem;
-    line-height:1;
-  }
-  .topbar-menu-actions{
-    order:0;
-    gap:.28rem;
-  }
-  .topbar-menu-divider{
-    order:0;
-    height:2.18rem;
-  }
-  .montage-picker-button,
-  .montage-menu{
-    min-width:clamp(10.3rem, 14vw, 13.8rem);
-    max-width:clamp(10.3rem, 17vw, 15rem);
-  }
-  .montage-picker-button{
-    overflow:hidden;
-    padding-left:.56rem;
-    padding-right:.56rem;
-    white-space:nowrap;
-  }
-  #timebase{
-    max-width:6.45rem;
-  }
-  #sensitivity{
-    max-width:6.25rem;
-  }
-  .topbar-separator{
-    display:block;
-    height:2.18rem;
-  }
-  #rhythmFieldset{
-    order:0;
-    flex:1 1 auto;
-    width:auto;
-    min-width:0;
-  }
-  #rhythmFieldset .mode-controls{
-    flex-wrap:nowrap;
-    gap:.28rem;
-    min-width:0;
-    align-items:flex-end;
-  }
-  #rhythmFieldset .ctrl{
-    flex:0 1 auto;
-    min-width:0;
-  }
-  #rhythmSel{
-    max-width:7.55rem;
-  }
-  #sleepSel{
-    max-width:9.15rem;
-  }
-  #rhythmFieldset .pill{
-    padding:.42rem .5rem;
-  }
-  .topbar-actions{
-    order:0;
-    flex:0 0 auto;
-    width:auto;
-    margin-left:auto;
-    flex-wrap:nowrap;
-    justify-content:flex-end;
-    gap:.28rem;
-  }
-  #topbar button{
-    padding:.4rem .56rem;
-  }
-  #play{
-    min-width:3.8rem;
-  }
-}
-
-@media (max-width:1240px) and (min-width:1121px){
-  #topbar{
-    gap:.24rem;
-    padding-left:.42rem;
-    padding-right:.42rem;
-  }
-  .topbar-menu-actions{
-    gap:.22rem;
-  }
-  .montage-picker-button,
-  .montage-menu{
-    min-width:10rem;
-    max-width:12.4rem;
-  }
-  #timebase{
-    max-width:6.15rem;
-  }
-  #sensitivity{
-    max-width:6rem;
-  }
-  #rhythmSel{
-    max-width:7.1rem;
-  }
-  #sleepSel{
-    max-width:8.55rem;
-  }
-  #rhythmFieldset .mode-controls{
-    gap:.22rem;
-  }
-  #rhythmFieldset .pill{
-    padding-left:.42rem;
-    padding-right:.42rem;
-  }
-  #topbar button{
-    padding-left:.48rem;
-    padding-right:.48rem;
-  }
-}
-
-#topbar.topbar-wrap{
-  flex-wrap:nowrap !important;
-  overflow-x:hidden !important;
-  align-items:flex-end;
-  gap:.24rem;
-  padding:.34rem .42rem;
-}
-#topbar.topbar-wrap > .ctrl,
-#topbar.topbar-wrap > .topbar-menu-actions,
-#topbar.topbar-wrap > .topbar-menu-divider,
-#topbar.topbar-wrap > #rhythmFieldset,
-#topbar.topbar-wrap > .topbar-separator,
-#topbar.topbar-wrap > .topbar-actions{
-  order:0;
-}
-#topbar.topbar-wrap > .ctrl{
-  flex:0 1 auto;
-  width:auto;
-}
-#topbar.topbar-wrap .ctrl label{
-  font-size:.68rem;
-  line-height:1;
-}
-#topbar.topbar-wrap .topbar-menu-actions{
-  gap:.22rem;
-}
-#topbar.topbar-wrap .topbar-menu-divider,
-#topbar.topbar-wrap > .topbar-separator{
-  display:block;
-  height:2.05rem;
-}
-#topbar.topbar-wrap .montage-picker-button{
-  min-width:9.8rem;
-  max-width:11.8rem;
-  padding-left:.5rem;
-  padding-right:.5rem;
-}
-#topbar.topbar-wrap #timebase{
-  max-width:6.05rem;
-}
-#topbar.topbar-wrap #sensitivity{
-  max-width:5.9rem;
-}
-#topbar.topbar-wrap > #rhythmFieldset{
-  flex:1 1 auto;
-  width:auto;
-  min-width:0;
-}
-#topbar.topbar-wrap > #rhythmFieldset .mode-controls{
-  flex-wrap:nowrap;
-  gap:.2rem;
-  min-width:0;
-  align-items:flex-end;
-}
-#topbar.topbar-wrap > #rhythmFieldset .ctrl{
-  flex:0 1 auto;
-  min-width:0;
-}
-#topbar.topbar-wrap #rhythmSel{
-  max-width:6.9rem;
-}
-#topbar.topbar-wrap #sleepSel{
-  max-width:8.15rem;
-}
-#topbar.topbar-wrap #rhythmFieldset .pill{
-  padding:.4rem .4rem;
-}
-#topbar.topbar-wrap > .topbar-actions{
-  flex:0 0 auto;
-  width:auto;
-  margin-left:auto;
-  flex-wrap:nowrap;
-  justify-content:flex-end;
-  gap:.22rem;
-}
-#topbar.topbar-wrap > .topbar-menu-actions button,
-#topbar.topbar-wrap > .topbar-actions button,
-#topbar.topbar-wrap .montage-picker-button{
-  padding-left:.46rem;
-  padding-right:.46rem;
-}
-
-@media (max-width:1120px){
-  #topbar{
-    flex-wrap:wrap !important;
-    overflow-x:hidden !important;
-    overflow-y:visible;
-    align-items:stretch;
-    padding:.4rem .5rem;
-  }
-  #topbarToggle{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    min-height:2.15rem;
-    padding:.42rem .7rem;
-    flex:0 0 auto;
-  }
-  #topbar.topbar-mobile-collapsed{
-    min-height:3rem;
-    gap:0;
-    align-items:center;
-  }
-  #topbar.topbar-mobile-collapsed > :not(#topbarToggle){
-    display:none;
-  }
-  #topbar.topbar-mobile-expanded{
-    display:grid;
-    grid-template-columns:repeat(2, minmax(0, 1fr));
-    gap:.45rem;
-    align-items:end;
-    max-height:min(58dvh, 25rem);
-    overflow-y:auto;
-    overscroll-behavior:contain;
-  }
-  #topbar.topbar-mobile-expanded > #topbarToggle{
-    grid-column:1 / -1;
-    width:max-content;
-    margin:0;
-    align-self:start;
-  }
-  #topbar.topbar-mobile-expanded > .ctrl{
-    min-width:0;
-    width:100%;
-    flex:initial;
-  }
-  #topbar.topbar-mobile-expanded > .ctrl:first-of-type{
-    grid-column:1 / -1;
-  }
-  #topbar.topbar-mobile-expanded > .ctrl select{
-    width:100%;
-    max-width:none;
-  }
-  #topbar.topbar-mobile-expanded .montage-picker-button{
-    width:100%;
-    max-width:none;
-  }
-  #topbar.topbar-mobile-expanded > .topbar-separator{
-    display:none;
-  }
-  #topbar.topbar-mobile-expanded > .topbar-menu-actions{
-    grid-column:1;
-    justify-self:start;
-    align-self:end;
-  }
-  #topbar.topbar-mobile-expanded > .topbar-menu-divider{
-    grid-column:2;
-    justify-self:start;
-    align-self:stretch;
-    height:auto;
-    min-height:2.2rem;
-  }
-  #topbar.topbar-mobile-expanded > #rhythmFieldset{
-    grid-column:1 / -1;
-    width:100%;
-    min-width:0;
-    flex:initial;
-  }
-  #topbar.topbar-mobile-expanded > #rhythmFieldset .mode-controls{
-    display:grid;
-    grid-template-columns:repeat(2, minmax(0, 1fr));
-    gap:.4rem;
-    align-items:end;
-  }
-  #topbar.topbar-mobile-expanded > #rhythmFieldset .ctrl{
-    width:100%;
-    min-width:0;
-  }
-  #topbar.topbar-mobile-expanded > #rhythmFieldset .ctrl select{
-    width:100%;
-    max-width:none;
-  }
-  #topbar.topbar-mobile-expanded > #rhythmFieldset .pill{
-    grid-column:auto;
-    justify-self:start;
-    align-self:end;
-  }
-  #topbar.topbar-mobile-expanded > .topbar-actions{
-    grid-column:1 / -1;
-    display:grid;
-    grid-template-columns:repeat(auto-fit, minmax(4.5rem, max-content));
-    width:100%;
-    margin-left:0;
-    justify-content:start;
-    align-items:end;
-    gap:.4rem;
-  }
-}
-
-.topbar-eeg-btn{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  min-height:2.2rem;
-  min-width:3.6rem;
-  padding:.45rem .75rem;
-  border:1px solid rgba(112,163,105,.62);
-  border-left:4px solid rgba(52,128,59,.72);
-  border-radius:10px;
-  background:linear-gradient(180deg,#fff,#f7fbf5);
-  color:#173220;
-  box-shadow:0 2px 6px rgba(19,65,27,.08);
-  font-weight:800;
-  letter-spacing:.01em;
-}
-.topbar-eeg-btn[hidden]{
-  display:none !important;
-}
-.topbar-eeg-btn:hover,
-.topbar-eeg-btn:focus-visible{
-  filter:none;
-  transform:translateY(-1px);
-  background:linear-gradient(180deg,#fffdf5,#eef9ed);
-  border-color:rgba(52,128,59,.82);
-  box-shadow:0 5px 14px rgba(19,65,27,.16);
-  outline:none;
-}
-.topbar-eeg-btn:focus-visible{
-  box-shadow:0 0 0 3px rgba(78,149,83,.22),0 5px 14px rgba(19,65,27,.16);
-}
-#topbar.topbar-eeg-collapsed > .topbar-separator{
-  display:none;
-}
-.eeg-menu{
-  width:min(90vw, 23rem);
-  max-width:min(90vw, 23rem);
-  gap:.48rem;
-  padding:.55rem;
-}
-.eeg-menu > .ctrl,
-.eeg-menu > #rhythmFieldset{
-  display:flex;
-  flex-direction:column;
-  align-items:stretch;
-  gap:.32rem;
-  width:100%;
-  min-width:0;
-  padding:.58rem .68rem;
-  border:1px solid rgba(112,163,105,.62);
-  border-left:4px solid rgba(52,128,59,.72);
-  border-radius:10px;
-  background:linear-gradient(180deg,#fff,#f7fbf5);
-  box-shadow:0 2px 6px rgba(19,65,27,.08);
-}
-.eeg-menu label{
-  color:#35523b;
-  font-size:.76rem;
-  font-weight:800;
-  line-height:1.1;
-}
-.eeg-menu select,
-.eeg-menu .montage-picker-button{
-  width:100%;
-  max-width:none;
-  min-width:0;
-}
-.eeg-menu #timebase,
-.eeg-menu #sensitivity,
-.eeg-menu #rhythmSel,
-.eeg-menu #sleepSel{
-  width:100%;
-  max-width:none;
-}
-.eeg-menu .montage-picker-button{
-  justify-content:space-between;
-  max-width:none;
-  min-width:0;
-}
-.eeg-menu #rhythmFieldset .mode-controls{
-  display:grid;
-  grid-template-columns:repeat(2, minmax(0, 1fr));
-  gap:.48rem;
-  align-items:end;
-}
-.eeg-menu #rhythmFieldset .ctrl{
-  width:100%;
-  min-width:0;
-}
-.eeg-menu #rhythmFieldset .pill{
-  justify-self:start;
-  margin:0;
-  padding:.46rem .58rem;
-  border-color:rgba(112,163,105,.58);
-  background:linear-gradient(180deg,#fff,#f7fbf5);
-  font-weight:750;
-}
-
-@media (max-width:1120px) and (min-width:561px){
-  #topbar{
-    display:flex !important;
-    flex-wrap:nowrap !important;
-    overflow-x:hidden !important;
-    overflow-y:hidden !important;
-    align-items:center;
-    gap:.32rem;
-    padding:.36rem .45rem;
-  }
-  #topbarToggle{
-    display:none !important;
-  }
-  #topbar > .topbar-menu-actions,
-  #topbar > .topbar-menu-divider,
-  #topbar > #eegMenuBtn,
-  #topbar > .topbar-actions{
-    flex:0 0 auto;
-  }
-  #topbar > .topbar-menu-actions{
-    gap:.24rem;
-  }
-  #topbar > .topbar-menu-divider{
-    height:2.05rem;
-  }
-  #topbar > .topbar-actions{
-    width:auto;
-    margin-left:auto;
-    display:flex;
-    flex-wrap:nowrap;
-    justify-content:flex-end;
-    gap:.26rem;
-  }
-  #topbar button{
-    min-height:2.05rem;
-    padding:.4rem .55rem;
-  }
-  .topbar-speed{
-    min-width:4.45rem;
-    width:4.45rem;
-    max-width:4.45rem;
-  }
-}
-
-@media (max-width:560px){
-  #topbar{
-    display:flex !important;
-    flex-wrap:nowrap !important;
-    align-items:center !important;
-    gap:.26rem;
-    padding:.34rem .4rem;
-    overflow-x:hidden !important;
-    overflow-y:hidden !important;
-  }
-  #topbarToggle{
-    display:none !important;
-  }
-  #topbar > .topbar-menu-actions{
-    flex:0 0 auto;
-    gap:.2rem;
-  }
-  #topbar > .topbar-menu-divider{
-    display:none;
-  }
-  #topbar > #eegMenuBtn{
-    flex:1 1 auto;
-    min-width:3.3rem;
-    max-width:7rem;
-    padding:.38rem .52rem;
-  }
-  #topbar > #eegMenuBtn::before{
-    content:"EEG";
-  }
-  #topbar > #eegMenuBtn{
-    font-size:0;
-  }
-  #topbar > #eegMenuBtn::before{
-    font-size:.82rem;
-    font-weight:850;
-  }
-  #topbar > .topbar-actions{
-    flex:0 0 auto;
-    width:auto;
-    margin-left:0;
-    display:flex;
-    flex-wrap:nowrap;
-    justify-content:flex-end;
-    gap:.2rem;
-  }
-  #topbar > .topbar-actions #penToolBtn{
-    display:none !important;
-  }
-  #topbar button{
-    min-height:2rem;
-    padding:.36rem .5rem;
-  }
-  #play{
-    min-width:3.15rem;
-  }
-  .topbar-speed{
-    min-width:3.95rem;
-    width:3.95rem;
-    max-width:3.95rem;
-  }
-  .topbar-mini-btn{
-    width:2rem;
-    min-width:2rem;
-  }
-  .eeg-menu{
-    width:min(94vw, 21rem);
-    max-width:min(94vw, 21rem);
-  }
-  .eeg-menu #rhythmFieldset .mode-controls{
-    grid-template-columns:1fr;
-  }
-}
-</style>
-
 </head>
 <body>
   <div id="topbar">
@@ -1909,7 +1371,6 @@ html, body{max-width:100vw;overflow:hidden}
       <button id="learningMenuBtn" type="button" class="options-strong topbar-emoji-btn" aria-label="Learn menu" title="Learn" aria-haspopup="true" aria-expanded="false">🧠</button>
     </div>
     <div class="topbar-menu-divider" aria-hidden="true"></div>
-    <button id="eegMenuBtn" type="button" class="topbar-eeg-btn" aria-label="EEG settings" aria-haspopup="dialog" aria-expanded="false" hidden>EEG Settings</button>
     <div id="montageControl" class="ctrl montage-control"><label>Montage</label>
       <select id="montageSel">
         <option value="bipolar_longitudinal" selected>Longitudinal bipolar</option>
@@ -1931,14 +1392,14 @@ html, body{max-width:100vw;overflow:hidden}
         </div>
       </div>
     </div>
-    <div id="timebaseControl" class="ctrl"><label>Timebase</label>
+    <div class="ctrl"><label>Timebase</label>
       <select id="timebase">
         <option value="15">15 mm/sec</option>
         <option value="30" selected>30 mm/sec</option>
         <option value="60">60 mm/sec</option>
       </select>
     </div>
-    <div id="sensitivityControl" class="ctrl"><label>Sensitivity</label>
+    <div class="ctrl"><label>Sensitivity</label>
       <select id="sensitivity">
         <option value="3">3 uV/mm</option>
         <option value="5">5 uV/mm</option>
@@ -1973,7 +1434,7 @@ html, body{max-width:100vw;overflow:hidden}
           </select>
         </div>
         <label class="pill topbar-eyes-control"><input type="checkbox" id="eyesOpen"> Eyes open</label>
-        <label class="pill topbar-ekg-control"><input type="checkbox" id="showEkg" checked> EKG</label>
+        <label class="pill topbar-ekg-control"><input type="checkbox" id="showEkg"> EKG</label>
       </div>
     </div>
     <div class="topbar-actions">
@@ -2003,8 +1464,6 @@ html, body{max-width:100vw;overflow:hidden}
     <button id="tutorialBtnTop" class="options-strong" role="menuitem">Tutorial</button>
     <button id="quizBtnTop" class="options-strong" role="menuitem">Quiz</button>
   </div>
-
-  <div id="eegMenu" class="topbar-menu eeg-menu" role="dialog" aria-label="EEG controls" hidden></div>
 
   <!-- Options modal -->
   <div id="optionsModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="optionsTitle" hidden>
@@ -2037,11 +1496,10 @@ html, body{max-width:100vw;overflow:hidden}
       <button id="aboutX" class="modal-x" type="button" aria-label="Close">×</button>
       <h1 id="aboutTitle">About</h1>
       <p>Created by Micah Etter, MD</p>
-      <p>Version 0.9</p>
+      <p>Version 0.3</p>
       <p>The EEG Machine is built as an educational tool for learning EEG patterns, artifacts, sleep stages, and seizure morphology in an interactive way.</p>
       <p>It is meant to support curiosity, pattern recognition, and deliberate practice rather than replace clinical judgment.</p>
       <p>Explore, compare patterns, test yourself, share your favorite EEG seed, and have fun!</p>
-      <p>Special thanks to Dr. Yazeed Alolayan, Dr. Brendan Deatheridge, Dr. Anna Kafka, and Dr. Myrka Torres for their feedback and support.</p>
       <fieldset>
         <legend>Seed</legend>
         <p class="about-seed-help">Save or paste a seed to recreate the same baseline settings, pathology, artifacts, and related detail selections.</p>
@@ -4139,7 +3597,7 @@ function scheduleEkg(now, immediate=false){
     t0: immediate ? now : now + 0.18,
     rateHz: 1.08 + 0.22*state.rng(),
     phase: state.rng(),
-    pAmp: 38 + 10*state.rng(),
+    pAmp: 22 + 6*state.rng(),
     qAmp: -30 - 10*state.rng(),
     rAmp: 255 + 55*state.rng(),
     sAmp: -70 - 18*state.rng(),
@@ -4147,17 +3605,17 @@ function scheduleEkg(now, immediate=false){
   };
 }
 function syncEkgGenerator(forceRestart=false){
-  if (!state.ekg) state.ekg = {active:false, t0:0, rateHz:1.18, phase:0, pAmp:44, qAmp:-34, rAmp:280, sAmp:-78, tAmp:64};
+  if (!state.ekg) state.ekg = {active:false, t0:0, rateHz:1.18, phase:0, pAmp:24, qAmp:-34, rAmp:280, sAmp:-78, tAmp:64};
   if (forceRestart || !state.ekg.active) scheduleEkg(state.artClock || 0, true);
 }
 function ekgWave_uV(clock){
-  const ekg = state.ekg || {active:false, t0:0, rateHz:1.18, phase:0, pAmp:44, qAmp:-34, rAmp:280, sAmp:-78, tAmp:64};
+  const ekg = state.ekg || {active:false, t0:0, rateHz:1.18, phase:0, pAmp:24, qAmp:-34, rAmp:280, sAmp:-78, tAmp:64};
   if (!ekg.active) return 0;
   const localT = Math.max(0, clock - ekg.t0);
   const rateHz = Math.max(1.0, Math.min(1.5, ekg.rateHz + 0.015*Math.sin(2*Math.PI*0.04*localT)));
   const phase = (((localT * rateHz) + ekg.phase) % 1 + 1) % 1;
   const g = (mu, sigma, amp)=> amp*Math.exp(-0.5*((phase-mu)/sigma)**2);
-  const p = g(0.154, 0.034, ekg.pAmp*0.72) + g(0.190, 0.036, ekg.pAmp*0.46);
+  const p = g(0.160, 0.026, ekg.pAmp);
   const q = g(0.338, 0.010, ekg.qAmp);
   const r = g(0.365, 0.0065, ekg.rAmp);
   const s = g(0.394, 0.013, ekg.sAmp);
@@ -5078,7 +4536,7 @@ const state = {
   speed: 1,
   viewOffsetSec: 0,
   rewind: {active:false, startedAt:0, fromOffset:0, toOffset:0, durationSec:0},
-  opts: {blink:false, rovingEyes:false, reading:false, ventilator:false, lambdaWaves:false, muRhythm:false, sreda:false, positiveSpikes14And6:false, bets:false, wicketSpikes:false, photicStim:false, chew:false, sweat:false, ekgArtifact:false, breach:false, pop:false, emg:false, ekgTrace:true},
+  opts: {blink:false, rovingEyes:false, reading:false, ventilator:false, lambdaWaves:false, muRhythm:false, sreda:false, positiveSpikes14And6:false, bets:false, wicketSpikes:false, photicStim:false, chew:false, sweat:false, ekgArtifact:false, breach:false, pop:false, emg:false, ekgTrace:false},
   artifactConfig: {photicHz:15, breachLead:'random', popLead:'random', emgLead:'diffuse', emgLevel:0, ekgLevel:0, blinkLevel:0, rovingEyesLevel:0, readingLevel:0, ventilatorLevel:0, lambdaWavesLevel:0, muRhythmLevel:0, sredaLevel:0, positiveSpikes14And6Level:0, betsLevel:0, wicketSpikesLevel:0, photicStimLevel:0, chewLevel:0, sweatLevel:0, breachLevel:0, popLevel:0},
   pathology: {encephalopathy:false, encephalopathyLevel:0, burstSuppression:false, burstSuppressionLevel:0, firda:false, firdaLevel:0, tirda:false, tirdaLevel:0, extremeDeltaBrush:false, extremeDeltaBrushLevel:0, alphaComa:false, alphaComaLevel:0, hypsarrhythmia:false, hypsarrhythmiaLevel:0, gpd:false, gpdLevel:0, lpd:false, lpdLevel:0, lpdSide:'left', bipds:false, interictal:false, interictalLevel:0, interictalLead:'random', generalizedEmg:DEFAULT_EMG_LEVEL, focalSeizure:false, focalFocus:'random', fbtcSeizure:false},
   seizureDurations: {generalized:10, absence:10, focal:10, fbtc:20},
@@ -6815,75 +6273,7 @@ function step(){
  * UI wiring
  ***********************/
 const $=id=>document.getElementById(id);
-const eegControlIds = ['montageControl','timebaseControl','sensitivityControl','rhythmFieldset'];
-const eegControlAnchors = new Map();
-const eegMenuQuery = window.matchMedia ? window.matchMedia('(max-width: 1280px)') : null;
-let eegControlsInMenu = false;
-for (const id of eegControlIds){
-  const control = $(id);
-  if (!control || !control.parentNode) continue;
-  const anchor = document.createComment(`${id}-topbar-anchor`);
-  control.parentNode.insertBefore(anchor, control);
-  eegControlAnchors.set(control, anchor);
-}
-function restoreEegControl(control){
-  const anchor = eegControlAnchors.get(control);
-  if (anchor && anchor.parentNode){
-    anchor.parentNode.insertBefore(control, anchor.nextSibling);
-  }
-}
-function setEegControlsInMenu(useMenu){
-  const menu = $('eegMenu');
-  const button = $('eegMenuBtn');
-  const topbarEl = $('topbar');
-  if (!menu || !button || !topbarEl) return false;
-  if (useMenu === eegControlsInMenu){
-    button.hidden = !useMenu;
-    topbarEl.classList.toggle('topbar-eeg-collapsed', useMenu);
-    return useMenu;
-  }
-  eegControlsInMenu = useMenu;
-  button.hidden = !useMenu;
-  topbarEl.classList.toggle('topbar-eeg-collapsed', useMenu);
-  if (useMenu){
-    for (const id of eegControlIds){
-      const control = $(id);
-      if (control) menu.appendChild(control);
-    }
-  } else {
-    menu.hidden = true;
-    button.setAttribute('aria-expanded', 'false');
-    for (const id of eegControlIds){
-      const control = $(id);
-      if (control) restoreEegControl(control);
-    }
-  }
-  return useMenu;
-}
-function syncEegControlMenu(){
-  const topbarEl = $('topbar');
-  if (!topbarEl || !$('eegMenu') || !$('eegMenuBtn')) return false;
-  const viewport = window.visualViewport;
-  const viewportWidth = Math.max(1, viewport ? viewport.width : window.innerWidth);
-  let useMenu = !!(eegMenuQuery && eegMenuQuery.matches);
-  if (!useMenu && !eegControlsInMenu){
-    useMenu = topbarEl.scrollWidth > topbarEl.clientWidth + 4;
-  }
-  if (!useMenu && eegControlsInMenu){
-    setEegControlsInMenu(false);
-    requestAnimationFrame(()=>{
-      const shouldRecompact = viewportWidth > 1280 && topbarEl.scrollWidth > topbarEl.clientWidth + 4;
-      if (shouldRecompact) setEegControlsInMenu(true);
-      repositionOpenTopbarActionMenus();
-    });
-    return false;
-  }
-  const result = setEegControlsInMenu(useMenu);
-  requestAnimationFrame(repositionOpenTopbarActionMenus);
-  return result;
-}
 const topbarActionMenus = [
-  {button:$('eegMenuBtn'), menu:$('eegMenu')},
   {button:$('clinicalMenuBtn'), menu:$('clinicalMenu')},
   {button:$('learningMenuBtn'), menu:$('learningMenu')}
 ].filter((entry)=> entry.button && entry.menu);
@@ -6937,11 +6327,7 @@ document.addEventListener('click', (e)=>{
   const insideMenu = topbarActionMenus.some(({button, menu})=>
     (button && button.contains(target)) || (menu && menu.contains(target))
   );
-  const insideFloatingEegControl = ['montageMenu','montagePreview'].some((id)=>{
-    const floating = $(id);
-    return floating && floating.contains(target);
-  });
-  if (!insideMenu && !insideFloatingEegControl) closeTopbarActionMenus();
+  if (!insideMenu) closeTopbarActionMenus();
 });
 document.addEventListener('keydown', (e)=>{
   if (e.key === 'Escape') closeTopbarActionMenus();
@@ -6956,12 +6342,6 @@ if (window.visualViewport){
   window.visualViewport.addEventListener('resize', repositionOpenTopbarActionMenus);
   window.visualViewport.addEventListener('scroll', repositionOpenTopbarActionMenus);
 }
-window.addEventListener('resize', syncEegControlMenu);
-if (eegMenuQuery){
-  if (typeof eegMenuQuery.addEventListener === 'function') eegMenuQuery.addEventListener('change', syncEegControlMenu);
-  else if (typeof eegMenuQuery.addListener === 'function') eegMenuQuery.addListener(syncEegControlMenu);
-}
-syncEegControlMenu();
 const ARTIFACT_LEVEL_FIELDS = {
   blink:'blinkLevel',
   rovingEyes:'rovingEyesLevel',
@@ -7431,18 +6811,25 @@ syncEmgSliderUI();
 syncEkgArtifactSliderUI();
 const topbar = $('topbar');
 const topbarToggle = $('topbarToggle');
-const mobileTopbarQuery = window.matchMedia ? window.matchMedia('(max-width: 560px)') : null;
+const mobileTopbarQuery = window.matchMedia ? window.matchMedia('(max-width: 900px)') : null;
 function syncMobileTopbar(){
   if (!topbar || !topbarToggle) return;
-  syncEegControlMenu();
-  topbar.classList.remove('topbar-mobile-collapsed', 'topbar-mobile-expanded');
-  topbarToggle.hidden = true;
-  topbarToggle.setAttribute('aria-expanded', 'true');
-  topbarToggle.textContent = 'Show Controls';
-  requestAnimationFrame(()=>{
-    topbar.classList.toggle('topbar-wrap', !eegControlsInMenu && topbar.scrollWidth > topbar.clientWidth + 2);
-    requestAnimationFrame(resize);
-  });
+  const mobile = !!(mobileTopbarQuery && mobileTopbarQuery.matches);
+  const expanded = topbar.dataset.mobileExpanded === 'true';
+  topbar.classList.remove('topbar-wrap');
+  topbar.classList.toggle('topbar-mobile-collapsed', mobile && !expanded);
+  topbar.classList.toggle('topbar-mobile-expanded', mobile && expanded);
+  topbarToggle.hidden = !mobile;
+  topbarToggle.setAttribute('aria-expanded', mobile ? String(expanded) : 'true');
+  topbarToggle.textContent = mobile && expanded ? 'Hide Controls' : 'Show Controls';
+  if (!mobile){
+    requestAnimationFrame(()=>{
+      topbar.classList.toggle('topbar-wrap', topbar.scrollWidth > topbar.clientWidth + 2);
+      requestAnimationFrame(resize);
+    });
+    return;
+  }
+  requestAnimationFrame(resize);
 }
 function setMobileTopbarExpanded(expanded){
   if (!topbar) return;
@@ -7457,7 +6844,6 @@ if (mobileTopbarQuery){
   if (typeof mobileTopbarQuery.addEventListener === 'function') mobileTopbarQuery.addEventListener('change', syncMobileTopbar);
   else if (typeof mobileTopbarQuery.addListener === 'function') mobileTopbarQuery.addListener(syncMobileTopbar);
 }
-window.addEventListener('resize', syncMobileTopbar);
 syncMobileTopbar();
 function syncPlaybackButtons(){
   const playBtn = $('play');
@@ -7721,7 +7107,7 @@ function applyDisplaySeedPayload(payload){
 
   setPlaybackRunning(controls.running !== false);
   state.opts = {
-    blink:false, rovingEyes:false, reading:false, ventilator:false, lambdaWaves:false, muRhythm:false, sreda:false, positiveSpikes14And6:false, bets:false, wicketSpikes:false, photicStim:false, chew:false, sweat:false, ekgArtifact:false, breach:false, pop:false, emg:false, ekgTrace:true,
+    blink:false, rovingEyes:false, reading:false, ventilator:false, lambdaWaves:false, muRhythm:false, sreda:false, positiveSpikes14And6:false, bets:false, wicketSpikes:false, photicStim:false, chew:false, sweat:false, ekgArtifact:false, breach:false, pop:false, emg:false, ekgTrace:false,
     ...(payload.opts || {})
   };
   const payloadArtifactConfig = payload.artifactConfig || {};
