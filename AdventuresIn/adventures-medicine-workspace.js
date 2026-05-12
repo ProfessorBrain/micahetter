@@ -638,6 +638,11 @@
 
   function updateSidebarToggleButton() {
     const mobile = isMobileLayout();
+
+    if (mobile) {
+      document.body.classList.remove("sidebarCollapsed");
+    }
+
     const drawerOpen = document.body.classList.contains("drawerOpen");
     const collapsed = document.body.classList.contains("sidebarCollapsed");
     const expanded = mobile ? drawerOpen : !collapsed;
@@ -655,8 +660,13 @@
       "aria-label",
       mobile ? "Open case menu" : "Show Sidebar"
     );
-    syncRegionVisibility(els.sidebarContent, sidebarContentVisible, els.collapsedSidebarToggleButton);
-    syncRegionVisibility(els.collapsedSidebarCard, collapsedVisible, els.sidebarToggleButton);
+    if (sidebarContentVisible) {
+      syncRegionVisibility(els.sidebarContent, true, els.collapsedSidebarToggleButton);
+      syncRegionVisibility(els.collapsedSidebarCard, false, els.sidebarToggleButton);
+    } else {
+      syncRegionVisibility(els.collapsedSidebarCard, collapsedVisible, els.sidebarToggleButton);
+      syncRegionVisibility(els.sidebarContent, false, els.collapsedSidebarToggleButton);
+    }
   }
 
   function applySelectedContext(record, caseInfo) {
@@ -889,6 +899,7 @@
   function handleSidebarToggle() {
     if (isMobileLayout()) {
       const shouldOpen = !document.body.classList.contains("drawerOpen");
+      document.body.classList.remove("sidebarCollapsed");
       document.body.classList.toggle("drawerOpen", shouldOpen);
       els.sidebarScrim.classList.toggle("isHidden", !shouldOpen);
       updateSidebarToggleButton();
