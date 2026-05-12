@@ -402,8 +402,10 @@
       '}' +
       'body.has-medicine-shell.medicineTwineCase tw-passage tw-link,' +
       'body.has-medicine-shell.medicineTwineCase tw-passage .enchantment-link {' +
+        'box-sizing: border-box !important;' +
         'display: block !important;' +
         'width: 100% !important;' +
+        'max-width: 100% !important;' +
         'margin: 0.8rem 0 0 !important;' +
         'padding: 1rem 1.05rem !important;' +
         'border: 1px solid rgba(255, 157, 23, 0.42) !important;' +
@@ -508,11 +510,32 @@
           'border-radius: 1.4rem !important;' +
           'box-shadow: 0 0 0 5px #ffd62c, 0 0 0 9px #ff9d17, 0 16px 32px rgba(0, 0, 0, 0.18) !important;' +
         '}' +
-        'body.has-medicine-shell.medicineTwineCase tw-story::before {' +
-          'inset: 8px;' +
+        'body.has-medicine-shell.medicineTwineCase tw-story::before,' +
+        'body.has-medicine-shell.medicineTwineCase tw-story::after {' +
+          'display: none !important;' +
         '}' +
         'body.has-medicine-shell.medicineTwineCase tw-story tw-passage {' +
-          'padding-bottom: 4rem !important;' +
+          'padding-bottom: 4.8rem !important;' +
+        '}' +
+        'body.has-medicine-shell.medicineTwineCase tw-passage tw-link,' +
+        'body.has-medicine-shell.medicineTwineCase tw-passage .enchantment-link {' +
+          'box-sizing: border-box !important;' +
+          'max-width: 100% !important;' +
+          'display: flex !important;' +
+          'align-items: center !important;' +
+          'min-height: 5rem !important;' +
+          'padding: 1.2rem 1rem !important;' +
+          'line-height: 1.35 !important;' +
+        '}' +
+        'body.has-medicine-shell.medicineTwineCase tw-passage .enchantment-link tw-link {' +
+          'display: inline !important;' +
+          'width: auto !important;' +
+          'min-height: 0 !important;' +
+          'margin: 0 !important;' +
+          'padding: 0 !important;' +
+          'border: 0 !important;' +
+          'border-radius: 0 !important;' +
+          'background: transparent !important;' +
         '}' +
       '}';
 

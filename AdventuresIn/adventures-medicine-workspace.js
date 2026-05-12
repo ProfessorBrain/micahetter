@@ -683,6 +683,7 @@
   }
 
   function resetViewerSurface() {
+    document.body.classList.remove("caseLoaded");
     els.viewerEmpty.classList.remove("isHidden");
     els.caseFrame.classList.add("isHidden");
     els.caseFrame.src = "about:blank";
@@ -744,6 +745,7 @@
   }
 
   function loadCase(caseInfo, forceReload) {
+    document.body.classList.add("caseLoaded");
     els.viewerEmpty.classList.add("isHidden");
     els.caseFrame.classList.remove("isHidden");
 

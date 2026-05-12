@@ -4,6 +4,10 @@
   }
 
   function parseCaseData() {
+    if (window.adventuresCasebookData) {
+      return window.adventuresCasebookData;
+    }
+
     const el = document.getElementById('adventures-casebook-data');
     if (!el) {
       return null;
@@ -75,16 +79,20 @@
       return;
     }
 
+    const normalizedReflection = typeof reflection === 'string'
+      ? { title: 'Take-home pearl', body: [reflection] }
+      : reflection;
+
     const box = document.createElement('section');
     box.className = 'reflectionBox';
 
     const title = document.createElement('h2');
-    title.textContent = reflection.title || 'Clinical reflection';
+    title.textContent = normalizedReflection.title || 'Clinical reflection';
     box.appendChild(title);
 
-    createParagraphs(box, reflection.body);
+    createParagraphs(box, normalizedReflection.body);
 
-    const bullets = normalizeArray(reflection.bullets);
+    const bullets = normalizeArray(normalizedReflection.bullets);
     if (bullets.length) {
       const list = document.createElement('ul');
       bullets.forEach(function (item) {
@@ -105,7 +113,7 @@
   }
 
   const initialState = cloneValue(data.initialState || {});
-  const state = cloneValue(initialState);
+  const state = data.state || cloneValue(initialState);
   const historyStack = [];
   let currentEntry = {
     kind: 'scene',
@@ -126,7 +134,9 @@
     if (!data.scenes || !data.scenes[id]) {
       throw new Error('Missing scene: ' + id);
     }
-    return data.scenes[id];
+
+    const scene = data.scenes[id];
+    return typeof scene === 'function' ? scene() : scene;
   }
 
   function syncBackButton() {
@@ -179,6 +189,10 @@
 
         mergeState(state, option.set);
 
+        if (typeof option.effect === 'function') {
+          option.effect();
+        }
+
         if (option.response) {
           currentEntry = {
             kind: 'response',
@@ -188,7 +202,7 @@
         } else {
           currentEntry = {
             kind: 'scene',
-            id: option.next
+            id: typeof option.next === 'function' ? option.next() : option.next
           };
         }
 
@@ -234,7 +248,11 @@
     }
 
     if (currentEntry.kind === 'scene') {
-      renderScene(getScene(currentEntry.id));
+      const scene = getScene(currentEntry.id);
+      if (typeof scene.onEnter === 'function') {
+        scene.onEnter();
+      }
+      renderScene(scene);
     } else {
       const scene = getScene(currentEntry.sceneId);
       renderResponse(scene, scene.options[currentEntry.optionIndex]);
