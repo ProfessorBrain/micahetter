@@ -168,19 +168,6 @@ button.options-strong:active{
 .quiz-summary .quiz-report-line:first-of-type{border-top:0}
 .quiz-summary .quiz-report-label{font-weight:700;color:#244e78}
 .quiz-summary-actions{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.7rem}
-.quiz-mode-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:.55rem;margin:.7rem .25rem;max-width:100%;min-width:0}
-.quiz-mode-card{display:flex;flex-direction:column;gap:.25rem;align-items:flex-start;text-align:left;width:100%;max-width:100%;min-width:0;overflow:hidden;padding:.7rem .8rem;border:1px solid rgba(112,163,105,.62);border-left:4px solid rgba(52,128,59,.72);border-radius:10px;background:linear-gradient(180deg,#fff,#f7fbf5);box-shadow:0 2px 6px rgba(19,65,27,.08);font:inherit;cursor:pointer}
-.quiz-mode-card strong{font-size:.96rem;color:#173220}
-.quiz-mode-card span{max-width:100%;font-size:.82rem;line-height:1.35;color:#41534a;white-space:normal;overflow-wrap:anywhere}
-.quiz-mode-card:hover,.quiz-mode-card:focus-visible{filter:none;transform:translateY(-1px);background:linear-gradient(180deg,#fffdf5,#eef9ed);border-color:rgba(52,128,59,.82);box-shadow:0 5px 14px rgba(19,65,27,.16);outline:none}
-.quiz-progress{margin:.4rem .35rem .55rem;color:#506158;font-size:.78rem;font-weight:750;letter-spacing:.01em}
-.quiz-step-title{margin:.1rem 0 .2rem;font-size:1rem;font-weight:800;color:#15251b}
-.quiz-step-help{margin:.1rem 0 .7rem;color:#43524a;font-size:.84rem;line-height:1.4}
-.quiz-score-box{margin:.65rem 0 .2rem;padding:.58rem .7rem;border:1px solid #bdd5f7;border-radius:10px;background:linear-gradient(180deg,#f7fbff,#edf6ff);color:#183e67;font-weight:750}
-.quiz-score-box.good{border-color:#9cd2a7;background:linear-gradient(180deg,#f2fff4,#e8f8eb);color:#146a31}
-.quiz-score-box.review{border-color:#ebb2b2;background:linear-gradient(180deg,#fff7f7,#fff0f0);color:#8b2f2f}
-.quiz-score-details{margin:.45rem 0 .25rem;padding:.45rem .6rem;border-radius:9px;background:#fffaf0;border:1px solid rgba(216,177,88,.45);font-size:.82rem;line-height:1.35;color:#604f2e}
-.quiz-score-details p{margin:.22rem 0}
 </style>
 
 
@@ -820,13 +807,7 @@ html, body{max-width:100vw;overflow:hidden}
   overflow:auto;
 }
 .education-panel-x{top:.45rem;right:.45rem}
-.education-panel-collapse{
-  top:.45rem;
-  right:2.35rem;
-  font-size:.86rem;
-}
-#quizPanel > h2{padding-right:4.2rem}
-.tutorial-header{padding-right:4.2rem}
+#quizPanel > h2{padding-right:2rem}
 .tutorial-panel{
   width:min(34rem, 36vw);
   max-width:calc(100vw - var(--education-panel-left) - .75rem);
@@ -842,12 +823,6 @@ html, body{max-width:100vw;overflow:hidden}
   padding-top:.5rem;
   padding-bottom:.1rem;
   background:linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,.98) 28%, rgba(255,255,255,.98));
-}
-#quizControls.quiz-choices-controls{
-  justify-content:flex-end;
-}
-#quizControls.quiz-choices-controls #quizSubmit{
-  margin-left:auto;
 }
 .education-restore-tab{
   position:fixed;
@@ -1340,6 +1315,9 @@ html, body{max-width:100vw;overflow:hidden}
 .tutorial-controls button:disabled{
   opacity:.48;
   cursor:default;
+}
+#tutorialCollapse{
+  margin-left:auto;
 }
 #tutorialRestoreTab{
   left:clamp(3.35rem, 4vw, 4.4rem);
@@ -2464,22 +2442,20 @@ html, body{max-width:100vw;overflow:hidden}
 
   <div id="quizBanner">Correct! New quiz ready.</div>
   <aside id="quizPanel" aria-live="polite">
-    <button id="quizCollapse" class="modal-x education-panel-collapse" type="button" aria-label="Collapse quiz panel">▲</button>
     <button id="quizPanelX" class="modal-x education-panel-x" type="button" aria-label="Hide quiz panel">×</button>
     <h2>EEG Quiz</h2>
     <div id="quizSteps"></div>
     <div id="quizSummary" class="quiz-summary" hidden></div>
     <div id="quizControls">
-      <button id="quizBack">Back</button>
       <button id="quizSubmit">Submit</button>
       <button id="quizNew">New Case</button>
       <button id="quizEnd">End Quiz</button>
+      <button id="quizCollapse" class="education-collapse" type="button">Collapse</button>
     </div>
   </aside>
   <button id="quizRestoreTab" class="education-restore-tab" type="button" hidden>Show Quiz</button>
 
   <aside id="tutorialPanel" class="tutorial-panel" aria-live="polite">
-    <button id="tutorialCollapse" class="modal-x education-panel-collapse" type="button" aria-label="Collapse tutorial panel">▲</button>
     <button id="tutorialPanelX" class="modal-x education-panel-x" type="button" aria-label="Hide tutorial panel">×</button>
     <div class="tutorial-header">
       <h2>Tutorial Mode</h2>
@@ -2494,6 +2470,7 @@ html, body{max-width:100vw;overflow:hidden}
       <button id="tutorialPlay">Pause Trace</button>
       <button id="tutorialNewCase">New Case</button>
       <button id="tutorialEnd">End Tutorial</button>
+      <button id="tutorialCollapse" class="education-collapse" type="button">Collapse</button>
     </div>
   </aside>
   <button id="tutorialRestoreTab" class="education-restore-tab" type="button" hidden>Show Tutorial</button>
@@ -8706,17 +8683,12 @@ state.quiz = {
   truth:{},
   answered:{},
   responses:{},
-  stepSubmitted:{},
-  stepPassed:{},
-  choiceGuessStats:{correct:0,total:0},
   order:[],
   questionKeys:[],
   snapshot:null,
   panelCollapsed:false,
   completed:false,
-  submitted:false,
-  mode:null,
-  finalScore:null
+  submitted:false
 };
 
 function syncEducationPanelVisibility(){
@@ -8892,142 +8864,26 @@ function hideQuizSummary(){
   const submitBtn = $('quizSubmit');
   if (submitBtn) submitBtn.hidden = false;
 }
-function quizReportSourceFromResponses(){
-  const responses = (state.quiz && state.quiz.responses) || {};
-  const truth = (state.quiz && state.quiz.truth) || {};
-  return {
-    background: responses.background || 'Not answered',
-    artifact: responses.artifact || 'None',
-    symmetry: responses.symmetry || 'Not answered',
-    amplitude: responses.amplitude || 'Not answered',
-    slowingDist: responses.slowingDist || 'None',
-    slowingTempo: responses.slowingTempo || '',
-    periodic: responses.periodic || 'None',
-    sleep: responses.sleep || 'Unable to determine',
-    spindles: responses.spindles || truth.spindles || 'absent',
-    kcomplexes: responses.kcomplexes || truth.kcomplexes || 'absent',
-    epileptiform: responses.epileptiform || 'None'
-  };
-}
-function appendQuizReportLines(summary, source){
-  appendQuizReportLine(summary, 'Background', `${source.background} background rhythm.`);
-  appendQuizReportLine(summary, 'Symmetry / Amplitude', `${source.symmetry}; ${source.amplitude}.`);
-  appendQuizReportLine(summary, 'Slowing', quizSlowingReport(source));
-  appendQuizReportLine(summary, 'Epileptiform / Periodic', quizPeriodicEpileptiformReport(source));
-  appendQuizReportLine(summary, 'Artifact', quizArtifactReport(source));
-  appendQuizReportLine(summary, 'Sleep', quizSleepReport(source));
-  appendQuizReportLine(summary, 'Impression', quizImpressionReport(source));
-}
-function isQuizResponseCorrect(key, val){
-  if (!(state.quiz && state.quiz.truth)) return false;
-  if (key === 'sleep' && val === 'Unable to determine') return null;
-  const truth = (state.quiz.truth[key] ?? '').toString();
-  if (key === 'spindles' || key === 'kcomplexes'){
-    return String(val).toLowerCase() === truth.toLowerCase();
-  }
-  return val === truth;
-}
-function evaluateQuizResponses(keys){
-  const quizKeys = keys || ((state.quiz.questionKeys && state.quiz.questionKeys.length)
-    ? state.quiz.questionKeys
-    : buildQuizQuestionKeys(state.quiz.order));
-  const responses = state.quiz.responses || {};
-  const answered = {};
-  const missingKeys = [];
-  const neutralKeys = [];
-  const incorrectKeys = [];
-  const correctKeys = [];
-  quizKeys.forEach((key)=>{
-    if (!(key in responses)){
-      missingKeys.push(key);
-      return;
-    }
-    const result = isQuizResponseCorrect(key, responses[key]);
-    answered[key] = result;
-    if (result === null) neutralKeys.push(key);
-    else if (result) correctKeys.push(key);
-    else incorrectKeys.push(key);
-  });
-  state.quiz.answered = answered;
-  const scoredTotal = correctKeys.length + incorrectKeys.length;
-  const finalScore = {
-    keys: quizKeys,
-    missingKeys,
-    neutralKeys,
-    correctKeys,
-    incorrectKeys,
-    correct: correctKeys.length,
-    total: scoredTotal,
-    choiceGuessStats: state.quiz.choiceGuessStats ? {...state.quiz.choiceGuessStats} : null,
-    allCorrect: incorrectKeys.length === 0 && missingKeys.length === 0
-  };
-  state.quiz.finalScore = finalScore;
-  return finalScore;
-}
-function resetQuizChoiceGuessStats(){
-  if (!state.quiz) return;
-  state.quiz.choiceGuessStats = {correct:0, total:0};
-}
-function recordQuizChoiceGuesses(keys){
-  if (!(state.quiz && state.quiz.choiceGuessStats)) resetQuizChoiceGuessStats();
-  const stats = state.quiz.choiceGuessStats;
-  (keys || []).forEach((key)=>{
-    const result = state.quiz.answered ? state.quiz.answered[key] : undefined;
-    if (result === null || result === undefined) return;
-    stats.total += 1;
-    if (result === true) stats.correct += 1;
-  });
-  return stats;
-}
-function quizScoreText(score){
-  if (!score) return '';
-  if (state.quiz && state.quiz.mode === 'choices' && state.quiz.choiceGuessStats){
-    const stats = state.quiz.choiceGuessStats;
-    return stats.total > 0
-      ? `${stats.correct}/${stats.total} submitted guesses correct.`
-      : 'No scored guesses were counted.';
-  }
-  const neutralText = score.neutralKeys.length
-    ? ` ${score.neutralKeys.length} neutral sleep/state response${score.neutralKeys.length === 1 ? ' was' : 's were'} not counted.`
-    : '';
-  return `${score.correct}/${score.total} scored fields correct.${neutralText}`;
-}
-function showQuizCompletionSummary(scored=false){
+function showQuizCompletionSummary(){
   const summary = $('quizSummary');
   if (!summary || !(state.quiz && state.quiz.truth)) return;
-  const source = quizReportSourceFromResponses();
+  const truth = state.quiz.truth;
   const title = document.createElement('h3');
-  title.textContent = scored ? 'Quiz Complete' : 'Review Your EEG Report';
+  title.textContent = 'Quiz Complete';
   const prompt = document.createElement('p');
-  prompt.textContent = scored
-    ? 'Your completed read is summarized below. Continue with a new case, go back to review, or end the quiz.'
-    : 'Your selected findings have been assembled into a report. Submit for final scoring, or go back and change an element.';
+  prompt.textContent = 'Your completed read is summarized below. Continue with a new case, or end the quiz.';
   summary.replaceChildren(title, prompt);
-  if (scored){
-    const score = state.quiz.finalScore || evaluateQuizResponses();
-    const scoreBox = document.createElement('div');
-    scoreBox.className = `quiz-score-box ${score.allCorrect ? 'good' : 'review'}`;
-    scoreBox.textContent = quizScoreText(score);
-    summary.appendChild(scoreBox);
-    if (score.incorrectKeys.length){
-      const details = document.createElement('div');
-      details.className = 'quiz-score-details';
-      const heading = document.createElement('p');
-      heading.textContent = 'Review these mismatches against the generated case:';
-      details.appendChild(heading);
-      score.incorrectKeys.forEach((key)=>{
-        const line = document.createElement('p');
-        const selected = quizReportValue(state.quiz.responses[key]);
-        const expected = quizReportValue(state.quiz.truth[key]);
-        line.textContent = `${quizQuestionLabelForKey(key, state.quiz.order)}: selected ${selected}; expected ${expected}.`;
-        details.appendChild(line);
-      });
-      summary.appendChild(details);
-    }
-  }
-  appendQuizReportLines(summary, source);
+  appendQuizReportLine(summary, 'Background', `${truth.background} background rhythm.`);
+  appendQuizReportLine(summary, 'Symmetry / Amplitude', `${truth.symmetry}; ${truth.amplitude}.`);
+  appendQuizReportLine(summary, 'Slowing', quizSlowingReport(truth));
+  appendQuizReportLine(summary, 'Epileptiform / Periodic', quizPeriodicEpileptiformReport(truth));
+  appendQuizReportLine(summary, 'Artifact', quizArtifactReport(truth));
+  appendQuizReportLine(summary, 'Sleep', quizSleepReport(truth));
+  appendQuizReportLine(summary, 'Impression', quizImpressionReport(truth));
   const newBtn = $('quizNew');
-  if (newBtn) newBtn.textContent = scored ? 'Continue' : 'New Case';
+  if (newBtn) newBtn.textContent = 'Continue';
+  const submitBtn = $('quizSubmit');
+  if (submitBtn) submitBtn.hidden = true;
   summary.hidden = false;
   if (typeof summary.scrollIntoView === 'function') summary.scrollIntoView({block:'nearest'});
 }
@@ -9040,6 +8896,7 @@ function setEducationTopbarMode(active){
 }
 
 function startQuiz(){
+  const rng = state.rng;
   if (!(state.quiz && state.quiz.active)){
     state.quiz.snapshot = createQuizSnapshot();
   }
@@ -9053,47 +8910,10 @@ function startQuiz(){
   state.quiz.stepIndex= 0;
   state.quiz.answered = {};
   state.quiz.responses = {};
-  state.quiz.stepSubmitted = {};
-  state.quiz.stepPassed = {};
-  resetQuizChoiceGuessStats();
   state.quiz.panelCollapsed = false;
   state.quiz.completed = false;
   state.quiz.submitted = false;
-  state.quiz.mode = null;
-  state.quiz.finalScore = null;
-  state.quiz.truth = {};
-  state.quiz.order = [];
-  state.quiz.questionKeys = [];
   state.quiz.bias     = {leftScale:1,rightScale:1,diffuseScale:1,focal:{}};
-
-  buildQuizUI();
-  const panel = document.getElementById('quizPanel');
-  if (panel) panel.style.zIndex='9999';
-  syncEducationPanelVisibility();
-  setEducationTopbarMode(true);
-  closeClinicalPanels();
-  if (typeof updateModeButtons === 'function') updateModeButtons();
-}
-
-function beginQuizCase(mode){
-  const rng = state.rng;
-  clearQuizBannerTimer();
-  const banner = document.getElementById('quizBanner');
-  if (banner) banner.style.display = 'none';
-  hideQuizSummary();
-  state.quiz.active = true;
-  state.quiz.stepIndex = 0;
-  state.quiz.answered = {};
-  state.quiz.responses = {};
-  state.quiz.stepSubmitted = {};
-  state.quiz.stepPassed = {};
-  resetQuizChoiceGuessStats();
-  state.quiz.panelCollapsed = false;
-  state.quiz.completed = false;
-  state.quiz.submitted = false;
-  state.quiz.mode = mode;
-  state.quiz.finalScore = null;
-  state.quiz.bias = {leftScale:1,rightScale:1,diffuseScale:1,focal:{}};
 
   // Random ground truth
   let sleep      = randChoice(rng, ['Awake','Drowsy','Stage 1','Stage 2','SWS','REM']);
@@ -9255,164 +9075,80 @@ function buildEyesClosedToggle(onChange){
   label.appendChild(document.createTextNode(' Eyes closed'));
   return label;
 }
-function quizStepKeys(step){
-  if (!step) return [];
-  if (step.group && Array.isArray(step.parts)) return step.parts.map((part)=> part.key);
-  return step.key ? [step.key] : [];
-}
-function quizCurrentStep(){
-  if (!(state.quiz && Array.isArray(state.quiz.order))) return null;
-  return state.quiz.order[state.quiz.stepIndex] || null;
-}
-function quizStepTitle(step){
-  return step ? (step.group || step.label || 'Quiz section') : 'Report review';
-}
-function quizStepHelp(step){
-  const title = quizStepTitle(step);
-  return `Choose the best answer for ${title.toLowerCase()}.`;
-}
-function updateQuizControls(){
-  const backBtn = $('quizBack');
-  const submitBtn = $('quizSubmit');
-  const newBtn = $('quizNew');
-  const endBtn = $('quizEnd');
-  const collapseBtn = $('quizCollapse');
-  const controls = $('quizControls');
-  if (!(state.quiz && state.quiz.active)){
-    if (backBtn) backBtn.hidden = true;
-    if (submitBtn) submitBtn.hidden = true;
-    if (controls) controls.classList.remove('quiz-choices-controls');
-    return;
-  }
-  const modeChosen = !!state.quiz.mode;
-  const atReport = modeChosen && state.quiz.stepIndex >= state.quiz.order.length;
-  const choicesMode = state.quiz.mode === 'choices';
-  const choicesTaking = state.quiz.mode === 'choices' && !atReport;
-  const choicesStepPassed = choicesTaking && state.quiz.stepPassed && state.quiz.stepPassed[state.quiz.stepIndex];
-  if (controls) controls.classList.toggle('quiz-choices-controls', choicesTaking);
-  if (backBtn) backBtn.hidden = choicesMode || !modeChosen || state.quiz.stepIndex <= 0;
-  if (submitBtn){
-    submitBtn.hidden = !modeChosen || (atReport && (state.quiz.mode === 'choices' || state.quiz.completed));
-    submitBtn.textContent = atReport
-      ? 'Submit Final Score'
-      : (state.quiz.mode === 'choices' ? (choicesStepPassed ? 'Next' : 'Submit') : 'Next');
-  }
-  if (newBtn){
-    newBtn.hidden = choicesMode;
-    newBtn.textContent = atReport && state.quiz.completed ? 'Continue' : 'New Case';
-  }
-  if (endBtn) endBtn.hidden = choicesMode;
-  if (collapseBtn) collapseBtn.hidden = false;
-}
-function renderQuizModeChoice(stepsEl){
-  const intro = document.createElement('div');
-  intro.className = 'quiz-step';
-  const title = document.createElement('div');
-  title.className = 'quiz-step-title';
-  title.textContent = 'Choose quiz mode';
-  const help = document.createElement('p');
-  help.className = 'quiz-step-help';
-  help.textContent = 'Both modes use the same generated case. Choose whether you want feedback as you go, or only after reviewing your assembled EEG report.';
-  const grid = document.createElement('div');
-  grid.className = 'quiz-mode-grid';
-  [
-    ['choices', 'Score My Choices', 'Get immediate feedback for each section, then review the final report created from your submitted choices.'],
-    ['report', 'Score My Report', 'Click through each field first, review the assembled report, then submit once for final scoring.']
-  ].forEach(([mode, label, description])=>{
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'quiz-mode-card';
-    btn.innerHTML = `<strong>${label}</strong><span>${description}</span>`;
-    btn.addEventListener('click', ()=>{
-      beginQuizCase(mode);
-    });
-    grid.appendChild(btn);
-  });
-  intro.append(title, help, grid);
-  stepsEl.replaceChildren(intro);
-  hideQuizSummary();
-  updateQuizControls();
-}
-function buildQuizOptionButton(key, opt){
-  const b = document.createElement('button');
-  b.type = 'button';
-  b.className = 'quiz-pill';
-  b.setAttribute('aria-pressed', 'false');
-  b.textContent = opt;
-  const selected = state.quiz.responses && state.quiz.responses[key] === opt;
-  if (selected){
-    b.classList.add('active');
-    b.setAttribute('aria-pressed', 'true');
-    if (state.quiz.mode === 'choices' && key in state.quiz.answered && state.quiz.stepSubmitted && state.quiz.stepSubmitted[key]){
-      const outcome = state.quiz.answered[key];
-      b.classList.add(outcome === null ? 'neutral' : (outcome ? 'correct' : 'wrong'));
-    }
-  }
-  b.addEventListener('click', ()=> onAnswer(key, opt, b));
-  return b;
-}
-function renderQuizStep(stepsEl, step){
-  const container = document.createElement('div');
-  container.className = 'quiz-step';
-  const progress = document.createElement('div');
-  progress.className = 'quiz-progress';
-  progress.textContent = `Step ${state.quiz.stepIndex + 1} of ${state.quiz.order.length}`;
-  const title = document.createElement('div');
-  title.className = 'quiz-step-title';
-  title.textContent = quizStepTitle(step);
-  const help = document.createElement('p');
-  help.className = 'quiz-step-help';
-  help.textContent = quizStepHelp(step);
-  container.append(progress, title, help);
-
-  if (step.group && Array.isArray(step.parts)){
-    step.parts.forEach((row)=>{
-      const rowWrap = document.createElement('div');
-      rowWrap.className = 'quiz-subrow';
-      if (!row.label) rowWrap.classList.add('no-label');
-      if (row.label){
-        const rowLabel = document.createElement('div');
-        rowLabel.className = 'quiz-subrow-label';
-        rowLabel.textContent = row.label;
-        rowWrap.appendChild(rowLabel);
-      }
-      const optionsWrap = document.createElement('div');
-      optionsWrap.className = 'quiz-subrow-options';
-      row.options.forEach((opt)=> optionsWrap.appendChild(buildQuizOptionButton(row.key, opt)));
-      rowWrap.appendChild(optionsWrap);
-      container.appendChild(rowWrap);
-    });
-  } else {
-    const pills = document.createElement('div');
-    pills.className = 'quiz-pills';
-    step.options.forEach((opt)=> pills.appendChild(buildQuizOptionButton(step.key, opt)));
-    container.appendChild(pills);
-  }
-  stepsEl.replaceChildren(container);
-  hideQuizSummary();
-  updateQuizControls();
-}
 function buildQuizUI(){
   const stepsEl = document.getElementById('quizSteps');
   if (!stepsEl) return;
-  if (!(state.quiz && state.quiz.mode)){
-    renderQuizModeChoice(stepsEl);
-    return;
-  }
-  if (state.quiz.stepIndex >= state.quiz.order.length){
-    stepsEl.replaceChildren();
-    showQuizCompletionSummary(!!state.quiz.completed || state.quiz.mode === 'choices');
-    updateQuizControls();
-    return;
-  }
-  renderQuizStep(stepsEl, quizCurrentStep());
+  const frag = document.createDocumentFragment();
+
+  state.quiz.order.forEach((step)=>{
+    // Grouped "Slowing" with two sub-rows
+    if (step.group && Array.isArray(step.parts)){
+      const container = document.createElement('div');
+      container.className = 'quiz-step';
+
+      const header = document.createElement('div');
+      header.textContent = step.group;
+      container.appendChild(header);
+
+      step.parts.forEach((row, rIndex)=>{ 
+        const rowWrap = document.createElement('div');
+        rowWrap.className = 'quiz-subrow';
+        if (!row.label) rowWrap.classList.add('no-label');
+        if (row.label){
+          const rowLabel = document.createElement('div');
+          rowLabel.className = 'quiz-subrow-label';
+          rowLabel.textContent = row.label;
+          rowWrap.appendChild(rowLabel);
+        }
+        const optionsWrap = document.createElement('div');
+        optionsWrap.className = 'quiz-subrow-options';
+        row.options.forEach(opt=>{
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className='quiz-pill';
+          b.setAttribute('aria-pressed', 'false');
+          b.textContent = opt;
+          b.addEventListener('click', ()=> onAnswer(row.key, opt, b));
+          optionsWrap.appendChild(b);
+        });
+        rowWrap.appendChild(optionsWrap);
+        container.appendChild(rowWrap);
+      });
+
+      frag.appendChild(container);
+      return;
+    }
+
+    // Standard single-row step
+    const s = document.createElement('div');
+    s.className='quiz-step';
+
+    const h = document.createElement('div');
+    h.textContent = step.label;
+    s.appendChild(h);
+
+    const pills = document.createElement('div');
+    pills.className='quiz-pills';
+
+    step.options.forEach(opt=>{
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className='quiz-pill';
+      b.setAttribute('aria-pressed', 'false');
+      b.textContent = opt;
+      b.addEventListener('click', ()=> onAnswer(step.key, opt, b));
+      pills.appendChild(b);
+    });
+
+    s.appendChild(pills);
+    frag.appendChild(s);
+  });
+  stepsEl.replaceChildren(frag);
 }
 
 function onAnswer(key, val, btn){
-  if (!(state.quiz && state.quiz.active)) return;
-  if (state.quiz.completed){
+  if (state.quiz && state.quiz.completed){
     state.quiz.completed = false;
-    state.quiz.finalScore = null;
     hideQuizSummary();
   }
   state.quiz.submitted = false;
@@ -9420,18 +9156,30 @@ function onAnswer(key, val, btn){
   const banner = document.getElementById('quizBanner');
   if (banner) banner.style.display = 'none';
   clearQuizBannerTimer();
+  // toggle active visual
   Array.from(btn.parentElement.children).forEach((el)=>{
     el.classList.remove('active', 'correct', 'wrong', 'neutral');
     el.setAttribute('aria-pressed', 'false');
   });
   btn.classList.add('active');
   btn.setAttribute('aria-pressed', 'true');
-  if (state.quiz.mode === 'choices'){
-    if (state.quiz.answered) delete state.quiz.answered[key];
-    if (state.quiz.stepSubmitted) delete state.quiz.stepSubmitted[key];
-    if (state.quiz.stepPassed) delete state.quiz.stepPassed[state.quiz.stepIndex];
+
+  const isNeutral = (key === 'sleep' && val === 'Unable to determine');
+  if (isNeutral){
+    btn.classList.add('neutral');
+    state.quiz.answered[key] = null;
+    return;
   }
-  updateQuizControls();
+
+  // grade
+  const truth = (state.quiz.truth[key] ?? '').toString();
+  const isCorrect =
+    (val === truth) ||
+    (key==='spindles'   && val.toLowerCase() === truth.toLowerCase()) ||
+    (key==='kcomplexes' && val.toLowerCase() === truth.toLowerCase());
+
+  btn.classList.add(isCorrect ? 'correct' : 'wrong');
+  state.quiz.answered[key] = isCorrect;
 }
 
 function showQuizBanner(message, durationMs){
@@ -9448,95 +9196,32 @@ function showQuizBanner(message, durationMs){
 
 function submitQuiz(){
   if (!(state.quiz && state.quiz.active)) return;
-  if (!state.quiz.mode){
-    showQuizBanner('Choose Score My Choices or Score My Report to begin.', 2600);
-    return;
-  }
-  const atReport = state.quiz.stepIndex >= state.quiz.order.length;
-  if (!atReport){
-    const step = quizCurrentStep();
-    const stepKeys = quizStepKeys(step);
-    const missingKeys = stepKeys.filter((key)=> !(key in state.quiz.responses));
-    if (missingKeys.length){
-      const message = quizMissingAnswerMessage(missingKeys);
-      showQuizBanner(message, Math.min(6500, Math.max(2800, 1700 + message.length * 55)));
-      return;
-    }
-    if (state.quiz.mode === 'choices'){
-      if (state.quiz.stepPassed && state.quiz.stepPassed[state.quiz.stepIndex]){
-        state.quiz.stepIndex = Math.min(state.quiz.order.length, state.quiz.stepIndex + 1);
-        if (state.quiz.stepIndex >= state.quiz.order.length){
-          evaluateQuizResponses();
-          state.quiz.completed = true;
-        }
-        buildQuizUI();
-        return;
-      }
-      stepKeys.forEach((key)=>{
-        if (key in state.quiz.responses){
-          state.quiz.answered[key] = isQuizResponseCorrect(key, state.quiz.responses[key]);
-          state.quiz.stepSubmitted[key] = true;
-        }
-      });
-      recordQuizChoiceGuesses(stepKeys);
-      const resultText = stepKeys
-        .map((key)=> state.quiz.answered[key])
-        .filter((result)=> result !== null);
-      const correctCount = resultText.filter(Boolean).length;
-      const sectionCorrect = stepKeys.every((key)=> state.quiz.answered[key] !== false);
-      state.quiz.stepPassed[state.quiz.stepIndex] = sectionCorrect;
-      buildQuizUI();
-      if (sectionCorrect){
-        showQuizBanner(resultText.length ? 'Correct. Continue when ready.' : 'Neutral response recorded. Continue when ready.', 1400);
-      } else {
-        showQuizBanner(`${correctCount}/${resultText.length} correct. Try this section again.`, 2200);
-      }
-      return;
-    }
-    state.quiz.stepIndex = Math.min(state.quiz.order.length, state.quiz.stepIndex + 1);
-    if (state.quiz.stepIndex >= state.quiz.order.length){
-      if (state.quiz.mode === 'choices'){
-        evaluateQuizResponses();
-        state.quiz.completed = true;
-      }
-      buildQuizUI();
-      showQuizBanner(state.quiz.mode === 'choices' ? 'Choices scored - review your report.' : 'Review your report, then submit for final score.', 2600);
-      return;
-    }
-    buildQuizUI();
-    return;
-  }
-
-  state.quiz.submitted = true;
   const keys = (state.quiz.questionKeys && state.quiz.questionKeys.length)
     ? state.quiz.questionKeys
     : buildQuizQuestionKeys(state.quiz.order);
-  const missingKeys = keys.filter((key)=> !(key in state.quiz.responses));
-  if (missingKeys.length){
+  const allAnswered = keys.length > 0 && keys.every((key) => key in state.quiz.answered);
+  state.quiz.submitted = true;
+  if (!allAnswered){
+    const missingKeys = keys.filter((key) => !(key in state.quiz.answered));
     const message = quizMissingAnswerMessage(missingKeys);
     showQuizBanner(message, Math.min(6500, Math.max(2800, 1700 + message.length * 55)));
     return;
   }
 
-  clearQuizBannerTimer();
-  evaluateQuizResponses(keys);
-  state.quiz.completed = true;
-  buildQuizUI();
-  showQuizBanner('Quiz complete - final score shown with your report.', 2600);
-}
+  const scoredKeys = keys.filter((key) => state.quiz.answered[key] !== null);
+  const allCorrect  = scoredKeys.every((key) => state.quiz.answered[key] === true);
 
-function quizBack(){
-  if (!(state.quiz && state.quiz.active && state.quiz.mode)) return;
-  const atReport = state.quiz.stepIndex >= state.quiz.order.length;
-  if (atReport){
-    state.quiz.completed = false;
-    state.quiz.finalScore = null;
-    state.quiz.stepIndex = Math.max(0, state.quiz.order.length - 1);
-  } else {
-    state.quiz.stepIndex = Math.max(0, state.quiz.stepIndex - 1);
+  clearQuizBannerTimer();
+  if (allCorrect){
+    state.quiz.completed = true;
+    showQuizCompletionSummary();
+    showQuizBanner('Quiz complete - review your report.');
+    return;
   }
+
+  state.quiz.completed = false;
   hideQuizSummary();
-  buildQuizUI();
+  showQuizBanner('Not quite - review the highlighted answers, then submit again.');
 }
 
 function endQuiz(){
@@ -9544,15 +9229,10 @@ function endQuiz(){
   state.quiz.active = false;
   state.quiz.answered = {};
   state.quiz.responses = {};
-  state.quiz.stepSubmitted = {};
-  state.quiz.stepPassed = {};
-  resetQuizChoiceGuessStats();
   state.quiz.questionKeys = [];
   state.quiz.panelCollapsed = false;
   state.quiz.completed = false;
   state.quiz.submitted = false;
-  state.quiz.mode = null;
-  state.quiz.finalScore = null;
   hideQuizSummary();
   state.quiz.slowing = buildQuizSlowingConfig(state.rng || Math.random, 'None', 'Continuous');
   state.quiz.spikes = buildQuizSpikeConfig(state.rng || Math.random, 'none');
@@ -9586,8 +9266,6 @@ if (_qn){
 }
 const _qs = document.getElementById('quizSubmit');
 if (_qs) _qs.addEventListener('click', submitQuiz);
-const _qb = document.getElementById('quizBack');
-if (_qb) _qb.addEventListener('click', quizBack);
 const _qe = document.getElementById('quizEnd');
 if (_qe) _qe.addEventListener('click', endQuiz);
 const _qc = document.getElementById('quizCollapse');
@@ -9828,23 +9506,7 @@ function tutorialCurrentHighlight(){
     ...raw
   };
 }
-function tutorialHighlightCacheKey(stepKey, canvasWidth){
-  return `${stepKey || 'unknown'}:${Math.round(canvasWidth || 0)}:${Math.round((state.seconds || 0) * 10)}`;
-}
-function rememberTutorialHighlightWindow(stepKey, canvasWidth, range){
-  if (!(state.tutorial && stepKey && range)) return;
-  state.tutorial.highlightWindowCache = {
-    key:tutorialHighlightCacheKey(stepKey, canvasWidth),
-    x1:range.x1,
-    x2:range.x2
-  };
-}
-function cachedTutorialHighlightWindow(stepKey, canvasWidth){
-  const cache = state.tutorial && state.tutorial.highlightWindowCache;
-  if (!cache || cache.key !== tutorialHighlightCacheKey(stepKey, canvasWidth)) return null;
-  return {x1:cache.x1, x2:cache.x2};
-}
-function resolveTutorialHighlightWindow(canvasWidth, desiredWidthPx, desiredRightX, stepKey){
+function resolveTutorialHighlightWindow(canvasWidth, desiredWidthPx, desiredRightX){
   const widthPx = Math.max(24, Math.min(canvasWidth, desiredWidthPx));
   const desiredLeftX = desiredRightX - widthPx;
   const clampRange = (minX, maxX, preferredLeft)=>{
@@ -9855,7 +9517,7 @@ function resolveTutorialHighlightWindow(canvasWidth, desiredWidthPx, desiredRigh
     return {x1, x2:x1 + actualWidth};
   };
   const baseRange = clampRange(0, canvasWidth, desiredLeftX);
-  if (!tutorialPanel || tutorialPanel.style.display === 'none') return cachedTutorialHighlightWindow(stepKey, canvasWidth) || baseRange;
+  if (!tutorialPanel || tutorialPanel.style.display === 'none') return baseRange;
 
   const canvasRect = canvas.getBoundingClientRect();
   const panelRect = tutorialPanel.getBoundingClientRect();
@@ -9901,7 +9563,6 @@ function pairMatchesTutorialHighlight(pair, spec){
 }
 function renderTutorialHighlights(pairs, yMids, rowH, canvasWidth){
   if (!(state.tutorial && state.tutorial.active)) return;
-  const step = currentTutorialStep();
   const spec = tutorialCurrentHighlight();
   if (!spec || !pairs || !pairs.length) return;
   const pxPerSec = canvasWidth / Math.max(0.001, state.seconds);
@@ -9924,9 +9585,8 @@ function renderTutorialHighlights(pairs, yMids, rowH, canvasWidth){
       desiredRightX = Math.min(canvasWidth, clampedLeft + desiredWidthPx);
     }
   }
-  const xRange = resolveTutorialHighlightWindow(canvasWidth, desiredWidthPx, desiredRightX, step ? step.key : '');
+  const xRange = resolveTutorialHighlightWindow(canvasWidth, desiredWidthPx, desiredRightX);
   if (!xRange || xRange.x2 <= xRange.x1) return;
-  if (tutorialPanel && tutorialPanel.style.display !== 'none') rememberTutorialHighlightWindow(step ? step.key : '', canvasWidth, xRange);
   const {x1, x2} = xRange;
   ctx.save();
   ctx.fillStyle = spec.fill || 'rgba(59, 126, 255, 0.12)';

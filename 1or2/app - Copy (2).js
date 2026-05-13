@@ -2292,15 +2292,14 @@ const fellowshipCompareSelectionMap = {
 };
 
 const step2CkPassingScore = 218;
-const step2CkMaxScore = 300;
 
 const compareSliderDefinitions = [
-  { key: "step2", label: "USMLE Step 2 CK score", min: step2CkPassingScore, max: step2CkMaxScore, step: 1, weight: 0.24, radarMin: step2CkPassingScore, radarMax: step2CkMaxScore, radarReference: "matchedMean" },
-  { key: "contiguousRanks", label: "Contiguous ranked programs", min: 1, max: 30, step: 1, weight: 0.28 },
-  { key: "research", label: "Research projects", min: 0, max: 10, step: 1, weight: 0.1 },
-  { key: "publications", label: "Abstracts, presentations, publications", min: 0, max: 40, step: 1, weight: 0.12 },
-  { key: "work", label: "Work experiences", min: 0, max: 4, step: 1, weight: 0.04 },
-  { key: "volunteer", label: "Volunteer experiences", min: 0, max: 6, step: 1, weight: 0.04 },
+  { key: "step2", label: "USMLE Step 2 CK score", min: step2CkPassingScore, max: 280, step: 1, weight: 0.24 },
+  { key: "contiguousRanks", label: "Contiguous ranked programs", min: 0, max: 30, step: 1, weight: 0.28 },
+  { key: "research", label: "Research projects", min: 0, max: 20, step: 1, weight: 0.1 },
+  { key: "publications", label: "Abstracts, presentations, publications", min: 0, max: 60, step: 1, weight: 0.12 },
+  { key: "work", label: "Work experiences", min: 0, max: 10, step: 1, weight: 0.04 },
+  { key: "volunteer", label: "Volunteer experiences", min: 0, max: 15, step: 1, weight: 0.04 },
 ];
 
 const compareNeededFor90Keys = new Set(["step2", "contiguousRanks"]);
@@ -3657,13 +3656,11 @@ let exploreResizeFrame = null;
 
 const EXPLORE_CANVAS_BASE_WIDTH = 1920;
 const EXPLORE_CANVAS_BASE_HEIGHT = 1220;
-const EXPLORE_ZOOM_MIN = 0.4;
+const EXPLORE_ZOOM_MIN = 0.7;
 const EXPLORE_ZOOM_MAX = 2.2;
 const EXPLORE_ZOOM_STEP = 0.2;
 const EXPLORE_WHEEL_ZOOM_STEP = 0.12;
 const EXPLORE_DRAG_THRESHOLD = 4;
-const EXPLORE_CANVAS_MARGIN_X = 360;
-const EXPLORE_CANVAS_MARGIN_Y = 300;
 let exploreCanvasBaseWidth = EXPLORE_CANVAS_BASE_WIDTH;
 let exploreCanvasBaseHeight = EXPLORE_CANVAS_BASE_HEIGHT;
 
@@ -4051,18 +4048,6 @@ function createCompareButton(selectionId, label = "Compare applicant profile") {
   return `<button class="ghost-button match-card__compare" type="button" data-compare-id="${selectionId}">${label}</button>`;
 }
 
-function hasCompareDataForSelection(selectionId) {
-  if (!selectionId) {
-    return false;
-  }
-
-  const optionId = getCompareOptionIdForSelection(selectionId);
-  const compareDataId = getCompareDataIdForEntityId(selectionId)
-    ?? getCompareDataIdForEntityId(optionId);
-
-  return Boolean(compareDataId && compareDataById[compareDataId]);
-}
-
 function getCompareDataOptions() {
   return specialties
     .map((specialty) => {
@@ -4206,35 +4191,14 @@ function getRadarPoint(center, radius, axisIndex, axisCount, ratio) {
   };
 }
 
-function getRadarRatio(metric, value, maxRatio = 1.35) {
-  if (Number.isFinite(metric.radarMin) && Number.isFinite(metric.radarMax) && metric.radarMax > metric.radarMin) {
-    if (metric.radarReference === "matchedMean") {
-      const matchedReferenceRatio = 1 / maxRatio;
-      const matchedMean = clamp(metric.matchedMean, metric.radarMin + 0.01, metric.radarMax - 0.01);
-
-      if (value <= matchedMean) {
-        return clamp((value - metric.radarMin) / (matchedMean - metric.radarMin), 0, 1) * matchedReferenceRatio;
-      }
-
-      return matchedReferenceRatio + (
-        clamp((value - matchedMean) / (metric.radarMax - matchedMean), 0, 1) * (1 - matchedReferenceRatio)
-      );
-    }
-
-    return clamp((value - metric.radarMin) / (metric.radarMax - metric.radarMin), 0, 1);
-  }
-
-  const matchedMean = Math.max(0.01, metric.matchedMean);
-  return clamp(value / matchedMean, 0, maxRatio) / maxRatio;
-}
-
 function getRadarPointString(metrics, valueAccessor, maxRatio = 1.35) {
   const center = 150;
   const radius = 94;
 
   return metrics.map((metric, index) => {
-    const value = valueAccessor(metric);
-    const ratio = getRadarRatio(metric, value, maxRatio);
+    const value = Math.max(metric.radarMin ?? 0, valueAccessor(metric));
+    const matchedMean = Math.max(0.01, metric.matchedMean);
+    const ratio = clamp(value / matchedMean, 0, maxRatio) / maxRatio;
     const point = getRadarPoint(center, radius, index, metrics.length, ratio);
 
     return `${point.x.toFixed(1)},${point.y.toFixed(1)}`;
@@ -4290,6 +4254,7 @@ function renderMatchedAverageRadar(metrics) {
   const radius = 94;
   const maxRatio = 1.35;
   const axisCount = metrics.length;
+  const matchedRingRatio = 1 / maxRatio;
   const gridRatios = [0.25, 0.5, 0.75, 1].map((ratio) => ratio / maxRatio);
   const userPoints = getRadarPointString(metrics, (metric) => metric.value, maxRatio);
   const matchedPoints = getRadarPointString(metrics, (metric) => metric.matchedMean, maxRatio);
@@ -4313,6 +4278,11 @@ function renderMatchedAverageRadar(metrics) {
 
     return `<polygon class="compare-radar__grid" points="${points}"></polygon>`;
   }).join("");
+  const matchedRingPoints = metrics.map((_, index) => {
+    const point = getRadarPoint(center, radius, index, axisCount, matchedRingRatio);
+    return `${point.x.toFixed(1)},${point.y.toFixed(1)}`;
+  }).join(" ");
+
   return `
     <div class="compare-radar-card">
       <div class="compare-radar-card__copy">
@@ -4321,10 +4291,11 @@ function renderMatchedAverageRadar(metrics) {
       <figure class="compare-radar" aria-label="Radar chart comparing your inputs with matched-applicant averages">
         <svg viewBox="0 0 300 300" role="img">
           <title>Your profile inputs compared with matched-applicant averages</title>
-          <desc>The dashed polygon shows matched-applicant means. The Step 2 axis uses a 218 to 300 score range, with each specialty's matched mean pinned to the same reference position so above- and below-mean values remain visually comparable.</desc>
+          <desc>The dashed polygon shows matched-applicant means. The filled teal polygon shows the user's current inputs, including a binary individuators axis scored from 1 to 5 using specialty-specific matched-minus-unmatched deltas and capped at 135 percent of the matched mean for each axis.</desc>
           ${gridMarkup}
           ${axisMarkup}
           <polygon class="compare-radar__matched" points="${matchedPoints}"></polygon>
+          <polygon class="compare-radar__matched-ring" points="${matchedRingPoints}"></polygon>
           <polygon class="compare-radar__user" points="${userPoints}"></polygon>
         </svg>
       </figure>
@@ -4602,14 +4573,11 @@ function handleCompareInput(event) {
   const checkKey = event.target.dataset.compareCheck;
 
   if (sliderKey) {
-    const definition = compareSliderDefinitions.find((item) => item.key === sliderKey);
-    compareProfile[sliderKey] = definition
-      ? clamp(Number(event.target.value), definition.min, definition.max)
-      : Number(event.target.value);
+    compareProfile[sliderKey] = Number(event.target.value);
     const output = document.getElementById(`compare-${sliderKey}-value`);
 
     if (output) {
-      output.textContent = compareProfile[sliderKey];
+      output.textContent = event.target.value;
     }
   }
 
@@ -4641,12 +4609,10 @@ function handleCompareMetricSliderInput(event) {
     return;
   }
 
-  const definition = compareSliderDefinitions.find((item) => item.key === sliderKey);
-  compareProfile[sliderKey] = definition
-    ? clamp(Number(event.target.value), definition.min, definition.max)
-    : Number(event.target.value);
+  compareProfile[sliderKey] = Number(event.target.value);
   syncCompareSliderControl(sliderKey);
 
+  const definition = compareSliderDefinitions.find((item) => item.key === sliderKey);
   const valueLabel = event.target.closest(".compare-metric")?.querySelector(".compare-metric__head strong");
 
   if (definition && valueLabel) {
@@ -4661,10 +4627,7 @@ function handleCompareMetricSliderCommit(event) {
     return;
   }
 
-  const definition = compareSliderDefinitions.find((item) => item.key === sliderKey);
-  compareProfile[sliderKey] = definition
-    ? clamp(Number(event.target.value), definition.min, definition.max)
-    : Number(event.target.value);
+  compareProfile[sliderKey] = Number(event.target.value);
   syncCompareInputs();
   renderCompareOutput();
 }
@@ -5535,20 +5498,6 @@ function fitExploreNodesToCanvas(nodes, width, height) {
   });
 }
 
-function applyExploreCanvasMargins(layoutData, marginX = EXPLORE_CANVAS_MARGIN_X, marginY = EXPLORE_CANVAS_MARGIN_Y) {
-  layoutData.nodes.forEach((node) => {
-    node.x += marginX;
-    node.y += marginY;
-    node.anchorX += marginX;
-    node.anchorY += marginY;
-  });
-
-  layoutData.width += marginX * 2;
-  layoutData.height += marginY * 2;
-
-  return layoutData;
-}
-
 function buildExploreLayoutData(specialtyResults, fellowshipResults, visibleFellowshipResults = []) {
   const width = EXPLORE_CANVAS_BASE_WIDTH;
   const height = EXPLORE_CANVAS_BASE_HEIGHT;
@@ -5599,7 +5548,7 @@ function buildExploreLayoutData(specialtyResults, fellowshipResults, visibleFell
   runExploreForceLayout(nodes, similarityEdges, parentEdges, width, height);
   fitExploreNodesToCanvas(nodes, width, height);
 
-  return applyExploreCanvasMargins({
+  return {
     width,
     height,
     nodes,
@@ -5608,7 +5557,7 @@ function buildExploreLayoutData(specialtyResults, fellowshipResults, visibleFell
     similarityEdges,
     parentEdges,
     nodeMap: Object.fromEntries(nodes.map((node) => [node.id, node])),
-  });
+  };
 }
 
 function getDefaultExploreSelection(specialtyResults) {
@@ -5727,13 +5676,8 @@ function renderExploreInspector(selectedEntity, nodes) {
     : '<p class="explore-inspector__empty">Nearby profiles will appear once the graph has enough profile overlap to compare.</p>';
   const compareId = selectedEntity.id;
 
-  if (hasCompareDataForSelection(compareId)) {
-    exploreCompareButton.classList.remove("hidden");
-    exploreCompareButton.dataset.compareId = compareId;
-  } else {
-    exploreCompareButton.classList.add("hidden");
-    delete exploreCompareButton.dataset.compareId;
-  }
+  exploreCompareButton.classList.remove("hidden");
+  exploreCompareButton.dataset.compareId = compareId;
 
   if (selectedEntity.kind === "specialty") {
     exploreNodeType.textContent = "Specialty";

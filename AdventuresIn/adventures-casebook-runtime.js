@@ -140,18 +140,19 @@
 
   function stripStepLabel(value) {
     let text = String(value || '').trim();
+    const internalPrefix = '(?:step|ending|end)';
 
-    if (/^continue\s+to\s+(?:step\s*)?\d+[a-z]?$/i.test(text)) {
+    if (new RegExp('^continue\\s+to\\s+(?:' + internalPrefix + '\\s*)?\\d+[a-z]?$', 'i').test(text)) {
       return 'Continue';
     }
 
-    if (/^(?:step\s*)?\d+[a-z]?$/i.test(text)) {
+    if (new RegExp('^(?:' + internalPrefix + '\\s*)?\\d+[a-z]?$', 'i').test(text)) {
       return '';
     }
 
     text = text
-      .replace(/^\s*step\s*\d+[a-z]?\b\s*(?:feedback\b)?\s*(?:[-:]\s*)?/i, '')
-      .replace(/^\s*step\s*\d+\s*/i, '')
+      .replace(/^\s*(?:step|ending|end)\s*\d+[a-z]?\b\s*(?:feedback\b)?\s*(?:[-:]\s*)?/i, '')
+      .replace(/^\s*(?:step|ending|end)\s*\d+\s*/i, '')
       .replace(/^\s*\d+[a-z]\s*(?:[-:]\s*)?/i, '')
       .trim();
 
