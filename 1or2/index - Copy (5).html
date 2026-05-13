@@ -67,7 +67,8 @@
           </div>
 
           <div class="start-view__actions start-view__actions--subtle">
-            <button class="ghost-button" id="startInfoButton" type="button">About</button>
+            <button class="ghost-button" id="startInfoButton" type="button">About this quiz</button>
+            <button class="ghost-button" id="startShareButton" type="button">Use a seed</button>
           </div>
         </section>
 
@@ -327,14 +328,6 @@
           >
             Explore
           </button>
-          <button
-            class="ghost-button rank-panel__action"
-            id="compareToggle"
-            type="button"
-            aria-controls="compareView"
-          >
-            Compare
-          </button>
           <button class="ghost-button hidden rank-panel__action" id="restartTop" type="button">Restart</button>
         </div>
 
@@ -383,7 +376,7 @@
     <section class="info-pane info-pane--modal" role="dialog" aria-modal="true" aria-labelledby="infoPaneTitle">
       <div class="info-pane__topbar">
         <div class="info-pane__intro">
-          <p class="section-kicker">About</p>
+          <p class="section-kicker">About this quiz</p>
           <h2 id="infoPaneTitle">A simple question-based way to reflect on specialty fit.</h2>
           <p class="info-pane__lede">
             This is meant for first- and second-year medical students who want a rough starting point before clinical experience begins to narrow the field.
@@ -420,25 +413,6 @@
           <p class="section-kicker section-kicker--spaced">Included Fields</p>
           <p class="support-copy">
             Internal Medicine, Family Medicine, Pediatrics, Medicine-Pediatrics, Emergency Medicine, General Surgery, Orthopedic Surgery, Anesthesiology, Psychiatry, Radiology, Neurology, Obstetrics &amp; Gynecology, Dermatology, Ophthalmology, Otolaryngology, Urology, Physical Medicine &amp; Rehabilitation, Pathology, and a broad set of fellowship paths that sit within or alongside those homes.
-          </p>
-        </div>
-        <div class="info-panel__block info-panel__block--pane">
-          <p class="section-kicker">Seed</p>
-          <h3>Load a shared session</h3>
-          <p class="support-copy">
-            A seed captures prompt order, current place, and answers so someone else can load the same session in this app.
-          </p>
-          <textarea class="share-seed-field" id="shareSeedInput" rows="5" spellcheck="false" placeholder="Paste seed here"></textarea>
-          <div class="share-block__actions">
-            <button class="secondary-button" id="loadSeedButton" type="button">Load seed</button>
-          </div>
-          <p class="share-status" id="shareImportStatus"></p>
-        </div>
-        <div class="info-panel__block info-panel__block--pane">
-          <p class="section-kicker">Credit</p>
-          <h3>Designed by Micah Etter, MD</h3>
-          <p class="support-copy">
-            Built as a free reflection tool for early medical specialty exploration.
           </p>
         </div>
       </div>
@@ -536,11 +510,11 @@
           <p class="share-block__text">
             Paste a seed to load someone else&apos;s prompt order and answers. Loading a seed replaces the current in-browser session.
           </p>
-          <textarea class="share-seed-field" id="shareSeedInputShare" rows="6" spellcheck="false" placeholder="Paste seed here"></textarea>
+          <textarea class="share-seed-field" id="shareSeedInput" rows="6" spellcheck="false" placeholder="Paste seed here"></textarea>
           <div class="share-block__actions">
-            <button class="secondary-button" id="loadSeedButtonShare" type="button">Load seed</button>
+            <button class="secondary-button" id="loadSeedButton" type="button">Load seed</button>
           </div>
-          <p class="share-status" id="shareImportStatusShare"></p>
+          <p class="share-status" id="shareImportStatus"></p>
         </section>
       </div>
     </section>

@@ -3682,7 +3682,7 @@ const resultsFellowshipDisplayInputs = Array.from(document.querySelectorAll('inp
 const shareModal = document.getElementById("shareModal");
 const shareBackdrop = document.getElementById("shareBackdrop");
 const shareToggle = document.getElementById("shareToggle");
-const compareToggle = document.getElementById("compareToggle");
+const startShareButton = document.getElementById("startShareButton");
 const resultsShareButton = document.getElementById("resultsShareButton");
 const continueQuizButton = document.getElementById("continueQuizButton");
 const closeShareButton = document.getElementById("closeShareButton");
@@ -3694,9 +3694,6 @@ const shareCopyStatus = document.getElementById("shareCopyStatus");
 const shareSeedInput = document.getElementById("shareSeedInput");
 const loadSeedButton = document.getElementById("loadSeedButton");
 const shareImportStatus = document.getElementById("shareImportStatus");
-const shareSeedInputShare = document.getElementById("shareSeedInputShare");
-const loadSeedButtonShare = document.getElementById("loadSeedButtonShare");
-const shareImportStatusShare = document.getElementById("shareImportStatusShare");
 const compareView = document.getElementById("compareView");
 const compareAboutButton = document.getElementById("compareAboutButton");
 const compareAboutModal = document.getElementById("compareAboutModal");
@@ -3894,7 +3891,7 @@ function updateShareUI() {
   shareSummary.textContent = hasSession ? buildShareSummary() : "";
   copySeedButton.disabled = !hasSession;
   setStatusMessage(shareCopyStatus, "");
-  setStatusMessage(shareImportStatusShare, "");
+  setStatusMessage(shareImportStatus, "");
 }
 
 function setShareModalOpen(isOpen, trigger = null) {
@@ -3917,7 +3914,7 @@ function setShareModalOpen(isOpen, trigger = null) {
     if (state.started) {
       closeShareButton.focus();
     } else {
-      shareSeedInputShare.focus();
+      shareSeedInput.focus();
     }
 
     return;
@@ -4250,9 +4247,7 @@ function getRadarAxisLabel(label) {
     .replace("Contiguous ranked programs", "Ranked programs")
     .replace("Abstracts, presentations, publications", "Publications")
     .replace("Research projects", "Research")
-    .replace("Volunteer experiences", "Volunteer")
-    .replace("Work experiences", "Work")
-    .replace("Binary Individuators", "Binary");
+    .replace("Binary Individuators", "Binary individuators");
 }
 
 function getBinaryIndividuatorMetric(checkMetrics) {
@@ -4300,7 +4295,7 @@ function renderMatchedAverageRadar(metrics) {
   const matchedPoints = getRadarPointString(metrics, (metric) => metric.matchedMean, maxRatio);
   const axisMarkup = metrics.map((metric, index) => {
     const outerPoint = getRadarPoint(center, radius, index, axisCount, 1);
-    const labelPoint = getRadarPoint(center, radius + 20, index, axisCount, 1);
+    const labelPoint = getRadarPoint(center, radius + 26, index, axisCount, 1);
     const anchor = Math.abs(labelPoint.x - center) < 10
       ? "middle"
       : labelPoint.x > center ? "start" : "end";
@@ -4324,7 +4319,7 @@ function renderMatchedAverageRadar(metrics) {
         <h4>How your inputs compare with the matched average</h4>
       </div>
       <figure class="compare-radar" aria-label="Radar chart comparing your inputs with matched-applicant averages">
-        <svg viewBox="-28 -12 356 324" role="img">
+        <svg viewBox="0 0 300 300" role="img">
           <title>Your profile inputs compared with matched-applicant averages</title>
           <desc>The dashed polygon shows matched-applicant means. The Step 2 axis uses a 218 to 300 score range, with each specialty's matched mean pinned to the same reference position so above- and below-mean values remain visually comparable.</desc>
           ${gridMarkup}
@@ -4912,7 +4907,6 @@ function applyImportedSession(seedPayload) {
   hideCompareView();
   hideExploreView();
   shareSeedInput.value = "";
-  shareSeedInputShare.value = "";
   startView.classList.add("hidden");
   progressWrap.classList.remove("hidden");
 
@@ -4956,21 +4950,21 @@ async function copyCurrentSeed() {
   }
 }
 
-function loadSeedFromInput(seedInput = shareSeedInput, statusElement = shareImportStatus) {
-  const seedText = seedInput.value.trim();
+function loadSeedFromInput() {
+  const seedText = shareSeedInput.value.trim();
 
   if (!seedText) {
-    setStatusMessage(statusElement, "Paste a seed first.", "error");
+    setStatusMessage(shareImportStatus, "Paste a seed first.", "error");
     return;
   }
 
   try {
     const parsedSeed = parseShareSeed(seedText);
-    setStatusMessage(statusElement, "Seed loaded.", "success");
+    setStatusMessage(shareImportStatus, "Seed loaded.", "success");
     applyImportedSession(parsedSeed);
   } catch (error) {
     setStatusMessage(
-      statusElement,
+      shareImportStatus,
       error instanceof Error ? error.message : "That seed could not be loaded.",
       "error"
     );
@@ -6628,6 +6622,9 @@ startCompareButton.addEventListener("click", () => {
 startInfoButton.addEventListener("click", () => {
   setInfoModalOpen(true, startInfoButton);
 });
+startShareButton.addEventListener("click", () => {
+  setShareModalOpen(true, startShareButton);
+});
 infoToggle.addEventListener("click", () => {
   setInfoModalOpen(true, infoToggle);
 });
@@ -6639,9 +6636,6 @@ shareToggle.addEventListener("click", () => {
 });
 exploreToggle.addEventListener("click", () => {
   openExplore(exploreToggle);
-});
-compareToggle.addEventListener("click", () => {
-  showCompareView(compareToggle);
 });
 resultsShareButton.addEventListener("click", () => {
   setShareModalOpen(true, resultsShareButton);
@@ -6672,8 +6666,7 @@ exploreCanvasShell.addEventListener("pointercancel", endExplorePointerDrag);
 exploreCanvasShell.addEventListener("lostpointercapture", endExplorePointerDrag);
 window.addEventListener("resize", handleExploreResize);
 copySeedButton.addEventListener("click", copyCurrentSeed);
-loadSeedButton.addEventListener("click", () => loadSeedFromInput(shareSeedInput, shareImportStatus));
-loadSeedButtonShare.addEventListener("click", () => loadSeedFromInput(shareSeedInputShare, shareImportStatusShare));
+loadSeedButton.addEventListener("click", loadSeedFromInput);
 compareSpecialtySelect.addEventListener("change", handleCompareSelectionChange);
 compareSliderGrid.addEventListener("input", handleCompareInput);
 compareOutput.addEventListener("input", handleCompareMetricSliderInput);
@@ -6716,15 +6709,6 @@ resultsFellowshipDisplayInputs.forEach((input) => {
   input.addEventListener("change", () => applyFellowshipDisplayMode(input.value));
 });
 
-function loadVisibleSeedInput() {
-  if (!infoModal.classList.contains("hidden")) {
-    loadSeedFromInput(shareSeedInput, shareImportStatus);
-    return;
-  }
-
-  loadSeedFromInput(shareSeedInputShare, shareImportStatusShare);
-}
-
 document.addEventListener("keydown", (event) => {
   if (!compareAboutModal.classList.contains("hidden")) {
     if (event.key === "Escape") {
@@ -6753,12 +6737,6 @@ document.addEventListener("keydown", (event) => {
   if (!infoModal.classList.contains("hidden")) {
     if (event.key === "Escape") {
       setInfoModalOpen(false);
-      return;
-    }
-
-    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "enter") {
-      event.preventDefault();
-      loadVisibleSeedInput();
     }
 
     return;
@@ -6780,7 +6758,7 @@ document.addEventListener("keydown", (event) => {
 
     if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "enter") {
       event.preventDefault();
-      loadVisibleSeedInput();
+      loadSeedFromInput();
     }
 
     return;
