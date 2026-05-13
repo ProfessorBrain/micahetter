@@ -130,6 +130,54 @@
     frame: document.querySelector('.caseFrame')
   };
 
+  function sentenceCaseFirst(value) {
+    if (!value) {
+      return '';
+    }
+
+    return value.charAt(0).toUpperCase() + value.slice(1);
+  }
+
+  function stripStepLabel(value) {
+    let text = String(value || '').trim();
+
+    if (/^continue\s+to\s+(?:step\s*)?\d+[a-z]?$/i.test(text)) {
+      return 'Continue';
+    }
+
+    if (/^(?:step\s*)?\d+[a-z]?$/i.test(text)) {
+      return '';
+    }
+
+    text = text
+      .replace(/^\s*step\s*\d+[a-z]?\b\s*(?:feedback\b)?\s*(?:[-:]\s*)?/i, '')
+      .replace(/^\s*step\s*\d+\s*/i, '')
+      .replace(/^\s*\d+[a-z]\s*(?:[-:]\s*)?/i, '')
+      .trim();
+
+    return sentenceCaseFirst(text);
+  }
+
+  function displayTitle(value, fallback) {
+    if (String(value || '').trim()) {
+      return stripStepLabel(value);
+    }
+
+    const title = stripStepLabel(value);
+
+    if (title) {
+      return title;
+    }
+
+    return stripStepLabel(fallback);
+  }
+
+  function setTitle(value, fallback) {
+    const title = displayTitle(value, fallback);
+    els.title.textContent = title;
+    els.title.hidden = !title;
+  }
+
   function getScene(id) {
     if (!data.scenes || !data.scenes[id]) {
       throw new Error('Missing scene: ' + id);
@@ -160,13 +208,13 @@
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'sceneOption';
-    button.textContent = String(label);
+    button.textContent = stripStepLabel(label) || 'Continue';
     button.addEventListener('click', handler);
     return button;
   }
 
   function renderScene(scene) {
-    els.title.textContent = scene.title || data.caseTitle || 'Untitled case';
+    setTitle(scene.title, data.caseTitle || 'Untitled case');
     els.body.innerHTML = '';
     els.options.innerHTML = '';
 
@@ -213,7 +261,7 @@
 
   function renderResponse(scene, option) {
     const response = option.response || {};
-    els.title.textContent = response.title || scene.title || data.caseTitle || 'Continue';
+    setTitle(response.title || scene.title, data.caseTitle || 'Continue');
     els.body.innerHTML = '';
     els.options.innerHTML = '';
 
