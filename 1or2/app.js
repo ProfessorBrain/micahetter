@@ -50,11 +50,6 @@ const rawSpecialties = [
     blurb: "Vascular disease care with procedures, physiology, longitudinal risk management, and urgent operative or endovascular decisions.",
   },
   {
-    id: "thoracic-surgery-integrated",
-    name: "Thoracic Surgery",
-    blurb: "Chest surgery involving large operations, anatomy, cancer care, perioperative ownership, and focused procedural expertise.",
-  },
-  {
     id: "anesthesiology",
     name: "Anesthesiology",
     blurb: "Physiology, procedures, acute management, and team-based care mostly without longitudinal continuity.",
@@ -115,11 +110,6 @@ const rawSpecialties = [
     blurb: "Function-focused care centered on rehabilitation, musculoskeletal issues, procedures, and quality of life over time.",
   },
   {
-    id: "preventive-medicine",
-    name: "Preventive Medicine",
-    blurb: "Population health, prevention, systems thinking, and long-horizon risk reduction rather than one-patient-at-a-time acute care.",
-  },
-  {
     id: "med-peds",
     name: "Medicine-Pediatrics",
     blurb: "Combined adult and pediatric training with broad continuity and room for either primary care or hospital-based practice.",
@@ -142,7 +132,6 @@ const specialtyVisuals = {
   "orthopedic-surgery": { shortLabel: "Orthopaedics", color: "#b66a4f" },
   "plastic-surgery": { shortLabel: "Plastic Surg", color: "#c27963" },
   "vascular-surgery-integrated": { shortLabel: "Vascular Surg", color: "#9b5f4a" },
-  "thoracic-surgery-integrated": { shortLabel: "Thoracic Surg", color: "#8f624c" },
   anesthesiology: { shortLabel: "Anesthesia", color: "#5d6bb0" },
   psychiatry: { shortLabel: "Psychiatry", color: "#7d5b8d" },
   radiology: { shortLabel: "Diag Rads", color: "#4d78bc" },
@@ -155,7 +144,6 @@ const specialtyVisuals = {
   otolaryngology: { shortLabel: "ENT", color: "#aa7540" },
   urology: { shortLabel: "Urology", color: "#3d8777" },
   "physical-medicine-rehab": { shortLabel: "PM&R", color: "#5a9f8d" },
-  "preventive-medicine": { shortLabel: "Preventive", color: "#5f9465" },
   "med-peds": { shortLabel: "Med-Peds", color: "#47858b" },
   pathology: { shortLabel: "Pathology", color: "#5f6774" },
 };
@@ -2007,7 +1995,7 @@ Object.keys(fellowshipParentIdsByName).forEach((name) => {
 const sharedExploreParentIdsByFellowshipId = {
   "adult-congenital-heart-disease": ["internal-medicine", "pediatrics", "med-peds"],
   "adolescent-medicine": ["pediatrics", "family-medicine", "internal-medicine", "med-peds"],
-  "addiction-medicine-family": ["family-medicine", "internal-medicine", "emergency-medicine", "pediatrics", "psychiatry", "preventive-medicine", "med-peds"],
+  "addiction-medicine-family": ["family-medicine", "internal-medicine", "emergency-medicine", "pediatrics", "psychiatry", "med-peds"],
   "allergy-immunology-med-peds": ["internal-medicine", "pediatrics", "med-peds"],
   "brain-injury-medicine": ["physical-medicine-rehab", "neurology", "psychiatry"],
   "clinical-neurophysiology": ["neurology", "child-neurology"],
@@ -2020,7 +2008,7 @@ const sharedExploreParentIdsByFellowshipId = {
   "hospice-palliative-medicine-med-peds": ["family-medicine", "internal-medicine", "pediatrics", "psychiatry", "neurology", "emergency-medicine", "anesthesiology", "general-surgery", "radiology", "obgyn", "med-peds"],
   "interventional-radiology": ["radiology", "interventional-radiology-integrated"],
   "medical-genetics": ["med-peds", "pediatrics", "internal-medicine", "obgyn"],
-  "medical-toxicology": ["emergency-medicine", "internal-medicine", "pediatrics", "preventive-medicine"],
+  "medical-toxicology": ["emergency-medicine", "internal-medicine", "pediatrics"],
   "neuro-ophthalmology": ["ophthalmology", "neurology"],
   "neurocritical-care": ["neurology", "anesthesiology", "emergency-medicine", "internal-medicine"],
   "neuromuscular-medicine-neurology": ["neurology", "physical-medicine-rehab"],
@@ -2041,7 +2029,7 @@ const sharedExploreParentIdsByFellowshipId = {
   "sports-medicine-emergency": ["family-medicine", "emergency-medicine", "pediatrics", "internal-medicine", "physical-medicine-rehab", "med-peds"],
   "sports-medicine-med-peds": ["family-medicine", "emergency-medicine", "pediatrics", "internal-medicine", "physical-medicine-rehab", "med-peds"],
   "family-sports-medicine": ["family-medicine", "emergency-medicine", "pediatrics", "internal-medicine", "physical-medicine-rehab", "med-peds"],
-  "thoracic-surgery": ["general-surgery", "thoracic-surgery-integrated"],
+  "thoracic-surgery": ["general-surgery"],
   "vascular-neurology": ["neurology", "emergency-medicine"],
   "vascular-surgery": ["general-surgery", "vascular-surgery-integrated"],
 };
@@ -2287,7 +2275,6 @@ const fellowshipCompareMap = {
 
 const fellowshipCompareSelectionMap = {
   "interventional-radiology": "interventional-radiology-integrated",
-  "thoracic-surgery": "thoracic-surgery-integrated",
   "vascular-surgery": "vascular-surgery-integrated",
 };
 
@@ -3365,28 +3352,6 @@ const nrmpMainMatchSpecialtySignals = {
     ["disability-and-qol", "yes", 2],
     ["low-emergencies", "yes", 1],
   ],
-  "preventive-medicine": [
-    ["continuity", "yes", 3],
-    ["breadth", "yes", 5],
-    ["direct-patient-contact", "yes", 2],
-    ["procedures", "no", 5],
-    ["acuity", "no", 6],
-    ["operating-room", "no", 6],
-    ["manual-skill", "no", 3],
-    ["preventive-care", "yes", 8],
-    ["routine-preventive-care", "yes", 8],
-    ["community-generalist", "yes", 7],
-    ["context-outside-clinic", "yes", 5],
-    ["broad-vs-narrow-alt", "yes", 4],
-    ["communication-over-procedures", "yes", 3],
-    ["panel-management", "yes", 3],
-    ["chronic-vs-episodic", "yes", 4],
-    ["clinic-vs-hospital", "yes", 4],
-    ["outpatient-most-days", "yes", 4],
-    ["low-emergencies", "yes", 6],
-    ["predictability-priority", "yes", 5],
-    ["hospital-vs-office", "no", 3],
-  ],
   "radiation-oncology": [
     ["continuity", "yes", 4],
     ["direct-patient-contact", "yes", 3],
@@ -3409,29 +3374,6 @@ const nrmpMainMatchSpecialtySignals = {
     ["low-emergencies", "yes", 4],
     ["predictability-priority", "yes", 3],
     ["conversation-based-care", "yes", 2],
-  ],
-  "thoracic-surgery-integrated": [
-    ["direct-patient-contact", "yes", 2],
-    ["procedures", "yes", 5],
-    ["acuity", "yes", 3],
-    ["operating-room", "yes", 6],
-    ["manual-skill", "yes", 5],
-    ["physiology", "yes", 3],
-    ["narrow-anatomy", "yes", 4],
-    ["miss-operating-room", "yes", 6],
-    ["hands-doing-the-work", "yes", 5],
-    ["procedural-vs-medical", "yes", 5],
-    ["regular-urgency", "yes", 3],
-    ["acute-teamwork", "yes", 4],
-    ["perioperative-vs-clinic", "yes", 5],
-    ["hospital-vs-office", "yes", 4],
-    ["call-worth-it", "yes", 4],
-    ["immediate-physical-result", "yes", 4],
-    ["pathophysiology-draw", "yes", 3],
-    ["focused-expertise", "yes", 4],
-    ["large-operations", "yes", 6],
-    ["low-emergencies", "no", 3],
-    ["function-over-operation", "no", 4],
   ],
   "vascular-surgery-integrated": [
     ["continuity", "yes", 3],
@@ -3531,6 +3473,10 @@ function getQuestionSpecialtyWeights(question) {
 
   ["yes", "no"].forEach((answerKey) => {
     Object.entries(question[answerKey] || {}).forEach(([specialtyId, weight]) => {
+      if (!specialtyById[specialtyId]) {
+        return;
+      }
+
       weights[specialtyId] = (weights[specialtyId] || 0) + Math.abs(Number(weight) || 0);
     });
   });
