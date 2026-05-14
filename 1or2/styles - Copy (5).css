@@ -685,10 +685,10 @@ body.explore-mode .page-shell {
 .compare-radar-card {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 2px;
+  gap: 12px;
   align-items: start;
   min-height: 0;
-  padding: clamp(12px, 1.6vw, 20px);
+  padding: clamp(18px, 2.4vw, 30px);
   border: 1px solid rgba(29, 111, 127, 0.13);
   border-radius: 22px;
   background:
@@ -714,7 +714,7 @@ body.explore-mode .page-shell {
 
 .compare-radar svg {
   display: block;
-  width: min(100%, 560px);
+  width: min(100%, 430px);
   margin: 0 auto;
   overflow: visible;
 }
@@ -2303,55 +2303,6 @@ body.explore-mode .page-shell {
   color: var(--accent-strong);
 }
 
-.signal-results-button {
-  --signal-button-fill: 0%;
-  isolation: isolate;
-  min-width: 176px;
-  overflow: hidden;
-  background: rgba(248, 251, 253, 0.76);
-}
-
-.signal-results-button::before {
-  content: "";
-  position: absolute;
-  inset: 0 auto 0 0;
-  z-index: 0;
-  width: var(--signal-button-fill);
-  border-radius: inherit;
-  background: linear-gradient(90deg, rgba(29, 111, 127, 0.16), rgba(42, 131, 148, 0.2));
-  pointer-events: none;
-  transition: width 240ms ease;
-}
-
-.signal-results-button > span {
-  position: relative;
-  z-index: 1;
-}
-
-.signal-results-button:disabled {
-  cursor: not-allowed;
-  color: rgba(95, 117, 132, 0.88);
-  border-color: rgba(18, 36, 48, 0.1);
-  background: rgba(240, 244, 247, 0.72);
-  box-shadow: none;
-}
-
-.signal-results-button:disabled:hover,
-.signal-results-button:disabled:focus-visible {
-  transform: none;
-  background: rgba(240, 244, 247, 0.72);
-  box-shadow: none;
-}
-
-.signal-results-button:disabled::before {
-  background: linear-gradient(90deg, rgba(95, 117, 132, 0.12), rgba(95, 117, 132, 0.18));
-}
-
-.signal-results-button--ready {
-  color: var(--accent-strong);
-  border-color: rgba(29, 111, 127, 0.22);
-}
-
 .rank-toggle-handle {
   position: fixed;
   top: 50%;
@@ -2891,17 +2842,16 @@ body.explore-mode .page-shell {
 
   .compare-radar-card {
     min-height: 0;
-    gap: 4px;
-    padding: 10px;
+    gap: 18px;
   }
 
   .compare-radar-card__copy h4 {
-    font-size: clamp(1.25rem, 6.5vw, 1.85rem);
+    font-size: clamp(1.35rem, 7vw, 2rem);
     max-width: none;
   }
 
   .compare-radar svg {
-    width: min(100%, 360px);
+    width: min(100%, 320px);
   }
 
   .compare-slider__top,

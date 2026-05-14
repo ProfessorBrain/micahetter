@@ -3476,9 +3476,7 @@ Object.entries(nrmpMainMatchSpecialtySignals).forEach(([specialtyId, signals]) =
 const questionIndexById = Object.fromEntries(questions.map((question, index) => [question.id, index]));
 const QUESTION_ORDER_STORAGE_KEY = "1or2-question-order-mode";
 const FELLOWSHIP_DISPLAY_STORAGE_KEY = "1or2-fellowship-display-mode";
-const LEGACY_SHARE_SEED_VERSION = "v1";
-const SHARE_SEED_VERSION = "v2";
-const RESULTS_READY_ANSWER_COUNT = 10;
+const SHARE_SEED_VERSION = "v1";
 const RESPONSE_TO_CODE = {
   yes: "y",
   no: "n",
@@ -3594,144 +3592,26 @@ function decodeQuestionOrder(encodedOrder) {
   return decoded;
 }
 
-function getResponseCode(response) {
-  return RESPONSE_TO_CODE[String(response)] ?? RESPONSE_TO_CODE.null;
+function buildShareSeed() {
+  return [
+    SHARE_SEED_VERSION,
+    state.orderMode === "random" ? "r" : "s",
+    state.currentIndex.toString(36),
+    encodeResponseSequence(state.responses),
+    encodeQuestionOrder(state.questionOrder),
+  ].join(".");
 }
 
-function encodeResponseMap(responses) {
-  const encoded = responses
-    .map((response, index) => {
-      const code = getResponseCode(response);
+function parseShareSeed(seedText) {
+  const normalized = seedText.trim().replace(/\s+/g, "").toLowerCase();
+  const [version, modeCode, currentIndexCode, responseSequence, questionOrderSequence] = normalized.split(".");
 
-      if (code === RESPONSE_TO_CODE.null) {
-        return null;
-      }
-
-      return `${questions[index].id}:${code}`;
-    })
-    .filter(Boolean)
-    .join(",");
-
-  return encoded || "-";
-}
-
-function decodeResponseMap(encodedResponses) {
-  const responses = Array(questions.length).fill(null);
-
-  if (!encodedResponses || encodedResponses === "-") {
-    return responses;
-  }
-
-  const pairs = encodedResponses.split(",");
-
-  pairs.forEach((pair) => {
-    const pairParts = pair.split(":");
-    const [questionId, code] = pairParts;
-    const questionIndex = questionIndexById[questionId];
-
-    if (pairParts.length !== 2 || !questionId || !code || !(code in CODE_TO_RESPONSE)) {
-      throw new Error("The seed contains an unknown response code.");
-    }
-
-    if (questionIndex === undefined) {
-      return;
-    }
-
-    responses[questionIndex] = CODE_TO_RESPONSE[code];
-  });
-
-  return responses;
-}
-
-function encodeQuestionOrderById(questionOrder) {
-  return questionOrder
-    .map((index) => questions[index]?.id)
-    .filter(Boolean)
-    .join("~");
-}
-
-function decodeQuestionOrderById(encodedOrder) {
-  if (!encodedOrder) {
-    throw new Error("This seed does not include a prompt order.");
-  }
-
-  const decoded = [];
-  const seen = new Set();
-  let knownPromptCount = 0;
-
-  encodedOrder.split("~").forEach((questionId) => {
-    const questionIndex = questionIndexById[questionId];
-
-    if (questionIndex === undefined || seen.has(questionIndex)) {
-      return;
-    }
-
-    knownPromptCount += 1;
-    seen.add(questionIndex);
-    decoded.push(questionIndex);
-  });
-
-  if (knownPromptCount === 0) {
-    throw new Error("The seed prompt order does not match this prompt set.");
-  }
-
-  questions.forEach((_, index) => {
-    if (!seen.has(index)) {
-      decoded.push(index);
-    }
-  });
-
-  if (decoded.length !== questions.length || new Set(decoded).size !== questions.length) {
-    throw new Error("The seed prompt order is incomplete or duplicated.");
-  }
-
-  return decoded;
-}
-
-function getCurrentCursorId() {
-  if (state.currentIndex >= questions.length) {
-    return "end";
-  }
-
-  const currentQuestionIndex = state.questionOrder[state.currentIndex];
-  return questions[currentQuestionIndex]?.id ?? "end";
-}
-
-function encodeCursor() {
-  return `${state.currentIndex.toString(36)}:${getCurrentCursorId()}`;
-}
-
-function decodeCursor(encodedCursor, questionOrder) {
-  const cursorParts = encodedCursor.split(":");
-  const [currentIndexCode, cursorId] = cursorParts;
-  const fallbackIndex = Number.parseInt(currentIndexCode, 36);
-
-  if (cursorParts.length !== 2 || !cursorId || !Number.isInteger(fallbackIndex) || fallbackIndex < 0 || fallbackIndex > questions.length) {
-    throw new Error("This seed contains an invalid place marker.");
-  }
-
-  if (cursorId === "end") {
-    return questions.length;
-  }
-
-  const cursorQuestionIndex = questionIndexById[cursorId];
-
-  if (cursorQuestionIndex !== undefined) {
-    const orderIndex = questionOrder.indexOf(cursorQuestionIndex);
-
-    if (orderIndex !== -1) {
-      return orderIndex;
-    }
-  }
-
-  return Math.min(fallbackIndex, questions.length);
-}
-
-function parseLegacyShareSeed(parts) {
-  const [version, modeCode, currentIndexCode, responseSequence, questionOrderSequence] = parts;
-
-  if (parts.length !== 5 || !version || !modeCode || !currentIndexCode || !responseSequence || !questionOrderSequence) {
+  if (!version || !modeCode || !currentIndexCode || !responseSequence || !questionOrderSequence) {
     throw new Error("This seed looks incomplete.");
+  }
+
+  if (version !== SHARE_SEED_VERSION) {
+    throw new Error("This seed version is not supported here.");
   }
 
   if (modeCode !== "r" && modeCode !== "s") {
@@ -3746,65 +3626,9 @@ function parseLegacyShareSeed(parts) {
 
   return {
     orderMode: modeCode === "r" ? "random" : "sequential",
-    fellowshipDisplayMode: state.fellowshipDisplayMode,
     currentIndex,
-    resultsPreview: currentIndex >= questions.length,
     responses: decodeResponseSequence(responseSequence),
     questionOrder: decodeQuestionOrder(questionOrderSequence),
-  };
-}
-
-function buildShareSeed() {
-  return [
-    SHARE_SEED_VERSION,
-    state.orderMode === "random" ? "r" : "s",
-    state.fellowshipDisplayMode === "separate" ? "p" : "i",
-    isResultsActive() ? "r" : "q",
-    encodeCursor(),
-    encodeResponseMap(state.responses),
-    encodeQuestionOrderById(state.questionOrder),
-  ].join(".");
-}
-
-function parseShareSeed(seedText) {
-  const normalized = seedText.trim().replace(/\s+/g, "").toLowerCase();
-  const parts = normalized.split(".");
-  const [version, modeCode, displayCode, viewCode, cursorCode, responseMap, questionOrderMap] = parts;
-
-  if (version === LEGACY_SHARE_SEED_VERSION) {
-    return parseLegacyShareSeed(parts);
-  }
-
-  if (parts.length !== 7 || !version || !modeCode || !displayCode || !viewCode || !cursorCode || !responseMap || !questionOrderMap) {
-    throw new Error("This seed looks incomplete.");
-  }
-
-  if (version !== SHARE_SEED_VERSION) {
-    throw new Error("This seed version is not supported here.");
-  }
-
-  if (modeCode !== "r" && modeCode !== "s") {
-    throw new Error("This seed contains an invalid order mode.");
-  }
-
-  if (displayCode !== "i" && displayCode !== "p") {
-    throw new Error("This seed contains an invalid fellowship display mode.");
-  }
-
-  if (viewCode !== "q" && viewCode !== "r") {
-    throw new Error("This seed contains an invalid view marker.");
-  }
-
-  const questionOrder = decodeQuestionOrderById(questionOrderMap);
-  const currentIndex = decodeCursor(cursorCode, questionOrder);
-
-  return {
-    orderMode: modeCode === "r" ? "random" : "sequential",
-    fellowshipDisplayMode: displayCode === "p" ? "separate" : "integrated",
-    currentIndex,
-    resultsPreview: viewCode === "r" || currentIndex >= questions.length,
-    responses: decodeResponseMap(responseMap),
-    questionOrder,
   };
 }
 
@@ -4057,10 +3881,10 @@ function buildShareSummary() {
     : "";
 
   if (isResultsActive()) {
-    return `Current results: ${answeredLabel}. Loading this seed restores the same answers and results display.`;
+    return `Current results: ${answeredLabel}. Loading this seed restores the same answer pattern.`;
   }
 
-  return `Current signal: ${answeredLabel}${skippedLabel}. Loading this seed resumes from the same prompt order, answers, and place.`;
+  return `Current signal: ${answeredLabel}${skippedLabel}. Loading this seed resumes from the same prompt order and place.`;
 }
 
 function updateShareUI() {
@@ -4427,28 +4251,26 @@ function getRadarAxisLabel(label) {
     .replace("Abstracts, presentations, publications", "Publications")
     .replace("Research projects", "Research")
     .replace("Volunteer experiences", "Volunteer")
-    .replace("Work experiences", "Work");
+    .replace("Work experiences", "Work")
+    .replace("Binary Individuators", "Binary");
 }
 
 function getBinaryIndividuatorMetric(checkMetrics) {
   const baseline = 1;
-  const positiveDeltas = checkMetrics.map((metric) => {
-    const delta = Number(metric.matchedPercent) - Number(metric.unmatchedPercent);
-    return Number.isFinite(delta) ? Math.max(0, delta) : 0;
-  });
+  const positiveDeltas = checkMetrics.map((metric) => Math.max(0, metric.matchedPercent - metric.unmatchedPercent));
   const totalPositiveDelta = positiveDeltas.reduce((total, delta) => total + delta, 0);
   const availablePoints = 4;
+  const fallbackWeight = availablePoints / Math.max(1, checkMetrics.length);
   const weightedMetrics = checkMetrics.map((metric, index) => ({
     ...metric,
-    credentialDelta: positiveDeltas[index],
     binaryWeight: totalPositiveDelta > 0
       ? (positiveDeltas[index] / totalPositiveDelta) * availablePoints
-      : 0,
+      : fallbackWeight,
   }));
 
   return {
     key: "binaryIndividuators",
-    label: "Credentials",
+    label: "Binary Individuators",
     min: baseline,
     max: baseline + availablePoints,
     value: baseline + weightedMetrics.reduce((total, metric) => total + (metric.checked ? metric.binaryWeight : 0), 0),
@@ -4478,14 +4300,14 @@ function renderMatchedAverageRadar(metrics) {
   const matchedPoints = getRadarPointString(metrics, (metric) => metric.matchedMean, maxRatio);
   const axisMarkup = metrics.map((metric, index) => {
     const outerPoint = getRadarPoint(center, radius, index, axisCount, 1);
-    const labelPoint = getRadarPoint(center, radius + 8, index, axisCount, 1);
+    const labelPoint = getRadarPoint(center, radius + 20, index, axisCount, 1);
     const anchor = Math.abs(labelPoint.x - center) < 10
       ? "middle"
       : labelPoint.x > center ? "start" : "end";
 
     return `
       <line class="compare-radar__axis" x1="${center}" y1="${center}" x2="${outerPoint.x.toFixed(1)}" y2="${outerPoint.y.toFixed(1)}"></line>
-      <text class="compare-radar__label" x="${labelPoint.x.toFixed(1)}" y="${labelPoint.y.toFixed(1)}" text-anchor="${anchor}" dominant-baseline="middle">${getRadarAxisLabel(metric.label)}</text>
+      <text class="compare-radar__label" x="${labelPoint.x.toFixed(1)}" y="${labelPoint.y.toFixed(1)}" text-anchor="${anchor}">${getRadarAxisLabel(metric.label)}</text>
     `;
   }).join("");
   const gridMarkup = gridRatios.map((ratio) => {
@@ -4594,7 +4416,7 @@ function renderCompareOutput() {
           step="${sliderStep}"
           value="${sliderValue}"
           ${sliderAttributes}
-          aria-label="${isEditableSlider ? `Adjust ${metric.label}` : `${metric.label} score from selected credentials`}"
+          aria-label="${isEditableSlider ? `Adjust ${metric.label}` : `${metric.label} score from selected binary individuators`}"
         >
       </div>
       <div class="compare-metric__values">
@@ -4852,15 +4674,8 @@ function handleCompareMetricSliderCommit(event) {
   renderCompareOutput();
 }
 
-function handleCompareSelectionChange(event) {
-  const nextSelection = event?.currentTarget?.value || compareSpecialtySelect.value;
-
-  if (!nextSelection) {
-    return;
-  }
-
-  selectedCompareId = nextSelection;
-  syncCompareInputs();
+function handleCompareSelectionChange() {
+  selectedCompareId = compareSpecialtySelect.value;
   renderCompareOutput();
 }
 
@@ -5084,10 +4899,9 @@ function applyImportedSession(seedPayload) {
   state.started = true;
   state.rankPanelCollapsed = true;
   state.orderMode = seedPayload.orderMode;
-  state.fellowshipDisplayMode = seedPayload.fellowshipDisplayMode ?? state.fellowshipDisplayMode;
   state.questionOrder = [...seedPayload.questionOrder];
   state.currentIndex = seedPayload.currentIndex;
-  state.resultsPreview = Boolean(seedPayload.resultsPreview);
+  state.resultsPreview = false;
   state.responses = [...seedPayload.responses];
   resultsList.innerHTML = "";
   restartTop.classList.remove("hidden");
@@ -5102,7 +4916,7 @@ function applyImportedSession(seedPayload) {
   startView.classList.add("hidden");
   progressWrap.classList.remove("hidden");
 
-  if (state.resultsPreview || state.currentIndex >= questions.length) {
+  if (state.currentIndex >= questions.length) {
     showResults();
     return;
   }
@@ -6181,22 +5995,6 @@ function getSpecificityLabel(answeredCount) {
   return "Highly specific";
 }
 
-function updateFinishQuizButton() {
-  const answered = countExplicitAnswers();
-  const isReady = answered >= RESULTS_READY_ANSWER_COUNT;
-  const fillPercent = clamp((answered / RESULTS_READY_ANSWER_COUNT) * 100, 0, 100);
-  const buttonLabel = isReady ? "Show results" : "Signal forming...";
-
-  finishQuizButton.disabled = !isReady;
-  finishQuizButton.innerHTML = `<span>${buttonLabel}</span>`;
-  finishQuizButton.classList.toggle("signal-results-button--ready", isReady);
-  finishQuizButton.style.setProperty("--signal-button-fill", `${fillPercent}%`);
-  finishQuizButton.setAttribute("aria-disabled", String(!isReady));
-  finishQuizButton.title = isReady
-    ? "Show results based on the answers so far."
-    : `Answer at least ${RESULTS_READY_ANSWER_COUNT} prompts to show results.`;
-}
-
 function updateProgress() {
   const answered = countExplicitAnswers();
   const specificityPercent = clamp(Math.round((answered / 40) * 100), 0, 100);
@@ -6208,7 +6006,6 @@ function updateProgress() {
 
   progressPercent.textContent = getSpecificityLabel(answered);
   progressFill.style.width = `${specificityPercent}%`;
-  updateFinishQuizButton();
 }
 
 function getRankingStage(answeredCount) {
@@ -6595,7 +6392,7 @@ function showResults() {
       : `${summaryBits.join(", ")}. Signal strength: ${confidence}. These results are based on ${answeredPromptLabel} about continuity, pace, procedures, uncertainty, work setting, and the kinds of subspecialty branches those answers point toward.`;
 
   skippedSummary.textContent = unansweredEverything
-    ? `No need to go through the whole bank, but at least ${RESULTS_READY_ANSWER_COUNT} genuine answers are needed before results are ready.`
+    ? "No need to go through the whole bank; a few genuine answers are enough to start."
     :
     skippedCount > 0
       ? "Skipped prompts were left out of the signal. You can answer more later if the results feel too broad."
@@ -6752,11 +6549,6 @@ function handleBack() {
 }
 
 function finishQuizEarly() {
-  if (countExplicitAnswers() < RESULTS_READY_ANSWER_COUNT) {
-    updateFinishQuizButton();
-    return;
-  }
-
   state.resultsPreview = true;
   showResults();
 }
@@ -6882,7 +6674,6 @@ window.addEventListener("resize", handleExploreResize);
 copySeedButton.addEventListener("click", copyCurrentSeed);
 loadSeedButton.addEventListener("click", () => loadSeedFromInput(shareSeedInput, shareImportStatus));
 loadSeedButtonShare.addEventListener("click", () => loadSeedFromInput(shareSeedInputShare, shareImportStatusShare));
-compareSpecialtySelect.addEventListener("input", handleCompareSelectionChange);
 compareSpecialtySelect.addEventListener("change", handleCompareSelectionChange);
 compareSliderGrid.addEventListener("input", handleCompareInput);
 compareOutput.addEventListener("input", handleCompareMetricSliderInput);
