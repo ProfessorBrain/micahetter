@@ -4345,7 +4345,7 @@ function ensureCompareControls() {
         <span>${definition.label}</span>
         <output id="compare-${definition.key}-value" for="compare-${definition.key}">${compareProfile[definition.key]}</output>
       </span>
-      <span class="compare-slider__range${compareNeededFor90Keys.has(definition.key) ? " compare-slider__range--with-marker" : ""}">
+      <span class="compare-slider__range">
         <input
           id="compare-${definition.key}"
           type="range"
@@ -4409,6 +4409,7 @@ function updateNeededFor90Markers(data) {
   compareSliderDefinitions.forEach((definition) => {
     const marker = document.getElementById(`compare-${definition.key}-needed90`);
     const label = marker?.querySelector(".compare-slider__needed90-label");
+    const range = marker?.closest(".compare-slider__range");
 
     if (!marker || !label) {
       return;
@@ -4416,7 +4417,7 @@ function updateNeededFor90Markers(data) {
 
     marker.classList.add("is-hidden");
     marker.classList.remove("compare-slider__needed90--passing");
-    marker.classList.remove("compare-slider__needed90--unreached");
+    range?.classList.remove("compare-slider__range--with-marker");
 
     if (!compareNeededFor90Keys.has(definition.key) || !data?.neededFor90) {
       return;
@@ -4425,13 +4426,6 @@ function updateNeededFor90Markers(data) {
     const value = data.neededFor90[definition.key];
 
     if (!Number.isFinite(value)) {
-      if (definition.key === "step2" && value === null) {
-        marker.style.setProperty("--x", "0%");
-        label.textContent = "No >90% match rate association with Step 2 score";
-        marker.classList.add("compare-slider__needed90--unreached");
-        marker.classList.remove("is-hidden");
-      }
-
       return;
     }
 
@@ -4445,6 +4439,7 @@ function updateNeededFor90Markers(data) {
 
     marker.style.setProperty("--x", getMarkerPosition(markerValue, definition.min, definition.max));
     label.textContent = getNeededFor90Text(definition, value);
+    range?.classList.add("compare-slider__range--with-marker");
     marker.classList.remove("is-hidden");
   });
 }
