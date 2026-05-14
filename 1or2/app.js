@@ -4568,7 +4568,7 @@ function renderMatchedAverageRadar(metrics) {
   return `
     <div class="compare-radar-card">
       <div class="compare-radar-card__copy">
-        <h4>How your inputs compare with the matched average</h4>
+        <h4>How your inputs compare with the matched average applicant</h4>
       </div>
       <figure class="compare-radar" aria-label="Radar chart comparing your inputs with matched-applicant averages">
         <svg viewBox="-28 -12 356 324" role="img">
@@ -6973,6 +6973,14 @@ compareOutput.addEventListener("input", handleCompareMetricSliderInput);
 compareOutput.addEventListener("change", handleCompareMetricSliderCommit);
 compareView.querySelectorAll("[data-compare-check]").forEach((input) => {
   input.addEventListener("change", handleCompareInput);
+});
+compareView.querySelectorAll(".compare-check__source-link").forEach((link) => {
+  link.addEventListener("click", (event) => {
+    event.stopPropagation();
+  });
+  link.addEventListener("keydown", (event) => {
+    event.stopPropagation();
+  });
 });
 rankToggleButton.addEventListener("click", toggleRankPanel);
 rankPanelToggle.addEventListener("click", toggleRankPanel);
