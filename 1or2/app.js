@@ -3526,9 +3526,137 @@ function shuffleIndices(indices) {
   return shuffled;
 }
 
+function getQuestionSpecialtyWeights(question) {
+  const weights = {};
+
+  ["yes", "no"].forEach((answerKey) => {
+    Object.entries(question[answerKey] || {}).forEach(([specialtyId, weight]) => {
+      weights[specialtyId] = (weights[specialtyId] || 0) + Math.abs(Number(weight) || 0);
+    });
+  });
+
+  return weights;
+}
+
+function getQuestionOrderMetadata(indices) {
+  return new Map(indices.map((index) => {
+    const question = questions[index];
+    const specialtyWeights = getQuestionSpecialtyWeights(question);
+    const specialtyEntries = Object.entries(specialtyWeights)
+      .sort((left, right) => right[1] - left[1]);
+    const totalWeight = specialtyEntries.reduce((total, [, weight]) => total + weight, 0);
+    const maxWeight = specialtyEntries[0]?.[1] || 0;
+    const topSpecialties = specialtyEntries
+      .filter(([, weight]) => weight >= Math.max(2, maxWeight * 0.55))
+      .slice(0, 4)
+      .map(([specialtyId]) => specialtyId);
+    const normalizedSpecialtyWeights = Object.fromEntries(
+      specialtyEntries.map(([specialtyId, weight]) => [
+        specialtyId,
+        totalWeight > 0 ? weight / totalWeight : 0,
+      ])
+    );
+
+    return [index, {
+      index,
+      category: question.category,
+      topSpecialties,
+      normalizedSpecialtyWeights,
+    }];
+  }));
+}
+
+function incrementCount(counts, key, amount = 1) {
+  counts[key] = (counts[key] || 0) + amount;
+}
+
+function getProfileOverlap(left, right) {
+  return Object.entries(left.normalizedSpecialtyWeights).reduce((total, [specialtyId, weight]) => {
+    return total + (weight * (right.normalizedSpecialtyWeights[specialtyId] || 0));
+  }, 0);
+}
+
+function buildBalancedQuestionOrder(indices) {
+  const metadata = getQuestionOrderMetadata(indices);
+  const remaining = shuffleIndices(indices);
+  const selected = [];
+  const categoryInventory = {};
+  const specialtyInventory = {};
+
+  indices.forEach((index) => {
+    const item = metadata.get(index);
+    incrementCount(categoryInventory, item.category);
+    item.topSpecialties.forEach((specialtyId) => incrementCount(specialtyInventory, specialtyId));
+  });
+
+  const categoryCounts = {};
+  const specialtyCounts = {};
+  const recentWindowSize = 10;
+
+  while (remaining.length > 0) {
+    const nextPosition = selected.length + 1;
+    const recentIndices = selected.slice(-recentWindowSize);
+    const recentCategoryCounts = {};
+    const recentSpecialtyCounts = {};
+
+    recentIndices.forEach((index) => {
+      const item = metadata.get(index);
+      incrementCount(recentCategoryCounts, item.category);
+      item.topSpecialties.forEach((specialtyId) => incrementCount(recentSpecialtyCounts, specialtyId));
+    });
+
+    let bestPosition = 0;
+    let bestScore = Infinity;
+
+    remaining.forEach((index, position) => {
+      const item = metadata.get(index);
+      const categoryExpected = (nextPosition * categoryInventory[item.category]) / indices.length;
+      const recentCategoryPenalty = (recentCategoryCounts[item.category] || 0) * 5.2;
+      const categoryOverusePenalty = Math.max(0, (categoryCounts[item.category] || 0) + 1 - categoryExpected) * 2.8;
+      const categoryNoveltyBonus = categoryCounts[item.category] ? 0 : 4;
+      const recentSpecialtyPenalty = item.topSpecialties.reduce((total, specialtyId) => {
+        return total + ((recentSpecialtyCounts[specialtyId] || 0) * 3.1);
+      }, 0);
+      const specialtyOverusePenalty = item.topSpecialties.reduce((total, specialtyId) => {
+        const expected = (nextPosition * (specialtyInventory[specialtyId] || 1)) / indices.length;
+        return total + (Math.max(0, (specialtyCounts[specialtyId] || 0) + 1 - expected) * 1.8);
+      }, 0);
+      const specialtyNoveltyBonus = item.topSpecialties.reduce((total, specialtyId) => {
+        return total + (specialtyCounts[specialtyId] ? 0 : 0.9);
+      }, 0);
+      const overlapPenalty = recentIndices.reduce((total, recentIndex, offset) => {
+        const ageWeight = (offset + 1) / Math.max(1, recentIndices.length);
+        return total + (getProfileOverlap(item, metadata.get(recentIndex)) * ageWeight * 8);
+      }, 0);
+      const earlyCoverageBoost = selected.length < 32 ? 1 : 0.45;
+      const randomJitter = Math.random() * (selected.length < 32 ? 1.4 : 2.4);
+      const score = recentCategoryPenalty
+        + categoryOverusePenalty
+        + recentSpecialtyPenalty
+        + specialtyOverusePenalty
+        + overlapPenalty
+        - ((categoryNoveltyBonus + specialtyNoveltyBonus) * earlyCoverageBoost)
+        + randomJitter;
+
+      if (score < bestScore) {
+        bestScore = score;
+        bestPosition = position;
+      }
+    });
+
+    const [nextIndex] = remaining.splice(bestPosition, 1);
+    const nextItem = metadata.get(nextIndex);
+    selected.push(nextIndex);
+    incrementCount(categoryCounts, nextItem.category);
+    nextItem.topSpecialties.forEach((specialtyId) => incrementCount(specialtyCounts, specialtyId));
+  }
+
+  return selected;
+}
+
 function buildQuestionOrder(mode) {
   const indices = questions.map((_, index) => index);
-  return mode === "random" ? shuffleIndices(indices) : indices;
+  return mode === "random" ? buildBalancedQuestionOrder(indices) : indices;
 }
 
 function loadFellowshipDisplayMode() {
@@ -6166,19 +6294,34 @@ function getSpecificityLabel(answeredCount) {
     return "Broad signal";
   }
 
-  if (answeredCount < 6) {
+  if (answeredCount < RESULTS_READY_ANSWER_COUNT) {
     return "Early signal";
   }
 
-  if (answeredCount < 16) {
+  if (answeredCount < 24) {
     return "Taking shape";
   }
 
-  if (answeredCount < 32) {
+  if (answeredCount < 60) {
     return "More specific";
   }
 
   return "Highly specific";
+}
+
+function getSignalProgressPercent(answeredCount) {
+  if (answeredCount <= 0) {
+    return 0;
+  }
+
+  if (answeredCount >= questions.length) {
+    return 100;
+  }
+
+  const answeredRatio = clamp(answeredCount / questions.length, 0, 1);
+  const curvedRatio = Math.log1p(answeredRatio * 3) / Math.log1p(3);
+
+  return clamp(Math.round(curvedRatio * 100), 0, 99);
 }
 
 function updateFinishQuizButton() {
@@ -6199,7 +6342,7 @@ function updateFinishQuizButton() {
 
 function updateProgress() {
   const answered = countExplicitAnswers();
-  const specificityPercent = clamp(Math.round((answered / 40) * 100), 0, 100);
+  const specificityPercent = getSignalProgressPercent(answered);
   const answerNoun = answered === 1 ? "answer" : "answers";
 
   progressLabel.textContent = answered === 0
