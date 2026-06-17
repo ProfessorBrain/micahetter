@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ED Rush!</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app-shell" aria-live="polite">
+    <section id="titleScreen" class="screen screen-title active">
+      <div class="title-card">
+        <p class="eyebrow">Overhead emergency department time-management</p>
+        <h1>ED Rush!</h1>
+        <p class="tagline">Manage rooms, diagnose fast, document clearly, treat decisively, and keep patients moving before the shift unravels.</p>
+        <div class="title-actions">
+          <button id="startButton" class="primary-button">Start ED Rush!</button>
+          <button id="resetProgressButton" class="ghost-button">Reset progress</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="roundScreen" class="screen">
+      <header class="screen-header">
+        <div>
+          <p class="eyebrow">Round selection</p>
+          <h1>ED Rush!</h1>
+        </div>
+        <div class="wallet">
+          <span>Money: <strong id="roundMoneyValue">$0</strong></span>
+          <span>Patient Satisfaction Tokens: <strong id="roundTokensValue">0</strong></span>
+        </div>
+      </header>
+      <div id="roundCards" class="round-grid"></div>
+    </section>
+
+    <section id="gameScreen" class="screen">
+      <header class="hud">
+        <div class="hud-title">
+          <h1>ED Rush!</h1>
+          <span id="hudRound">Round 1</span>
+        </div>
+        <div class="hud-stats">
+          <span>Shift <strong id="hudTimer">00:00</strong></span>
+          <span>Score <strong id="hudScore">0</strong></span>
+          <span>Safety <strong id="hudSafety">100</strong></span>
+          <span>Flow <strong id="hudFlow">100</strong></span>
+          <span>Satisfaction <strong id="hudSatisfaction">100</strong></span>
+          <span>Money <strong id="hudMoney">$0</strong></span>
+          <span>Tokens <strong id="hudTokens">0</strong></span>
+          <span>Waiting <strong id="hudWaiting">0</strong></span>
+          <span>AMA/LBTC <strong id="hudAma">0</strong></span>
+        </div>
+        <button id="abandonRoundButton" class="danger-button compact">End shift</button>
+      </header>
+
+      <div class="game-layout">
+        <aside class="panel lobby-panel">
+          <div class="panel-heading">
+            <h2>Waiting Room / Lobby</h2>
+            <span id="lobbyCount" class="pill">0 waiting</span>
+          </div>
+          <div id="lobbyList" class="patient-list"></div>
+        </aside>
+
+        <section class="panel floor-panel">
+          <div class="panel-heading">
+            <h2>Overhead ED Floor</h2>
+            <span class="pill">Click patient, then empty room</span>
+          </div>
+          <div id="roomGrid" class="room-grid"></div>
+        </section>
+
+        <aside class="panel details-panel">
+          <div class="panel-heading">
+            <h2>Selected Room / Patient</h2>
+          </div>
+          <div id="detailsPanel" class="details-content"></div>
+        </aside>
+      </div>
+
+      <section class="event-log panel">
+        <div class="panel-heading">
+          <h2>Event Log / Alert Feed</h2>
+        </div>
+        <div id="eventLog"></div>
+      </section>
+    </section>
+
+    <section id="debriefScreen" class="screen">
+      <header class="screen-header">
+        <div>
+          <p class="eyebrow">Round debrief</p>
+          <h1>ED Rush!</h1>
+        </div>
+      </header>
+      <div id="debriefContent" class="debrief-card"></div>
+    </section>
+
+    <section id="upgradeScreen" class="screen">
+      <header class="screen-header">
+        <div>
+          <p class="eyebrow">Upgrade bay</p>
+          <h1>ED Rush!</h1>
+        </div>
+        <div class="wallet">
+          <span>Money: <strong id="upgradeMoneyValue">$0</strong></span>
+          <span>Patient Satisfaction Tokens: <strong id="upgradeTokensValue">0</strong></span>
+        </div>
+      </header>
+      <div id="rewardSummary" class="reward-summary"></div>
+      <div id="upgradeList" class="upgrade-grid"></div>
+      <div class="upgrade-actions">
+        <button id="nextRoundButton" class="primary-button">Next round</button>
+        <button id="replayRoundButton" class="secondary-button">Replay round</button>
+        <button id="roundSelectButton" class="ghost-button">Round select</button>
+      </div>
+    </section>
+  </main>
+
+  <div id="microgameOverlay" class="microgame-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="microgameTitle">
+    <div class="microgame-card">
+      <div class="microgame-topline">
+        <div>
+          <p id="microgameActionLabel" class="eyebrow">Action</p>
+          <h2 id="microgameTitle">Microgame</h2>
+        </div>
+        <div class="microgame-clock">
+          <span id="microgameTimer">0</span>s
+        </div>
+      </div>
+      <p id="microgameInstructions" class="microgame-instructions"></p>
+      <div class="microgame-meter">
+        <div id="microgameTimeBar"></div>
+      </div>
+      <div id="microgameScene" class="microgame-scene"></div>
+      <div id="microgameFeedback" class="microgame-feedback"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
