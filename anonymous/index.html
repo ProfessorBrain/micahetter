@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Anonymous feedback intake for University of Arizona Neurology Residency residents."
+    />
+    <title>UA Neurology Residency Anonymous Feedback</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main>
+      <section class="intro-grid" id="feedback-section" aria-labelledby="scope-title">
+        <form class="feedback-form" id="feedbackForm" novalidate>
+          <div class="scope-alert" role="note" aria-labelledby="scope-title">
+            <h1 id="scope-title">Before you submit</h1>
+            <p>
+              Use this form only for non-urgent residency program feedback. Do
+              not submit emergencies, threats, abuse or neglect, discrimination
+              or harassment, sexual violence, patient safety events needing
+              immediate action, patient identifiers, or formal complaints.
+            </p>
+            <a class="inline-link" href="#routes">Use another route</a>
+          </div>
+
+          <div class="form-status form-status--setup" id="setupStatus" hidden>
+            Sheet endpoint not configured yet. The ombuds owner should finish
+            the setup steps below before sharing this page.
+          </div>
+
+          <div class="field">
+            <label for="feedback">Feedback</label>
+            <textarea
+              id="feedback"
+              name="feedback"
+              rows="9"
+              required
+              maxlength="5000"
+              placeholder="What should we know?"
+            ></textarea>
+            <div class="field-foot">
+              <p class="field-error" data-error-for="feedback"></p>
+              <span id="feedbackCount">0 / 5000</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="topic">Topic <span>optional</span></label>
+            <select id="topic" name="topic">
+              <option value="">No topic selected</option>
+              <option>Clinical learning environment</option>
+              <option>Supervision and teaching</option>
+              <option>Scheduling, workload, or duty hours</option>
+              <option>Well-being and support</option>
+              <option>Evaluations, promotion, or remediation</option>
+              <option>Program culture or communication</option>
+              <option>Facilities, workflow, or systems issue</option>
+              <option>Other program-improvement feedback</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="context">Rotation, site, or timeframe <span>optional</span></label>
+            <input
+              id="context"
+              name="context"
+              autocomplete="off"
+              placeholder="Example: inpatient wards"
+              maxlength="180"
+            />
+          </div>
+
+          <div class="field">
+            <label for="identifier">Optional identifier or contact</label>
+            <input
+              id="identifier"
+              name="identifier"
+              autocomplete="off"
+              placeholder="Leave blank to remain anonymous"
+              maxlength="240"
+            />
+            <p class="hint">
+              Leave blank to remain anonymous.
+            </p>
+          </div>
+
+          <button class="submit-button" id="submitButton" type="submit">
+            Submit anonymous feedback
+          </button>
+          <div class="form-status" id="formStatus" aria-live="polite"></div>
+        </form>
+      </section>
+
+      <section class="routes-section" id="routes" aria-labelledby="routes-title">
+        <div class="section-heading">
+          <h2 id="routes-title">Use another route for these concerns</h2>
+        </div>
+
+        <div class="route-grid">
+          <article class="route-card route-card--urgent">
+            <h3>Immediate danger or crime</h3>
+            <p>
+              Call <strong>911</strong>. UAPD non-emergency:
+              <a href="tel:+15206218273">520-621-8273</a>. Tucson Police
+              non-emergency: <a href="tel:+15207915700">520-791-5700</a>.
+            </p>
+          </article>
+
+          <article class="route-card">
+            <h3>Discrimination, harassment, Title IX, sexual assault, IPV, or stalking</h3>
+            <p>
+              Office of Institutional Equity:
+              <a href="mailto:equity@arizona.edu">equity@arizona.edu</a> or
+              <a href="tel:+15206219449">520-621-9449</a>.
+            </p>
+            <a href="https://equity.arizona.edu/reporting/submit-report">OIE reporting</a>
+          </article>
+
+          <article class="route-card">
+            <h3>Confidential support before deciding what to do</h3>
+            <p>
+              UA Ombuds:
+              <a href="mailto:ombuds@arizona.edu">ombuds@arizona.edu</a>,
+              Survivor Advocacy: <a href="tel:+15206215767">520-621-5767</a>,
+              Life & Work Connections:
+              <a href="tel:+15206212493">520-621-2493</a>. For mental health
+              crisis support, call/text <a href="tel:988">988</a>.
+            </p>
+          </article>
+
+          <article class="route-card">
+            <h3>Legal, policy, ethics, or compliance violations</h3>
+            <p>
+              UA Ethics and Compliance Hotline:
+              <a href="tel:+18663641908">866-364-1908</a>.
+              Compliance:
+              <a href="mailto:compliance@arizona.edu">compliance@arizona.edu</a>.
+            </p>
+            <a href="https://compliance.arizona.edu/hotline">Compliance hotline</a>
+          </article>
+
+          <article class="route-card">
+            <h3>ACGME training or accreditation issues</h3>
+            <p>
+              ACGME Ombudsperson:
+              <a href="mailto:ombuds@acgme.org">ombuds@acgme.org</a>.
+              Complaint process:
+              <a href="mailto:complaints@acgme.org">complaints@acgme.org</a>.
+            </p>
+            <a href="https://www.acgme.org/Residents-and-Fellows/Report-an-Issue/">
+              ACGME report an issue
+            </a>
+          </article>
+
+          <article class="route-card">
+            <h3>Child, elder, or vulnerable-adult abuse or neglect</h3>
+            <p>
+              Child abuse or neglect: Arizona DCS
+              <a href="tel:+18887672445">1-888-SOS-CHILD</a>. Vulnerable adult:
+              Arizona APS <a href="tel:+18777672385">877-SOS-ADULT</a>.
+            </p>
+            <a href="https://des.az.gov/services/basic-needs/adult-protective-services/report-adult-abuse">
+              APS reporting
+            </a>
+          </article>
+
+          <article class="route-card">
+            <h3>Patient safety event or protected health information</h3>
+            <p>
+              Use the clinical chain of command, supervising attending, site
+              safety event system, or risk/patient safety office. Do not submit
+              patient names, MRNs, dates of birth, or detailed PHI here.
+            </p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>
+        Built for anonymous program-improvement feedback. For urgent or protected
+        concerns, use the routed resources above.
+      </p>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>
