@@ -2592,7 +2592,7 @@ const questions = [
     id: "behind-the-scenes",
     category: "Work environment",
     text: "Would you still feel fulfilled in a specialty where patients may rarely know you were central to their care?",
-    support: "This can signal comfort with diagnostic or systems-facing impact rather than bedside visibility.",
+    support: "This can suggest comfort with diagnostic or systems-facing impact rather than bedside visibility.",
     yes: {
       pathology: 6,
       radiology: 5,
@@ -4134,7 +4134,7 @@ function buildShareSummary() {
     return `Current results: ${answeredLabel}. Loading this seed restores the same answers and results display.`;
   }
 
-  return `Current signal: ${answeredLabel}${skippedLabel}. Loading this seed resumes from the same prompt order, answers, and place.`;
+  return `Current profile: ${answeredLabel}${skippedLabel}. Loading this seed resumes from the same prompt order, answers, and place.`;
 }
 
 function updateShareUI() {
@@ -6232,11 +6232,11 @@ function countExplicitAnswers() {
 
 function getSpecificityLabel(answeredCount) {
   if (answeredCount === 0) {
-    return "Broad signal";
+    return "Broad profile";
   }
 
   if (answeredCount < RESULTS_READY_ANSWER_COUNT) {
-    return "Early signal";
+    return "Early profile";
   }
 
   if (answeredCount < 24) {
@@ -6269,12 +6269,12 @@ function updateFinishQuizButton() {
   const answered = countExplicitAnswers();
   const isReady = answered >= RESULTS_READY_ANSWER_COUNT;
   const fillPercent = clamp((answered / RESULTS_READY_ANSWER_COUNT) * 100, 0, 100);
-  const buttonLabel = isReady ? "Show results" : "Signal forming...";
+  const buttonLabel = isReady ? "Show results" : "Profile forming...";
 
   finishQuizButton.disabled = !isReady;
   finishQuizButton.innerHTML = `<span>${buttonLabel}</span>`;
-  finishQuizButton.classList.toggle("signal-results-button--ready", isReady);
-  finishQuizButton.style.setProperty("--signal-button-fill", `${fillPercent}%`);
+  finishQuizButton.classList.toggle("profile-results-button--ready", isReady);
+  finishQuizButton.style.setProperty("--profile-button-fill", `${fillPercent}%`);
   finishQuizButton.setAttribute("aria-disabled", String(!isReady));
   finishQuizButton.title = isReady
     ? "Show results based on the answers so far."
@@ -6288,7 +6288,7 @@ function updateProgress() {
 
   progressLabel.textContent = answered === 0
     ? "No answers yet"
-    : `${answered} ${answerNoun} shaping the signal`;
+    : `${answered} ${answerNoun} shaping the profile`;
 
   progressPercent.textContent = getSpecificityLabel(answered);
   progressFill.style.width = `${specificityPercent}%`;
@@ -6307,7 +6307,7 @@ function getRankingStage(answeredCount) {
 
   if (answeredCount < 6) {
     return {
-      summary: "This is a broad early signal. The order will move around as more answers come in.",
+      summary: "This is a broad early profile. The order will move around as more answers come in.",
       maxItems: 4,
       showLeader: false,
       showReasons: false,
@@ -6333,7 +6333,7 @@ function getRankingStage(answeredCount) {
   }
 
   return {
-    summary: "The signal is highly specific now. Additional answers can still refine close calls and fellowship paths.",
+    summary: "The profile is highly specific now. Additional answers can still refine close calls and fellowship paths.",
     maxItems: 6,
     showLeader: true,
     showReasons: true,
@@ -6374,7 +6374,7 @@ function renderRankPanel() {
     : (positiveRanked.length > 0 ? positiveRanked : ranked).slice(0, stage.maxItems);
 
   rankSummary.textContent = skippedCount > 0
-    ? `${stage.summary} Skipped prompts stay out of the signal.`
+    ? `${stage.summary} Skipped prompts stay out of the profile.`
     : stage.summary;
 
   if (displayed.length === 0) {
@@ -6655,9 +6655,9 @@ function showResults() {
     : "Specialties and fellowship paths suggested by your answers";
 
   if (showSeparateFellowships && displayedFellowships.length > 0) {
-    summaryBits.push(`${displayedFellowships[0].name} had the strongest current fellowship-path signal`);
+    summaryBits.push(`${displayedFellowships[0].name} had the strongest current fellowship-path fit`);
   } else if (displayedResults.length > 0) {
-    summaryBits.push(`${displayedResults[0].name} had the strongest current fit signal`);
+    summaryBits.push(`${displayedResults[0].name} had the strongest current fit`);
   }
   if (showSeparateFellowships && displayedFellowships.length === 2) {
     summaryBits.push(`${displayedFellowships[1].name} was close behind`);
@@ -6673,16 +6673,16 @@ function showResults() {
   const answeredPromptLabel = `${explicitAnswers} answered prompt${explicitAnswers === 1 ? "" : "s"}`;
 
   resultsSummaryText.textContent = unansweredEverything
-    ? "There is no meaningful signal yet because no preference prompts were answered. Go back and answer one or a few prompts that produce a real reaction."
+    ? "There is no meaningful profile yet because no preference prompts were answered. Go back and answer one or a few prompts that produce a real reaction."
     : showSeparateFellowships && displayedFellowships.length === 0
-      ? `No fellowship path has enough direct signal yet. Signal strength: ${confidence}. These results are based on ${answeredPromptLabel}, but the answered items have not separated specific fellowship branches.`
-      : `${summaryBits.join(", ")}. Signal strength: ${confidence}. These results are based on ${answeredPromptLabel} about continuity, pace, procedures, uncertainty, work setting, and the kinds of subspecialty branches those answers point toward.`;
+      ? `No fellowship path has enough direct support yet. Result strength: ${confidence}. These results are based on ${answeredPromptLabel}, but the answered items have not separated specific fellowship branches.`
+      : `${summaryBits.join(", ")}. Result strength: ${confidence}. These results are based on ${answeredPromptLabel} about continuity, pace, procedures, uncertainty, work setting, and the kinds of subspecialty branches those answers point toward.`;
 
   skippedSummary.textContent = unansweredEverything
     ? `No need to go through the whole bank, but at least ${RESULTS_READY_ANSWER_COUNT} genuine answers are needed before results are ready.`
     :
     skippedCount > 0
-      ? "Skipped prompts were left out of the signal. You can answer more later if the results feel too broad."
+      ? "Skipped prompts were left out of the profile. You can answer more later if the results feel too broad."
       : "You can stop here or keep answering later if you want an even more specific read.";
 
   resultsList.innerHTML = unansweredEverything
@@ -6707,7 +6707,7 @@ function createSeparatedFellowshipResults(fellowshipMatches, answeredCount) {
         <div class="match-card__left">
           <span class="match-card__score-label">Fellowship paths</span>
           <h4>More answers will sharpen this view.</h4>
-          <p>Specific fellowship paths are available here once enough path-level signals have been answered.</p>
+          <p>Specific fellowship paths are available here once enough path-level cues have been answered.</p>
         </div>
       </article>
     `;
@@ -6718,7 +6718,7 @@ function createSeparatedFellowshipResults(fellowshipMatches, answeredCount) {
       <div class="match-card__left">
         <span class="match-card__score-label">Fellowship paths</span>
         <h4>No specific branch stands out yet.</h4>
-        <p>The specialty ranking still has useful signal, but no fellowship path has enough direct support from the answered prompts.</p>
+        <p>The specialty ranking still has useful information, but no fellowship path has enough direct support from the answered prompts.</p>
       </div>
     </article>
   `;
@@ -6763,7 +6763,7 @@ function createResultCard(result, rank, fellowshipMatches, answeredCount) {
           <p>${result.blurb}</p>
         </div>
         <div class="match-card__score" aria-label="Match strength for ${result.name}">
-          <span class="match-card__score-label">Signal</span>
+          <span class="match-card__score-label">Fit</span>
           <span class="match-card__score-value">${result.normalized}%</span>
         </div>
       </div>
@@ -6785,7 +6785,7 @@ function createFellowshipResultCard(path, rank) {
     ? path.reasons
         .map((reason) => `<li>${reason.explanation}</li>`)
         .join("")
-    : "<li>This fellowship path rose from a combination of its home specialty and nearby path-level signals.</li>";
+    : "<li>This fellowship path rose from a combination of its home specialty and nearby path-level cues.</li>";
 
   return `
     <article class="match-card">
@@ -6797,7 +6797,7 @@ function createFellowshipResultCard(path, rank) {
           <p class="match-card__path-note">Home specialty: ${path.parentName}</p>
         </div>
         <div class="match-card__score" aria-label="Match strength for ${path.name}">
-          <span class="match-card__score-label">Signal</span>
+          <span class="match-card__score-label">Fit</span>
           <span class="match-card__score-value">${path.normalized}%</span>
         </div>
       </div>

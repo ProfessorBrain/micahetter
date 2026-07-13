@@ -161,7 +161,7 @@ body.explore-mode .page-shell {
 .results-footnotes p,
 .match-card p,
 .match-card li,
-.signal-list li {
+.detail-list li {
   color: var(--muted);
   line-height: 1.6;
 }
@@ -2336,32 +2336,32 @@ body.explore-mode .page-shell {
   color: var(--accent-strong);
 }
 
-.signal-results-button {
-  --signal-button-fill: 0%;
+.profile-results-button {
+  --profile-button-fill: 0%;
   isolation: isolate;
   min-width: 176px;
   overflow: hidden;
   background: rgba(248, 251, 253, 0.76);
 }
 
-.signal-results-button::before {
+.profile-results-button::before {
   content: "";
   position: absolute;
   inset: 0 auto 0 0;
   z-index: 0;
-  width: var(--signal-button-fill);
+  width: var(--profile-button-fill);
   border-radius: inherit;
   background: linear-gradient(90deg, rgba(29, 111, 127, 0.16), rgba(42, 131, 148, 0.2));
   pointer-events: none;
   transition: width 240ms ease;
 }
 
-.signal-results-button > span {
+.profile-results-button > span {
   position: relative;
   z-index: 1;
 }
 
-.signal-results-button:disabled {
+.profile-results-button:disabled {
   cursor: not-allowed;
   color: rgba(95, 117, 132, 0.88);
   border-color: rgba(18, 36, 48, 0.1);
@@ -2369,18 +2369,18 @@ body.explore-mode .page-shell {
   box-shadow: none;
 }
 
-.signal-results-button:disabled:hover,
-.signal-results-button:disabled:focus-visible {
+.profile-results-button:disabled:hover,
+.profile-results-button:disabled:focus-visible {
   transform: none;
   background: rgba(240, 244, 247, 0.72);
   box-shadow: none;
 }
 
-.signal-results-button:disabled::before {
+.profile-results-button:disabled::before {
   background: linear-gradient(90deg, rgba(95, 117, 132, 0.12), rgba(95, 117, 132, 0.18));
 }
 
-.signal-results-button--ready {
+.profile-results-button--ready {
   color: var(--accent-strong);
   border-color: rgba(29, 111, 127, 0.22);
 }
@@ -2512,7 +2512,7 @@ body.explore-mode .page-shell {
   margin-top: 18px;
 }
 
-.signal-list {
+.detail-list {
   margin: 18px 0 0;
   padding: 0;
   list-style: none;
@@ -2520,12 +2520,12 @@ body.explore-mode .page-shell {
   gap: 12px;
 }
 
-.signal-list li {
+.detail-list li {
   position: relative;
   padding-left: 18px;
 }
 
-.signal-list li::before {
+.detail-list li::before {
   content: "";
   position: absolute;
   left: 0;
