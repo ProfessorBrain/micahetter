@@ -3904,14 +3904,16 @@ let exploreZoom = 1;
 let exploreDragState = null;
 let suppressExploreCanvasClick = false;
 let exploreResizeFrame = null;
+let exploreNodeLayoutById = {};
 
 const EXPLORE_CANVAS_BASE_WIDTH = 1920;
 const EXPLORE_CANVAS_BASE_HEIGHT = 1220;
 const EXPLORE_ZOOM_MIN = 0.4;
 const EXPLORE_ZOOM_MAX = 2.2;
-const EXPLORE_ZOOM_STEP = 0.2;
-const EXPLORE_WHEEL_ZOOM_STEP = 0.12;
+const EXPLORE_ZOOM_STEP = 0.1;
+const EXPLORE_WHEEL_ZOOM_STEP = 0.1;
 const EXPLORE_DRAG_THRESHOLD = 4;
+const EXPLORE_KEYBOARD_PAN_STEP = 84;
 const EXPLORE_CANVAS_MARGIN_X = 360;
 const EXPLORE_CANVAS_MARGIN_Y = 300;
 let exploreCanvasBaseWidth = EXPLORE_CANVAS_BASE_WIDTH;
@@ -3962,10 +3964,14 @@ const resultsExploreButton = document.getElementById("resultsExploreButton");
 const closeExploreButton = document.getElementById("closeExploreButton");
 const exploreCanvasShell = document.getElementById("exploreCanvasShell");
 const exploreCanvas = document.getElementById("exploreCanvas");
+const exploreFitButton = document.getElementById("exploreFitButton");
+const exploreCenterButton = document.getElementById("exploreCenterButton");
 const exploreZoomOutButton = document.getElementById("exploreZoomOut");
 const exploreZoomResetButton = document.getElementById("exploreZoomReset");
 const exploreZoomInButton = document.getElementById("exploreZoomIn");
+const exploreZoomSlider = document.getElementById("exploreZoomSlider");
 const exploreZoomValue = document.getElementById("exploreZoomValue");
+const exploreMapStatus = document.getElementById("exploreMapStatus");
 const exploreNodeType = document.getElementById("exploreNodeType");
 const exploreNodeTitle = document.getElementById("exploreNodeTitle");
 const exploreNodeBlurb = document.getElementById("exploreNodeBlurb");
@@ -4800,7 +4806,14 @@ function showExploreView(trigger = null, selectedId = null, preserveReturn = fal
   renderExploreView();
   syncModalBodyLock();
   syncRankPanelVisibility();
-  centerExploreCanvas();
+  if (!preserveReturn) {
+    if (expandSelection) {
+      setExploreZoom(1, false, null, false);
+      centerExploreSelection(false);
+    } else {
+      fitExploreCanvas(false);
+    }
+  }
   scrollPageToTop();
 
   lastTrigger = trigger ?? document.activeElement;
@@ -4949,16 +4962,57 @@ function clampExploreZoom(value) {
   return Math.min(EXPLORE_ZOOM_MAX, Math.max(EXPLORE_ZOOM_MIN, value));
 }
 
+function roundExploreZoom(value) {
+  return clampExploreZoom(Math.round(value * 100) / 100);
+}
+
+function getExploreMaxScroll() {
+  return {
+    left: Math.max(0, exploreCanvasShell.scrollWidth - exploreCanvasShell.clientWidth),
+    top: Math.max(0, exploreCanvasShell.scrollHeight - exploreCanvasShell.clientHeight),
+  };
+}
+
+function setExploreScroll(left, top) {
+  const maxScroll = getExploreMaxScroll();
+  exploreCanvasShell.scrollLeft = clamp(left, 0, maxScroll.left);
+  exploreCanvasShell.scrollTop = clamp(top, 0, maxScroll.top);
+}
+
+function getExploreAnchorOffset(anchorPoint = null) {
+  if (!anchorPoint) {
+    return {
+      x: exploreCanvasShell.clientWidth / 2,
+      y: exploreCanvasShell.clientHeight / 2,
+    };
+  }
+
+  const shellRect = exploreCanvasShell.getBoundingClientRect();
+  return {
+    x: clamp(anchorPoint.clientX - shellRect.left, 0, exploreCanvasShell.clientWidth),
+    y: clamp(anchorPoint.clientY - shellRect.top, 0, exploreCanvasShell.clientHeight),
+  };
+}
+
+function setExploreMapStatus(message) {
+  if (exploreMapStatus) {
+    exploreMapStatus.textContent = message;
+  }
+}
+
 function syncExploreZoomControls() {
   const zoom = Number(exploreZoom.toFixed(2));
   const canvasWidth = Math.round(exploreCanvasBaseWidth * zoom);
   const canvasHeight = Math.round(exploreCanvasBaseHeight * zoom);
+  const zoomPercent = Math.round(zoom * 100);
 
   exploreCanvas.style.width = `${canvasWidth}px`;
   exploreCanvas.style.height = `${canvasHeight}px`;
   exploreCanvas.style.minWidth = `${canvasWidth}px`;
   exploreCanvas.style.minHeight = `${canvasHeight}px`;
-  exploreZoomValue.textContent = `${Math.round(zoom * 100)}%`;
+  exploreZoomValue.textContent = `${zoomPercent}%`;
+  exploreZoomSlider.value = String(zoomPercent);
+  exploreZoomSlider.setAttribute("aria-valuetext", `${zoomPercent}%`);
 
   exploreZoomOutButton.disabled = zoom <= EXPLORE_ZOOM_MIN + 0.01;
   exploreZoomResetButton.disabled = Math.abs(zoom - 1) < 0.01;
@@ -4967,43 +5021,81 @@ function syncExploreZoomControls() {
 
 function centerExploreCanvas() {
   requestAnimationFrame(() => {
-    const maxScrollLeft = Math.max(0, exploreCanvasShell.scrollWidth - exploreCanvasShell.clientWidth);
-    const maxScrollTop = Math.max(0, exploreCanvasShell.scrollHeight - exploreCanvasShell.clientHeight);
+    const maxScroll = getExploreMaxScroll();
 
-    exploreCanvasShell.scrollLeft = maxScrollLeft / 2;
-    exploreCanvasShell.scrollTop = maxScrollTop / 2;
+    setExploreScroll(maxScroll.left / 2, maxScroll.top / 2);
   });
 }
 
-function setExploreZoom(nextZoom, preserveCenter = true, anchorPoint = null) {
-  const previousWidth = exploreCanvasShell.scrollWidth || 1;
-  const previousHeight = exploreCanvasShell.scrollHeight || 1;
-  const shellRect = exploreCanvasShell.getBoundingClientRect();
-  const anchorOffsetX = anchorPoint
-    ? anchorPoint.clientX - shellRect.left
-    : exploreCanvasShell.clientWidth / 2;
-  const anchorOffsetY = anchorPoint
-    ? anchorPoint.clientY - shellRect.top
-    : exploreCanvasShell.clientHeight / 2;
-  const anchorXRatio = (exploreCanvasShell.scrollLeft + anchorOffsetX) / previousWidth;
-  const anchorYRatio = (exploreCanvasShell.scrollTop + anchorOffsetY) / previousHeight;
+function centerExploreSelection(announce = true) {
+  const node = exploreNodeLayoutById[selectedExploreId];
 
-  exploreZoom = clampExploreZoom(nextZoom);
-  syncExploreZoomControls();
-
-  if (!preserveCenter) {
+  if (!node) {
+    centerExploreCanvas();
     return;
   }
 
   requestAnimationFrame(() => {
-    exploreCanvasShell.scrollLeft = (exploreCanvasShell.scrollWidth * anchorXRatio) - anchorOffsetX;
-    exploreCanvasShell.scrollTop = (exploreCanvasShell.scrollHeight * anchorYRatio) - anchorOffsetY;
+    setExploreScroll(
+      (node.x * exploreZoom) - (exploreCanvasShell.clientWidth / 2),
+      (node.y * exploreZoom) - (exploreCanvasShell.clientHeight / 2)
+    );
   });
+
+  if (announce) {
+    setExploreMapStatus(`${node.name} is centered on the map.`);
+  }
 }
 
-function resetExploreZoom() {
-  setExploreZoom(1, false);
+function getExploreFitZoom() {
+  const widthRatio = exploreCanvasShell.clientWidth / Math.max(1, exploreCanvasBaseWidth);
+  const heightRatio = exploreCanvasShell.clientHeight / Math.max(1, exploreCanvasBaseHeight);
+  return roundExploreZoom(Math.min(widthRatio, heightRatio) * 0.96);
+}
+
+function setExploreZoom(nextZoom, preserveAnchor = true, anchorPoint = null, announce = false) {
+  const anchorOffset = getExploreAnchorOffset(anchorPoint);
+  const baseAnchorX = (exploreCanvasShell.scrollLeft + anchorOffset.x) / Math.max(exploreZoom, 0.01);
+  const baseAnchorY = (exploreCanvasShell.scrollTop + anchorOffset.y) / Math.max(exploreZoom, 0.01);
+
+  exploreZoom = roundExploreZoom(nextZoom);
+  syncExploreZoomControls();
+
+  if (!preserveAnchor) {
+    if (announce) {
+      setExploreMapStatus(`Map zoom ${Math.round(exploreZoom * 100)}%.`);
+    }
+
+    return;
+  }
+
+  requestAnimationFrame(() => {
+    setExploreScroll(
+      (baseAnchorX * exploreZoom) - anchorOffset.x,
+      (baseAnchorY * exploreZoom) - anchorOffset.y
+    );
+  });
+
+  if (announce) {
+    setExploreMapStatus(`Map zoom ${Math.round(exploreZoom * 100)}%.`);
+  }
+}
+
+function zoomExploreBy(delta, anchorPoint = null, announce = true) {
+  setExploreZoom(exploreZoom + delta, true, anchorPoint, announce);
+}
+
+function resetExploreZoom(announce = true) {
+  setExploreZoom(1, true, null, announce);
+}
+
+function fitExploreCanvas(announce = true) {
+  setExploreZoom(getExploreFitZoom(), false, null, announce);
   centerExploreCanvas();
+
+  if (announce) {
+    setExploreMapStatus("The full map is fitted in view.");
+  }
 }
 
 function handleExploreResize() {
@@ -5018,7 +5110,7 @@ function handleExploreResize() {
   exploreResizeFrame = requestAnimationFrame(() => {
     exploreResizeFrame = null;
     syncExploreZoomControls();
-    centerExploreCanvas();
+    setExploreScroll(exploreCanvasShell.scrollLeft, exploreCanvasShell.scrollTop);
   });
 }
 
@@ -5027,13 +5119,84 @@ function handleExploreWheel(event) {
     return;
   }
 
+  if (!event.ctrlKey && !event.metaKey) {
+    return;
+  }
+
   event.preventDefault();
   const direction = event.deltaY < 0 ? 1 : -1;
-  setExploreZoom(
-    exploreZoom + (direction * EXPLORE_WHEEL_ZOOM_STEP),
-    true,
-    { clientX: event.clientX, clientY: event.clientY }
+  zoomExploreBy(
+    direction * EXPLORE_WHEEL_ZOOM_STEP,
+    { clientX: event.clientX, clientY: event.clientY },
+    false
   );
+}
+
+function handleExploreCanvasKeydown(event) {
+  if (exploreView.classList.contains("hidden")) {
+    return;
+  }
+
+  const panStep = event.shiftKey ? EXPLORE_KEYBOARD_PAN_STEP * 2 : EXPLORE_KEYBOARD_PAN_STEP;
+  let handled = true;
+
+  switch (event.key) {
+    case "ArrowLeft":
+      setExploreScroll(exploreCanvasShell.scrollLeft - panStep, exploreCanvasShell.scrollTop);
+      break;
+    case "ArrowRight":
+      setExploreScroll(exploreCanvasShell.scrollLeft + panStep, exploreCanvasShell.scrollTop);
+      break;
+    case "ArrowUp":
+      setExploreScroll(exploreCanvasShell.scrollLeft, exploreCanvasShell.scrollTop - panStep);
+      break;
+    case "ArrowDown":
+      setExploreScroll(exploreCanvasShell.scrollLeft, exploreCanvasShell.scrollTop + panStep);
+      break;
+    case "+":
+    case "=":
+      zoomExploreBy(EXPLORE_ZOOM_STEP, null, true);
+      break;
+    case "-":
+    case "_":
+      zoomExploreBy(-EXPLORE_ZOOM_STEP, null, true);
+      break;
+    case "0":
+      resetExploreZoom(true);
+      break;
+    case "Home":
+      fitExploreCanvas(true);
+      break;
+    case "End":
+      centerExploreSelection(true);
+      break;
+    default:
+      handled = false;
+  }
+
+  if (handled) {
+    event.preventDefault();
+  }
+}
+
+function handleExploreZoomSliderInput(event) {
+  const zoomPercent = Number(event.target.value);
+
+  if (!Number.isFinite(zoomPercent)) {
+    return;
+  }
+
+  setExploreZoom(zoomPercent / 100, true, null, false);
+}
+
+function handleExploreZoomSliderChange(event) {
+  const zoomPercent = Number(event.target.value);
+
+  if (!Number.isFinite(zoomPercent)) {
+    return;
+  }
+
+  setExploreZoom(zoomPercent / 100, true, null, true);
 }
 
 function handleExplorePointerDown(event) {
@@ -5982,6 +6145,8 @@ function renderExploreInspector(selectedEntity, nodes) {
     return;
   }
 
+  setExploreMapStatus(`${selectedEntity.name} selected. Current fit ${selectedEntity.fitPercent}%.`);
+
   const nearbyNodes = getExploreNearbyNodes(selectedEntity, nodes);
   const nearbyMarkup = nearbyNodes.length > 0
     ? nearbyNodes.map(({ node }) => createPathButton(node, true)).join("")
@@ -6160,11 +6325,13 @@ function renderExploreView() {
 
   const specialtyMarkup = specialtyNodes.map((node) => `
     <g
+      id="explore-node-${node.id}"
       class="explore-node explore-node--specialty ${isSelected(node) ? "explore-node--selected" : ""} ${isConnected(node) ? "explore-node--connected" : ""}"
       data-explore-id="${node.id}"
       tabindex="0"
       role="button"
-      aria-label="${node.name}"
+      aria-pressed="${isSelected(node)}"
+      aria-label="${node.name}, primary specialty, ${node.fitPercent}% current fit${isSelected(node) ? ", selected" : ""}"
       style="--node-color: ${node.color}; --node-opacity: ${Math.max(0.38, node.normalized / 100)};"
     >
       <circle cx="${node.x}" cy="${node.y}" r="${node.radius}"></circle>
@@ -6173,11 +6340,13 @@ function renderExploreView() {
   `).join("");
   const fellowshipMarkup = fellowshipNodes.map((node) => `
     <g
+      id="explore-node-${node.id}"
       class="explore-node explore-node--fellowship ${isSelected(node) ? "explore-node--selected" : ""} ${isConnected(node) ? "explore-node--connected" : ""}"
       data-explore-id="${node.id}"
       tabindex="0"
       role="button"
-      aria-label="${node.name}"
+      aria-pressed="${isSelected(node)}"
+      aria-label="${node.name}, fellowship path, ${node.fitPercent}% current fit${isSelected(node) ? ", selected" : ""}"
       style="--node-color: ${node.color}; --node-opacity: ${Math.max(0.24, node.normalized / 100)};"
     >
       <circle cx="${node.x}" cy="${node.y}" r="${node.radius}"></circle>
@@ -6189,6 +6358,7 @@ function renderExploreView() {
   exploreCanvas.setAttribute("viewBox", `0 0 ${width} ${height}`);
   exploreCanvasBaseWidth = width;
   exploreCanvasBaseHeight = height;
+  exploreNodeLayoutById = nodeMap;
   exploreCanvas.innerHTML = `${parentLinkMarkup}${similarityLinkMarkup}${specialtyMarkup}${fellowshipMarkup}${locationMarkup}`;
   syncExploreZoomControls();
   renderExploreInspector(activeNode, nodes);
@@ -6953,10 +7123,15 @@ closeCompareAboutButton.addEventListener("click", () => setCompareAboutModalOpen
 compareAboutBackdrop.addEventListener("click", () => setCompareAboutModalOpen(false));
 closeCompareButton.addEventListener("click", returnFromCompareView);
 closeExploreButton.addEventListener("click", returnFromExploreView);
-exploreZoomOutButton.addEventListener("click", () => setExploreZoom(exploreZoom - EXPLORE_ZOOM_STEP));
-exploreZoomResetButton.addEventListener("click", resetExploreZoom);
-exploreZoomInButton.addEventListener("click", () => setExploreZoom(exploreZoom + EXPLORE_ZOOM_STEP));
+exploreFitButton.addEventListener("click", () => fitExploreCanvas(true));
+exploreCenterButton.addEventListener("click", () => centerExploreSelection(true));
+exploreZoomOutButton.addEventListener("click", () => zoomExploreBy(-EXPLORE_ZOOM_STEP));
+exploreZoomResetButton.addEventListener("click", () => resetExploreZoom(true));
+exploreZoomInButton.addEventListener("click", () => zoomExploreBy(EXPLORE_ZOOM_STEP));
+exploreZoomSlider.addEventListener("input", handleExploreZoomSliderInput);
+exploreZoomSlider.addEventListener("change", handleExploreZoomSliderChange);
 exploreCanvasShell.addEventListener("wheel", handleExploreWheel, { passive: false });
+exploreCanvasShell.addEventListener("keydown", handleExploreCanvasKeydown);
 exploreCanvasShell.addEventListener("pointerdown", handleExplorePointerDown);
 exploreCanvasShell.addEventListener("pointermove", handleExplorePointerMove);
 exploreCanvasShell.addEventListener("pointerup", endExplorePointerDrag);

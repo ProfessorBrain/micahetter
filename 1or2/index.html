@@ -256,17 +256,40 @@
                     Color follows specialty family
                   </span>
                 </div>
-                <div class="explore-zoom" aria-label="Explorer zoom controls">
-                  <button class="explore-zoom__button" id="exploreZoomOut" type="button" aria-label="Zoom out">-</button>
-                  <button class="explore-zoom__reset" id="exploreZoomReset" type="button" aria-label="Reset zoom">
-                    <span id="exploreZoomValue">100%</span>
-                  </button>
-                  <button class="explore-zoom__button" id="exploreZoomIn" type="button" aria-label="Zoom in">+</button>
+                <div class="explore-map-actions" aria-label="Map view controls">
+                  <button class="explore-map-action" id="exploreFitButton" type="button" aria-label="Fit whole map in view" title="Fit whole map">Fit</button>
+                  <button class="explore-map-action" id="exploreCenterButton" type="button" aria-label="Center selected map item" title="Center selected item">Center</button>
+                  <div class="explore-zoom" aria-label="Map zoom controls">
+                    <button class="explore-zoom__button" id="exploreZoomOut" type="button" aria-label="Zoom out">-</button>
+                    <label class="sr-only" for="exploreZoomSlider">Map zoom</label>
+                    <input
+                      class="explore-zoom__slider"
+                      id="exploreZoomSlider"
+                      type="range"
+                      min="40"
+                      max="220"
+                      step="5"
+                      value="100"
+                    >
+                    <button class="explore-zoom__reset" id="exploreZoomReset" type="button" aria-label="Reset zoom">
+                      <span id="exploreZoomValue">100%</span>
+                    </button>
+                    <button class="explore-zoom__button" id="exploreZoomIn" type="button" aria-label="Zoom in">+</button>
+                  </div>
                 </div>
               </div>
               <p class="sr-only" id="exploreCanvasLabel">Network map of specialties and fellowship paths</p>
-              <div class="explore-canvas-shell" id="exploreCanvasShell">
-                <svg class="explore-canvas" id="exploreCanvas" viewBox="0 0 1280 920" aria-labelledby="exploreCanvasLabel"></svg>
+              <p class="sr-only" id="exploreMapHelp">Drag the map or use the scrollbars to pan. Use the map controls, plus and minus keys, or Control plus mouse wheel to zoom. Arrow keys pan when the map is focused.</p>
+              <p class="sr-only" id="exploreMapStatus" aria-live="polite"></p>
+              <div
+                class="explore-canvas-shell"
+                id="exploreCanvasShell"
+                tabindex="0"
+                role="region"
+                aria-labelledby="exploreCanvasLabel"
+                aria-describedby="exploreMapHelp exploreMapStatus"
+              >
+                <svg class="explore-canvas" id="exploreCanvas" viewBox="0 0 1280 920" role="group" aria-labelledby="exploreCanvasLabel"></svg>
               </div>
             </section>
 
