@@ -389,6 +389,21 @@ const fellowshipPaths = [
     ],
   },
   {
+    id: "neuroendovascular-intervention",
+    name: "Neuroendovascular Intervention",
+    shortLabel: "Neuroendo",
+    parentId: "neurological-surgery",
+    blurb: "Catheter-based, image-guided care for cerebrovascular disease with anatomy, technical precision, and acute decision-making.",
+    tags: ["procedures", "vascular", "images"],
+    signals: [
+      { questionId: "procedures", answer: "yes", weight: 4, label: "hands-on procedural care" },
+      { questionId: "images-and-data", answer: "yes", weight: 4, label: "image-guided decisions" },
+      { questionId: "anatomic-localization", answer: "yes", weight: 3, label: "neuroanatomic localization" },
+      { questionId: "fine-motor-precision", answer: "yes", weight: 3, label: "fine technical precision" },
+      { questionId: "regular-urgency", answer: "yes", weight: 2, label: "time-sensitive decisions" },
+    ],
+  },
+  {
     id: "vascular-neurology",
     name: "Vascular Neurology",
     shortLabel: "Stroke",
@@ -2009,8 +2024,9 @@ const sharedExploreParentIdsByFellowshipId = {
   "interventional-radiology": ["radiology", "interventional-radiology-integrated"],
   "medical-genetics": ["med-peds", "pediatrics", "internal-medicine", "obgyn"],
   "medical-toxicology": ["emergency-medicine", "internal-medicine", "pediatrics"],
+  "neuroendovascular-intervention": ["neurological-surgery", "neurology", "child-neurology", "radiology", "interventional-radiology-integrated"],
   "neuro-ophthalmology": ["ophthalmology", "neurology"],
-  "neurocritical-care": ["neurology", "anesthesiology", "emergency-medicine", "internal-medicine"],
+  "neurocritical-care": ["neurology", "child-neurology", "anesthesiology", "emergency-medicine", "internal-medicine", "general-surgery", "neurological-surgery"],
   "neuromuscular-medicine-neurology": ["neurology", "physical-medicine-rehab"],
   "neuromuscular-medicine-pmr": ["neurology", "physical-medicine-rehab"],
   "pain-medicine": ["anesthesiology", "physical-medicine-rehab", "neurology", "psychiatry"],
@@ -5119,10 +5135,6 @@ function handleExploreWheel(event) {
     return;
   }
 
-  if (!event.ctrlKey && !event.metaKey) {
-    return;
-  }
-
   event.preventDefault();
   const direction = event.deltaY < 0 ? 1 : -1;
   zoomExploreBy(
@@ -5399,12 +5411,33 @@ function buildFellowshipSignalLine(label) {
   return `Your answers also leaned toward ${label}, which often supports this path.`;
 }
 
+function getFellowshipParentResults(path, specialtyResultMap) {
+  return getExploreAccessibleParentIds(path)
+    .map((parentId) => specialtyResultMap[parentId])
+    .filter(Boolean);
+}
+
+function getBestFellowshipParentResult(parentResults, fallbackParent) {
+  return parentResults.reduce((best, parent) => {
+    if (!best || (parent.adjusted ?? 0) > (best.adjusted ?? 0)) {
+      return parent;
+    }
+
+    return best;
+  }, fallbackParent ?? null);
+}
+
 function getFellowshipScoreData(specialtyResults = getScoreData()) {
   const answeredCount = countExplicitAnswers();
   const specialtyResultMap = Object.fromEntries(specialtyResults.map((item) => [item.id, item]));
   const ranked = fellowshipPaths
     .map((path) => {
-      const parent = specialtyResultMap[path.parentId];
+      const accessibleParentResults = getFellowshipParentResults(path, specialtyResultMap);
+      const accessibleParentAdjustedById = Object.fromEntries(
+        accessibleParentResults.map((parentResult) => [parentResult.id, parentResult.adjusted ?? 0])
+      );
+      const parent = getBestFellowshipParentResult(accessibleParentResults, specialtyResultMap[path.parentId]);
+      const parentId = parent?.id ?? path.parentId;
       const matchedSignals = [];
       let matchedWeight = 0;
       let answeredSignalWeight = 0;
@@ -5453,7 +5486,7 @@ function getFellowshipScoreData(specialtyResults = getScoreData()) {
         reasons.push({
           kind: "home",
           weight: Math.max(1, Math.round(parent.normalized / 18)),
-          explanation: `${parent.name} is the home specialty for this path, so its specialty-level score gives useful context.`,
+          explanation: `${parent.name} is an entry specialty for this path, so its specialty-level score gives useful context.`,
         });
       }
 
@@ -5465,8 +5498,10 @@ function getFellowshipScoreData(specialtyResults = getScoreData()) {
       return {
         ...path,
         kind: "fellowship",
-        color: specialtyById[path.parentId]?.color ?? "#2d7d89",
-        parentName: specialtyById[path.parentId]?.name ?? "Specialty",
+        color: specialtyById[parentId]?.color ?? "#2d7d89",
+        parentName: specialtyById[parentId]?.name ?? "Specialty",
+        scoringParentId: parentId,
+        accessibleParentAdjustedById,
         parentAdjusted,
         signalRatio,
         answeredSignalWeight,
@@ -5524,7 +5559,10 @@ function getTopFellowshipsForSpecialty(specialtyId, limit = 3, fellowshipResults
 
   const source = fellowshipResults ?? getFellowshipScoreData();
   return source
-    .filter((path) => path.parentId === specialtyId && path.parentAdjusted > 0.08 && path.matchedWeight > 0)
+    .filter((path) => {
+      const specialtyAdjusted = path.accessibleParentAdjustedById?.[specialtyId] ?? 0;
+      return getExploreAccessibleParentIds(path).includes(specialtyId) && specialtyAdjusted > 0.08 && path.matchedWeight > 0;
+    })
     .slice(0, limit);
 }
 
