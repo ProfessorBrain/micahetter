@@ -389,21 +389,6 @@ const fellowshipPaths = [
     ],
   },
   {
-    id: "neuroendovascular-intervention",
-    name: "Neuroendovascular Intervention",
-    shortLabel: "Neuroendo",
-    parentId: "neurological-surgery",
-    blurb: "Catheter-based, image-guided care for cerebrovascular disease with anatomy, technical precision, and acute decision-making.",
-    tags: ["procedures", "vascular", "images"],
-    signals: [
-      { questionId: "procedures", answer: "yes", weight: 4, label: "hands-on procedural care" },
-      { questionId: "images-and-data", answer: "yes", weight: 4, label: "image-guided decisions" },
-      { questionId: "anatomic-localization", answer: "yes", weight: 3, label: "neuroanatomic localization" },
-      { questionId: "fine-motor-precision", answer: "yes", weight: 3, label: "fine technical precision" },
-      { questionId: "regular-urgency", answer: "yes", weight: 2, label: "time-sensitive decisions" },
-    ],
-  },
-  {
     id: "vascular-neurology",
     name: "Vascular Neurology",
     shortLabel: "Stroke",
@@ -1101,20 +1086,6 @@ const fellowshipPaths = [
       makeSignal("function-rehab", "yes", 2, "function and disability mattering"),
       makeSignal("diagnostic-workup", "yes", 3, "figuring out what is going on"),
       makeSignal("continuity-follow-up", "yes", 2, "longitudinal follow-up"),
-    ]
-  ),
-  makeFellowshipPath(
-    "neurocritical-care",
-    "Neurocritical Care",
-    "Neurocrit",
-    "neurology",
-    "Acuity, hospital teams, physiology, and localization around neurologic emergencies.",
-    ["critical care", "localization", "acuity"],
-    [
-      makeSignal("anatomic-localization", "yes", 3, "careful localization"),
-      makeSignal("physiology", "yes", 3, "real-time physiology"),
-      makeSignal("hospital-vs-office", "yes", 3, "hospital-based work"),
-      makeSignal("regular-urgency", "yes", 3, "urgent decision-making"),
     ]
   ),
   makeFellowshipPath(
@@ -2024,9 +1995,7 @@ const sharedExploreParentIdsByFellowshipId = {
   "interventional-radiology": ["radiology", "interventional-radiology-integrated"],
   "medical-genetics": ["med-peds", "pediatrics", "internal-medicine", "obgyn"],
   "medical-toxicology": ["emergency-medicine", "internal-medicine", "pediatrics"],
-  "neuroendovascular-intervention": ["neurological-surgery", "neurology", "child-neurology", "radiology", "interventional-radiology-integrated"],
   "neuro-ophthalmology": ["ophthalmology", "neurology"],
-  "neurocritical-care": ["neurology", "child-neurology", "anesthesiology", "emergency-medicine", "internal-medicine", "general-surgery", "neurological-surgery"],
   "neuromuscular-medicine-neurology": ["neurology", "physical-medicine-rehab"],
   "neuromuscular-medicine-pmr": ["neurology", "physical-medicine-rehab"],
   "pain-medicine": ["anesthesiology", "physical-medicine-rehab", "neurology", "psychiatry"],
