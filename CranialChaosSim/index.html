@@ -159,36 +159,6 @@
       gap: 16px;
     }
 
-    .status-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .stat {
-      min-height: 82px;
-      padding: 14px;
-      border-radius: var(--radius);
-      background: var(--surface);
-      border: 1px solid rgba(18, 18, 18, 0.13);
-    }
-
-    .stat span {
-      display: block;
-      color: var(--muted);
-      font-size: 0.76rem;
-      font-weight: 800;
-      letter-spacing: 0;
-      text-transform: uppercase;
-    }
-
-    .stat strong {
-      display: block;
-      margin-top: 4px;
-      font-size: 1.35rem;
-      line-height: 1.08;
-    }
-
     .table-panel {
       padding: 18px;
     }
@@ -202,21 +172,33 @@
       margin-bottom: 14px;
     }
 
-    .round-header p {
-      margin-bottom: 0;
+    .round-label {
       color: var(--muted);
+      font-size: 0.86rem;
+      font-weight: 750;
     }
 
-    .prompt-zone {
+    .round-workspace {
       display: grid;
-      grid-template-columns: minmax(220px, 0.72fr) minmax(220px, 1fr);
-      gap: 16px;
-      align-items: stretch;
+      grid-template-columns: minmax(340px, 0.9fr) minmax(420px, 1.1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .activity-column,
+    .answer-column {
+      min-width: 0;
+    }
+
+    .answer-column {
+      display: grid;
+      gap: 12px;
+      align-content: start;
     }
 
     .axon-stack {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 14px;
     }
 
@@ -259,6 +241,14 @@
       overflow-wrap: anywhere;
     }
 
+    .card-cue {
+      padding-top: 10px;
+      border-top: 1px solid rgba(5, 5, 5, 0.18);
+      color: #343432;
+      font-size: 0.78rem;
+      line-height: 1.35;
+    }
+
     .bonus-frame {
       border-color: #0b0b0b;
       background: #343432;
@@ -279,30 +269,6 @@
       font-weight: 900;
     }
 
-    .requirement {
-      display: grid;
-      gap: 12px;
-      align-content: start;
-      padding: 14px 0;
-    }
-
-    .requirement-card {
-      border-left: 5px solid var(--amber);
-      border-radius: 0 var(--radius) var(--radius) 0;
-      background: #fff8ec;
-      padding: 14px 16px;
-    }
-
-    .requirement-card.no-bonus {
-      border-left-color: var(--green);
-      background: #edf7f4;
-    }
-
-    .requirement-card p {
-      margin-bottom: 0;
-      color: var(--muted);
-    }
-
     .answer-builder {
       display: grid;
       gap: 18px;
@@ -314,6 +280,10 @@
       border: 1px solid rgba(18, 18, 18, 0.14);
       border-radius: 6px;
       background: var(--surface-2);
+    }
+
+    .answer-column .answer-slots {
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     }
 
     .bank-heading {
@@ -468,10 +438,6 @@
       font-size: 0.86rem;
     }
 
-    .award-panel {
-      padding: 16px;
-    }
-
     .award-row {
       display: flex;
       flex-wrap: wrap;
@@ -509,81 +475,91 @@
       margin: 0;
     }
 
-    .tabs {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-
-    .tab-btn {
-      border: 1px solid rgba(18, 18, 18, 0.16);
-      border-radius: 999px;
-      background: #fff;
-      padding: 8px 11px;
+    .reference-picker {
+      display: grid;
+      gap: 6px;
+      max-width: 440px;
+      margin-bottom: 18px;
+      color: var(--ink);
       font-size: 0.82rem;
-      font-weight: 850;
+      font-weight: 800;
     }
 
-    .tab-btn[aria-selected="true"] {
-      border-color: var(--teal);
-      background: var(--teal);
-      color: #fff;
+    .reference-picker select {
+      width: 100%;
+      border: 1px solid rgba(18, 18, 18, 0.2);
+      border-radius: 6px;
+      background: #fff;
+      color: var(--ink);
+      padding: 10px 11px;
+      font: inherit;
     }
 
     .reference-card {
       display: grid;
-      gap: 10px;
+      gap: 16px;
       border-top: 1px solid rgba(18, 18, 18, 0.12);
-      padding-top: 14px;
+      padding-top: 18px;
     }
 
-    .reference-card h3 {
+    .reference-heading {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .reference-heading > span {
+      min-width: 62px;
+      border-right: 3px solid var(--teal);
+      padding: 8px 12px 8px 0;
+      color: var(--teal-dark);
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .reference-heading h3 {
+      margin-bottom: 2px;
       font-size: 1.25rem;
       letter-spacing: 0;
     }
 
-    .fact-list {
+    .reference-heading p {
+      margin-bottom: 0;
+      color: var(--muted);
+    }
+
+    .reference-primary {
       display: grid;
-      gap: 9px;
-      margin: 0;
-      padding: 0;
-      list-style: none;
+      gap: 4px;
+      border-left: 4px solid var(--green);
+      background: #edf7f4;
+      padding: 13px 15px;
     }
 
-    .fact-list li {
-      display: grid;
-      gap: 3px;
-      padding: 9px 0;
-      border-bottom: 1px solid rgba(18, 18, 18, 0.08);
-    }
-
-    .fact-list li:last-child {
-      border-bottom: 0;
-    }
-
-    .fact-list span {
+    .reference-primary span {
       color: var(--muted);
       font-size: 0.74rem;
       font-weight: 850;
-      letter-spacing: 0;
       text-transform: uppercase;
     }
 
-    .mini-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 8px;
-      margin-top: 10px;
+    .reference-details {
+      border-top: 1px solid rgba(18, 18, 18, 0.1);
     }
 
-    .mini-card {
-      border: 1px solid rgba(18, 18, 18, 0.13);
-      border-radius: 6px;
-      background: #fff;
-      padding: 9px;
-      font-size: 0.82rem;
-      text-align: center;
+    .reference-details details {
+      border-bottom: 1px solid rgba(18, 18, 18, 0.1);
+      padding: 11px 0;
+    }
+
+    .reference-details summary {
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    .reference-details p {
+      margin: 9px 0 2px;
+      color: var(--muted);
     }
 
     .log-list {
@@ -729,7 +705,7 @@
     }
 
     @media (max-width: 800px) {
-      .prompt-zone {
+      .round-workspace {
         grid-template-columns: 1fr;
       }
     }
@@ -749,10 +725,6 @@
         justify-content: flex-start;
       }
 
-      .mini-grid {
-        grid-template-columns: 1fr;
-      }
-
       .answer-slots,
       .bank-grid {
         grid-template-columns: 1fr;
@@ -762,22 +734,8 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
-      .status-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-
-      .table-panel,
-      .award-panel {
+      .table-panel {
         padding: 13px;
-      }
-
-      .stat {
-        min-height: 72px;
-        padding: 10px;
-      }
-
-      .stat strong {
-        font-size: 1.08rem;
       }
 
       .modal-header,
@@ -821,45 +779,25 @@
 
     <section id="gamePanel" class="game-layout">
       <div class="game-main">
-        <section class="status-grid" aria-label="Game status">
-          <div class="stat">
-            <span>Round</span>
-            <strong id="roundStat">1</strong>
-          </div>
-          <div class="stat">
-            <span>Score</span>
-            <strong id="scoreStat">0 points</strong>
-          </div>
-          <div class="stat">
-            <span>Round value</span>
-            <strong id="pointsStat">1 point</strong>
-          </div>
-        </section>
-
         <section id="gameOver" class="game-over" aria-live="polite"></section>
 
         <section class="table-panel panel" aria-labelledby="tableTitle">
           <div class="round-header">
-            <div>
-              <h2 id="tableTitle">Current Round</h2>
-              <p id="roundInstruction">Drag or tap one choice from each bank into the answer tray.</p>
-            </div>
-            <div class="actions">
-              <button id="newGameTop" type="button" class="btn btn-small">New game</button>
-            </div>
+            <h2 id="tableTitle">Current activity</h2>
+            <span id="roundLabel" class="round-label">Round 1 of 8</span>
           </div>
 
-          <div class="prompt-zone">
-            <div class="axon-stack" id="axonStack"></div>
-            <div class="requirement" id="requirementPanel"></div>
+          <div class="round-workspace">
+            <div class="activity-column">
+              <div class="axon-stack" id="axonStack"></div>
+            </div>
+            <div class="answer-column">
+              <div id="answerTray"></div>
+              <div id="awardControls" class="award-row" aria-live="polite"></div>
+            </div>
           </div>
 
           <div id="answerBuilder" class="answer-builder" aria-live="polite"></div>
-        </section>
-
-        <section class="award-panel panel" aria-labelledby="awardTitle">
-          <h2 id="awardTitle">Answer check</h2>
-          <div id="awardControls" class="award-row"></div>
         </section>
       </div>
     </section>
@@ -872,7 +810,7 @@
         </header>
         <div class="modal-body">
           <ol class="how-list">
-            <li>Read the activity and its focus cue. Each cue has one best cranial nerve.</li>
+            <li>Read the activity and the clue printed on its card. Each clue has one best cranial nerve.</li>
             <li>Drag a nerve from the Nerve bank into the Best nerve slot, or tap it to place it.</li>
             <li>Match the supporting function. Bonus rounds also require one exact anatomy detail.</li>
             <li>Select <strong>Check answer</strong>. Every slot is compared directly with the stored solution.</li>
@@ -902,7 +840,10 @@
           <button id="referenceClose" type="button" class="btn btn-icon" aria-label="Close nerve reference">&times;</button>
         </header>
         <div class="modal-body">
-          <div id="nerveTabs" class="tabs" role="tablist" aria-label="Choose cranial nerve"></div>
+          <label class="reference-picker" for="nerveSelect">
+            <span>Cranial nerve</span>
+            <select id="nerveSelect"></select>
+          </label>
           <div id="referenceCard" class="reference-card"></div>
           <div class="modal-actions">
             <button id="referenceDismiss" type="button" class="btn">Close</button>
@@ -1081,12 +1022,12 @@
       },
       {
         text: "Getting a facial/ear piercing",
-        cue: "Focus on general sensation from a facial piercing.",
+        cue: "A facial piercing activates general facial sensation.",
         nerveId: "V"
       },
       {
         text: "Scrolling TikTok for three hours straight",
-        cue: "Focus on accommodation and pupillary constriction while viewing a near screen.",
+        cue: "Viewing a near screen requires accommodation and pupillary constriction.",
         nerveId: "III"
       },
       {
@@ -1101,7 +1042,7 @@
       },
       {
         text: "Giving yourself a COVID swab test",
-        cue: "Focus on general sensation from the nasal cavity during the swab.",
+        cue: "The swab activates general sensation from the nasal cavity.",
         nerveId: "V"
       },
       {
@@ -1129,7 +1070,7 @@
       },
       {
         text: "Watching the big summer blockbuster in a theater",
-        cue: "Focus on the nerve carrying the movie soundtrack from the cochlea.",
+        cue: "The movie soundtrack is carried from the cochlea.",
         nerveId: "VIII"
       }
     ];
@@ -1172,18 +1113,14 @@
     };
 
     const els = {
-      newGameTop: document.getElementById("newGameTop"),
-      roundStat: document.getElementById("roundStat"),
-      scoreStat: document.getElementById("scoreStat"),
-      pointsStat: document.getElementById("pointsStat"),
+      roundLabel: document.getElementById("roundLabel"),
       axonStack: document.getElementById("axonStack"),
-      requirementPanel: document.getElementById("requirementPanel"),
+      answerTray: document.getElementById("answerTray"),
       answerBuilder: document.getElementById("answerBuilder"),
       awardControls: document.getElementById("awardControls"),
-      nerveTabs: document.getElementById("nerveTabs"),
+      nerveSelect: document.getElementById("nerveSelect"),
       referenceCard: document.getElementById("referenceCard"),
       logList: document.getElementById("logList"),
-      roundInstruction: document.getElementById("roundInstruction"),
       gameOver: document.getElementById("gameOver"),
       howToButton: document.getElementById("howToButton"),
       howToDialog: document.getElementById("howToDialog"),
@@ -1432,36 +1369,22 @@
     }
 
     function render() {
-      renderStatus();
+      renderRoundLabel();
       renderAxonCards();
       renderAnswerBuilder();
       renderAnswerControls();
-      renderReferenceTabs();
+      renderReferencePicker();
       renderReferenceCard();
       renderLog();
     }
 
-    function renderStatus() {
-      const roundPoints = state.currentRound ? 1 + (state.currentRound.bonus ? state.currentRound.bonus.points : 0) : 0;
-      const player = state.players[0];
-      els.roundStat.textContent = state.gameActive && state.currentRound ? `${state.roundNumber} / ${state.roundLimit}` : `${Math.min(state.roundNumber, state.roundLimit)} / ${state.roundLimit}`;
-      els.scoreStat.textContent = player ? pluralizePoint(player.score) : "0 points";
-      els.pointsStat.textContent = state.currentRound ? pluralizePoint(roundPoints) : "-";
-      if (!state.currentRound) {
-        els.roundInstruction.textContent = "The solo run is complete.";
-      } else if (state.currentRound.result && state.currentRound.result.passed) {
-        els.roundInstruction.textContent = "Answer scored. Continue to the next prompt.";
-      } else if (state.currentRound.result) {
-        els.roundInstruction.textContent = "One or more matches are incorrect. Try again.";
-      } else {
-        els.roundInstruction.textContent = "Drag or tap one choice from each bank into the answer tray.";
-      }
+    function renderRoundLabel() {
+      els.roundLabel.textContent = `Round ${Math.min(state.roundNumber, state.roundLimit)} of ${state.roundLimit}`;
     }
 
     function renderAxonCards() {
       if (!state.currentRound) {
         els.axonStack.innerHTML = "";
-        els.requirementPanel.innerHTML = "";
         return;
       }
 
@@ -1470,6 +1393,7 @@
           <div class="card-inner">
             <div class="card-kicker">Activity</div>
             <div class="card-text">${escapeHtml(state.currentRound.prompt.text)}</div>
+            <div class="card-cue">${escapeHtml(state.currentRound.prompt.cue)}</div>
           </div>
         </article>
       `;
@@ -1488,24 +1412,6 @@
         : "";
 
       els.axonStack.innerHTML = promptCard + bonusCard;
-
-      if (bonus) {
-        els.requirementPanel.innerHTML = `
-          <div class="requirement-card">
-            <h3>Focus</h3>
-            <p>${escapeHtml(state.currentRound.prompt.cue)}</p>
-          </div>
-          <p><strong>${escapeHtml(bonus.name)}:</strong> Select the matching ${escapeHtml(bonus.hintKey)} detail for +${bonus.points}.</p>
-        `;
-      } else {
-        els.requirementPanel.innerHTML = `
-          <div class="requirement-card no-bonus">
-            <h3>Focus</h3>
-            <p>${escapeHtml(state.currentRound.prompt.cue)}</p>
-          </div>
-          <p>Match the single best cranial nerve and its function.</p>
-        `;
-      }
     }
 
     function getChoiceLabel(type, nerveId) {
@@ -1576,6 +1482,7 @@
 
     function renderAnswerBuilder() {
       if (!state.currentRound) {
+        els.answerTray.innerHTML = "";
         els.answerBuilder.innerHTML = "";
         return;
       }
@@ -1586,7 +1493,7 @@
         ? renderBank("detail", `${round.bonus.name} bank`, round.options.detail)
         : "";
 
-      els.answerBuilder.innerHTML = `
+      els.answerTray.innerHTML = `
         <section class="answer-tray" aria-labelledby="answerTrayTitle">
           <div class="bank-heading">
             <h3 id="answerTrayTitle">Answer tray</h3>
@@ -1598,6 +1505,9 @@
             ${detailSlot}
           </div>
         </section>
+      `;
+
+      els.answerBuilder.innerHTML = `
         ${renderBank("nerve", "Nerve bank", round.options.nerve)}
         ${renderBank("function", "Function bank", round.options.function)}
         ${detailBank}
@@ -1613,7 +1523,7 @@
         });
       });
 
-      els.answerBuilder.querySelectorAll("[data-slot]").forEach((slot) => {
+      els.answerTray.querySelectorAll("[data-slot]").forEach((slot) => {
         slot.addEventListener("dragover", (event) => {
           event.preventDefault();
           event.dataTransfer.dropEffect = "copy";
@@ -1628,7 +1538,7 @@
         });
       });
 
-      els.answerBuilder.querySelectorAll("[data-clear]").forEach((button) => {
+      els.answerTray.querySelectorAll("[data-clear]").forEach((button) => {
         button.addEventListener("click", () => clearChoice(button.dataset.clear));
       });
     }
@@ -1686,54 +1596,41 @@
       document.getElementById("retryAnswer").addEventListener("click", retryAnswer);
     }
 
-    function renderReferenceTabs() {
-      els.nerveTabs.innerHTML = NERVES.map((nerve) => `
-        <button
-          type="button"
-          class="tab-btn"
-          role="tab"
-          aria-selected="${state.selectedReference === nerve.id ? "true" : "false"}"
-          data-reference="${nerve.id}">
-          CN ${nerve.roman}
-        </button>
+    function renderReferencePicker() {
+      els.nerveSelect.innerHTML = NERVES.map((nerve) => `
+        <option value="${nerve.id}">CN ${escapeHtml(nerve.roman)} - ${escapeHtml(nerve.name)}</option>
       `).join("");
-
-      els.nerveTabs.querySelectorAll("[data-reference]").forEach((button) => {
-        button.addEventListener("click", () => {
-          state.selectedReference = button.dataset.reference;
-          renderReferenceTabs();
-          renderReferenceCard();
-        });
-      });
+      els.nerveSelect.value = state.selectedReference;
     }
 
     function renderReferenceCard() {
       const nerve = getNerve(state.selectedReference);
       els.referenceCard.innerHTML = `
-        <h3>CN ${escapeHtml(nerve.roman)} - ${escapeHtml(nerve.name)}</h3>
-        <div class="mini-grid">
-          <div class="mini-card"><strong>${escapeHtml(nerve.modality)}</strong></div>
-          <div class="mini-card"><strong>${escapeHtml(nerve.shortName)}</strong></div>
-          <div class="mini-card"><strong>CN ${escapeHtml(nerve.roman)}</strong></div>
+        <div class="reference-heading">
+          <span>CN ${escapeHtml(nerve.roman)}</span>
+          <div>
+            <h3>${escapeHtml(nerve.name)}</h3>
+            <p>${escapeHtml(nerve.modality)}</p>
+          </div>
         </div>
-        <ul class="fact-list">
-          <li>
-            <span>Function</span>
-            <strong>${escapeHtml(nerve.function)}</strong>
-          </li>
-          <li>
-            <span>Foramina</span>
-            <strong>${escapeHtml(nerve.foramina)}</strong>
-          </li>
-          <li>
-            <span>Synapse</span>
-            <strong>${escapeHtml(nerve.synapse)}</strong>
-          </li>
-          <li>
-            <span>Pathway</span>
-            <strong>${escapeHtml(nerve.pathway)}</strong>
-          </li>
-        </ul>
+        <section class="reference-primary">
+          <span>Primary role</span>
+          <strong>${escapeHtml(nerve.function)}</strong>
+        </section>
+        <div class="reference-details">
+          <details>
+            <summary>Skull passage</summary>
+            <p>${escapeHtml(nerve.foramina)}</p>
+          </details>
+          <details>
+            <summary>Synapse</summary>
+            <p>${escapeHtml(nerve.synapse)}</p>
+          </details>
+          <details>
+            <summary>Pathway</summary>
+            <p>${escapeHtml(nerve.pathway)}</p>
+          </details>
+        </div>
       `;
     }
 
@@ -1772,11 +1669,18 @@
       });
     }
 
-    els.newGameTop.addEventListener("click", newGame);
     els.howToButton.addEventListener("click", () => openDialog(els.howToDialog));
     els.howToClose.addEventListener("click", () => closeDialog(els.howToDialog));
     els.howToDismiss.addEventListener("click", () => closeDialog(els.howToDialog));
-    els.referenceButton.addEventListener("click", () => openDialog(els.referenceDialog));
+    els.referenceButton.addEventListener("click", () => {
+      renderReferencePicker();
+      renderReferenceCard();
+      openDialog(els.referenceDialog);
+    });
+    els.nerveSelect.addEventListener("change", () => {
+      state.selectedReference = els.nerveSelect.value;
+      renderReferenceCard();
+    });
     els.referenceClose.addEventListener("click", () => closeDialog(els.referenceDialog));
     els.referenceDismiss.addEventListener("click", () => closeDialog(els.referenceDialog));
     closeOnBackdrop(els.howToDialog);
