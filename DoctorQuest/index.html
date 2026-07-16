@@ -1,0 +1,3614 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Doctor Quest: The Curious Casebook of Dr. Click - Local HTML</title>
+  <style>
+    :root {
+      --ink: #211923;
+      --paper: #f7edcf;
+      --gold: #d7aa44;
+      --maroon: #5c1f31;
+      --teal: #1f6f78;
+      --clinic-green: #7ea687;
+      --brick: #9b4d45;
+      --retro-font: "Courier New", Courier, "Lucida Console", Monaco, monospace;
+      --emoji-font: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      min-height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 20% 12%, rgba(215, 170, 68, 0.2), transparent 28rem),
+        linear-gradient(135deg, #1d3f47 0%, #2d2034 48%, #5c2a32 100%);
+      color: var(--paper);
+      font-family: var(--retro-font);
+    }
+
+    button { font: inherit; }
+
+    .game-root {
+      --game-pad: clamp(6px, 1.5vh, 24px);
+      height: 100dvh;
+      min-height: 0;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      padding: var(--game-pad);
+      overflow: hidden;
+    }
+
+    .game-root.cursor-active, .game-root.cursor-active * { cursor: none; }
+
+    .emoji-cursor {
+      position: fixed;
+      z-index: 80;
+      display: none;
+      pointer-events: none;
+      font-family: var(--emoji-font);
+      font-size: 28px;
+      line-height: 1;
+      filter: drop-shadow(2px 3px 0 rgba(0,0,0,0.55));
+      transform: translate(-50%, -50%);
+    }
+
+    .emoji-cursor.visible { display: block; }
+
+    .game-cabinet {
+      width: min(1180px, 100%);
+      height: 100%;
+      min-height: 0;
+      margin: 0 auto;
+      border: 5px solid #180f17;
+      background: #2a1824;
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr);
+      overflow: hidden;
+      box-shadow:
+        0 28px 80px rgba(0, 0, 0, 0.4),
+        inset 0 0 0 4px #b58337,
+        inset 0 0 0 8px #3a283a;
+    }
+
+    .game-header {
+      padding: clamp(7px, 1.4vh, 16px) 20px clamp(5px, 1vh, 12px);
+      border-bottom: 4px solid #130b12;
+      background:
+        linear-gradient(90deg, rgba(126, 166, 135, 0.36), transparent 32%),
+        linear-gradient(180deg, #5c1f31 0%, #341927 100%);
+    }
+
+    .top-toolbar {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: clamp(6px, 1vh, 10px) 12px;
+      border-bottom: 4px solid #130b12;
+      background: linear-gradient(180deg, #34213a, var(--ink));
+    }
+
+    .tool-strip {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: stretch;
+      flex: 0 0 auto;
+    }
+
+    .tool-button {
+      position: relative;
+      min-height: 48px;
+      min-width: 48px;
+      width: 48px;
+      height: 48px;
+      flex: 0 0 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      margin: 0;
+      border: 3px outset var(--gold);
+      border-radius: 0;
+      background: linear-gradient(180deg, #f6e2a6, #b98443);
+      color: var(--ink);
+      font-family: var(--retro-font);
+      font-size: 1.25rem;
+      line-height: 1;
+      appearance: none;
+      -webkit-appearance: none;
+      touch-action: manipulation;
+    }
+
+    .tool-button > * { pointer-events: none; }
+
+    .tool-button.selected {
+      border-style: inset;
+      background: linear-gradient(180deg, #91d8c5, var(--teal));
+      color: var(--paper);
+    }
+
+    .tool-icon {
+      font-family: var(--emoji-font);
+      font-size: 1.35rem;
+      line-height: 1;
+    }
+
+    .top-inventory {
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1 1 260px;
+      min-width: 220px;
+      padding: 5px 8px;
+      border: 3px ridge var(--gold);
+      background: rgba(247, 237, 207, 0.12);
+    }
+
+    .toolbar-spacer { flex: 1 1 auto; }
+
+    .toolbar-menu {
+      position: relative;
+      display: flex;
+      align-items: stretch;
+      flex: 0 1 172px;
+    }
+
+    .settings-menu {
+      flex: 0 0 48px;
+    }
+
+    .toolbar-menu-button,
+    .chart-review-button {
+      position: relative;
+      z-index: 30;
+      min-height: 48px;
+      height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      margin: 0;
+      padding: 7px 12px;
+      border: 3px outset var(--gold);
+      border-radius: 0;
+      background: linear-gradient(180deg, #fff0b8, var(--gold));
+      color: var(--ink);
+      font-family: var(--retro-font);
+      font-size: 0.78rem;
+      line-height: 1;
+      user-select: none;
+      appearance: none;
+      -webkit-appearance: none;
+      touch-action: manipulation;
+    }
+
+    .chart-review-button {
+      flex: 0 1 172px;
+    }
+
+    .toolbar-menu-button:after { content: "\25BE"; margin-left: 8px; }
+
+    .settings-menu .toolbar-menu-button {
+      padding: 0;
+      color: var(--ink);
+      font-family: var(--retro-font);
+      font-size: 1.45rem;
+      font-weight: 900;
+    }
+
+    .settings-menu .toolbar-menu-button:after {
+      content: "";
+      margin-left: 0;
+    }
+
+    .toolbar-menu.open .toolbar-menu-button {
+      border-style: inset;
+      background: linear-gradient(180deg, #f7edcf, #d7aa44);
+    }
+
+    .menu-panel {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 8px);
+      z-index: 24;
+      width: 248px;
+      padding: 10px;
+      border: 4px ridge var(--gold);
+      background: var(--ink);
+      box-shadow: 0 14px 30px rgba(0,0,0,0.45);
+    }
+
+    .menu-panel[hidden] { display: none; }
+
+    .menu-item {
+      width: 100%;
+      margin-bottom: 8px;
+      padding: 9px;
+      border: 3px ridge var(--gold);
+      background: var(--paper);
+      color: var(--ink);
+      text-align: left;
+    }
+
+    .menu-item span {
+      display: block;
+      margin-top: 4px;
+      color: var(--maroon);
+      font-family: var(--retro-font);
+      font-size: 0.66rem;
+      text-transform: uppercase;
+    }
+
+    .menu-item.locked { filter: saturate(0.65); opacity: 0.78; }
+
+    .menu-note {
+      padding: 8px;
+      border: 2px solid rgba(247,237,207,0.55);
+      color: var(--paper);
+      font-family: var(--retro-font);
+      font-size: 0.68rem;
+      line-height: 1.35;
+    }
+
+    .music-control {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 8px;
+      padding: 8px;
+      border: 2px solid rgba(247,237,207,0.55);
+      background: rgba(247,237,207,0.08);
+      color: var(--paper);
+      font-family: var(--retro-font);
+      font-size: 0.68rem;
+    }
+
+    .music-control label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      text-transform: uppercase;
+    }
+
+    .music-control input[type="range"] {
+      width: 100%;
+      accent-color: var(--gold);
+    }
+
+    .music-control .menu-item { margin-bottom: 0; }
+
+    .eyebrow, .game-header h1 { margin: 0; }
+
+    .eyebrow {
+      color: #f2ce77;
+      font-family: var(--retro-font);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+    }
+
+    .game-header h1 {
+      color: #fff3bf;
+      font-size: clamp(1.08rem, 2.4vw, 1.62rem);
+      line-height: 1.08;
+      text-shadow: 2px 2px 0 #1b1019;
+    }
+
+    .game-header .eyebrow { margin-top: 4px; }
+
+    .adventure-frame {
+      min-height: 0;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      border-bottom: 4px solid #130b12;
+      background: #09090a;
+      container-type: size;
+    }
+
+    .room-scene {
+      position: relative;
+      width: 100%;
+      max-height: 100%;
+      aspect-ratio: 1448 / 1086;
+      min-height: 0;
+      overflow: hidden;
+      background: #09090a;
+      image-rendering: pixelated;
+    }
+
+    @supports (width: 1cqw) {
+      .room-scene {
+        width: min(100cqw, calc(100cqh * 1448 / 1086));
+        height: min(100cqh, calc(100cqw * 1086 / 1448));
+        max-height: none;
+      }
+    }
+
+    .scene-art, .back-wall, .floor-shadow, .door-art, .bed-art,
+    .tray-art, .cart-art, .cabinet-art, .ct-lightbox,
+    .monitor-art, .phone-art { position: absolute; }
+
+    .scene-art {
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .scene-image {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+      image-rendering: pixelated;
+    }
+
+    .back-wall {
+      inset: 0 0 28%;
+      background:
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.08) 0 2px, transparent 2px 72px),
+        linear-gradient(180deg, rgba(255,255,255,0.12), transparent 48%);
+    }
+
+    .floor-shadow {
+      left: 12%; right: 7%; bottom: 9%; height: 15%;
+      border-radius: 50%;
+      background: rgba(19, 11, 18, 0.36);
+    }
+
+    .door-art {
+      left: 0.8%; top: 27%; width: 8%; height: 49%;
+      border: 5px solid #362230;
+      background: linear-gradient(90deg, #34535c, #20343f);
+      box-shadow: inset -8px 0 0 rgba(0,0,0,0.22);
+    }
+
+    .door-art:after {
+      content: "";
+      position: absolute;
+      right: 12%; top: 48%;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--gold);
+    }
+
+    .ct-lightbox {
+      left: 9%; top: 16%; width: 17%; height: 25%;
+      border: 5px ridge #6e7f8d;
+      background: #d9e2d8;
+      box-shadow: 0 8px 0 rgba(0,0,0,0.22);
+    }
+
+    .ct-lightbox span {
+      position: absolute;
+      top: 16%; width: 32%; height: 66%;
+      border-radius: 48%;
+      border: 7px solid #515b61;
+      background: radial-gradient(circle, #777 0 18%, #b8bbb3 19% 34%, #444 35% 38%, #ddd 39%);
+    }
+
+    .ct-lightbox span:first-child { left: 14%; }
+    .ct-lightbox span:last-child { right: 14%; }
+
+    .monitor-art {
+      right: 17%; top: 17%; width: 15%; height: 21%;
+      border: 5px solid #26323a;
+      background: #0e2220;
+      box-shadow: 0 8px 0 rgba(0,0,0,0.24);
+    }
+
+    .monitor-line {
+      position: absolute;
+      left: 9%; right: 9%; top: 48%;
+      height: 4px;
+      background: linear-gradient(90deg, #78f0aa 0 18%, transparent 18% 24%, #78f0aa 24% 32%, transparent 32% 38%, #78f0aa 38% 100%);
+    }
+
+    .monitor-dot {
+      position: absolute;
+      right: 12%; bottom: 12%;
+      width: 8px; height: 8px;
+      background: #e4574f;
+    }
+
+    .phone-art {
+      right: 5%; top: 16%; width: 7%; height: 9%;
+      border-radius: 12px 12px 4px 4px;
+      background: var(--ink);
+      border: 3px solid var(--gold);
+    }
+
+    .bed-art {
+      left: 37%; top: 43%; width: 30%; height: 31%;
+      border-radius: 10px 24px 18px 12px;
+      background: linear-gradient(180deg, #e8d9b5, #c69e68);
+      box-shadow: inset 0 -18px 0 #6f3e3e, 0 14px 0 rgba(0,0,0,0.22);
+    }
+
+    .pillow {
+      position: absolute;
+      right: 12%; top: 8%;
+      width: 28%; height: 30%;
+      border-radius: 50% 35% 35% 50%;
+      background: var(--paper);
+    }
+
+    .patient-head {
+      position: absolute;
+      right: 19%; top: 22%;
+      width: 13%; height: 18%;
+      border-radius: 50%;
+      background: #b97958;
+      box-shadow: inset -4px -2px 0 rgba(0,0,0,0.2);
+    }
+
+    .patient-body {
+      position: absolute;
+      left: 28%; top: 33%;
+      width: 45%; height: 26%;
+      border-radius: 18px;
+      background: #456a8a;
+    }
+
+    .patient-arm {
+      position: absolute;
+      top: 38%;
+      width: 26%; height: 7%;
+      border-radius: 8px;
+      background: #b97958;
+    }
+
+    .right-arm { right: 22%; transform: rotate(-10deg); }
+    .left-arm { left: 25%; transform: rotate(17deg); filter: saturate(0.82); }
+
+    .tray-art {
+      left: 29%; top: 62%; width: 12%; height: 13%;
+      border-radius: 8px;
+      background: #8f9a99;
+      border: 4px solid #3f4c50;
+    }
+
+    .plate {
+      position: absolute;
+      left: 16%; top: 20%;
+      width: 64%; height: 58%;
+      border-radius: 50%;
+      background: #f5f0dd;
+    }
+
+    .sandwich {
+      position: absolute;
+      top: 34%;
+      width: 26%; height: 25%;
+      background: var(--gold);
+      border: 2px solid #8b5a2b;
+    }
+
+    .right-half { right: 25%; clip-path: polygon(0 0, 100% 50%, 0 100%); }
+    .left-half { left: 25%; opacity: 0.35; clip-path: polygon(100% 0, 0 50%, 100% 100%); }
+
+    .cart-art {
+      right: 15%; top: 52%; width: 12%; height: 24%;
+      border: 4px solid #322432;
+      background: #6b8391;
+      box-shadow: 0 10px 0 rgba(0,0,0,0.22);
+    }
+
+    .cart-art span {
+      display: block;
+      height: 14%;
+      margin: 11% 12%;
+      background: #d8e0d2;
+      border: 2px solid #34404a;
+    }
+
+    .cabinet-art {
+      right: 3%; top: 35%; width: 11%; height: 39%;
+      border: 5px solid #3a283a;
+      background: linear-gradient(90deg, #82543f, #a36a51);
+      box-shadow: inset 0 0 0 4px rgba(255,255,255,0.08);
+    }
+
+    .cabinet-art span {
+      position: absolute;
+      left: 16%; right: 16%;
+      height: 3px;
+      background: #2a1824;
+    }
+
+    .cabinet-art span:first-child { top: 35%; }
+    .cabinet-art span:last-child { top: 65%; }
+
+    .hotspot {
+      position: absolute;
+      z-index: 4;
+      border: 2px solid transparent;
+      background: transparent;
+      color: transparent;
+      cursor: pointer;
+    }
+
+    .hotspot span {
+      position: absolute;
+      left: 50%; bottom: 100%;
+      min-width: max-content;
+      padding: 4px 7px;
+      border: 2px solid var(--ink);
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--retro-font);
+      font-size: 0.68rem;
+      opacity: 0;
+      transform: translateX(-50%) translateY(-4px);
+      transition: opacity 120ms ease;
+    }
+
+    .hotspot:hover, .hotspot:focus-visible {
+      border-color: rgba(247,237,207,0.8);
+      outline: none;
+      background: rgba(247,237,207,0.1);
+    }
+
+    .game-root.inventory-dragging .hotspot {
+      border-color: rgba(215,170,68,0.54);
+      background: rgba(247,237,207,0.08);
+    }
+
+    .game-root.inventory-dragging .hotspot.drop-target {
+      border-color: #fff0b8;
+      background: rgba(215,170,68,0.28);
+      box-shadow: inset 0 0 0 2px rgba(33,25,35,0.75), 0 0 18px rgba(247,237,207,0.6);
+    }
+
+    .hotspot:hover span, .hotspot:focus-visible span { opacity: 1; }
+
+    .case-rail {
+      padding: 14px 10px;
+      border-left: 4px solid #130b12;
+      background: linear-gradient(180deg, #3a283a, var(--ink));
+    }
+
+    .case-rail h2, .inventory-panel h2 {
+      margin: 0 0 5px;
+      color: #f2ce77;
+      font-family: var(--retro-font);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+    }
+
+    .case-file {
+      width: 100%;
+      margin-bottom: 8px;
+      padding: 8px;
+      border: 3px ridge var(--gold);
+      background: var(--paper);
+      color: var(--ink);
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .case-file span {
+      display: block;
+      margin-top: 4px;
+      color: var(--maroon);
+      font-family: var(--retro-font);
+      font-size: 0.66rem;
+      text-transform: uppercase;
+    }
+
+    .case-file.locked { filter: saturate(0.65); opacity: 0.78; }
+
+    .inventory-panel {
+      border: 4px ridge var(--gold);
+      background: var(--paper);
+      color: var(--ink);
+    }
+
+    .help-button, .inventory-item, .primary-action, .option, .exam-card, .message-ok {
+      border: 3px outset var(--gold);
+      background: linear-gradient(180deg, #f6e2a6, #b98443);
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    .option.selected {
+      border-style: inset;
+      background: linear-gradient(180deg, #91d8c5, var(--teal));
+      color: var(--paper);
+    }
+
+    .inventory-panel {
+      min-height: 0;
+      padding: clamp(7px, 1vh, 10px);
+      overflow: hidden;
+    }
+
+    .inventory-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .top-inventory .inventory-list { flex: 1 1 auto; }
+
+    .inventory-item {
+      min-height: 30px;
+      padding: 4px 8px;
+      font-size: 0.72rem;
+      font-family: var(--retro-font);
+      white-space: nowrap;
+      touch-action: none;
+      user-select: none;
+    }
+
+    .inventory-item.dragging {
+      border-style: inset;
+      opacity: 0.55;
+    }
+
+    .drag-ghost {
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 120;
+      display: none;
+      max-width: 220px;
+      padding: 6px 9px;
+      border: 3px outset var(--gold);
+      background: linear-gradient(180deg, #f6e2a6, #b98443);
+      color: var(--ink);
+      font-family: var(--retro-font);
+      font-size: 0.72rem;
+      line-height: 1.1;
+      pointer-events: none;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.45);
+      transform: translate(12px, 12px);
+    }
+
+    .drag-ghost.visible { display: block; }
+
+    .game-root.inventory-dragging .emoji-cursor { display: none !important; }
+
+    .message-popup {
+      position: fixed;
+      inset: 0;
+      z-index: 35;
+      display: grid;
+      place-items: center;
+      padding: clamp(18px, 4vw, 48px);
+      background: rgba(15, 9, 18, 0.22);
+    }
+
+    .message-popup[hidden] { display: none; }
+
+    .message-window {
+      width: min(560px, calc(100vw - 36px));
+      max-height: min(70dvh, 340px);
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      border: 5px ridge var(--gold);
+      background:
+        linear-gradient(90deg, rgba(255,232,172,0.2), transparent 12px, transparent calc(100% - 12px), rgba(255,232,172,0.2)),
+        var(--paper);
+      color: var(--ink);
+      box-shadow:
+        inset 0 0 0 2px #6f3b57,
+        0 18px 38px rgba(0, 0, 0, 0.52);
+      font-family: var(--retro-font);
+    }
+
+    .message-window h2 {
+      margin: 0;
+      padding: 10px 14px;
+      border-bottom: 4px solid #6f3b57;
+      background: var(--maroon);
+      color: #fff3bf;
+      font-size: 1rem;
+      line-height: 1.1;
+      text-shadow: 1px 1px 0 #1b1019;
+    }
+
+    .message-window p {
+      min-height: 86px;
+      margin: 0;
+      padding: 16px 18px;
+      font-size: 1rem;
+      line-height: 1.38;
+      overflow: hidden;
+    }
+
+    .message-actions {
+      display: flex;
+      justify-content: flex-end;
+      padding: 0 14px 14px;
+    }
+
+    .message-ok {
+      min-width: 84px;
+      min-height: 38px;
+      font-family: var(--retro-font);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+    }
+
+    .history-dialogue {
+      position: absolute;
+      z-index: 18;
+      left: 1.1%;
+      right: 1.1%;
+      top: 2.2%;
+      display: grid;
+      grid-template-columns: clamp(86px, 12vw, 126px) 1fr;
+      gap: 12px;
+      align-items: start;
+      color: #5b2f48;
+      font-family: var(--retro-font);
+      image-rendering: pixelated;
+    }
+
+    .history-dialogue[hidden] { display: none; }
+
+    .history-portrait,
+    .history-box {
+      border: 4px ridge #f4cf72;
+      box-shadow:
+        inset 0 0 0 2px #6f3b57,
+        0 6px 0 rgba(26, 12, 22, 0.46);
+      background: #d49372;
+    }
+
+    .history-portrait {
+      position: relative;
+      aspect-ratio: 1 / 1.18;
+      overflow: hidden;
+      background: #365f8c;
+    }
+
+    .history-portrait img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      image-rendering: pixelated;
+    }
+
+    .history-box {
+      position: relative;
+      min-height: clamp(82px, 13vw, 118px);
+      padding: 15px 18px 20px;
+      background:
+        linear-gradient(90deg, rgba(255,232,172,0.24), transparent 10px, transparent calc(100% - 10px), rgba(255,232,172,0.24)),
+        #d49372;
+      font-size: clamp(0.82rem, 1.7vw, 1.2rem);
+      line-height: 1.35;
+      text-shadow: 1px 1px 0 rgba(255,230,184,0.24);
+      text-align: left;
+      cursor: default;
+    }
+
+    .history-speaker {
+      display: block;
+      margin-bottom: 5px;
+      color: #2e2136;
+      font-size: 0.62em;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+
+    .history-next {
+      position: absolute;
+      right: 12px;
+      bottom: 5px;
+      color: #f7edcf;
+      text-shadow: 1px 1px 0 #5b2f48;
+    }
+
+    .history-text {
+      min-height: 2.7em;
+      margin-bottom: 10px;
+    }
+
+    .history-topics {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .history-topic,
+    .history-close {
+      min-height: 34px;
+      padding: 6px 8px;
+      border: 2px outset #f4cf72;
+      border-radius: 0;
+      background: #f2c48f;
+      color: #2e2136;
+      font-family: var(--retro-font);
+      font-size: 0.62em;
+      line-height: 1.15;
+      text-align: left;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .history-topic.done {
+      border-style: inset;
+      background: #bb8e73;
+      color: #47273a;
+    }
+
+    .history-close {
+      position: absolute;
+      right: 10px;
+      bottom: -42px;
+      width: auto;
+      text-align: center;
+      background: #f6e2a6;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: none;
+      place-items: center;
+      padding: 20px;
+      background: rgba(16, 12, 22, 0.72);
+    }
+
+    .modal-backdrop.open { display: grid; }
+
+    .modal-card {
+      width: min(920px, 100%);
+      max-height: min(88vh, 820px);
+      overflow: auto;
+      border: 5px solid #140b12;
+      background:
+        linear-gradient(180deg, rgba(126,166,135,0.18), transparent 160px),
+        var(--paper);
+      color: var(--ink);
+      box-shadow: inset 0 0 0 5px var(--gold), 0 26px 70px rgba(0,0,0,0.5);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      border-bottom: 4px solid var(--ink);
+      background: var(--maroon);
+      color: #fff3bf;
+    }
+
+    .modal-header h2 { margin: 0; font-size: 1.3rem; }
+
+    .modal-header button {
+      width: 36px;
+      height: 32px;
+      border: 3px outset var(--gold);
+      background: var(--paper);
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    .modal-card > p, .quiz-card > p { margin: 18px 20px; line-height: 1.45; }
+
+    .option-stack, .exam-grid, .modal-actions { margin: 18px 20px; }
+
+    .option-stack { display: grid; gap: 10px; }
+
+    .option { padding: 12px; text-align: left; }
+
+    .hint {
+      margin: 12px 20px;
+      padding: 10px;
+      border-left: 5px solid var(--teal);
+      background: rgba(31,111,120,0.12);
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .primary-action { min-height: 44px; padding: 9px 14px; font-weight: 700; }
+
+    .primary-action:disabled {
+      cursor: not-allowed;
+      filter: grayscale(0.9);
+      opacity: 0.58;
+    }
+
+    .exam-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .exam-card {
+      min-height: 96px;
+      padding: 12px;
+      text-align: left;
+    }
+
+    .exam-card strong, .exam-card span { display: block; }
+    .exam-card span { margin-top: 8px; font-size: 0.9rem; }
+    .exam-card.done { background: linear-gradient(180deg, #c9e8cf, var(--clinic-green)); }
+
+    .mini-card { width: min(720px, 100%); }
+
+    .cancellation-sheet {
+      position: relative;
+      height: 280px;
+      margin: 20px;
+      border: 4px solid var(--ink);
+      background:
+        linear-gradient(90deg, transparent 49.7%, rgba(92,31,49,0.22) 49.7% 50.3%, transparent 50.3%),
+        #fff9e8;
+    }
+
+    .sheet-midline {
+      position: absolute;
+      left: 50%; top: 5%; bottom: 5%;
+      width: 2px;
+      background: rgba(33,25,35,0.18);
+    }
+
+    .bell {
+      position: absolute;
+      width: 34px; height: 30px;
+      border: 3px solid var(--ink);
+      border-radius: 50% 50% 42% 42%;
+      background: #f6e2a6;
+      color: var(--ink);
+      font-family: var(--retro-font);
+      transform: translate(-50%, -50%);
+      cursor: pointer;
+    }
+
+    .bell.right { opacity: 0.42; }
+    .bell.selected { background: var(--teal); color: var(--paper); }
+
+    .timing-meter {
+      position: relative;
+      height: 42px;
+      margin: 28px 20px 14px;
+      border: 4px solid var(--ink);
+      background: linear-gradient(90deg, var(--maroon), #8b5a2b, var(--teal));
+    }
+
+    .target-zone, .meter-marker { position: absolute; top: 0; bottom: 0; }
+    .target-zone { background: rgba(255,243,191,0.62); }
+    .meter-marker { width: 5px; background: #fff3bf; box-shadow: 0 0 0 2px var(--ink); }
+
+    .hit-pips { display: flex; gap: 8px; margin: 0 20px 18px; }
+
+    .hit-pips span {
+      width: 28px; height: 14px;
+      border: 2px solid var(--ink);
+      background: #cab88b;
+    }
+
+    .hit-pips span.lit { background: var(--teal); }
+
+    .wash-card { width: min(820px, 100%); }
+
+    .wash-hud {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 12px;
+      margin: 14px 20px 0;
+    }
+
+    .wash-progress {
+      height: 20px;
+      border: 3px solid var(--ink);
+      background: #cab88b;
+      overflow: hidden;
+      box-shadow: inset 0 0 0 2px rgba(255,243,191,0.35);
+    }
+
+    .wash-progress-fill {
+      display: block;
+      width: 0;
+      height: 100%;
+      background: linear-gradient(90deg, var(--teal), #91d8c5, #fff3bf);
+      transition: width 120ms steps(4);
+    }
+
+    .wash-progress-text {
+      min-width: 198px;
+      color: var(--ink);
+      font-family: var(--retro-font);
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .wash-game {
+      position: relative;
+      width: calc(100% - 40px);
+      max-width: min(740px, calc(52vh * 1456 / 1092));
+      aspect-ratio: 1456 / 1092;
+      margin: 14px auto 20px;
+      border: 5px solid var(--ink);
+      overflow: hidden;
+      background: #596063 url("assets/handwash-sink.png") center / 100% 100% no-repeat;
+      cursor: crosshair;
+      image-rendering: pixelated;
+      touch-action: none;
+      user-select: none;
+    }
+
+    .wash-bubble {
+      position: absolute;
+      z-index: 2;
+      left: var(--bubble-x);
+      top: var(--bubble-y);
+      width: var(--bubble-size);
+      height: var(--bubble-size);
+      border: 2px solid rgba(255,255,255,0.88);
+      border-radius: 50%;
+      margin: 0;
+      padding: 0;
+      background:
+        radial-gradient(circle at 30% 28%, rgba(255,255,255,0.96) 0 13%, transparent 14%),
+        radial-gradient(circle at 66% 70%, rgba(145,216,197,0.5) 0 22%, transparent 23%),
+        rgba(234,253,250,0.56);
+      box-shadow:
+        inset -3px -4px 0 rgba(31,111,120,0.2),
+        0 3px 0 rgba(33,25,35,0.2);
+      transform: translate(-50%, -50%);
+      transition: opacity 120ms ease, transform 120ms ease, filter 120ms ease;
+      cursor: crosshair;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .wash-bubble.popped {
+      opacity: 0;
+      filter: blur(2px);
+      pointer-events: none;
+      transform: translate(-50%, -50%) scale(0.16);
+    }
+
+    .wash-bubble:focus-visible {
+      outline: 3px solid #fff3bf;
+      outline-offset: 2px;
+    }
+
+    .wash-splat {
+      position: absolute;
+      z-index: 3;
+      left: var(--splat-x);
+      top: var(--splat-y);
+      width: var(--splat-size);
+      height: var(--splat-size);
+      margin: 0;
+      padding: 0;
+      border: 2px solid rgba(88,24,31,0.8);
+      border-radius: 46% 54% 42% 58%;
+      background:
+        radial-gradient(circle at 31% 28%, rgba(255,228,127,0.8) 0 7%, transparent 8%),
+        radial-gradient(circle at 70% 68%, rgba(100,31,43,0.88) 0 18%, transparent 19%),
+        radial-gradient(circle at 30% 72%, rgba(125,58,37,0.92) 0 19%, transparent 20%),
+        #7b2a2f;
+      box-shadow:
+        -7px 3px 0 -3px #7b2a2f,
+        6px -4px 0 -4px #7b2a2f,
+        0 3px 0 rgba(33,25,35,0.28);
+      transform: translate(-50%, -50%) rotate(var(--splat-rotation));
+      cursor: not-allowed;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .wash-splat.hit {
+      opacity: 0.46;
+      filter: grayscale(0.6);
+      pointer-events: none;
+      transform: translate(-50%, -50%) rotate(var(--splat-rotation)) scale(0.92);
+    }
+
+    .ct-scan {
+      position: relative;
+      width: min(420px, calc(100% - 40px));
+      height: 320px;
+      margin: 20px auto 28px;
+      border: 5px solid var(--ink);
+      background:
+        radial-gradient(ellipse at center, transparent 0 34%, rgba(80,65,111,0.2) 35% 36%, transparent 37%),
+        radial-gradient(ellipse at 50% 50%, #d9ddd5 0 18%, #8d9496 19% 34%, #4d5558 35% 50%, #1d2528 51%);
+    }
+
+    .ct-scan:before, .ct-scan:after {
+      content: "";
+      position: absolute;
+      top: 38%;
+      width: 16%; height: 24%;
+      border-radius: 50%;
+      background: rgba(25,32,34,0.46);
+    }
+
+    .ct-scan:before { left: 37%; }
+    .ct-scan:after { right: 37%; }
+
+    .ct-zone {
+      position: absolute;
+      border: 2px solid transparent;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .ct-zone:hover, .ct-zone:focus-visible { border-color: #fff3bf; outline: none; }
+    .ct-zone.correct { left: 16%; top: 30%; width: 25%; height: 24%; border-radius: 44%; }
+    .ct-zone.ventricle { left: 39%; top: 41%; width: 22%; height: 22%; }
+    .ct-zone.artifact { right: 13%; bottom: 16%; width: 23%; height: 20%; }
+
+    .report-sheet {
+      margin: 18px 20px;
+      padding: 14px;
+      border: 4px ridge var(--gold);
+      background:
+        repeating-linear-gradient(0deg, transparent 0 28px, rgba(31,111,120,0.08) 28px 30px),
+        #fff9e8;
+      color: var(--ink);
+    }
+
+    .report-sheet h3 {
+      margin: 0 0 10px;
+      color: var(--maroon);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+    }
+
+    .report-row {
+      display: grid;
+      grid-template-columns: 120px minmax(0, 1fr);
+      gap: 10px;
+      margin: 0 0 8px;
+      line-height: 1.35;
+    }
+
+    .report-row dt {
+      color: var(--teal);
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .report-row dd { margin: 0; }
+
+    .report-impression {
+      margin: 12px 0 0;
+      padding-top: 12px;
+      border-top: 3px solid rgba(33,25,35,0.24);
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    .case-complete-stamp {
+      display: inline-block;
+      margin: 0 20px 14px;
+      padding: 7px 10px;
+      border: 3px solid var(--maroon);
+      color: var(--maroon);
+      font-weight: 700;
+      text-transform: uppercase;
+      transform: rotate(-2deg);
+    }
+
+    .help-modal {
+      width: min(780px, 100%);
+    }
+
+    .help-layout {
+      display: grid;
+      gap: 16px;
+      padding: 18px 20px 22px;
+    }
+
+    .help-layout h3, .next-move h3 {
+      margin: 0 0 8px;
+      color: var(--maroon);
+      font-family: var(--retro-font);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+    }
+
+    .help-layout p {
+      margin: 0;
+      line-height: 1.45;
+    }
+
+    .help-list {
+      margin: 0;
+      padding-left: 20px;
+      line-height: 1.5;
+    }
+
+    .next-move {
+      padding: 14px;
+      border: 4px ridge var(--gold);
+      background: rgba(31,111,120,0.12);
+    }
+
+    .review-modal {
+      width: min(1060px, 100%);
+    }
+
+    .review-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.8fr);
+      align-items: start;
+      gap: 18px;
+      padding: 18px 20px 20px;
+    }
+
+    .review-column {
+      display: grid;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .review-panel {
+      padding: 12px;
+      border: 4px ridge var(--gold);
+      background: rgba(255,249,232,0.62);
+    }
+
+    .review-layout h3 {
+      margin: 0 0 8px;
+      color: var(--maroon);
+      font-family: var(--retro-font);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+    }
+
+    .review-finding-list {
+      display: grid;
+      gap: 10px;
+      max-height: min(52vh, 520px);
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .review-action-list {
+      margin: 0;
+      padding-left: 22px;
+      line-height: 1.45;
+    }
+
+    .review-action-list li {
+      margin-bottom: 5px;
+    }
+
+    .review-finding {
+      padding: 10px 12px;
+      border: 3px solid rgba(33,25,35,0.28);
+      background: rgba(255,249,232,0.76);
+    }
+
+    .review-finding strong,
+    .review-finding span {
+      display: block;
+    }
+
+    .review-finding strong {
+      color: var(--maroon);
+    }
+
+    .review-finding span {
+      margin-top: 3px;
+      color: var(--teal);
+      font-family: var(--retro-font);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+    }
+
+    .review-finding p {
+      margin: 7px 0 0;
+      line-height: 1.42;
+    }
+
+    .review-empty,
+    .review-next {
+      margin: 0;
+      line-height: 1.45;
+    }
+
+    @media (max-width: 980px) {
+      .review-layout { grid-template-columns: 1fr; }
+      .toolbar-spacer { display: none; }
+      .top-inventory { flex: 1 1 100%; min-width: 0; }
+      .toolbar-menu { flex: 1 1 180px; }
+      .settings-menu { flex: 0 0 48px; }
+      .chart-review-button { flex: 1 1 180px; }
+      .toolbar-menu-button { width: 100%; justify-content: center; }
+      .menu-panel { left: 0; right: auto; width: min(320px, 92vw); }
+    }
+
+    @media (max-width: 700px) {
+      .game-root { padding: 10px; }
+      .game-header h1 { font-size: 1rem; }
+      .room-scene { min-height: 0; }
+      .exam-grid { grid-template-columns: 1fr; }
+      .tool-button { flex: 0 0 48px; }
+      .history-dialogue {
+        grid-template-columns: 76px 1fr;
+        gap: 8px;
+        top: 3%;
+      }
+      .history-box {
+        min-height: 78px;
+        padding: 10px 13px 18px;
+        font-size: 0.72rem;
+      }
+      .history-topics { grid-template-columns: 1fr; }
+      .history-close {
+        position: static;
+        margin-top: 8px;
+      }
+      .modal-backdrop { padding: 8px; }
+      .wash-hud {
+        grid-template-columns: 1fr;
+        gap: 6px;
+        margin: 10px 14px 0;
+      }
+      .wash-progress-text {
+        min-width: 0;
+        text-align: left;
+      }
+      .wash-game {
+        width: calc(100% - 28px);
+        max-width: min(100%, calc(40vh * 1456 / 1092));
+        margin: 10px 14px 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="game-root cursor-active" data-mode="look">
+    <div class="emoji-cursor" id="emojiCursor" aria-hidden="true">&#128065;&#65039;</div>
+    <div class="drag-ghost" id="dragGhost" aria-hidden="true"></div>
+    <section class="game-cabinet" aria-label="Doctor Quest: The Curious Casebook of Dr. Click medical case adventure">
+      <header class="game-header">
+        <div>
+          <h1>Doctor Quest: The Curious Casebook of Dr. Click</h1>
+          <p class="eyebrow">Case 01: Neurology Consult</p>
+        </div>
+      </header>
+
+      <nav class="top-toolbar" aria-label="Game toolbar">
+        <div class="tool-strip" aria-label="Action tools">
+          <button class="tool-button selected" type="button" data-mode="look" aria-label="Look" title="Look"><span class="tool-icon" aria-hidden="true">&#128065;&#65039;</span></button>
+          <button class="tool-button" type="button" data-mode="talk" aria-label="Talk" title="Talk"><span class="tool-icon" aria-hidden="true">&#128172;</span></button>
+          <button class="tool-button" type="button" data-mode="grab" aria-label="Grab" title="Grab / use / activate / take"><span class="tool-icon" aria-hidden="true">&#9995;</span></button>
+          <button class="tool-button" type="button" data-mode="auscultate" aria-label="Auscultate" title="Examine / listen / auscultate"><span class="tool-icon" aria-hidden="true">&#129658;</span></button>
+          <button class="tool-button" type="button" data-mode="think" aria-label="Think" title="Think / solve puzzle"><span class="tool-icon" aria-hidden="true">&#129504;</span></button>
+        </div>
+
+        <div class="top-inventory" aria-label="Inventory">
+          <div class="inventory-list" id="inventoryList"></div>
+        </div>
+
+        <button class="chart-review-button" type="button" data-chart-review>Chart Review</button>
+
+        <div class="toolbar-menu settings-menu" data-toolbar-menu="settings">
+          <button class="toolbar-menu-button" type="button" data-menu-toggle="settings" aria-label="Help and settings" title="Help and settings" aria-expanded="false" aria-controls="settingsMenu">&#10067;&#65038;</button>
+          <div class="menu-panel" id="settingsMenu" hidden>
+            <button class="menu-item" type="button" data-help>HELP / RULES</button>
+            <button class="menu-item" type="button" data-level-select>LEVEL SELECT</button>
+            <div class="music-control">
+              <button class="menu-item" type="button" data-music-toggle>START MUSIC</button>
+              <label for="musicVolume">Music <span id="musicVolumeValue">35%</span></label>
+              <input id="musicVolume" type="range" min="0" max="100" value="35" step="1" data-music-volume>
+              <label for="sfxVolume">Sound Effects <span id="sfxVolumeValue">100%</span></label>
+              <input id="sfxVolume" type="range" min="0" max="100" value="100" step="1" data-sfx-volume>
+              <button class="menu-item" type="button" data-sfx-test>TEST SFX</button>
+              <div id="musicStatus">Music ready.</div>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <div class="adventure-frame">
+        <div class="room-scene" aria-label="Neurology hospital room">
+          <div class="scene-art" aria-hidden="true">
+            <img class="scene-image" src="assets/case1bg.png" alt="">
+          </div>
+
+          <button class="hotspot" style="left:56.2%;top:28.4%;width:23.1%;height:24.4%" data-hotspot="patient"><span>Patient</span></button>
+          <button class="hotspot" style="left:79.4%;top:47.9%;width:18.2%;height:18.1%" data-hotspot="bedsideTable"><span>Bedside table</span></button>
+          <button class="hotspot" style="left:79.5%;top:62.2%;width:18.9%;height:32.6%" data-hotspot="cart"><span>Exam cart</span></button>
+          <button class="hotspot" style="left:4.6%;top:36.9%;width:13.6%;height:10.6%" data-hotspot="sink"><span>Sink</span></button>
+          <button class="hotspot" style="left:8.7%;top:6.8%;width:28.5%;height:18.4%" data-hotspot="cabinet"><span>Supply cabinets</span></button>
+          <button class="hotspot" style="left:46.0%;top:18.3%;width:12.7%;height:30.6%" data-hotspot="monitor"><span>Vitals station</span></button>
+          <button class="hotspot" style="left:82.0%;top:20.3%;width:9.3%;height:18.3%" data-hotspot="ct"><span>Imaging software</span></button>
+          <button class="hotspot" style="left:0.0%;top:70.8%;width:31.0%;height:29.2%" data-hotspot="belongings"><span>Patient belongings</span></button>
+          <button class="hotspot" style="left:91.2%;top:0.0%;width:8.8%;height:60.2%" data-hotspot="door"><span>Curtain exit</span></button>
+          <div class="history-dialogue" id="historyDialogue" role="dialog" aria-live="polite" hidden>
+            <div class="history-portrait" aria-hidden="true"><img src="assets/patient-portrait.png" alt=""></div>
+            <div class="history-box" id="historyPanel">
+              <span class="history-speaker" id="historySpeaker">Patient</span>
+              <div class="history-text" id="historyText"></div>
+              <div class="history-topics" id="historyTopics"></div>
+              <button class="history-close" type="button" id="historyClose">Done</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="message-popup" id="messagePopup" role="dialog" aria-modal="true" aria-labelledby="messageTitle" aria-describedby="messageText" hidden>
+      <section class="message-window">
+        <h2 id="messageTitle">Doctor Quest</h2>
+        <p id="messageText"></p>
+        <div class="message-actions">
+          <button class="message-ok" type="button" id="messageOk">OK</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div class="modal-backdrop" id="modalRoot"></div>
+
+  <script src="assets/er-midi-data.js"></script>
+  <script>
+    const state = {
+      mode: "look",
+      findings: [],
+      inventory: [],
+      completed: [],
+      actionLog: [],
+      musicVolume: 35,
+      sfxVolume: 100,
+      timingTimer: null,
+      timingMarker: 0,
+      timingHits: 0,
+      washScore: 0,
+      washTotal: 0,
+      washSplats: 0
+    };
+
+    const modeEmoji = {
+      look: "\u{1F441}\uFE0F",
+      talk: "\u{1F4AC}",
+      grab: "\u270B",
+      auscultate: "\u{1FA7A}",
+      think: "\u{1F9E0}"
+    };
+
+    const allFindings = [
+      ["chiefConcern", "Chief concern", "Progressive left-leg weakness with near falls.", "History"],
+      ["timeCourse", "Time course", "Symptoms began gradually several weeks ago and have worsened.", "History"],
+      ["asymmetricSensory", "Asymmetric sensory symptoms", "The legs feel wrong in different ways, suggesting more than one sensory pathway.", "History"],
+      ["bandPain", "Thoracic band pain", "A tight aching band wraps around the left middle back.", "History"],
+      ["normalArmsFace", "Normal arms and face", "No face or arm symptoms, which lowers the odds of a cortical stroke presentation.", "History"],
+      ["urinaryUrgency", "Bladder symptom", "Recent urinary urgency raises concern for spinal cord involvement.", "History"],
+      ["collateralPhone", "Collateral walking clue", "A phone video shows the left foot catching and dragging, worse than earlier stair trouble.", "History"],
+      ["handHygiene", "Hand hygiene", "Hands washed before touching the patient; physical exam can proceed.", "Exam"],
+      ["auscultation", "Auscultation", "Heart rhythm is regular and lungs are clear; no acute cardiopulmonary finding explains the presentation.", "Exam"],
+      ["vitals", "Vitals", "Stable vitals; no fever or unstable rhythm driving the presentation.", "Diagnostics"],
+      ["motorWeakness", "Motor exam", "Left-leg upper motor neuron weakness, most obvious distally; right leg and arms are normal.", "Exam"],
+      ["reflexes", "Reflex pattern", "Left knee and ankle reflexes are brisk.", "Exam"],
+      ["plantar", "Plantar response", "The left great toe extends upward, supporting an upper motor neuron lesion.", "Exam"],
+      ["dorsalColumn", "Vibration and position", "Vibration and joint position are reduced on the left below the thoracic level.", "Exam"],
+      ["spinothalamic", "Pain and temperature", "Pinprick and cold are reduced on the right beginning below the lower thoracic levels.", "Exam"],
+      ["sensoryLevel", "Sensory level", "A thoracic sensory level is identified: left dorsal-column loss around T8, right pain-temperature loss around T10.", "Exam"],
+      ["localization", "Localization", "Crossed findings localize to the left thoracic hemicord, not brain, root, nerve, or muscle.", "Assessment"],
+      ["mriOrder", "Imaging order", "MRI thoracic spine with and without contrast is the appropriate study.", "Diagnostics"],
+      ["mriMass", "MRI finding", "MRI shows a left-sided posterolateral thoracic mass compressing the cord.", "Diagnostics"],
+      ["finalDiagnosis", "Final diagnosis", "Brown-Sequard syndrome from left thoracic hemicord compression by a posterolateral mass.", "Assessment"],
+      ["neurosurgery", "Disposition", "Urgent neurosurgical evaluation is needed for compressive myelopathy.", "Management"]
+    ].map(([id, label, detail, group]) => ({ id, label, detail, group }));
+
+    const inventoryCatalog = {
+      soapRefill: ["Soap Refill", "A standard soap dispenser cartridge for hand hygiene before the exam."],
+      phoneCharger: ["Phone Charger", "A charging cable that fits the bedside phone."],
+      hammer: ["Reflex Hammer", "A reflex hammer for corticospinal tract signs."],
+      tuningFork: ["Tuning Fork", "For testing vibration and dorsal-column function."],
+      neurotip: ["Disposable Neurotip", "A safe, single-use pinprick tester."],
+      coldPack: ["Cold Pack", "For bedside temperature testing."],
+      patientPhone: ["Charged Phone", "Contains the walking video and useful collateral history."]
+    };
+
+    const hotspotLabels = {
+      patient: "patient",
+      bedsideTable: "bedside table",
+      cart: "exam cart",
+      sink: "sink",
+      monitor: "monitor",
+      cabinet: "cabinet",
+      ct: "imaging software",
+      belongings: "patient belongings",
+      phone: "wall phone",
+      door: "ward door"
+    };
+
+    const washBubbleLayout = [
+      { x: 17, y: 30, size: 34 },
+      { x: 25, y: 42, size: 42 },
+      { x: 33, y: 27, size: 30 },
+      { x: 42, y: 45, size: 38 },
+      { x: 50, y: 32, size: 44 },
+      { x: 59, y: 47, size: 32 },
+      { x: 68, y: 31, size: 40 },
+      { x: 77, y: 44, size: 28 },
+      { x: 16, y: 52, size: 26 },
+      { x: 22, y: 64, size: 32 },
+      { x: 31, y: 74, size: 42 },
+      { x: 40, y: 63, size: 28 },
+      { x: 50, y: 71, size: 38 },
+      { x: 61, y: 63, size: 44 },
+      { x: 72, y: 70, size: 34 },
+      { x: 82, y: 61, size: 32 },
+      { x: 36, y: 52, size: 36 },
+      { x: 45, y: 79, size: 26 },
+      { x: 58, y: 81, size: 30 },
+      { x: 70, y: 56, size: 26 },
+      { x: 53, y: 52, size: 24 },
+      { x: 64, y: 39, size: 28 }
+    ];
+
+    const washSplatLimit = 3;
+
+    const washSplatLayout = [
+      { x: 23, y: 30, size: 34, rotation: -12 },
+      { x: 39, y: 58, size: 38, rotation: 9 },
+      { x: 52, y: 42, size: 32, rotation: -5 },
+      { x: 63, y: 72, size: 36, rotation: 14 },
+      { x: 76, y: 37, size: 34, rotation: -18 },
+      { x: 30, y: 78, size: 30, rotation: 21 },
+      { x: 84, y: 63, size: 32, rotation: 7 }
+    ];
+
+    const inventoryDrag = {
+      itemId: "",
+      pointerId: null,
+      source: null,
+      target: null,
+      startX: 0,
+      startY: 0,
+      active: false,
+      suppressClick: false
+    };
+
+    const patientHistoryTopics = [
+      {
+        id: "chiefConcern",
+        label: "What brought you to the hospital?",
+        response: "\"My left leg keeps giving out. I have nearly fallen several times, and I am running out of graceful recoveries.\"",
+        findings: ["chiefConcern"]
+      },
+      {
+        id: "timeCourse",
+        label: "When did this begin?",
+        response: "\"It started gradually several weeks ago and has been getting worse. It did not arrive like a lightning bolt.\"",
+        findings: ["timeCourse"]
+      },
+      {
+        id: "asymmetricSensory",
+        label: "Any numbness or unusual sensations?",
+        response: "\"Yes, but it is hard to explain. My two legs do not feel wrong in the same way.\"",
+        findings: ["asymmetricSensory"]
+      },
+      {
+        id: "bandPain",
+        label: "Do you have pain?",
+        response: "\"There is a tight, aching band around the left side of my middle back, like a tight belt.\"",
+        findings: ["bandPain"]
+      },
+      {
+        id: "normalArmsFace",
+        label: "Any problems with your arms or face?",
+        response: "\"No. It seems to be everything below my waist. My face and arms feel normal.\"",
+        findings: ["normalArmsFace"]
+      },
+      {
+        id: "urinaryUrgency",
+        label: "Any bowel or bladder changes?",
+        response: "\"I have had more urinary urgency lately. I did not think it was related.\"",
+        findings: ["urinaryUrgency"]
+      },
+      {
+        id: "collateralPhone",
+        label: "Has anyone else noticed your walking?",
+        response: "\"My husband recorded it on my phone. The battery was dead, but now you can see my left foot catching when I try to walk.\"",
+        lockedResponse: "\"My husband recorded it on my phone, but the battery is dead. The charger is probably somewhere in this room.\"",
+        requires: "phoneCharged",
+        findings: ["collateralPhone"]
+      }
+    ];
+
+    const musicState = {
+      context: null,
+      master: null,
+      sfxMaster: null,
+      notes: [],
+      loopDuration: 8,
+      loaded: false,
+      playing: false,
+      timer: null,
+      loopStart: 0,
+      nextNote: 0,
+      lastSuccessSound: -10
+    };
+
+    function setMusicStatus(message) {
+      const status = document.getElementById("musicStatus");
+      if (status) status.textContent = message;
+    }
+
+    function updateMusicUi() {
+      const value = document.getElementById("musicVolumeValue");
+      const slider = document.querySelector("[data-music-volume]");
+      const sfxValue = document.getElementById("sfxVolumeValue");
+      const sfxSlider = document.querySelector("[data-sfx-volume]");
+      const toggle = document.querySelector("[data-music-toggle]");
+      if (value) value.textContent = state.musicVolume + "%";
+      if (slider) slider.value = String(state.musicVolume);
+      if (sfxValue) sfxValue.textContent = state.sfxVolume + "%";
+      if (sfxSlider) sfxSlider.value = String(state.sfxVolume);
+      if (toggle) toggle.textContent = musicState.playing ? "STOP MUSIC" : "START MUSIC";
+    }
+
+    function midiBytesFromBase64(value) {
+      const binary = atob(value);
+      const bytes = new Uint8Array(binary.length);
+      for (let index = 0; index < binary.length; index += 1) {
+        bytes[index] = binary.charCodeAt(index);
+      }
+      return bytes;
+    }
+
+    function readAscii(bytes, offset, length) {
+      let text = "";
+      for (let index = 0; index < length; index += 1) {
+        text += String.fromCharCode(bytes[offset + index]);
+      }
+      return text;
+    }
+
+    function readUint16(bytes, offset) {
+      return (bytes[offset] << 8) | bytes[offset + 1];
+    }
+
+    function readUint32(bytes, offset) {
+      return ((bytes[offset] << 24) >>> 0) + (bytes[offset + 1] << 16) + (bytes[offset + 2] << 8) + bytes[offset + 3];
+    }
+
+    function readVariableLength(bytes, cursor) {
+      let value = 0;
+      while (cursor.position < bytes.length) {
+        const byte = bytes[cursor.position];
+        cursor.position += 1;
+        value = (value << 7) | (byte & 0x7f);
+        if ((byte & 0x80) === 0) break;
+      }
+      return value;
+    }
+
+    function parseMidi(base64) {
+      const bytes = midiBytesFromBase64(base64);
+      if (readAscii(bytes, 0, 4) !== "MThd") throw new Error("Missing MIDI header.");
+
+      const headerLength = readUint32(bytes, 4);
+      const trackCount = readUint16(bytes, 10);
+      const division = readUint16(bytes, 12);
+      if (division & 0x8000) throw new Error("SMPTE MIDI timing is not supported.");
+
+      let offset = 8 + headerLength;
+      const tempoEvents = [{ tick: 0, micros: 500000 }];
+      const rawNotes = [];
+
+      for (let trackIndex = 0; trackIndex < trackCount; trackIndex += 1) {
+        if (readAscii(bytes, offset, 4) !== "MTrk") break;
+        const trackLength = readUint32(bytes, offset + 4);
+        const trackEnd = offset + 8 + trackLength;
+        const cursor = { position: offset + 8 };
+        const activeNotes = new Map();
+        let tick = 0;
+        let runningStatus = 0;
+
+        while (cursor.position < trackEnd) {
+          tick += readVariableLength(bytes, cursor);
+          let status = bytes[cursor.position];
+          cursor.position += 1;
+
+          if (status < 0x80) {
+            cursor.position -= 1;
+            status = runningStatus;
+          } else if (status < 0xf0) {
+            runningStatus = status;
+          }
+
+          if (status === 0xff) {
+            const metaType = bytes[cursor.position];
+            cursor.position += 1;
+            const length = readVariableLength(bytes, cursor);
+            if (metaType === 0x51 && length === 3) {
+              tempoEvents.push({
+                tick,
+                micros: (bytes[cursor.position] << 16) | (bytes[cursor.position + 1] << 8) | bytes[cursor.position + 2]
+              });
+            }
+            cursor.position += length;
+            continue;
+          }
+
+          if (status === 0xf0 || status === 0xf7) {
+            cursor.position += readVariableLength(bytes, cursor);
+            continue;
+          }
+
+          const eventType = status & 0xf0;
+          const channel = status & 0x0f;
+          const dataLength = eventType === 0xc0 || eventType === 0xd0 ? 1 : 2;
+          const data1 = bytes[cursor.position];
+          cursor.position += 1;
+          const data2 = dataLength === 2 ? bytes[cursor.position] : 0;
+          if (dataLength === 2) cursor.position += 1;
+
+          if (eventType === 0x90 && data2 > 0) {
+            const key = channel + ":" + data1;
+            if (!activeNotes.has(key)) activeNotes.set(key, []);
+            activeNotes.get(key).push({ tick, velocity: data2 / 127 });
+          }
+
+          if (eventType === 0x80 || (eventType === 0x90 && data2 === 0)) {
+            const key = channel + ":" + data1;
+            const stack = activeNotes.get(key);
+            if (stack && stack.length) {
+              const started = stack.shift();
+              rawNotes.push({
+                startTick: started.tick,
+                endTick: tick,
+                note: data1,
+                channel,
+                velocity: started.velocity
+              });
+            }
+          }
+        }
+
+        offset = trackEnd;
+      }
+
+      tempoEvents.sort((left, right) => left.tick - right.tick);
+      const tempos = [];
+      tempoEvents.forEach(event => {
+        const previous = tempos[tempos.length - 1];
+        if (previous && previous.tick === event.tick) previous.micros = event.micros;
+        else tempos.push({ ...event });
+      });
+
+      function tickToSeconds(targetTick) {
+        let seconds = 0;
+        let previousTick = 0;
+        let micros = 500000;
+
+        tempos.forEach(event => {
+          if (event.tick <= previousTick) {
+            micros = event.micros;
+            return;
+          }
+          if (event.tick >= targetTick) return;
+          seconds += ((event.tick - previousTick) * micros) / 1000000 / division;
+          previousTick = event.tick;
+          micros = event.micros;
+        });
+
+        return seconds + ((targetTick - previousTick) * micros) / 1000000 / division;
+      }
+
+      const notes = rawNotes
+        .filter(note => note.endTick > note.startTick)
+        .map(note => {
+          const start = tickToSeconds(note.startTick);
+          const end = tickToSeconds(note.endTick);
+          return {
+            start,
+            duration: Math.max(0.05, end - start),
+            midi: note.note,
+            channel: note.channel,
+            velocity: note.velocity
+          };
+        })
+        .sort((left, right) => left.start - right.start);
+
+      const loopDuration = Math.max(8, ...notes.map(note => note.start + note.duration)) + 0.75;
+      return { notes, loopDuration };
+    }
+
+    function ensureMusicLoaded() {
+      if (musicState.loaded) return true;
+      const source = window.SCUMMNEURO_ER_MIDI_BASE64;
+      if (!source) {
+        setMusicStatus("Music data is missing.");
+        return false;
+      }
+
+      try {
+        const parsed = parseMidi(source);
+        musicState.notes = parsed.notes;
+        musicState.loopDuration = parsed.loopDuration;
+        musicState.loaded = true;
+        setMusicStatus("Music loaded.");
+        return true;
+      } catch (error) {
+        setMusicStatus("Could not read music.");
+        return false;
+      }
+    }
+
+    function setMusicVolume(percent) {
+      state.musicVolume = Math.max(0, Math.min(100, Number(percent) || 0));
+      if (musicState.master && musicState.context) {
+        const gain = musicState.playing ? (state.musicVolume / 100) * 0.042 : 0;
+        musicState.master.gain.setTargetAtTime(gain, musicState.context.currentTime, 0.02);
+      }
+      updateMusicUi();
+    }
+
+    function sfxGainValue() {
+      return (state.sfxVolume / 100) * 0.85;
+    }
+
+    function setSfxVolume(percent) {
+      state.sfxVolume = Math.max(0, Math.min(100, Number(percent) || 0));
+      if (musicState.sfxMaster && musicState.context) {
+        musicState.sfxMaster.gain.setTargetAtTime(sfxGainValue(), musicState.context.currentTime, 0.02);
+      }
+      updateMusicUi();
+    }
+
+    function ensureAudioContext() {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) {
+        setMusicStatus("Web Audio is unavailable.");
+        return false;
+      }
+
+      if (!musicState.context) {
+        try {
+          musicState.context = new AudioContextClass();
+          musicState.master = musicState.context.createGain();
+          musicState.master.gain.value = 0;
+          musicState.master.connect(musicState.context.destination);
+          musicState.sfxMaster = musicState.context.createGain();
+          musicState.sfxMaster.gain.value = sfxGainValue();
+          musicState.sfxMaster.connect(musicState.context.destination);
+        } catch (error) {
+          setMusicStatus("Web Audio is unavailable.");
+          return false;
+        }
+      }
+
+      if (!musicState.sfxMaster) {
+        musicState.sfxMaster = musicState.context.createGain();
+        musicState.sfxMaster.gain.value = sfxGainValue();
+        musicState.sfxMaster.connect(musicState.context.destination);
+      }
+
+      return true;
+    }
+
+    function scheduleSfxTone(frequency, when, duration, volume, type = "triangle") {
+      const context = musicState.context;
+      if (!context || !musicState.sfxMaster) return;
+      const oscillator = context.createOscillator();
+      const gain = context.createGain();
+      const end = when + duration;
+
+      oscillator.type = type;
+      oscillator.frequency.setValueAtTime(frequency, when);
+      gain.gain.setValueAtTime(0.0001, when);
+      gain.gain.exponentialRampToValueAtTime(volume, when + 0.006);
+      gain.gain.exponentialRampToValueAtTime(0.0001, end);
+      oscillator.connect(gain);
+      gain.connect(musicState.sfxMaster);
+      oscillator.start(when);
+      oscillator.stop(end + 0.02);
+    }
+
+    function scheduleSfxPattern(kind) {
+      const context = musicState.context;
+      if (!context || !musicState.sfxMaster || state.sfxVolume <= 0) return;
+      const now = context.currentTime;
+
+      if (kind === "success") {
+        if (now - musicState.lastSuccessSound < 0.14) return;
+        musicState.lastSuccessSound = now;
+        scheduleSfxTone(523.25, now + 0.005, 0.1, 0.24);
+        scheduleSfxTone(659.25, now + 0.1, 0.11, 0.22);
+        scheduleSfxTone(783.99, now + 0.205, 0.12, 0.2);
+        return;
+      }
+
+      scheduleSfxTone(360, now + 0.003, 0.06, 0.18, "square");
+      scheduleSfxTone(520, now + 0.032, 0.05, 0.12, "triangle");
+    }
+
+    function playSfx(kind) {
+      if (!ensureAudioContext()) return;
+      const context = musicState.context;
+      if (context.state === "suspended") {
+        context.resume()
+          .then(() => scheduleSfxPattern(kind))
+          .catch(() => {});
+        return;
+      }
+      scheduleSfxPattern(kind);
+    }
+
+    function noteFrequency(midiNote) {
+      return 440 * Math.pow(2, (midiNote - 69) / 12);
+    }
+
+    function scheduleSynthNote(note, when) {
+      const context = musicState.context;
+      const oscillator = context.createOscillator();
+      const gain = context.createGain();
+      const duration = Math.min(note.duration, 3.5);
+      const end = when + duration;
+      const attack = 0.008;
+      const release = Math.min(0.08, duration / 2);
+      const amplitude = Math.min(0.12, 0.025 + note.velocity * 0.08);
+      const waveforms = ["square", "triangle", "sine", "sawtooth"];
+
+      oscillator.type = note.channel === 9 ? "square" : waveforms[note.channel % waveforms.length];
+      oscillator.frequency.setValueAtTime(noteFrequency(note.midi), when);
+      gain.gain.setValueAtTime(0, when);
+      gain.gain.linearRampToValueAtTime(amplitude, when + attack);
+      gain.gain.setValueAtTime(amplitude, Math.max(when + attack, end - release));
+      gain.gain.linearRampToValueAtTime(0, end);
+
+      oscillator.connect(gain);
+      gain.connect(musicState.master);
+      oscillator.start(when);
+      oscillator.stop(end + 0.05);
+    }
+
+    function scheduleMusic() {
+      if (!musicState.playing || !musicState.context || !musicState.notes.length) return;
+      const context = musicState.context;
+      const now = context.currentTime;
+      const lookAhead = 0.8;
+
+      while (musicState.loopStart + musicState.loopDuration < now - 0.05) {
+        musicState.loopStart += musicState.loopDuration;
+        musicState.nextNote = 0;
+      }
+
+      while (musicState.nextNote < musicState.notes.length) {
+        const note = musicState.notes[musicState.nextNote];
+        const when = musicState.loopStart + note.start;
+        if (when > now + lookAhead) break;
+        if (when + note.duration > now) scheduleSynthNote(note, when);
+        musicState.nextNote += 1;
+      }
+
+      if (musicState.nextNote >= musicState.notes.length && musicState.loopStart + musicState.loopDuration < now + lookAhead) {
+        musicState.loopStart += musicState.loopDuration;
+        musicState.nextNote = 0;
+      }
+    }
+
+    async function startMusic() {
+      if (!ensureMusicLoaded()) return;
+      setMusicStatus("Starting music...");
+      if (!ensureAudioContext()) return;
+      try {
+        const resumeAttempt = musicState.context.state === "suspended"
+          ? musicState.context.resume()
+          : Promise.resolve();
+        musicState.playing = true;
+        musicState.loopStart = musicState.context.currentTime + 0.08;
+        musicState.nextNote = 0;
+        setMusicVolume(state.musicVolume);
+        clearInterval(musicState.timer);
+        musicState.timer = setInterval(scheduleMusic, 120);
+        scheduleMusic();
+        setMusicStatus("Music playing.");
+        updateMusicUi();
+        resumeAttempt.catch(() => {
+          if (musicState.playing) setMusicStatus("Browser blocked audio. Click START MUSIC again.");
+        });
+      } catch (error) {
+        musicState.playing = false;
+        setMusicStatus("Browser blocked audio. Click START MUSIC again.");
+        updateMusicUi();
+      }
+    }
+
+    function stopMusic() {
+      musicState.playing = false;
+      clearInterval(musicState.timer);
+      musicState.timer = null;
+      if (musicState.master && musicState.context) {
+        musicState.master.gain.setTargetAtTime(0, musicState.context.currentTime, 0.03);
+      }
+      setMusicStatus("Music paused.");
+      updateMusicUi();
+    }
+
+    function toggleMusic() {
+      if (musicState.playing) stopMusic();
+      else startMusic();
+    }
+
+    const quizzes = {
+      examTools: {
+        title: "Exam Cart Combination",
+        prompt: "Choose the highest-yield tool pair for upper motor neuron and dorsal-column bedside testing.",
+        options: [
+          "Reflex hammer and tuning fork",
+          "Tongue depressor and snack wrapper",
+          "Otoscope and optimism",
+          "Lumbar puncture tray before any exam"
+        ],
+        answer: 0,
+        hint: "Brisk reflexes test the corticospinal tract; vibration tests dorsal columns.",
+        success: "The cart opens. Inside are a reflex hammer and tuning fork."
+      },
+      cabinet: {
+        title: "Supply Cabinet Sorter",
+        prompt: "Choose the safe tools that best test the spinothalamic tract at the bedside.",
+        options: [
+          "Disposable neurotip and cold pack",
+          "A used needle and a space heater",
+          "A reflex hammer and stethoscope only",
+          "No testing until MRI is reviewed"
+        ],
+        answer: 0,
+        hint: "Pain and temperature sensation use the anterolateral system.",
+        success: "The cabinet unlocks. The safe sensory tools are available."
+      },
+      ctSafety: {
+        title: "Imaging Order Gate",
+        prompt: "Choose the best study after you localize progressive Brown-Sequard-type findings to the thoracic cord.",
+        options: [
+          "MRI thoracic spine with and without contrast",
+          "Noncontrast CT head only",
+          "Peripheral nerve ultrasound",
+          "MRI brain without localizing signs"
+        ],
+        answer: 0,
+        hint: "The lesion localizes to thoracic cord, and a compressive mass needs MRI characterization.",
+        success: "The order is accepted. The final imaging sequence is now available."
+      }
+    };
+
+    const requiredFinalFindings = ["chiefConcern", "timeCourse", "motorWeakness", "reflexes", "dorsalColumn", "spinothalamic", "sensoryLevel", "localization", "mriMass", "finalDiagnosis", "neurosurgery"];
+
+    function has(list, id) { return list.indexOf(id) !== -1; }
+
+    function setMessage(text) {
+      const popup = document.getElementById("messagePopup");
+      document.getElementById("messageText").textContent = text;
+      popup.hidden = false;
+      document.getElementById("messageOk").focus();
+    }
+
+    function closeMessagePopup() {
+      document.getElementById("messagePopup").hidden = true;
+    }
+
+    function logAction(text) {
+      const entry = String(text || "").trim();
+      if (!entry) return;
+      if (state.actionLog[state.actionLog.length - 1] === entry) return;
+      state.actionLog.push(entry);
+      if (state.actionLog.length > 18) state.actionLog = state.actionLog.slice(-18);
+      playSfx("success");
+    }
+
+    function addFinding(id) {
+      if (!has(state.findings, id)) {
+        state.findings.push(id);
+        const finding = allFindings.find(item => item.id === id);
+        logAction("Charted finding: " + (finding ? finding.label : id));
+      }
+      render();
+    }
+
+    function addInventory(id) {
+      if (!has(state.inventory, id)) {
+        state.inventory.push(id);
+        logAction("Collected item: " + inventoryName(id));
+      }
+      render();
+    }
+
+    function removeInventory(id) {
+      const nextInventory = state.inventory.filter(item => item !== id);
+      if (nextInventory.length !== state.inventory.length) {
+        state.inventory = nextInventory;
+        render();
+      }
+    }
+
+    function markCompleted(id) {
+      if (!has(state.completed, id)) state.completed.push(id);
+    }
+
+    function discoveredFindings() {
+      return state.findings
+        .map(id => allFindings.find(finding => finding.id === id))
+        .filter(Boolean);
+    }
+
+    const diagnosisFindingIds = new Set([
+      "chiefConcern",
+      "timeCourse",
+      "asymmetricSensory",
+      "bandPain",
+      "normalArmsFace",
+      "urinaryUrgency",
+      "collateralPhone",
+      "vitals",
+      "motorWeakness",
+      "reflexes",
+      "plantar",
+      "dorsalColumn",
+      "spinothalamic",
+      "sensoryLevel",
+      "localization",
+      "mriOrder",
+      "mriMass",
+      "finalDiagnosis",
+      "neurosurgery"
+    ]);
+
+    function pertinentDiagnosisFindings() {
+      return discoveredFindings().filter(finding => diagnosisFindingIds.has(finding.id));
+    }
+
+    function finalReady() {
+      return requiredFinalFindings.every(id => has(state.findings, id));
+    }
+
+    function requireHandHygiene() {
+      if (has(state.completed, "handHygiene")) return true;
+      setMessage("The patient says, \"Would you mind washing your hands first?\" Hand hygiene is required before the exam.");
+      return false;
+    }
+
+    function requestPhysicalExam() {
+      if (!has(state.completed, "handHygiene")) {
+        setMessage("You ask permission to perform a physical exam. The patient agrees, then points at the sink: \"Would you mind washing your hands first?\"");
+        return;
+      }
+      openExam();
+    }
+
+    function installSoapRefill() {
+      if (has(state.completed, "soapInstalled")) {
+        setMessage("The soap dispenser is already full.");
+        return;
+      }
+      markCompleted("soapInstalled");
+      logAction("Installed the soap refill at the sink");
+      setMessage("You install the soap refill. Handwashing is now available at the sink.");
+    }
+
+    function washHands() {
+      if (!has(state.completed, "soapInstalled")) {
+        setMessage("The soap dispenser is empty. Find a refill before examining the patient.");
+        return;
+      }
+      if (has(state.completed, "handHygiene")) {
+        setMessage("Your hands are already clean. Further scrubbing would become performance art.");
+        return;
+      }
+      openHandwashingGame();
+    }
+
+    function updateWashProgress() {
+      const fill = document.getElementById("washProgressFill");
+      const label = document.getElementById("washProgressText");
+      if (!fill || !label || !state.washTotal) return;
+      const percent = Math.round((state.washScore / state.washTotal) * 100);
+      fill.style.width = percent + "%";
+      label.textContent = "Bubbles " + state.washScore + " / " + state.washTotal + " | Splats " + state.washSplats + " / " + washSplatLimit;
+    }
+
+    function completeHandwashingGame() {
+      if (has(state.completed, "handHygiene")) return;
+      markCompleted("handHygiene");
+      addFinding("handHygiene");
+      closeModal();
+      setMessage("You wash your hands thoroughly. The patient relaxes, and the physical exam is now available.");
+    }
+
+    function scrubWashBubble(button) {
+      if (!button || button.classList.contains("popped") || state.washSplats >= washSplatLimit || has(state.completed, "handHygiene")) return;
+      button.classList.add("popped");
+      button.setAttribute("aria-hidden", "true");
+      button.disabled = true;
+      state.washScore += 1;
+      if (state.washScore === 1 || state.washScore % 4 === 0) playSfx("click");
+      updateWashProgress();
+
+      const hint = document.getElementById("washHint");
+      if (hint) {
+        hint.textContent = state.washScore >= state.washTotal
+          ? "Hand hygiene complete."
+          : "Keep scrubbing until every visible bubble is gone.";
+      }
+
+      if (state.washScore >= state.washTotal) {
+        setTimeout(completeHandwashingGame, 260);
+      }
+    }
+
+    function resetHandwashingAttempt() {
+      if (!document.getElementById("washGame") || has(state.completed, "handHygiene")) return;
+      openHandwashingGame();
+    }
+
+    function hitWashSplat(button) {
+      if (!button || button.classList.contains("hit") || state.washSplats >= washSplatLimit || has(state.completed, "handHygiene")) return;
+      button.classList.add("hit");
+      button.setAttribute("aria-hidden", "true");
+      button.disabled = true;
+      state.washSplats += 1;
+      playSfx("click");
+      updateWashProgress();
+
+      const hint = document.getElementById("washHint");
+      if (hint) {
+        hint.textContent = state.washSplats >= washSplatLimit
+          ? "Too many splats. Rinse and start the scrub again."
+          : "Avoid the splats. Three splats restarts the handwashing attempt.";
+      }
+
+      if (state.washSplats >= washSplatLimit) {
+        document.querySelectorAll("[data-wash-bubble], [data-wash-splat]").forEach(item => {
+          item.disabled = true;
+          item.classList.add("hit");
+        });
+        setTimeout(resetHandwashingAttempt, 700);
+      }
+    }
+
+    function openHandwashingGame() {
+      state.washScore = 0;
+      state.washTotal = washBubbleLayout.length;
+      state.washSplats = 0;
+      openModal(`
+        <section class="modal-card mini-card wash-card" role="dialog" aria-modal="true">
+          <div class="modal-header"><h2>Handwashing</h2><button type="button" data-close aria-label="Close">X</button></div>
+          <p>Move the mouse across the sink to collect every bubble. Avoid the splats; three splats restarts the scrub.</p>
+          <div class="wash-hud" aria-live="polite">
+            <div class="wash-progress" aria-hidden="true"><span class="wash-progress-fill" id="washProgressFill"></span></div>
+            <span class="wash-progress-text" id="washProgressText">Bubbles 0 / ${washBubbleLayout.length} | Splats 0 / ${washSplatLimit}</span>
+          </div>
+          <div class="wash-game" id="washGame" role="group" aria-label="Handwashing bubble collection">
+            ${washBubbleLayout.map((bubble, index) => `<button type="button" class="wash-bubble" data-wash-bubble="${index}" style="--bubble-x:${bubble.x}%;--bubble-y:${bubble.y}%;--bubble-size:${bubble.size}px" aria-label="soap bubble ${index + 1}"></button>`).join("")}
+            ${washSplatLayout.map((splat, index) => `<button type="button" class="wash-splat" data-wash-splat="${index}" style="--splat-x:${splat.x}%;--splat-y:${splat.y}%;--splat-size:${splat.size}px;--splat-rotation:${splat.rotation}deg" aria-label="splat hazard ${index + 1}"></button>`).join("")}
+          </div>
+          <p class="hint" id="washHint">Collect every bubble while avoiding the splats.</p>
+        </section>
+      `);
+
+      const game = document.getElementById("washGame");
+      const bubbles = Array.from(document.querySelectorAll("[data-wash-bubble]"));
+      const splats = Array.from(document.querySelectorAll("[data-wash-splat]"));
+      bubbles.forEach(button => {
+        button.addEventListener("pointerenter", () => scrubWashBubble(button));
+        button.addEventListener("pointerdown", event => {
+          event.preventDefault();
+          scrubWashBubble(button);
+        });
+        button.addEventListener("click", event => {
+          event.preventDefault();
+          scrubWashBubble(button);
+        });
+      });
+      splats.forEach(button => {
+        button.addEventListener("pointerenter", () => hitWashSplat(button));
+        button.addEventListener("pointerdown", event => {
+          event.preventDefault();
+          hitWashSplat(button);
+        });
+        button.addEventListener("click", event => {
+          event.preventDefault();
+          hitWashSplat(button);
+        });
+      });
+
+      game.addEventListener("pointermove", event => {
+        const element = document.elementFromPoint(event.clientX, event.clientY);
+        const target = element && element.closest ? element.closest("[data-wash-splat], [data-wash-bubble]") : null;
+        if (!target || !game.contains(target)) return;
+        if (target.matches("[data-wash-splat]")) hitWashSplat(target);
+        if (target.matches("[data-wash-bubble]")) scrubWashBubble(target);
+      });
+    }
+
+    function getNextSuggestedMove() {
+      if (!has(state.findings, "chiefConcern")) {
+        return "Select TALK, click the patient, and ask what brought her in. Start with the history.";
+      }
+
+      if (!has(state.completed, "soapRefillFound")) {
+        return "Select GRAB and click the supply cabinet to find the missing soap refill. The patient would like clean hands before the exam.";
+      }
+
+      if (!has(state.completed, "soapInstalled")) {
+        return "Drag the Soap Refill from the inventory onto the sink, then click the sink to wash your hands.";
+      }
+
+      if (!has(state.completed, "handHygiene")) {
+        return "Click the sink to complete hand hygiene. After that, patient exams and bedside tests are available.";
+      }
+
+      if (!has(state.completed, "examTools")) {
+        return "Select THINK, then click the exam cart to unlock the reflex hammer and tuning fork.";
+      }
+
+      if (!has(state.completed, "cabinet")) {
+        return "Select THINK, then click the supply cabinet to unlock the neurotip and cold pack for pain-temperature testing.";
+      }
+
+      if (!has(state.findings, "motorWeakness")) {
+        return "Select THINK, click the patient, and run Motor Strength to document left-leg upper motor neuron weakness.";
+      }
+
+      if (!has(state.findings, "reflexes")) {
+        return "Use the reflex hammer on the patient or run Reflexes from the exam menu.";
+      }
+
+      if (!has(state.findings, "dorsalColumn")) {
+        return "Use the tuning fork on the patient to test vibration, then compare left and right.";
+      }
+
+      if (!has(state.findings, "spinothalamic")) {
+        return "Use the neurotip or cold pack on the patient to map right-sided pain-temperature loss.";
+      }
+
+      if (!has(state.findings, "sensoryLevel")) {
+        return "Open the exam menu and solve the sensory-level puzzle. The offset between T8 and T10 is the teaching gem.";
+      }
+
+      if (!has(state.findings, "localization")) {
+        return "Open the exam menu and run Localization. Combine left UMN/dorsal-column signs with right pain-temperature loss.";
+      }
+
+      if (!has(state.completed, "ctSafety")) {
+        return "Select THINK, then click the imaging software to order the correct study: MRI thoracic spine with and without contrast.";
+      }
+
+      if (!has(state.completed, "imagingLesionFound")) {
+        return "Use the imaging software to inspect the MRI, then click the left posterolateral thoracic cord compression.";
+      }
+
+      if (!has(state.completed, "imagingInterpretation")) {
+        return "Interpret the imaging pattern: connect the left thoracic cord compression to Brown-Sequard syndrome.";
+      }
+
+      if (!has(state.completed, "imagingReportConfirmed")) {
+        return "Confirm the imaging report and sign the final diagnosis to complete the room.";
+      }
+
+      return "Case complete. Chart Review now contains the final diagnosis and disposition.";
+    }
+
+    function render() {
+      document.querySelector(".game-root").dataset.mode = state.mode;
+      document.getElementById("emojiCursor").textContent = modeEmoji[state.mode];
+      updateMusicUi();
+
+      document.querySelectorAll(".tool-button").forEach(button => {
+        button.classList.toggle("selected", button.dataset.mode === state.mode);
+        button.setAttribute("aria-pressed", String(button.dataset.mode === state.mode));
+      });
+
+      const inventoryList = document.getElementById("inventoryList");
+      inventoryList.innerHTML = "";
+      state.inventory.forEach(id => {
+        const item = inventoryCatalog[id];
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "inventory-item";
+        button.draggable = true;
+        button.dataset.inventoryId = id;
+        button.setAttribute("aria-label", "Drag " + item[0] + " from inventory");
+        button.textContent = item[0];
+        button.title = item[1];
+        button.addEventListener("click", event => {
+          if (inventoryDrag.suppressClick) {
+            event.preventDefault();
+            return;
+          }
+          setMessage(item[1] + " Drag it onto a room hotspot to use it.");
+        });
+        button.addEventListener("pointerdown", event => beginInventoryPointer(event, id, button));
+        button.addEventListener("dragstart", event => beginNativeInventoryDrag(event, id, button));
+        button.addEventListener("dragend", clearInventoryDragVisuals);
+        inventoryList.appendChild(button);
+      });
+
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
+
+    function closeModal() {
+      if (state.timingTimer) {
+        clearInterval(state.timingTimer);
+        state.timingTimer = null;
+      }
+      state.washScore = 0;
+      state.washTotal = 0;
+      state.washSplats = 0;
+      const root = document.getElementById("modalRoot");
+      root.className = "modal-backdrop";
+      root.innerHTML = "";
+    }
+
+    function openModal(html) {
+      const root = document.getElementById("modalRoot");
+      root.innerHTML = html;
+      root.className = "modal-backdrop open";
+      root.querySelectorAll("[data-close]").forEach(button => button.addEventListener("click", closeModal));
+    }
+
+    function closeHistoryDialogue() {
+      const dialogue = document.getElementById("historyDialogue");
+      dialogue.hidden = true;
+      setMessage("History obtained. The responses are available in Chart Review.");
+    }
+
+    function renderHistoryTopics() {
+      const topics = document.getElementById("historyTopics");
+      topics.innerHTML = "";
+      patientHistoryTopics.forEach(topic => {
+        const button = document.createElement("button");
+        const isLocked = topic.requires && !has(state.completed, topic.requires);
+        const isDone = has(state.completed, "history_" + topic.id);
+        button.type = "button";
+        button.className = "history-topic" + (isDone ? " done" : "");
+        button.textContent = isLocked ? topic.label + " (phone battery dead)" : topic.label;
+        button.addEventListener("click", () => chooseHistoryTopic(topic));
+        topics.appendChild(button);
+      });
+    }
+
+    function chooseHistoryTopic(topic) {
+      const locked = topic.requires && !has(state.completed, topic.requires);
+      document.getElementById("historySpeaker").textContent = "Patient";
+      document.getElementById("historyText").textContent = locked ? topic.lockedResponse : topic.response;
+
+      if (locked) {
+        markCompleted("phoneLead");
+      } else {
+        markCompleted("history_" + topic.id);
+        topic.findings.forEach(addFinding);
+      }
+
+      renderHistoryTopics();
+    }
+
+    function openPatientHistory() {
+      closeToolbarMenus();
+      closeModal();
+      document.getElementById("historySpeaker").textContent = "Patient";
+      document.getElementById("historyText").textContent = "Choose a history topic to ask the patient.";
+      document.getElementById("historyDialogue").hidden = false;
+      renderHistoryTopics();
+    }
+
+    function openHelp() {
+      openModal(`
+        <section class="modal-card help-modal" role="dialog" aria-modal="true">
+          <div class="modal-header"><h2>Field Manual</h2><button type="button" data-close aria-label="Close">X</button></div>
+          <div class="help-layout">
+            <section class="next-move">
+              <h3>Next Suggested Move</h3>
+              <p>${escapeHtml(getNextSuggestedMove())}</p>
+            </section>
+            <section>
+              <h3>How To Play</h3>
+              <ul class="help-list">
+                <li>Pick an emoji verb, then click a hotspot in the room.</li>
+                <li>Eye and speech bubble uncover environmental clues and patient history topics.</li>
+                <li>Hand means grab, use, activate, take an item, or request a physical exam from the patient.</li>
+                <li>Stethoscope means examine, listen, or auscultate when used on the patient.</li>
+                <li>Drag inventory items from the top shelf onto room hotspots to use them.</li>
+                <li>Brain starts puzzles, diagnostic tests, bedside minigames, and localization locks.</li>
+                <li>Physical exam requires hand hygiene. Restore the soap dispenser before touching the patient.</li>
+                <li>Use Chart Review to revisit recent actions, pertinent findings, and the next suggested move.</li>
+              </ul>
+            </section>
+            <section>
+              <h3>Goal</h3>
+              <p>Build a coherent medical explanation: localize the lesion, name the syndrome, order the right imaging, and choose the immediate management plan. Funny room, real medicine.</p>
+            </section>
+          </div>
+        </section>
+      `);
+    }
+
+    function chooseLevel(caseName) {
+      closeModal();
+      if (caseName === "active") {
+        setMessage("You are already in Neurology Bay 5. Continue working through this spinal cord case.");
+      } else {
+        setMessage(caseName + " will be added as a future playable room.");
+      }
+    }
+
+    function openLevelSelect() {
+      openModal(`
+        <section class="modal-card mini-card" role="dialog" aria-modal="true">
+          <div class="modal-header"><h2>Level Select</h2><button type="button" data-close aria-label="Close">X</button></div>
+          <div class="option-stack">
+            <button class="menu-item active" type="button" data-level-choice="active">Neurology<span>active</span></button>
+            <button class="menu-item locked" type="button" data-level-choice="Cardiology: The Chest Pain That Lied">Cardiology<span>locked</span></button>
+            <button class="menu-item locked" type="button" data-level-choice="Endocrine: The Sweet-Smelling Disaster">Endocrine<span>locked</span></button>
+            <button class="menu-item locked" type="button" data-level-choice="Infectious Disease: Fever in the Backpack">Infectious Disease<span>locked</span></button>
+            <button class="menu-item locked" type="button" data-level-choice="Renal: The Acid-Base Contraption">Renal<span>locked</span></button>
+          </div>
+        </section>
+      `);
+
+      document.querySelectorAll("[data-level-choice]").forEach(button => {
+        button.addEventListener("click", () => chooseLevel(button.dataset.levelChoice));
+      });
+    }
+
+    function openChartReview() {
+      closeToolbarMenus();
+      closeMessagePopup();
+      const recentActions = state.actionLog.slice(-8).reverse();
+      const pertinentFindings = pertinentDiagnosisFindings().slice().reverse();
+      openModal(`
+        <section class="modal-card review-modal" role="dialog" aria-modal="true">
+          <div class="modal-header"><h2>Chart Review</h2><button type="button" data-close aria-label="Close">X</button></div>
+          <div class="review-layout">
+            <div class="review-column">
+              <section class="review-panel">
+                <h3>Pertinent Findings Revealed</h3>
+                ${pertinentFindings.length
+                  ? `<div class="review-finding-list">${pertinentFindings.map(finding => `<article class="review-finding">
+                      <strong>${escapeHtml(finding.label)}</strong>
+                      <span>${escapeHtml(finding.group)}</span>
+                      <p>${escapeHtml(finding.detail)}</p>
+                    </article>`).join("")}</div>`
+                  : `<p class="review-empty">No diagnosis-relevant findings revealed yet.</p>`}
+              </section>
+            </div>
+            <div class="review-column">
+              <section class="review-panel">
+                <h3>Next Suggested Move</h3>
+                <p class="review-next">${escapeHtml(getNextSuggestedMove())}</p>
+              </section>
+              <section class="review-panel">
+                <h3>Recent Successful Actions</h3>
+                ${recentActions.length
+                  ? `<ol class="review-action-list">${recentActions.map(action => `<li>${escapeHtml(action)}</li>`).join("")}</ol>`
+                  : `<p class="review-empty">No successful actions charted yet.</p>`}
+              </section>
+            </div>
+          </div>
+          <div class="modal-actions"><button type="button" class="primary-action" data-close>OK</button></div>
+        </section>
+      `);
+    }
+
+    function finishQuiz(id) {
+      markCompleted(id);
+      logAction("Solved puzzle: " + quizzes[id].title);
+      setMessage(quizzes[id].success);
+
+      if (id === "examTools") {
+        addInventory("hammer");
+        addInventory("tuningFork");
+        setMessage("The cart opens. Reflex hammer and tuning fork added to inventory.");
+      }
+      if (id === "cabinet") {
+        addInventory("neurotip");
+        addInventory("coldPack");
+        setMessage("You collect a disposable neurotip and cold pack for spinothalamic testing.");
+      }
+      if (id === "ctSafety") {
+        addFinding("mriOrder");
+      }
+      closeModal();
+    }
+
+    function openQuiz(id) {
+      const quiz = quizzes[id];
+      openModal(`
+        <section class="modal-card quiz-card" role="dialog" aria-modal="true">
+          <div class="modal-header"><h2>${escapeHtml(quiz.title)}</h2><button type="button" data-close aria-label="Close">X</button></div>
+          <p>${escapeHtml(quiz.prompt)}</p>
+          <div class="option-stack">
+            ${quiz.options.map((option, index) => `<button type="button" class="option" data-answer="${index}">${escapeHtml(option)}</button>`).join("")}
+          </div>
+          <p class="hint" id="quizHint" style="display:none"></p>
+          <div class="modal-actions"><button type="button" class="primary-action" id="quizSubmit" disabled>Answer</button></div>
+        </section>
+      `);
+
+      let selected = null;
+      document.querySelectorAll(".option").forEach(button => {
+        button.addEventListener("click", () => {
+          selected = Number(button.dataset.answer);
+          document.querySelectorAll(".option").forEach(item => item.classList.remove("selected"));
+          button.classList.add("selected");
+          document.getElementById("quizSubmit").disabled = false;
+          document.getElementById("quizHint").style.display = "none";
+        });
+      });
+
+      document.getElementById("quizSubmit").addEventListener("click", () => {
+        if (selected === quiz.answer) {
+          finishQuiz(id);
+        } else {
+          const hint = document.getElementById("quizHint");
+          hint.textContent = quiz.hint;
+          hint.style.display = "block";
+        }
+      });
+    }
+
+    function handleGrab(id) {
+      if (id === "patient") {
+        requestPhysicalExam();
+        return;
+      }
+      if (id === "bedsideTable") {
+        setMessage("The bedside phone battery is dead. Check the patient belongings for a charger.");
+        return;
+      }
+      if (id === "belongings") {
+        addInventory("phoneCharger");
+        setMessage("You find a phone charger in the patient's bag.");
+        return;
+      }
+      if (id === "sink") {
+        washHands();
+        return;
+      }
+      if (id === "cart") {
+        if (!has(state.completed, "examTools")) {
+          setMessage("The exam cart is locked. Select THINK, then click it to solve the combination.");
+          return;
+        }
+        addInventory("hammer");
+        addInventory("tuningFork");
+        markCompleted("outletRevealed");
+        setMessage("You collect the reflex hammer and tuning fork. Moving the cart also reveals an outlet for the patient's phone.");
+        return;
+      }
+      if (id === "monitor") {
+        addFinding("vitals");
+        setMessage("You activate the monitor controls. Vitals are stable, which leaves the long-tract mystery in the spotlight.");
+        return;
+      }
+      if (id === "cabinet") {
+        if (!has(state.completed, "soapRefillFound")) {
+          markCompleted("soapRefillFound");
+          addInventory("soapRefill");
+          setMessage("You find a soap refill behind the cotton jars.");
+          return;
+        }
+        if (!has(state.completed, "cabinet")) {
+          setMessage("The deeper cabinet drawer is locked. Select THINK to sort the safe sensory tools.");
+          return;
+        }
+        addInventory("neurotip");
+        addInventory("coldPack");
+        setMessage("You collect the neurotip and cold pack. Pain and temperature testing is now respectable.");
+        return;
+      }
+      if (id === "ct") {
+        if (!has(state.completed, "ctSafety")) {
+          setMessage("Imaging order requires localization. Select THINK to start the imaging puzzle.");
+          return;
+        }
+        openMRI();
+        return;
+      }
+      if (id === "phone") {
+        if (!finalReady()) {
+          setMessage("You lift the wall phone, but the attending requests a confirmed imaging diagnosis before the big call.");
+          return;
+        }
+        setMessage("You present the final diagnosis and disposition. Case 01 is complete.");
+        return;
+      }
+      if (id === "door") {
+        setMessage("The ward door is locked. Future specialty rooms are not available yet.");
+      }
+    }
+
+    function inventoryName(itemId) {
+      return inventoryCatalog[itemId] ? inventoryCatalog[itemId][0] : "That item";
+    }
+
+    function genericInventoryUse(itemId, hotspotId) {
+      setMessage(inventoryName(itemId) + " is not useful with the " + (hotspotLabels[hotspotId] || "hotspot") + ".");
+    }
+
+    function handleInventoryUse(itemId, hotspotId) {
+      if (!itemId || !has(state.inventory, itemId)) return;
+
+      if (hotspotId === "door") {
+        setMessage("Using " + inventoryName(itemId) + " on the ward door has no effect. Future specialty rooms are not available yet.");
+        return;
+      }
+
+      if (hotspotId === "phone") {
+        if (finalReady()) {
+          setMessage("You bring the confirmed diagnosis to the attending phone. Case 01 is complete.");
+        } else {
+          setMessage("The attending wants a confirmed diagnosis from the imaging report first.");
+        }
+        return;
+      }
+
+      if (itemId === "soapRefill") {
+        if (hotspotId === "sink") {
+          installSoapRefill();
+          removeInventory(itemId);
+          return;
+        }
+        if (hotspotId === "patient") {
+          setMessage("The patient declines to be examined with a soap cartridge. Try the sink.");
+          return;
+        }
+      }
+
+      if (itemId === "phoneCharger") {
+        if (hotspotId === "cart") {
+          if (!has(state.completed, "outletRevealed")) {
+            markCompleted("outletRevealed");
+            setMessage("You move the cart and reveal an outlet. Connect the charger to the phone.");
+            return;
+          }
+          markCompleted("phoneCharged");
+          addInventory("patientPhone");
+          addFinding("collateralPhone");
+          removeInventory(itemId);
+          setMessage("You route the charger from the outlet to the bedside phone. The phone powers on and displays a walking video: the left foot catches and drags.");
+          return;
+        }
+        if (hotspotId === "bedsideTable") {
+          if (!has(state.completed, "outletRevealed")) {
+            setMessage("The charger fits the phone, but the battery needs power. Move the exam cart to find the outlet.");
+            return;
+          }
+          markCompleted("phoneCharged");
+          addInventory("patientPhone");
+          addFinding("collateralPhone");
+          removeInventory(itemId);
+          setMessage("You connect the charger to the bedside phone. The walking video shows the left foot catching and dragging.");
+          return;
+        }
+      }
+
+      if (itemId === "patientPhone") {
+        if (hotspotId === "patient") {
+          addFinding("collateralPhone");
+          removeInventory(itemId);
+          setMessage("The video shows left-foot catching that has progressed from stairs to flat ground. Collateral history is now charted.");
+          return;
+        }
+      }
+
+      if (itemId === "hammer") {
+        if (hotspotId === "patient") {
+          if (!requireHandHygiene()) return;
+          runExam("reflex");
+          return;
+        }
+        if (hotspotId === "cabinet") {
+          setMessage("Use the reflex hammer on the patient, not the cabinet.");
+          return;
+        }
+      }
+
+      if (itemId === "tuningFork") {
+        if (hotspotId === "patient") {
+          if (!requireHandHygiene()) return;
+          addFinding("dorsalColumn");
+          removeInventory(itemId);
+          setMessage("Vibration fades early on the left great toe and ankle but is preserved on the right. Dorsal-column loss is charted.");
+          return;
+        }
+      }
+
+      if (itemId === "neurotip" || itemId === "coldPack") {
+        if (hotspotId === "patient") {
+          if (!requireHandHygiene()) return;
+          openSpinothalamicExam();
+          return;
+        }
+      }
+
+      if (itemId === "coldPack") {
+        if (hotspotId === "sink") {
+          setMessage("The cold pack is not useful at the sink.");
+          return;
+        }
+      }
+
+      if (hotspotId === "ct") {
+        if (!has(state.findings, "localization")) {
+          setMessage("Imaging order requires localization before MRI review.");
+          return;
+        }
+        if (!has(state.completed, "ctSafety")) {
+          openQuiz("ctSafety");
+          return;
+        }
+        openMRI();
+        return;
+      }
+
+      genericInventoryUse(itemId, hotspotId);
+    }
+
+    function setInventoryDragTarget(target) {
+      if (inventoryDrag.target === target) return;
+      if (inventoryDrag.target) inventoryDrag.target.classList.remove("drop-target");
+      inventoryDrag.target = target;
+      if (inventoryDrag.target) inventoryDrag.target.classList.add("drop-target");
+    }
+
+    function hotspotFromPoint(x, y) {
+      const element = document.elementFromPoint(x, y);
+      return element ? element.closest("[data-hotspot]") : null;
+    }
+
+    function positionDragGhost(x, y) {
+      const ghost = document.getElementById("dragGhost");
+      ghost.style.left = x + "px";
+      ghost.style.top = y + "px";
+    }
+
+    function startInventoryDragVisuals(itemId, source, x, y) {
+      inventoryDrag.active = true;
+      inventoryDrag.itemId = itemId;
+      inventoryDrag.source = source;
+      source.classList.add("dragging");
+      document.querySelector(".game-root").classList.add("inventory-dragging");
+      const ghost = document.getElementById("dragGhost");
+      ghost.textContent = inventoryName(itemId);
+      ghost.classList.add("visible");
+      positionDragGhost(x, y);
+    }
+
+    function clearInventoryDragVisuals() {
+      document.querySelector(".game-root").classList.remove("inventory-dragging");
+      document.querySelectorAll(".inventory-item.dragging").forEach(item => item.classList.remove("dragging"));
+      document.querySelectorAll(".hotspot.drop-target").forEach(item => item.classList.remove("drop-target"));
+      const ghost = document.getElementById("dragGhost");
+      ghost.classList.remove("visible");
+      ghost.textContent = "";
+      inventoryDrag.target = null;
+    }
+
+    function resetInventoryPointerDrag() {
+      inventoryDrag.itemId = "";
+      inventoryDrag.pointerId = null;
+      inventoryDrag.source = null;
+      inventoryDrag.startX = 0;
+      inventoryDrag.startY = 0;
+      inventoryDrag.active = false;
+    }
+
+    function beginInventoryPointer(event, itemId, source) {
+      if (event.button !== undefined && event.button !== 0) return;
+      inventoryDrag.itemId = itemId;
+      inventoryDrag.pointerId = event.pointerId;
+      inventoryDrag.source = source;
+      inventoryDrag.startX = event.clientX;
+      inventoryDrag.startY = event.clientY;
+      inventoryDrag.active = false;
+      source.setPointerCapture?.(event.pointerId);
+      document.addEventListener("pointermove", moveInventoryPointer, { passive: false });
+      document.addEventListener("pointerup", endInventoryPointer, { passive: false });
+      document.addEventListener("pointercancel", cancelInventoryPointer, { passive: false });
+    }
+
+    function moveInventoryPointer(event) {
+      if (event.pointerId !== inventoryDrag.pointerId || !inventoryDrag.itemId) return;
+      const distance = Math.hypot(event.clientX - inventoryDrag.startX, event.clientY - inventoryDrag.startY);
+      if (!inventoryDrag.active && distance < 6) return;
+      event.preventDefault();
+      if (!inventoryDrag.active) {
+        startInventoryDragVisuals(inventoryDrag.itemId, inventoryDrag.source, event.clientX, event.clientY);
+      }
+      positionDragGhost(event.clientX, event.clientY);
+      setInventoryDragTarget(hotspotFromPoint(event.clientX, event.clientY));
+    }
+
+    function endInventoryPointer(event) {
+      if (event.pointerId !== inventoryDrag.pointerId) return;
+      document.removeEventListener("pointermove", moveInventoryPointer);
+      document.removeEventListener("pointerup", endInventoryPointer);
+      document.removeEventListener("pointercancel", cancelInventoryPointer);
+      const itemId = inventoryDrag.itemId;
+      const target = inventoryDrag.active ? hotspotFromPoint(event.clientX, event.clientY) : null;
+      if (inventoryDrag.active) {
+        event.preventDefault();
+        inventoryDrag.suppressClick = true;
+        setTimeout(() => { inventoryDrag.suppressClick = false; }, 0);
+        clearInventoryDragVisuals();
+        if (target) handleInventoryUse(itemId, target.dataset.hotspot);
+        else setMessage("You keep " + inventoryName(itemId) + " in the inventory shelf.");
+      }
+      resetInventoryPointerDrag();
+    }
+
+    function cancelInventoryPointer() {
+      document.removeEventListener("pointermove", moveInventoryPointer);
+      document.removeEventListener("pointerup", endInventoryPointer);
+      document.removeEventListener("pointercancel", cancelInventoryPointer);
+      clearInventoryDragVisuals();
+      resetInventoryPointerDrag();
+    }
+
+    function beginNativeInventoryDrag(event, itemId, source) {
+      inventoryDrag.itemId = itemId;
+      inventoryDrag.source = source;
+      inventoryDrag.suppressClick = true;
+      event.dataTransfer.effectAllowed = "move";
+      event.dataTransfer.setData("text/plain", itemId);
+      startInventoryDragVisuals(itemId, source, event.clientX || inventoryDrag.startX, event.clientY || inventoryDrag.startY);
+      setTimeout(() => { inventoryDrag.suppressClick = false; }, 0);
+    }
+
+    function handleHotspot(id) {
+      if (state.mode === "grab") {
+        handleGrab(id);
+        return;
+      }
+
+      if (id === "patient") {
+        if (state.mode === "talk") {
+          openPatientHistory();
+          return;
+        }
+        if (state.mode === "think") {
+          requestPhysicalExam();
+          return;
+        }
+        if (state.mode === "auscultate") {
+          if (!requireHandHygiene()) return;
+          addFinding("auscultation");
+          setMessage("You auscultate the patient. Heart rhythm is regular and lungs are clear; this does not explain the progressive long-tract findings.");
+          return;
+        }
+        setMessage("The patient is awake and worried about progressive left-leg weakness.");
+        return;
+      }
+
+      if (state.mode === "auscultate") {
+        setMessage("Use the stethoscope on the patient to auscultate.");
+        return;
+      }
+
+      if (id === "bedsideTable") {
+        if (state.mode === "talk") {
+          setMessage("The bedside table holds a phone with a dead battery.");
+          return;
+        }
+        if (state.mode === "think") {
+          setMessage("Collateral history is locked until the phone is charged. Find power, then review the walking video.");
+          return;
+        }
+        setMessage("An uncharged patient phone is on the bedside table. It may contain useful collateral history.");
+        return;
+      }
+
+      if (id === "belongings") {
+        if (state.mode === "talk") {
+          setMessage("The patient says, \"My charger might be in there.\"");
+          return;
+        }
+        if (state.mode === "think") {
+          setMessage("The phone needs power before collateral history is available. Check the belongings bag for a charger.");
+          return;
+        }
+        setMessage("A coat and leather bag sit on the chair. Select GRAB to search them for the phone charger.");
+        return;
+      }
+
+      if (id === "sink") {
+        if (state.mode === "talk") {
+          setMessage("Use the sink for hand hygiene before the exam.");
+          return;
+        }
+        if (state.mode === "think") {
+          setMessage(has(state.completed, "soapInstalled")
+            ? "Soap and water are available for hand hygiene before the neurologic exam."
+            : "The dispenser is empty. Search the supply cabinet for a refill.");
+          return;
+        }
+        washHands();
+        return;
+      }
+
+      if (id === "cart") {
+        if (state.mode === "think") {
+          if (!has(state.completed, "examTools")) openQuiz("examTools");
+          else {
+            markCompleted("outletRevealed");
+            setMessage("The exam cart is open. Reflex hammer and tuning fork are available; an outlet is visible behind the cart.");
+          }
+          return;
+        }
+        setMessage("The exam cart has tools inside, a combination lock outside, and possibly an outlet behind it. This is a THINK or GRAB problem.");
+        return;
+      }
+
+      if (id === "monitor") {
+        addFinding("vitals");
+        setMessage("The monitor shows stable vitals. Useful, but the mystery is written in long tracts.");
+        return;
+      }
+
+      if (id === "cabinet") {
+        if (!has(state.completed, "soapRefillFound")) {
+          setMessage("The cabinet contains supply jars. Use GRAB to search for the soap refill.");
+          return;
+        }
+        if (state.mode === "think") {
+          if (!has(state.completed, "cabinet")) openQuiz("cabinet");
+          else setMessage("The cabinet is open. Neurotip and cold pack are ready for spinothalamic testing.");
+          return;
+        }
+        setMessage("The cabinet has a deeper drawer with a keypad. Select THINK to solve it.");
+        return;
+      }
+
+      if (id === "ct") {
+        if (!has(state.findings, "localization")) {
+          setMessage("The imaging software displays: Localize first.");
+          return;
+        }
+        if (state.mode === "think") {
+          if (!has(state.completed, "ctSafety")) {
+            openQuiz("ctSafety");
+            return;
+          }
+          openMRI();
+          return;
+        }
+        setMessage("Use THINK on the imaging software to make a localization-driven imaging decision.");
+        return;
+      }
+
+      if (id === "phone") {
+        if (!finalReady()) {
+          setMessage("The attending says over the wall phone: 'Bring me the confirmed diagnosis from the imaging report.'");
+          return;
+        }
+        setMessage("You present the final diagnosis and disposition. Case 01 is complete.");
+        return;
+      }
+
+      if (id === "door") {
+        setMessage("Future specialty rooms are not available yet.");
+      }
+    }
+
+    function openExam() {
+      const examButtons = [
+        ["motor", "Motor Strength", "Check left-leg pyramidal weakness."],
+        ["reflex", "Reflexes and Plantar", "Look for UMN release signs."],
+        ["vibration", "Vibration", "Use the tuning fork to test dorsal columns."],
+        ["position", "Position Sense", "Move the great toe with eyes closed."],
+        ["spinothalamic", "Pain and Temperature", "Compare bilateral pin and cold."],
+        ["sensoryLevel", "Sensory Level", "Mark where sensation normalizes."],
+        ["localization", "Localize Lesion", "Combine tracts into one cord lesion."]
+      ];
+
+      openModal(`
+        <section class="modal-card" role="dialog" aria-modal="true">
+          <div class="modal-header"><h2>Bedside Neuro Exam</h2><button type="button" data-close aria-label="Close">X</button></div>
+          <p>Pick focused maneuvers. Normal findings matter; crossed findings matter more.</p>
+          <div class="exam-grid">
+            ${examButtons.map(([id, label, detail]) => {
+              const findingId = id === "motor" ? "motorWeakness" : id === "reflex" ? "reflexes" : id === "vibration" || id === "position" ? "dorsalColumn" : id;
+              const done = has(state.findings, findingId) ? " done" : "";
+              return `<button type="button" class="exam-card${done}" data-exam="${id}"><strong>${label}</strong><span>${detail}</span></button>`;
+            }).join("")}
+          </div>
+        </section>
+      `);
+
+      document.querySelectorAll("[data-exam]").forEach(button => {
+        button.addEventListener("click", () => runExam(button.dataset.exam));
+      });
+    }
+
+    function runExam(exam) {
+      if (!requireHandHygiene()) {
+        closeModal();
+        return;
+      }
+
+      if (exam === "motor") openTiming({
+        title: "Left-Leg Strength Timing",
+        prompt: "Catch the effort while the marker crosses the gold zone. Three clean observations document true weakness rather than hallway wobble.",
+        zoneStart: 58,
+        zoneEnd: 75,
+        successText: "Left ankle dorsiflexion and hip flexion are weak; the arms and right leg stay strong.",
+        onSuccess: () => {
+          addFinding("motorWeakness");
+          setMessage("Left-leg UMN weakness is documented, supporting corticospinal tract involvement.");
+        }
+      });
+      if (exam === "reflex") {
+        if (!has(state.inventory, "hammer")) {
+          setMessage("Find the reflex hammer before testing reflexes.");
+          closeModal();
+          return;
+        }
+        openTiming({
+          title: "Reflex Hammer Meter",
+          prompt: "Strike while the swing is in the green zone. Too soft or too hard is not a reliable reflex.",
+          zoneStart: 34,
+          zoneEnd: 50,
+          successText: "Left knee and ankle reflexes are brisk, and the left toe goes up.",
+          onSuccess: () => {
+            addFinding("reflexes");
+            addFinding("plantar");
+            removeInventory("hammer");
+            setMessage("Brisk left reflexes and an extensor plantar response support a central motor pathway lesion.");
+          }
+        });
+      }
+      if (exam === "vibration") {
+        if (!has(state.inventory, "tuningFork")) {
+          setMessage("Find the tuning fork in the exam cart before testing vibration.");
+          closeModal();
+          return;
+        }
+        addFinding("dorsalColumn");
+        removeInventory("tuningFork");
+        setMessage("Vibration fades early on the left great toe and ankle, but is preserved on the right. This supports dorsal-column involvement.");
+        closeModal();
+      }
+      if (exam === "position") {
+        addFinding("dorsalColumn");
+        setMessage("With eyes closed, left toe position is unreliable while the right is crisp. The combined findings support dorsal-column involvement.");
+        closeModal();
+      }
+      if (exam === "spinothalamic") {
+        openSpinothalamicExam();
+      }
+      if (exam === "sensoryLevel") {
+        openSensoryLevel();
+      }
+      if (exam === "localization") {
+        openLocalization();
+      }
+    }
+
+    function openSpinothalamicExam() {
+      if (!has(state.inventory, "neurotip") || !has(state.inventory, "coldPack")) {
+        setMessage("You need both the neurotip and cold pack from the supply cabinet to compare pain and temperature safely.");
+        closeModal();
+        return;
+      }
+      openModal(`
+        <section class="modal-card mini-card" role="dialog" aria-modal="true">
+          <div class="modal-header"><h2>Pain and Temperature Map</h2><button type="button" data-close aria-label="Close">X</button></div>
+          <p>Which pattern matches a left hemicord lesion after spinothalamic fibers cross?</p>
+          <div class="option-stack">
+            <button type="button" class="option" data-spin="wrong">Left pain-temperature loss beginning at the foot only</button>
+            <button type="button" class="option" data-spin="correct">Right pain-temperature loss beginning below the lower thoracic levels</button>
+            <button type="button" class="option" data-spin="wrong">Both arms lose temperature first</button>
+            <button type="button" class="option" data-spin="wrong">No pain-temperature change because vibration is abnormal</button>
+          </div>
+          <p class="hint" id="spinHint" style="display:none"></p>
+        </section>
+      `);
+
+      document.querySelectorAll("[data-spin]").forEach(button => {
+        button.addEventListener("click", () => {
+          if (button.dataset.spin === "correct") {
+            addFinding("spinothalamic");
+            removeInventory("neurotip");
+            removeInventory("coldPack");
+            setMessage("Right-sided pinprick and cold are reduced below about T10, consistent with contralateral spinothalamic involvement after a left hemicord lesion.");
+            closeModal();
+          } else {
+            const hint = document.getElementById("spinHint");
+            hint.textContent = "Spinothalamic fibers cross in the cord after ascending one or two levels, so the body deficit is contralateral and slightly lower.";
+            hint.style.display = "block";
+          }
+        });
+      });
+    }
+
+    function openSensoryLevel() {
+      if (!has(state.findings, "dorsalColumn") || !has(state.findings, "spinothalamic")) {
+        setMessage("Map dorsal-column and pain-temperature findings before placing the sensory level.");
+        closeModal();
+        return;
+      }
+
+      openModal(`
+        <section class="modal-card mini-card" role="dialog" aria-modal="true">
+          <div class="modal-header"><h2>Sensory-Level Marker</h2><button type="button" data-close aria-label="Close">X</button></div>
+          <p>Place the clinically useful marker for this case.</p>
+          <div class="option-stack">
+            <button type="button" class="option" data-level="tooHigh">C5: above the arms</button>
+            <button type="button" class="option" data-level="correct">T8 left dorsal-column level, with right pain-temperature change around T10</button>
+            <button type="button" class="option" data-level="tooLow">L5: isolated foot-level deficit</button>
+            <button type="button" class="option" data-level="wrong">No sensory level</button>
+          </div>
+          <p class="hint" id="levelHint" style="display:none"></p>
+        </section>
+      `);
+
+      document.querySelectorAll("[data-level]").forEach(button => {
+        button.addEventListener("click", () => {
+          if (button.dataset.level === "correct") {
+            addFinding("sensoryLevel");
+            setMessage("A thoracic sensory level is charted. The one-to-two-level spinothalamic offset supports hemicord localization.");
+            closeModal();
+          } else {
+            const hint = document.getElementById("levelHint");
+            hint.textContent = button.dataset.level === "tooHigh"
+              ? "The arms and face are normal, so the lesion is not above the upper limb pathways."
+              : button.dataset.level === "tooLow"
+                ? "The abnormality begins on the trunk, not just the foot."
+                : "A sensory level is present and is central to localizing the cord.";
+            hint.style.display = "block";
+          }
+        });
+      });
+    }
+
+    function openLocalization() {
+      const ready = ["motorWeakness", "reflexes", "dorsalColumn", "spinothalamic", "sensoryLevel"].every(id => has(state.findings, id));
+      if (!ready) {
+        setMessage("Finish motor, reflex, dorsal-column, spinothalamic, and sensory-level findings before localizing.");
+        closeModal();
+        return;
+      }
+
+      openModal(`
+        <section class="modal-card mini-card" role="dialog" aria-modal="true">
+          <div class="modal-header"><h2>Localization Lock</h2><button type="button" data-close aria-label="Close">X</button></div>
+          <p>Make every clue explain one lesion.</p>
+          <div class="option-stack">
+            <button type="button" class="option" data-localize="brain">Right cortical hemisphere</button>
+            <button type="button" class="option" data-localize="root">Left lumbosacral root</button>
+            <button type="button" class="option" data-localize="correct">Left thoracic hemicord</button>
+            <button type="button" class="option" data-localize="nerve">Peripheral neuropathy</button>
+          </div>
+          <p class="hint" id="localizeHint" style="display:none"></p>
+        </section>
+      `);
+
+      document.querySelectorAll("[data-localize]").forEach(button => {
+        button.addEventListener("click", () => {
+          if (button.dataset.localize === "correct") {
+            addFinding("localization");
+            setMessage("Localization solved: left thoracic hemicord. Left corticospinal and dorsal-column findings plus right spinothalamic loss indicate one lesion.");
+            closeModal();
+          } else {
+            const hint = document.getElementById("localizeHint");
+            hint.textContent = "The normal arms and face, thoracic level, ipsilateral UMN/dorsal-column loss, and contralateral pain-temperature loss point to hemicord.";
+            hint.style.display = "block";
+          }
+        });
+      });
+    }
+
+    function openTiming(config) {
+      state.timingMarker = 0;
+      state.timingHits = 0;
+      openModal(`
+        <section class="modal-card mini-card" role="dialog" aria-modal="true">
+          <div class="modal-header"><h2>${escapeHtml(config.title)}</h2><button type="button" data-close aria-label="Close">X</button></div>
+          <p>${escapeHtml(config.prompt)}</p>
+          <div class="timing-meter">
+            <div class="target-zone" style="left:${config.zoneStart}%;width:${config.zoneEnd - config.zoneStart}%"></div>
+            <div class="meter-marker" id="meterMarker" style="left:0%"></div>
+          </div>
+          <div class="hit-pips" id="hitPips"><span></span><span></span><span></span></div>
+          <p class="hint" id="timingHint" style="display:none"></p>
+          <div class="modal-actions"><button type="button" class="primary-action" id="strikeButton">Record Moment</button></div>
+        </section>
+      `);
+
+      state.timingTimer = setInterval(() => {
+        state.timingMarker = (state.timingMarker + 5) % 101;
+        const marker = document.getElementById("meterMarker");
+        if (marker) marker.style.left = state.timingMarker + "%";
+      }, 95);
+
+      document.getElementById("strikeButton").addEventListener("click", () => {
+        const hint = document.getElementById("timingHint");
+        if (state.timingMarker >= config.zoneStart && state.timingMarker <= config.zoneEnd) {
+          state.timingHits += 1;
+          document.querySelectorAll("#hitPips span").forEach((pip, index) => pip.classList.toggle("lit", index < state.timingHits));
+          hint.textContent = state.timingHits >= 3 ? config.successText : "Good catch. Repeat it to prove the finding.";
+          hint.style.display = "block";
+          if (state.timingHits >= 3) {
+            setTimeout(() => {
+              config.onSuccess();
+              closeModal();
+            }, 450);
+          }
+        } else {
+          hint.textContent = "Missed the useful moment. Focus on the patient movement.";
+          hint.style.display = "block";
+        }
+      });
+    }
+
+    function openMRI() {
+      if (!has(state.completed, "imagingLesionFound")) {
+        openMRIViewer();
+        return;
+      }
+      if (!has(state.completed, "imagingInterpretation")) {
+        openImagingInterpretation();
+        return;
+      }
+      openImagingReport();
+    }
+
+    function openMRIViewer() {
+      openModal(`
+        <section class="modal-card mini-card" role="dialog" aria-modal="true">
+          <div class="modal-header"><h2>Final Imaging Lock</h2><button type="button" data-close aria-label="Close">X</button></div>
+          <p>The MRI is finally available. Click the left posterolateral cord compression before making the diagnosis.</p>
+          <div class="ct-scan">
+            <button type="button" class="ct-zone correct" data-ct="correct" aria-label="left posterolateral thoracic cord mass"></button>
+            <button type="button" class="ct-zone ventricle" data-ct="cord" aria-label="central cord"></button>
+            <button type="button" class="ct-zone artifact" data-ct="artifact" aria-label="posterior artifact"></button>
+          </div>
+          <p class="hint" id="ctHint" style="display:none"></p>
+        </section>
+      `);
+
+      document.querySelectorAll("[data-ct]").forEach(button => {
+        button.addEventListener("click", () => {
+          if (button.dataset.ct === "correct") {
+            markCompleted("imagingLesionFound");
+            addFinding("mriMass");
+            const hint = document.getElementById("ctHint");
+            hint.textContent = "Lesion identified. Now interpret what the imaging means for this patient.";
+            hint.style.display = "block";
+            setTimeout(openImagingInterpretation, 500);
+          } else {
+            const hint = document.getElementById("ctHint");
+            hint.textContent = button.dataset.ct === "cord"
+              ? "The cord is the structure being compressed; the mass is eccentrically left and posterior-lateral."
+              : "That streak is not the lesion. Look for asymmetric compression of the thoracic cord.";
+            hint.style.display = "block";
+          }
+        });
+      });
+    }
+
+    function openImagingInterpretation() {
+      openModal(`
+        <section class="modal-card mini-card" role="dialog" aria-modal="true">
+          <div class="modal-header"><h2>Final Diagnosis Lock</h2><button type="button" data-close aria-label="Close">X</button></div>
+          <p>The exam localizes to the left thoracic hemicord, and MRI shows a left posterolateral mass compressing the cord. What does this most likely represent?</p>
+          <div class="option-stack">
+            <button type="button" class="option" data-imaging-answer="correct">Brown-Sequard syndrome from left thoracic hemicord compression</button>
+            <button type="button" class="option" data-imaging-answer="brain">Right MCA stroke with neglect</button>
+            <button type="button" class="option" data-imaging-answer="root">Left lumbosacral radiculopathy</button>
+            <button type="button" class="option" data-imaging-answer="nerve">Length-dependent peripheral neuropathy</button>
+          </div>
+          <p class="hint" id="imagingHint" style="display:none"></p>
+        </section>
+      `);
+
+      document.querySelectorAll("[data-imaging-answer]").forEach(button => {
+        button.addEventListener("click", () => {
+          const hint = document.getElementById("imagingHint");
+          if (button.dataset.imagingAnswer === "correct") {
+            markCompleted("imagingInterpretation");
+            hint.textContent = "Correct. Confirm the radiology impression to sign the diagnosis.";
+            hint.style.display = "block";
+            setTimeout(openImagingReport, 500);
+            return;
+          }
+          hint.textContent = button.dataset.imagingAnswer === "brain"
+            ? "A cortical stroke would not explain a thoracic sensory level with crossed body findings and normal face/arms."
+            : button.dataset.imagingAnswer === "root"
+              ? "A single root lesion would not produce ipsilateral UMN/dorsal-column signs plus contralateral pain-temperature loss."
+              : "Peripheral neuropathy is usually distal and symmetric; this case has a focal hemicord pattern.";
+          hint.style.display = "block";
+        });
+      });
+    }
+
+    function openImagingReport() {
+      openModal(`
+        <section class="modal-card mini-card" role="dialog" aria-modal="true">
+          <div class="modal-header"><h2>Imaging Report</h2><button type="button" data-close aria-label="Close">X</button></div>
+          <p>Confirm the report against your localization before closing the room.</p>
+          <div class="report-sheet">
+            <h3>MRI Thoracic Spine With and Without Contrast</h3>
+            <dl>
+              <div class="report-row"><dt>Level</dt><dd>Mid-thoracic cord, left posterolateral aspect.</dd></div>
+              <div class="report-row"><dt>Finding</dt><dd>Enhancing intradural extramedullary mass with focal compression of the left hemicord.</dd></div>
+              <div class="report-row"><dt>Correlation</dt><dd>Matches ipsilateral corticospinal and dorsal-column findings with contralateral pain-temperature loss.</dd></div>
+            </dl>
+            <p class="report-impression">Impression: left thoracic hemicord compression causing Brown-Sequard syndrome. Urgent neurosurgical evaluation is recommended.</p>
+          </div>
+          ${has(state.completed, "caseComplete") ? `<span class="case-complete-stamp">Case complete</span>` : ""}
+          <div class="modal-actions">
+            ${has(state.completed, "caseComplete")
+              ? `<button type="button" class="primary-action" data-close>OK</button>`
+              : `<button type="button" class="primary-action" id="confirmDiagnosis">Confirm Diagnosis</button>`}
+          </div>
+        </section>
+      `);
+
+      const confirmButton = document.getElementById("confirmDiagnosis");
+      if (confirmButton) confirmButton.addEventListener("click", completeCase);
+    }
+
+    function completeCase() {
+      if (!has(state.completed, "imagingReportConfirmed")) markCompleted("imagingReportConfirmed");
+      if (!has(state.completed, "caseComplete")) markCompleted("caseComplete");
+      addFinding("finalDiagnosis");
+      addFinding("neurosurgery");
+      logAction("Completed Case 01: confirmed Brown-Sequard syndrome from thoracic cord compression");
+      closeModal();
+      setMessage("Diagnosis confirmed: Brown-Sequard syndrome from left thoracic hemicord compression by a posterolateral mass. Urgent neurosurgical evaluation ends the room.");
+    }
+
+    document.addEventListener("pointerdown", event => {
+      if (event.button !== 0) return;
+      if (!(event.target instanceof Element)) return;
+      if (event.target.closest("button, [data-hotspot], .inventory-item")) playSfx("click");
+    }, true);
+
+    document.querySelectorAll("[data-mode]").forEach(button => {
+      button.addEventListener("click", () => {
+        state.mode = button.dataset.mode;
+        render();
+      });
+    });
+
+    document.querySelectorAll("[data-hotspot]").forEach(button => {
+      button.addEventListener("click", () => handleHotspot(button.dataset.hotspot));
+      button.addEventListener("dragover", event => {
+        const types = Array.from(event.dataTransfer.types || []);
+        if (!inventoryDrag.itemId && !types.includes("text/plain")) return;
+        event.preventDefault();
+        event.dataTransfer.dropEffect = "move";
+        setInventoryDragTarget(button);
+      });
+      button.addEventListener("dragleave", () => {
+        if (inventoryDrag.target === button) setInventoryDragTarget(null);
+      });
+      button.addEventListener("drop", event => {
+        event.preventDefault();
+        const itemId = event.dataTransfer.getData("text/plain") || inventoryDrag.itemId;
+        clearInventoryDragVisuals();
+        resetInventoryPointerDrag();
+        handleInventoryUse(itemId, button.dataset.hotspot);
+      });
+    });
+
+    function closeToolbarMenus(except = null) {
+      document.querySelectorAll(".toolbar-menu").forEach(menu => {
+        if (menu === except) return;
+        menu.classList.remove("open");
+        menu.querySelector(".menu-panel").hidden = true;
+        menu.querySelector(".toolbar-menu-button").setAttribute("aria-expanded", "false");
+      });
+    }
+
+    document.querySelectorAll("[data-menu-toggle]").forEach(button => {
+      button.addEventListener("click", event => {
+        event.stopPropagation();
+        const menu = button.closest(".toolbar-menu");
+        const shouldOpen = !menu.classList.contains("open");
+        closeToolbarMenus(shouldOpen ? menu : null);
+        menu.classList.toggle("open", shouldOpen);
+        menu.querySelector(".menu-panel").hidden = !shouldOpen;
+        button.setAttribute("aria-expanded", String(shouldOpen));
+      });
+    });
+
+    document.addEventListener("click", event => {
+      if (!event.target.closest(".toolbar-menu")) closeToolbarMenus();
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") closeToolbarMenus();
+    });
+
+    document.querySelector("[data-help]").addEventListener("click", () => {
+      closeToolbarMenus();
+      openHelp();
+    });
+    document.querySelector("[data-level-select]").addEventListener("click", () => {
+      closeToolbarMenus();
+      openLevelSelect();
+    });
+
+    document.querySelector("[data-chart-review]").addEventListener("click", openChartReview);
+
+    document.querySelector("[data-music-toggle]").addEventListener("click", event => {
+      event.stopPropagation();
+      toggleMusic();
+    });
+
+    document.querySelector("[data-music-volume]").addEventListener("input", event => {
+      setMusicVolume(event.target.value);
+    });
+
+    document.querySelector("[data-sfx-volume]").addEventListener("input", event => {
+      setSfxVolume(event.target.value);
+    });
+
+    document.querySelector("[data-sfx-test]").addEventListener("click", event => {
+      event.stopPropagation();
+      playSfx("success");
+    });
+
+    document.getElementById("messageOk").addEventListener("click", closeMessagePopup);
+
+    document.addEventListener("keydown", event => {
+      const popup = document.getElementById("messagePopup");
+      if (popup.hidden) return;
+      if (event.key === "Escape" || event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        closeMessagePopup();
+      }
+    });
+
+    document.getElementById("historyClose").addEventListener("click", closeHistoryDialogue);
+
+    document.addEventListener("keydown", event => {
+      if (document.getElementById("historyDialogue").hidden) return;
+      if (event.key === "Escape") {
+        closeHistoryDialogue();
+        return;
+      }
+    });
+
+    const cursor = document.getElementById("emojiCursor");
+    document.querySelector(".game-root").addEventListener("pointermove", event => {
+      cursor.style.left = event.clientX + "px";
+      cursor.style.top = event.clientY + "px";
+      cursor.classList.add("visible");
+    });
+    document.querySelector(".game-root").addEventListener("pointerleave", () => {
+      cursor.classList.remove("visible");
+    });
+
+    render();
+  </script>
+</body>
+</html>
