@@ -1,0 +1,1788 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cranial Chaos Solo</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #e9eef0;
+      --surface: #fbfbf8;
+      --surface-2: #f1f6f4;
+      --ink: #172026;
+      --muted: #5a6770;
+      --line: #121212;
+      --teal: #157782;
+      --teal-dark: #0f5962;
+      --rose: #a64552;
+      --amber: #c98317;
+      --green: #2d7666;
+      --shadow: 0 18px 45px rgba(23, 32, 38, 0.12);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        linear-gradient(135deg, rgba(21, 119, 130, 0.14), transparent 36%),
+        linear-gradient(315deg, rgba(166, 69, 82, 0.12), transparent 42%),
+        var(--bg);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.45;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+
+    .app {
+      width: min(1240px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 24px 0 40px;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 20px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 0;
+      font-size: 3.2rem;
+      line-height: 0.95;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin-bottom: 12px;
+      font-size: 1.5rem;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin-bottom: 8px;
+      font-size: 1rem;
+    }
+
+    .header-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .panel {
+      border: 1px solid rgba(18, 18, 18, 0.13);
+      border-radius: var(--radius);
+      background: rgba(251, 251, 248, 0.94);
+      box-shadow: var(--shadow);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-top: 8px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 42px;
+      border: 1px solid rgba(18, 18, 18, 0.22);
+      border-radius: 6px;
+      background: #fff;
+      color: var(--ink);
+      padding: 10px 14px;
+      font-weight: 800;
+      text-decoration: none;
+      transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      border-color: rgba(18, 18, 18, 0.35);
+      background: #f7fbfb;
+    }
+
+    .btn-primary {
+      border-color: var(--teal-dark);
+      background: var(--teal);
+      color: #fff;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--teal-dark);
+    }
+
+    .btn-small {
+      min-height: 34px;
+      padding: 7px 10px;
+      font-size: 0.85rem;
+    }
+
+    .game-layout {
+      display: block;
+    }
+
+    .game-main {
+      display: grid;
+      gap: 16px;
+    }
+
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .stat {
+      min-height: 82px;
+      padding: 14px;
+      border-radius: var(--radius);
+      background: var(--surface);
+      border: 1px solid rgba(18, 18, 18, 0.13);
+    }
+
+    .stat span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .stat strong {
+      display: block;
+      margin-top: 4px;
+      font-size: 1.35rem;
+      line-height: 1.08;
+    }
+
+    .table-panel {
+      padding: 18px;
+    }
+
+    .round-header {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .round-header p {
+      margin-bottom: 0;
+      color: var(--muted);
+    }
+
+    .prompt-zone {
+      display: grid;
+      grid-template-columns: minmax(220px, 0.72fr) minmax(220px, 1fr);
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .axon-stack {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .card-frame {
+      border: 4px solid var(--line);
+      border-radius: 5px;
+      background: #3d3d3b;
+      padding: 16px;
+      min-height: 250px;
+      min-width: 0;
+      display: grid;
+      align-items: center;
+    }
+
+    .card-inner {
+      min-height: 145px;
+      min-width: 0;
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      gap: 14px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: #050505;
+      padding: 8px;
+      text-align: center;
+    }
+
+    .card-kicker {
+      font-size: 1rem;
+      font-weight: 950;
+      line-height: 1.1;
+      overflow-wrap: anywhere;
+    }
+
+    .card-text {
+      font-size: 1.15rem;
+      font-weight: 900;
+      line-height: 1.18;
+      overflow-wrap: anywhere;
+    }
+
+    .bonus-frame {
+      border-color: #0b0b0b;
+      background: #343432;
+    }
+
+    .bonus-frame .card-inner {
+      min-height: 165px;
+    }
+
+    .bonus-points {
+      display: inline-grid;
+      width: 64px;
+      height: 42px;
+      place-items: center;
+      border: 1px solid #050505;
+      border-radius: 999px;
+      font-size: 1.55rem;
+      font-weight: 900;
+    }
+
+    .requirement {
+      display: grid;
+      gap: 12px;
+      align-content: start;
+      padding: 14px 0;
+    }
+
+    .requirement-card {
+      border-left: 5px solid var(--amber);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      background: #fff8ec;
+      padding: 14px 16px;
+    }
+
+    .requirement-card.no-bonus {
+      border-left-color: var(--green);
+      background: #edf7f4;
+    }
+
+    .requirement-card p {
+      margin-bottom: 0;
+      color: var(--muted);
+    }
+
+    .answer-builder {
+      display: grid;
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .answer-tray {
+      padding: 14px;
+      border: 1px solid rgba(18, 18, 18, 0.14);
+      border-radius: 6px;
+      background: var(--surface-2);
+    }
+
+    .bank-heading {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .bank-heading h3 {
+      margin-bottom: 0;
+    }
+
+    .bank-heading span {
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .answer-slots {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+    }
+
+    .drop-slot {
+      position: relative;
+      min-height: 108px;
+      display: grid;
+      align-content: center;
+      gap: 8px;
+      border: 2px dashed rgba(18, 18, 18, 0.28);
+      border-radius: 6px;
+      background: #fff;
+      padding: 12px 42px 12px 12px;
+      transition: background 120ms ease, border-color 120ms ease;
+    }
+
+    .drop-slot.is-filled {
+      border-style: solid;
+      border-color: var(--teal);
+    }
+
+    .drop-slot.is-over {
+      border-color: var(--teal-dark);
+      background: #edf7f4;
+    }
+
+    .drop-slot.is-correct {
+      border-color: var(--green);
+      background: #edf7f4;
+    }
+
+    .drop-slot.is-incorrect {
+      border-color: var(--rose);
+      background: #fff3f4;
+    }
+
+    .slot-heading {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 10px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .slot-label,
+    .slot-status {
+      color: var(--muted);
+      font-size: 0.74rem;
+      font-weight: 850;
+      text-transform: uppercase;
+    }
+
+    .slot-status {
+      color: var(--ink);
+    }
+
+    .slot-value {
+      line-height: 1.28;
+    }
+
+    .slot-empty {
+      color: var(--muted);
+    }
+
+    .clear-choice {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 28px;
+      height: 28px;
+      border: 1px solid rgba(18, 18, 18, 0.2);
+      border-radius: 4px;
+      background: #fff;
+      color: var(--ink);
+      font-size: 1.15rem;
+      line-height: 1;
+    }
+
+    .choice-bank {
+      padding-top: 16px;
+      border-top: 1px solid rgba(18, 18, 18, 0.12);
+    }
+
+    .bank-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 8px;
+    }
+
+    .bank-grid-nerve {
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    }
+
+    .bank-card {
+      width: 100%;
+      min-height: 68px;
+      display: grid;
+      align-content: center;
+      gap: 3px;
+      border: 1px solid rgba(18, 18, 18, 0.2);
+      border-radius: 5px;
+      background: #fff;
+      color: var(--ink);
+      padding: 10px 11px;
+      text-align: left;
+      transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+    }
+
+    .bank-card:hover:not(:disabled) {
+      transform: translateY(-1px);
+      border-color: var(--teal);
+      background: #f3fbfb;
+    }
+
+    .bank-card.is-selected {
+      border-color: var(--teal-dark);
+      background: #e8f4f5;
+      box-shadow: inset 0 0 0 1px var(--teal-dark);
+    }
+
+    .bank-card strong,
+    .bank-card span {
+      overflow-wrap: anywhere;
+    }
+
+    .bank-card span {
+      color: #2b2b2b;
+      font-size: 0.86rem;
+    }
+
+    .award-panel {
+      padding: 16px;
+    }
+
+    .award-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .award-row p {
+      flex: 1 1 240px;
+      margin-bottom: 0;
+      color: var(--muted);
+    }
+
+    .answer-feedback {
+      flex: 1 1 100%;
+      display: grid;
+      gap: 7px;
+      border-left: 5px solid var(--amber);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      background: #fff8ec;
+      padding: 12px 14px;
+    }
+
+    .answer-feedback.is-pass {
+      border-left-color: var(--green);
+      background: #edf7f4;
+    }
+
+    .answer-feedback strong,
+    .answer-feedback p {
+      color: var(--ink);
+    }
+
+    .answer-feedback p {
+      margin: 0;
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .tab-btn {
+      border: 1px solid rgba(18, 18, 18, 0.16);
+      border-radius: 999px;
+      background: #fff;
+      padding: 8px 11px;
+      font-size: 0.82rem;
+      font-weight: 850;
+    }
+
+    .tab-btn[aria-selected="true"] {
+      border-color: var(--teal);
+      background: var(--teal);
+      color: #fff;
+    }
+
+    .reference-card {
+      display: grid;
+      gap: 10px;
+      border-top: 1px solid rgba(18, 18, 18, 0.12);
+      padding-top: 14px;
+    }
+
+    .reference-card h3 {
+      font-size: 1.25rem;
+      letter-spacing: 0;
+    }
+
+    .fact-list {
+      display: grid;
+      gap: 9px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .fact-list li {
+      display: grid;
+      gap: 3px;
+      padding: 9px 0;
+      border-bottom: 1px solid rgba(18, 18, 18, 0.08);
+    }
+
+    .fact-list li:last-child {
+      border-bottom: 0;
+    }
+
+    .fact-list span {
+      color: var(--muted);
+      font-size: 0.74rem;
+      font-weight: 850;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .mini-card {
+      border: 1px solid rgba(18, 18, 18, 0.13);
+      border-radius: 6px;
+      background: #fff;
+      padding: 9px;
+      font-size: 0.82rem;
+      text-align: center;
+    }
+
+    .log-list {
+      display: grid;
+      gap: 10px;
+      max-height: 300px;
+      overflow: auto;
+      padding-right: 6px;
+    }
+
+    .log-entry {
+      border-left: 4px solid var(--teal);
+      background: #f4faf9;
+      padding: 10px 12px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .modal {
+      width: min(700px, calc(100vw - 24px));
+      max-width: calc(100vw - 24px);
+      max-height: min(84vh, 760px);
+      margin: auto;
+      padding: 0;
+      overflow: hidden;
+      border: 1px solid rgba(18, 18, 18, 0.18);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--ink);
+      box-shadow: 0 26px 80px rgba(23, 32, 38, 0.28);
+    }
+
+    .modal-reference {
+      width: min(820px, calc(100vw - 24px));
+    }
+
+    .modal::backdrop {
+      background: rgba(23, 32, 38, 0.56);
+      backdrop-filter: blur(2px);
+    }
+
+    .modal-shell {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      max-height: min(84vh, 760px);
+      min-width: 0;
+    }
+
+    .modal-header {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 18px;
+      border-bottom: 1px solid rgba(18, 18, 18, 0.12);
+      background: var(--surface);
+      min-width: 0;
+    }
+
+    .modal-header h2 {
+      margin-bottom: 0;
+    }
+
+    .modal-body {
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 18px;
+      min-width: 0;
+    }
+
+    .modal-body > p {
+      color: var(--muted);
+    }
+
+    .modal-section {
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(18, 18, 18, 0.12);
+    }
+
+    .modal-section h3 {
+      font-size: 1.1rem;
+    }
+
+    .how-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding-left: 22px;
+    }
+
+    .how-list li::marker {
+      color: var(--teal-dark);
+      font-weight: 900;
+    }
+
+    .how-list li {
+      overflow-wrap: anywhere;
+    }
+
+    .btn-icon {
+      width: 40px;
+      min-width: 40px;
+      min-height: 40px;
+      padding: 0;
+      font-size: 1.35rem;
+      line-height: 1;
+    }
+
+    .modal-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      margin-top: 18px;
+    }
+
+    .game-over {
+      display: none;
+      padding: 16px;
+      border: 2px solid var(--green);
+      background: #edf7f4;
+      border-radius: var(--radius);
+    }
+
+    .game-over.is-visible {
+      display: block;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    @media (max-width: 800px) {
+      .prompt-zone {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .app {
+        width: min(100% - 20px, 1240px);
+        padding-top: 14px;
+      }
+
+      .topbar {
+        grid-template-columns: 1fr;
+        align-items: start;
+      }
+
+      .header-actions {
+        justify-content: flex-start;
+      }
+
+      .mini-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .answer-slots,
+      .bank-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .bank-grid-nerve {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .status-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .table-panel,
+      .award-panel {
+        padding: 13px;
+      }
+
+      .stat {
+        min-height: 72px;
+        padding: 10px;
+      }
+
+      .stat strong {
+        font-size: 1.08rem;
+      }
+
+      .modal-header,
+      .modal-body {
+        padding: 14px;
+      }
+
+      .card-frame {
+        min-height: 220px;
+        padding: 18px;
+      }
+
+      h1 {
+        font-size: 2.65rem;
+      }
+
+      h2 {
+        font-size: 1.28rem;
+      }
+
+      .card-kicker {
+        font-size: 1.28rem;
+      }
+
+      .card-text {
+        font-size: 1.42rem;
+      }
+
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <h1>Cranial Chaos</h1>
+      <div class="header-actions" aria-label="Game help">
+        <button id="referenceButton" type="button" class="btn">Nerve reference</button>
+        <button id="howToButton" type="button" class="btn">How to play</button>
+      </div>
+    </header>
+
+    <section id="gamePanel" class="game-layout">
+      <div class="game-main">
+        <section class="status-grid" aria-label="Game status">
+          <div class="stat">
+            <span>Round</span>
+            <strong id="roundStat">1</strong>
+          </div>
+          <div class="stat">
+            <span>Score</span>
+            <strong id="scoreStat">0 points</strong>
+          </div>
+          <div class="stat">
+            <span>Round value</span>
+            <strong id="pointsStat">1 point</strong>
+          </div>
+        </section>
+
+        <section id="gameOver" class="game-over" aria-live="polite"></section>
+
+        <section class="table-panel panel" aria-labelledby="tableTitle">
+          <div class="round-header">
+            <div>
+              <h2 id="tableTitle">Current Round</h2>
+              <p id="roundInstruction">Drag or tap one choice from each bank into the answer tray.</p>
+            </div>
+            <div class="actions">
+              <button id="newGameTop" type="button" class="btn btn-small">New game</button>
+            </div>
+          </div>
+
+          <div class="prompt-zone">
+            <div class="axon-stack" id="axonStack"></div>
+            <div class="requirement" id="requirementPanel"></div>
+          </div>
+
+          <div id="answerBuilder" class="answer-builder" aria-live="polite"></div>
+        </section>
+
+        <section class="award-panel panel" aria-labelledby="awardTitle">
+          <h2 id="awardTitle">Answer check</h2>
+          <div id="awardControls" class="award-row"></div>
+        </section>
+      </div>
+    </section>
+
+    <dialog id="howToDialog" class="modal" aria-labelledby="howToTitle">
+      <div class="modal-shell">
+        <header class="modal-header">
+          <h2 id="howToTitle">How to play</h2>
+          <button id="howToClose" type="button" class="btn btn-icon" aria-label="Close how to play">&times;</button>
+        </header>
+        <div class="modal-body">
+          <ol class="how-list">
+            <li>Read the activity and its focus cue. Each cue has one best cranial nerve.</li>
+            <li>Drag a nerve from the Nerve bank into the Best nerve slot, or tap it to place it.</li>
+            <li>Match the supporting function. Bonus rounds also require one exact anatomy detail.</li>
+            <li>Select <strong>Check answer</strong>. Every slot is compared directly with the stored solution.</li>
+          </ol>
+
+          <section class="modal-section" aria-labelledby="scoringTitle">
+            <h3 id="scoringTitle">Scoring</h3>
+            <p>An exact nerve-and-function match earns 1 point. Foramina Fumble and Synaptic Snag add 1 point; Pathway Peril adds 2 points for an exact detail match.</p>
+          </section>
+
+          <section class="modal-section" aria-labelledby="historyTitle">
+            <h3 id="historyTitle">Round history</h3>
+            <div id="logList" class="log-list"></div>
+          </section>
+
+          <div class="modal-actions">
+            <button id="howToDismiss" type="button" class="btn btn-primary">Start playing</button>
+          </div>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog id="referenceDialog" class="modal modal-reference" aria-labelledby="referenceTitle">
+      <div class="modal-shell">
+        <header class="modal-header">
+          <h2 id="referenceTitle">Nerve reference</h2>
+          <button id="referenceClose" type="button" class="btn btn-icon" aria-label="Close nerve reference">&times;</button>
+        </header>
+        <div class="modal-body">
+          <div id="nerveTabs" class="tabs" role="tablist" aria-label="Choose cranial nerve"></div>
+          <div id="referenceCard" class="reference-card"></div>
+          <div class="modal-actions">
+            <button id="referenceDismiss" type="button" class="btn">Close</button>
+          </div>
+        </div>
+      </div>
+    </dialog>
+  </main>
+
+  <script>
+    const NERVES = [
+      {
+        id: "I",
+        roman: "I",
+        name: "Olfactory Nerve",
+        shortName: "Olfactory",
+        modality: "Special sensory",
+        function: "Smell from the nasal mucosa.",
+        foramina: "Cribriform plate of the ethmoid bone.",
+        synapse: "Primary olfactory neurons synapse in the olfactory bulb.",
+        pathway: "Olfactory receptor neurons pass through the cribriform plate to the olfactory bulb, then olfactory tract fibers project toward primary olfactory cortex."
+      },
+      {
+        id: "II",
+        roman: "II",
+        name: "Optic Nerve",
+        shortName: "Optic",
+        modality: "Special sensory",
+        function: "Vision from retinal ganglion cells.",
+        foramina: "Optic canal.",
+        synapse: "Retinal ganglion cell axons relay through the lateral geniculate nucleus before visual cortex.",
+        pathway: "Retina to optic nerve, optic chiasm, optic tract, lateral geniculate nucleus, optic radiations, and visual cortex."
+      },
+      {
+        id: "III",
+        roman: "III",
+        name: "Oculomotor Nerve",
+        shortName: "Oculomotor",
+        modality: "Motor and parasympathetic",
+        function: "Most eye movements, eyelid elevation, pupillary constriction, and accommodation.",
+        foramina: "Superior orbital fissure.",
+        synapse: "Somatic motor fibers synapse at extraocular muscles; parasympathetic fibers synapse in the ciliary ganglion.",
+        pathway: "Midbrain fibers enter the cavernous sinus, pass through the superior orbital fissure, and reach extraocular muscles and the ciliary ganglion."
+      },
+      {
+        id: "IV",
+        roman: "IV",
+        name: "Trochlear Nerve",
+        shortName: "Trochlear",
+        modality: "Motor",
+        function: "Superior oblique muscle for depression and intorsion of the eye.",
+        foramina: "Superior orbital fissure.",
+        synapse: "Somatic motor fibers synapse at the superior oblique muscle.",
+        pathway: "Dorsal midbrain fibers wrap around the brainstem, enter the cavernous sinus, pass through the superior orbital fissure, and reach superior oblique."
+      },
+      {
+        id: "V",
+        roman: "V",
+        name: "Trigeminal Nerve",
+        shortName: "Trigeminal",
+        modality: "Sensory and motor",
+        function: "Facial, corneal, and nasal cavity sensation; anterior tongue general sensation; and muscles of mastication.",
+        foramina: "V1: superior orbital fissure; V2: foramen rotundum; V3: foramen ovale.",
+        synapse: "Sensory fibers relay in trigeminal sensory nuclei; V3 motor fibers synapse at muscles of mastication.",
+        pathway: "Peripheral branches converge at the trigeminal ganglion, enter the pons, and relay through trigeminal nuclei; V3 motor fibers travel to masticatory muscles."
+      },
+      {
+        id: "VI",
+        roman: "VI",
+        name: "Abducens Nerve",
+        shortName: "Abducens",
+        modality: "Motor",
+        function: "Lateral rectus muscle for eye abduction.",
+        foramina: "Superior orbital fissure.",
+        synapse: "Somatic motor fibers synapse at the lateral rectus muscle.",
+        pathway: "Pontine fibers travel through the cavernous sinus, enter the orbit through the superior orbital fissure, and reach lateral rectus."
+      },
+      {
+        id: "VII",
+        roman: "VII",
+        name: "Facial Nerve",
+        shortName: "Facial",
+        modality: "Motor, sensory, and parasympathetic",
+        function: "Facial expression, taste from anterior two-thirds of tongue, lacrimation, and salivation.",
+        foramina: "Internal acoustic meatus, facial canal, and stylomastoid foramen.",
+        synapse: "Motor fibers synapse at facial expression muscles; parasympathetic fibers synapse in pterygopalatine or submandibular ganglia; taste fibers relay in the solitary nucleus.",
+        pathway: "Fibers pass through the internal acoustic meatus and facial canal, exit the stylomastoid foramen, and distribute through facial branches; chorda tympani carries taste and salivary fibers."
+      },
+      {
+        id: "VIII",
+        roman: "VIII",
+        name: "Vestibulocochlear Nerve",
+        shortName: "Vestibulocochlear",
+        modality: "Special sensory",
+        function: "Hearing and balance.",
+        foramina: "Internal acoustic meatus.",
+        synapse: "Cochlear fibers relay in cochlear nuclei; vestibular fibers relay in vestibular nuclei.",
+        pathway: "Sensory fibers from the cochlea and vestibular apparatus travel through the internal acoustic meatus to brainstem cochlear and vestibular nuclei."
+      },
+      {
+        id: "IX",
+        roman: "IX",
+        name: "Glossopharyngeal Nerve",
+        shortName: "Glossopharyngeal",
+        modality: "Motor, sensory, and parasympathetic",
+        function: "Taste and sensation from posterior tongue, carotid body and sinus input, stylopharyngeus, parotid salivation, and gag reflex afferent limb.",
+        foramina: "Jugular foramen.",
+        synapse: "Sensory fibers relay in the solitary and trigeminal nuclei; parasympathetic fibers synapse in the otic ganglion; motor fibers synapse at stylopharyngeus.",
+        pathway: "Medullary fibers exit the jugular foramen, reach pharyngeal and tongue targets, and send parasympathetic fibers through the tympanic and lesser petrosal route to the otic ganglion."
+      },
+      {
+        id: "X",
+        roman: "X",
+        name: "Vagus Nerve",
+        shortName: "Vagus",
+        modality: "Motor, sensory, and parasympathetic",
+        function: "Palate, pharynx, larynx, voice, swallowing, visceral sensation, and parasympathetic supply to thoracic and abdominal organs.",
+        foramina: "Jugular foramen.",
+        synapse: "Sensory fibers relay in solitary and trigeminal nuclei; parasympathetic fibers synapse in or near target organs; motor fibers synapse at pharyngeal and laryngeal muscles.",
+        pathway: "Medullary fibers exit the jugular foramen, branch through the pharynx and larynx, and continue into the thorax and abdomen through the carotid sheath and vagal trunks."
+      },
+      {
+        id: "XI",
+        roman: "XI",
+        name: "Accessory Nerve",
+        shortName: "Accessory",
+        modality: "Motor",
+        function: "Sternocleidomastoid and trapezius muscles for head turn and shoulder elevation.",
+        foramina: "Spinal root enters the skull through the foramen magnum and exits through the jugular foramen.",
+        synapse: "Somatic motor fibers synapse at sternocleidomastoid and trapezius.",
+        pathway: "Spinal rootlets from upper cervical cord ascend through the foramen magnum, join briefly in the skull, exit through the jugular foramen, and reach neck muscles."
+      },
+      {
+        id: "XII",
+        roman: "XII",
+        name: "Hypoglossal Nerve",
+        shortName: "Hypoglossal",
+        modality: "Motor",
+        function: "Intrinsic and extrinsic tongue muscles except palatoglossus.",
+        foramina: "Hypoglossal canal.",
+        synapse: "Somatic motor fibers synapse at tongue muscles.",
+        pathway: "Medullary fibers exit through the hypoglossal canal and course forward to innervate tongue muscles."
+      }
+    ];
+
+    const ACTIVITY_CARDS = [
+      {
+        text: "Going to the opera",
+        cue: "Identify the nerve that carries sound from the cochlea.",
+        nerveId: "VIII"
+      },
+      {
+        text: "Washing the dishes you've been avoiding all exam week",
+        cue: "You look down at a dish held close to your nose. Identify the nerve that drives superior oblique.",
+        nerveId: "IV"
+      },
+      {
+        text: "Eating the questionable leftovers in the fridge",
+        cue: "A spoiled bite reaches the posterior tongue and triggers the afferent limb of the gag reflex.",
+        nerveId: "IX"
+      },
+      {
+        text: "Outrunning a hoard of crabs",
+        cue: "You turn your head to look back and elevate your shoulders while running.",
+        nerveId: "XI"
+      },
+      {
+        text: "Escaping a haunted house",
+        cue: "You spot the EXIT sign. Identify the nerve carrying visual input from the retina.",
+        nerveId: "II"
+      },
+      {
+        text: "Licking wedding envelopes",
+        cue: "Identify the nerve that drives the tongue movements needed to lick the flap.",
+        nerveId: "XII"
+      },
+      {
+        text: "Getting a facial/ear piercing",
+        cue: "Focus on general sensation from a facial piercing.",
+        nerveId: "V"
+      },
+      {
+        text: "Scrolling TikTok for three hours straight",
+        cue: "Focus on accommodation and pupillary constriction while viewing a near screen.",
+        nerveId: "III"
+      },
+      {
+        text: "Holding your baby nibling or cousin",
+        cue: "You smile at the baby. Identify the nerve controlling facial expression.",
+        nerveId: "VII"
+      },
+      {
+        text: "Picking flowers",
+        cue: "Identify the nerve carrying odor information from the nasal mucosa.",
+        nerveId: "I"
+      },
+      {
+        text: "Giving yourself a COVID swab test",
+        cue: "Focus on general sensation from the nasal cavity during the swab.",
+        nerveId: "V"
+      },
+      {
+        text: "Petting that one neighborhood cat you know will never love you back",
+        cue: "The cat moves to your side. Identify the nerve that abducts the eye using lateral rectus.",
+        nerveId: "VI"
+      }
+    ];
+
+    const EXAMPLE_PROMPTS = [
+      {
+        text: "Walking through the garden section of a hardware store",
+        cue: "Identify the nerve carrying the smell of flowers from the nasal mucosa.",
+        nerveId: "I"
+      },
+      {
+        text: "Finding take-out in the back of your fridge that is well past life expectancy",
+        cue: "Identify the nerve carrying the odor that warns you the food has spoiled.",
+        nerveId: "I"
+      },
+      {
+        text: "Singing along to the radio in your car",
+        cue: "Identify the nerve controlling the larynx and voice.",
+        nerveId: "X"
+      },
+      {
+        text: "Watching the big summer blockbuster in a theater",
+        cue: "Focus on the nerve carrying the movie soundtrack from the cochlea.",
+        nerveId: "VIII"
+      }
+    ];
+
+    const BONUS_TYPES = [
+      {
+        id: "foramina",
+        name: "Foramina Fumble",
+        points: 1,
+        requirement: "Include the foramen or foramina connected to the chosen cranial nerve.",
+        hintKey: "foramina"
+      },
+      {
+        id: "synaptic",
+        name: "Synaptic Snag",
+        points: 1,
+        requirement: "Include where along the pathway the chosen nerve synapses.",
+        hintKey: "synapse"
+      },
+      {
+        id: "pathway",
+        name: "Pathway Peril",
+        points: 2,
+        requirement: "Include the full signal pathway you are describing.",
+        hintKey: "pathway"
+      }
+    ];
+
+    const DEFAULT_NAME = "Player";
+
+    const state = {
+      players: [],
+      axonDeck: [],
+      roundNumber: 1,
+      roundLimit: 8,
+      currentRound: null,
+      selectedReference: "I",
+      log: [],
+      gameActive: false
+    };
+
+    const els = {
+      newGameTop: document.getElementById("newGameTop"),
+      roundStat: document.getElementById("roundStat"),
+      scoreStat: document.getElementById("scoreStat"),
+      pointsStat: document.getElementById("pointsStat"),
+      axonStack: document.getElementById("axonStack"),
+      requirementPanel: document.getElementById("requirementPanel"),
+      answerBuilder: document.getElementById("answerBuilder"),
+      awardControls: document.getElementById("awardControls"),
+      nerveTabs: document.getElementById("nerveTabs"),
+      referenceCard: document.getElementById("referenceCard"),
+      logList: document.getElementById("logList"),
+      roundInstruction: document.getElementById("roundInstruction"),
+      gameOver: document.getElementById("gameOver"),
+      howToButton: document.getElementById("howToButton"),
+      howToDialog: document.getElementById("howToDialog"),
+      howToClose: document.getElementById("howToClose"),
+      howToDismiss: document.getElementById("howToDismiss"),
+      referenceButton: document.getElementById("referenceButton"),
+      referenceDialog: document.getElementById("referenceDialog"),
+      referenceClose: document.getElementById("referenceClose"),
+      referenceDismiss: document.getElementById("referenceDismiss")
+    };
+
+    function shuffle(items) {
+      const copy = [...items];
+      for (let i = copy.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function makeAxonDeck(includeBonus, includeExamples) {
+      const activityCards = [...ACTIVITY_CARDS, ...(includeExamples ? EXAMPLE_PROMPTS : [])].map((prompt, index) => ({
+        id: `activity-${index}`,
+        kind: "activity",
+        ...prompt
+      }));
+
+      const bonusCards = includeBonus
+        ? BONUS_TYPES.flatMap((bonus) => [1, 2].map((copy) => ({
+          id: `${bonus.id}-${copy}`,
+          kind: "bonus",
+          ...bonus
+        })))
+        : [];
+
+      return shuffle([...activityCards, ...bonusCards]);
+    }
+
+    function getNerve(id) {
+      return NERVES.find((nerve) => nerve.id === id) || NERVES[0];
+    }
+
+    function pluralizePoint(points) {
+      return points === 1 ? "1 point" : `${points} points`;
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function makeChoiceIds(correctId, count) {
+      const distractors = shuffle(NERVES.filter((nerve) => nerve.id !== correctId)).slice(0, count - 1);
+      return shuffle([correctId, ...distractors.map((nerve) => nerve.id)]);
+    }
+
+    function makeDetailChoiceIds(correctId, hintKey, count) {
+      const correct = getNerve(correctId);
+      const usedDetails = new Set([correct[hintKey]]);
+      const distractors = [];
+      shuffle(NERVES.filter((nerve) => nerve.id !== correctId)).forEach((nerve) => {
+        if (distractors.length >= count - 1 || usedDetails.has(nerve[hintKey])) return;
+        usedDetails.add(nerve[hintKey]);
+        distractors.push(nerve.id);
+      });
+      return shuffle([correctId, ...distractors]);
+    }
+
+    function drawRoundCard() {
+      const bonusCards = [];
+      let prompt = null;
+
+      while (state.axonDeck.length) {
+        const next = state.axonDeck.shift();
+        if (next.kind === "bonus") {
+          bonusCards.push(next);
+          continue;
+        }
+        prompt = next;
+        break;
+      }
+
+      if (!prompt) {
+        return false;
+      }
+
+      const bonus = bonusCards[0] || null;
+      if (bonusCards.length > 1) {
+        state.axonDeck.push(...bonusCards.slice(1));
+        state.axonDeck = shuffle(state.axonDeck);
+      }
+
+      state.currentRound = {
+        prompt,
+        bonus,
+        evaluated: false,
+        placements: {
+          nerve: null,
+          function: null,
+          detail: null
+        },
+        options: {
+          nerve: makeChoiceIds(prompt.nerveId, 6),
+          function: makeChoiceIds(prompt.nerveId, 4),
+          detail: bonus ? makeDetailChoiceIds(prompt.nerveId, bonus.hintKey, 4) : []
+        },
+        result: null,
+        attempts: 0
+      };
+
+      return true;
+    }
+
+    function startGame() {
+      state.players = [{
+        name: DEFAULT_NAME,
+        score: 0,
+        cleared: 0
+      }];
+      state.axonDeck = makeAxonDeck(true, false);
+      state.roundNumber = 1;
+      state.roundLimit = 8;
+      state.selectedReference = "I";
+      state.log = [];
+      state.gameActive = true;
+      els.gameOver.classList.remove("is-visible");
+
+      if (!drawRoundCard()) {
+        finishGame("No activity prompts are available.");
+      }
+
+      render();
+    }
+
+    function newGame() {
+      startGame();
+    }
+
+    function placeChoice(type, nerveId) {
+      if (!state.currentRound || state.currentRound.evaluated) {
+        return;
+      }
+      const validTypes = ["nerve", "function", "detail"];
+      if (!validTypes.includes(type) || !state.currentRound.options[type].includes(nerveId)) return;
+      state.currentRound.placements[type] = nerveId;
+      if (type === "nerve") state.selectedReference = nerveId;
+      renderAnswerBuilder();
+      renderAnswerControls();
+    }
+
+    function clearChoice(type) {
+      if (!state.currentRound || state.currentRound.evaluated || !(type in state.currentRound.placements)) {
+        return;
+      }
+      state.currentRound.placements[type] = null;
+      renderAnswerBuilder();
+      renderAnswerControls();
+    }
+
+    function allChoicesPlaced() {
+      if (!state.currentRound) return false;
+      const { placements, bonus } = state.currentRound;
+      return Boolean(placements.nerve && placements.function && (!bonus || placements.detail));
+    }
+
+    function checkAnswer() {
+      if (!state.currentRound || state.currentRound.evaluated || !allChoicesPlaced()) return;
+      const round = state.currentRound;
+      const correctId = round.prompt.nerveId;
+      const nerveCorrect = round.placements.nerve === correctId;
+      const functionCorrect = round.placements.function === correctId;
+      const bonusCorrect = !round.bonus || round.placements.detail === correctId;
+      const basePassed = nerveCorrect && functionCorrect;
+
+      round.attempts += 1;
+      round.evaluated = true;
+      const points = basePassed ? 1 + (bonusCorrect && round.bonus ? round.bonus.points : 0) : 0;
+      round.result = {
+        passed: basePassed,
+        points,
+        nerveCorrect,
+        functionCorrect,
+        bonusCorrect
+      };
+
+      if (basePassed) {
+        const player = state.players[0];
+        player.score += points;
+        player.cleared += 1;
+        const bonusText = round.bonus
+          ? bonusCorrect
+            ? ` and earned ${round.bonus.name}`
+            : ` but missed ${round.bonus.name}`
+          : "";
+        state.log.unshift({
+          round: state.roundNumber,
+          text: `CN ${correctId} earned ${pluralizePoint(points)} for "${round.prompt.text}"${bonusText}.`
+        });
+      }
+      render();
+    }
+
+    function retryAnswer() {
+      if (!state.currentRound || !state.currentRound.result || state.currentRound.result.passed) {
+        return;
+      }
+      state.currentRound.evaluated = false;
+      state.currentRound.result = null;
+      render();
+    }
+
+    function nextRound() {
+      if (!state.currentRound || !state.currentRound.result || !state.currentRound.result.passed) {
+        return;
+      }
+
+      if (state.roundNumber >= state.roundLimit) {
+        finishGame("Round limit reached.");
+        render();
+        return;
+      }
+
+      state.roundNumber += 1;
+      if (!drawRoundCard()) {
+        finishGame("No Axon prompts remain.");
+      }
+      render();
+    }
+
+    function finishGame(reason) {
+      state.gameActive = false;
+      state.currentRound = null;
+      const player = state.players[0] || { name: DEFAULT_NAME, score: 0, cleared: 0 };
+      els.gameOver.classList.add("is-visible");
+      els.gameOver.innerHTML = `
+        <h2>Solo Run Complete</h2>
+        <p>${escapeHtml(reason)}</p>
+        <p><strong>${escapeHtml(player.name)}</strong> cleared ${player.cleared} ${player.cleared === 1 ? "round" : "rounds"} and scored ${pluralizePoint(player.score)}.</p>
+        <div class="actions"><button type="button" class="btn btn-primary" id="playAgain">Start another run</button></div>
+      `;
+      document.getElementById("playAgain").addEventListener("click", newGame);
+    }
+
+    function render() {
+      renderStatus();
+      renderAxonCards();
+      renderAnswerBuilder();
+      renderAnswerControls();
+      renderReferenceTabs();
+      renderReferenceCard();
+      renderLog();
+    }
+
+    function renderStatus() {
+      const roundPoints = state.currentRound ? 1 + (state.currentRound.bonus ? state.currentRound.bonus.points : 0) : 0;
+      const player = state.players[0];
+      els.roundStat.textContent = state.gameActive && state.currentRound ? `${state.roundNumber} / ${state.roundLimit}` : `${Math.min(state.roundNumber, state.roundLimit)} / ${state.roundLimit}`;
+      els.scoreStat.textContent = player ? pluralizePoint(player.score) : "0 points";
+      els.pointsStat.textContent = state.currentRound ? pluralizePoint(roundPoints) : "-";
+      if (!state.currentRound) {
+        els.roundInstruction.textContent = "The solo run is complete.";
+      } else if (state.currentRound.result && state.currentRound.result.passed) {
+        els.roundInstruction.textContent = "Answer scored. Continue to the next prompt.";
+      } else if (state.currentRound.result) {
+        els.roundInstruction.textContent = "One or more matches are incorrect. Try again.";
+      } else {
+        els.roundInstruction.textContent = "Drag or tap one choice from each bank into the answer tray.";
+      }
+    }
+
+    function renderAxonCards() {
+      if (!state.currentRound) {
+        els.axonStack.innerHTML = "";
+        els.requirementPanel.innerHTML = "";
+        return;
+      }
+
+      const promptCard = `
+        <article class="card-frame" aria-label="Activity card">
+          <div class="card-inner">
+            <div class="card-kicker">Activity</div>
+            <div class="card-text">${escapeHtml(state.currentRound.prompt.text)}</div>
+          </div>
+        </article>
+      `;
+
+      const bonus = state.currentRound.bonus;
+      const bonusTitle = bonus ? bonus.name.split(" ").map(escapeHtml).join("<br>") : "";
+      const bonusCard = bonus
+        ? `
+          <article class="card-frame bonus-frame" aria-label="Bonus card">
+            <div class="card-inner">
+              <div class="card-kicker">${bonusTitle}</div>
+              <div class="bonus-points">+${bonus.points}</div>
+            </div>
+          </article>
+        `
+        : "";
+
+      els.axonStack.innerHTML = promptCard + bonusCard;
+
+      if (bonus) {
+        els.requirementPanel.innerHTML = `
+          <div class="requirement-card">
+            <h3>Focus</h3>
+            <p>${escapeHtml(state.currentRound.prompt.cue)}</p>
+          </div>
+          <p><strong>${escapeHtml(bonus.name)}:</strong> Select the matching ${escapeHtml(bonus.hintKey)} detail for +${bonus.points}.</p>
+        `;
+      } else {
+        els.requirementPanel.innerHTML = `
+          <div class="requirement-card no-bonus">
+            <h3>Focus</h3>
+            <p>${escapeHtml(state.currentRound.prompt.cue)}</p>
+          </div>
+          <p>Match the single best cranial nerve and its function.</p>
+        `;
+      }
+    }
+
+    function getChoiceLabel(type, nerveId) {
+      const nerve = getNerve(nerveId);
+      if (type === "nerve") return `CN ${nerve.roman} - ${nerve.shortName}`;
+      if (type === "function") return nerve.function;
+      return state.currentRound && state.currentRound.bonus ? nerve[state.currentRound.bonus.hintKey] : "";
+    }
+
+    function renderSlot(type, label) {
+      const round = state.currentRound;
+      const nerveId = round.placements[type];
+      const resultKey = type === "nerve" ? "nerveCorrect" : type === "function" ? "functionCorrect" : "bonusCorrect";
+      const status = round.evaluated && round.result
+        ? round.result[resultKey] ? "is-correct" : "is-incorrect"
+        : "";
+      const statusText = round.evaluated && round.result
+        ? `<span class="slot-status">${round.result[resultKey] ? "Correct" : "Incorrect"}</span>`
+        : "";
+      return `
+        <div class="drop-slot ${nerveId ? "is-filled" : ""} ${status}" data-slot="${type}">
+          <div class="slot-heading">
+            <span class="slot-label">${escapeHtml(label)}</span>
+            ${statusText}
+          </div>
+          ${nerveId
+            ? `<strong class="slot-value">${escapeHtml(getChoiceLabel(type, nerveId))}</strong>`
+            : '<span class="slot-empty">Drop a choice here</span>'}
+          ${nerveId && !round.evaluated
+            ? `<button type="button" class="clear-choice" data-clear="${type}" aria-label="Clear ${escapeHtml(label)}">&times;</button>`
+            : ""}
+        </div>
+      `;
+    }
+
+    function renderBank(type, title, ids) {
+      const selected = state.currentRound.placements[type];
+      return `
+        <section class="choice-bank" aria-labelledby="bank-${type}">
+          <div class="bank-heading">
+            <h3 id="bank-${type}">${escapeHtml(title)}</h3>
+            <span>Drag or tap</span>
+          </div>
+          <div class="bank-grid ${type === "nerve" ? "bank-grid-nerve" : ""}">
+            ${ids.map((nerveId) => {
+              const nerve = getNerve(nerveId);
+              const isSelected = selected === nerveId;
+              const content = type === "nerve"
+                ? `<strong>CN ${escapeHtml(nerve.roman)}</strong><span>${escapeHtml(nerve.shortName)}</span>`
+                : `<span>${escapeHtml(getChoiceLabel(type, nerveId))}</span>`;
+              return `
+                <button
+                  type="button"
+                  class="bank-card ${isSelected ? "is-selected" : ""}"
+                  data-choice-type="${type}"
+                  data-choice-id="${nerveId}"
+                  draggable="${state.currentRound.evaluated ? "false" : "true"}"
+                  ${state.currentRound.evaluated ? "disabled" : ""}
+                  aria-pressed="${isSelected ? "true" : "false"}">
+                  ${content}
+                </button>
+              `;
+            }).join("")}
+          </div>
+        </section>
+      `;
+    }
+
+    function renderAnswerBuilder() {
+      if (!state.currentRound) {
+        els.answerBuilder.innerHTML = "";
+        return;
+      }
+
+      const round = state.currentRound;
+      const detailSlot = round.bonus ? renderSlot("detail", `${round.bonus.name} detail`) : "";
+      const detailBank = round.bonus
+        ? renderBank("detail", `${round.bonus.name} bank`, round.options.detail)
+        : "";
+
+      els.answerBuilder.innerHTML = `
+        <section class="answer-tray" aria-labelledby="answerTrayTitle">
+          <div class="bank-heading">
+            <h3 id="answerTrayTitle">Answer tray</h3>
+            <span>One exact match per slot</span>
+          </div>
+          <div class="answer-slots">
+            ${renderSlot("nerve", "Best nerve")}
+            ${renderSlot("function", "Supporting function")}
+            ${detailSlot}
+          </div>
+        </section>
+        ${renderBank("nerve", "Nerve bank", round.options.nerve)}
+        ${renderBank("function", "Function bank", round.options.function)}
+        ${detailBank}
+      `;
+
+      els.answerBuilder.querySelectorAll("[data-choice-type][data-choice-id]").forEach((button) => {
+        const type = button.dataset.choiceType;
+        const nerveId = button.dataset.choiceId;
+        button.addEventListener("click", () => placeChoice(type, nerveId));
+        button.addEventListener("dragstart", (event) => {
+          event.dataTransfer.setData("text/plain", `${type}|${nerveId}`);
+          event.dataTransfer.effectAllowed = "copy";
+        });
+      });
+
+      els.answerBuilder.querySelectorAll("[data-slot]").forEach((slot) => {
+        slot.addEventListener("dragover", (event) => {
+          event.preventDefault();
+          event.dataTransfer.dropEffect = "copy";
+          slot.classList.add("is-over");
+        });
+        slot.addEventListener("dragleave", () => slot.classList.remove("is-over"));
+        slot.addEventListener("drop", (event) => {
+          event.preventDefault();
+          slot.classList.remove("is-over");
+          const [type, nerveId] = event.dataTransfer.getData("text/plain").split("|");
+          if (type === slot.dataset.slot) placeChoice(type, nerveId);
+        });
+      });
+
+      els.answerBuilder.querySelectorAll("[data-clear]").forEach((button) => {
+        button.addEventListener("click", () => clearChoice(button.dataset.clear));
+      });
+    }
+
+    function renderAnswerControls() {
+      if (!state.currentRound) {
+        els.awardControls.innerHTML = '<p>Start another game to continue.</p>';
+        return;
+      }
+
+      const round = state.currentRound;
+      if (!round.evaluated) {
+        const ready = allChoicesPlaced();
+        els.awardControls.innerHTML = `
+          <p>${ready ? "Every required slot is filled." : "Fill every required slot with one choice from its matching bank."}</p>
+          <button id="checkAnswer" type="button" class="btn btn-primary" ${ready ? "" : "disabled"}>Check answer</button>
+        `;
+        document.getElementById("checkAnswer").addEventListener("click", checkAnswer);
+        return;
+      }
+
+      const result = round.result;
+      const nerve = getNerve(round.prompt.nerveId);
+      if (result.passed) {
+        let bonusFeedback = "The nerve and function are both exact matches.";
+        if (round.bonus && result.bonusCorrect) {
+          bonusFeedback = `${round.bonus.name} is also correct.`;
+        } else if (round.bonus) {
+          bonusFeedback = `${round.bonus.name} was not earned. Correct detail: ${nerve[round.bonus.hintKey]}`;
+        }
+        els.awardControls.innerHTML = `
+          <div class="answer-feedback is-pass" role="status">
+            <strong>Correct for ${pluralizePoint(result.points)}</strong>
+            <p>The best match is CN ${escapeHtml(nerve.roman)} - ${escapeHtml(nerve.name)}: ${escapeHtml(nerve.function)}</p>
+            <p>${escapeHtml(bonusFeedback)}</p>
+          </div>
+          <button id="nextRound" type="button" class="btn btn-primary">Next prompt</button>
+        `;
+        document.getElementById("nextRound").addEventListener("click", nextRound);
+        return;
+      }
+
+      const feedback = [
+        `Nerve: ${result.nerveCorrect ? "correct" : "incorrect"}.`,
+        `Function: ${result.functionCorrect ? "correct" : "incorrect"}.`
+      ];
+      if (round.bonus) feedback.push(`Bonus detail: ${result.bonusCorrect ? "correct" : "incorrect"}.`);
+      els.awardControls.innerHTML = `
+        <div class="answer-feedback" role="status">
+          <strong>Not correct yet</strong>
+          <p>${escapeHtml(feedback.join(" "))}</p>
+        </div>
+        <button id="retryAnswer" type="button" class="btn btn-primary">Try again</button>
+      `;
+      document.getElementById("retryAnswer").addEventListener("click", retryAnswer);
+    }
+
+    function renderReferenceTabs() {
+      els.nerveTabs.innerHTML = NERVES.map((nerve) => `
+        <button
+          type="button"
+          class="tab-btn"
+          role="tab"
+          aria-selected="${state.selectedReference === nerve.id ? "true" : "false"}"
+          data-reference="${nerve.id}">
+          CN ${nerve.roman}
+        </button>
+      `).join("");
+
+      els.nerveTabs.querySelectorAll("[data-reference]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.selectedReference = button.dataset.reference;
+          renderReferenceTabs();
+          renderReferenceCard();
+        });
+      });
+    }
+
+    function renderReferenceCard() {
+      const nerve = getNerve(state.selectedReference);
+      els.referenceCard.innerHTML = `
+        <h3>CN ${escapeHtml(nerve.roman)} - ${escapeHtml(nerve.name)}</h3>
+        <div class="mini-grid">
+          <div class="mini-card"><strong>${escapeHtml(nerve.modality)}</strong></div>
+          <div class="mini-card"><strong>${escapeHtml(nerve.shortName)}</strong></div>
+          <div class="mini-card"><strong>CN ${escapeHtml(nerve.roman)}</strong></div>
+        </div>
+        <ul class="fact-list">
+          <li>
+            <span>Function</span>
+            <strong>${escapeHtml(nerve.function)}</strong>
+          </li>
+          <li>
+            <span>Foramina</span>
+            <strong>${escapeHtml(nerve.foramina)}</strong>
+          </li>
+          <li>
+            <span>Synapse</span>
+            <strong>${escapeHtml(nerve.synapse)}</strong>
+          </li>
+          <li>
+            <span>Pathway</span>
+            <strong>${escapeHtml(nerve.pathway)}</strong>
+          </li>
+        </ul>
+      `;
+    }
+
+    function renderLog() {
+      if (!state.log.length) {
+        els.logList.innerHTML = '<p>No rounds completed yet.</p>';
+        return;
+      }
+      els.logList.innerHTML = state.log.map((entry) => `
+        <div class="log-entry">
+          <strong>Round ${entry.round}:</strong> ${escapeHtml(entry.text)}
+        </div>
+      `).join("");
+    }
+
+    function openDialog(dialog) {
+      if (dialog.open) return;
+      if (typeof dialog.showModal === "function") {
+        dialog.showModal();
+      } else {
+        dialog.setAttribute("open", "");
+      }
+    }
+
+    function closeDialog(dialog) {
+      if (typeof dialog.close === "function") {
+        dialog.close();
+      } else {
+        dialog.removeAttribute("open");
+      }
+    }
+
+    function closeOnBackdrop(dialog) {
+      dialog.addEventListener("click", (event) => {
+        if (event.target === dialog) closeDialog(dialog);
+      });
+    }
+
+    els.newGameTop.addEventListener("click", newGame);
+    els.howToButton.addEventListener("click", () => openDialog(els.howToDialog));
+    els.howToClose.addEventListener("click", () => closeDialog(els.howToDialog));
+    els.howToDismiss.addEventListener("click", () => closeDialog(els.howToDialog));
+    els.referenceButton.addEventListener("click", () => openDialog(els.referenceDialog));
+    els.referenceClose.addEventListener("click", () => closeDialog(els.referenceDialog));
+    els.referenceDismiss.addEventListener("click", () => closeDialog(els.referenceDialog));
+    closeOnBackdrop(els.howToDialog);
+    closeOnBackdrop(els.referenceDialog);
+    startGame();
+    openDialog(els.howToDialog);
+  </script>
+</body>
+</html>
