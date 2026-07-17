@@ -1295,11 +1295,31 @@
       height: 64px;
       font-size: 44px;
       line-height: 1;
-      filter: drop-shadow(3px 3px 0 rgba(20,15,23,0.55));
-      transform: translateY(-50%) rotate(-12deg);
-      transform-origin: center;
+      transform: translateY(-50%);
       pointer-events: none;
       will-change: top;
+    }
+
+    .reflex-hammer-icon {
+      display: grid;
+      place-items: center;
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(3px 3px 0 rgba(20,15,23,0.55));
+      transform: rotate(-12deg);
+      transform-origin: center;
+    }
+
+    .reflex-hammer::before {
+      content: "";
+      position: absolute;
+      right: 54px;
+      top: 50%;
+      width: 28px;
+      height: 1px;
+      background: rgba(255,243,191,0.58);
+      box-shadow: 0 1px 0 rgba(75,23,42,0.42);
+      transform: translateY(-50%);
     }
 
     .reflex-controls {
@@ -4078,7 +4098,7 @@
       if (position <= 40) {
         return "Patellar tendon";
       }
-      if (position < 49) {
+      if (position < 50) {
         return "You struck the tibial tuberosity, the bony insertion below the tendon.";
       }
       if (position < 76) {
@@ -4105,7 +4125,7 @@
             <button type="button" class="reflex-stage" id="reflexStage" aria-label="Strike when the hammer aligns with the patellar tendon">
               <img class="reflex-leg" src="assets/reflex-leg.png" alt="Anterior view of the patient's left leg">
               <span class="reflex-target" aria-hidden="true"><span>Patellar tendon</span></span>
-              <span class="reflex-hammer" id="reflexHammer" aria-hidden="true">&#128296;</span>
+              <span class="reflex-hammer" id="reflexHammer" aria-hidden="true"><span class="reflex-hammer-icon">&#128296;</span></span>
             </button>
             <section class="reflex-controls">
               <div class="reflex-streaks">
@@ -4199,7 +4219,7 @@
       }
 
       state.timingTimer = setInterval(() => {
-        state.timingMarker += direction * 1.35;
+        state.timingMarker += direction * 1.3;
         if (state.timingMarker >= 88) {
           state.timingMarker = 88;
           direction = -1;
