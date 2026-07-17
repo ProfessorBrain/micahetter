@@ -913,6 +913,216 @@
 
     .option { padding: 12px; text-align: left; }
 
+    .cart-quiz-card {
+      width: min(820px, 100%);
+      overflow: hidden;
+      background: #c6c1ad;
+    }
+
+    .cart-quiz-body {
+      padding: 16px 18px 20px;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,0.22), transparent 4%, transparent 96%, rgba(45,39,36,0.22)),
+        #b8b5a7;
+    }
+
+    .cart-console {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: center;
+      padding: 16px 22px;
+      border: 5px ridge #6c675d;
+      background:
+        radial-gradient(circle at 10px 10px, #403c37 0 3px, #9d988b 4px 7px, transparent 8px),
+        radial-gradient(circle at calc(100% - 10px) 10px, #403c37 0 3px, #9d988b 4px 7px, transparent 8px),
+        radial-gradient(circle at 10px calc(100% - 10px), #403c37 0 3px, #9d988b 4px 7px, transparent 8px),
+        radial-gradient(circle at calc(100% - 10px) calc(100% - 10px), #403c37 0 3px, #9d988b 4px 7px, transparent 8px),
+        linear-gradient(180deg, #555b5c, #2d3335);
+      color: #e9e1c6;
+      box-shadow: inset 0 0 0 3px #181d1e, 0 7px 0 #767166;
+      font-family: var(--retro-font);
+    }
+
+    .cart-console-label {
+      display: block;
+      margin-bottom: 8px;
+      color: #d8c26d;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+    }
+
+    .cart-led-readout {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(38px, 1fr));
+      gap: 7px;
+      padding: 9px;
+      border: 4px inset #72786f;
+      background: #07130e;
+      box-shadow: inset 0 0 18px #000;
+    }
+
+    .cart-led-digit {
+      display: grid;
+      place-items: center;
+      min-height: 46px;
+      border: 1px solid #183326;
+      color: #294c38;
+      font-size: 1.65rem;
+      line-height: 1;
+      text-shadow: none;
+    }
+
+    .cart-led-digit.lit {
+      color: #72ff9c;
+      text-shadow: 0 0 5px #36d86a, 0 0 12px rgba(54,216,106,0.8);
+    }
+
+    .cart-console-status {
+      margin-top: 8px;
+      color: #8fe0a8;
+      font-size: 0.7rem;
+      line-height: 1.25;
+      text-transform: uppercase;
+    }
+
+    .cart-console-status.error { color: #ff7d6d; }
+    .cart-console-status.accepted { color: #fff3a5; }
+
+    .cart-strikes {
+      min-width: 124px;
+      text-align: center;
+    }
+
+    .cart-strikes strong {
+      display: block;
+      margin-bottom: 8px;
+      color: #d8c26d;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+    }
+
+    .cart-strike-lights { display: flex; justify-content: center; gap: 9px; }
+
+    .cart-strike-light {
+      width: 24px;
+      height: 24px;
+      border: 4px ridge #777267;
+      border-radius: 50%;
+      background: #2f342e;
+      box-shadow: inset 0 0 6px #000;
+    }
+
+    .cart-strike-light.hit {
+      background: #e13d32;
+      box-shadow: inset 0 0 5px #691811, 0 0 10px #ff4b3d;
+    }
+
+    .cart-question-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 16px 2px 8px;
+      color: #3f3940;
+      font-family: var(--retro-font);
+      font-size: 0.68rem;
+      text-transform: uppercase;
+    }
+
+    .cart-difficulty {
+      color: var(--maroon);
+      font-weight: 700;
+    }
+
+    .cart-question {
+      min-height: 52px;
+      margin: 0 2px 12px;
+      color: var(--ink);
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .cart-answer-grid { display: grid; gap: 7px; }
+
+    .cart-answer {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr);
+      align-items: stretch;
+      min-height: 42px;
+      padding: 0;
+      border: 3px outset var(--gold);
+      background: linear-gradient(180deg, #f8e8b4, #c49253);
+      color: var(--ink);
+      font-family: var(--retro-font);
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .cart-answer:hover, .cart-answer:focus-visible { filter: brightness(1.08); }
+    .cart-answer:disabled { cursor: default; opacity: 0.76; }
+
+    .cart-answer-number {
+      display: grid;
+      place-items: center;
+      border-right: 3px solid #6b4931;
+      background: #243d35;
+      color: #8fffb0;
+      font-size: 1rem;
+      text-shadow: 0 0 5px #36d86a;
+    }
+
+    .cart-answer-text {
+      align-self: center;
+      padding: 8px 10px;
+      line-height: 1.25;
+    }
+
+    .cart-answer.correct-answer {
+      border-style: inset;
+      background: #a8d7b0;
+    }
+
+    .cart-answer.wrong-answer {
+      border-style: inset;
+      background: #df9b8f;
+    }
+
+    .cart-feedback {
+      min-height: 42px;
+      margin: 0;
+      padding: 9px 11px;
+      border-left: 5px solid var(--teal);
+      background: rgba(247,237,207,0.78);
+      color: var(--ink);
+      font-size: 0.86rem;
+      line-height: 1.35;
+    }
+
+    .cart-feedback.error { border-color: #a43832; }
+
+    .cart-feedback-actions {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: stretch;
+      margin: 10px 2px 0;
+    }
+
+    .cart-feedback-actions .primary-action { min-width: 154px; }
+
+    .cart-failure {
+      margin-top: 18px;
+      padding: 18px;
+      border: 4px solid #68261f;
+      background: #f0c8bd;
+      text-align: center;
+    }
+
+    .cart-failure h3 { margin: 0 0 8px; color: #6c1916; }
+    .cart-failure p { margin: 0 auto 14px; max-width: 610px; line-height: 1.4; }
+
     .hint {
       margin: 12px 20px;
       padding: 10px;
@@ -1002,6 +1212,156 @@
 
     .hit-pips span.lit { background: var(--teal); }
 
+    .reflex-card { width: min(800px, 100%); }
+
+    .reflex-layout {
+      display: grid;
+      grid-template-columns: minmax(250px, 340px) minmax(250px, 1fr);
+      gap: 18px;
+      align-items: center;
+      margin: 16px 20px 20px;
+    }
+
+    .reflex-stage {
+      position: relative;
+      width: min(100%, 330px);
+      max-height: min(54vh, 442px);
+      aspect-ratio: 320 / 442;
+      margin: 0 auto;
+      padding: 0;
+      overflow: hidden;
+      border: 5px ridge var(--gold);
+      background: #4a78a3;
+      box-shadow: inset 0 0 0 3px #21394e, 0 8px 0 rgba(33,25,35,0.24);
+      cursor: crosshair;
+      appearance: none;
+      -webkit-appearance: none;
+      image-rendering: pixelated;
+    }
+
+    .reflex-stage:focus-visible {
+      outline: 4px solid #fff3bf;
+      outline-offset: 2px;
+    }
+
+    .reflex-stage:disabled { cursor: default; }
+
+    .reflex-leg {
+      position: absolute;
+      left: 41%;
+      top: 0;
+      width: auto;
+      height: 100%;
+      transform: translateX(-50%);
+      image-rendering: pixelated;
+      pointer-events: none;
+    }
+
+    .reflex-target {
+      position: absolute;
+      z-index: 2;
+      left: 16%;
+      right: 7%;
+      top: 33%;
+      height: 7%;
+      border-top: 2px dashed rgba(255,243,191,0.9);
+      border-bottom: 2px dashed rgba(255,243,191,0.9);
+      background: rgba(215,170,68,0.13);
+      pointer-events: none;
+    }
+
+    .reflex-target span {
+      position: absolute;
+      right: 2px;
+      top: 50%;
+      padding: 2px 4px;
+      background: rgba(33,25,35,0.76);
+      color: #fff3bf;
+      font-family: var(--retro-font);
+      font-size: 0.54rem;
+      line-height: 1;
+      text-transform: uppercase;
+      transform: translateY(-50%);
+    }
+
+    .reflex-hammer {
+      position: absolute;
+      z-index: 4;
+      right: 5%;
+      top: 12%;
+      display: grid;
+      place-items: center;
+      width: 64px;
+      height: 64px;
+      font-size: 44px;
+      line-height: 1;
+      filter: drop-shadow(3px 3px 0 rgba(20,15,23,0.55));
+      transform: translateY(-50%) rotate(-12deg);
+      transform-origin: center;
+      pointer-events: none;
+      will-change: top;
+    }
+
+    .reflex-controls {
+      display: grid;
+      gap: 14px;
+      align-content: center;
+    }
+
+    .reflex-streaks {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .reflex-streak {
+      padding: 10px;
+      border: 3px ridge var(--gold);
+      background: rgba(247,237,207,0.72);
+    }
+
+    .reflex-streak strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--maroon);
+      font-family: var(--retro-font);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+    }
+
+    .reflex-pips { display: flex; gap: 6px; }
+
+    .reflex-pips span {
+      flex: 1 1 0;
+      height: 15px;
+      border: 2px solid var(--ink);
+      background: #b7aa89;
+    }
+
+    .reflex-hit-pips span.lit { background: #429f65; }
+    .reflex-miss-pips span.lit { background: #b43c37; }
+
+    .reflex-feedback {
+      min-height: 104px;
+      margin: 0;
+      padding: 12px;
+      border-left: 5px solid var(--teal);
+      background: rgba(31,111,120,0.12);
+      color: var(--ink);
+      line-height: 1.42;
+    }
+
+    .reflex-feedback.hit { border-color: #429f65; background: rgba(66,159,101,0.16); }
+    .reflex-feedback.miss { border-color: #b43c37; background: rgba(180,60,55,0.13); }
+
+    .reflex-strike-button {
+      width: 100%;
+      min-height: 54px;
+      font-family: var(--retro-font);
+      font-size: 0.86rem;
+      text-transform: uppercase;
+    }
+
     .wash-card { width: min(820px, 100%); }
 
     .wash-hud {
@@ -1059,22 +1419,54 @@
       top: var(--bubble-y);
       width: var(--bubble-size);
       height: var(--bubble-size);
-      border: 2px solid rgba(255,255,255,0.88);
-      border-radius: 50%;
+      border: 0;
       margin: 0;
       padding: 0;
-      background:
-        radial-gradient(circle at 30% 28%, rgba(255,255,255,0.96) 0 13%, transparent 14%),
-        radial-gradient(circle at 66% 70%, rgba(145,216,197,0.5) 0 22%, transparent 23%),
-        rgba(234,253,250,0.56);
-      box-shadow:
-        inset -3px -4px 0 rgba(31,111,120,0.2),
-        0 3px 0 rgba(33,25,35,0.2);
+      clip-path: polygon(
+        25% 0, 75% 0, 75% 6.25%, 87.5% 6.25%, 87.5% 12.5%,
+        93.75% 12.5%, 93.75% 25%, 100% 25%, 100% 75%, 93.75% 75%,
+        93.75% 87.5%, 87.5% 87.5%, 87.5% 93.75%, 75% 93.75%, 75% 100%,
+        25% 100%, 25% 93.75%, 12.5% 93.75%, 12.5% 87.5%, 6.25% 87.5%,
+        6.25% 75%, 0 75%, 0 25%, 6.25% 25%, 6.25% 12.5%,
+        12.5% 12.5%, 12.5% 6.25%, 25% 6.25%
+      );
+      background: rgba(243,255,252,0.92);
+      filter: drop-shadow(3px 3px 0 rgba(31,65,65,0.38));
       transform: translate(-50%, -50%);
-      transition: opacity 120ms ease, transform 120ms ease, filter 120ms ease;
+      transition: opacity 120ms steps(3), transform 120ms steps(3), filter 120ms steps(3);
       cursor: crosshair;
       appearance: none;
       -webkit-appearance: none;
+      image-rendering: pixelated;
+    }
+
+    .wash-bubble::before {
+      content: "";
+      position: absolute;
+      inset: 3px;
+      background:
+        linear-gradient(#ffffff, #ffffff) 22% 19% / 25% 12.5% no-repeat,
+        linear-gradient(#ffffff, #ffffff) 16% 28% / 12.5% 25% no-repeat,
+        linear-gradient(#8bcfc2, #8bcfc2) 69% 69% / 18.75% 18.75% no-repeat,
+        linear-gradient(#b9eee3, #b9eee3) 75% 53% / 12.5% 12.5% no-repeat,
+        linear-gradient(135deg, rgba(221,255,249,0.82) 0 49%, rgba(110,190,178,0.62) 50% 100%);
+      opacity: 0.8;
+      pointer-events: none;
+    }
+
+    .wash-bubble::after {
+      content: "";
+      position: absolute;
+      left: 31.25%;
+      top: 18.75%;
+      width: 12.5%;
+      height: 12.5%;
+      background: #ffffff;
+      box-shadow:
+        4px 0 0 rgba(255,255,255,0.92),
+        -2px 4px 0 rgba(255,255,255,0.72),
+        13px 14px 0 rgba(44,130,120,0.36);
+      pointer-events: none;
     }
 
     .wash-bubble.popped {
@@ -1098,21 +1490,53 @@
       height: var(--splat-size);
       margin: 0;
       padding: 0;
-      border: 2px solid rgba(88,24,31,0.8);
-      border-radius: 46% 54% 42% 58%;
-      background:
-        radial-gradient(circle at 31% 28%, rgba(255,228,127,0.8) 0 7%, transparent 8%),
-        radial-gradient(circle at 70% 68%, rgba(100,31,43,0.88) 0 18%, transparent 19%),
-        radial-gradient(circle at 30% 72%, rgba(125,58,37,0.92) 0 19%, transparent 20%),
-        #7b2a2f;
-      box-shadow:
-        -7px 3px 0 -3px #7b2a2f,
-        6px -4px 0 -4px #7b2a2f,
-        0 3px 0 rgba(33,25,35,0.28);
+      border: 0;
+      clip-path: polygon(
+        37.5% 6.25%, 56.25% 6.25%, 56.25% 12.5%, 68.75% 12.5%,
+        68.75% 25%, 81.25% 25%, 81.25% 18.75%, 87.5% 18.75%,
+        87.5% 37.5%, 100% 37.5%, 100% 56.25%, 87.5% 56.25%,
+        87.5% 75%, 75% 75%, 75% 87.5%, 62.5% 87.5%,
+        62.5% 100%, 43.75% 100%, 43.75% 87.5%, 25% 87.5%,
+        25% 81.25%, 12.5% 81.25%, 12.5% 68.75%, 0 68.75%,
+        0 50%, 12.5% 50%, 12.5% 31.25%, 25% 31.25%,
+        25% 12.5%, 37.5% 12.5%
+      );
+      background: #4d1824;
+      filter: drop-shadow(3px 3px 0 rgba(33,25,35,0.42));
       transform: translate(-50%, -50%) rotate(var(--splat-rotation));
       cursor: not-allowed;
       appearance: none;
       -webkit-appearance: none;
+      image-rendering: pixelated;
+    }
+
+    .wash-splat::before {
+      content: "";
+      position: absolute;
+      inset: 3px;
+      background:
+        linear-gradient(#ffd47a, #ffd47a) 24% 20% / 18.75% 12.5% no-repeat,
+        linear-gradient(#c96349, #c96349) 63% 24% / 18.75% 18.75% no-repeat,
+        linear-gradient(#5c1d2a, #5c1d2a) 68% 68% / 25% 25% no-repeat,
+        linear-gradient(#793229, #793229) 27% 72% / 25% 18.75% no-repeat,
+        linear-gradient(135deg, #b54d3d 0 49%, #7f2732 50% 100%);
+      pointer-events: none;
+    }
+
+    .wash-splat::after {
+      content: "";
+      position: absolute;
+      left: 37.5%;
+      top: 37.5%;
+      width: 12.5%;
+      height: 12.5%;
+      background: #e17a4b;
+      box-shadow:
+        4px 0 0 #8f2d34,
+        0 4px 0 #6a202d,
+        8px 4px 0 #d06043,
+        -4px 8px 0 #7a2b2b;
+      pointer-events: none;
     }
 
     .wash-splat.hit {
@@ -1375,6 +1799,26 @@
         max-width: min(100%, calc(40vh * 1456 / 1092));
         margin: 10px 14px 14px;
       }
+      .cart-quiz-body { padding: 10px; }
+      .cart-console {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 14px 17px;
+      }
+      .cart-strikes { min-width: 0; }
+      .cart-led-readout { grid-template-columns: repeat(5, minmax(30px, 1fr)); }
+      .cart-led-digit { min-height: 38px; font-size: 1.3rem; }
+      .cart-question { font-size: 0.88rem; }
+      .cart-answer { grid-template-columns: 36px minmax(0, 1fr); font-size: 0.72rem; }
+      .cart-feedback-actions { grid-template-columns: 1fr; }
+      .cart-feedback-actions .primary-action { width: 100%; }
+      .reflex-layout {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin: 12px 14px 16px;
+      }
+      .reflex-stage { max-height: min(47vh, 390px); }
+      .reflex-feedback { min-height: 78px; }
     }
   </style>
 </head>
@@ -1502,7 +1946,7 @@
       ["auscultation", "Auscultation", "Heart rhythm is regular and lungs are clear; no acute cardiopulmonary finding explains the presentation.", "Exam"],
       ["vitals", "Vitals", "Stable vitals; no fever or unstable rhythm driving the presentation.", "Diagnostics"],
       ["motorWeakness", "Motor exam", "Left-leg upper motor neuron weakness, most obvious distally; right leg and arms are normal.", "Exam"],
-      ["reflexes", "Reflex pattern", "Left knee and ankle reflexes are brisk.", "Exam"],
+      ["reflexes", "Reflex pattern", "The left patellar reflex is brisk on repeated tendon strikes.", "Exam"],
       ["plantar", "Plantar response", "The left great toe extends upward, supporting an upper motor neuron lesion.", "Exam"],
       ["dorsalColumn", "Vibration and position", "Vibration and joint position are reduced on the left below the thoracic level.", "Exam"],
       ["spinothalamic", "Pain and temperature", "Pinprick and cold are reduced on the right beginning below the lower thoracic levels.", "Exam"],
@@ -2049,20 +2493,140 @@
       else startMusic();
     }
 
-    const quizzes = {
-      examTools: {
-        title: "Exam Cart Combination",
-        prompt: "Choose the highest-yield tool pair for upper motor neuron and dorsal-column bedside testing.",
+    const cartQuestionBank = [
+      {
+        difficulty: "Foundations",
+        prompt: "Which examination finding most strongly supports an upper motor neuron lesion?",
         options: [
-          "Reflex hammer and tuning fork",
-          "Tongue depressor and snack wrapper",
-          "Otoscope and optimism",
-          "Lumbar puncture tray before any exam"
+          "Fasciculations",
+          "Marked early muscle atrophy",
+          "An extensor plantar response",
+          "Reduced muscle tone",
+          "Absent deep tendon reflexes"
+        ],
+        answer: 2,
+        explanation: "An extensor plantar response is a corticospinal tract sign; the other choices favor lower motor neuron dysfunction."
+      },
+      {
+        difficulty: "Foundations",
+        prompt: "Which pair of sensory modalities travels primarily in the dorsal columns?",
+        options: [
+          "Pain and temperature",
+          "Vibration and joint position",
+          "Crude touch and itch",
+          "Voluntary movement and tone",
+          "Autonomic sensation and sweating"
+        ],
+        answer: 1,
+        explanation: "The dorsal column-medial lemniscus pathway carries vibration, proprioception, and discriminative touch."
+      },
+      {
+        difficulty: "Clinical",
+        prompt: "A left thoracic hemicord lesion produces which classic pattern below the lesion?",
+        options: [
+          "Bilateral flaccid paralysis with complete sensory loss",
+          "Right weakness with right vibration loss only",
+          "Left pain-temperature loss with right vibration loss",
+          "Symmetric distal sensory loss without weakness",
+          "Left weakness and vibration loss with right pain-temperature loss"
+        ],
+        answer: 4,
+        explanation: "Brown-Sequard physiology causes ipsilateral corticospinal and dorsal-column deficits with contralateral pain-temperature loss."
+      },
+      {
+        difficulty: "Clinical",
+        prompt: "Where do second-order spinothalamic axons cross after entering the spinal cord?",
+        options: [
+          "The pyramidal decussation in the caudal medulla",
+          "The posterior columns at the same segment",
+          "The superior cerebellar peduncle",
+          "The anterior white commissure over roughly one to two segments",
+          "The optic chiasm"
+        ],
+        answer: 3,
+        explanation: "Pain-temperature fibers synapse in the dorsal horn, then cross through the anterior white commissure near their entry level."
+      },
+      {
+        difficulty: "Clinical",
+        prompt: "Which modality is typically spared in anterior spinal artery syndrome?",
+        options: [
+          "Vibration and proprioception",
+          "Pain sensation",
+          "Temperature sensation",
+          "Voluntary motor function",
+          "Bowel and bladder function"
         ],
         answer: 0,
-        hint: "Brisk reflexes test the corticospinal tract; vibration tests dorsal columns.",
-        success: "The cart opens. Inside are a reflex hammer and tuning fork."
+        explanation: "The posterior columns are supplied by the posterior spinal arteries, so vibration and proprioception are usually preserved."
       },
+      {
+        difficulty: "Resident",
+        prompt: "Which finding best matches a left medial longitudinal fasciculus lesion?",
+        options: [
+          "Failure of left-eye abduction on left gaze",
+          "Bilateral ptosis that improves with sustained upgaze",
+          "Failure of right-eye adduction on left gaze",
+          "An isolated fixed left pupil",
+          "Failure of left-eye adduction on right gaze with right abducting nystagmus"
+        ],
+        answer: 4,
+        explanation: "A left internuclear ophthalmoplegia impairs left-eye adduction and often produces nystagmus in the contralateral abducting eye."
+      },
+      {
+        difficulty: "Resident",
+        prompt: "Which repetitive nerve stimulation result most supports myasthenia gravis?",
+        options: [
+          "A large sensory nerve action potential",
+          "At least a 10% decrement with slow stimulation",
+          "Persistent myotonic discharges",
+          "Conduction block across a single peripheral nerve segment",
+          "A marked CMAP increment after high-rate stimulation"
+        ],
+        answer: 1,
+        explanation: "Postsynaptic neuromuscular transmission failure in myasthenia produces a decremental response on slow repetitive stimulation."
+      },
+      {
+        difficulty: "Clinical",
+        prompt: "What is the classic cerebrospinal fluid pattern in Guillain-Barre syndrome?",
+        options: [
+          "Low protein with neutrophilic pleocytosis",
+          "Oligoclonal bands with low glucose",
+          "Elevated protein with a normal or near-normal cell count",
+          "Xanthochromia with many red blood cells",
+          "Very low glucose with lymphocytic pleocytosis"
+        ],
+        answer: 2,
+        explanation: "Albuminocytologic dissociation means elevated CSF protein without a corresponding pleocytosis."
+      },
+      {
+        difficulty: "Clinical",
+        prompt: "Which movement is especially useful when testing for an L5 radiculopathy?",
+        options: [
+          "Great-toe extension",
+          "Elbow flexion",
+          "Shoulder shrug",
+          "Finger abduction",
+          "Jaw closure"
+        ],
+        answer: 0,
+        explanation: "Weak great-toe extension through extensor hallucis longus is a classic L5 motor finding."
+      },
+      {
+        difficulty: "Resident",
+        prompt: "An expanding right temporal mass causes uncal herniation. Which early pupillary finding is most expected?",
+        options: [
+          "Bilateral pinpoint pupils",
+          "A fixed, dilated left pupil",
+          "An isolated right relative afferent pupillary defect",
+          "A fixed, dilated right pupil from cranial nerve III compression",
+          "A right Horner syndrome"
+        ],
+        answer: 3,
+        explanation: "The uncus compresses the ipsilateral oculomotor nerve and its superficial parasympathetic fibers, causing ipsilateral mydriasis."
+      }
+    ];
+
+    const quizzes = {
       cabinet: {
         title: "Supply Cabinet Sorter",
         prompt: "Choose the safe tools that best test the spinothalamic tract at the bedside.",
@@ -2357,7 +2921,7 @@
       }
 
       if (!has(state.completed, "examTools")) {
-        return "Select THINK, then click the exam cart to unlock the reflex hammer and tuning fork.";
+        return "Select THINK, click the exam cart, and answer five neurology questions before three errors to unlock the exam tools.";
       }
 
       if (!has(state.completed, "cabinet")) {
@@ -2615,16 +3179,208 @@
       `);
     }
 
+    function shuffledCartQuestions() {
+      const questions = cartQuestionBank.slice();
+      for (let index = questions.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [questions[index], questions[swapIndex]] = [questions[swapIndex], questions[index]];
+      }
+      return questions;
+    }
+
+    function cartConsoleMarkup(session, statusText, statusClass) {
+      const codeSlots = Array.from({ length: 5 }, (_, index) => {
+        const digit = session.code[index];
+        return `<span class="cart-led-digit${digit ? " lit" : ""}">${digit || "-"}</span>`;
+      }).join("");
+      const strikeLights = Array.from({ length: 3 }, (_, index) => (
+        `<span class="cart-strike-light${index < session.mistakes ? " hit" : ""}"></span>`
+      )).join("");
+
+      return `
+        <div class="cart-console" aria-label="Exam cart access console">
+          <div>
+            <span class="cart-console-label">Neuro-Safe RX Cart / Access Code</span>
+            <div class="cart-led-readout" aria-label="${session.code.length} of 5 code digits entered">${codeSlots}</div>
+            <div class="cart-console-status ${statusClass || ""}" aria-live="polite">${escapeHtml(statusText)}</div>
+          </div>
+          <div class="cart-strikes">
+            <strong>Errors ${session.mistakes} / 3</strong>
+            <div class="cart-strike-lights" aria-label="${session.mistakes} of 3 errors">${strikeLights}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function completeCartQuiz(code) {
+      markCompleted("examTools");
+      logAction("Unlocked exam cart with five neurology answers");
+      addInventory("hammer");
+      addInventory("tuningFork");
+      closeModal();
+      setMessage("ACCESS " + code + " ACCEPTED. The cart opens. Reflex hammer and tuning fork added to inventory.");
+    }
+
+    function openCartQuiz() {
+      const session = {
+        questions: shuffledCartQuestions(),
+        questionIndex: 0,
+        correct: 0,
+        mistakes: 0,
+        code: [],
+        locked: false
+      };
+
+      openModal(`
+        <section class="modal-card cart-quiz-card" id="cartQuiz" role="dialog" aria-modal="true" aria-labelledby="cartQuizTitle">
+          <div class="modal-header"><h2 id="cartQuizTitle">Exam Cart: Neuro Rapid-Fire Lock</h2><button type="button" data-close aria-label="Close">X</button></div>
+          <div class="cart-quiz-body" id="cartQuizBody"></div>
+        </section>
+      `);
+
+      const quizCard = document.getElementById("cartQuiz");
+      const quizBody = document.getElementById("cartQuizBody");
+
+      function renderQuestion(result) {
+        const question = session.questions[session.questionIndex];
+        const answeredIndex = result ? result.answeredIndex : null;
+        const statusText = result
+          ? result.status
+          : "Choose 1-5. Five correct digits unlock the cart.";
+        const statusClass = result ? result.statusClass : "";
+
+        quizBody.innerHTML = `
+          ${cartConsoleMarkup(session, statusText, statusClass)}
+          <div class="cart-question-meta">
+            <span>${result ? "Correct " + session.correct + " of 5" : "Digit " + (session.correct + 1) + " of 5"} / Bank question ${session.questionIndex + 1}</span>
+            <span class="cart-difficulty">${escapeHtml(question.difficulty)}</span>
+          </div>
+          <p class="cart-question">${escapeHtml(question.prompt)}</p>
+          <div class="cart-answer-grid">
+            ${question.options.map((option, index) => {
+              let resultClass = "";
+              if (result && index === question.answer) resultClass = " correct-answer";
+              else if (result && index === answeredIndex) resultClass = " wrong-answer";
+              return `<button type="button" class="cart-answer${resultClass}" data-cart-answer="${index}"${result ? " disabled" : ""}>
+                <span class="cart-answer-number">${index + 1}</span>
+                <span class="cart-answer-text">${escapeHtml(option)}</span>
+              </button>`;
+            }).join("")}
+          </div>
+          ${result ? `<div class="cart-feedback-actions">
+            <p class="cart-feedback ${result.correct ? "" : "error"}">${escapeHtml(result.feedback)}</p>
+            <button type="button" class="primary-action" id="cartAdvance">${escapeHtml(result.advanceLabel)}</button>
+          </div>` : ""}
+        `;
+
+        if (!result) {
+          quizBody.querySelectorAll("[data-cart-answer]").forEach(button => {
+            button.addEventListener("click", () => answerQuestion(Number(button.dataset.cartAnswer)));
+          });
+          const firstAnswer = quizBody.querySelector("[data-cart-answer]");
+          if (firstAnswer) firstAnswer.focus();
+        } else {
+          const advanceButton = document.getElementById("cartAdvance");
+          advanceButton.addEventListener("click", () => advanceAfterFeedback(result, question));
+          advanceButton.focus();
+        }
+      }
+
+      function advanceAfterFeedback(result, question) {
+        if (result.advanceAction === "complete") {
+          completeCartQuiz(session.code.join(""));
+          return;
+        }
+        if (result.advanceAction === "lockout") {
+          renderFailure(question.explanation);
+          return;
+        }
+        session.questionIndex += 1;
+        session.locked = false;
+        renderQuestion();
+      }
+
+      function renderFailure(lastExplanation) {
+        session.code = [];
+        session.correct = 0;
+        quizBody.innerHTML = `
+          ${cartConsoleMarkup(session, "ERROR 3: ACCESS CODE CLEARED", "error")}
+          <section class="cart-failure">
+            <h3>LOCKOUT</h3>
+            <p>${escapeHtml(lastExplanation)} Three errors cleared the code. Restart for a newly shuffled set of questions.</p>
+            <button type="button" class="primary-action" id="restartCartQuiz">Restart Quiz</button>
+          </section>
+        `;
+        document.getElementById("restartCartQuiz").addEventListener("click", restartQuiz);
+        document.getElementById("restartCartQuiz").focus();
+      }
+
+      function restartQuiz() {
+        session.questions = shuffledCartQuestions();
+        session.questionIndex = 0;
+        session.correct = 0;
+        session.mistakes = 0;
+        session.code = [];
+        session.locked = false;
+        renderQuestion();
+      }
+
+      function answerQuestion(answerIndex) {
+        if (session.locked) return;
+        session.locked = true;
+        const question = session.questions[session.questionIndex];
+        const isCorrect = answerIndex === question.answer;
+
+        if (isCorrect) {
+          session.correct += 1;
+          session.code.push(answerIndex + 1);
+          playSfx("success");
+          const completesCode = session.correct === 5;
+          renderQuestion({
+            answeredIndex: answerIndex,
+            correct: true,
+            status: "DIGIT " + (answerIndex + 1) + " ACCEPTED",
+            statusClass: "accepted",
+            feedback: "Correct. " + question.explanation,
+            advanceAction: completesCode ? "complete" : "next",
+            advanceLabel: completesCode ? "Unlock Cart" : "Next Question"
+          });
+        } else {
+          session.mistakes += 1;
+          const triggersLockout = session.mistakes >= 3;
+          renderQuestion({
+            answeredIndex: answerIndex,
+            correct: false,
+            status: "ERROR " + session.mistakes + " OF 3",
+            statusClass: "error",
+            feedback: "Incorrect. " + question.explanation,
+            advanceAction: triggersLockout ? "lockout" : "next",
+            advanceLabel: triggersLockout ? "Continue to Lockout" : "Next Question"
+          });
+        }
+      }
+
+      quizCard.addEventListener("keydown", event => {
+        if (event.key === "[") {
+          event.preventDefault();
+          completeCartQuiz("00000");
+          return;
+        }
+        if (session.locked || !/^[1-5]$/.test(event.key)) return;
+        const answerButton = quizBody.querySelector(`[data-cart-answer="${Number(event.key) - 1}"]`);
+        if (!answerButton) return;
+        event.preventDefault();
+        answerButton.click();
+      });
+
+      renderQuestion();
+    }
+
     function finishQuiz(id) {
       markCompleted(id);
       logAction("Solved puzzle: " + quizzes[id].title);
       setMessage(quizzes[id].success);
 
-      if (id === "examTools") {
-        addInventory("hammer");
-        addInventory("tuningFork");
-        setMessage("The cart opens. Reflex hammer and tuning fork added to inventory.");
-      }
       if (id === "cabinet") {
         addInventory("neurotip");
         addInventory("coldPack");
@@ -2692,7 +3448,7 @@
       }
       if (id === "cart") {
         if (!has(state.completed, "examTools")) {
-          setMessage("The exam cart is locked. Select THINK, then click it to solve the combination.");
+          setMessage("The exam cart is locked. Select THINK, then click it to start the five-question neurology access test.");
           return;
         }
         addInventory("hammer");
@@ -3054,14 +3810,14 @@
 
       if (id === "cart") {
         if (state.mode === "think") {
-          if (!has(state.completed, "examTools")) openQuiz("examTools");
+          if (!has(state.completed, "examTools")) openCartQuiz();
           else {
             markCompleted("outletRevealed");
             setMessage("The exam cart is open. Reflex hammer and tuning fork are available; an outlet is visible behind the cart.");
           }
           return;
         }
-        setMessage("The exam cart has tools inside, a combination lock outside, and possibly an outlet behind it. This is a THINK or GRAB problem.");
+        setMessage("The exam cart has tools inside, a rapid-fire quiz lock on its screen, and possibly an outlet behind it. This is a THINK or GRAB problem.");
         return;
       }
 
@@ -3119,7 +3875,7 @@
     function openExam() {
       const examButtons = [
         ["motor", "Motor Strength", "Check left-leg pyramidal weakness."],
-        ["reflex", "Reflexes and Plantar", "Look for UMN release signs."],
+        ["reflex", "Patellar Reflex", "Test the left knee jerk with the reflex hammer."],
         ["vibration", "Vibration", "Use the tuning fork to test dorsal columns."],
         ["position", "Position Sense", "Move the great toe with eyes closed."],
         ["spinothalamic", "Pain and Temperature", "Compare bilateral pin and cold."],
@@ -3169,19 +3925,7 @@
           closeModal();
           return;
         }
-        openTiming({
-          title: "Reflex Hammer Meter",
-          prompt: "Strike while the swing is in the green zone. Too soft or too hard is not a reliable reflex.",
-          zoneStart: 34,
-          zoneEnd: 50,
-          successText: "Left knee and ankle reflexes are brisk, and the left toe goes up.",
-          onSuccess: () => {
-            addFinding("reflexes");
-            addFinding("plantar");
-            removeInventory("hammer");
-            setMessage("Brisk left reflexes and an extensor plantar response support a central motor pathway lesion.");
-          }
-        });
+        openReflexGame();
       }
       if (exam === "vibration") {
         if (!has(state.inventory, "tuningFork")) {
@@ -3322,6 +4066,153 @@
           }
         });
       });
+    }
+
+    function reflexContactAt(position) {
+      if (position < 22) {
+        return "You struck the distal quadriceps above the knee. Muscle is not the patellar tendon.";
+      }
+      if (position < 33) {
+        return "You tapped the patella itself. Move just inferior to the kneecap to find the tendon.";
+      }
+      if (position <= 40) {
+        return "Patellar tendon";
+      }
+      if (position < 49) {
+        return "You struck the tibial tuberosity, the bony insertion below the tendon.";
+      }
+      if (position < 76) {
+        return "You tapped the tibial shaft, commonly called the shin.";
+      }
+      return "You reached the ankle and foot, well below the knee reflex arc.";
+    }
+
+    function openReflexGame() {
+      const targetStart = 33;
+      const targetEnd = 40;
+      let direction = 1;
+      let hitStreak = 0;
+      let missStreak = 0;
+      let strikeLocked = false;
+
+      state.timingMarker = 12;
+      state.timingHits = 0;
+      openModal(`
+        <section class="modal-card reflex-card" role="dialog" aria-modal="true" aria-labelledby="reflexTitle">
+          <div class="modal-header"><h2 id="reflexTitle">Patellar Reflex</h2><button type="button" data-close aria-label="Close">X</button></div>
+          <p>Click when the moving hammer is aligned with the patellar tendon. Three accurate strikes in a row document the reflex; three consecutive misses end the attempt.</p>
+          <div class="reflex-layout">
+            <button type="button" class="reflex-stage" id="reflexStage" aria-label="Strike when the hammer aligns with the patellar tendon">
+              <img class="reflex-leg" src="assets/reflex-leg.png" alt="Anterior view of the patient's left leg">
+              <span class="reflex-target" aria-hidden="true"><span>Patellar tendon</span></span>
+              <span class="reflex-hammer" id="reflexHammer" aria-hidden="true">&#128296;</span>
+            </button>
+            <section class="reflex-controls">
+              <div class="reflex-streaks">
+                <div class="reflex-streak">
+                  <strong>Hit streak</strong>
+                  <div class="reflex-pips reflex-hit-pips" id="reflexHitPips"><span></span><span></span><span></span></div>
+                </div>
+                <div class="reflex-streak">
+                  <strong>Miss streak</strong>
+                  <div class="reflex-pips reflex-miss-pips" id="reflexMissPips"><span></span><span></span><span></span></div>
+                </div>
+              </div>
+              <p class="reflex-feedback" id="reflexFeedback" aria-live="polite">Follow the hammer vertically and strike as its head crosses the tendon just below the patella.</p>
+              <button type="button" class="primary-action reflex-strike-button" id="reflexStrike">Strike &#128296;</button>
+            </section>
+          </div>
+        </section>
+      `);
+
+      const hammer = document.getElementById("reflexHammer");
+      const stage = document.getElementById("reflexStage");
+      const strikeButton = document.getElementById("reflexStrike");
+      const feedback = document.getElementById("reflexFeedback");
+
+      function renderReflexStreaks() {
+        document.querySelectorAll("#reflexHitPips span").forEach((pip, index) => pip.classList.toggle("lit", index < hitStreak));
+        document.querySelectorAll("#reflexMissPips span").forEach((pip, index) => pip.classList.toggle("lit", index < missStreak));
+      }
+
+      function stopReflexMotion() {
+        if (state.timingTimer) {
+          clearInterval(state.timingTimer);
+          state.timingTimer = null;
+        }
+        stage.disabled = true;
+        strikeButton.disabled = true;
+      }
+
+      function finishReflexSuccess() {
+        stopReflexMotion();
+        feedback.className = "reflex-feedback hit";
+        feedback.textContent = "Patellar tendon again. Three brisk responses in a row document left patellar hyperreflexia.";
+        strikeButton.textContent = "Reflex documented";
+        setTimeout(() => {
+          if (!document.getElementById("reflexStage")) return;
+          addFinding("reflexes");
+          removeInventory("hammer");
+          closeModal();
+          setMessage("Repeated left patellar tendon strikes produce a brisk knee jerk, supporting corticospinal tract involvement.");
+        }, 900);
+      }
+
+      function finishReflexFailure(lastContact) {
+        stopReflexMotion();
+        feedback.className = "reflex-feedback miss";
+        feedback.textContent = lastContact + " Three misses in a row end this attempt.";
+        strikeButton.textContent = "Attempt ended";
+        setTimeout(() => {
+          if (!document.getElementById("reflexStage")) return;
+          closeModal();
+          setMessage("\"Maybe try again later,\" the patient says. The reflex hammer remains available for another attempt.");
+        }, 1150);
+      }
+
+      function strikeReflex() {
+        if (strikeLocked || stage.disabled) return;
+        strikeLocked = true;
+        setTimeout(() => { strikeLocked = false; }, 240);
+
+        const contact = reflexContactAt(state.timingMarker);
+        const accurate = state.timingMarker >= targetStart && state.timingMarker <= targetEnd;
+        if (accurate) {
+          hitStreak += 1;
+          missStreak = 0;
+          state.timingHits = hitStreak;
+          feedback.className = "reflex-feedback hit";
+          feedback.textContent = "Patellar tendon. The left lower leg extends briskly. Hit streak " + hitStreak + " of 3.";
+          playSfx("success");
+          renderReflexStreaks();
+          if (hitStreak >= 3) finishReflexSuccess();
+          return;
+        }
+
+        missStreak += 1;
+        hitStreak = 0;
+        state.timingHits = 0;
+        feedback.className = "reflex-feedback miss";
+        feedback.textContent = contact + " Miss streak " + missStreak + " of 3.";
+        renderReflexStreaks();
+        if (missStreak >= 3) finishReflexFailure(contact);
+      }
+
+      state.timingTimer = setInterval(() => {
+        state.timingMarker += direction * 1.35;
+        if (state.timingMarker >= 88) {
+          state.timingMarker = 88;
+          direction = -1;
+        } else if (state.timingMarker <= 10) {
+          state.timingMarker = 10;
+          direction = 1;
+        }
+        if (hammer) hammer.style.top = state.timingMarker + "%";
+      }, 40);
+
+      stage.addEventListener("click", strikeReflex);
+      strikeButton.addEventListener("click", strikeReflex);
+      strikeButton.focus();
     }
 
     function openTiming(config) {
