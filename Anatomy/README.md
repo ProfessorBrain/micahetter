@@ -1,98 +1,57 @@
-# vinext-starter
+# Critical Structures
 
-A clean full-stack starter running on
-[vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
-Drizzle support.
+Critical Structures is a static, data-driven anatomy learning game. Players reveal diminishing-value clues, choose a candidate structure, navigate from a whole-body view into progressively closer boards, then place and orient the structure. The first release is intentionally a polished vertical slice: all seven requested zones are represented by two provisional structures, while the game engine stays independent of any individual anatomy record.
 
-## Prerequisites
+> All included anatomy content and placeholder artwork is provisional until reviewed by an anatomy educator.
 
-- Node.js `>=22.13.0`
+## Features
 
-## Quick Start
+- Single-player sessions with locally saved mastery, review, zone performance, streaks, and clue use
+- Pass-and-play for 2–6 local players, including optional steal attempts
+- Novice, intermediate, advanced, and expert candidate/clue behavior
+- Data-driven structure selection, distractor ranking, clues, zoom paths, tolerances, rotation, and feedback
+- Click-to-place, drag-and-drop, touch, and keyboard controls
+- Multiple hidden zoom regions on each broad board, including anatomically incorrect choices
+- Placement outcomes for perfect, correct, near miss, wrong region, wrong orientation, and wrong structure
+- High contrast, text enlargement, reduced motion, mute, screen-reader announcements, and enlarged tolerance
+- `?debug=1` overlays, live coordinates, forced targets/clues, and polygon authoring
+
+## Run locally
+
+Use Node.js 22.13 or newer.
 
 ```bash
 npm install
 npm run dev
+```
+
+Open the local URL printed by the development server. The app needs no account, backend, paid dependency, or external runtime service.
+
+## Test and build
+
+```bash
+npm test
 npm run build
 ```
 
-This starter does not use `wrangler.jsonc`.
+The tests cover spinner exhaustion, score calculation, zone-aware target selection, candidate construction, placement/orientation evaluation, multiplayer turns, product markup, and content coverage.
 
-## Included Shape
+## Static-host deployment
 
-- edit site code under `app/`
-- `.openai/hosting.json` declares optional Sites D1 and R2 bindings
-- `vite.config.ts` simulates declared bindings for local development
-- `db/schema.ts` starts intentionally empty
-- `examples/d1/` contains an optional D1 example surface
-- `drizzle.config.ts` supports local migration generation when needed
+Run `npm run build`, then deploy the generated `dist` output to a static/edge host that supports the included worker entry. The included Sites configuration requires no database or object storage. For a traditional static host, the public data, JavaScript, and assets are already static; serve the generated application shell at `/` and preserve the `/data`, `/js`, and `/assets` paths.
 
-## Workspace Auth Headers
+## Project map
 
-OpenAI workspace sites can read the current user's email from
-`oai-authenticated-user-email`.
+- `app/page.tsx` — semantic HTML application shell
+- `app/globals.css` — responsive visual system and accessibility modes
+- `public/js/` — vanilla JavaScript ES modules
+- `public/data/structures.json` — anatomy content records
+- `public/data/boards.json` — normalized board and zoom-zone definitions
+- `public/data/structure.schema.json` — JSON Schema for structure records
+- `public/assets/` — original provisional SVG boards and pieces
+- `CONTENT_AUTHORING.md` — safe content and geometry authoring workflow
+- `tests/` — automated logic and deliverable checks
 
-SIWC-authenticated workspace sites may also receive
-`oai-authenticated-user-full-name` when the user's SIWC profile has a non-empty
-`name` claim. The full-name value is percent-encoded UTF-8 and is accompanied by
-`oai-authenticated-user-full-name-encoding: percent-encoded-utf-8`.
+## Content review
 
-Treat the full name as optional and fall back to email when it is absent:
-
-```tsx
-import { headers } from "next/headers";
-
-export default async function Home() {
-  const requestHeaders = await headers();
-  const email = requestHeaders.get("oai-authenticated-user-email");
-  const encodedFullName = requestHeaders.get("oai-authenticated-user-full-name");
-  const fullName =
-    encodedFullName &&
-    requestHeaders.get("oai-authenticated-user-full-name-encoding") ===
-      "percent-encoded-utf-8"
-      ? decodeURIComponent(encodedFullName)
-      : null;
-
-  const displayName = fullName ?? email;
-  // ...
-}
-```
-
-## Optional Dispatch-Owned ChatGPT Sign-In
-
-Import the ready-to-use helpers from `app/chatgpt-auth.ts` when the site needs
-optional or required ChatGPT sign-in:
-
-- Use `getChatGPTUser()` for optional signed-in UI.
-- Use `requireChatGPTUser(returnTo)` for server-rendered pages that should send
-  anonymous visitors through Sign in with ChatGPT.
-- Use `chatGPTSignInPath(returnTo)` and `chatGPTSignOutPath(returnTo)` for
-  browser links or actions.
-- Pass a same-origin relative `returnTo` path for the destination after sign-in
-  or sign-out. The helper validates and safely encodes it.
-- Mark protected pages with `export const dynamic = "force-dynamic"` because
-  they depend on per-request identity headers.
-
-Dispatch owns `/signin-with-chatgpt`, `/signout-with-chatgpt`, `/callback`, the
-OAuth cookies, and identity header injection. Do not implement app routes for
-those reserved paths. Routes that do not import and call the helper remain
-anonymous-compatible.
-
-SIWC establishes identity only; it does not prove workspace membership. Use the
-Sites hosting platform's access policy controls for workspace-wide restrictions,
-or enforce explicit server-side membership or allowlist checks.
-
-Use SIWC for account pages, user-specific dashboards, saved records, and write
-actions tied to the current ChatGPT user. Leave public content anonymous.
-
-## Useful Commands
-
-- `npm run dev`: start local development
-- `npm run build`: verify the vinext build output
-- `npm test`: build the starter and verify its rendered loading skeleton
-- `npm run db:generate`: generate Drizzle migrations after schema changes
-
-## Learn More
-
-- [vinext Documentation](https://github.com/cloudflare/vinext)
-- [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)
+Do not treat the demonstration content as clinical advice or publish it as reviewed curriculum. Before educational release, have a qualified anatomy educator validate naming, relationships, clue wording, target geometry, distractor similarity, layer choice, and placement tolerances.
