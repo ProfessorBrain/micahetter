@@ -119,6 +119,14 @@
       position: relative;
     }
 
+    .color-key-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      min-width: 0;
+    }
+
     .how-to-play-dialog {
       width: min(620px, calc(100% - 32px));
       max-height: calc(100vh - 32px);
@@ -188,7 +196,7 @@
       display: grid;
       grid-template-columns: minmax(270px, 340px) minmax(560px, 1fr);
       gap: 16px;
-      align-items: start;
+      align-items: stretch;
     }
 
     .workspace > * {
@@ -444,7 +452,7 @@
       flex-wrap: wrap;
       gap: 8px;
       align-items: center;
-      margin-top: 12px;
+      margin-top: 0;
       color: var(--muted);
       font-size: 0.9rem;
     }
@@ -487,7 +495,7 @@
       flex-direction: column;
       position: sticky;
       top: 16px;
-      max-height: calc(100vh - 32px);
+      align-self: stretch;
       min-height: 0;
       padding: 14px;
     }
@@ -589,8 +597,12 @@
 
       .bank-area {
         position: static;
-        max-height: none;
+        align-self: auto;
         order: 2;
+      }
+
+      .card-bank {
+        max-height: 420px;
       }
 
       .board-area {
@@ -696,6 +708,15 @@
         justify-content: stretch;
       }
 
+      .color-key-group {
+        width: 100%;
+        align-items: stretch;
+      }
+
+      .color-key-group .legend {
+        width: 100%;
+      }
+
       .bank-toolbar {
         align-items: stretch;
       }
@@ -773,10 +794,17 @@
         </div>
       </div>
       <div class="top-actions">
-        <label class="switch">
-          <input type="checkbox" id="studyToggle" checked>
-          <span>Study mode</span>
-        </label>
+        <div class="color-key-group">
+          <label class="switch">
+            <input type="checkbox" id="colorKeyToggle" aria-controls="colorKeyLegend" checked>
+            <span>Color Key</span>
+          </label>
+          <div class="legend" id="colorKeyLegend" aria-label="Region color key">
+            <span class="legend-item"><span class="swatch foregut"></span>Foregut</span>
+            <span class="legend-item"><span class="swatch midgut"></span>Midgut</span>
+            <span class="legend-item"><span class="swatch hindgut"></span>Hindgut</span>
+          </div>
+        </div>
         <button class="btn btn-primary" type="button" id="hintBtn">Hint</button>
         <button class="btn" type="button" id="howToPlayBtn">How to play</button>
       </div>
@@ -802,11 +830,6 @@
           </div>
         </div>
 
-        <div class="legend" aria-label="Region legend">
-          <span class="legend-item"><span class="swatch foregut"></span>Foregut</span>
-          <span class="legend-item"><span class="swatch midgut"></span>Midgut</span>
-          <span class="legend-item"><span class="swatch hindgut"></span>Hindgut</span>
-        </div>
         <div class="win-banner" id="winBanner">Grid complete.</div>
       </section>
     </section>
@@ -824,7 +847,7 @@
           <li>Each row, column, and 3x3 box must contain exactly three foregut, three midgut, and three hindgut cards.</li>
           <li>A completed 3x3 box receives a green rim when it contains three cards from each region.</li>
           <li>Row and column status boxes stay blank until full, then show a green check for a balanced distribution or a red X for an incorrect one.</li>
-          <li>Study mode shows or hides the region colors. Hint randomly places a card-bank item correctly before correcting a card already on the board.</li>
+          <li>Color Key shows or hides the region colors. Hint randomly places a card-bank item correctly before correcting a card already on the board.</li>
         </ol>
       </section>
 
@@ -942,6 +965,7 @@
     const winBanner = document.getElementById("winBanner");
     const rowStatuses = document.getElementById("rowStatuses");
     const columnStatuses = document.getElementById("columnStatuses");
+    const colorKeyLegend = document.getElementById("colorKeyLegend");
     const howToPlayDialog = document.getElementById("howToPlayDialog");
 
     document.getElementById("howToPlayBtn").addEventListener("click", openHowToPlay);
@@ -954,7 +978,7 @@
       }
     });
 
-    document.getElementById("studyToggle").addEventListener("change", (event) => {
+    document.getElementById("colorKeyToggle").addEventListener("change", (event) => {
       revealRegions = event.target.checked;
       boardShell.classList.toggle("show-regions", revealRegions);
       render();
@@ -1295,6 +1319,7 @@
     function render() {
       const report = getReport();
       boardShell.classList.toggle("show-regions", revealRegions);
+      colorKeyLegend.hidden = !revealRegions;
       winBanner.classList.toggle("show", report.solved);
       renderBoard(report);
       renderBoxRims(report);

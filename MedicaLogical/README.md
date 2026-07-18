@@ -1,6 +1,6 @@
-# The Clinical Detective
+# MedicaLogical
 
-An HTML-first, specialty-aware Einstein logic puzzle for medical students and residents.
+An HTML-first adult clinical logic puzzle spanning the major medical specialties, designed for medical students and residents.
 
 ## Open the game
 
@@ -9,16 +9,19 @@ Open [`index.html`](./index.html) directly in a web browser. It is the project e
 ## Included gameplay
 
 - Five-patient, medium-difficulty logic puzzle
-- 28 selectable specialty modes with 140 clinical cases
+- 27 selectable adult specialty modes with 135 clinical cases
 - Single-specialty and mixed-specialty puzzle generation
 - Diagnosis, mechanism-of-action treatment, and symptom knowledge clues
-- Compact position-by-position puzzle grid
-- Left-column clue panel beside the puzzle grid
+- Compact appointment-by-appointment logic table
+- Left-column clue panel beside the clinic schedule
 - Four active rows: Name plus one randomized demographic, history, and clinical row
-- New names, specialty cases, row assignments, option order, and clue order for every generated grid
+- New names, specialty cases, row assignments, option order, and clue order for every generated puzzle
 - Clues that automatically mark themselves applied or conflicting
 - Previously used row options disabled in the remaining dropdowns
-- Progressive hints and automatic completion detection
+- Specialty selection contained in the Settings panel
+- Easy, Medium, and Hard clue-generation modes
+- Age- and sex-compatible patient/case pairing
+- Automatic completion detection
 - Animated case-closed celebration after a correct solution
 - Responsive mobile layout and keyboard-accessible controls
 

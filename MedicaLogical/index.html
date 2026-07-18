@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="A specialty-aware clinical zebra logic puzzle for medical students and residents.">
-  <title>The Five Unsolved Cases | The Clinical Detective</title>
+  <meta name="description" content="MedicaLogical is an adult clinical logic puzzle spanning the major medical specialties.">
+  <title>MedicaLogical</title>
   <style>
     :root {
       --page: #edf0eb;
@@ -32,7 +32,7 @@
       line-height: 1.45;
     }
     button, select { font: inherit; }
-    button:focus-visible, select:focus-visible, a:focus-visible {
+    button:focus-visible, select:focus-visible, a:focus-visible, .board-scroll:focus-visible {
       outline: 3px solid var(--gold);
       outline-offset: 2px;
     }
@@ -45,43 +45,37 @@
       color: #fffdf8;
       border-bottom: 3px solid var(--gold);
     }
-    .topbar .shell { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 18px; }
-    .brand { display: flex; align-items: center; gap: 11px; font-family: Georgia, serif; font-weight: 700; letter-spacing: .01em; }
-    .lens { width: 25px; height: 25px; border: 2px solid var(--gold); border-radius: 50%; position: relative; }
-    .lens::after { content: ""; width: 10px; height: 2px; background: var(--gold); position: absolute; right: -7px; bottom: 0; transform: rotate(45deg); }
-    .top-meta { display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,.72); font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
-    .top-meta span + span { border-left: 1px solid rgba(255,255,255,.22); padding-left: 10px; }
-
-    main { padding: 22px 0 44px; }
-    .puzzle-heading { min-height: 66px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
-    .eyebrow { display: block; margin-bottom: 3px; color: var(--rust); font-size: .67rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
-    h1 { margin: 0; font: 700 clamp(1.55rem, 3vw, 2.25rem)/1.1 Georgia, serif; letter-spacing: -.02em; }
-    .progress-summary { min-width: 190px; text-align: right; }
-    .progress-summary strong { display: block; font: 700 1.05rem Georgia, serif; }
-    .progress-summary span { color: var(--muted); font-size: .75rem; }
-    .progress-track { width: 190px; height: 4px; margin-top: 7px; margin-left: auto; overflow: hidden; background: #d4dad5; border-radius: 99px; }
-    .progress-track i { display: block; width: 0; height: 100%; background: var(--teal); transition: width 180ms ease; }
-
-    .modebar { margin-bottom: 14px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; gap: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
-    .mode-label { color: var(--muted); font-size: .72rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
-    .specialty-menu { min-width: min(520px, 100%); position: relative; }
-    .specialty-menu summary { min-height: 38px; padding: 8px 36px 8px 12px; border: 1px solid var(--line); border-radius: 5px; background: var(--surface-muted); color: var(--ink); font-size: .82rem; font-weight: 700; cursor: pointer; list-style: none; }
-    .specialty-menu summary::-webkit-details-marker { display: none; }
-    .specialty-menu summary::after { content: "▾"; position: absolute; right: 13px; top: 8px; color: var(--teal); }
-    .specialty-menu[open] summary::after { transform: rotate(180deg); }
-    .specialty-popover { width: min(620px, calc(100vw - 32px)); max-height: 420px; padding: 12px; position: absolute; right: 0; top: 44px; z-index: 20; overflow: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 7px; box-shadow: 0 18px 50px rgba(27,48,55,.2); }
+    .topbar .shell { height: 100%; position: relative; display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+    .brand { color: #fffdf8; font: 700 1.35rem/1 Georgia, serif; letter-spacing: -.01em; }
+    .top-actions { display: flex; align-items: center; gap: 8px; }
+    .top-button { min-height: 36px; padding: 7px 11px; border: 1px solid rgba(255,255,255,.3); border-radius: 4px; background: transparent; color: white; font-size: .72rem; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; cursor: pointer; }
+    .top-button:hover, .top-button[aria-expanded="true"] { background: rgba(255,255,255,.1); border-color: var(--gold); }
+    .header-panel { width: min(620px, calc(100vw - 32px)); max-height: min(520px, calc(100vh - 86px)); padding: 16px; position: absolute; right: 0; top: 52px; z-index: 30; overflow: auto; background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 7px; box-shadow: 0 18px 50px rgba(9,26,31,.28); }
+    .header-panel[hidden] { display: none; }
+    .header-panel h2 { margin: 0 0 7px; font: 700 1.22rem Georgia, serif; }
+    .header-panel p { margin: 0 0 12px; color: var(--muted); font-size: .82rem; }
+    .how-list { margin: 0; padding-left: 19px; color: var(--ink); font-size: .82rem; }
+    .how-list li + li { margin-top: 7px; }
+    .settings-section + .settings-section { margin-top: 16px; padding-top: 15px; border-top: 1px solid var(--line); }
+    .settings-section h3 { margin: 0 0 9px; color: var(--ink); font-size: .72rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
     .specialty-actions { margin-bottom: 9px; display: flex; gap: 7px; }
     .specialty-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px 12px; }
     .specialty-option { min-height: 34px; padding: 6px 8px; display: flex; align-items: center; gap: 8px; border-radius: 4px; font-size: .79rem; cursor: pointer; }
     .specialty-option:hover { background: var(--surface-muted); }
     .specialty-option input { accent-color: var(--teal); }
-    .mode-note { margin: 0; color: var(--muted); font-size: .72rem; white-space: nowrap; }
-
+    .difficulty-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .difficulty-option { min-height: 68px; padding: 9px 10px; display: grid; grid-template-columns: auto 1fr; align-items: start; gap: 8px; border: 1px solid var(--line); border-radius: 5px; background: var(--surface-muted); cursor: pointer; }
+    .difficulty-option:hover { border-color: var(--teal); }
+    .difficulty-option input { margin-top: 3px; accent-color: var(--teal); }
+    .difficulty-option strong { display: block; font-size: .8rem; }
+    .difficulty-option input:checked + span strong { color: var(--teal); }
+    .difficulty-option small { display: block; margin-top: 2px; color: var(--muted); font-size: .67rem; line-height: 1.35; }
+    main { padding: 20px 0 44px; }
     .workspace { display: grid; grid-template-columns: minmax(310px, 390px) minmax(0, 1fr); gap: 16px; align-items: start; }
     .game-panel { min-width: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow); overflow: hidden; }
-    .board-scroll { overflow-x: auto; scrollbar-color: var(--teal) transparent; }
+    .board-scroll { overflow-x: auto; overscroll-behavior-inline: contain; scrollbar-color: var(--teal) transparent; scrollbar-width: thin; -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y; }
     .board { width: 100%; min-width: 820px; border-collapse: collapse; table-layout: fixed; }
-    .board th, .board td { border: solid var(--line); border-width: 0 1px 1px 0; }
+    .board th, .board td { border: solid var(--line); border-width: 0 1px 1px 0; transition: background-color 180ms ease, box-shadow 180ms ease; }
     .board thead th { height: 57px; padding: 7px 10px; background: var(--ink); color: white; text-align: center; }
     .board thead th:first-child { width: 130px; position: sticky; left: 0; z-index: 3; text-align: left; color: #dcb66f; }
     .board thead small { display: block; color: rgba(255,255,255,.58); font-size: .61rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
@@ -100,30 +94,23 @@
       cursor: pointer;
     }
     .board select.has-value { border-color: #8bb2ac; background: #f8fcfb; }
+    .board thead th.correct-column { background: #27695c; box-shadow: inset 0 -4px #8bc8ae; }
+    .board tbody tr.correct-row > th,
+    .board tbody tr.correct-row > td { background: #e4f3eb; }
+    .board tbody td.correct-column { background: #edf8f2; }
+    .board tbody tr.correct-row > td.correct-column { background: #d5ecdf; }
+    .board tbody tr.correct-row select,
+    .board tbody td.correct-column select { border-color: #64a98c; background: #f0faf5; color: #174f40; box-shadow: 0 0 0 1px rgba(50, 126, 94, .12); }
     .board select.duplicate { border-color: var(--rust); background: var(--rust-soft); box-shadow: 0 0 0 1px var(--rust); }
     .board select option:disabled { color: #9aa39f; background: #eef0ed; }
 
-    .controlbar { min-height: 56px; padding: 8px 12px 8px 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px; background: var(--surface-muted); border-bottom: 1px solid var(--line); }
-    .game-status { margin: 0; color: var(--muted); font-size: .82rem; }
-    .game-status strong { color: var(--ink); }
-    .game-status.is-error strong { color: var(--rust); }
-    .game-status.is-solved strong { color: var(--teal); }
-    .controls { display: flex; gap: 8px; }
     .button { min-height: 36px; border: 1px solid var(--line); border-radius: 4px; padding: .45rem .8rem; background: white; color: var(--ink); font-size: .73rem; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; cursor: pointer; }
     .button:hover { border-color: var(--teal); color: var(--teal); }
     .button-primary { background: var(--teal); border-color: var(--teal); color: white; }
     .button-primary:hover { background: #174c49; color: white; }
-    .hint-line { display: none; margin: 0; padding: 10px 16px; background: #fff7df; border-bottom: 1px solid #e6d7a9; color: #65552f; font-size: .82rem; }
-    .hint-line.is-visible { display: block; }
-
     .clues { max-height: calc(100vh - 100px); padding: 18px 16px 14px; position: sticky; top: 14px; overflow: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow); }
-    .clues-head { margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+    .clues-head { margin-bottom: 10px; }
     .clues h2 { margin: 0; font: 700 1.3rem Georgia, serif; }
-    .legend { display: flex; gap: 14px; color: var(--muted); font-size: .69rem; }
-    .legend span { display: flex; align-items: center; gap: 5px; }
-    .legend i { width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; color: white; font-style: normal; font-size: .66rem; font-weight: 900; }
-    .legend .good { background: var(--teal); }
-    .legend .bad { background: var(--rust); }
     .clue-list { margin: 0; padding: 0; list-style: none; }
     .clue-list li { min-height: 40px; padding: 7px 7px 7px 34px; position: relative; break-inside: avoid-column; border-bottom: 1px solid var(--line); font: .87rem/1.45 Georgia, serif; transition: background 150ms ease, color 150ms ease, opacity 150ms ease; }
     .clue-state { width: 20px; height: 20px; position: absolute; left: 6px; top: 8px; border: 1px solid #bdc7c1; border-radius: 50%; display: grid; place-items: center; color: transparent; font: 900 .71rem/1 "Segoe UI", sans-serif; }
@@ -131,11 +118,6 @@
     .clue-list li.satisfied .clue-state { background: var(--teal); border-color: var(--teal); color: white; }
     .clue-list li.contradicted { color: #7e3324; background: var(--rust-soft); }
     .clue-list li.contradicted .clue-state { background: var(--rust); border-color: var(--rust); color: white; }
-
-    .solved-banner { display: none; margin-top: 14px; padding: 13px 16px; border-radius: 6px; background: var(--teal); color: white; align-items: center; justify-content: space-between; gap: 18px; }
-    .solved-banner.is-visible { display: flex; }
-    .solved-banner strong { font: 700 1.05rem Georgia, serif; }
-    .solved-banner span { color: rgba(255,255,255,.76); font-size: .8rem; }
 
     .win-pop {
       position: fixed;
@@ -204,35 +186,43 @@
       0% { transform: translate3d(0, -5vh, 0) rotate(0); }
       100% { transform: translate3d(var(--drift), 112vh, 0) rotate(var(--spin)); }
     }
-    footer { padding: 22px 0 30px; color: var(--muted); font-size: .7rem; text-align: center; }
-
     @media (max-width: 960px) {
       .workspace { grid-template-columns: 1fr; }
+      .game-panel { order: -1; }
       .clues { max-height: none; position: static; }
     }
     @media (max-width: 720px) {
-      .shell { width: min(100% - 20px, 1240px); }
-      .topbar { height: 56px; }
-      .top-meta span:first-child { display: none; }
-      main { padding-top: 12px; }
-      .puzzle-heading { align-items: flex-end; }
-      .progress-summary { min-width: 100px; }
-      .progress-track { width: 100px; }
-      .modebar { align-items: stretch; flex-direction: column; }
-      .specialty-menu { min-width: 0; }
-      .specialty-popover { left: 0; right: auto; }
+      .shell { width: min(100% - 16px, 1240px); }
+      .topbar { height: 60px; }
+      .topbar .shell { gap: 8px; }
+      .brand { font-size: 1.05rem; }
+      .top-actions { gap: 4px; }
+      .top-button { min-height: 44px; padding-inline: 7px; font-size: .62rem; }
+      .header-panel { width: calc(100vw - 16px); max-height: calc(100vh - 72px); max-height: calc(100dvh - 72px); top: 52px; padding: 14px; }
+      main { padding: 10px 0 28px; }
+      .workspace { gap: 12px; }
       .specialty-grid { grid-template-columns: 1fr; }
-      .mode-note { white-space: normal; }
-      .board { min-width: 820px; }
-      .controlbar { align-items: flex-start; flex-direction: column; }
-      .controls { width: 100%; }
-      .controls .button { flex: 1; }
+      .specialty-option { min-height: 44px; }
+      .specialty-option input { width: 18px; height: 18px; flex: 0 0 auto; }
+      .difficulty-options { grid-template-columns: 1fr; }
+      .difficulty-option { min-height: 58px; }
+      .game-panel { border-radius: 6px; }
+      .board { min-width: 760px; }
+      .board thead th { height: 52px; padding: 6px 8px; }
+      .board thead th:first-child { width: 112px; }
+      .board thead strong { font-size: .9rem; }
+      .board tbody th { width: 112px; padding: 8px; font-size: .64rem; letter-spacing: .07em; }
+      .board td { height: 56px; padding: 6px; }
+      .board select { height: 44px; padding-inline: 8px 26px; font-size: 16px; text-overflow: ellipsis; }
       .clues { padding-inline: 12px; }
-      .clues-head { align-items: flex-start; flex-direction: column; gap: 7px; }
       .clue-list { columns: 1; }
-      .solved-banner { align-items: flex-start; flex-direction: column; }
       .win-card { padding-inline: 20px; }
       .win-actions { flex-direction: column; }
+      .win-actions .button { min-height: 44px; }
+    }
+    @media (max-width: 380px) {
+      .brand { font-size: .98rem; }
+      .top-button { padding-inline: 6px; font-size: .59rem; }
     }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
@@ -243,70 +233,71 @@
 <body>
   <header class="topbar">
     <div class="shell">
-      <div class="brand"><span class="lens" aria-hidden="true"></span><span>The Clinical Detective</span></div>
-      <div class="top-meta"><span>Einstein-style logic puzzle</span><span>Medium</span></div>
+      <div class="brand">MedicaLogical</div>
+      <div class="top-actions">
+        <button class="top-button" id="how-to-button" type="button" aria-expanded="false" aria-controls="how-to-panel">How to play</button>
+        <button class="top-button" id="settings-button" type="button" aria-expanded="false" aria-controls="settings-panel">Settings</button>
+
+        <section class="header-panel" id="how-to-panel" aria-labelledby="how-to-heading" hidden>
+          <h2 id="how-to-heading">How to play</h2>
+          <p>Match each adult patient and clinical detail to the correct appointment time.</p>
+          <ol class="how-list">
+            <li>Read the clues, then choose one item in each row for every appointment.</li>
+            <li>Each option can be used only once per row.</li>
+            <li>Applied clues move to the bottom. A red clue means the current choices conflict.</li>
+            <li>Some clues require medical knowledge to identify a diagnosis, treatment, or symptom.</li>
+            <li>Difficulty changes how directly the clues reveal each relationship.</li>
+          </ol>
+        </section>
+
+        <section class="header-panel" id="settings-panel" aria-labelledby="settings-heading" hidden>
+          <h2 id="settings-heading">Settings</h2>
+          <div class="settings-section">
+            <h3>Specialties</h3>
+            <div class="specialty-actions">
+              <button class="button" id="select-all-specialties" type="button">Select all</button>
+            </div>
+            <div class="specialty-grid" id="specialty-options"></div>
+          </div>
+          <div class="settings-section">
+            <h3 id="difficulty-heading">Difficulty</h3>
+            <div class="difficulty-options" id="difficulty-options" role="radiogroup" aria-labelledby="difficulty-heading">
+              <label class="difficulty-option">
+                <input type="radio" name="difficulty" value="easy">
+                <span><strong>Easy</strong><small>More direct placement clues.</small></span>
+              </label>
+              <label class="difficulty-option">
+                <input type="radio" name="difficulty" value="medium" checked>
+                <span><strong>Medium</strong><small>A mix of direct and relational clues.</small></span>
+              </label>
+              <label class="difficulty-option">
+                <input type="radio" name="difficulty" value="hard">
+                <span><strong>Hard</strong><small>Indirect, multi-step deductions.</small></span>
+              </label>
+            </div>
+          </div>
+        </section>
+      </div>
     </div>
   </header>
 
   <main class="shell">
-    <div class="puzzle-heading">
-      <div>
-        <span class="eyebrow"><span id="case-number">Case 017</span> · Clinical Medicine</span>
-        <h1>The Five Unsolved Cases</h1>
-      </div>
-      <div class="progress-summary" aria-live="polite">
-        <strong id="progress-count">0 clues</strong>
-        <span>automatically applied</span>
-        <div class="progress-track" aria-hidden="true"><i id="progress-bar"></i></div>
-      </div>
-    </div>
-
-    <div class="modebar">
-      <span class="mode-label">Specialty modes</span>
-      <details class="specialty-menu" id="specialty-menu">
-        <summary id="specialty-summary">Neurology</summary>
-        <div class="specialty-popover">
-          <div class="specialty-actions">
-            <button class="button" id="select-all-specialties" type="button">Select all</button>
-            <button class="button" id="neurology-only" type="button">Neurology only</button>
-          </div>
-          <div class="specialty-grid" id="specialty-options"></div>
-        </div>
-      </details>
-      <p class="mode-note">5 cases per grid.</p>
-    </div>
-
     <div class="workspace">
       <aside class="clues" aria-labelledby="clues-heading">
         <div class="clues-head">
           <h2 id="clues-heading">Clues</h2>
-          <div class="legend" aria-label="Clue status legend">
-            <span><i class="good">✓</i> applied</span>
-            <span><i class="bad">!</i> conflict</span>
-          </div>
         </div>
         <ol class="clue-list" id="clue-list"></ol>
       </aside>
 
       <section class="game-panel" aria-label="Clinical medicine zebra puzzle">
-        <div class="board-scroll" tabindex="0" aria-label="Puzzle grid; scroll horizontally on smaller screens">
+        <div class="board-scroll" id="board-scroll" tabindex="0" aria-label="Clinic schedule; scroll horizontally on smaller screens">
           <table class="board" id="board"></table>
         </div>
-        <div class="controlbar">
-          <p class="game-status" id="game-status" aria-live="polite"><strong>Begin anywhere.</strong> Clues update as you fill the grid.</p>
-          <div class="controls">
-            <button class="button" id="hint-button" type="button">Hint</button>
-            <button class="button button-primary" id="reset-button" type="button">New grid</button>
-          </div>
-        </div>
-        <p class="hint-line" id="hint-line" aria-live="polite"></p>
+        <p class="sr-only" id="game-status" aria-live="polite"></p>
       </section>
     </div>
 
-    <div class="solved-banner" id="solved-banner" role="status">
-      <strong>Case closed — the ledger is complete.</strong>
-      <span>You correctly matched every name and case detail.</span>
-    </div>
   </main>
 
   <div class="win-pop" id="win-pop" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="win-title" aria-describedby="win-message">
@@ -323,34 +314,32 @@
     </div>
   </div>
 
-  <footer class="shell">Educational puzzle only — not medical advice.</footer>
-
   <script src="specialties.js"></script>
   <script>
     "use strict";
 
     const slots = [
-      { id: "0900", time: "9:00 AM", position: "Consult 1" },
-      { id: "1000", time: "10:00 AM", position: "Consult 2" },
-      { id: "1100", time: "11:00 AM", position: "Consult 3" },
-      { id: "1300", time: "1:00 PM", position: "Consult 4" },
-      { id: "1400", time: "2:00 PM", position: "Consult 5" }
+      { id: "0900", time: "9:00 AM", position: "Appointment 1" },
+      { id: "1000", time: "10:00 AM", position: "Appointment 2" },
+      { id: "1100", time: "11:00 AM", position: "Appointment 3" },
+      { id: "1300", time: "1:00 PM", position: "Appointment 4" },
+      { id: "1400", time: "2:00 PM", position: "Appointment 5" }
     ];
 
     const namePool = [
-      ["dorian-knox", "Dorian Knox"], ["clara-finch", "Clara Finch"], ["amara-vale", "Amara Vale"],
-      ["evelyn-march", "Evelyn March"], ["basil-reed", "Basil Reed"], ["maya-chen", "Maya Chen"],
-      ["owen-brooks", "Owen Brooks"], ["priya-shah", "Priya Shah"], ["theo-grant", "Theo Grant"],
-      ["lena-ortiz", "Lena Ortiz"], ["marcus-bell", "Marcus Bell"], ["nadia-park", "Nadia Park"],
-      ["jonah-price", "Jonah Price"], ["sylvie-hart", "Sylvie Hart"], ["ravi-mehta", "Ravi Mehta"]
+      ["dorian-knox", "Dorian Knox", "male"], ["clara-finch", "Clara Finch", "female"], ["amara-vale", "Amara Vale", "female"],
+      ["evelyn-march", "Evelyn March", "female"], ["basil-reed", "Basil Reed", "male"], ["maya-chen", "Maya Chen", "female"],
+      ["owen-brooks", "Owen Brooks", "male"], ["priya-shah", "Priya Shah", "female"], ["theo-grant", "Theo Grant", "male"],
+      ["lena-ortiz", "Lena Ortiz", "female"], ["marcus-bell", "Marcus Bell", "male"], ["nadia-park", "Nadia Park", "female"],
+      ["jonah-price", "Jonah Price", "male"], ["sylvie-hart", "Sylvie Hart", "female"], ["ravi-mehta", "Ravi Mehta", "male"]
     ];
     let nameRow = null;
 
     const demographicRows = [
       {
         key: "age", label: "Age",
-        values: [["age-68", "68"], ["age-12", "12"], ["age-37", "37"], ["age-29", "29"], ["age-21", "21"]],
-        subjects: ["68-year-old patient", "12-year-old patient", "37-year-old patient", "29-year-old patient", "21-year-old patient"]
+        values: [["age-68", "68"], ["age-52", "52"], ["age-37", "37"], ["age-29", "29"], ["age-21", "21"]],
+        subjects: ["68-year-old patient", "52-year-old patient", "37-year-old patient", "29-year-old patient", "21-year-old patient"]
       },
       {
         key: "birthplace", label: "Birthplace",
@@ -372,8 +361,8 @@
       },
       {
         key: "social-history", label: "Social History",
-        values: [["retired-teacher", "Social history: retired teacher"], ["middle-school", "Social history: middle-school student"], ["night-nurse", "Social history: night-shift nurse"], ["grad-student", "Social history: graduate student"], ["college-athlete", "Social history: college athlete"]],
-        subjects: ["retired teacher", "middle-school student", "night-shift nurse", "graduate student", "college athlete"]
+        values: [["retired-teacher", "Social history: retired teacher"], ["accountant", "Social history: accountant"], ["night-nurse", "Social history: night-shift nurse"], ["grad-student", "Social history: graduate student"], ["college-athlete", "Social history: college athlete"]],
+        subjects: ["retired teacher", "accountant", "night-shift nurse", "graduate student", "college athlete"]
       },
       {
         key: "medical-history", label: "Medical History",
@@ -397,12 +386,11 @@
     let categoryKeys = [];
     let solution = {};
     let clueSpecs = [];
-    let hints = [];
     let entries = {};
-    let hintIndex = 0;
     let hasCelebrated = false;
     const previousSelections = { demographic: "", history: "", outcome: "" };
     let previousNameSignature = "";
+    let selectedDifficulty = "medium";
     const selectedSpecialties = new Set(["neurology"]);
 
     function shuffled(items) {
@@ -414,6 +402,13 @@
       return copy;
     }
 
+    function inlineDiagnosis(diagnosis) {
+      const keepsInitialCapital = /^(?:Barrett\b|Clostridioides\b|Crohn\b|Graves\b|IgE\b|Parkinson\b|ST(?:-|\b))/;
+      return keepsInitialCapital.test(diagnosis)
+        ? diagnosis
+        : diagnosis.charAt(0).toLowerCase() + diagnosis.slice(1);
+    }
+
     function pickDifferent(pool, previousKey) {
       const choices = pool.filter(row => row.key !== previousKey);
       return choices[Math.floor(Math.random() * choices.length)];
@@ -421,6 +416,20 @@
 
     function makeNameClues() {
       const names = nameRow.assignment;
+      if (selectedDifficulty === "easy") {
+        return names.map((name, index) => ({
+          text: `${name[1]} had the ${slots[index].time} appointment.`,
+          test: () => fixed("name", name[0], index)
+        }));
+      }
+      if (selectedDifficulty === "hard") {
+        return [
+          { text: `${names[0][1]} was seen earlier than ${names[1][1]}.`, test: () => before("name", names[0][0], "name", names[1][0]) },
+          { text: `${names[1][1]} was seen immediately before ${names[2][1]}.`, test: () => adjacent("name", names[1][0], "name", names[2][0]) },
+          { text: `${names[2][1]} was seen earlier than ${names[3][1]}.`, test: () => before("name", names[2][0], "name", names[3][0]) },
+          { text: `${names[3][1]} was seen immediately before ${names[4][1]}.`, test: () => adjacent("name", names[3][0], "name", names[4][0]) }
+        ];
+      }
       return [
         { text: `${names[0][1]} was the first consultation of the day.`, test: () => fixed("name", names[0][0], 0) },
         { text: `${names[1][1]} was seen immediately before ${names[2][1]}.`, test: () => adjacent("name", names[1][0], "name", names[2][0]) },
@@ -436,6 +445,23 @@
     function makePlacementClues(row) {
       const ids = row.assignment.map(value => value[0]);
       const subjects = ids.map(id => subjectFor(row, id));
+      if (selectedDifficulty === "easy") {
+        return ids.map((id, index) => {
+          const name = nameRow.assignment[index];
+          return {
+            text: `${name[1]} was the ${subjects[index]}.`,
+            test: () => sameGroup([["name", name[0]], [row.key, id]])
+          };
+        });
+      }
+      if (selectedDifficulty === "hard") {
+        return [
+          { text: `The ${subjects[0]} was seen earlier than the ${subjects[1]}.`, test: () => before(row.key, ids[0], row.key, ids[1]) },
+          { text: `The ${subjects[1]} was seen immediately before the ${subjects[2]}.`, test: () => adjacent(row.key, ids[1], row.key, ids[2]) },
+          { text: `The ${subjects[2]} was seen earlier than the ${subjects[3]}.`, test: () => before(row.key, ids[2], row.key, ids[3]) },
+          { text: `The ${subjects[3]} was seen immediately before the ${subjects[4]}.`, test: () => adjacent(row.key, ids[3], row.key, ids[4]) }
+        ];
+      }
       const firstName = nameRow.assignment[0];
       const finalName = nameRow.assignment[4];
       return [
@@ -447,25 +473,56 @@
     }
 
     function makeOutcomeClues(row) {
+      if (selectedDifficulty === "hard") {
+        const subjects = row.assignment.map(outcome => outcomeSubject(row, outcome));
+        const ids = row.assignment.map(outcome => outcome[0]);
+        return [
+          { text: `The ${subjects[0]} belonged to an earlier appointment than the ${subjects[1]}.`, test: () => before(row.key, ids[0], row.key, ids[1]) },
+          { text: `The ${subjects[1]} was in the appointment immediately before the ${subjects[2]}.`, test: () => adjacent(row.key, ids[1], row.key, ids[2]) },
+          { text: `The ${subjects[2]} belonged to an earlier appointment than the ${subjects[3]}.`, test: () => before(row.key, ids[2], row.key, ids[3]) },
+          { text: `The ${subjects[3]} was in the appointment immediately before the ${subjects[4]}.`, test: () => adjacent(row.key, ids[3], row.key, ids[4]) }
+        ];
+      }
       return row.assignment.map((outcome, index) => {
         const name = nameRow.assignment[index];
         const clinicalCase = row.caseByValue[outcome[0]];
+        const diagnosis = inlineDiagnosis(clinicalCase.diagnosis);
         let text;
-        if (row.key === "diagnosis") {
-          text = `${name[1]} presented with ${clinicalCase.fact}; this determines the diagnosis in the grid.`;
+        if (selectedDifficulty === "easy" && row.key === "diagnosis") {
+          text = `The ${slots[index].time} patient presented with ${clinicalCase.fact}.`;
+        } else if (selectedDifficulty === "easy" && row.key === "treatment") {
+          const mechanism = window.TREATMENT_MECHANISMS[clinicalCase.id];
+          text = mechanism
+            ? `The ${slots[index].time} patient with ${diagnosis} received a therapy that ${mechanism}.`
+            : `The ${slots[index].time} patient with ${diagnosis} required its standard treatment.`;
+        } else if (selectedDifficulty === "easy") {
+          text = `The ${slots[index].time} patient with ${diagnosis} had its characteristic symptom.`;
+        } else if (row.key === "diagnosis") {
+          text = `${name[1]} presented with ${clinicalCase.fact}; use this to identify the diagnosis.`;
         } else if (row.key === "treatment") {
           const mechanism = window.TREATMENT_MECHANISMS[clinicalCase.id];
           text = mechanism
-            ? `${name[1]}'s ${clinicalCase.diagnosis} was treated with a therapy that ${mechanism}.`
-            : `${name[1]}'s ${clinicalCase.diagnosis} required its standard treatment.`;
+            ? `${name[1]}'s ${diagnosis} was treated with a therapy that ${mechanism}.`
+            : `${name[1]}'s ${diagnosis} required its standard treatment.`;
         } else {
-          text = `${name[1]}'s ${clinicalCase.diagnosis} produced the characteristic symptom in the grid.`;
+          text = `${name[1]}'s ${diagnosis} produced its characteristic symptom.`;
         }
         return {
           text,
           test: () => sameGroup([["name", name[0]], [row.key, outcome[0]]])
         };
       });
+    }
+
+    function outcomeSubject(row, outcome) {
+      const clinicalCase = row.caseByValue[outcome[0]];
+      const diagnosis = inlineDiagnosis(clinicalCase.diagnosis);
+      if (row.key === "diagnosis") return `diagnosis suggested by ${clinicalCase.fact}`;
+      if (row.key === "treatment") {
+        const mechanism = window.TREATMENT_MECHANISMS[clinicalCase.id];
+        return mechanism ? `therapy that ${mechanism}` : `standard treatment for ${diagnosis}`;
+      }
+      return `characteristic symptom of ${diagnosis}`;
     }
 
     function chooseSpecialtyCases() {
@@ -503,11 +560,40 @@
       };
     }
 
-    function updateSpecialtySummary() {
-      const labels = Array.from(selectedSpecialties).map(key => SPECIALTY_MODES[key].label);
-      document.getElementById("specialty-summary").textContent = labels.length <= 2
-        ? labels.join(" + ")
-        : `${labels.length} specialties selected`;
+    function demographicsFor(clinicalCase) {
+      return { minAge: 18, maxAge: 85, sex: "any", ...(window.CASE_DEMOGRAPHICS[clinicalCase.id] || {}) };
+    }
+
+    function chooseCompatibleNames(clinicalCases) {
+      const available = shuffled(namePool);
+      return clinicalCases.map(clinicalCase => {
+        const requiredSex = demographicsFor(clinicalCase).sex;
+        const candidates = available.filter(name => requiredSex === "any" || name[2] === requiredSex);
+        if (!candidates.length) throw new Error(`No compatible adult name for ${clinicalCase.id}`);
+        const selected = candidates[0];
+        available.splice(available.findIndex(name => name[0] === selected[0]), 1);
+        return selected;
+      });
+    }
+
+    function buildAgeRow(clinicalCases) {
+      const availableAges = [19, 22, 25, 28, 31, 35, 39, 43, 47, 52, 57, 62, 65, 68, 71, 74, 78, 82, 85];
+      const selectedAges = clinicalCases.map(clinicalCase => {
+        const { minAge, maxAge } = demographicsFor(clinicalCase);
+        const candidates = shuffled(availableAges.filter(age => age >= minAge && age <= maxAge));
+        if (!candidates.length) throw new Error(`No compatible adult age for ${clinicalCase.id}`);
+        const selected = candidates[0];
+        availableAges.splice(availableAges.indexOf(selected), 1);
+        return selected;
+      });
+      const values = selectedAges.map(age => [`age-${age}`, String(age)]);
+      return {
+        key: "age",
+        label: "Age",
+        values,
+        subjects: selectedAges.map(age => `${age}-year-old patient`),
+        assignment: values.slice()
+      };
     }
 
     function renderSpecialtySelector() {
@@ -519,20 +605,20 @@
             <span>${escapeHtml(specialty.label)}</span>
           </label>`)
         .join("");
-      updateSpecialtySummary();
     }
 
     function newPuzzle() {
       hasCelebrated = false;
       hideWinCelebration();
+      const clinicalCases = chooseSpecialtyCases();
       let selectedNames;
       let nameSignature;
       do {
-        selectedNames = shuffled(namePool).slice(0, slots.length);
+        selectedNames = chooseCompatibleNames(clinicalCases);
         nameSignature = selectedNames.map(name => name[0]).sort().join("|");
       } while (nameSignature === previousNameSignature);
       previousNameSignature = nameSignature;
-      nameRow = { key: "name", label: "Name", values: selectedNames, assignment: shuffled(selectedNames) };
+      nameRow = { key: "name", label: "Name", values: selectedNames, assignment: selectedNames.slice() };
 
       const demographicTemplate = pickDifferent(demographicRows, previousSelections.demographic);
       const historyTemplate = pickDifferent(historyRows, previousSelections.history);
@@ -541,9 +627,11 @@
       previousSelections.history = historyTemplate.key;
       previousSelections.outcome = outcomeKind.key;
 
-      const demographic = { ...demographicTemplate, assignment: shuffled(demographicTemplate.values) };
+      const demographic = demographicTemplate.key === "age"
+        ? buildAgeRow(clinicalCases)
+        : { ...demographicTemplate, assignment: shuffled(demographicTemplate.values) };
       const history = { ...historyTemplate, assignment: shuffled(historyTemplate.values) };
-      const outcome = buildOutcomeRow(outcomeKind, chooseSpecialtyCases());
+      const outcome = buildOutcomeRow(outcomeKind, clinicalCases);
 
       const activeRows = [nameRow, demographic, history, outcome];
       categories = Object.fromEntries(activeRows.map(row => [row.key, { label: row.label, options: shuffled(row.values) }]));
@@ -558,20 +646,8 @@
         ...makePlacementClues(history),
         ...makeOutcomeClues(outcome)
       ]);
-      hints = [
-        "Start with the two name clues that identify the first and final appointments, then resolve the adjacent pairs.",
-        `For ${demographic.label}, place the first and last matches before resolving the two adjacent pairs.`,
-        `For ${history.label}, the name clues anchor both ends of the row.`,
-        outcome.key === "diagnosis"
-          ? "Use the presentation pattern in each clinical clue to identify its diagnosis."
-          : `Use each named diagnosis to identify its characteristic ${outcome.key}.`
-      ];
       entries = emptyEntries();
-      hintIndex = 0;
-      document.getElementById("case-number").textContent = `Case ${Math.floor(100 + Math.random() * 900)}`;
-      const hintLine = document.getElementById("hint-line");
-      hintLine.textContent = "";
-      hintLine.classList.remove("is-visible");
+      document.getElementById("board-scroll").scrollLeft = 0;
       updateAll();
     }
 
@@ -593,6 +669,14 @@
       if (targetValue && targetValue !== value) return "contradicted";
       if (actualPosition < 0) return "unresolved";
       return actualPosition === targetPosition ? "satisfied" : "contradicted";
+    }
+
+    function before(fieldA, valueA, fieldB, valueB) {
+      const a = positionOf(fieldA, valueA);
+      const b = positionOf(fieldB, valueB);
+      if (a === slots.length - 1 || b === 0) return "contradicted";
+      if (a < 0 || b < 0) return "unresolved";
+      return a < b ? "satisfied" : "contradicted";
     }
 
     function adjacent(fieldA, valueA, fieldB, valueB) {
@@ -643,20 +727,33 @@
       }).join("");
     }
 
+    function rowIsCorrect(field) {
+      return slots.every(slot => entries[slot.id][field] === solution[slot.id][field]);
+    }
+
+    function columnIsCorrect(slotId) {
+      return categoryKeys.every(field => entries[slotId][field] === solution[slotId][field]);
+    }
+
     function renderBoard() {
       const duplicates = duplicateKeys();
-      const headers = slots.map(slot => `<th scope="col"><small>${escapeHtml(slot.position)}</small><strong>${escapeHtml(slot.time)}</strong></th>`).join("");
+      const correctColumns = new Set(slots.filter(slot => columnIsCorrect(slot.id)).map(slot => slot.id));
+      const headers = slots.map(slot => {
+        const correct = correctColumns.has(slot.id);
+        return `<th scope="col" class="${correct ? "correct-column" : ""}"><small>${escapeHtml(slot.position)}</small><strong>${escapeHtml(slot.time)}</strong>${correct ? '<span class="sr-only">Correctly completed.</span>' : ""}</th>`;
+      }).join("");
       const rows = categoryKeys.map(field => {
         const category = categories[field];
+        const correct = rowIsCorrect(field);
         const usedValues = new Set(slots.map(slot => entries[slot.id][field]).filter(Boolean));
         const cells = slots.map(slot => {
           const value = entries[slot.id][field];
           const key = `${slot.id}:${field}`;
-          return `<td><select data-slot="${slot.id}" data-field="${field}" class="${value ? "has-value" : ""}${duplicates.has(key) ? " duplicate" : ""}" aria-label="${escapeHtml(category.label)} for ${escapeHtml(slot.time)}">${optionMarkup(category.options, value, usedValues)}</select></td>`;
+          return `<td class="${correctColumns.has(slot.id) ? "correct-column" : ""}"><select data-slot="${slot.id}" data-field="${field}" class="${value ? "has-value" : ""}${duplicates.has(key) ? " duplicate" : ""}" aria-label="${escapeHtml(category.label)} for ${escapeHtml(slot.time)}">${optionMarkup(category.options, value, usedValues)}</select></td>`;
         }).join("");
-        return `<tr><th scope="row">${escapeHtml(category.label)}</th>${cells}</tr>`;
+        return `<tr class="${correct ? "correct-row" : ""}"><th scope="row">${escapeHtml(category.label)}${correct ? '<span class="sr-only">Correctly completed.</span>' : ""}</th>${cells}</tr>`;
       }).join("");
-      document.getElementById("board").innerHTML = `<thead><tr><th scope="col">Case ledger</th>${headers}</tr></thead><tbody>${rows}</tbody>`;
+      document.getElementById("board").innerHTML = `<thead><tr><th scope="col">Clinic appointments</th>${headers}</tr></thead><tbody>${rows}</tbody>`;
     }
 
     function renderClues() {
@@ -672,31 +769,26 @@
         return `<li class="${status}"><span class="clue-state" aria-hidden="true">${symbol}</span><span class="sr-only">${statusText}</span>${escapeHtml(clue.text)}</li>`;
       }).join("");
 
-      const satisfied = statuses.filter(status => status === "satisfied").length;
       const contradicted = statuses.filter(status => status === "contradicted").length;
       const duplicates = duplicateKeys().size;
       const filled = slots.reduce((total, slot) => total + categoryKeys.filter(field => entries[slot.id][field]).length, 0);
       const totalEntries = slots.length * categoryKeys.length;
       const solved = filled === totalEntries && !duplicates && statuses.every(status => status === "satisfied");
 
-      document.getElementById("progress-count").textContent = `${satisfied} of ${clueSpecs.length} clues`;
-      document.getElementById("progress-bar").style.width = `${(satisfied / clueSpecs.length) * 100}%`;
-      document.getElementById("solved-banner").classList.toggle("is-visible", solved);
       if (solved && !hasCelebrated) {
         hasCelebrated = true;
         showWinCelebration();
       }
 
       const statusElement = document.getElementById("game-status");
-      statusElement.className = `game-status${solved ? " is-solved" : contradicted || duplicates ? " is-error" : ""}`;
       if (solved) {
-        statusElement.innerHTML = `<strong>Case closed.</strong> All ${totalEntries} entries and ${clueSpecs.length} clues agree.`;
+        statusElement.textContent = "Puzzle solved.";
       } else if (duplicates) {
-        statusElement.innerHTML = `<strong>Duplicate entry.</strong> Each item may be used only once per row.`;
+        statusElement.textContent = "Duplicate entry. Each item may be used only once per row.";
       } else if (contradicted) {
-        statusElement.innerHTML = `<strong>${contradicted} clue ${contradicted === 1 ? "conflict" : "conflicts"}.</strong> Red clues contradict the current grid.`;
+        statusElement.textContent = "One or more clues conflict with the current choices.";
       } else {
-        statusElement.innerHTML = `<strong>${filled} of ${totalEntries} entries.</strong> ${satisfied} clues automatically applied.`;
+        statusElement.textContent = "Choices updated.";
       }
     }
 
@@ -722,6 +814,27 @@
       pop.setAttribute("aria-hidden", "true");
     }
 
+    const headerPanels = [
+      { button: document.getElementById("how-to-button"), panel: document.getElementById("how-to-panel") },
+      { button: document.getElementById("settings-button"), panel: document.getElementById("settings-panel") }
+    ];
+
+    function closeHeaderPanels() {
+      for (const { button, panel } of headerPanels) {
+        panel.hidden = true;
+        button.setAttribute("aria-expanded", "false");
+      }
+    }
+
+    function toggleHeaderPanel(button, panel) {
+      const shouldOpen = panel.hidden;
+      closeHeaderPanels();
+      if (shouldOpen) {
+        panel.hidden = false;
+        button.setAttribute("aria-expanded", "true");
+      }
+    }
+
     function updateAll() {
       renderBoard();
       renderClues();
@@ -734,17 +847,6 @@
       updateAll();
     });
 
-    document.getElementById("hint-button").addEventListener("click", () => {
-      const line = document.getElementById("hint-line");
-      line.textContent = `Hint ${hintIndex + 1}: ${hints[hintIndex]}`;
-      line.classList.add("is-visible");
-      hintIndex = (hintIndex + 1) % hints.length;
-    });
-
-    document.getElementById("reset-button").addEventListener("click", () => {
-      newPuzzle();
-    });
-
     document.getElementById("win-close").addEventListener("click", hideWinCelebration);
 
     document.getElementById("win-new").addEventListener("click", () => {
@@ -755,9 +857,22 @@
       if (event.target === event.currentTarget) hideWinCelebration();
     });
 
+    document.getElementById("how-to-button").addEventListener("click", () => {
+      toggleHeaderPanel(document.getElementById("how-to-button"), document.getElementById("how-to-panel"));
+    });
+
+    document.getElementById("settings-button").addEventListener("click", () => {
+      toggleHeaderPanel(document.getElementById("settings-button"), document.getElementById("settings-panel"));
+    });
+
+    document.addEventListener("click", event => {
+      if (!event.target.closest || !event.target.closest(".top-actions")) closeHeaderPanels();
+    });
+
     document.addEventListener("keydown", event => {
-      if (event.key === "Escape" && document.getElementById("win-pop").classList.contains("is-visible")) {
-        hideWinCelebration();
+      if (event.key === "Escape") {
+        closeHeaderPanels();
+        if (document.getElementById("win-pop").classList.contains("is-visible")) hideWinCelebration();
       }
     });
 
@@ -774,21 +889,19 @@
         return;
       }
 
-      updateSpecialtySummary();
+      newPuzzle();
+    });
+
+    document.getElementById("difficulty-options").addEventListener("change", event => {
+      const radio = event.target.closest('input[name="difficulty"]');
+      if (!radio || !radio.checked || radio.value === selectedDifficulty) return;
+      selectedDifficulty = radio.value;
       newPuzzle();
     });
 
     document.getElementById("select-all-specialties").addEventListener("click", () => {
       Object.keys(SPECIALTY_MODES).forEach(key => selectedSpecialties.add(key));
       renderSpecialtySelector();
-      newPuzzle();
-    });
-
-    document.getElementById("neurology-only").addEventListener("click", () => {
-      selectedSpecialties.clear();
-      selectedSpecialties.add("neurology");
-      renderSpecialtySelector();
-      document.getElementById("specialty-menu").open = false;
       newPuzzle();
     });
 

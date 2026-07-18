@@ -5,10 +5,10 @@ window.SPECIALTY_MODES = {
     label: "Neurology",
     cases: [
       { id: "neuro-tn", diagnosis: "Trigeminal neuralgia", treatment: "Carbamazepine", symptom: "Triggerable electric facial pain", fact: "recurrent unilateral shock-like facial pain triggered by chewing" },
-      { id: "neuro-cae", diagnosis: "Childhood absence epilepsy", treatment: "Ethosuximide", symptom: "Brief staring spells", fact: "hyperventilation-provoked staring with generalized 3-Hz spike-and-wave" },
+      { id: "neuro-parkinson", diagnosis: "Parkinson disease", treatment: "Carbidopa-levodopa", symptom: "Bradykinesia with resting tremor", fact: "asymmetric resting tremor, rigidity, bradykinesia, and a shuffling gait" },
       { id: "neuro-tle", diagnosis: "Temporal lobe epilepsy", treatment: "Levetiracetam", symptom: "Epigastric aura with automatisms", fact: "a rising epigastric sensation, lip smacking, and mesial temporal sclerosis" },
       { id: "neuro-rrms", diagnosis: "Relapsing-remitting multiple sclerosis", treatment: "Ocrelizumab", symptom: "Optic neuritis with INO", fact: "optic neuritis, internuclear ophthalmoplegia, Dawson fingers, and CSF oligoclonal bands" },
-      { id: "neuro-jme", diagnosis: "Juvenile myoclonic epilepsy", treatment: "Valproate", symptom: "Morning myoclonic jerks", fact: "morning jerks after sleep deprivation with generalized polyspike-and-wave" }
+      { id: "neuro-mg", diagnosis: "Myasthenia gravis", treatment: "Pyridostigmine", symptom: "Fatigable ptosis and diplopia", fact: "fluctuating ocular and bulbar weakness that worsens with repeated use" }
     ]
   },
   cardiology: {
@@ -111,16 +111,6 @@ window.SPECIALTY_MODES = {
       { id: "psych-panic", diagnosis: "Panic disorder", treatment: "Cognitive behavioral therapy with sertraline", symptom: "Recurrent unexpected panic attacks", fact: "sudden recurrent episodes of intense fear with autonomic symptoms and anticipatory worry" }
     ]
   },
-  pediatrics: {
-    label: "Pediatrics",
-    cases: [
-      { id: "peds-croup", diagnosis: "Viral croup", treatment: "Dexamethasone", symptom: "Barking cough with inspiratory stridor", fact: "a young child with hoarseness, barking cough, and inspiratory stridor" },
-      { id: "peds-bronch", diagnosis: "Viral bronchiolitis", treatment: "Supportive hydration and oxygen when needed", symptom: "Infant wheeze after coryza", fact: "an infant with rhinorrhea followed by diffuse wheeze, crackles, and increased work of breathing" },
-      { id: "peds-aom", diagnosis: "Acute otitis media", treatment: "High-dose amoxicillin", symptom: "Ear pain with a bulging tympanic membrane", fact: "acute ear pain, middle-ear effusion, and a bulging erythematous tympanic membrane" },
-      { id: "peds-kawasaki", diagnosis: "Kawasaki disease", treatment: "Intravenous immunoglobulin plus aspirin", symptom: "Prolonged fever with mucocutaneous inflammation", fact: "five days of fever with conjunctivitis, oral change, rash, extremity change, and cervical adenopathy" },
-      { id: "peds-intuss", diagnosis: "Intussusception", treatment: "Air enema reduction", symptom: "Intermittent colicky pain with currant-jelly stool", fact: "episodic severe abdominal pain, a sausage-shaped mass, and bloody mucus stool" }
-    ]
-  },
   "obstetrics-gynecology": {
     label: "Obstetrics & Gynecology",
     cases: [
@@ -218,7 +208,7 @@ window.SPECIALTY_MODES = {
       { id: "rad-epidural", diagnosis: "Traumatic epidural hematoma", treatment: "Emergency neurosurgical evacuation", symptom: "A lucid interval followed by rapid decline", fact: "a biconvex hyperdense extra-axial collection that does not cross cranial sutures" },
       { id: "rad-dissection", diagnosis: "Acute aortic dissection on CT angiography", treatment: "Intravenous beta blockade and urgent surgical assessment", symptom: "Tearing chest pain radiating to the back", fact: "an intimal flap dividing true and false aortic lumens" },
       { id: "rad-volvulus", diagnosis: "Sigmoid volvulus", treatment: "Endoscopic detorsion followed by definitive surgery", symptom: "Marked distention with obstipation", fact: "a coffee-bean configuration of a massively dilated sigmoid colon" },
-      { id: "rad-brodie", diagnosis: "Subacute osteomyelitis with Brodie abscess", treatment: "Culture-directed antibiotics with debridement when indicated", symptom: "Persistent focal bone pain", fact: "a well-defined metaphyseal lytic lesion with a rim of sclerosis and surrounding marrow edema" }
+      { id: "rad-vertebral", diagnosis: "Vertebral osteomyelitis on MRI", treatment: "Culture-directed antibiotics with debridement when indicated", symptom: "Persistent focal back pain with fever", fact: "adjacent vertebral endplate and disc enhancement with surrounding marrow edema" }
     ]
   },
   pathology: {
@@ -285,10 +275,10 @@ window.SPECIALTY_MODES = {
 
 window.TREATMENT_MECHANISMS = {
   "neuro-tn": "stabilizes the inactivated state of voltage-gated sodium channels, reducing high-frequency neuronal firing",
-  "neuro-cae": "blocks thalamic T-type calcium channels and suppresses the oscillations that produce absence seizures",
+  "neuro-parkinson": "replaces striatal dopamine while peripheral decarboxylase inhibition increases central availability and limits peripheral effects",
   "neuro-tle": "binds synaptic vesicle protein SV2A and modulates neurotransmitter release",
   "neuro-rrms": "targets CD20-positive B cells and depletes a population that contributes to inflammatory demyelination",
-  "neuro-jme": "increases inhibitory GABA signaling while also limiting voltage-gated sodium and T-type calcium currents",
+  "neuro-mg": "reversibly inhibits acetylcholinesterase and increases acetylcholine at the neuromuscular junction",
 
   "card-stemi": "mechanically reopens the occluded coronary artery and restores myocardial perfusion",
   "card-hfref": "combines neprilysin inhibition with angiotensin II receptor blockade",
@@ -346,10 +336,6 @@ window.TREATMENT_MECHANISMS = {
   "psych-schiz": "antagonizes dopamine D2 and serotonin 5-HT2A receptors",
   "psych-panic": "inhibits the serotonin transporter while exposure-based therapy reduces fear conditioning",
 
-  "peds-croup": "activates glucocorticoid receptors and reduces inflammatory subglottic edema",
-  "peds-aom": "binds bacterial penicillin-binding proteins and inhibits cell-wall cross-linking",
-  "peds-kawasaki": "combines broad immunomodulation with cyclooxygenase inhibition and antiplatelet activity",
-
   "obgyn-ectopic": "inhibits dihydrofolate reductase and stops DNA synthesis in rapidly dividing trophoblastic tissue",
   "obgyn-preeclampsia": "reduces central neuromuscular excitability to prevent seizures while delivery removes the disease-driving placenta",
   "obgyn-endometriosis": "suppresses gonadotropin-driven ovulation and stabilizes hormonally responsive endometrial tissue",
@@ -390,7 +376,7 @@ window.TREATMENT_MECHANISMS = {
 
   "rad-pe": "inhibits the coagulation cascade to prevent clot extension after the embolus is identified",
   "rad-dissection": "reduces heart rate and contractility, lowering aortic shear stress while definitive repair is arranged",
-  "rad-brodie": "eradicates the cultured organism while debridement removes devitalized infected bone when necessary",
+  "rad-vertebral": "eradicates the cultured organism while debridement removes devitalized infected tissue when necessary",
 
   "path-apl": "binds the abnormal retinoic-acid receptor fusion protein and permits malignant promyelocytes to differentiate",
   "path-gpa": "depletes CD20-positive B cells while glucocorticoids rapidly suppress inflammatory transcription",
@@ -406,4 +392,69 @@ window.TREATMENT_MECHANISMS = {
   "fm-hld": "competitively inhibits HMG-CoA reductase and increases hepatic LDL-receptor expression",
   "fm-tobacco": "partially stimulates alpha-4-beta-2 nicotinic receptors, reducing withdrawal while blocking nicotine reinforcement",
   "fm-migraine": "agonizes serotonin 5-HT1B and 5-HT1D receptors, constricting cranial vessels and reducing trigeminal neuropeptide release"
+};
+
+// Adult age ranges and sex-linked constraints used when pairing cases with patients.
+// Cases not listed here use the adult default of 18–85 years and either sex.
+window.CASE_DEMOGRAPHICS = {
+  "neuro-tn": { minAge: 40 },
+  "neuro-parkinson": { minAge: 50 },
+  "neuro-rrms": { maxAge: 60 },
+  "neuro-mg": { maxAge: 75 },
+  "card-stemi": { minAge: 35 },
+  "card-hfref": { minAge: 35 },
+  "card-af": { minAge: 45 },
+  "pulm-copd": { minAge: 40 },
+  "pulm-osa": { minAge: 30 },
+  "gi-he": { minAge: 30 },
+  "renal-hyperk": { minAge: 30 },
+  "endo-hyperpara": { minAge: 35 },
+  "heme-aml": { minAge: 30 },
+  "heme-myeloma": { minAge: 50 },
+  "id-cdiff": { minAge: 30 },
+  "id-endo": { minAge: 25 },
+  "rheum-gout": { minAge: 30 },
+  "rheum-gca": { minAge: 50 },
+  "rheum-as": { maxAge: 50 },
+  "derm-zoster": { minAge: 50 },
+  "derm-melanoma": { minAge: 25 },
+  "psych-schiz": { maxAge: 50 },
+  "obgyn-ectopic": { minAge: 18, maxAge: 45, sex: "female" },
+  "obgyn-preeclampsia": { minAge: 18, maxAge: 45, sex: "female" },
+  "obgyn-endometriosis": { minAge: 18, maxAge: 50, sex: "female" },
+  "obgyn-pid": { minAge: 18, maxAge: 50, sex: "female" },
+  "obgyn-pph": { minAge: 18, maxAge: 45, sex: "female" },
+  "ortho-hip": { minAge: 65 },
+  "ortho-acl": { minAge: 18, maxAge: 45 },
+  "ortho-carpal": { minAge: 30 },
+  "ortho-oa": { minAge: 45 },
+  "oph-angle": { minAge: 40 },
+  "oph-detach": { minAge: 40 },
+  "oph-glaucoma": { minAge: 40 },
+  "ent-bppv": { minAge: 40 },
+  "uro-bph": { minAge: 50, sex: "male" },
+  "uro-prostatitis": { minAge: 18, maxAge: 70, sex: "male" },
+  "uro-torsion": { minAge: 18, maxAge: 40, sex: "male" },
+  "uro-ed": { minAge: 30, sex: "male" },
+  "rad-dissection": { minAge: 40 },
+  "rad-volvulus": { minAge: 50 },
+  "rad-vertebral": { minAge: 40 },
+  "path-dlbcl": { minAge: 40 },
+  "path-hsil": { minAge: 21, maxAge: 65, sex: "female" },
+  "path-barrett": { minAge: 40 },
+  "pmr-cervical": { minAge: 30 },
+  "pmr-stenosis": { minAge: 50 },
+  "geri-delirium": { minAge: 65 },
+  "geri-polypharmacy": { minAge: 65 },
+  "geri-frailty": { minAge: 65 },
+  "geri-falls": { minAge: 65 },
+  "geri-pressure": { minAge: 65 },
+  "ns-sdh": { minAge: 60 },
+  "ns-nph": { minAge: 65 },
+  "ns-cervical": { minAge: 50 },
+  "cc-cardiogenic": { minAge: 40 },
+  "fm-htn": { minAge: 30 },
+  "fm-t2dm": { minAge: 30 },
+  "fm-hld": { minAge: 35 },
+  "fm-migraine": { maxAge: 55 }
 };

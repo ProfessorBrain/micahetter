@@ -167,7 +167,7 @@ function DeductionGrid({
         </div>
         <span className="grid-instruction">tap: × → ✓ → clear</span>
       </div>
-      <div className="matrix-scroll" tabIndex={0} aria-label={`${category.label} deduction grid; scroll horizontally if needed`}>
+      <div className="matrix-scroll" tabIndex={0} aria-label={`${category.label} deduction table; scroll horizontally if needed`}>
         <table className="logic-matrix">
           <thead>
             <tr>
