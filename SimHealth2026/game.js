@@ -6,6 +6,9 @@
   const modalBackdrop = $("#modal-backdrop");
   const modalContent = $("#modal-content");
   const endingStorageKey = "hellthcare-continuous-endings";
+  const hospitalName = "Community Hospital Medical Center";
+  const localPaperName = "The Community Chronicle";
+  const startingCash = 20;
 
   const metricMeta = {
     workforce: { label: "Hospital team", short: "Staff" },
@@ -69,7 +72,7 @@
     insurer: {
       initials: "BH",
       name: "Bret Hallow",
-      role: "North Meridian payer liaison",
+      role: "AmazingCare payer liaison",
       theme: "antagonist",
     },
     casework: {
@@ -105,8 +108,9 @@
       status: "INHERITED STABILITY",
       adviser: "nurse",
       title: "Nothing is on fire.",
-      situation: "You take over with all 60 beds open, a veteran group of department leaders, and $26 million in unrestricted cash. Vacancies are low, the operating-room schedule is full, and the case management team can usually find a safe discharge placement before noon.",
+      situation: `You take over with all 60 beds open, a veteran group of department leaders, and $${startingCash} million in unrestricted cash. Vacancies are low, the operating-room schedule is full, and the case management team can usually find a safe discharge placement before noon.`,
       pressure: "For now, the hospital collects most commercial claims within 45 days and makes payroll without borrowing. Department heads have submitted a modest wish list: more weekend therapy coverage, two additional environmental services positions, and replacement monitors for the step-down unit.",
+      briefingQuote: "You have a good team and enough room to make it better. Give me weekend therapy coverage, two more people in environmental services, and those replacement monitors, and we can keep ordinary problems ordinary.",
       baseRevenue: 29.4,
       baseExpense: 27.1,
       decay: { workforce: 1, care: 1, trust: 0, flow: 1 },
@@ -158,10 +162,11 @@
       title: "Still a hospital. Mostly.",
       situation: "Admissions finish the quarter six percent above forecast. The additional volume is manageable, but nurses are picking up more overtime and weekend therapy coverage is thin enough to delay a few Monday discharges.",
       pressure: "Two commercial insurers have quietly extended the time they take to pay clean claims. The state has also issued a 612-page billing manual with new documentation rules, so the revenue team is moving experienced staff away from collections to review charts and resubmit forms.",
+      briefingQuote: "The extra admissions are not the problem yet. The problem is that two insurers have decided a clean claim can spend another month sightseeing. I can move more people into billing review, but then nobody is left to collect the money they already owe us.",
       baseRevenue: 29.8,
       baseExpense: 28.7,
       decay: { workforce: 2, care: 1, trust: 1, flow: 2 },
-      ticker: "NORTH MERIDIAN: 97% OF CLEAN CLAIMS EVENTUALLY RESEMBLE PAYMENT",
+      ticker: "AMAZINGCARE: 97% OF CLEAN CLAIMS EVENTUALLY RESEMBLE PAYMENT",
       choices: [
         {
           mode: "care",
@@ -207,8 +212,9 @@
       status: "PAYMENT WEATHER",
       adviser: "insurer",
       title: "The care happened. Payment did not.",
-      situation: "North Meridian has placed $8.6 million in inpatient claims under extended review. The care was authorized, delivered, documented, and billed; the payer is now requesting records that were included with the original claims.",
-      pressure: "The hospital has already paid the physicians, nurses, technicians, and suppliers involved in those stays. Collections are falling behind payroll, and North Meridian's account representative says the hospital should expect another 60 to 90 days before the reviews are complete.",
+      situation: "AmazingCare has placed $8.6 million in inpatient claims under extended review. The care was authorized, delivered, documented, and billed; the payer is now requesting records that were included with the original claims.",
+      pressure: "The hospital has already paid the physicians, nurses, technicians, and suppliers involved in those stays. Collections are falling behind payroll, and AmazingCare's account representative says the hospital should expect another 60 to 90 days before the reviews are complete.",
+      briefingQuote: "Before you ask, yes, the stays were authorized. Extended review is not a denial; it is a careful process that allows AmazingCare another 60 to 90 days to request the same records. You may want to arrange your payroll accordingly.",
       baseRevenue: 27.1,
       baseExpense: 29.6,
       decay: { workforce: 4, care: 3, trust: 2, flow: 4 },
@@ -224,7 +230,7 @@
           debt: 0.3,
           effects: { workforce: 4, care: 5, trust: 5, flow: 4 },
           adviser: "nurse",
-          quote: "Your appeal team recovered more claims than expected. North Meridian will review whether the appeal process is being used too successfully.",
+          quote: "Your appeal team recovered more claims than expected. AmazingCare will review whether the appeal process is being used too successfully.",
         },
         {
           mode: "balance",
@@ -236,7 +242,7 @@
           debt: 1.2,
           effects: { workforce: 1, care: 1, trust: -2, flow: 1 },
           adviser: "finance",
-          quote: "Borrowing is a hospital financing decision. North Meridian remains committed to reviewing payment when review is complete.",
+          quote: "Borrowing is a hospital financing decision. AmazingCare remains committed to reviewing payment when review is complete.",
         },
         {
           mode: "extract",
@@ -258,8 +264,9 @@
       status: "POST-ACUTE GRIDLOCK",
       adviser: "casework",
       title: "Everyone is ready to leave. Nobody can.",
-      situation: "Twenty inpatients no longer need acute hospital care. Therapy and case management recommend skilled nursing for fourteen of them and inpatient rehabilitation for six. North Meridian denied every placement, including several facilities it had already identified as in-network.",
+      situation: "Twenty inpatients no longer need acute hospital care. Therapy and case management recommend skilled nursing for fourteen of them and inpatient rehabilitation for six. AmazingCare denied every placement, including several facilities it had already identified as in-network.",
       pressure: "Those patients remain in staffed hospital beds while appeals are filed. Eleven admitted patients are waiting in the emergency department, three on hallway stretchers, and two nearby nursing facilities have stopped accepting referrals after cuts to the state's payment rates.",
+      briefingQuote: "I can move these patients out of acute beds if somebody will approve somewhere safe for them to go. We can discharge them home on paper today, but paper does not provide wound care, a wheelchair ramp, or a daughter who can lift two hundred pounds.",
       baseRevenue: 26.4,
       baseExpense: 31.3,
       decay: { workforce: 7, care: 6, trust: 5, flow: 12 },
@@ -311,6 +318,7 @@
       title: "Payroll has discovered inflation.",
       situation: "The annual wage review shows the hospital is falling behind the local market for nurses, imaging technicians, therapists, pharmacists, and environmental services staff. Open positions are taking longer to fill, and agency shifts now cost almost twice as much as regular staff hours.",
       pressure: "Keeping the current workforce will raise labor costs by roughly eleven percent. Commercial insurers are offering an average rate increase of 1.8 percent, and the state program has not changed its hospital rates at all.",
+      briefingQuote: "You can call sanitation a support service if you want. Infection control calls it the reason we can open a room again. My crew can keep doing this work, but not for last year's wages while every agency in town offers more.",
       baseRevenue: 27.6,
       baseExpense: 34.8,
       decay: { workforce: 10, care: 8, trust: 5, flow: 8 },
@@ -362,6 +370,7 @@
       title: "The state would like its money back.",
       situation: "The state Medicaid program has reprocessed last year's claims under a new interpretation of its payment rules and removed $7.2 million from the hospital's current remittance. The notice arrived as a scanned attachment in the provider portal, without a patient-level claim list.",
       pressure: "Finance has 30 days to identify the affected claims and file an appeal. The state budget already counts the recoupment as savings, so even a successful appeal may not return the cash before the next two payroll dates.",
+      briefingQuote: "You have 30 days to appeal the recoupment. I cannot provide the patient-level claim list, and the portal cannot accept a file larger than ten megabytes. A successful appeal may restore the funds after the state has finished using them as savings.",
       baseRevenue: 25.2,
       baseExpense: 36.9,
       decay: { workforce: 10, care: 9, trust: 7, flow: 10 },
@@ -411,12 +420,13 @@
       status: "DEBT SPIRAL",
       adviser: "advocate",
       title: "The interest is now a department.",
-      situation: "The bank has renewed the hospital's credit line at a higher interest rate and added monthly cash-balance requirements. At the same time, two community clinics have closed, sending more uninsured and underinsured patients to St. Dymphna's emergency department.",
+      situation: `The bank has renewed the hospital's credit line at a higher interest rate and added monthly cash-balance requirements. At the same time, two community clinics have closed, sending more uninsured and underinsured patients to ${hospitalName}'s emergency department.`,
       pressure: "Patient volume is up, but a larger share of that care will never be fully paid. The hospital is borrowing to cover ordinary operations, and the bank wants a turnaround plan that reduces expenses before it will release the next portion of the credit line.",
+      briefingQuote: "More people are coming here because the clinics they used are gone. If you put the hospital's full charges on them, you will collect a fraction of the bill and ruin families for the balance. The bank will still call that a collection strategy.",
       baseRevenue: 26.1,
       baseExpense: 40.7,
       decay: { workforce: 13, care: 11, trust: 9, flow: 13 },
-      ticker: "BOND DESK: ST. DYMPHNA DOWNGRADED FROM CONCERNING TO CONTENT OPPORTUNITY",
+      ticker: `BOND DESK: ${hospitalName.toUpperCase()} DOWNGRADED FROM CONCERNING TO CONTENT OPPORTUNITY`,
       choices: [
         {
           mode: "care",
@@ -464,6 +474,7 @@
       title: "There is no good line left.",
       situation: "The latest forecast shows fewer than twenty days of cash on hand. The hospital still provides the area's only emergency department, inpatient psychiatric service, and obstetric unit, and the clinical teams continue to meet their quality targets despite months of vacancies and discharge delays.",
       pressure: "The board wants a plan that can keep the doors open without violating the bank's loan terms. Every remaining option involves closing services, reducing staffed beds, taking on more debt, or preparing an orderly shutdown; a closure vote has been added to the same meeting agenda.",
+      briefingQuote: "The staff can keep patients safe through a smaller operation or an orderly shutdown. What they cannot do is discover after every finance meeting that another unit vanished. I need you to decide what this hospital will still promise people tomorrow morning.",
       baseRevenue: 25.4,
       baseExpense: 44.9,
       decay: { workforce: 16, care: 14, trust: 11, flow: 16 },
@@ -512,6 +523,8 @@
   const endings = {
     parachute: {
       code: "ENDING 06 / 06 // YOU WIN",
+      verdict: "PRIVATE EQUITY VICTORY",
+      headline: "HOSPITAL SOLD; EXECUTIVE DECLARES SUCCESS FROM AIRPORT LOUNGE",
       title: "The Golden Parachute",
       kicker: "YOUR CAREER HAS NEVER BEEN HEALTHIER. THE HOSPITAL HAS BEEN PRONOUNCED AN ASSET.",
       body: "Atrium Vulture Partners pays you an $18 million exit award, borrows against the hospital, sells the building, cuts staffed beds, outsources the workforce, and raises every price it can locate. Patients now travel forty-seven miles. You join a panel on courageous leadership.",
@@ -519,6 +532,8 @@
     },
     beloved: {
       code: "ENDING 01 / 06 // CLOSED",
+      verdict: "CLOSED WITH CARE INTACT",
+      headline: "COMMUNITY MOURNS HOSPITAL THAT COULD NOT BILL ITS WAY OUT",
       title: "Beloved & Bankrupt",
       kicker: "THE PATIENTS TRUSTED YOU. THE BONDHOLDERS DID NOT.",
       body: "You protected staff, safe discharges, and necessary services until the arithmetic exhausted the building. The hospital closes with every patient transferred and every final paycheck cleared. The community holds a candlelight vigil outside an urgent-care franchise.",
@@ -526,6 +541,8 @@
     },
     efficient: {
       code: "ENDING 02 / 06 // TECHNICALLY OPEN",
+      verdict: "PROFITABLE ON PAPER",
+      headline: "FULL-SERVICE HOSPITAL REOPENS AS IMAGING CENTER WITH AMBULANCE BAY",
       title: "The Efficient Ruin",
       kicker: "MARGIN IMPROVED. THE HOSPITAL DISAPPEARED.",
       body: "You cut services, raised prices, reduced staffed beds, and preserved a cash balance long enough to leave behind a profitable imaging center with an emergency-department-shaped legal obligation attached.",
@@ -533,6 +550,8 @@
     },
     payroll: {
       code: "ENDING 03 / 06 // INSOLVENT",
+      verdict: "CASH FAILURE",
+      headline: "INSURERS RELEASE PAYMENT TO HOSPITAL THAT CLOSED LAST MONTH",
       title: "The Last Payroll",
       kicker: "THE MONEY ARRIVED AFTER THE HOSPITAL LEFT.",
       body: "Cash reaches the basement before the final winter. Three insurers eventually release payment on the claims, addressing the checks to an institution that no longer exists.",
@@ -540,16 +559,20 @@
     },
     abandoned: {
       code: "ENDING 04 / 06 // EMPTY",
+      verdict: "TRUST FAILURE",
+      headline: "HOSPITAL REMAINS OPEN; COMMUNITY CONTINUES GOING ELSEWHERE",
       title: "The Empty Lobby",
       kicker: "THE DOORS ARE OPEN. NOBODY BELIEVES YOU.",
-      body: "The hospital remains nominally alive after pricing and cuts push trust and care below recoverable levels. Patients avoid it, staff leave it, and North Meridian praises the decline in unnecessary utilization.",
+      body: "The hospital remains nominally alive after pricing and cuts push trust and care below recoverable levels. Patients avoid it, staff leave it, and AmazingCare praises the decline in unnecessary utilization.",
       epitaph: "A hospital without trust is a building with billing privileges.",
     },
     managed: {
       code: "ENDING 05 / 06 // CLOSED AS PLANNED",
+      verdict: "ORDERLY FAILURE",
+      headline: "BOARD APPROVES ORDERLY CLOSURE; NEIGHBORHOOD ADVISED TO PLAN AROUND IT",
       title: "Managed Decline",
       kicker: "EVERY COMPROMISE BOUGHT TIME. TIME SENT AN INVOICE.",
-      body: "You balanced, borrowed, appealed, cross-subsidized, and cut around the edges. St. Dymphna lasts two years before a carefully managed closure removes the last full-service hospital from the neighborhood.",
+      body: `You balanced, borrowed, appealed, cross-subsidized, and cut around the edges. ${hospitalName} lasts two years before a carefully managed closure removes the last full-service hospital from the neighborhood.`,
       epitaph: "No single decision killed it. That was the elegance of the arrangement.",
     },
   };
@@ -557,7 +580,7 @@
   function freshState() {
     return {
       period: 0,
-      cash: 26,
+      cash: startingCash,
       priceIndex: 100,
       patientDebt: 3.2,
       metrics: { workforce: 84, care: 88, trust: 79, flow: 76 },
@@ -712,16 +735,23 @@
     const period = periods[Math.min(state.period, periods.length - 1)];
     const grade = hospitalGrade();
     const briefingAdviser = advisers[period.adviser];
+    const briefingSeverity = state.period === 0
+      ? { className: "update-advisory", label: "Planning note" }
+      : state.period === 1
+        ? { className: "update-caution", label: "Watch item" }
+        : { className: "update-bad-news", label: "Operational risk" };
     gameView.innerHTML = `<section class="game-screen streamlined-game">
       <div class="streamlined-layout">
         <aside class="status-sidebar" aria-label="Hospital data">
           ${renderSideVitals()}
           ${renderLedger(period)}
-          <section class="side-section local-press">
-            <div class="side-heading">Local paper</div>
-            <p>${period.ticker.replace(/^[^:]+:\s*/, "")}</p>
+          <section class="side-section local-press" aria-label="Local newspaper">
+            <div class="newspaper-masthead">${localPaperName}</div>
+            <div class="newspaper-dateline"><span>Community edition &middot; ${periodLabel(state.period)}</span><span>25&cent;</span></div>
+            <p class="newspaper-headline">${period.ticker.replace(/^[^:]+:\s*/, "")}</p>
+            <div class="newspaper-footer"><span>Local desk</span><span>Page A1</span></div>
           </section>
-          <details class="side-section side-history">
+          <details class="side-section side-history" open>
             <summary>Previous reports <span>${state.history.length}</span></summary>
             <div>${renderHistory()}</div>
           </details>
@@ -737,13 +767,19 @@
           </header>
 
           <div class="hospital-update">
-            <div class="update-speaker">
-              <div class="adviser-portrait update-portrait ${briefingAdviser.theme} character-${period.adviser}" aria-hidden="true"><span>${briefingAdviser.initials}</span></div>
-              <p><strong>${briefingAdviser.name}</strong><br>${briefingAdviser.role}</p>
-            </div>
             <div class="update-copy">
-              <p>${period.situation}</p>
-              <p class="update-bad-news"><strong>Operational risk:</strong> ${period.pressure}</p>
+              <div class="update-message update-system-message">
+                <p><strong>Hospital status:</strong> ${period.situation}</p>
+              </div>
+              <div class="character-quote-row">
+                <div class="adviser-portrait update-portrait ${briefingAdviser.theme} character-${period.adviser}" aria-hidden="true"><span>${briefingAdviser.initials}</span></div>
+                <div class="character-quote-content">
+                  <p class="quote-speaker"><strong>${briefingAdviser.name}</strong><br>${briefingAdviser.role}</p>
+                  <blockquote class="update-message update-character-message update-risk ${briefingSeverity.className}">
+                    <p><strong>${briefingSeverity.label}:</strong> &ldquo;${period.briefingQuote}&rdquo;</p>
+                  </blockquote>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -859,26 +895,65 @@
     const ending = state.ending;
     const totalRevenue = state.history.reduce((sum, item) => sum + item.revenue, 0);
     const totalExpense = state.history.reduce((sum, item) => sum + item.expense, 0);
-    gameView.innerHTML = `<section class="ending-screen">
-      <div class="ending-main">
-        <p class="eyebrow">${ending.code} // ST. DYMPHNA MEMORIAL</p>
-        <h1>${ending.title}</h1>
-        <h2>${ending.kicker}</h2>
-        <p>${ending.body}</p>
-        <blockquote>${ending.epitaph}</blockquote>
-        ${renderVitals(true)}
-        <details class="compact-audit">
-          <summary>Open final two-year audit</summary>
-          <div class="ending-ledger">
-            <span>Total money in <strong>${money(totalRevenue)}</strong></span>
-            <span>Total money out <strong>${money(totalExpense)}</strong></span>
-            <span>Final cash <strong>${money(state.cash)}</strong></span>
-            <span>Final patient debt <strong>${money(state.patientDebt)}</strong></span>
+    const totalNet = totalRevenue - totalExpense;
+    gameView.innerHTML = `<section class="ending-screen ending-${ending.id}">
+      <header class="ending-titlebar">
+        <span>${hospitalName.toUpperCase()} // FINAL BOARD REPORT</span>
+        <strong>FILE CLOSED</strong>
+      </header>
+
+      <div class="ending-layout">
+        <article class="ending-main ending-report">
+          <div class="ending-code-row">
+            <span>${ending.code}</span>
+            <strong>${ending.verdict}</strong>
           </div>
-        </details>
-        <p class="discovered-note">ENDING ${discoveredCount()} OF ${Object.keys(endings).length} DISCOVERED ON THIS DEVICE</p>
-        <button class="primary-action" id="restart-button" type="button">Inherit it again ↻<span>↻</span></button>
+          <p class="ending-overline">Hospital disposition</p>
+          <h1>${ending.title}</h1>
+          <p class="ending-kicker">${ending.kicker}</p>
+
+          <section class="ending-narrative">
+            <span>What happened</span>
+            <p>${ending.body}</p>
+          </section>
+
+          <blockquote class="ending-final-note">
+            <span>Final note from the floor</span>
+            <p>${ending.epitaph}</p>
+          </blockquote>
+        </article>
+
+        <aside class="ending-rail" aria-label="Final hospital audit">
+          <section class="ending-newspaper local-press" aria-label="Final local newspaper">
+            <div class="newspaper-masthead">${localPaperName}</div>
+            <div class="newspaper-dateline"><span>Final edition</span><span>25&cent;</span></div>
+            <p class="newspaper-headline">${ending.headline}</p>
+            <div class="newspaper-footer"><span>Local desk</span><span>Page A1</span></div>
+          </section>
+
+          <section class="ending-stat-panel">
+            <div class="panel-heading">Hospital at disposition</div>
+            ${renderVitals(true)}
+          </section>
+
+          <details class="compact-audit ending-audit">
+            <summary>Open final ledger</summary>
+            <div class="ending-ledger">
+              <span>Quarters operated <strong>${state.history.length}</strong></span>
+              <span>Total money in <strong>${money(totalRevenue)}</strong></span>
+              <span>Total money out <strong>${money(totalExpense)}</strong></span>
+              <span>Operating change <strong class="${totalNet < 0 ? "bad" : "good"}">${money(totalNet, true)}</strong></span>
+              <span>Final cash <strong>${money(state.cash)}</strong></span>
+              <span>Patient debt <strong>${money(state.patientDebt)}</strong></span>
+            </div>
+          </details>
+        </aside>
       </div>
+
+      <footer class="ending-footer">
+        <p class="discovered-note">ENDING ${discoveredCount()} OF ${Object.keys(endings).length} DISCOVERED ON THIS DEVICE</p>
+        <button class="primary-action ending-restart" id="restart-button" type="button">Run the hospital again <span>&orarr;</span></button>
+      </footer>
     </section>`;
   }
 
@@ -901,7 +976,7 @@
     if (panel === "briefing") {
       openModal(`<p class="eyebrow">HOW TO PLAY</p>
         <h2 class="plain-modal-title" id="modal-title">How to play</h2>
-        <p class="modal-intro">You are in charge of St. Dymphna Memorial. On each turn, review the hospital, choose a policy, and see what happens during the quarter.</p>
+        <p class="modal-intro">You are in charge of ${hospitalName}. On each turn, review the hospital, choose a policy, and see what happens during the quarter.</p>
         <div class="briefing-grid continuous-briefing">
           <div><strong>1</strong><p>Check cash, prices, staffing, patient flow, care, trust, and the quarterly financial forecast.</p></div>
           <div><strong>2</strong><p>Choose one policy for the hospital to follow during the quarter.</p></div>

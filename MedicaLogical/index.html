@@ -300,7 +300,7 @@
               </label>
               <label class="difficulty-option">
                 <input type="radio" name="difficulty" value="medium" checked>
-                <span><strong>Medium</strong><small>A mix of direct and relational clues.</small></span>
+                <span><strong>Medium</strong><small>Direct medical pairings with short relational deductions.</small></span>
               </label>
               <label class="difficulty-option">
                 <input type="radio" name="difficulty" value="hard">
@@ -430,6 +430,7 @@
     let hasCelebrated = false;
     const previousSelections = { demographic: "", history: "", outcomes: "" };
     let previousNameSignature = "";
+    let previousMediumRecipe = "";
     let selectedDifficulty = "medium";
     const selectedSpecialties = new Set(Object.keys(SPECIALTY_MODES));
 
@@ -572,6 +573,230 @@
       return `characteristic symptom of ${diagnosis}`;
     }
 
+    function clueEntity(row, value) {
+      if (row.key === "name") return value[1];
+      if (row.subjects) return `the ${subjectFor(row, value[0])}`;
+      return `the ${outcomeSubject(row, value)}`;
+    }
+
+    function sentenceEntity(row, value) {
+      const entity = clueEntity(row, value);
+      return entity.charAt(0).toUpperCase() + entity.slice(1);
+    }
+
+    function appointmentPhrase(row, value) {
+      if (row.key === "name") return `${value[1]}'s appointment`;
+      if (row.subjects) return `the appointment for ${clueEntity(row, value)}`;
+      return `the appointment involving ${clueEntity(row, value)}`;
+    }
+
+    function sentenceAppointment(row, value) {
+      const phrase = appointmentPhrase(row, value);
+      return phrase.charAt(0).toUpperCase() + phrase.slice(1);
+    }
+
+    function variedClueText(options) {
+      return options[Math.floor(Math.random() * options.length)];
+    }
+
+    function mediumNamePairingText(nameValue, otherRow, otherValue) {
+      const name = nameValue[1];
+      if (otherRow.key === "age") return `${name} was the ${subjectFor(otherRow, otherValue[0])}.`;
+      if (otherRow.key === "birthplace") return `${name} was born in ${otherValue[1]}.`;
+      if (otherRow.key === "accompanied") {
+        const companions = {
+          spouse: "their spouse",
+          father: "their father",
+          sister: "their sister",
+          friend: "a friend"
+        };
+        return otherValue[0] === "alone"
+          ? `${name} arrived alone.`
+          : `${name} arrived with ${companions[otherValue[0]]}.`;
+      }
+      if (otherRow.key === "social-history") {
+        const role = subjectFor(otherRow, otherValue[0]);
+        if (otherValue[0] === "accountant") return `${name} worked as an accountant.`;
+        if (otherValue[0] === "night-nurse") return `${name} worked as a night-shift nurse.`;
+        if (otherValue[0] === "retired-teacher") return `${name} had retired from teaching.`;
+        return `${name} was the ${role}.`;
+      }
+      if (otherRow.subjects) return `${name} was ${clueEntity(otherRow, otherValue)}.`;
+
+      const clinicalCase = otherRow.caseByValue[otherValue[0]];
+      const diagnosis = inlineDiagnosis(clinicalCase.diagnosis);
+      if (otherRow.key === "diagnosis") return `${name} presented with ${clinicalCase.fact}.`;
+      if (otherRow.key === "treatment") {
+        const mechanism = window.TREATMENT_MECHANISMS[clinicalCase.id];
+        return mechanism
+          ? `${name}'s ${diagnosis} was treated with a therapy that ${mechanism}.`
+          : `${name}'s ${diagnosis} required its standard treatment.`;
+      }
+      return `${name}'s ${diagnosis} produced its characteristic symptom.`;
+    }
+
+    function mediumFixedClue(row, position) {
+      const value = row.assignment[position];
+      const text = row.key === "name"
+        ? `${value[1]} had the ${slots[position].time} appointment.`
+        : `${sentenceEntity(row, value)} belonged to the ${slots[position].time} appointment.`;
+      return { text, test: () => fixed(row.key, value[0], position) };
+    }
+
+    function mediumNotFixedClue(row, valuePosition, excludedPosition) {
+      const value = row.assignment[valuePosition];
+      return {
+        text: variedClueText([
+          `${sentenceAppointment(row, value)} was not the ${slots[excludedPosition].time} appointment.`,
+          `The ${slots[excludedPosition].time} appointment did not involve ${clueEntity(row, value)}.`
+        ]),
+        test: () => notFixed(row.key, value[0], excludedPosition)
+      };
+    }
+
+    function mediumBeforeClue(rowA, positionA, rowB, positionB) {
+      const valueA = rowA.assignment[positionA];
+      const valueB = rowB.assignment[positionB];
+      return {
+        text: variedClueText([
+          `${sentenceAppointment(rowA, valueA)} was earlier than ${appointmentPhrase(rowB, valueB)}.`,
+          `${sentenceAppointment(rowA, valueA)} preceded ${appointmentPhrase(rowB, valueB)} in the day's schedule.`,
+          `${sentenceAppointment(rowB, valueB)} occurred later than ${appointmentPhrase(rowA, valueA)}.`
+        ]),
+        test: () => before(rowA.key, valueA[0], rowB.key, valueB[0])
+      };
+    }
+
+    function mediumAdjacentClue(rowA, positionA, rowB, positionB) {
+      const valueA = rowA.assignment[positionA];
+      const valueB = rowB.assignment[positionB];
+      return {
+        text: variedClueText([
+          `${sentenceAppointment(rowA, valueA)} immediately preceded ${appointmentPhrase(rowB, valueB)}.`,
+          `${sentenceAppointment(rowA, valueA)} came immediately before ${appointmentPhrase(rowB, valueB)}.`,
+          `${sentenceAppointment(rowB, valueB)} followed directly after ${appointmentPhrase(rowA, valueA)}.`
+        ]),
+        test: () => adjacent(rowA.key, valueA[0], rowB.key, valueB[0])
+      };
+    }
+
+    function mediumTwoBeforeClue(rowA, positionA, rowB, positionB) {
+      const valueA = rowA.assignment[positionA];
+      const valueB = rowB.assignment[positionB];
+      return {
+        text: `${sentenceAppointment(rowA, valueA)} was two time slots before ${appointmentPhrase(rowB, valueB)}.`,
+        test: () => twoBefore(rowA.key, valueA[0], rowB.key, valueB[0])
+      };
+    }
+
+    function mediumSameClue(rowA, positionA, rowB, positionB) {
+      const valueA = rowA.assignment[positionA];
+      const valueB = rowB.assignment[positionB];
+      let text;
+      if (rowA.key === "name") {
+        text = mediumNamePairingText(valueA, rowB, valueB);
+      } else if (rowB.key === "name") {
+        text = mediumNamePairingText(valueB, rowA, valueA);
+      } else {
+        text = variedClueText([
+          `${sentenceEntity(rowA, valueA)} was paired with ${clueEntity(rowB, valueB)}.`,
+          `${sentenceEntity(rowA, valueA)} matched ${clueEntity(rowB, valueB)}.`,
+          `${sentenceEntity(rowA, valueA)} and ${clueEntity(rowB, valueB)} described the same patient.`
+        ]);
+      }
+      return {
+        text,
+        test: () => sameGroup([[rowA.key, valueA[0]], [rowB.key, valueB[0]]])
+      };
+    }
+
+    function makeMediumAnchorClues(row) {
+      const recipeChoices = ["two-anchors", "edge-and-gap", "three-anchors"]
+        .filter(recipe => recipe !== previousMediumRecipe);
+      const recipe = recipeChoices[Math.floor(Math.random() * recipeChoices.length)];
+      previousMediumRecipe = recipe;
+
+      if (recipe === "two-anchors") {
+        const fixedPositions = shuffled([0, 1, 2, 3]).slice(0, 2).sort((a, b) => a - b);
+        const remaining = [0, 1, 2, 3].filter(position => !fixedPositions.includes(position));
+        return [
+          ...fixedPositions.map(position => mediumFixedClue(row, position)),
+          mediumBeforeClue(row, remaining[0], row, remaining[1])
+        ];
+      }
+
+      if (recipe === "edge-and-gap") {
+        const edge = Math.random() < .5 ? 0 : 3;
+        const excludedPosition = edge === 0 ? 2 : 0;
+        return [
+          mediumFixedClue(row, edge),
+          mediumAdjacentClue(row, 1, row, 2),
+          mediumNotFixedClue(row, 1, excludedPosition)
+        ];
+      }
+
+      return shuffled([0, 1, 2, 3]).slice(0, 3).map(position => mediumFixedClue(row, position));
+    }
+
+    function mediumCrossLinkClue(childRow, parentRow, position, preferredStyles, allowImmediate) {
+      const validStyles = preferredStyles.filter(style => (
+        style === "same"
+        || (allowImmediate && style === "before" && position < slots.length - 1)
+        || (allowImmediate && style === "after" && position > 0)
+        || (style === "two-before" && position < slots.length - 2)
+        || (style === "two-after" && position > 1)
+      ));
+      const style = validStyles[0] || "same";
+      let clue;
+      if (style === "before") clue = mediumAdjacentClue(childRow, position, parentRow, position + 1);
+      else if (style === "after") clue = mediumAdjacentClue(parentRow, position - 1, childRow, position);
+      else if (style === "two-before") clue = mediumTwoBeforeClue(childRow, position, parentRow, position + 2);
+      else if (style === "two-after") clue = mediumTwoBeforeClue(parentRow, position - 2, childRow, position);
+      else clue = mediumSameClue(childRow, position, parentRow, position);
+      clue.mediumRelationStyle = style;
+      return clue;
+    }
+
+    function makeMediumClues(activeRows) {
+      const anchorRow = activeRows.find(row => row.key === "name");
+      const childRows = shuffled(activeRows.filter(row => row.key !== anchorRow.key));
+      const guidedRow = childRows[Math.floor(Math.random() * childRows.length)];
+      const clues = makeMediumAnchorClues(anchorRow);
+      const styleCycle = shuffled(["same", "same", "same", "same", "before", "after"]);
+      let styleIndex = 0;
+      let immediateCrossLinks = 0;
+
+      for (const childRow of childRows) {
+        const linkCount = childRow.key === guidedRow.key ? 3 : 2;
+        const linkedPositions = shuffled([0, 1, 2, 3]).slice(0, linkCount).sort((a, b) => a - b);
+        const remaining = [0, 1, 2, 3].filter(position => !linkedPositions.includes(position));
+
+        for (const position of linkedPositions) {
+          const preferredStyles = [
+            ...styleCycle.slice(styleIndex),
+            ...styleCycle.slice(0, styleIndex)
+          ];
+          const crossLink = mediumCrossLinkClue(
+            childRow,
+            anchorRow,
+            position,
+            preferredStyles,
+            immediateCrossLinks < 2
+          );
+          clues.push(crossLink);
+          if (crossLink.mediumRelationStyle === "before" || crossLink.mediumRelationStyle === "after") {
+            immediateCrossLinks += 1;
+          }
+          styleIndex = (styleIndex + 1) % styleCycle.length;
+        }
+        if (remaining.length === 2) {
+          clues.push(mediumBeforeClue(childRow, remaining[0], childRow, remaining[1]));
+        }
+      }
+
+      return shuffled(clues);
+    }
+
     function chooseSpecialtyCases(selectedOutcomeKinds) {
       const specialtyKeys = shuffled(Array.from(selectedSpecialties));
       const chosen = [];
@@ -703,12 +928,14 @@
         slot.id,
         Object.fromEntries(activeRows.map(row => [row.key, row.assignment[position][0]]))
       ]));
-      clueSpecs = shuffled([
-        ...makeNameClues(),
-        ...makePlacementClues(demographic),
-        ...makePlacementClues(history),
-        ...outcomes.flatMap(makeOutcomeClues)
-      ]);
+      clueSpecs = selectedDifficulty === "medium"
+        ? makeMediumClues(activeRows)
+        : shuffled([
+          ...makeNameClues(),
+          ...makePlacementClues(demographic),
+          ...makePlacementClues(history),
+          ...outcomes.flatMap(makeOutcomeClues)
+        ]);
       entries = emptyEntries();
       document.getElementById("board-scroll").scrollLeft = 0;
       updateAll();
@@ -749,6 +976,22 @@
       if (b === 0) return "contradicted";
       if (a < 0 || b < 0) return "unresolved";
       return b === a + 1 ? "satisfied" : "contradicted";
+    }
+
+    function twoBefore(fieldA, valueA, fieldB, valueB) {
+      const a = positionOf(fieldA, valueA);
+      const b = positionOf(fieldB, valueB);
+      if (a >= slots.length - 2 || (b >= 0 && b < 2)) return "contradicted";
+      if (a < 0 || b < 0) return "unresolved";
+      return b === a + 2 ? "satisfied" : "contradicted";
+    }
+
+    function notFixed(field, value, excludedPosition) {
+      const actualPosition = positionOf(field, value);
+      const excludedValue = entries[slots[excludedPosition].id][field];
+      if (actualPosition === excludedPosition) return "contradicted";
+      if (actualPosition >= 0 || (excludedValue && excludedValue !== value)) return "satisfied";
+      return "unresolved";
     }
 
     function sameGroup(items) {

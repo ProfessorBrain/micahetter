@@ -1428,85 +1428,6 @@ footer {
   }
 }
 
-/* Quarter briefings: one visible speaker carries the update into its result. */
-.hospital-update {
-  display: block;
-  padding: 14px 16px;
-}
-
-.update-speaker {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
-  padding-bottom: 10px;
-  border-bottom: 2px solid #858579;
-}
-
-.update-portrait {
-  width: 62px;
-  height: 70px;
-  flex: 0 0 62px;
-}
-
-.hospital-update p,
-.hospital-update p + p,
-.update-speaker p,
-.update-copy p {
-  margin: 0 0 12px;
-  color: #111;
-  font-family: Arial, sans-serif;
-  font-size: 14px;
-  line-height: 1.45;
-}
-
-.update-speaker p,
-.update-speaker p + p {
-  margin: 0;
-}
-
-.update-speaker strong,
-.update-bad-news strong {
-  font-size: inherit;
-}
-
-.update-bad-news,
-.hospital-update .update-bad-news {
-  margin: 0;
-  padding: 10px 12px;
-  border: 2px solid;
-  border-color: #7c0000 #fff #fff #7c0000;
-  background: #ffe0cf;
-  box-shadow: inset 5px 0 0 #b4141b;
-  color: #630006;
-}
-
-.adviser-portrait.character-nurse { --adviser-color: #06705d; background-color: #78b3cf; }
-.adviser-portrait.character-finance { --adviser-color: #183f8f; background-color: #8ea3ba; }
-.adviser-portrait.character-insurer { --adviser-color: #842028; background-color: #d3aa75; }
-.adviser-portrait.character-casework { --adviser-color: #765399; background-color: #75aac0; }
-.adviser-portrait.character-services { --adviser-color: #c2641c; background-color: #79a897; }
-.adviser-portrait.character-state { --adviser-color: #6f2631; background-color: #aaa0a0; }
-.adviser-portrait.character-advocate { --adviser-color: #275daa; background-color: #d5a06e; }
-.adviser-portrait.character-physician { --adviser-color: #15738c; background-color: #8db4bf; }
-
-@media (max-width: 620px) {
-  .hospital-update {
-    padding: 12px;
-  }
-
-  .update-speaker {
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .update-portrait {
-    width: 54px;
-    height: 62px;
-    flex-basis: 54px;
-  }
-}
-
 /* Continuous six-month simulation */
 body.modal-open {
   overflow: hidden;
@@ -3354,5 +3275,558 @@ summary:focus-visible {
     overflow-wrap: normal;
     word-break: normal;
     hyphens: none;
+  }
+}
+
+/* Quarter briefings: one visible speaker carries the update into its result. */
+.hospital-update {
+  display: block;
+  padding: 14px 16px;
+}
+
+.update-portrait {
+  width: 62px;
+  height: 70px;
+  flex: 0 0 62px;
+}
+
+.hospital-update p,
+.hospital-update p + p,
+.update-copy p {
+  margin: 0 0 12px;
+  color: #111;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.update-risk strong {
+  font-size: inherit;
+}
+
+.update-risk,
+.hospital-update .update-risk {
+  margin: 0;
+  padding: 10px 12px;
+  border: 2px solid;
+}
+
+.update-message {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.update-system-message {
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border: 2px solid;
+  border-color: #666 #fff #fff #666;
+  background: #fffef4;
+}
+
+.character-quote-row {
+  display: grid;
+  grid-template-columns: 62px minmax(0, 1fr);
+  align-items: start;
+  gap: 12px;
+}
+
+.character-quote-content {
+  min-width: 0;
+}
+
+.hospital-update .quote-speaker {
+  margin: 0 0 7px;
+}
+
+.hospital-update .update-system-message p,
+.hospital-update .update-character-message p {
+  margin: 0;
+  color: inherit;
+  font-size: 14px;
+}
+
+.update-character-message {
+  position: relative;
+  font-style: normal;
+}
+
+.update-character-message::before {
+  content: "";
+  position: absolute;
+  top: 17px;
+  left: -8px;
+  width: 12px;
+  height: 12px;
+  border-bottom: 2px solid currentColor;
+  border-left: 2px solid currentColor;
+  background: inherit;
+  transform: rotate(45deg);
+}
+
+.update-advisory,
+.hospital-update .update-advisory {
+  border-color: #315f37 #fff #fff #315f37;
+  background: #e1efda;
+  box-shadow: inset 5px 0 0 #4c814e;
+  color: #173b1b;
+}
+
+.update-caution,
+.hospital-update .update-caution {
+  border-color: #756000 #fff #fff #756000;
+  background: #fff1b8;
+  box-shadow: inset 5px 0 0 #c58a00;
+  color: #4c3800;
+}
+
+.update-bad-news,
+.hospital-update .update-bad-news {
+  border-color: #7c0000 #fff #fff #7c0000;
+  background: #ffe0cf;
+  box-shadow: inset 5px 0 0 #b4141b;
+  color: #630006;
+}
+
+.adviser-portrait.character-nurse { --adviser-color: #06705d; background-color: #78b3cf; }
+.adviser-portrait.character-finance { --adviser-color: #183f8f; background-color: #8ea3ba; }
+.adviser-portrait.character-insurer { --adviser-color: #842028; background-color: #d3aa75; }
+.adviser-portrait.character-casework { --adviser-color: #765399; background-color: #75aac0; }
+.adviser-portrait.character-services { --adviser-color: #c2641c; background-color: #79a897; }
+.adviser-portrait.character-state { --adviser-color: #6f2631; background-color: #aaa0a0; }
+.adviser-portrait.character-advocate { --adviser-color: #275daa; background-color: #d5a06e; }
+.adviser-portrait.character-physician { --adviser-color: #15738c; background-color: #8db4bf; }
+
+@media (max-width: 620px) {
+  .hospital-update {
+    padding: 12px;
+  }
+
+  .update-portrait {
+    width: 54px;
+    height: 62px;
+    flex-basis: 54px;
+  }
+
+  .character-quote-row {
+    grid-template-columns: 54px minmax(0, 1fr);
+    gap: 9px;
+  }
+}
+
+/* Sidebar newspaper clipping */
+.local-press {
+  padding: 7px;
+  border: 1px solid #24231d;
+  background:
+    repeating-linear-gradient(0deg, rgba(68, 61, 40, 0.035) 0 1px, transparent 1px 4px),
+    #eee8c9;
+  box-shadow: 2px 2px 0 #5d5a4d, inset 0 0 18px rgba(96, 78, 33, 0.12);
+  color: #171610;
+  transform: rotate(-0.12deg);
+  transform-origin: 50% 0;
+}
+
+.newspaper-masthead {
+  padding: 2px 2px 4px;
+  border-top: 3px double #171610;
+  border-bottom: 4px double #171610;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 18px;
+  font-style: italic;
+  font-weight: 900;
+  letter-spacing: -0.7px;
+  line-height: 1;
+  text-align: center;
+  text-shadow: 1px 1px rgba(255, 255, 255, 0.4);
+}
+
+.newspaper-dateline,
+.newspaper-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-family: "Courier New", monospace;
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.25px;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.newspaper-dateline {
+  padding: 4px 1px 3px;
+  border-bottom: 1px solid #595545;
+}
+
+.local-press .newspaper-headline {
+  margin: 0;
+  padding: 8px 2px 9px;
+  border: 0;
+  background: transparent;
+  color: #11100c;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: -0.2px;
+  line-height: 1.08;
+  text-align: left;
+  text-transform: none;
+}
+
+.newspaper-footer {
+  padding: 3px 1px 0;
+  border-top: 3px double #171610;
+}
+
+@media (max-width: 620px) {
+  .local-press {
+    transform: none;
+  }
+
+  .newspaper-masthead {
+    font-size: 17px;
+  }
+}
+
+/* Final hospital disposition window */
+.ending-screen {
+  width: min(calc(100% - 24px), 1120px);
+  margin: 14px auto 38px;
+  padding: 0;
+  border: 4px solid;
+  border-color: #fff #3d3d3d #3d3d3d #fff;
+  background: var(--ui-face);
+  box-shadow: 5px 5px 0 #172224;
+  color: #111;
+}
+
+.ending-titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 30px;
+  padding: 6px 9px;
+  border: 1px solid #000;
+  background: var(--ui-blue);
+  color: #fff;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  text-shadow: 1px 1px #000;
+}
+
+.ending-titlebar strong {
+  padding: 2px 5px;
+  border: 1px solid #fff;
+  background: #a40000;
+  font-size: 9px;
+  white-space: nowrap;
+}
+
+.ending-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 10px;
+  padding: 10px;
+}
+
+.ending-report,
+.ending-stat-panel,
+.ending-audit {
+  border: 2px solid;
+  border-color: #4b4b4b #fff #fff #4b4b4b;
+  background: #deded8;
+}
+
+.ending-report {
+  min-width: 0;
+  padding: clamp(15px, 3vw, 26px);
+}
+
+.ending-code-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #777;
+  color: #333;
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.ending-code-row strong {
+  padding: 6px 8px 5px;
+  border: 3px double #8a0000;
+  background: #f3d4c9;
+  color: #8a0000;
+  font-family: Arial, sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.4px;
+  text-align: center;
+  transform: rotate(-1deg);
+}
+
+.ending-parachute .ending-code-row strong {
+  border-color: #006837;
+  background: #d8ecd8;
+  color: #006837;
+}
+
+.ending-screen .ending-main > p.ending-overline {
+  margin: 16px 0 4px;
+  color: #000080;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.ending-screen .ending-main h1 {
+  margin: 0;
+  color: #000080;
+  font-family: Arial, sans-serif;
+  font-size: clamp(42px, 7vw, 72px);
+  font-weight: 900;
+  letter-spacing: -0.045em;
+  line-height: 0.94;
+  overflow-wrap: normal;
+  text-shadow: 2px 2px #fff;
+}
+
+.ending-screen .ending-main > p.ending-kicker {
+  margin: 14px 0 18px;
+  padding: 8px 10px;
+  border: 2px solid;
+  border-color: #424242 #fff #fff #424242;
+  background: #c9c9c3;
+  color: #111;
+  font-family: Arial, sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.ending-narrative {
+  border: 2px solid;
+  border-color: #4c4c4c #fff #fff #4c4c4c;
+  background: #fffef4;
+}
+
+.ending-narrative > span,
+.ending-final-note > span {
+  display: block;
+  padding: 5px 7px;
+  border-bottom: 1px solid #555;
+  background: var(--ui-blue);
+  color: #fff;
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-shadow: 1px 1px #000;
+}
+
+.ending-narrative p {
+  margin: 0;
+  padding: 13px 14px;
+  color: #111;
+  font-family: Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.48;
+}
+
+.ending-main .ending-final-note {
+  margin: 12px 0 0;
+  padding: 0;
+  border: 2px solid;
+  border-color: #4b4b4b #fff #fff #4b4b4b;
+  background: #fff3bf;
+  color: #111;
+}
+
+.ending-final-note > span {
+  background: #3e3e38;
+}
+
+.ending-final-note p {
+  margin: 0;
+  padding: 12px 14px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 15px;
+  font-style: italic;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.ending-rail {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  min-width: 0;
+}
+
+.ending-newspaper {
+  margin: 2px 3px 4px;
+}
+
+.ending-stat-panel {
+  overflow: hidden;
+}
+
+.ending-stat-panel .panel-heading {
+  min-height: auto;
+}
+
+.ending-stat-panel .final-vitals {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+  border: 0;
+  background: #777;
+  gap: 1px;
+}
+
+.ending-stat-panel .final-vitals span {
+  min-width: 0;
+  padding: 7px 8px;
+  border: 0;
+  background: #deded8;
+  color: #333;
+  font-size: 9px;
+}
+
+.ending-stat-panel .final-vitals strong {
+  margin-top: 3px;
+  color: #000;
+  font-family: Arial, sans-serif;
+  font-size: 15px;
+}
+
+.ending-audit {
+  margin: 0;
+  overflow: hidden;
+}
+
+.ending-audit summary {
+  padding: 8px 9px;
+  background: #c9c9c3;
+  color: #000080;
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ending-audit[open] summary {
+  border-bottom: 1px solid #666;
+}
+
+.ending-audit .ending-ledger {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  padding: 0;
+  background: #777;
+}
+
+.ending-audit .ending-ledger span {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 8px;
+  background: #deded8;
+  color: #333;
+  font-size: 9px;
+}
+
+.ending-audit .ending-ledger strong {
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.ending-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 9px 10px 10px;
+  border-top: 1px solid #777;
+  background: #c9c9c3;
+}
+
+.ending-footer .discovered-note {
+  margin: 0;
+  color: #333;
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.ending-footer .ending-restart {
+  width: auto;
+  min-width: 240px;
+  margin: 0;
+}
+
+@media (max-width: 760px) {
+  .ending-screen {
+    width: calc(100% - 12px);
+    margin-top: 7px;
+  }
+
+  .ending-layout {
+    grid-template-columns: 1fr;
+    padding: 7px;
+  }
+
+  .ending-rail {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .ending-audit {
+    grid-column: 1 / -1;
+  }
+
+  .ending-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .ending-footer .ending-restart {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .ending-titlebar {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .ending-code-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .ending-screen .ending-main h1 {
+    font-size: 40px;
+  }
+
+  .ending-rail {
+    grid-template-columns: 1fr;
+  }
+
+  .ending-audit {
+    grid-column: auto;
   }
 }
