@@ -1195,28 +1195,64 @@ width: fit-content;
 
     @media (max-width: 720px){
       .main{
-        grid-template-columns:minmax(0, 1fr);
-        gap:10px;
+        grid-template-columns:repeat(2, minmax(0, 1fr));
+        column-gap:6px;
+        row-gap:10px;
       }
 
-      .eye-panel,
-      .controls-od,
-      .controls-os{
-        grid-column:1;
-      }
-
-      .eye-panel{ grid-row:1; }
-      .controls-od{ grid-row:2; }
-      .controls-os{ grid-row:3; }
-
-      .controls,
       .eye-panel{
+        grid-column:1 / -1;
+        grid-row:1;
         border-radius:14px;
         padding:10px;
       }
 
-      .controls{ gap:8px; }
-      .slider-group{ margin-bottom:2px; }
+      .controls{
+        min-width:0;
+        align-self:stretch;
+        border-radius:12px;
+        padding:7px;
+        gap:6px;
+      }
+      .controls-od{ grid-column:1; grid-row:2; }
+      .controls-os{ grid-column:2; grid-row:2; }
+      .controls h2{
+        font-size:clamp(0.72rem, 2.8vw, 0.9rem);
+        line-height:1.15;
+      }
+      .slider-group{
+        margin-bottom:0;
+        padding:5px;
+        border-radius:8px;
+      }
+      .slider-header{
+        display:grid;
+        grid-template-columns:minmax(0, 1fr) auto;
+        align-items:start;
+        gap:2px;
+      }
+      .muscle-name{
+        min-width:0;
+        font-size:clamp(0.66rem, 2.6vw, 0.78rem);
+        letter-spacing:0;
+        overflow-wrap:anywhere;
+      }
+      .muscle-name .side-tag{
+        display:block;
+        margin:2px 0 0;
+        font-size:clamp(0.52rem, 2.1vw, 0.62rem);
+        line-height:1.15;
+        overflow-wrap:anywhere;
+      }
+      .slider-value{
+        min-width:18px;
+        font-size:0.68rem;
+      }
+      .slider-subtext{
+        font-size:clamp(0.54rem, 2.1vw, 0.64rem);
+        line-height:1.2;
+        overflow-wrap:anywhere;
+      }
       .ask-look-grid{ row-gap:6px; }
       .ask-btn{ width:44px; height:44px; }
       .ask-center,

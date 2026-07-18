@@ -21,34 +21,45 @@
     {
       label: "HHS OIG — Medicare Advantage SNF denials, 2026",
       note: "A federal review found wide variation in skilled-nursing admission denials and that nearly all appealed denials in its sample were overturned.",
+      story: "Story correlate: AmazingCare's post-acute placement denials and the hospital's appeals.",
       url: "https://oig.hhs.gov/reports/all/2026/medicare-advantage-organizations-overturned-nearly-all-appealed-prior-authorization-denials-for-skilled-nursing-facility-admission-raising-concerns-about-initial-denials/",
     },
     {
       label: "MedPAC — March 2026 Medicare Payment Policy",
-      note: "Hospital costs, margins, access, payment adequacy, and payer mix inform the fictional operating model.",
+      note: "The chapter describes inpatient rehabilitation services, staffing, access, payment adequacy, margins, and payment updates.",
+      story: "Story correlate: rehabilitation placement, post-acute capacity, and payment-policy pressure.",
       url: "https://www.medpac.gov/wp-content/uploads/2026/03/Mar26_Ch9_MedPAC_Report_To_Congress_SEC.pdf",
     },
     {
       label: "CMS — Hospital Price Transparency",
       note: "Hospitals publish gross charges, discounted cash prices, and payer-negotiated amounts under federal transparency rules.",
+      story: "Story correlate: listed prices, cash prices, facility charges, imaging, medicines, and procedures.",
       url: "https://www.cms.gov/priorities/key-initiatives/hospital-price-transparency",
     },
     {
       label: "GAO — Urban Hospital Closures, 2025",
       note: "The report examines financial and operating factors behind selected closures and the resulting loss of services.",
+      story: "Story correlate: service cuts, closure decisions, and the community losing access to hospital care.",
       url: "https://files.gao.gov/reports/GAO-25-106473/index.html",
     },
     {
       label: "BLS — Occupational Employment and Wages",
       note: "National data describe the large, specialized workforce required to operate a hospital.",
+      story: "Story correlate: staffing, payroll, specialized clinical roles, sanitation, therapy, and outsourcing.",
       url: "https://www.bls.gov/news.release/ocwage.htm",
     },
     {
       label: "FTC, DOJ & HHS — Private Equity in Health Care Inquiry",
       note: "The agencies sought evidence about transactions that may enrich owners while threatening quality, access, workers, and affordability.",
+      story: "Story correlate: the private-equity panic button and the Golden Parachute ending.",
       url: "https://www.ftc.gov/news-events/news/press-releases/2024/03/federal-trade-commission-department-justice-department-health-human-services-launch-cross-government",
     },
   ];
+
+  function cite(...numbers) {
+    const label = `${numbers.length === 1 ? "Source" : "Sources"} ${numbers.join(", ")}`;
+    return `<sup class="source-citation" role="doc-noteref" aria-label="${label}" title="See ${label}">${numbers.map((number) => `[${number}]`).join("")}</sup>`;
+  }
 
   const advisers = {
     finance: {
@@ -119,7 +130,7 @@
         {
           mode: "care",
           title: "Add staff and weekend coverage",
-          text: "Hire nurses and add sanitation, therapy, and casework hours.",
+          text: `Hire nurses and add sanitation, therapy, and casework hours.${cite(5)}`,
           price: 0,
           revenue: 0.2,
           expense: 2.4,
@@ -143,7 +154,7 @@
         {
           mode: "extract",
           title: "Raise imaging and drug prices",
-          text: "Increase charges for scans, medicines, and procedures.",
+          text: `Increase charges for scans, medicines, and procedures.${cite(3)}`,
           price: 12,
           revenue: 3.3,
           expense: -0.3,
@@ -160,7 +171,7 @@
       status: "ORDINARY FRICTION",
       adviser: "finance",
       title: "Still a hospital. Mostly.",
-      situation: "Admissions finish the quarter six percent above forecast. The additional volume is manageable, but nurses are picking up more overtime and weekend therapy coverage is thin enough to delay a few Monday discharges.",
+      situation: `Admissions finish the quarter six percent above forecast. The additional volume is manageable, but nurses are picking up more overtime and weekend therapy coverage is thin enough to delay a few Monday discharges.${cite(5)}`,
       pressure: "Two commercial insurers have quietly extended the time they take to pay clean claims. The state has also issued a 612-page billing manual with new documentation rules, so the revenue team is moving experienced staff away from collections to review charts and resubmit forms.",
       briefingQuote: "The extra admissions are not the problem yet. The problem is that two insurers have decided a clean claim can spend another month sightseeing. I can move more people into billing review, but then nobody is left to collect the money they already owe us.",
       baseRevenue: 29.8,
@@ -171,7 +182,7 @@
         {
           mode: "care",
           title: "Maintain full staffing",
-          text: "Keep current nursing, environmental services, and weekend therapy coverage.",
+          text: `Keep current nursing, environmental services, and weekend therapy coverage.${cite(5)}`,
           price: 2,
           revenue: 0.5,
           expense: 2.8,
@@ -195,7 +206,7 @@
         {
           mode: "extract",
           title: "Add facility fees",
-          text: "Add a hospital facility charge to outpatient visits.",
+          text: `Add a hospital facility charge to outpatient visits.${cite(3)}`,
           price: 14,
           revenue: 4.1,
           expense: -0.5,
@@ -247,7 +258,7 @@
         {
           mode: "extract",
           title: "Raise all listed prices",
-          text: "Increase medicine, procedure, and imaging charges.",
+          text: `Increase medicine, procedure, and imaging charges.${cite(3)}`,
           price: 28,
           revenue: 6.2,
           expense: -0.6,
@@ -264,8 +275,8 @@
       status: "POST-ACUTE GRIDLOCK",
       adviser: "casework",
       title: "Everyone is ready to leave. Nobody can.",
-      situation: "Twenty inpatients no longer need acute hospital care. Therapy and case management recommend skilled nursing for fourteen of them and inpatient rehabilitation for six. AmazingCare denied every placement, including several facilities it had already identified as in-network.",
-      pressure: "Those patients remain in staffed hospital beds while appeals are filed. Eleven admitted patients are waiting in the emergency department, three on hallway stretchers, and two nearby nursing facilities have stopped accepting referrals after cuts to the state's payment rates.",
+      situation: `Twenty inpatients no longer need acute hospital care. Therapy and case management recommend skilled nursing for fourteen of them and inpatient rehabilitation for six. AmazingCare denied every placement, including several facilities it had already identified as in-network.${cite(1, 2)}`,
+      pressure: `Those patients remain in staffed hospital beds while appeals are filed. Eleven admitted patients are waiting in the emergency department, three on hallway stretchers, and two nearby nursing facilities have stopped accepting referrals after cuts to the state's payment rates.${cite(1, 2)}`,
       briefingQuote: "I can move these patients out of acute beds if somebody will approve somewhere safe for them to go. We can discharge them home on paper today, but paper does not provide wound care, a wheelchair ramp, or a daughter who can lift two hundred pounds.",
       baseRevenue: 26.4,
       baseExpense: 31.3,
@@ -275,7 +286,7 @@
         {
           mode: "care",
           title: "Pay for post-acute beds",
-          text: "Pay rehabilitation and nursing facilities before insurance approves them.",
+          text: `Pay rehabilitation and nursing facilities before insurance approves them.${cite(1, 2)}`,
           price: 5,
           revenue: 0.8,
           expense: 5.1,
@@ -287,7 +298,7 @@
         {
           mode: "balance",
           title: "Expand the appeals team",
-          text: "Add casework and therapy hours to challenge placement denials.",
+          text: `Add casework and therapy hours to challenge placement denials.${cite(1)}`,
           price: 11,
           revenue: 2.6,
           expense: 2.3,
@@ -299,7 +310,7 @@
         {
           mode: "extract",
           title: "Discharge patients home",
-          text: "Send medically stable patients home without covered support services.",
+          text: `Send medically stable patients home without covered support services.${cite(1, 2)}`,
           price: 21,
           revenue: 5.3,
           expense: -1.2,
@@ -316,8 +327,8 @@
       status: "LABOR REALITY",
       adviser: "services",
       title: "Payroll has discovered inflation.",
-      situation: "The annual wage review shows the hospital is falling behind the local market for nurses, imaging technicians, therapists, pharmacists, and environmental services staff. Open positions are taking longer to fill, and agency shifts now cost almost twice as much as regular staff hours.",
-      pressure: "Keeping the current workforce will raise labor costs by roughly eleven percent. Commercial insurers are offering an average rate increase of 1.8 percent, and the state program has not changed its hospital rates at all.",
+      situation: `The annual wage review shows the hospital is falling behind the local market for nurses, imaging technicians, therapists, pharmacists, and environmental services staff. Open positions are taking longer to fill, and agency shifts now cost almost twice as much as regular staff hours.${cite(5)}`,
+      pressure: `Keeping the current workforce will raise labor costs by roughly eleven percent. Commercial insurers are offering an average rate increase of 1.8 percent, and the state program has not changed its hospital rates at all.${cite(5)}`,
       briefingQuote: "You can call sanitation a support service if you want. Infection control calls it the reason we can open a room again. My crew can keep doing this work, but not for last year's wages while every agency in town offers more.",
       baseRevenue: 27.6,
       baseExpense: 34.8,
@@ -327,7 +338,7 @@
         {
           mode: "care",
           title: "Increase wages hospital-wide",
-          text: "Raise pay for every clinical, technical, and operating team.",
+          text: `Raise pay for every clinical, technical, and operating team.${cite(5)}`,
           price: 8,
           revenue: 1.2,
           expense: 6.3,
@@ -339,7 +350,7 @@
         {
           mode: "balance",
           title: "Freeze executive pay",
-          text: "Suspend bonuses, reduce management costs, and protect bedside payroll.",
+          text: `Suspend bonuses, reduce management costs, and protect bedside payroll.${cite(5)}`,
           price: 15,
           revenue: 2.9,
           expense: 1.6,
@@ -351,7 +362,7 @@
         {
           mode: "extract",
           title: "Outsource sanitation and food",
-          text: "Replace hospital-employed teams with the lowest outside bid.",
+          text: `Replace hospital-employed teams with the lowest outside bid.${cite(5)}`,
           price: 26,
           revenue: 4.6,
           expense: -3.1,
@@ -379,7 +390,7 @@
         {
           mode: "care",
           title: "Keep all services open",
-          text: "Use reserves for obstetrics, psychiatry, wound care, and language access.",
+          text: `Use reserves for obstetrics, psychiatry, wound care, and language access.${cite(4)}`,
           price: 10,
           revenue: 0.6,
           expense: 6.8,
@@ -391,7 +402,7 @@
         {
           mode: "balance",
           title: "Raise imaging contract rates",
-          text: "Charge insurers more for imaging while limiting cash prices.",
+          text: `Charge insurers more for imaging while limiting cash prices.${cite(3)}`,
           price: 19,
           revenue: 5.4,
           expense: 2.5,
@@ -403,7 +414,7 @@
         {
           mode: "extract",
           title: "Close unprofitable services",
-          text: "Keep imaging and surgery; close obstetrics, psychiatry, and charity clinics.",
+          text: `Keep imaging and surgery; close obstetrics, psychiatry, and charity clinics.${cite(4)}`,
           price: 31,
           revenue: 7.8,
           expense: -4.8,
@@ -420,7 +431,7 @@
       status: "DEBT SPIRAL",
       adviser: "advocate",
       title: "The interest is now a department.",
-      situation: `The bank has renewed the hospital's credit line at a higher interest rate and added monthly cash-balance requirements. At the same time, two community clinics have closed, sending more uninsured and underinsured patients to ${hospitalName}'s emergency department.`,
+      situation: `The bank has renewed the hospital's credit line at a higher interest rate and added monthly cash-balance requirements. At the same time, two community clinics have closed, sending more uninsured and underinsured patients to ${hospitalName}'s emergency department.${cite(4)}`,
       pressure: "Patient volume is up, but a larger share of that care will never be fully paid. The hospital is borrowing to cover ordinary operations, and the bank wants a turnaround plan that reduces expenses before it will release the next portion of the credit line.",
       briefingQuote: "More people are coming here because the clinics they used are gone. If you put the hospital's full charges on them, you will collect a fraction of the bill and ruin families for the balance. The bank will still call that a collection strategy.",
       baseRevenue: 26.1,
@@ -431,7 +442,7 @@
         {
           mode: "care",
           title: "Use the remaining reserves",
-          text: "Maintain staffing, beds, charity care, and safe discharge support.",
+          text: `Maintain staffing, beds, charity care, and safe discharge support.${cite(4, 5)}`,
           price: 12,
           revenue: 0.9,
           expense: 8.2,
@@ -455,7 +466,7 @@
         {
           mode: "extract",
           title: "Increase uninsured collections",
-          text: "Apply listed prices, collection notices, and bedside payment plans.",
+          text: `Apply listed prices, collection notices, and bedside payment plans.${cite(3)}`,
           price: 38,
           revenue: 9.4,
           expense: -2.8,
@@ -472,8 +483,8 @@
       status: "TERMINAL OPERATIONS",
       adviser: "physician",
       title: "There is no good line left.",
-      situation: "The latest forecast shows fewer than twenty days of cash on hand. The hospital still provides the area's only emergency department, inpatient psychiatric service, and obstetric unit, and the clinical teams continue to meet their quality targets despite months of vacancies and discharge delays.",
-      pressure: "The board wants a plan that can keep the doors open without violating the bank's loan terms. Every remaining option involves closing services, reducing staffed beds, taking on more debt, or preparing an orderly shutdown; a closure vote has been added to the same meeting agenda.",
+      situation: `The latest forecast shows fewer than twenty days of cash on hand. The hospital still provides the area's only emergency department, inpatient psychiatric service, and obstetric unit, and the clinical teams continue to meet their quality targets despite months of vacancies and discharge delays.${cite(4, 5)}`,
+      pressure: `The board wants a plan that can keep the doors open without violating the bank's loan terms. Every remaining option involves closing services, reducing staffed beds, taking on more debt, or preparing an orderly shutdown; a closure vote has been added to the same meeting agenda.${cite(4)}`,
       briefingQuote: "The staff can keep patients safe through a smaller operation or an orderly shutdown. What they cannot do is discover after every finance meeting that another unit vanished. I need you to decide what this hospital will still promise people tomorrow morning.",
       baseRevenue: 25.4,
       baseExpense: 44.9,
@@ -483,7 +494,7 @@
         {
           mode: "care",
           title: "Fund a safe shutdown",
-          text: "Pay staff and transfer every patient before closing services.",
+          text: `Pay staff and transfer every patient before closing services.${cite(4, 5)}`,
           price: 10,
           revenue: -0.4,
           expense: 9.6,
@@ -495,7 +506,7 @@
         {
           mode: "balance",
           title: "Reduce beds and refinance",
-          text: "Cut staffed beds and borrow again to keep fewer services open.",
+          text: `Cut staffed beds and borrow again to keep fewer services open.${cite(4)}`,
           price: 28,
           revenue: 5.8,
           expense: -1.2,
@@ -507,7 +518,7 @@
         {
           mode: "extract",
           title: "Limit care to profitable services",
-          text: "Keep profitable procedures and reduce the rest of the hospital.",
+          text: `Keep profitable procedures and reduce the rest of the hospital.${cite(3, 4)}`,
           price: 45,
           revenue: 11.2,
           expense: -6.4,
@@ -527,7 +538,7 @@
       headline: "HOSPITAL SOLD; EXECUTIVE DECLARES SUCCESS FROM AIRPORT LOUNGE",
       title: "The Golden Parachute",
       kicker: "YOUR CAREER HAS NEVER BEEN HEALTHIER. THE HOSPITAL HAS BEEN PRONOUNCED AN ASSET.",
-      body: "Atrium Vulture Partners pays you an $18 million exit award, borrows against the hospital, sells the building, cuts staffed beds, outsources the workforce, and raises every price it can locate. Patients now travel forty-seven miles. You join a panel on courageous leadership.",
+      body: `Atrium Vulture Partners pays you an $18 million exit award, borrows against the hospital, sells the building, cuts staffed beds, outsources the workforce, and raises every price it can locate. Patients now travel forty-seven miles. You join a panel on courageous leadership.${cite(4, 6)}`,
       epitaph: "The physicians and hospital staff did everything they could. The transaction did exactly what it was designed to do.",
     },
     beloved: {
@@ -536,7 +547,7 @@
       headline: "COMMUNITY MOURNS HOSPITAL THAT COULD NOT BILL ITS WAY OUT",
       title: "Beloved & Bankrupt",
       kicker: "THE PATIENTS TRUSTED YOU. THE BONDHOLDERS DID NOT.",
-      body: "You protected staff, safe discharges, and necessary services until the arithmetic exhausted the building. The hospital closes with every patient transferred and every final paycheck cleared. The community holds a candlelight vigil outside an urgent-care franchise.",
+      body: `You protected staff, safe discharges, and necessary services until the arithmetic exhausted the building. The hospital closes with every patient transferred and every final paycheck cleared. The community holds a candlelight vigil outside an urgent-care franchise.${cite(4, 5)}`,
       epitaph: "You did not fail to run a hospital. The system failed to finance one.",
     },
     efficient: {
@@ -545,7 +556,7 @@
       headline: "FULL-SERVICE HOSPITAL REOPENS AS IMAGING CENTER WITH AMBULANCE BAY",
       title: "The Efficient Ruin",
       kicker: "MARGIN IMPROVED. THE HOSPITAL DISAPPEARED.",
-      body: "You cut services, raised prices, reduced staffed beds, and preserved a cash balance long enough to leave behind a profitable imaging center with an emergency-department-shaped legal obligation attached.",
+      body: `You cut services, raised prices, reduced staffed beds, and preserved a cash balance long enough to leave behind a profitable imaging center with an emergency-department-shaped legal obligation attached.${cite(3, 4)}`,
       epitaph: "The spreadsheet survived the people it was meant to describe.",
     },
     payroll: {
@@ -554,7 +565,7 @@
       headline: "INSURERS RELEASE PAYMENT TO HOSPITAL THAT CLOSED LAST MONTH",
       title: "The Last Payroll",
       kicker: "THE MONEY ARRIVED AFTER THE HOSPITAL LEFT.",
-      body: "Cash reaches the basement before the final winter. Three insurers eventually release payment on the claims, addressing the checks to an institution that no longer exists.",
+      body: `Cash reaches the basement before the final winter. Three insurers eventually release payment on the claims, addressing the checks to an institution that no longer exists.${cite(4)}`,
       epitaph: "Care was delivered on time. Payment was a retrospective concept.",
     },
     abandoned: {
@@ -563,7 +574,7 @@
       headline: "HOSPITAL REMAINS OPEN; COMMUNITY CONTINUES GOING ELSEWHERE",
       title: "The Empty Lobby",
       kicker: "THE DOORS ARE OPEN. NOBODY BELIEVES YOU.",
-      body: "The hospital remains nominally alive after pricing and cuts push trust and care below recoverable levels. Patients avoid it, staff leave it, and AmazingCare praises the decline in unnecessary utilization.",
+      body: `The hospital remains nominally alive after pricing and cuts push trust and care below recoverable levels. Patients avoid it, staff leave it, and AmazingCare praises the decline in unnecessary utilization.${cite(3, 4, 5)}`,
       epitaph: "A hospital without trust is a building with billing privileges.",
     },
     managed: {
@@ -572,7 +583,7 @@
       headline: "BOARD APPROVES ORDERLY CLOSURE; NEIGHBORHOOD ADVISED TO PLAN AROUND IT",
       title: "Managed Decline",
       kicker: "EVERY COMPROMISE BOUGHT TIME. TIME SENT AN INVOICE.",
-      body: `You balanced, borrowed, appealed, cross-subsidized, and cut around the edges. ${hospitalName} lasts two years before a carefully managed closure removes the last full-service hospital from the neighborhood.`,
+      body: `You balanced, borrowed, appealed, cross-subsidized, and cut around the edges. ${hospitalName} lasts two years before a carefully managed closure removes the last full-service hospital from the neighborhood.${cite(4)}`,
       epitaph: "No single decision killed it. That was the elegance of the arrangement.",
     },
   };
@@ -900,7 +911,7 @@
       ${privateEquityAvailable() ? `<div class="panic-dock">
         <button class="panic-button" id="panic-button" type="button" aria-label="Panic button: sell to private equity. You win instantly; patients and employees do not.">
           <span>PANIC BUTTON</span>
-          <strong>SELL TO PRIVATE EQUITY</strong>
+          <strong>SELL TO PRIVATE EQUITY ${cite(6)}</strong>
           <small>YOU WIN · THE HOSPITAL DOES NOT</small>
         </button>
       </div>` : ""}
@@ -1188,9 +1199,9 @@
         <p class="modal-intro">This is satire, not a forecast. Each period combines a fictional hospital ledger with real policy pressure points.</p>
         <div class="model-grid">
           <div><span>TIME</span><strong>8 quarters</strong><p>One continuous two-year playthrough designed for roughly 3–5 minutes.</p></div>
-          <div><span>PEOPLE</span><strong>Clinicians are the good guys</strong><p>Staff absorb pressure and preserve care. Insurers and government payment systems intensify it.</p></div>
-          <div><span>MONEY</span><strong>Revenue is not cash</strong><p>The model collects 8% of patient balances each quarter. The rest remains owed while payment delays, payroll, bottlenecks, and borrowing compound.</p></div>
-          <div><span>ENDING</span><strong>Doom is scheduled</strong><p>Choices determine who is protected, who pays, and what remains when the hospital closes.</p></div>
+          <div><span>PEOPLE</span><strong>Clinicians are the good guys</strong><p>Staff absorb pressure and preserve care. Insurers and government payment systems intensify it.${cite(1, 5)}</p></div>
+          <div><span>MONEY</span><strong>Revenue is not cash</strong><p>The model collects 8% of patient balances each quarter. The rest remains owed while payment delays, payroll, bottlenecks, and borrowing compound.${cite(1, 2, 3)}</p></div>
+          <div><span>ENDING</span><strong>Doom is scheduled</strong><p>Choices determine who is protected, who pays, and what remains when the hospital closes.${cite(4, 6)}</p></div>
         </div>
         <p class="method-note">All organizations, characters, dollar amounts, and incidents are fictional. Policy concepts are simplified for play.</p>`);
       return;
@@ -1198,9 +1209,7 @@
 
     if (panel === "sources") {
       openModal(`<p class="eyebrow">BACKGROUND READING</p>
-        <h2 id="modal-title">Real pressure points. Fictional catastrophe.</h2>
-        <p class="modal-intro">These public sources inform the themes. They do not validate the game's invented figures or guarantee its outcomes.</p>
-        <div class="source-list">${sources.map((source, index) => `<a href="${source.url}" target="_blank" rel="noreferrer"><span>0${index + 1}</span><strong>${source.label}</strong><small>${source.note}</small><i>↗</i></a>`).join("")}</div>`);
+        <div class="source-list">${sources.map((source, index) => `<a href="${source.url}" target="_blank" rel="noreferrer"><span>[${index + 1}]</span><strong>${source.label}</strong><small>${source.note}<b class="source-correlate">${source.story}</b></small><i>↗</i></a>`).join("")}</div>`);
     }
   }
 
