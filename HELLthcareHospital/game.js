@@ -94,7 +94,7 @@
     },
     services: {
       initials: "DP",
-      name: "Darnell Price",
+      name: "Danielle Price",
       role: "Director of environmental services",
       theme: "care",
     },
