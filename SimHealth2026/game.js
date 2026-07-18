@@ -598,6 +598,22 @@
     return `${sign}$${Math.abs(value).toFixed(1)}M`;
   }
 
+  function policyImpact(label, value, positiveWord, negativeWord, options = {}) {
+    const {
+      neutralWord = "no change",
+      positiveTone = "positive",
+      negativeTone = "negative",
+      format = (amount) => `${amount}`,
+    } = options;
+    const direction = value > 0 ? "▲" : value < 0 ? "▼" : "—";
+    return {
+      label,
+      value: `${direction} ${format(Math.abs(value))}`,
+      word: value > 0 ? positiveWord : value < 0 ? negativeWord : neutralWord,
+      tone: value > 0 ? positiveTone : value < 0 ? negativeTone : "neutral",
+    };
+  }
+
   function clamp(value, min = 0, max = 100) {
     return Math.max(min, Math.min(max, value));
   }
@@ -698,11 +714,31 @@
         const projectedRevenue = period.baseRevenue + choice.revenue;
         const projectedExpense = period.baseExpense + choice.expense;
         const net = projectedRevenue - projectedExpense;
+        const impacts = [
+          policyImpact("Prices", choice.price, "increase", "decrease", {
+            positiveTone: choice.price >= 20 ? "negative" : "warning",
+            format: (amount) => `${amount}%`,
+          }),
+          policyImpact("Team", choice.effects.workforce - period.decay.workforce, "improves", "worsens"),
+          policyImpact("Care", choice.effects.care - period.decay.care, "improves", "worsens"),
+          policyImpact("Cash", net, "adds cash", "uses cash", {
+            neutralWord: "break-even",
+            format: (amount) => money(amount),
+          }),
+          policyImpact("Flow", choice.effects.flow - period.decay.flow, "improves", "worsens"),
+        ];
+        const impactForecast = impacts
+          .map((impact) => `<span class="policy-impact ${impact.tone}" aria-label="${impact.label}: ${impact.word}, ${impact.value}">
+            <small>${impact.label}</small>
+            <b>${impact.value}</b>
+            <em>${impact.word}</em>
+          </span>`)
+          .join("");
         return `<button class="choice policy-choice ${choice.mode}" type="button" data-choice="${index}">
-          <span class="choice-cost">PRICES +${choice.price}% · NET ${money(net, true)}</span>
           <strong>${choice.title}</strong>
           <p>${choice.text}</p>
-          <small>REVENUE ${money(projectedRevenue)} · EXPENSES ${money(projectedExpense)}</small>
+          <span class="policy-forecast-label">Expected quarter impact</span>
+          <span class="policy-forecast">${impactForecast}</span>
         </button>`;
       })
       .join("");
