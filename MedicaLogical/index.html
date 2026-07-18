@@ -290,6 +290,7 @@
             <h3>Specialties</h3>
             <div class="specialty-actions">
               <button class="button" id="select-all-specialties" type="button">Select all</button>
+              <button class="button" id="select-no-specialties" type="button">Select none</button>
             </div>
             <div class="specialty-grid" id="specialty-options"></div>
           </div>
@@ -898,6 +899,7 @@
     }
 
     function newPuzzle() {
+      if (!selectedSpecialties.size) return;
       hasCelebrated = false;
       hideWinCelebration();
       slots = appointmentSchedules[Math.floor(Math.random() * appointmentSchedules.length)];
@@ -1193,14 +1195,11 @@
 
       if (checkbox.checked) {
         selectedSpecialties.add(checkbox.value);
-      } else if (selectedSpecialties.size > 1) {
-        selectedSpecialties.delete(checkbox.value);
       } else {
-        checkbox.checked = true;
-        return;
+        selectedSpecialties.delete(checkbox.value);
       }
 
-      newPuzzle();
+      if (selectedSpecialties.size) newPuzzle();
     });
 
     document.getElementById("difficulty-options").addEventListener("change", event => {
@@ -1214,6 +1213,11 @@
       Object.keys(SPECIALTY_MODES).forEach(key => selectedSpecialties.add(key));
       renderSpecialtySelector();
       newPuzzle();
+    });
+
+    document.getElementById("select-no-specialties").addEventListener("click", () => {
+      selectedSpecialties.clear();
+      renderSpecialtySelector();
     });
 
     renderSpecialtySelector();

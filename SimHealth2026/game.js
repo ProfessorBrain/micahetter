@@ -582,7 +582,7 @@
       period: 0,
       cash: startingCash,
       priceIndex: 100,
-      patientDebt: 3.2,
+      patientDebt: 3.0,
       metrics: { workforce: 84, care: 88, trust: 79, flow: 76 },
       history: [],
       modes: { care: 0, balance: 0, extract: 0 },
@@ -769,18 +769,15 @@
     </section>`;
   }
 
-  function renderLedger(period) {
+  function renderLedger() {
     const latest = state.history[state.history.length - 1];
-    const baselineCollections = patientDebtCollected(state.patientDebt);
-    const baselineNet = roundOne(period.baseRevenue + baselineCollections - period.baseExpense);
     return `<section class="side-section side-ledger" aria-label="Quarterly financial report">
       <div class="side-heading">Finances</div>
-      <div><span>Last quarter in</span><strong>${latest ? money(latest.revenue) : "—"}</strong></div>
+      <div><span>Revenue collected</span><strong>${latest ? money(latest.revenue) : "—"}</strong></div>
       <div><span>Patient debt collected (8%)</span><strong>${latest ? money(latest.patientCollections) : "—"}</strong></div>
       <div><span>Patient balances owed</span><strong>${money(state.patientDebt)}</strong></div>
-      <div><span>Last quarter out</span><strong>${latest ? money(latest.expense) : "—"}</strong></div>
-      <div><span>Last quarter net</span><strong class="${latest ? (latest.net < 0 ? "bad" : "good") : ""}">${latest ? money(latest.net, true) : "—"}</strong></div>
-      <div><span>Before-policy net</span><strong class="${baselineNet < 0 ? "bad" : "good"}">${money(baselineNet, true)}</strong></div>
+      <div><span>Staff, care &amp; overhead</span><strong title="Payroll, clinical services, supplies, facilities, and policy costs">${latest ? money(latest.expense) : "—"}</strong></div>
+      <div><span>Quarterly surplus / shortfall</span><strong class="${latest ? (latest.net < 0 ? "bad" : "good") : ""}">${latest ? money(latest.net, true) : "—"}</strong></div>
     </section>`;
   }
 
@@ -856,7 +853,7 @@
       <div class="streamlined-layout">
         <aside class="status-sidebar" aria-label="Hospital data">
           ${renderSideVitals()}
-          ${renderLedger(period)}
+          ${renderLedger()}
           <section class="side-section local-press" aria-label="Local newspaper">
             <div class="newspaper-masthead">${localPaperName}</div>
             <div class="newspaper-dateline"><span>Community edition &middot; ${periodLabel(state.period)}</span><span>25&cent;</span></div>
@@ -1139,8 +1136,8 @@
             <summary>Open final ledger</summary>
             <div class="ending-ledger">
               <span>Quarters operated <strong>${state.history.length}</strong></span>
-              <span>Total money in <strong>${money(totalRevenue)}</strong></span>
-              <span>Total money out <strong>${money(totalExpense)}</strong></span>
+              <span>Total revenue collected <strong>${money(totalRevenue)}</strong></span>
+              <span>Total staff, care &amp; overhead <strong>${money(totalExpense)}</strong></span>
               <span>Operating change <strong class="${totalNet < 0 ? "bad" : "good"}">${money(totalNet, true)}</strong></span>
               <span>Final cash <strong>${money(state.cash)}</strong></span>
               <span>Patient debt <strong>${money(state.patientDebt)}</strong></span>
