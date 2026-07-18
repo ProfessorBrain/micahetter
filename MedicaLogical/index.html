@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="MedicaLogical is an adult clinical logic puzzle spanning the major medical specialties.">
   <title>MedicaLogical</title>
+  <link rel="icon" type="image/png" href="favicon.png">
   <style>
     :root {
       --page: #624631;
@@ -57,7 +58,8 @@
       box-shadow: 0 5px 12px rgba(38, 22, 13, .38), inset 0 -1px rgba(255,255,255,.13);
     }
     .topbar .shell { height: 100%; position: relative; display: flex; align-items: center; justify-content: space-between; gap: 18px; }
-    .brand { color: #f7e4b2; font: 700 1.35rem/1 Georgia, serif; letter-spacing: .01em; text-shadow: 0 1px #102a25, 0 2px 4px rgba(0,0,0,.35); }
+    .brand { height: 100%; min-width: 0; display: flex; align-items: center; overflow: hidden; flex: 1 1 auto; }
+    .brand img { width: clamp(180px, 22vw, 250px); max-width: 100%; height: auto; display: block; object-fit: contain; object-position: left center; filter: drop-shadow(0 2px 3px rgba(0,0,0,.28)); }
     .top-actions { display: flex; align-items: center; gap: 8px; }
     .top-button { min-height: 36px; padding: 7px 11px; border: 1px solid #d7c79f; border-radius: 3px; background: linear-gradient(#fff9e8, #e8d9b6); color: #31443e; box-shadow: 0 2px 0 #9b7d4f, 0 4px 8px rgba(0,0,0,.2); font-size: .72rem; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; cursor: pointer; }
     .top-button:hover, .top-button[aria-expanded="true"] { background: linear-gradient(#fffdf6, #f2e5c7); border-color: #d6ae61; color: #214d43; transform: translateY(-1px); }
@@ -225,7 +227,7 @@
       .shell { width: min(100% - 16px, 1240px); }
       .topbar { height: 60px; }
       .topbar .shell { gap: 8px; }
-      .brand { font-size: 1.05rem; }
+      .brand img { width: min(42vw, 175px); }
       .top-actions { gap: 4px; }
       .top-button { min-height: 44px; padding-inline: 7px; font-size: .62rem; }
       .header-panel { width: calc(100vw - 16px); max-height: calc(100vh - 72px); max-height: calc(100dvh - 72px); top: 52px; padding: 14px; }
@@ -253,7 +255,7 @@
       .win-actions .button { min-height: 44px; }
     }
     @media (max-width: 380px) {
-      .brand { font-size: .98rem; }
+      .brand img { width: min(38vw, 145px); }
       .top-button { padding-inline: 6px; font-size: .59rem; }
     }
     @media (prefers-reduced-motion: reduce) {
@@ -265,7 +267,7 @@
 <body>
   <header class="topbar">
     <div class="shell">
-      <div class="brand">MedicaLogical</div>
+      <div class="brand"><img src="medicalogical-logo-transparent.png" alt="MedicaLogical" width="2022" height="778"></div>
       <div class="top-actions">
         <button class="top-button" id="how-to-button" type="button" aria-expanded="false" aria-controls="how-to-panel">How to play</button>
         <button class="top-button" id="settings-button" type="button" aria-expanded="false" aria-controls="settings-panel">Settings</button>

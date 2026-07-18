@@ -598,6 +598,31 @@
     return `${sign}$${Math.abs(value).toFixed(1)}M`;
   }
 
+  function roundOne(value) {
+    return Number(value.toFixed(1));
+  }
+
+  function projectChoice(period, choice, currentState = state) {
+    const revenue = roundOne(period.baseRevenue + choice.revenue);
+    const expense = roundOne(period.baseExpense + choice.expense);
+    const net = roundOne(revenue - expense);
+    const metrics = {};
+    Object.keys(metricMeta).forEach((key) => {
+      metrics[key] = clamp(
+        currentState.metrics[key] - period.decay[key] + (choice.effects[key] || 0),
+      );
+    });
+    return {
+      revenue,
+      expense,
+      net,
+      cash: roundOne(currentState.cash + net),
+      priceIndex: clamp(currentState.priceIndex + choice.price, 80, 300),
+      patientDebt: Math.max(0, roundOne(currentState.patientDebt + choice.debt)),
+      metrics,
+    };
+  }
+
   function policyImpact(label, value, positiveWord, negativeWord, options = {}) {
     const {
       neutralWord = "no change",
@@ -697,35 +722,32 @@
 
   function renderLedger(period) {
     const latest = state.history[state.history.length - 1];
-    const projectedRevenue = period.baseRevenue;
-    const projectedExpense = period.baseExpense;
+    const baselineNet = roundOne(period.baseRevenue - period.baseExpense);
     return `<section class="side-section side-ledger" aria-label="Quarterly financial report">
       <div class="side-heading">Finances</div>
-      <div><span>Revenue</span><strong>${latest ? money(latest.revenue) : "—"}</strong></div>
-      <div><span>Expenses</span><strong>${latest ? money(latest.expense) : "—"}</strong></div>
-      <div><span>Net</span><strong class="${latest && latest.net < 0 ? "bad" : "good"}">${latest ? money(latest.net, true) : "—"}</strong></div>
-      <div><span>Next forecast</span><strong class="${projectedRevenue - projectedExpense < 0 ? "bad" : "good"}">${money(projectedRevenue - projectedExpense, true)}</strong></div>
+      <div><span>Last quarter in</span><strong>${latest ? money(latest.revenue) : "—"}</strong></div>
+      <div><span>Last quarter out</span><strong>${latest ? money(latest.expense) : "—"}</strong></div>
+      <div><span>Last quarter net</span><strong class="${latest ? (latest.net < 0 ? "bad" : "good") : ""}">${latest ? money(latest.net, true) : "—"}</strong></div>
+      <div><span>Before-policy net</span><strong class="${baselineNet < 0 ? "bad" : "good"}">${money(baselineNet, true)}</strong></div>
     </section>`;
   }
 
   function renderChoices(period) {
     return period.choices
       .map((choice, index) => {
-        const projectedRevenue = period.baseRevenue + choice.revenue;
-        const projectedExpense = period.baseExpense + choice.expense;
-        const net = projectedRevenue - projectedExpense;
+        const projection = projectChoice(period, choice);
         const impacts = [
-          policyImpact("Prices", choice.price, "increase", "decrease", {
+          policyImpact("Prices", projection.priceIndex - state.priceIndex, "increase", "decrease", {
             positiveTone: choice.price >= 20 ? "negative" : "warning",
             format: (amount) => `${amount}%`,
           }),
-          policyImpact("Team", choice.effects.workforce - period.decay.workforce, "improves", "worsens"),
-          policyImpact("Care", choice.effects.care - period.decay.care, "improves", "worsens"),
-          policyImpact("Cash", net, "adds cash", "uses cash", {
+          policyImpact("Team", projection.metrics.workforce - state.metrics.workforce, "improves", "worsens"),
+          policyImpact("Care", projection.metrics.care - state.metrics.care, "improves", "worsens"),
+          policyImpact("Cash", projection.net, "adds cash", "uses cash", {
             neutralWord: "break-even",
             format: (amount) => money(amount),
           }),
-          policyImpact("Flow", choice.effects.flow - period.decay.flow, "improves", "worsens"),
+          policyImpact("Flow", projection.metrics.flow - state.metrics.flow, "improves", "worsens"),
         ];
         const impactForecast = impacts
           .map((impact) => `<span class="policy-impact ${impact.tone}" aria-label="${impact.label}: ${impact.word}, ${impact.value}">
@@ -749,7 +771,7 @@
       return `<div class="timeline-empty">No completed periods yet.</div>`;
     }
     return state.history
-      .slice(-4)
+      .slice()
       .reverse()
       .map((item) => {
         const grade = hospitalGrade(item.priceIndex);
@@ -839,32 +861,40 @@
     const choice = period.choices[index];
     if (!choice) return;
 
-    const revenue = period.baseRevenue + choice.revenue;
-    const expense = period.baseExpense + choice.expense;
-    const net = revenue - expense;
+    const before = {
+      cash: state.cash,
+      priceIndex: state.priceIndex,
+      patientDebt: state.patientDebt,
+      metrics: { ...state.metrics },
+    };
+    const projection = projectChoice(period, choice, state);
 
-    state.cash = Number((state.cash + net).toFixed(1));
-    state.priceIndex = clamp(state.priceIndex + choice.price, 80, 300);
-    state.patientDebt = Math.max(0, Number((state.patientDebt + choice.debt).toFixed(1)));
+    state.cash = projection.cash;
+    state.priceIndex = projection.priceIndex;
+    state.patientDebt = projection.patientDebt;
+    state.metrics = { ...projection.metrics };
     state.modes[choice.mode] += 1;
-
-    Object.keys(metricMeta).forEach((key) => {
-      state.metrics[key] = clamp(state.metrics[key] - period.decay[key] + (choice.effects[key] || 0));
-    });
 
     const report = {
       date: periodLabel(state.period),
       title: choice.title,
       mode: choice.mode,
-      revenue,
-      expense,
-      net,
+      revenue: projection.revenue,
+      expense: projection.expense,
+      net: projection.net,
       priceIndex: Math.round(state.priceIndex),
       patientDebt: state.patientDebt,
       trust: Math.round(state.metrics.trust),
       quote: choice.quote,
       adviser: advisers[period.adviser],
       adviserKey: period.adviser,
+      before,
+      after: {
+        cash: state.cash,
+        priceIndex: state.priceIndex,
+        patientDebt: state.patientDebt,
+        metrics: { ...state.metrics },
+      },
       nextPressure: state.period + 1 < periods.length ? periodLabel(state.period + 1) : "BOARD VOTE",
     };
 
@@ -878,13 +908,87 @@
     const finalPeriod = state.period >= periods.length;
     const collapsed = state.cash <= -8 || state.metrics.care <= 8 || state.metrics.workforce <= 8;
     const continueLabel = finalPeriod || collapsed ? "Open the final audit →" : "Advance to next quarter →";
-    const notice = report.mode === "care"
-      ? "Patients and staff felt the benefit. The balance sheet has filed an objection."
-      : report.mode === "balance"
-        ? "You purchased time at the customary rate of more time later."
-        : "Cash improved by moving the cost somewhere less visible.";
-
-    const grade = hospitalGrade(report.priceIndex);
+    const comparisonTone = (change, inverse = false) => {
+      if (Math.abs(change) < 0.05) return "same";
+      const improved = inverse ? change < 0 : change > 0;
+      return improved ? "good" : "bad";
+    };
+    const numberChange = (change, suffix = "") => {
+      if (Math.abs(change) < 0.05) return "— no change";
+      const sign = change > 0 ? "+" : "−";
+      const arrow = change > 0 ? "▲" : "▼";
+      return `${arrow} ${sign}${Math.abs(Math.round(change))}${suffix}`;
+    };
+    const moneyChange = (change) => Math.abs(change) < 0.05
+      ? "— no change"
+      : `${change > 0 ? "▲" : "▼"} ${money(change, true)}`;
+    const priceAndGrade = (value) => {
+      const priceChange = Math.round(value - 100);
+      const priceLabel = priceChange === 0
+        ? "BASE"
+        : `${priceChange > 0 ? "+" : "−"}${Math.abs(priceChange)}%`;
+      return `${priceLabel} · ${hospitalGrade(value).label}`;
+    };
+    const comparisonRows = [
+      {
+        label: "Prices / grade",
+        before: priceAndGrade(report.before.priceIndex),
+        after: priceAndGrade(report.after.priceIndex),
+        change: numberChange(report.after.priceIndex - report.before.priceIndex, "%"),
+        tone: comparisonTone(report.after.priceIndex - report.before.priceIndex, true),
+      },
+      {
+        label: "Cash on hand",
+        before: money(report.before.cash),
+        after: money(report.after.cash),
+        change: moneyChange(report.after.cash - report.before.cash),
+        tone: comparisonTone(report.after.cash - report.before.cash),
+      },
+      {
+        label: "Team",
+        before: Math.round(report.before.metrics.workforce),
+        after: Math.round(report.after.metrics.workforce),
+        change: numberChange(report.after.metrics.workforce - report.before.metrics.workforce),
+        tone: comparisonTone(report.after.metrics.workforce - report.before.metrics.workforce),
+      },
+      {
+        label: "Care",
+        before: Math.round(report.before.metrics.care),
+        after: Math.round(report.after.metrics.care),
+        change: numberChange(report.after.metrics.care - report.before.metrics.care),
+        tone: comparisonTone(report.after.metrics.care - report.before.metrics.care),
+      },
+      {
+        label: "Patient flow",
+        before: Math.round(report.before.metrics.flow),
+        after: Math.round(report.after.metrics.flow),
+        change: numberChange(report.after.metrics.flow - report.before.metrics.flow),
+        tone: comparisonTone(report.after.metrics.flow - report.before.metrics.flow),
+      },
+      {
+        label: "Trust",
+        before: Math.round(report.before.metrics.trust),
+        after: Math.round(report.after.metrics.trust),
+        change: numberChange(report.after.metrics.trust - report.before.metrics.trust),
+        tone: comparisonTone(report.after.metrics.trust - report.before.metrics.trust),
+      },
+      {
+        label: "Patient debt",
+        before: money(report.before.patientDebt),
+        after: money(report.after.patientDebt),
+        change: moneyChange(report.after.patientDebt - report.before.patientDebt),
+        tone: comparisonTone(report.after.patientDebt - report.before.patientDebt, true),
+      },
+    ];
+    const comparisonMarkup = comparisonRows
+      .map((item) => `<div class="report-comparison-row">
+        <span class="comparison-measure">${item.label}</span>
+        <span class="comparison-value"><small>Before</small><strong>${item.before}</strong></span>
+        <span class="comparison-arrow" aria-hidden="true">→</span>
+        <span class="comparison-value"><small>After</small><strong>${item.after}</strong></span>
+        <span class="comparison-change ${item.tone}">${item.change}</span>
+      </div>`)
+      .join("");
     openModal(`<div class="adviser-report ${report.adviser.theme}">
       <div class="adviser-person">
         <div class="adviser-portrait character-${report.adviserKey}" aria-hidden="true"><span>${report.adviser.initials}</span></div>
@@ -892,19 +996,10 @@
       </div>
       <div class="speech-card">
         <p class="adviser-quote">“${report.quote}”</p>
-        <p>${notice}</p>
       </div>
-      <div class="popup-ledger">
-        <div><span>Money in</span><strong>${money(report.revenue)}</strong></div>
-        <div><span>Money out</span><strong>${money(report.expense)}</strong></div>
-        <div><span>Net change</span><strong class="${report.net < 0 ? "bad" : "good"}">${money(report.net, true)}</strong></div>
-        <div><span>Cash left</span><strong>${money(state.cash)}</strong></div>
-      </div>
-      <div class="popup-impact">
-        <span>HOSPITAL GRADE <strong class="hospital-grade ${grade.className}">${grade.label}</strong></span>
-        <span>PATIENT DEBT <strong>${money(report.patientDebt)}</strong></span>
-        <span>TRUST <strong>${report.trust}</strong></span>
-        <span>NEXT: <strong>${report.nextPressure}</strong></span>
+      <div class="report-comparison">
+        <div class="report-comparison-heading"><strong>Hospital before and after</strong><small>NEXT: ${report.nextPressure}</small></div>
+        <div class="report-comparison-body">${comparisonMarkup}</div>
       </div>
       <button class="primary-action adviser-continue" type="button" data-advance="${finalPeriod || collapsed ? "ending" : "continue"}">${continueLabel}<span>›</span></button>
     </div>`, false);
@@ -929,9 +1024,9 @@
 
   function renderEnding() {
     const ending = state.ending;
-    const totalRevenue = state.history.reduce((sum, item) => sum + item.revenue, 0);
-    const totalExpense = state.history.reduce((sum, item) => sum + item.expense, 0);
-    const totalNet = totalRevenue - totalExpense;
+    const totalRevenue = roundOne(state.history.reduce((sum, item) => sum + item.revenue, 0));
+    const totalExpense = roundOne(state.history.reduce((sum, item) => sum + item.expense, 0));
+    const totalNet = roundOne(totalRevenue - totalExpense);
     gameView.innerHTML = `<section class="ending-screen ending-${ending.id}">
       <header class="ending-titlebar">
         <span>${hospitalName.toUpperCase()} // FINAL BOARD REPORT</span>
