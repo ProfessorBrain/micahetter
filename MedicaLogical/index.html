@@ -82,11 +82,11 @@
     .difficulty-option input:checked + span strong { color: var(--teal); }
     .difficulty-option small { display: block; margin-top: 2px; color: var(--muted); font-size: .67rem; line-height: 1.35; }
     main { padding: 30px 0 52px; }
-    .workspace { display: grid; grid-template-columns: minmax(310px, 390px) minmax(0, 1fr); gap: 24px; align-items: start; }
+    .workspace { display: grid; grid-template-columns: minmax(300px, 350px) minmax(0, 1fr); gap: 24px; align-items: start; }
     .game-panel { min-width: 0; padding-top: 11px; position: relative; background: #e9ddbe; border: 1px solid #b9a67b; border-radius: 4px; box-shadow: var(--shadow), 6px 7px 0 rgba(54,34,20,.18); overflow: visible; }
     .game-panel::before { content: ""; height: 24px; position: absolute; top: -11px; right: 24px; left: 24px; z-index: 5; pointer-events: none; background: radial-gradient(ellipse at center, transparent 0 5px, #303b39 6px 7px, #77817e 8px, transparent 9px) 0 0 / 38px 23px repeat-x; filter: drop-shadow(1px 2px 1px rgba(38,24,15,.35)); }
     .board-scroll { overflow-x: auto; overscroll-behavior-inline: contain; background: var(--paper); border-radius: 2px; box-shadow: inset 0 1px rgba(255,255,255,.8); scrollbar-color: var(--teal) transparent; scrollbar-width: thin; -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y; }
-    .board { width: 100%; min-width: 820px; border-collapse: collapse; table-layout: fixed; }
+    .board { width: 100%; min-width: 700px; border-collapse: collapse; table-layout: fixed; }
     .board th, .board td { border: solid #c9d2ca; border-width: 0 1px 1px 0; transition: background-color 180ms ease, box-shadow 180ms ease; }
     .board thead th { height: 68px; padding: 10px 12px; background-color: #2b554b; background-image: linear-gradient(180deg, rgba(255,255,255,.08), transparent 50%, rgba(0,0,0,.14)); color: white; text-align: center; box-shadow: inset 0 -2px rgba(19,49,43,.32); }
     .board thead th:first-child { width: 130px; position: sticky; left: 0; z-index: 3; text-align: left; color: #dcb66f; }
@@ -114,6 +114,7 @@
     .board tbody tr.correct-row > td.correct-column { background: #d5ecdf; }
     .board tbody tr.correct-row select,
     .board tbody td.correct-column select { border-color: #64a98c; background: #f0faf5; color: #174f40; box-shadow: 0 0 0 1px rgba(50, 126, 94, .12); }
+    .board select:disabled { cursor: default; opacity: 1; -webkit-text-fill-color: #174f40; }
     .board select.duplicate { border-color: var(--rust); background: var(--rust-soft); box-shadow: 0 0 0 1px var(--rust); }
     .board select option:disabled { color: #9aa39f; background: #eef0ed; }
 
@@ -202,18 +203,24 @@
       0% { transform: translate3d(0, -5vh, 0) rotate(0); }
       100% { transform: translate3d(var(--drift), 112vh, 0) rotate(var(--spin)); }
     }
-    @media (max-width: 1279px) {
-      .workspace { grid-template-columns: 1fr; }
-      .game-panel { order: -1; }
-      .clues { max-height: none; position: static; overflow: visible; transform: none; }
-    }
-    @media (min-width: 721px) and (max-width: 1279px) {
+    @media (min-width: 700px) and (max-width: 1105px) {
+      .shell { width: min(100% - 20px, 1240px); }
+      .workspace { grid-template-columns: clamp(230px, 32vw, 320px) minmax(0, 1fr); gap: 14px; }
       .board { min-width: 0; }
-      .clues { padding-right: 24px; }
-      .clue-list { columns: 2; column-gap: 42px; column-rule: 1px solid rgba(150, 106, 45, .2); }
-      .clue-list li { padding-right: 14px; }
+      .board thead th { height: 60px; padding: 6px 4px; }
+      .board thead th:first-child { width: 82px; padding-inline: 7px; font-size: .7rem; line-height: 1.25; }
+      .board thead small { font-size: .49rem; letter-spacing: .08em; }
+      .board thead strong { font-size: .8rem; }
+      .board tbody th { width: 82px; padding: 7px; font-size: .56rem; letter-spacing: .06em; }
+      .board td { height: 58px; padding: 5px; }
+      .board select { height: 42px; padding-inline: 6px 20px; font-size: .8rem; text-overflow: ellipsis; }
+      .clues { max-height: calc(100vh - 102px); max-height: calc(100dvh - 102px); padding: 20px 10px 16px 43px; position: sticky; top: 18px; overflow: auto; scrollbar-color: var(--teal) transparent; scrollbar-width: thin; transform: none; }
+      .clues h2 { font-size: 1.18rem; }
+      .clue-list { columns: 1; }
+      .clue-list li { min-height: 40px; padding: 7px 3px 7px 29px; font-size: .79rem; line-height: 1.48; }
+      .clue-state { width: 18px; height: 18px; left: 2px; top: 10px; }
     }
-    @media (max-width: 720px) {
+    @media (max-width: 699px) {
       body { background-attachment: scroll; }
       .shell { width: min(100% - 16px, 1240px); }
       .topbar { height: 60px; }
@@ -223,14 +230,16 @@
       .top-button { min-height: 44px; padding-inline: 7px; font-size: .62rem; }
       .header-panel { width: calc(100vw - 16px); max-height: calc(100vh - 72px); max-height: calc(100dvh - 72px); top: 52px; padding: 14px; }
       main { padding: 10px 0 28px; }
-      .workspace { gap: 12px; }
+      .workspace { grid-template-columns: 1fr; gap: 12px; }
+      .game-panel { order: -1; }
+      .clues { max-height: none; position: relative; top: auto; overflow: visible; transform: none; }
       .specialty-grid { grid-template-columns: 1fr; }
       .specialty-option { min-height: 44px; }
       .specialty-option input { width: 18px; height: 18px; flex: 0 0 auto; }
       .difficulty-options { grid-template-columns: 1fr; }
       .difficulty-option { min-height: 58px; }
       .game-panel { border-radius: 3px; }
-      .board { min-width: 760px; }
+      .board { min-width: 640px; }
       .board thead th { height: 60px; padding: 8px; }
       .board thead th:first-child { width: 112px; }
       .board thead strong { font-size: .9rem; }
@@ -314,7 +323,7 @@
       </aside>
 
       <section class="game-panel" aria-label="Clinical medicine zebra puzzle">
-        <div class="board-scroll" id="board-scroll" tabindex="0" aria-label="Clinic schedule; scroll horizontally on smaller screens">
+        <div class="board-scroll" id="board-scroll" tabindex="0" aria-label="Patient appointment details; scroll horizontally on smaller screens">
           <table class="board" id="board"></table>
         </div>
         <p class="sr-only" id="game-status" aria-live="polite"></p>
@@ -341,13 +350,21 @@
   <script>
     "use strict";
 
-    const slots = [
-      { id: "0900", time: "9:00 AM", position: "Appointment 1" },
-      { id: "1000", time: "10:00 AM", position: "Appointment 2" },
-      { id: "1100", time: "11:00 AM", position: "Appointment 3" },
-      { id: "1300", time: "1:00 PM", position: "Appointment 4" },
-      { id: "1400", time: "2:00 PM", position: "Appointment 5" }
+    const appointmentSchedules = [
+      [
+        { id: "0800", time: "8:00 AM", position: "Appointment 1" },
+        { id: "0900", time: "9:00 AM", position: "Appointment 2" },
+        { id: "1000", time: "10:00 AM", position: "Appointment 3" },
+        { id: "1100", time: "11:00 AM", position: "Appointment 4" }
+      ],
+      [
+        { id: "1300", time: "1:00 PM", position: "Appointment 1" },
+        { id: "1400", time: "2:00 PM", position: "Appointment 2" },
+        { id: "1500", time: "3:00 PM", position: "Appointment 3" },
+        { id: "1600", time: "4:00 PM", position: "Appointment 4" }
+      ]
     ];
+    let slots = appointmentSchedules[0];
 
     const namePool = [
       ["dorian-knox", "Dorian Knox", "male"], ["clara-finch", "Clara Finch", "female"], ["amara-vale", "Amara Vale", "female"],
@@ -411,7 +428,7 @@
     let clueSpecs = [];
     let entries = {};
     let hasCelebrated = false;
-    const previousSelections = { demographic: "", history: "", outcome: "" };
+    const previousSelections = { demographic: "", history: "", outcomes: "" };
     let previousNameSignature = "";
     let selectedDifficulty = "medium";
     const selectedSpecialties = new Set(Object.keys(SPECIALTY_MODES));
@@ -426,7 +443,7 @@
     }
 
     function inlineDiagnosis(diagnosis) {
-      const keepsInitialCapital = /^(?:Barrett\b|Clostridioides\b|Crohn\b|Graves\b|IgE\b|Parkinson\b|ST(?:-|\b))/;
+      const keepsInitialCapital = /^(?:Achilles\b|Barrett\b|Clostridioides\b|Crohn\b|De Quervain\b|Graves\b|Hodgkin\b|IgE\b|Ménière\b|Parkinson\b|ST(?:-|\b))/;
       return keepsInitialCapital.test(diagnosis)
         ? diagnosis
         : diagnosis.charAt(0).toLowerCase() + diagnosis.slice(1);
@@ -435,6 +452,17 @@
     function pickDifferent(pool, previousKey) {
       const choices = pool.filter(row => row.key !== previousKey);
       return choices[Math.floor(Math.random() * choices.length)];
+    }
+
+    function pickOutcomeKinds() {
+      let selected;
+      let signature;
+      do {
+        selected = shuffled(outcomeKinds).slice(0, 2);
+        signature = selected.map(kind => kind.key).sort().join("|");
+      } while (signature === previousSelections.outcomes);
+      previousSelections.outcomes = signature;
+      return selected;
     }
 
     function makeNameClues() {
@@ -449,15 +477,13 @@
         return [
           { text: `${names[0][1]} was seen earlier than ${names[1][1]}.`, test: () => before("name", names[0][0], "name", names[1][0]) },
           { text: `${names[1][1]} was seen immediately before ${names[2][1]}.`, test: () => adjacent("name", names[1][0], "name", names[2][0]) },
-          { text: `${names[2][1]} was seen earlier than ${names[3][1]}.`, test: () => before("name", names[2][0], "name", names[3][0]) },
-          { text: `${names[3][1]} was seen immediately before ${names[4][1]}.`, test: () => adjacent("name", names[3][0], "name", names[4][0]) }
+          { text: `${names[2][1]} was seen earlier than ${names[3][1]}.`, test: () => before("name", names[2][0], "name", names[3][0]) }
         ];
       }
       return [
-        { text: `${names[0][1]} was the first consultation of the day.`, test: () => fixed("name", names[0][0], 0) },
+        { text: `${names[0][1]} was the first patient of the day.`, test: () => fixed("name", names[0][0], 0) },
         { text: `${names[1][1]} was seen immediately before ${names[2][1]}.`, test: () => adjacent("name", names[1][0], "name", names[2][0]) },
-        { text: `${names[3][1]} was seen immediately before ${names[4][1]}.`, test: () => adjacent("name", names[3][0], "name", names[4][0]) },
-        { text: `${names[4][1]} took the final appointment.`, test: () => fixed("name", names[4][0], 4) }
+        { text: `${names[3][1]} took the final appointment.`, test: () => fixed("name", names[3][0], slots.length - 1) }
       ];
     }
 
@@ -481,17 +507,16 @@
         return [
           { text: `The ${subjects[0]} was seen earlier than the ${subjects[1]}.`, test: () => before(row.key, ids[0], row.key, ids[1]) },
           { text: `The ${subjects[1]} was seen immediately before the ${subjects[2]}.`, test: () => adjacent(row.key, ids[1], row.key, ids[2]) },
-          { text: `The ${subjects[2]} was seen earlier than the ${subjects[3]}.`, test: () => before(row.key, ids[2], row.key, ids[3]) },
-          { text: `The ${subjects[3]} was seen immediately before the ${subjects[4]}.`, test: () => adjacent(row.key, ids[3], row.key, ids[4]) }
+          { text: `The ${subjects[2]} was seen earlier than the ${subjects[3]}.`, test: () => before(row.key, ids[2], row.key, ids[3]) }
         ];
       }
       const firstName = nameRow.assignment[0];
-      const finalName = nameRow.assignment[4];
+      const finalIndex = slots.length - 1;
+      const finalName = nameRow.assignment[finalIndex];
       return [
         { text: `${firstName[1]} was the ${subjects[0]}.`, test: () => sameGroup([["name", firstName[0]], [row.key, ids[0]]]) },
         { text: `The ${subjects[1]} was seen immediately before the ${subjects[2]}.`, test: () => adjacent(row.key, ids[1], row.key, ids[2]) },
-        { text: `The ${subjects[3]} was seen immediately before the ${subjects[4]}.`, test: () => adjacent(row.key, ids[3], row.key, ids[4]) },
-        { text: `${finalName[1]} was the ${subjects[4]}.`, test: () => sameGroup([["name", finalName[0]], [row.key, ids[4]]]) }
+        { text: `${finalName[1]} was the ${subjects[finalIndex]}.`, test: () => sameGroup([["name", finalName[0]], [row.key, ids[finalIndex]]]) }
       ];
     }
 
@@ -502,8 +527,7 @@
         return [
           { text: `The ${subjects[0]} belonged to an earlier appointment than the ${subjects[1]}.`, test: () => before(row.key, ids[0], row.key, ids[1]) },
           { text: `The ${subjects[1]} was in the appointment immediately before the ${subjects[2]}.`, test: () => adjacent(row.key, ids[1], row.key, ids[2]) },
-          { text: `The ${subjects[2]} belonged to an earlier appointment than the ${subjects[3]}.`, test: () => before(row.key, ids[2], row.key, ids[3]) },
-          { text: `The ${subjects[3]} was in the appointment immediately before the ${subjects[4]}.`, test: () => adjacent(row.key, ids[3], row.key, ids[4]) }
+          { text: `The ${subjects[2]} belonged to an earlier appointment than the ${subjects[3]}.`, test: () => before(row.key, ids[2], row.key, ids[3]) }
         ];
       }
       return row.assignment.map((outcome, index) => {
@@ -521,7 +545,7 @@
         } else if (selectedDifficulty === "easy") {
           text = `The ${slots[index].time} patient with ${diagnosis} had its characteristic symptom.`;
         } else if (row.key === "diagnosis") {
-          text = `${name[1]} presented with ${clinicalCase.fact}; use this to identify the diagnosis.`;
+          text = `${name[1]} presented with ${clinicalCase.fact}.`;
         } else if (row.key === "treatment") {
           const mechanism = window.TREATMENT_MECHANISMS[clinicalCase.id];
           text = mechanism
@@ -548,23 +572,32 @@
       return `characteristic symptom of ${diagnosis}`;
     }
 
-    function chooseSpecialtyCases() {
+    function chooseSpecialtyCases(selectedOutcomeKinds) {
       const specialtyKeys = shuffled(Array.from(selectedSpecialties));
       const chosen = [];
       const used = new Set();
+      const usedLabels = Object.fromEntries(selectedOutcomeKinds.map(kind => [kind.key, new Set()]));
 
-      for (const specialtyKey of specialtyKeys.slice(0, slots.length)) {
-        const candidates = shuffled(SPECIALTY_MODES[specialtyKey].cases);
-        const clinicalCase = candidates[0];
+      const canUse = clinicalCase => !used.has(clinicalCase.id)
+        && selectedOutcomeKinds.every(kind => !usedLabels[kind.key].has(clinicalCase[kind.key]));
+
+      const addCase = clinicalCase => {
         chosen.push(clinicalCase);
         used.add(clinicalCase.id);
+        selectedOutcomeKinds.forEach(kind => usedLabels[kind.key].add(clinicalCase[kind.key]));
+      };
+
+      for (const specialtyKey of specialtyKeys) {
+        const clinicalCase = shuffled(SPECIALTY_MODES[specialtyKey].cases).find(canUse);
+        if (clinicalCase) addCase(clinicalCase);
+        if (chosen.length === slots.length) break;
       }
 
-      const remaining = shuffled(specialtyKeys.flatMap(key => SPECIALTY_MODES[key].cases)).filter(clinicalCase => !used.has(clinicalCase.id));
-      while (chosen.length < slots.length && remaining.length) {
-        const clinicalCase = remaining.shift();
-        chosen.push(clinicalCase);
-        used.add(clinicalCase.id);
+      const remaining = shuffled(specialtyKeys.flatMap(key => SPECIALTY_MODES[key].cases));
+      while (chosen.length < slots.length) {
+        const clinicalCase = remaining.find(canUse);
+        if (!clinicalCase) throw new Error("Not enough distinct clinical options for the selected specialties");
+        addCase(clinicalCase);
       }
       return shuffled(chosen);
     }
@@ -619,6 +652,13 @@
       };
     }
 
+    function buildRotatingRow(template) {
+      const selectedIndexes = shuffled(template.values.map((value, index) => index)).slice(0, slots.length);
+      const values = selectedIndexes.map(index => template.values[index]);
+      const subjects = selectedIndexes.map(index => template.subjects[index]);
+      return { ...template, values, subjects, assignment: shuffled(values) };
+    }
+
     function renderSpecialtySelector() {
       document.getElementById("specialty-options").innerHTML = Object.entries(SPECIALTY_MODES)
         .sort((a, b) => a[1].label.localeCompare(b[1].label))
@@ -633,7 +673,9 @@
     function newPuzzle() {
       hasCelebrated = false;
       hideWinCelebration();
-      const clinicalCases = chooseSpecialtyCases();
+      slots = appointmentSchedules[Math.floor(Math.random() * appointmentSchedules.length)];
+      const selectedOutcomeKinds = pickOutcomeKinds();
+      const clinicalCases = chooseSpecialtyCases(selectedOutcomeKinds);
       let selectedNames;
       let nameSignature;
       do {
@@ -645,18 +687,16 @@
 
       const demographicTemplate = pickDifferent(demographicRows, previousSelections.demographic);
       const historyTemplate = pickDifferent(historyRows, previousSelections.history);
-      const outcomeKind = pickDifferent(outcomeKinds, previousSelections.outcome);
       previousSelections.demographic = demographicTemplate.key;
       previousSelections.history = historyTemplate.key;
-      previousSelections.outcome = outcomeKind.key;
 
       const demographic = demographicTemplate.key === "age"
         ? buildAgeRow(clinicalCases)
-        : { ...demographicTemplate, assignment: shuffled(demographicTemplate.values) };
-      const history = { ...historyTemplate, assignment: shuffled(historyTemplate.values) };
-      const outcome = buildOutcomeRow(outcomeKind, clinicalCases);
+        : buildRotatingRow(demographicTemplate);
+      const history = buildRotatingRow(historyTemplate);
+      const outcomes = selectedOutcomeKinds.map(kind => buildOutcomeRow(kind, clinicalCases));
 
-      const activeRows = [nameRow, demographic, history, outcome];
+      const activeRows = [nameRow, demographic, history, ...outcomes];
       categories = Object.fromEntries(activeRows.map(row => [row.key, { label: row.label, options: shuffled(row.values) }]));
       categoryKeys = activeRows.map(row => row.key);
       solution = Object.fromEntries(slots.map((slot, position) => [
@@ -667,7 +707,7 @@
         ...makeNameClues(),
         ...makePlacementClues(demographic),
         ...makePlacementClues(history),
-        ...makeOutcomeClues(outcome)
+        ...outcomes.flatMap(makeOutcomeClues)
       ]);
       entries = emptyEntries();
       document.getElementById("board-scroll").scrollLeft = 0;
@@ -763,7 +803,7 @@
       const correctColumns = new Set(slots.filter(slot => columnIsCorrect(slot.id)).map(slot => slot.id));
       const headers = slots.map(slot => {
         const correct = correctColumns.has(slot.id);
-        return `<th scope="col" class="${correct ? "correct-column" : ""}"><small>${escapeHtml(slot.position)}</small><strong>${escapeHtml(slot.time)}</strong>${correct ? '<span class="sr-only">Correctly completed.</span>' : ""}</th>`;
+        return `<th scope="col" class="${correct ? "correct-column" : ""}"><strong>${escapeHtml(slot.time)}</strong>${correct ? '<span class="sr-only">Correctly completed.</span>' : ""}</th>`;
       }).join("");
       const rows = categoryKeys.map(field => {
         const category = categories[field];
@@ -772,11 +812,14 @@
         const cells = slots.map(slot => {
           const value = entries[slot.id][field];
           const key = `${slot.id}:${field}`;
-          return `<td class="${correctColumns.has(slot.id) ? "correct-column" : ""}"><select data-slot="${slot.id}" data-field="${field}" class="${value ? "has-value" : ""}${duplicates.has(key) ? " duplicate" : ""}" aria-label="${escapeHtml(category.label)} for ${escapeHtml(slot.time)}">${optionMarkup(category.options, value, usedValues)}</select></td>`;
+          const locked = correct || correctColumns.has(slot.id);
+          const lockAttributes = locked ? ' disabled title="Correctly completed and locked"' : "";
+          const lockLabel = locked ? ", correctly completed and locked" : "";
+          return `<td class="${correctColumns.has(slot.id) ? "correct-column" : ""}"><select data-slot="${slot.id}" data-field="${field}" class="${value ? "has-value" : ""}${duplicates.has(key) ? " duplicate" : ""}" aria-label="${escapeHtml(category.label)} for ${escapeHtml(slot.time)}${lockLabel}"${lockAttributes}>${optionMarkup(category.options, value, usedValues)}</select></td>`;
         }).join("");
         return `<tr class="${correct ? "correct-row" : ""}"><th scope="row">${escapeHtml(category.label)}${correct ? '<span class="sr-only">Correctly completed.</span>' : ""}</th>${cells}</tr>`;
       }).join("");
-      document.getElementById("board").innerHTML = `<thead><tr><th scope="col">Clinic appointments</th>${headers}</tr></thead><tbody>${rows}</tbody>`;
+      document.getElementById("board").innerHTML = `<thead><tr><th scope="col"><span class="sr-only">Patient details</span></th>${headers}</tr></thead><tbody>${rows}</tbody>`;
     }
 
     function renderClues() {

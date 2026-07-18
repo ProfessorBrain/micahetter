@@ -1428,6 +1428,85 @@ footer {
   }
 }
 
+/* Quarter briefings: one visible speaker carries the update into its result. */
+.hospital-update {
+  display: block;
+  padding: 14px 16px;
+}
+
+.update-speaker {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #858579;
+}
+
+.update-portrait {
+  width: 62px;
+  height: 70px;
+  flex: 0 0 62px;
+}
+
+.hospital-update p,
+.hospital-update p + p,
+.update-speaker p,
+.update-copy p {
+  margin: 0 0 12px;
+  color: #111;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.update-speaker p,
+.update-speaker p + p {
+  margin: 0;
+}
+
+.update-speaker strong,
+.update-bad-news strong {
+  font-size: inherit;
+}
+
+.update-bad-news,
+.hospital-update .update-bad-news {
+  margin: 0;
+  padding: 10px 12px;
+  border: 2px solid;
+  border-color: #7c0000 #fff #fff #7c0000;
+  background: #ffe0cf;
+  box-shadow: inset 5px 0 0 #b4141b;
+  color: #630006;
+}
+
+.adviser-portrait.character-nurse { --adviser-color: #06705d; background-color: #78b3cf; }
+.adviser-portrait.character-finance { --adviser-color: #183f8f; background-color: #8ea3ba; }
+.adviser-portrait.character-insurer { --adviser-color: #842028; background-color: #d3aa75; }
+.adviser-portrait.character-casework { --adviser-color: #765399; background-color: #75aac0; }
+.adviser-portrait.character-services { --adviser-color: #c2641c; background-color: #79a897; }
+.adviser-portrait.character-state { --adviser-color: #6f2631; background-color: #aaa0a0; }
+.adviser-portrait.character-advocate { --adviser-color: #275daa; background-color: #d5a06e; }
+.adviser-portrait.character-physician { --adviser-color: #15738c; background-color: #8db4bf; }
+
+@media (max-width: 620px) {
+  .hospital-update {
+    padding: 12px;
+  }
+
+  .update-speaker {
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .update-portrait {
+    width: 54px;
+    height: 62px;
+    flex-basis: 54px;
+  }
+}
+
 /* Continuous six-month simulation */
 body.modal-open {
   overflow: hidden;
@@ -2193,6 +2272,30 @@ body.modal-open {
   font-family: var(--display);
   font-size: 31px;
   line-height: 1;
+}
+
+.hospital-grade {
+  font-family: Arial Black, Arial, "Segoe UI Emoji", sans-serif !important;
+  font-weight: 900 !important;
+}
+
+.grade-a { color: #007a3d !important; }
+.grade-b { color: #168b43 !important; }
+.grade-c { color: #8a7700 !important; }
+.grade-d { color: #b45c00 !important; }
+.grade-f { color: #b10018 !important; }
+.grade-x { color: #5b1895 !important; }
+.grade-skull { color: #111 !important; }
+
+.primary-readouts .hospital-grade {
+  font-size: 36px;
+  line-height: .9;
+}
+
+.compact-vitals .hospital-grade,
+.popup-impact .hospital-grade {
+  display: inline;
+  font-size: inherit;
 }
 
 .hospital-update {

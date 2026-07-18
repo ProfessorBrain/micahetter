@@ -2,9 +2,9 @@
 
 **A small American healthcare nightmare simulator.**
 
-You are in charge of fictional St. Dymphna Memorial, a 60-bed nonprofit hospital. One continuous playthrough follows the hospital in six-month periods across four years. You must admit patients, preserve staffed beds, arrange safe discharges, pay the entire hospital team, fight insurers, interpret government payment rules, set prices, and keep enough cash on hand to open tomorrow.
+You are in charge of fictional St. Dymphna Memorial, a 60-bed nonprofit hospital. One continuous playthrough follows the hospital across eight quarters and two years. You must admit patients, preserve staffed beds, arrange safe discharges, pay the entire hospital team, fight insurers, interpret government payment rules, set prices, and keep enough cash on hand to open tomorrow.
 
-Each session lasts about 3–5 minutes. The first year begins in suspiciously good shape, then payer delays, post-acute gridlock, rising payroll, public-payment recoupments, and debt compound. At the end of every six months, a hospital representative reports the financial and human consequences in a pop-up. Six replayable outcomes can be discovered—including a panic-button sale to private equity that rewards the person in charge and destroys the hospital for everyone else.
+Each session lasts about 3–5 minutes. The first two quarters begin in suspiciously good shape, then payer delays, post-acute gridlock, rising payroll, public-payment recoupments, and debt compound. At the end of every quarter, a hospital representative reports the financial and human consequences in a pop-up. Six replayable outcomes can be discovered—including a panic-button sale to private equity that rewards the person in charge and destroys the hospital for everyone else.
 
 ## Play locally
 

@@ -72,11 +72,29 @@
       role: "North Meridian payer liaison",
       theme: "antagonist",
     },
+    casework: {
+      initials: "MC",
+      name: "Mina Cho, LCSW",
+      role: "Director of case management",
+      theme: "care",
+    },
+    services: {
+      initials: "DP",
+      name: "Darnell Price",
+      role: "Director of environmental services",
+      theme: "care",
+    },
     state: {
-      initials: "SL",
-      name: "Automated State Liaison",
-      role: "Department of reimbursement recovery",
+      initials: "RC",
+      name: "Rhea Caldwell",
+      role: "State Medicaid program liaison",
       theme: "antagonist",
+    },
+    physician: {
+      initials: "AB",
+      name: "Dr. Amara Bell",
+      role: "Emergency physician & medical staff chair",
+      theme: "care",
     },
   };
 
@@ -85,9 +103,10 @@
       date: "JAN–JUN 2026",
       year: "YEAR 1 · FIRST HALF",
       status: "INHERITED STABILITY",
+      adviser: "nurse",
       title: "Nothing is on fire.",
-      situation: "St. Dymphna Memorial is full, respected, and unusually liquid. The physicians, nurses, therapists, caseworkers, sanitation crews, and support teams know exactly what they are doing.",
-      pressure: "Commercial claims arrive on time. Discharges move. Even the ice machine has stopped making that noise.",
+      situation: "You take over with all 60 beds open, a veteran group of department leaders, and $26 million in unrestricted cash. Vacancies are low, the operating-room schedule is full, and the case management team can usually find a safe discharge placement before noon.",
+      pressure: "For now, the hospital collects most commercial claims within 45 days and makes payroll without borrowing. Department heads have submitted a modest wish list: more weekend therapy coverage, two additional environmental services positions, and replacement monitors for the step-down unit.",
       baseRevenue: 29.4,
       baseExpense: 27.1,
       decay: { workforce: 1, care: 1, trust: 0, flow: 1 },
@@ -103,7 +122,7 @@
           debt: -0.2,
           effects: { workforce: 7, care: 6, trust: 4, flow: 5 },
           adviser: "nurse",
-          quote: "Nobody had to be heroic. That is what a good six months looks like.",
+          quote: "Nobody had to be heroic. That is what a good quarter looks like.",
         },
         {
           mode: "balance",
@@ -115,7 +134,7 @@
           debt: 0.1,
           effects: { workforce: 3, care: 2, trust: 2, flow: 2 },
           adviser: "finance",
-          quote: "A normal quarter. I checked twice. It appears to be legal.",
+          quote: "Staffing held, patients moved, and nobody was asked to cover two jobs at once. I can work with that.",
         },
         {
           mode: "extract",
@@ -127,7 +146,7 @@
           debt: 1.6,
           effects: { workforce: -2, care: -1, trust: -8, flow: 0 },
           adviser: "finance",
-          quote: "You monetized peace. The board is aroused and concerned.",
+          quote: "The units are still safe because the staff absorbed the change. The higher bills did not make their work easier.",
         },
       ],
     },
@@ -135,9 +154,10 @@
       date: "JUL–DEC 2026",
       year: "YEAR 1 · SECOND HALF",
       status: "ORDINARY FRICTION",
+      adviser: "finance",
       title: "Still a hospital. Mostly.",
-      situation: "Volume rises gently. Two insurers slow payment, but the revenue team knows the dance. Staff cover the gaps without missing care.",
-      pressure: "The new state billing manual is 612 pages, including 48 pages explaining that it is simpler.",
+      situation: "Admissions finish the quarter six percent above forecast. The additional volume is manageable, but nurses are picking up more overtime and weekend therapy coverage is thin enough to delay a few Monday discharges.",
+      pressure: "Two commercial insurers have quietly extended the time they take to pay clean claims. The state has also issued a 612-page billing manual with new documentation rules, so the revenue team is moving experienced staff away from collections to review charts and resubmit forms.",
       baseRevenue: 29.8,
       baseExpense: 28.7,
       decay: { workforce: 2, care: 1, trust: 1, flow: 2 },
@@ -153,7 +173,7 @@
           debt: 0,
           effects: { workforce: 7, care: 6, trust: 4, flow: 5 },
           adviser: "nurse",
-          quote: "The units are busy, not unsafe. Please remember the distinction.",
+          quote: "The staffing expense is real, but so is the overtime it prevented. This quarter cost more and ran better.",
         },
         {
           mode: "balance",
@@ -165,7 +185,7 @@
           debt: 0.4,
           effects: { workforce: 2, care: 2, trust: 0, flow: 2 },
           adviser: "finance",
-          quote: "We spent cash to wait for money we already earned. A classic.",
+          quote: "We used reserves to bridge claims that should already have been paid. The books balance, provided nobody asks when.",
         },
         {
           mode: "extract",
@@ -177,7 +197,7 @@
           debt: 2.1,
           effects: { workforce: -2, care: -2, trust: -10, flow: -1 },
           adviser: "advocate",
-          quote: "The doctor helped me. Then the building sent its own invoice.",
+          quote: "Facility fees improved collections quickly. They also gave every outpatient a second bill to dispute.",
         },
       ],
     },
@@ -185,9 +205,10 @@
       date: "JAN–JUN 2027",
       year: "YEAR 2 · FIRST HALF",
       status: "PAYMENT WEATHER",
+      adviser: "insurer",
       title: "The care happened. Payment did not.",
-      situation: "North Meridian places $8.6 million in clean claims under ‘extended review.’ The patients have been treated. The staff have been paid. The insurer is thinking.",
-      pressure: "A payer representative recommends reducing reliance on reimbursement by providing less reimbursable care.",
+      situation: "North Meridian has placed $8.6 million in inpatient claims under extended review. The care was authorized, delivered, documented, and billed; the payer is now requesting records that were included with the original claims.",
+      pressure: "The hospital has already paid the physicians, nurses, technicians, and suppliers involved in those stays. Collections are falling behind payroll, and North Meridian's account representative says the hospital should expect another 60 to 90 days before the reviews are complete.",
       baseRevenue: 27.1,
       baseExpense: 29.6,
       decay: { workforce: 4, care: 3, trust: 2, flow: 4 },
@@ -203,7 +224,7 @@
           debt: 0.3,
           effects: { workforce: 4, care: 5, trust: 5, flow: 4 },
           adviser: "nurse",
-          quote: "The chart was correct before the insurer read it and after.",
+          quote: "Your appeal team recovered more claims than expected. North Meridian will review whether the appeal process is being used too successfully.",
         },
         {
           mode: "balance",
@@ -215,7 +236,7 @@
           debt: 1.2,
           effects: { workforce: 1, care: 1, trust: -2, flow: 1 },
           adviser: "finance",
-          quote: "The bank paid us because the insurer did not. Both sent fees.",
+          quote: "Borrowing is a hospital financing decision. North Meridian remains committed to reviewing payment when review is complete.",
         },
         {
           mode: "extract",
@@ -227,7 +248,7 @@
           debt: 4.8,
           effects: { workforce: -4, care: -4, trust: -16, flow: -3 },
           adviser: "advocate",
-          quote: "The CT found nothing. The bill found my house.",
+          quote: "Higher list prices strengthen your negotiating position. They also allow us to describe the hospital as the cause of rising costs.",
         },
       ],
     },
@@ -235,9 +256,10 @@
       date: "JUL–DEC 2027",
       year: "YEAR 2 · SECOND HALF",
       status: "POST-ACUTE GRIDLOCK",
+      adviser: "casework",
       title: "Everyone is ready to leave. Nobody can.",
-      situation: "Twenty patients are medically ready for rehab or skilled nursing. North Meridian denies every placement. The state has closed two nursing facilities after underfunding them for years.",
-      pressure: "The emergency department boards admissions in hallways while safe discharge plans wait for authorization.",
+      situation: "Twenty inpatients no longer need acute hospital care. Therapy and case management recommend skilled nursing for fourteen of them and inpatient rehabilitation for six. North Meridian denied every placement, including several facilities it had already identified as in-network.",
+      pressure: "Those patients remain in staffed hospital beds while appeals are filed. Eleven admitted patients are waiting in the emergency department, three on hallway stretchers, and two nearby nursing facilities have stopped accepting referrals after cuts to the state's payment rates.",
       baseRevenue: 26.4,
       baseExpense: 31.3,
       decay: { workforce: 7, care: 6, trust: 5, flow: 12 },
@@ -265,7 +287,7 @@
           debt: 1.8,
           effects: { workforce: 3, care: 3, trust: 1, flow: 9 },
           adviser: "finance",
-          quote: "We won most appeals. Their reward is another appeal.",
+          quote: "The team overturned most of the denials, but every appeal took hours we should have spent arranging care.",
         },
         {
           mode: "extract",
@@ -277,7 +299,7 @@
           debt: 5.9,
           effects: { workforce: -8, care: -14, trust: -18, flow: 10 },
           adviser: "advocate",
-          quote: "The discharge summary was flawless. The discharge was not.",
+          quote: "We completed the paperwork. We did not make those apartments safe, and several patients will be back.",
         },
       ],
     },
@@ -285,9 +307,10 @@
       date: "JAN–JUN 2028",
       year: "YEAR 3 · FIRST HALF",
       status: "LABOR REALITY",
+      adviser: "services",
       title: "Payroll has discovered inflation.",
-      situation: "Nurses, physicians, therapists, sanitation workers, caseworkers, technicians, pharmacists, and food-service teams all cost more because they are people who require housing.",
-      pressure: "Payers offer a 1.8% rate increase and a webinar about shared sacrifice.",
+      situation: "The annual wage review shows the hospital is falling behind the local market for nurses, imaging technicians, therapists, pharmacists, and environmental services staff. Open positions are taking longer to fill, and agency shifts now cost almost twice as much as regular staff hours.",
+      pressure: "Keeping the current workforce will raise labor costs by roughly eleven percent. Commercial insurers are offering an average rate increase of 1.8 percent, and the state program has not changed its hospital rates at all.",
       baseRevenue: 27.6,
       baseExpense: 34.8,
       decay: { workforce: 10, care: 8, trust: 5, flow: 8 },
@@ -315,7 +338,7 @@
           debt: 2.4,
           effects: { workforce: 7, care: 5, trust: 4, flow: 3 },
           adviser: "finance",
-          quote: "The nurses stayed. The bonus can seek care elsewhere.",
+          quote: "The frontline teams stayed and the checks cleared. Nobody on my crew is mourning the bonus pool.",
         },
         {
           mode: "extract",
@@ -335,9 +358,10 @@
       date: "JUL–DEC 2028",
       year: "YEAR 3 · SECOND HALF",
       status: "RETROACTIVE GOVERNMENT",
+      adviser: "state",
       title: "The state would like its money back.",
-      situation: "A state payment bulletin changes last year's interpretation and recoups $7.2 million. The notice is a scanned photograph embedded in a portal that only accepts Internet Explorer.",
-      pressure: "The legislature calls the recoupment fiscal stewardship. It spent the savings before sending the letter.",
+      situation: "The state Medicaid program has reprocessed last year's claims under a new interpretation of its payment rules and removed $7.2 million from the hospital's current remittance. The notice arrived as a scanned attachment in the provider portal, without a patient-level claim list.",
+      pressure: "Finance has 30 days to identify the affected claims and file an appeal. The state budget already counts the recoupment as savings, so even a successful appeal may not return the cash before the next two payroll dates.",
       baseRevenue: 25.2,
       baseExpense: 36.9,
       decay: { workforce: 10, care: 9, trust: 7, flow: 10 },
@@ -353,7 +377,7 @@
           debt: 1.1,
           effects: { workforce: 10, care: 12, trust: 10, flow: 5 },
           adviser: "advocate",
-          quote: "You kept the services our patients actually need. I wish that were financeable.",
+          quote: "The hospital kept every service open. The state appreciates that commitment but cannot recognize it as an allowable budget variance.",
         },
         {
           mode: "balance",
@@ -365,7 +389,7 @@
           debt: 2.2,
           effects: { workforce: 4, care: 7, trust: -3, flow: 3 },
           adviser: "finance",
-          quote: "The MRI is now financially responsible for psychiatry and two elevators.",
+          quote: "Your imaging revenue may cover the gap temporarily. Future rate adjustments may account for the hospital's improved revenue.",
         },
         {
           mode: "extract",
@@ -385,9 +409,10 @@
       date: "JAN–JUN 2029",
       year: "YEAR 4 · FIRST HALF",
       status: "DEBT SPIRAL",
+      adviser: "advocate",
       title: "The interest is now a department.",
-      situation: "The hospital pays more to borrow, waits longer for reimbursement, and treats more uninsured patients who cannot pay. Demand rises as community clinics close.",
-      pressure: "The bank requires a turnaround plan. The insurer requires gratitude. The patients require care, which is considered inflexible.",
+      situation: "The bank has renewed the hospital's credit line at a higher interest rate and added monthly cash-balance requirements. At the same time, two community clinics have closed, sending more uninsured and underinsured patients to St. Dymphna's emergency department.",
+      pressure: "Patient volume is up, but a larger share of that care will never be fully paid. The hospital is borrowing to cover ordinary operations, and the bank wants a turnaround plan that reduces expenses before it will release the next portion of the credit line.",
       baseRevenue: 26.1,
       baseExpense: 40.7,
       decay: { workforce: 13, care: 11, trust: 9, flow: 13 },
@@ -403,7 +428,7 @@
           debt: 1.4,
           effects: { workforce: 13, care: 14, trust: 12, flow: 9 },
           adviser: "nurse",
-          quote: "The hospital is still a hospital. That should not sound like a eulogy.",
+          quote: "People can still get care without losing the services they depend on. The reserve is almost gone, but the hospital still means something.",
         },
         {
           mode: "balance",
@@ -415,7 +440,7 @@
           debt: 5.8,
           effects: { workforce: 3, care: 3, trust: -5, flow: 2 },
           adviser: "finance",
-          quote: "We have converted the roof into liquidity. Please avoid weather.",
+          quote: "The doors stay open, but the building now belongs to the loan. Patients will not see that debt until it changes their care.",
         },
         {
           mode: "extract",
@@ -435,9 +460,10 @@
       date: "JUL–DEC 2029",
       year: "YEAR 4 · SECOND HALF",
       status: "TERMINAL OPERATIONS",
+      adviser: "physician",
       title: "There is no good line left.",
-      situation: "The hospital is clinically indispensable and financially nonviable. Every staffed bed loses money under one contract and earns money under another, but only after a denial, an appeal, and a fiscal year.",
-      pressure: "The board asks for a sustainable plan by Friday. It has scheduled the closure vote for Thursday.",
+      situation: "The latest forecast shows fewer than twenty days of cash on hand. The hospital still provides the area's only emergency department, inpatient psychiatric service, and obstetric unit, and the clinical teams continue to meet their quality targets despite months of vacancies and discharge delays.",
+      pressure: "The board wants a plan that can keep the doors open without violating the bank's loan terms. Every remaining option involves closing services, reducing staffed beds, taking on more debt, or preparing an orderly shutdown; a closure vote has been added to the same meeting agenda.",
       baseRevenue: 25.4,
       baseExpense: 44.9,
       decay: { workforce: 16, care: 14, trust: 11, flow: 16 },
@@ -465,7 +491,7 @@
           debt: 7.1,
           effects: { workforce: -4, care: -3, trust: -8, flow: -6 },
           adviser: "finance",
-          quote: "The plan works if nothing else happens. Something else has happened.",
+          quote: "We can run a smaller hospital safely, but not if 'smaller' keeps changing after every finance meeting.",
         },
         {
           mode: "extract",
@@ -477,7 +503,7 @@
           debt: 13.2,
           effects: { workforce: -22, care: -25, trust: -30, flow: -17 },
           adviser: "insurer",
-          quote: "Congratulations. Utilization has fallen among people who can no longer reach care.",
+          quote: "The profitable procedures remain. The emergency department is left to receive everyone the rest of the plan excludes.",
         },
       ],
     },
@@ -523,7 +549,7 @@
       code: "ENDING 05 / 06 // CLOSED AS PLANNED",
       title: "Managed Decline",
       kicker: "EVERY COMPROMISE BOUGHT TIME. TIME SENT AN INVOICE.",
-      body: "You balanced, borrowed, appealed, cross-subsidized, and cut around the edges. St. Dymphna lasts four years before a carefully managed closure removes the last full-service hospital from the neighborhood.",
+      body: "You balanced, borrowed, appealed, cross-subsidized, and cut around the edges. St. Dymphna lasts two years before a carefully managed closure removes the last full-service hospital from the neighborhood.",
       epitaph: "No single decision killed it. That was the elegance of the arrangement.",
     },
   };
@@ -560,11 +586,25 @@
     return "failing";
   }
 
-  function priceLabel() {
-    if (state.priceIndex < 110) return "near baseline";
-    if (state.priceIndex < 140) return "elevated";
-    if (state.priceIndex < 180) return "severe";
-    return "astronomical";
+  function hospitalGrade(value = state.priceIndex) {
+    if (value <= 105) return { label: "A", className: "grade-a", note: "excellent" };
+    if (value <= 120) return { label: "B", className: "grade-b", note: "good" };
+    if (value <= 145) return { label: "C", className: "grade-c", note: "strained" };
+    if (value <= 175) return { label: "D", className: "grade-d", note: "poor" };
+    if (value <= 205) return { label: "F", className: "grade-f", note: "failing" };
+    if (value <= 235) return { label: "X", className: "grade-x", note: "ungradable" };
+    return { label: "💀", className: "grade-skull", note: "catastrophic" };
+  }
+
+  function privateEquityAvailable() {
+    return (
+      state.period >= 5 ||
+      state.cash <= 5 ||
+      state.metrics.workforce <= 30 ||
+      state.metrics.care <= 25 ||
+      state.metrics.trust <= 20 ||
+      state.metrics.flow <= 20
+    );
   }
 
   function discoveredCount() {
@@ -586,17 +626,18 @@
   }
 
   function periodLabel(index) {
-    return `MONTHS ${index * 6}–${(index + 1) * 6}`;
+    return `QUARTER ${index + 1}`;
   }
 
   function renderVitals(final = false) {
+    const grade = hospitalGrade();
     const metricItems = Object.entries(metricMeta)
       .map(([key, meta]) => `<span>${meta.short}<strong>${Math.round(state.metrics[key])}</strong></span>`)
       .join("");
     return `<div class="compact-vitals ${final ? "final-vitals" : ""}">
       ${metricItems}
       <span>Patient debt<strong>${money(state.patientDebt)}</strong></span>
-      <span>Price index<strong>${Math.round(state.priceIndex)}</strong></span>
+      <span>Hospital grade<strong class="hospital-grade ${grade.className}">${grade.label}</strong></span>
     </div>`;
   }
 
@@ -619,7 +660,7 @@
     const latest = state.history[state.history.length - 1];
     const projectedRevenue = period.baseRevenue;
     const projectedExpense = period.baseExpense;
-    return `<section class="side-section side-ledger" aria-label="Six-month financial report">
+    return `<section class="side-section side-ledger" aria-label="Quarterly financial report">
       <div class="side-heading">Finances</div>
       <div><span>Revenue</span><strong>${latest ? money(latest.revenue) : "—"}</strong></div>
       <div><span>Expenses</span><strong>${latest ? money(latest.expense) : "—"}</strong></div>
@@ -651,11 +692,14 @@
     return state.history
       .slice(-4)
       .reverse()
-      .map((item) => `<div class="timeline-row">
-        <span>${item.date}</span>
-        <strong>${item.title}</strong>
-        <small>${money(item.net, true)} · PRICES ${item.priceIndex} · TRUST ${item.trust}</small>
-      </div>`)
+      .map((item) => {
+        const grade = hospitalGrade(item.priceIndex);
+        return `<div class="timeline-row">
+          <span>${item.date}</span>
+          <strong>${item.title}</strong>
+          <small>${money(item.net, true)} · GRADE ${grade.label} · TRUST ${item.trust}</small>
+        </div>`;
+      })
       .join("");
   }
 
@@ -666,6 +710,8 @@
     }
 
     const period = periods[Math.min(state.period, periods.length - 1)];
+    const grade = hospitalGrade();
+    const briefingAdviser = advisers[period.adviser];
     gameView.innerHTML = `<section class="game-screen streamlined-game">
       <div class="streamlined-layout">
         <aside class="status-sidebar" aria-label="Hospital data">
@@ -683,30 +729,36 @@
 
         <main class="policy-stage">
           <header class="policy-topline">
-            <div class="month-label"><span>CURRENT PERIOD</span><strong>${periodLabel(state.period)}</strong></div>
+            <div class="month-label"><span>CURRENT QUARTER</span><strong>${periodLabel(state.period)}</strong></div>
             <div class="primary-readouts">
               <div><span>Cash on hand</span><strong>${money(state.cash)}</strong><small>${state.cash < 5 ? "PAYROLL AT RISK" : "AVAILABLE RESERVE"}</small></div>
-              <div><span>Hospital price index</span><strong>${Math.round(state.priceIndex)}</strong><small>${priceLabel()}</small></div>
+              <div><span>Hospital grade</span><strong class="hospital-grade ${grade.className}">${grade.label}</strong><small>${grade.note}</small></div>
             </div>
           </header>
 
           <div class="hospital-update">
-            <p>${period.situation}</p>
-            <p>${period.pressure}</p>
+            <div class="update-speaker">
+              <div class="adviser-portrait update-portrait ${briefingAdviser.theme} character-${period.adviser}" aria-hidden="true"><span>${briefingAdviser.initials}</span></div>
+              <p><strong>${briefingAdviser.name}</strong><br>${briefingAdviser.role}</p>
+            </div>
+            <div class="update-copy">
+              <p>${period.situation}</p>
+              <p class="update-bad-news"><strong>Operational risk:</strong> ${period.pressure}</p>
+            </div>
           </div>
 
-          <div class="decision-heading"><span>SET POLICY FOR THE NEXT SIX MONTHS</span></div>
+          <div class="decision-heading"><span>SET POLICY FOR THIS QUARTER</span></div>
           <div class="choices streamlined-choices">${renderChoices(period)}</div>
         </main>
       </div>
 
-      <div class="panic-dock">
+      ${privateEquityAvailable() ? `<div class="panic-dock">
         <button class="panic-button" id="panic-button" type="button" aria-label="Panic button: sell to private equity. You win instantly; patients and employees do not.">
           <span>PANIC BUTTON</span>
           <strong>SELL TO PRIVATE EQUITY</strong>
           <small>YOU WIN · THE HOSPITAL DOES NOT</small>
         </button>
-      </div>
+      </div>` : ""}
     </section>`;
   }
 
@@ -739,7 +791,8 @@
       patientDebt: state.patientDebt,
       trust: Math.round(state.metrics.trust),
       quote: choice.quote,
-      adviser: advisers[choice.adviser],
+      adviser: advisers[period.adviser],
+      adviserKey: period.adviser,
       nextPressure: state.period + 1 < periods.length ? periodLabel(state.period + 1) : "BOARD VOTE",
     };
 
@@ -752,16 +805,17 @@
   function showReport(report) {
     const finalPeriod = state.period >= periods.length;
     const collapsed = state.cash <= -8 || state.metrics.care <= 8 || state.metrics.workforce <= 8;
-    const continueLabel = finalPeriod || collapsed ? "Open the final audit →" : "Advance six months →";
+    const continueLabel = finalPeriod || collapsed ? "Open the final audit →" : "Advance to next quarter →";
     const notice = report.mode === "care"
       ? "Patients and staff felt the benefit. The balance sheet has filed an objection."
       : report.mode === "balance"
         ? "You purchased time at the customary rate of more time later."
         : "Cash improved by moving the cost somewhere less visible.";
 
+    const grade = hospitalGrade(report.priceIndex);
     openModal(`<div class="adviser-report ${report.adviser.theme}">
       <div class="adviser-person">
-        <div class="adviser-portrait" aria-hidden="true"><span>${report.adviser.initials}</span></div>
+        <div class="adviser-portrait character-${report.adviserKey}" aria-hidden="true"><span>${report.adviser.initials}</span></div>
         <div><p>${report.date} REPORT</p><strong>${report.adviser.name}</strong><small>${report.adviser.role}</small></div>
       </div>
       <div class="speech-card">
@@ -775,7 +829,7 @@
         <div><span>Cash left</span><strong>${money(state.cash)}</strong></div>
       </div>
       <div class="popup-impact">
-        <span>PRICE INDEX <strong>${report.priceIndex}</strong></span>
+        <span>HOSPITAL GRADE <strong class="hospital-grade ${grade.className}">${grade.label}</strong></span>
         <span>PATIENT DEBT <strong>${money(report.patientDebt)}</strong></span>
         <span>TRUST <strong>${report.trust}</strong></span>
         <span>NEXT: <strong>${report.nextPressure}</strong></span>
@@ -814,7 +868,7 @@
         <blockquote>${ending.epitaph}</blockquote>
         ${renderVitals(true)}
         <details class="compact-audit">
-          <summary>Open final four-year audit</summary>
+          <summary>Open final two-year audit</summary>
           <div class="ending-ledger">
             <span>Total money in <strong>${money(totalRevenue)}</strong></span>
             <span>Total money out <strong>${money(totalExpense)}</strong></span>
@@ -847,13 +901,13 @@
     if (panel === "briefing") {
       openModal(`<p class="eyebrow">HOW TO PLAY</p>
         <h2 class="plain-modal-title" id="modal-title">How to play</h2>
-        <p class="modal-intro">You are in charge of St. Dymphna Memorial. On each turn, review the hospital, choose a policy, and see what happens over the next six months.</p>
+        <p class="modal-intro">You are in charge of St. Dymphna Memorial. On each turn, review the hospital, choose a policy, and see what happens during the quarter.</p>
         <div class="briefing-grid continuous-briefing">
-          <div><strong>1</strong><p>Check cash, prices, staffing, patient flow, care, trust, and the six-month financial forecast.</p></div>
-          <div><strong>2</strong><p>Choose one policy for the hospital to follow during the next six months.</p></div>
+          <div><strong>1</strong><p>Check cash, prices, staffing, patient flow, care, trust, and the quarterly financial forecast.</p></div>
+          <div><strong>2</strong><p>Choose one policy for the hospital to follow during the quarter.</p></div>
           <div><strong>3</strong><p>Read the hospital representative's report, then continue to the next period.</p></div>
         </div>
-        <button class="primary-action howto-start" type="button" data-close-panel>Start the first six months →<span>›</span></button>`);
+        <button class="primary-action howto-start" type="button" data-close-panel>Start quarter 1 →<span>›</span></button>`);
       return;
     }
 
@@ -862,7 +916,7 @@
         <h2 id="modal-title">The spiral is structural.</h2>
         <p class="modal-intro">This is satire, not a forecast. Each period combines a fictional hospital ledger with real policy pressure points.</p>
         <div class="model-grid">
-          <div><span>TIME</span><strong>8 half-years</strong><p>One continuous four-year playthrough designed for roughly 3–5 minutes.</p></div>
+          <div><span>TIME</span><strong>8 quarters</strong><p>One continuous two-year playthrough designed for roughly 3–5 minutes.</p></div>
           <div><span>PEOPLE</span><strong>Clinicians are the good guys</strong><p>Staff absorb pressure and preserve care. Insurers and government payment systems intensify it.</p></div>
           <div><span>MONEY</span><strong>Revenue is not cash</strong><p>Payment delays, fixed payroll, post-acute bottlenecks, price increases, debt, and borrowing compound.</p></div>
           <div><span>ENDING</span><strong>Doom is scheduled</strong><p>Choices determine who is protected, who pays, and what remains when the hospital closes.</p></div>

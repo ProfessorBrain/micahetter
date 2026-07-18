@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>GrID - GastroIntestinal Disease Sudoku</title>
+  <title>GrID: Medical Sudoku</title>
   <style>
     :root {
       color-scheme: light;
@@ -158,13 +158,21 @@
     }
 
     .settings-dialog {
-      width: min(480px, calc(100% - 32px));
+      width: min(360px, calc(100% - 32px));
+    }
+
+    .settings-content {
+      padding: 18px;
+    }
+
+    .settings-content h2 {
+      font-size: 1.25rem;
     }
 
     .settings-field {
       display: grid;
       gap: 7px;
-      margin-top: 20px;
+      margin-top: 14px;
     }
 
     .settings-field label {
@@ -179,6 +187,10 @@
       background: var(--surface);
       color: var(--ink);
       padding: 8px 10px;
+    }
+
+    .settings-content .dialog-actions {
+      margin-top: 16px;
     }
 
     .dialog-intro {
@@ -476,7 +488,7 @@
       font-size: 0.9rem;
     }
 
-    .legend[hidden] {
+    .legend.hide-swatches .swatch {
       display: none;
     }
 
@@ -548,11 +560,6 @@
 
     .bank-card[hidden] {
       display: none;
-    }
-
-    .empty-bank {
-      color: var(--muted);
-      padding: 18px 4px 8px;
     }
 
     .win-banner {
@@ -790,6 +797,402 @@
         margin-bottom: 12px;
       }
     }
+
+    /* Lightweight route-line visual system. */
+    :root {
+      --bg: #f2faff;
+      --ink: #244252;
+      --muted: #668391;
+      --surface: #fbfdff;
+      --surface-strong: #eaf7fd;
+      --line: #7cbdd7;
+      --line-soft: #c9e5f1;
+      --grid-line: #6faec8;
+      --accent: #5eabc9;
+      --accent-ink: #173b4b;
+      --danger: #d76f82;
+      --danger-soft: #fff0f3;
+      --success: #4b9e87;
+      --success-soft: #edf9f5;
+      --focus: #ef91a5;
+      --foregut: #ffd8c9;
+      --midgut: #d7efcf;
+      --hindgut: #c8eafa;
+      --foregut-deep: #9a5d49;
+      --midgut-deep: #4d7850;
+      --hindgut-deep: #3c7187;
+      --shadow: 0 10px 28px rgba(80, 151, 181, 0.09);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Avenir Next", Avenir, "Century Gothic", Futura, "Segoe UI", sans-serif;
+      font-weight: 300;
+    }
+
+    .app {
+      position: relative;
+    }
+
+    .topbar {
+      position: relative;
+      padding-bottom: 14px;
+    }
+
+    .topbar::after {
+      content: "";
+      grid-column: 1 / -1;
+      width: 100%;
+      height: 1px;
+      margin-top: 2px;
+      background: linear-gradient(90deg,
+        var(--accent) 0 11%,
+        transparent 11% 13%,
+        var(--line-soft) 13% 46%,
+        transparent 46% 49%,
+        var(--line-soft) 49% 82%,
+        transparent 82% 85%,
+        var(--accent) 85% 100%);
+    }
+
+    .brand-mark {
+      position: relative;
+      isolation: isolate;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      color: var(--ink);
+      font-weight: 400;
+    }
+
+    .brand-mark::before {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      inset: 7px 3px 5px;
+      border-right: 1px solid var(--accent);
+      border-bottom: 1px solid var(--accent);
+      border-left: 1px solid var(--accent);
+    }
+
+    .brand-mark::after {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      top: 7px;
+      left: 3px;
+      width: 18px;
+      border-top: 1px solid var(--accent);
+      box-shadow: 33px 0 0 var(--accent);
+    }
+
+    h1 {
+      color: #315d70;
+      font-weight: 300;
+    }
+
+    h2,
+    h3 {
+      font-weight: 400;
+    }
+
+    .board-area,
+    .bank-area {
+      border: 1px solid var(--line-soft);
+      border-radius: 3px;
+      background: rgba(251, 253, 255, 0.9);
+      box-shadow: none;
+    }
+
+    .board-area {
+      position: relative;
+    }
+
+    .bank-area {
+      position: sticky;
+    }
+
+    .board-area::before,
+    .bank-area::before {
+      content: "";
+      position: absolute;
+      z-index: 5;
+      top: -1px;
+      width: 54px;
+      height: 18px;
+      pointer-events: none;
+    }
+
+    .bank-area::before {
+      left: -1px;
+      border-top: 1px solid var(--accent);
+      border-left: 1px solid var(--accent);
+    }
+
+    .board-area::before {
+      right: -1px;
+      border-top: 1px solid var(--accent);
+      border-right: 1px solid var(--accent);
+    }
+
+    .btn,
+    .switch,
+    .settings-select {
+      border: 1px solid var(--line-soft);
+      border-radius: 5px;
+      background: rgba(251, 253, 255, 0.92);
+      color: var(--ink);
+      font-weight: 400;
+      box-shadow: none;
+      transition: border-color 150ms ease, background-color 150ms ease, color 150ms ease;
+    }
+
+    .btn:hover {
+      border-color: var(--accent);
+      background: var(--surface-strong);
+    }
+
+    .btn-primary,
+    .btn-primary:hover {
+      border-color: var(--accent);
+      background: #dff2fa;
+      color: var(--accent-ink);
+    }
+
+    .switch input {
+      accent-color: var(--accent);
+    }
+
+    .legend {
+      color: var(--muted);
+      font-weight: 300;
+    }
+
+    .swatch {
+      border: 1px solid rgba(85, 147, 172, 0.35);
+      border-radius: 2px;
+    }
+
+    .board {
+      border: 1px solid var(--grid-line);
+      background: var(--line-soft);
+      gap: 1px;
+    }
+
+    .cell {
+      background: rgba(251, 253, 255, 0.98);
+      font-weight: 300;
+    }
+
+    .cell:nth-child(3n) {
+      border-right: 2px solid var(--grid-line);
+    }
+
+    .cell:nth-child(9n) {
+      border-right: 0;
+    }
+
+    .cell:nth-child(n+19):nth-child(-n+27),
+    .cell:nth-child(n+46):nth-child(-n+54) {
+      border-bottom: 2px solid var(--grid-line);
+    }
+
+    .cell-label,
+    .cell-label-short {
+      font-weight: 400;
+    }
+
+    .cell.empty::after {
+      width: 5px;
+      height: 5px;
+      background: var(--line-soft);
+    }
+
+    .cell.selected,
+    .bank-card.selected {
+      outline: 2px solid var(--focus);
+      outline-offset: -2px;
+    }
+
+    .cell.problem {
+      box-shadow: inset 0 0 0 2px var(--danger);
+    }
+
+    .box-rim.complete {
+      box-shadow: inset 0 0 0 2px var(--success);
+    }
+
+    .unit-status {
+      border: 1px solid var(--line-soft);
+      border-radius: 2px;
+      background: rgba(251, 253, 255, 0.9);
+      font-weight: 400;
+    }
+
+    .bank-card {
+      min-height: 56px;
+      border: 1px solid var(--line-soft);
+      border-radius: 4px;
+      background: rgba(251, 253, 255, 0.96);
+      color: var(--ink);
+      font-weight: 400;
+      transition: border-color 150ms ease, background-color 150ms ease;
+    }
+
+    .bank-card:hover {
+      border-color: var(--accent);
+      background: var(--surface-strong);
+      transform: none;
+    }
+
+    .card-bank {
+      align-content: start;
+      scrollbar-color: var(--line) transparent;
+      scrollbar-width: thin;
+    }
+
+    .card-bank::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .card-bank::-webkit-scrollbar-thumb {
+      background: var(--line);
+      border-radius: 0;
+    }
+
+    .how-to-play-dialog,
+    .settings-dialog {
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: var(--surface);
+      color: var(--ink);
+      box-shadow: var(--shadow);
+    }
+
+    .how-to-play-dialog::backdrop,
+    .settings-dialog::backdrop {
+      background: rgba(47, 84, 101, 0.25);
+    }
+
+    .dialog-credit {
+      border-top-color: var(--line-soft);
+    }
+
+    .win-banner {
+      border: 1px solid var(--success);
+      border-radius: 3px;
+      background: var(--success-soft);
+      font-weight: 400;
+    }
+
+    .win-celebration {
+      position: absolute;
+      z-index: 8;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .win-particle {
+      position: absolute;
+      top: -24px;
+      left: var(--x);
+      width: var(--particle-width);
+      height: var(--particle-height);
+      color: var(--particle-color);
+      opacity: 0;
+      animation: win-route-fall var(--duration) cubic-bezier(0.18, 0.68, 0.35, 1) var(--delay) forwards;
+    }
+
+    .win-particle.line {
+      border-top: 1px solid currentColor;
+    }
+
+    .win-particle.turn {
+      border-top: 1px solid currentColor;
+      border-right: 1px solid currentColor;
+    }
+
+    .win-particle.u-turn {
+      border-right: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+      border-left: 1px solid currentColor;
+    }
+
+    .board-area.celebrating .board-shell {
+      animation: win-board-pulse 720ms ease-out;
+    }
+
+    .board-area.celebrating .win-banner {
+      animation: win-banner-arrive 620ms ease-out;
+    }
+
+    @keyframes win-route-fall {
+      0% {
+        opacity: 0;
+        transform: translate3d(0, -18px, 0) rotate(var(--rotation));
+      }
+
+      12% {
+        opacity: 1;
+      }
+
+      74% {
+        opacity: 1;
+      }
+
+      100% {
+        opacity: 0;
+        transform: translate3d(var(--drift), var(--fall), 0) rotate(calc(var(--rotation) + 180deg));
+      }
+    }
+
+    @keyframes win-board-pulse {
+      0%, 100% {
+        transform: scale(1);
+        filter: none;
+      }
+
+      42% {
+        transform: scale(0.992);
+        filter: drop-shadow(0 0 8px rgba(94, 171, 201, 0.28));
+      }
+    }
+
+    @keyframes win-banner-arrive {
+      0% {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .btn,
+      .switch,
+      .settings-select,
+      .bank-card {
+        transition: none;
+      }
+
+      .win-particle,
+      .board-area.celebrating .board-shell,
+      .board-area.celebrating .win-banner {
+        animation: none;
+      }
+    }
+
+    @media (max-width: 860px) {
+      .bank-area {
+        position: relative;
+      }
+    }
   </style>
 </head>
 <body>
@@ -798,7 +1201,7 @@
       <div class="brand">
         <div class="brand-mark" aria-hidden="true">GrID</div>
         <div>
-          <h1 id="gameTitle">GastroIntestinal Disease Sudoku</h1>
+          <h1>GrID: Medical Sudoku</h1>
         </div>
       </div>
       <div class="top-actions">
@@ -814,7 +1217,7 @@
           </label>
         </div>
         <button class="btn btn-primary" type="button" id="hintBtn">Hint</button>
-        <button class="btn" type="button" id="settingsBtn">Settings</button>
+        <button class="btn" type="button" id="settingsBtn">Set</button>
         <button class="btn" type="button" id="howToPlayBtn">How to play</button>
       </div>
     </header>
@@ -834,7 +1237,8 @@
           </div>
         </div>
 
-        <div class="win-banner" id="winBanner">Grid complete.</div>
+        <div class="win-banner" id="winBanner" role="status" aria-live="polite">Grid complete.</div>
+        <div class="win-celebration" id="winCelebration" aria-hidden="true"></div>
       </section>
     </section>
   </main>
@@ -842,21 +1246,21 @@
   <dialog class="how-to-play-dialog" id="howToPlayDialog" aria-labelledby="howToPlayTitle">
     <div class="how-to-play-content">
       <h2 id="howToPlayTitle">Welcome to GrID</h2>
-      <p class="dialog-intro" id="dialogIntro">A browser version of the GrID anatomy card activity: classify GI features into foregut, midgut, and hindgut regions while keeping every Sudoku unit balanced.</p>
+      <p class="dialog-intro">Choose a content set, then classify its cards into three categories while keeping every Sudoku unit balanced.</p>
 
       <section class="dialog-section" aria-labelledby="instructionsTitle">
         <h3 id="instructionsTitle">How to play</h3>
         <ol class="dialog-steps">
           <li>Choose a card from the card bank, then choose a cell on the board.</li>
-          <li id="distributionRule">Each row, column, and 3x3 box must contain exactly three foregut, three midgut, and three hindgut cards.</li>
-          <li id="boxRule">A completed 3x3 box receives a green rim when it contains three cards from each region.</li>
+          <li>Each row, column, and 3x3 box must contain exactly three cards from each of the set's three categories. In the GI regions set, for example, those categories are foregut, midgut, and hindgut.</li>
+          <li>A completed 3x3 box receives a green rim when it contains three cards from each category.</li>
           <li>Row and column status boxes stay blank until full, then show a green check for a balanced distribution or a red X for an incorrect one.</li>
-          <li id="colorRule">Color Key shows or hides the region colors. Hint randomly places a card-bank item correctly before correcting a card already on the board.</li>
-          <li>Use Settings to switch content sets. Switching starts a fresh puzzle.</li>
+          <li>Color Key shows or hides the category colors. Hint randomly places a card-bank item correctly before correcting a card already on the board.</li>
+          <li>Use Set to switch content sets. Switching starts a fresh puzzle.</li>
         </ol>
       </section>
 
-      <p class="dialog-credit"><strong>Original activity:</strong> Adapted from Dunne, Paterson, and Spear, "GrID (GastroIntestinal Disease): An interactive Sudoku-based clinical anatomy card game for first-year medical students," <em>Anatomical Sciences Education</em>, 2026.</p>
+      <p class="dialog-credit"><strong>Original activity:</strong> Adapted from Dunne, Paterson, and Spear, "GrID (GastroIntestinal Disease): An interactive Sudoku-based clinical anatomy card game for first-year medical students," <em>Anatomical Sciences Education</em>, 2026.<br><strong>Digital implementation:</strong> Micah Etter, MD.</p>
 
       <div class="dialog-actions">
         <button class="btn btn-primary" type="button" id="howToPlayClose">Start playing</button>
@@ -866,7 +1270,7 @@
 
   <dialog class="settings-dialog" id="settingsDialog" aria-labelledby="settingsTitle">
     <div class="settings-content">
-      <h2 id="settingsTitle">Settings</h2>
+      <h2 id="settingsTitle">Choose set</h2>
       <div class="settings-field">
         <label for="contentSetSelect">Content set</label>
         <select class="settings-select" id="contentSetSelect">
@@ -969,25 +1373,619 @@
       { id: "descending-colon", label: "Descending colon", region: "hindgut", solution: 80 }
     ];
 
-    const cardMap = new Map(cards.map((card) => [card.id, card]));
+    const alternateSetDefinitions = [
+      {
+        "key": "ectoderm-lineages",
+        "selectorLabel": "Ectodermal lineages",
+        "title": "Ectodermal Lineages",
+        "categoryNoun": "lineage",
+        "categories": [
+          {
+            "key": "surface-ectoderm",
+            "label": "Surface ectoderm",
+            "labels": [
+              "Epidermis",
+              "Hair follicle epithelium",
+              "Nail plate",
+              "Sebaceous gland epithelium",
+              "Eccrine sweat gland epithelium",
+              "Apocrine sweat gland epithelium",
+              "Mammary gland epithelium",
+              "Corneal epithelium",
+              "Lens",
+              "Lacrimal gland epithelium",
+              "Conjunctival epithelium",
+              "Enamel",
+              "Parotid gland epithelium",
+              "Adenohypophysis",
+              "Olfactory receptor neurons",
+              "Olfactory epithelium",
+              "Inner-ear sensory epithelium",
+              "Organ of Corti hair cells",
+              "Vestibular hair cells",
+              "Spiral ganglion",
+              "Vestibular ganglion",
+              "Trigeminal ganglion placodal neurons",
+              "Geniculate ganglion placodal neurons",
+              "Petrosal ganglion placodal neurons",
+              "Nodose ganglion placodal neurons",
+              "Epithelium of the external auditory canal",
+              "Epithelium of the lower anal canal"
+            ]
+          },
+          {
+            "key": "neural-tube",
+            "label": "Neural tube",
+            "labels": [
+              "Cerebral cortical neurons",
+              "Basal-nuclei neurons",
+              "Thalamic neurons",
+              "Hypothalamic neurons",
+              "Midbrain neurons",
+              "Pontine neurons",
+              "Medullary neurons",
+              "Cerebellar neurons",
+              "Spinal-cord neurons",
+              "Ependymal cells",
+              "Astrocytes",
+              "Oligodendrocytes",
+              "Retinal ganglion cells",
+              "Retinal photoreceptors",
+              "Retinal pigment epithelium",
+              "Optic nerve",
+              "Neurohypophysis",
+              "Pineal gland",
+              "Ciliary body epithelium",
+              "Iris epithelium",
+              "Iris sphincter muscle",
+              "Iris dilator muscle",
+              "Cerebral aqueduct lining",
+              "Choroid plexus epithelium",
+              "Ventral horn motor neurons",
+              "Dorsal horn interneurons",
+              "Preganglionic autonomic neurons"
+            ]
+          },
+          {
+            "key": "neural-crest",
+            "label": "Neural crest",
+            "labels": [
+              "Dorsal-root ganglion neurons",
+              "Sympathetic ganglion neurons",
+              "Parasympathetic ganglion neurons",
+              "Enteric ganglion neurons",
+              "Schwann cells",
+              "Satellite glial cells",
+              "Melanocytes",
+              "Adrenal medullary chromaffin cells",
+              "Thyroid parafollicular cells",
+              "Pia mater",
+              "Arachnoid mater",
+              "Odontoblasts",
+              "Dental pulp connective tissue",
+              "Corneal stroma",
+              "Corneal endothelium",
+              "Scleral connective tissue",
+              "Choroidal connective tissue",
+              "Ciliary muscle",
+              "Dermis of the face",
+              "Cartilage of the external ear",
+              "Malleus",
+              "Incus",
+              "Stapes",
+              "Mandible",
+              "Maxilla",
+              "Hyoid lesser horn",
+              "Aorticopulmonary septum"
+            ]
+          }
+        ]
+      },
+      {
+        "key": "germ-layers",
+        "selectorLabel": "Germ-layer derivatives",
+        "title": "Germ-Layer Derivatives",
+        "categoryNoun": "germ layer",
+        "categories": [
+          {
+            "key": "ectoderm",
+            "label": "Ectoderm",
+            "labels": [
+              "Epidermis",
+              "Hair",
+              "Nails",
+              "Sweat gland epithelium",
+              "Mammary gland epithelium",
+              "Lens",
+              "Corneal epithelium",
+              "Enamel",
+              "Adenohypophysis",
+              "Neurohypophysis",
+              "Cerebral cortex",
+              "Spinal cord",
+              "Retina",
+              "Optic nerve",
+              "Pineal gland",
+              "Astrocytes",
+              "Oligodendrocytes",
+              "Peripheral sensory ganglia",
+              "Autonomic ganglia",
+              "Enteric ganglia",
+              "Schwann cells",
+              "Melanocytes",
+              "Adrenal medulla",
+              "Pia mater",
+              "Arachnoid mater",
+              "Odontoblasts",
+              "Craniofacial cartilage"
+            ]
+          },
+          {
+            "key": "mesoderm",
+            "label": "Mesoderm",
+            "labels": [
+              "Skeletal muscle",
+              "Cardiac muscle",
+              "Smooth muscle of the gut",
+              "Bone of the limbs",
+              "Vertebral bodies",
+              "Dermis of the trunk",
+              "Tendons",
+              "Articular cartilage",
+              "Myocardium",
+              "Endocardium",
+              "Vascular endothelium",
+              "Blood cells",
+              "Lymphatic endothelium",
+              "Spleen",
+              "Adrenal cortex",
+              "Renal glomeruli",
+              "Renal tubules",
+              "Ureteric collecting ducts",
+              "Gonadal stroma",
+              "Ovarian granulosa cells",
+              "Testicular Sertoli cells",
+              "Uterine myometrium",
+              "Serosal mesothelium",
+              "Notochord",
+              "Annulus fibrosus",
+              "Spinal dura mater",
+              "Connective tissue of the limbs"
+            ]
+          },
+          {
+            "key": "endoderm",
+            "label": "Endoderm",
+            "labels": [
+              "Esophageal epithelium",
+              "Gastric epithelium",
+              "Small-intestinal epithelium",
+              "Colonic epithelium",
+              "Rectal epithelium above the pectinate line",
+              "Hepatocytes",
+              "Bile-duct epithelium",
+              "Gallbladder epithelium",
+              "Pancreatic acinar cells",
+              "Pancreatic islet cells",
+              "Laryngeal epithelium",
+              "Tracheal epithelium",
+              "Bronchial epithelium",
+              "Alveolar epithelium",
+              "Thyroid follicular cells",
+              "Parathyroid epithelium",
+              "Thymic epithelium",
+              "Auditory-tube epithelium",
+              "Middle-ear cavity epithelium",
+              "Palatine tonsillar epithelium",
+              "Urinary-bladder epithelium",
+              "Urethral epithelium",
+              "Prostatic glandular epithelium",
+              "Bulbourethral gland epithelium",
+              "Greater vestibular gland epithelium",
+              "Lower-vaginal epithelium",
+              "Epithelium of the anal canal above the pectinate line"
+            ]
+          }
+        ]
+      },
+      {
+        "key": "mesoderm-lineages",
+        "selectorLabel": "Mesodermal lineages",
+        "title": "Mesodermal Lineages",
+        "categoryNoun": "mesodermal division",
+        "categories": [
+          {
+            "key": "paraxial",
+            "label": "Paraxial mesoderm",
+            "labels": [
+              "Occipital bone",
+              "Vertebral body",
+              "Vertebral arch",
+              "Rib",
+              "Annulus fibrosus",
+              "Dermis of the back",
+              "Epaxial skeletal muscle",
+              "Hypaxial skeletal muscle",
+              "Intercostal muscles",
+              "Rectus abdominis",
+              "External oblique muscle",
+              "Internal oblique muscle",
+              "Transversus abdominis",
+              "Diaphragmatic skeletal muscle",
+              "Pelvic-floor skeletal muscle",
+              "Intrinsic back muscles",
+              "Limb skeletal muscle",
+              "Tongue skeletal muscle",
+              "Extraocular skeletal muscles",
+              "Tendons of the trunk",
+              "Syndetome cells",
+              "Zygapophyseal joint cartilage",
+              "Spinous process",
+              "Transverse process",
+              "Costal cartilage precursor",
+              "Dermis of the dorsal neck",
+              "Skeletal muscle of the body wall"
+            ]
+          },
+          {
+            "key": "intermediate",
+            "label": "Intermediate mesoderm",
+            "labels": [
+              "Bowman's capsule",
+              "Proximal convoluted tubule",
+              "Loop of Henle",
+              "Distal convoluted tubule",
+              "Juxtaglomerular cells",
+              "Renal interstitium",
+              "Ureter",
+              "Renal pelvis",
+              "Major calyx",
+              "Minor calyx",
+              "Collecting duct",
+              "Epididymal duct",
+              "Ductus deferens",
+              "Seminal vesicle",
+              "Ejaculatory duct",
+              "Efferent ductules",
+              "Appendix testis",
+              "Uterine tube",
+              "Uterus",
+              "Cervix",
+              "Upper vagina",
+              "Ovarian stroma",
+              "Testicular stroma",
+              "Sertoli cells",
+              "Leydig cells",
+              "Granulosa cells",
+              "Theca cells"
+            ]
+          },
+          {
+            "key": "lateral-plate",
+            "label": "Lateral plate mesoderm",
+            "labels": [
+              "Myocardium",
+              "Endocardium",
+              "Epicardium",
+              "Vascular endothelium",
+              "Vascular smooth muscle of the trunk",
+              "Blood cells",
+              "Lymphatic vessels",
+              "Spleen",
+              "Fibrous pericardium",
+              "Parietal pleura",
+              "Visceral pleura",
+              "Parietal pericardium",
+              "Visceral pericardium",
+              "Parietal peritoneum",
+              "Visceral peritoneum",
+              "Mesentery",
+              "Omentum",
+              "Limb bones",
+              "Limb cartilage",
+              "Limb tendons",
+              "Limb ligaments",
+              "Limb dermis",
+              "Limb connective tissue",
+              "Sternum",
+              "Smooth muscle of the gut",
+              "Connective tissue of the gut",
+              "Serosal mesothelium"
+            ]
+          }
+        ]
+      },
+      {
+        "key": "brain-divisions",
+        "selectorLabel": "Brain divisions",
+        "title": "Forebrain, Midbrain, and Hindbrain",
+        "categoryNoun": "brain division",
+        "categories": [
+          {
+            "key": "forebrain",
+            "label": "Forebrain",
+            "labels": [
+              "Cerebral cortex",
+              "Corpus callosum",
+              "Hippocampus",
+              "Amygdala",
+              "Caudate nucleus",
+              "Putamen",
+              "Globus pallidus",
+              "Claustrum",
+              "Olfactory bulb",
+              "Olfactory tract",
+              "Septal nuclei",
+              "Fornix",
+              "Internal capsule",
+              "Lateral ventricle",
+              "Thalamus",
+              "Hypothalamus",
+              "Epithalamus",
+              "Subthalamic nucleus",
+              "Habenular nuclei",
+              "Mammillary bodies",
+              "Pineal gland",
+              "Retina",
+              "Optic nerve",
+              "Optic chiasm",
+              "Neurohypophysis",
+              "Third ventricle",
+              "Choroid plexus of the lateral ventricle"
+            ]
+          },
+          {
+            "key": "midbrain",
+            "label": "Midbrain",
+            "labels": [
+              "Cerebral aqueduct",
+              "Superior colliculus",
+              "Inferior colliculus",
+              "Pretectal area",
+              "Periaqueductal gray",
+              "Cerebral peduncle",
+              "Crus cerebri",
+              "Substantia nigra",
+              "Red nucleus",
+              "Ventral tegmental area",
+              "Oculomotor nucleus",
+              "Edinger–Westphal nucleus",
+              "Trochlear nucleus",
+              "Mesencephalic trigeminal nucleus",
+              "Interpeduncular nucleus",
+              "Superior colliculus brachium",
+              "Inferior colliculus brachium",
+              "Decussation of the superior cerebellar peduncles",
+              "Oculomotor nerve fascicles",
+              "Trochlear nerve fascicles",
+              "Posterior commissure",
+              "Rostral interstitial nucleus of the MLF",
+              "Interstitial nucleus of Cajal",
+              "Dorsal raphe nucleus",
+              "Cuneiform nucleus",
+              "Pedunculopontine nucleus",
+              "Mesencephalic reticular formation"
+            ]
+          },
+          {
+            "key": "hindbrain",
+            "label": "Hindbrain",
+            "labels": [
+              "Pons",
+              "Medulla",
+              "Cerebellum",
+              "Fourth ventricle",
+              "Pontine nuclei",
+              "Middle cerebellar peduncle",
+              "Inferior cerebellar peduncle",
+              "Dentate nucleus",
+              "Fastigial nucleus",
+              "Globose nucleus",
+              "Emboliform nucleus",
+              "Abducens nucleus",
+              "Facial motor nucleus",
+              "Vestibular nuclei",
+              "Cochlear nuclei",
+              "Nucleus ambiguus",
+              "Solitary nucleus",
+              "Dorsal motor nucleus of the vagus",
+              "Hypoglossal nucleus",
+              "Spinal trigeminal nucleus",
+              "Inferior olivary nucleus",
+              "Gracile nucleus",
+              "Cuneate nucleus",
+              "Area postrema",
+              "Locus coeruleus",
+              "Medullary pyramids",
+              "Pyramidal decussation"
+            ]
+          }
+        ]
+      },
+      {
+        "key": "cerebral-arterial-territories",
+        "selectorLabel": "Cerebral arterial territories",
+        "title": "ACA, MCA, and PCA Territories",
+        "categoryNoun": "arterial territory",
+        "categories": [
+          {
+            "key": "aca",
+            "label": "Anterior cerebral artery",
+            "labels": [
+              "Medial frontal cortex",
+              "Medial parietal cortex",
+              "Paracentral lobule",
+              "Supplementary motor area",
+              "Anterior cingulate cortex",
+              "Genu of the corpus callosum",
+              "Body of the corpus callosum",
+              "Rostrum of the corpus callosum",
+              "Septal area",
+              "Head of the caudate nucleus",
+              "Anterior limb of the internal capsule",
+              "Recurrent artery of Heubner",
+              "Pericallosal artery",
+              "Callosomarginal artery",
+              "Orbitofrontal branch of the ACA",
+              "Frontopolar branch of the ACA",
+              "Contralateral leg weakness",
+              "Contralateral leg sensory loss",
+              "Urinary incontinence",
+              "Abulia",
+              "Akinetic mutism",
+              "Transcortical motor aphasia",
+              "Alien-hand syndrome",
+              "Callosal disconnection",
+              "Grasp reflex",
+              "Gait apraxia",
+              "Bilateral leg weakness"
+            ]
+          },
+          {
+            "key": "mca",
+            "label": "Middle cerebral artery",
+            "labels": [
+              "Lateral frontal cortex",
+              "Lateral parietal cortex",
+              "Lateral temporal cortex",
+              "Insular cortex",
+              "Primary motor face area",
+              "Primary motor arm area",
+              "Primary sensory face area",
+              "Primary sensory arm area",
+              "Frontal eye field",
+              "Broca area",
+              "Wernicke area",
+              "Heschl gyri",
+              "Lentiform nucleus",
+              "Posterior limb of the internal capsule",
+              "Lenticulostriate arteries",
+              "Superior division of the MCA",
+              "Inferior division of the MCA",
+              "Contralateral face–arm weakness",
+              "Contralateral face–arm sensory loss",
+              "Gaze preference toward the lesion",
+              "Global aphasia",
+              "Broca aphasia",
+              "Wernicke aphasia",
+              "Hemispatial neglect",
+              "Constructional apraxia",
+              "Contralateral homonymous hemianopia",
+              "MCA stem occlusion"
+            ]
+          },
+          {
+            "key": "pca",
+            "label": "Posterior cerebral artery",
+            "labels": [
+              "Primary visual cortex",
+              "Occipital pole",
+              "Calcarine cortex",
+              "Cuneus",
+              "Lingual gyrus",
+              "Inferomedial temporal cortex",
+              "Parahippocampal gyrus",
+              "Hippocampus",
+              "Splenium of the corpus callosum",
+              "Posterior thalamus",
+              "Lateral geniculate body",
+              "Medial geniculate body",
+              "Posterior choroidal arteries",
+              "Thalamogeniculate arteries",
+              "Calcarine artery",
+              "Parieto-occipital artery",
+              "Contralateral homonymous hemianopia with macular sparing",
+              "Alexia without agraphia",
+              "Visual agnosia",
+              "Prosopagnosia",
+              "Achromatopsia",
+              "Visual hallucinations",
+              "Thalamic pain syndrome",
+              "Contralateral hemisensory loss",
+              "Memory impairment",
+              "Topographic disorientation",
+              "Bilateral cortical blindness"
+            ]
+          }
+        ]
+      }
+    ];
+
+    const defaultCategories = [
+      { key: "foregut", label: "Foregut" },
+      { key: "midgut", label: "Midgut" },
+      { key: "hindgut", label: "Hindgut" }
+    ];
+    const solutionSlotsByCategory = Object.fromEntries(defaultCategories.map((category) => [category.key, []]));
+
+    for (const card of defaultCards) {
+      solutionSlotsByCategory[card.region].push(card.solution);
+    }
+
+    function slugifyId(value) {
+      return value
+        .normalize("NFKD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "");
+    }
+
+    const contentSets = [
+      {
+        key: "gi-regions",
+        selectorLabel: "GI regions",
+        title: "GastroIntestinal Disease Sudoku",
+        categoryNoun: "region",
+        categories: defaultCategories,
+        cards: defaultCards.map((card) => ({
+          ...card,
+          categoryIndex: defaultCategories.findIndex((category) => category.key === card.region)
+        }))
+      },
+      ...alternateSetDefinitions.map((definition) => ({
+        ...definition,
+        cards: definition.categories.flatMap((category, categoryIndex) =>
+          category.labels.map((label, labelIndex) => ({
+            id: `${definition.key}-${category.key}-${slugifyId(label)}`,
+            label,
+            region: category.key,
+            categoryIndex,
+            solution: solutionSlotsByCategory[defaultCategories[categoryIndex].key][labelIndex]
+          }))
+        )
+      }))
+    ];
+
+    let activeSet = contentSets[0];
+    let regions = activeSet.categories.map((category) => category.key);
+    let regionLabels = Object.fromEntries(activeSet.categories.map((category) => [category.key, category.label]));
+    let cards = activeSet.cards;
+    let cardMap = new Map(cards.map((card) => [card.id, card]));
     let boardState = Array(81).fill(null);
     let bankOrder = shuffle(cards.map((card) => card.id));
     let selected = null;
     let revealRegions = true;
     let dragPayload = null;
+    let wasSolved = false;
+    let celebrationTimer = null;
 
     const board = document.getElementById("board");
     const boardShell = document.getElementById("boardShell");
     const boxRims = document.getElementById("boxRims");
     const cardBank = document.getElementById("cardBank");
     const winBanner = document.getElementById("winBanner");
+    const winCelebration = document.getElementById("winCelebration");
     const rowStatuses = document.getElementById("rowStatuses");
     const columnStatuses = document.getElementById("columnStatuses");
     const colorKeyLegend = document.getElementById("colorKeyLegend");
     const howToPlayDialog = document.getElementById("howToPlayDialog");
+    const settingsDialog = document.getElementById("settingsDialog");
+    const contentSetSelect = document.getElementById("contentSetSelect");
     const bankArea = document.getElementById("bankArea");
     const boardArea = document.getElementById("boardArea");
     const desktopLayout = window.matchMedia("(min-width: 861px)");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
     function syncPanelHeights() {
       if (!desktopLayout.matches) {
@@ -1005,13 +2003,18 @@
     }
 
     document.getElementById("howToPlayBtn").addEventListener("click", openHowToPlay);
+    document.getElementById("settingsBtn").addEventListener("click", () => openDialog(settingsDialog));
 
     document.getElementById("howToPlayClose").addEventListener("click", () => {
-      if (typeof howToPlayDialog.close === "function") {
-        howToPlayDialog.close();
-      } else {
-        howToPlayDialog.removeAttribute("open");
-      }
+      closeDialog(howToPlayDialog);
+    });
+
+    document.getElementById("settingsClose").addEventListener("click", () => {
+      closeDialog(settingsDialog);
+    });
+
+    contentSetSelect.addEventListener("change", (event) => {
+      applyContentSet(event.target.value);
     });
 
     document.getElementById("colorKeyToggle").addEventListener("change", (event) => {
@@ -1051,14 +2054,62 @@
     }
 
     function openHowToPlay() {
-      if (howToPlayDialog.open) {
+      openDialog(howToPlayDialog);
+    }
+
+    function openDialog(dialog) {
+      if (dialog.open) {
         return;
       }
-      if (typeof howToPlayDialog.showModal === "function") {
-        howToPlayDialog.showModal();
+      if (typeof dialog.showModal === "function") {
+        dialog.showModal();
       } else {
-        howToPlayDialog.setAttribute("open", "");
+        dialog.setAttribute("open", "");
       }
+    }
+
+    function closeDialog(dialog) {
+      if (typeof dialog.close === "function") {
+        dialog.close();
+      } else {
+        dialog.removeAttribute("open");
+      }
+    }
+
+    function renderLegend() {
+      colorKeyLegend.innerHTML = activeSet.categories.map((category, index) =>
+        `<span class="legend-item"><span class="swatch category-${index}"></span>${escapeHtml(category.label)}</span>`
+      ).join("");
+      colorKeyLegend.setAttribute("aria-label", `${activeSet.categoryNoun} color key`);
+    }
+
+    function updateSetText() {
+      board.setAttribute("aria-label", `${activeSet.title}, 9 by 9 board`);
+      cardBank.setAttribute("aria-label", `${activeSet.title} available cards`);
+      contentSetSelect.value = activeSet.key;
+      renderLegend();
+    }
+
+    function applyContentSet(setKey) {
+      const nextSet = contentSets.find((set) => set.key === setKey);
+      if (!nextSet || nextSet === activeSet) {
+        return;
+      }
+
+      activeSet = nextSet;
+      regions = activeSet.categories.map((category) => category.key);
+      regionLabels = Object.fromEntries(activeSet.categories.map((category) => [category.key, category.label]));
+      cards = activeSet.cards;
+      cardMap = new Map(cards.map((card) => [card.id, card]));
+      boardState = Array(81).fill(null);
+      bankOrder = shuffle(cards.map((card) => card.id));
+      selected = null;
+      dragPayload = null;
+      clearWinCelebration();
+      wasSolved = false;
+      cardBank.scrollTop = 0;
+      updateSetText();
+      render();
     }
 
     function escapeHtml(value) {
@@ -1150,7 +2201,8 @@
     }
 
     function unitCounts(indices) {
-      const counts = { foregut: 0, midgut: 0, hindgut: 0, empty: 0 };
+      const counts = Object.fromEntries(regions.map((region) => [region, 0]));
+      counts.empty = 0;
       for (const index of indices) {
         const cardId = boardState[index];
         if (!cardId) {
@@ -1177,6 +2229,41 @@
         units.push({ type: "box", number: i, label: `B${i + 1}`, indices: unitIndices("box", i) });
       }
       return units;
+    }
+
+    function validateContentSet(set) {
+      const ids = new Set(set.cards.map((card) => card.id));
+      const categoryKeys = set.categories.map((category) => category.key);
+      const solution = Array(81).fill(null);
+      const validCards = set.cards.length === 81
+        && ids.size === 81
+        && set.cards.every((card) => typeof card.label === "string" && card.label.trim())
+        && set.cards.every((card) => Number.isInteger(card.solution) && card.solution >= 0 && card.solution < 81);
+      const validCategories = set.categories.length === 3
+        && set.categories.every((category) => set.cards.filter((card) => card.region === category.key).length === 27);
+
+      for (const card of set.cards) {
+        if (solution[card.solution]) {
+          throw new Error(`${set.key} assigns more than one card to solution cell ${card.solution}.`);
+        }
+        solution[card.solution] = card;
+      }
+
+      const validUnits = allUnits().every((unit) => {
+        const counts = Object.fromEntries(categoryKeys.map((key) => [key, 0]));
+        for (const index of unit.indices) {
+          const card = solution[index];
+          if (!card || !(card.region in counts)) {
+            return false;
+          }
+          counts[card.region] += 1;
+        }
+        return categoryKeys.every((key) => counts[key] === 3);
+      });
+
+      if (!validCards || !validCategories || !validUnits) {
+        throw new Error(`Invalid content set: ${set.key}`);
+      }
     }
 
     function getReport() {
@@ -1232,6 +2319,7 @@
         if (card) {
           cell.classList.add("filled");
           cell.dataset.region = card.region;
+          cell.dataset.categoryIndex = String(card.categoryIndex);
           cell.draggable = true;
           cell.innerHTML = `<span class="cell-label">${cardLabelHtml(card)}</span><span class="cell-label-short">${escapeHtml(abbreviation(card.label))}</span>`;
           cell.addEventListener("dragstart", (event) => {
@@ -1305,11 +2393,11 @@
         } else if (unit.complete) {
           status.classList.add("correct");
           status.textContent = "\u2713";
-          status.setAttribute("aria-label", `${unitName} has a correct region distribution`);
+          status.setAttribute("aria-label", `${unitName} has a correct ${activeSet.categoryNoun} distribution`);
         } else {
           status.classList.add("incorrect");
           status.textContent = "\u00d7";
-          status.setAttribute("aria-label", `${unitName} has an incorrect region distribution`);
+          status.setAttribute("aria-label", `${unitName} has an incorrect ${activeSet.categoryNoun} distribution`);
         }
 
         container.appendChild(status);
@@ -1326,6 +2414,7 @@
         button.type = "button";
         button.className = "bank-card";
         button.dataset.region = card.region;
+        button.dataset.categoryIndex = String(card.categoryIndex);
         if (revealRegions) {
           button.classList.add("show-region");
         }
@@ -1344,26 +2433,68 @@
         cardBank.appendChild(button);
       }
 
-      if (ids.length === 0) {
-        const empty = document.createElement("div");
-        empty.className = "empty-bank";
-        empty.textContent = "All cards are on the board.";
-        cardBank.appendChild(empty);
+    }
+
+    function clearWinCelebration() {
+      if (celebrationTimer) {
+        clearTimeout(celebrationTimer);
+        celebrationTimer = null;
       }
+      boardArea.classList.remove("celebrating");
+      winCelebration.innerHTML = "";
+    }
+
+    function playWinCelebration() {
+      clearWinCelebration();
+      if (reducedMotion.matches) {
+        return;
+      }
+
+      const colors = ["var(--accent)", "var(--focus)", "var(--success)", "var(--foregut)", "var(--hindgut-deep)"];
+      const shapes = ["line", "turn", "u-turn"];
+      const fallDistance = `${boardArea.clientHeight + 80}px`;
+
+      for (let index = 0; index < 36; index += 1) {
+        const particle = document.createElement("span");
+        particle.className = `win-particle ${shapes[index % shapes.length]}`;
+        particle.style.setProperty("--x", `${3 + Math.random() * 94}%`);
+        particle.style.setProperty("--particle-width", `${10 + Math.random() * 22}px`);
+        particle.style.setProperty("--particle-height", `${5 + Math.random() * 12}px`);
+        particle.style.setProperty("--particle-color", colors[index % colors.length]);
+        particle.style.setProperty("--rotation", `${-35 + Math.random() * 70}deg`);
+        particle.style.setProperty("--drift", `${-55 + Math.random() * 110}px`);
+        particle.style.setProperty("--fall", fallDistance);
+        particle.style.setProperty("--delay", `${Math.random() * 0.55}s`);
+        particle.style.setProperty("--duration", `${1.45 + Math.random() * 0.7}s`);
+        winCelebration.appendChild(particle);
+      }
+
+      void boardArea.offsetWidth;
+      boardArea.classList.add("celebrating");
+      celebrationTimer = setTimeout(clearWinCelebration, 2800);
     }
 
     function render() {
       const report = getReport();
+      const justSolved = report.solved && !wasSolved;
       boardShell.classList.toggle("show-regions", revealRegions);
-      colorKeyLegend.hidden = !revealRegions;
+      colorKeyLegend.classList.toggle("hide-swatches", !revealRegions);
       winBanner.classList.toggle("show", report.solved);
       renderBoard(report);
       renderBoxRims(report);
       renderUnitStatuses(report);
       renderBank();
       syncPanelHeights();
+      if (justSolved) {
+        playWinCelebration();
+      } else if (!report.solved && wasSolved) {
+        clearWinCelebration();
+      }
+      wasSolved = report.solved;
     }
 
+    contentSets.forEach(validateContentSet);
+    updateSetText();
     render();
     openHowToPlay();
   </script>

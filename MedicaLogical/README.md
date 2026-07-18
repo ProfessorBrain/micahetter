@@ -8,13 +8,14 @@ Open [`index.html`](./index.html) directly in a web browser. It is the project e
 
 ## Included gameplay
 
-- Five-patient, medium-difficulty logic puzzle
-- 27 selectable adult specialty modes with 135 clinical cases
+- Four-patient, medium-difficulty logic puzzle
+- 27 selectable adult specialty modes with 187 clinical cases
 - Single-specialty and mixed-specialty puzzle generation
 - Diagnosis, mechanism-of-action treatment, and symptom knowledge clues
 - Compact appointment-by-appointment logic table
 - Left-column clue panel beside the clinic schedule
-- Four active rows: Name plus one randomized demographic, history, and clinical row
+- Five active rows: Name, one randomized demographic, one history, and two distinct clinical rows
+- Random morning (8–11 AM) or afternoon (1–4 PM) appointment blocks
 - New names, specialty cases, row assignments, option order, and clue order for every generated puzzle
 - Clues that automatically mark themselves applied or conflicting
 - Previously used row options disabled in the remaining dropdowns
