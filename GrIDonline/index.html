@@ -1092,8 +1092,89 @@
       position: absolute;
       z-index: 8;
       inset: 0;
+      display: grid;
+      place-items: center;
       overflow: hidden;
+      padding: 20px;
+      background: rgba(36, 66, 82, 0.38);
+      opacity: 0;
       pointer-events: none;
+      transition: opacity 180ms ease;
+    }
+
+    .board-area.celebrating .win-celebration {
+      opacity: 1;
+    }
+
+    .win-popup {
+      position: relative;
+      z-index: 2;
+      width: min(340px, calc(100% - 24px));
+      border: 1px solid var(--accent);
+      border-radius: 5px;
+      background: var(--surface);
+      box-shadow: 0 22px 64px rgba(36, 66, 82, 0.3);
+      padding: 28px 24px;
+      color: var(--ink);
+      text-align: center;
+      animation: win-popup-arrive 620ms cubic-bezier(0.2, 0.82, 0.32, 1.12);
+    }
+
+    .win-popup::before,
+    .win-popup::after {
+      content: "";
+      position: absolute;
+      width: 44px;
+      height: 14px;
+      border-color: var(--focus);
+      pointer-events: none;
+    }
+
+    .win-popup::before {
+      top: 9px;
+      left: -8px;
+      border-top: 1px solid var(--focus);
+      border-left: 1px solid var(--focus);
+    }
+
+    .win-popup::after {
+      right: -8px;
+      bottom: 9px;
+      border-right: 1px solid var(--focus);
+      border-bottom: 1px solid var(--focus);
+    }
+
+    .win-popup strong,
+    .win-popup span {
+      display: block;
+    }
+
+    .win-popup strong {
+      font-size: 1.55rem;
+      font-weight: 400;
+    }
+
+    .win-popup span {
+      margin-top: 7px;
+      color: var(--muted);
+      font-weight: 300;
+    }
+
+    @keyframes win-popup-arrive {
+      0% {
+        opacity: 0;
+        transform: translateY(22px) scale(0.82);
+      }
+
+      60% {
+        opacity: 1;
+        transform: translateY(-3px) scale(1.03);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
     }
 
     .win-particle {
@@ -1183,6 +1264,7 @@
       }
 
       .win-particle,
+      .win-popup,
       .board-area.celebrating .board-shell,
       .board-area.celebrating .win-banner {
         animation: none;
@@ -2447,32 +2529,36 @@
 
     function playWinCelebration() {
       clearWinCelebration();
-      if (reducedMotion.matches) {
-        return;
-      }
 
-      const colors = ["var(--accent)", "var(--focus)", "var(--success)", "var(--foregut)", "var(--hindgut-deep)"];
-      const shapes = ["line", "turn", "u-turn"];
-      const fallDistance = `${boardArea.clientHeight + 80}px`;
+      const popup = document.createElement("div");
+      popup.className = "win-popup";
+      popup.innerHTML = "<strong>Puzzle complete!</strong><span>Excellent work.</span>";
+      winCelebration.appendChild(popup);
 
-      for (let index = 0; index < 36; index += 1) {
-        const particle = document.createElement("span");
-        particle.className = `win-particle ${shapes[index % shapes.length]}`;
-        particle.style.setProperty("--x", `${3 + Math.random() * 94}%`);
-        particle.style.setProperty("--particle-width", `${10 + Math.random() * 22}px`);
-        particle.style.setProperty("--particle-height", `${5 + Math.random() * 12}px`);
-        particle.style.setProperty("--particle-color", colors[index % colors.length]);
-        particle.style.setProperty("--rotation", `${-35 + Math.random() * 70}deg`);
-        particle.style.setProperty("--drift", `${-55 + Math.random() * 110}px`);
-        particle.style.setProperty("--fall", fallDistance);
-        particle.style.setProperty("--delay", `${Math.random() * 0.55}s`);
-        particle.style.setProperty("--duration", `${1.45 + Math.random() * 0.7}s`);
-        winCelebration.appendChild(particle);
+      if (!reducedMotion.matches) {
+        const colors = ["var(--accent)", "var(--focus)", "var(--success)", "var(--foregut)", "var(--hindgut-deep)"];
+        const shapes = ["line", "turn", "u-turn"];
+        const fallDistance = `${boardArea.clientHeight + 80}px`;
+
+        for (let index = 0; index < 36; index += 1) {
+          const particle = document.createElement("span");
+          particle.className = `win-particle ${shapes[index % shapes.length]}`;
+          particle.style.setProperty("--x", `${3 + Math.random() * 94}%`);
+          particle.style.setProperty("--particle-width", `${10 + Math.random() * 22}px`);
+          particle.style.setProperty("--particle-height", `${5 + Math.random() * 12}px`);
+          particle.style.setProperty("--particle-color", colors[index % colors.length]);
+          particle.style.setProperty("--rotation", `${-35 + Math.random() * 70}deg`);
+          particle.style.setProperty("--drift", `${-55 + Math.random() * 110}px`);
+          particle.style.setProperty("--fall", fallDistance);
+          particle.style.setProperty("--delay", `${Math.random() * 0.55}s`);
+          particle.style.setProperty("--duration", `${1.45 + Math.random() * 0.7}s`);
+          winCelebration.appendChild(particle);
+        }
       }
 
       void boardArea.offsetWidth;
       boardArea.classList.add("celebrating");
-      celebrationTimer = setTimeout(clearWinCelebration, 2800);
+      celebrationTimer = setTimeout(clearWinCelebration, 3400);
     }
 
     function render() {

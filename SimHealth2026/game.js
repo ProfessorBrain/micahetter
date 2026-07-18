@@ -602,8 +602,15 @@
     return Number(value.toFixed(1));
   }
 
+  function patientDebtCollected(openingBalance, newPatientDebt = 0) {
+    const collectibleBalance = Math.max(0, openingBalance + newPatientDebt);
+    if (collectibleBalance === 0) return 0;
+    return Math.min(collectibleBalance, roundOne(collectibleBalance * 0.08));
+  }
+
   function projectChoice(period, choice, currentState = state) {
-    const revenue = roundOne(period.baseRevenue + choice.revenue);
+    const patientCollections = patientDebtCollected(currentState.patientDebt, choice.debt);
+    const revenue = roundOne(period.baseRevenue + choice.revenue + patientCollections);
     const expense = roundOne(period.baseExpense + choice.expense);
     const net = roundOne(revenue - expense);
     const metrics = {};
@@ -616,9 +623,10 @@
       revenue,
       expense,
       net,
+      patientCollections,
       cash: roundOne(currentState.cash + net),
       priceIndex: clamp(currentState.priceIndex + choice.price, 80, 300),
-      patientDebt: Math.max(0, roundOne(currentState.patientDebt + choice.debt)),
+      patientDebt: Math.max(0, roundOne(currentState.patientDebt + choice.debt - patientCollections)),
       metrics,
     };
   }
@@ -643,20 +651,58 @@
     return Math.max(min, Math.min(max, value));
   }
 
-  function metricClass(value) {
-    if (value >= 68) return "stable";
-    if (value >= 45) return "strained";
-    if (value >= 24) return "critical";
-    return "failing";
+  function statusGrade(value) {
+    if (value >= 95) return { label: "A+", className: "grade-a", note: "exceptional", rank: 0 };
+    if (value >= 90) return { label: "A", className: "grade-a", note: "excellent", rank: 1 };
+    if (value >= 85) return { label: "A−", className: "grade-a", note: "very good", rank: 2 };
+    if (value >= 82) return { label: "B+", className: "grade-b", note: "strong", rank: 3 };
+    if (value >= 78) return { label: "B", className: "grade-b", note: "good", rank: 4 };
+    if (value >= 75) return { label: "B−", className: "grade-b", note: "mostly stable", rank: 5 };
+    if (value >= 72) return { label: "C+", className: "grade-c", note: "under pressure", rank: 6 };
+    if (value >= 68) return { label: "C", className: "grade-c", note: "strained", rank: 7 };
+    if (value >= 65) return { label: "C−", className: "grade-c", note: "visibly strained", rank: 8 };
+    if (value >= 60) return { label: "D+", className: "grade-d", note: "poor", rank: 9 };
+    if (value >= 55) return { label: "D", className: "grade-d", note: "seriously poor", rank: 10 };
+    if (value >= 50) return { label: "D−", className: "grade-d", note: "near failure", rank: 11 };
+    if (value >= 45) return { label: "F+", className: "grade-f", note: "failing", rank: 12 };
+    if (value >= 40) return { label: "F", className: "grade-f", note: "deep failure", rank: 13 };
+    if (value >= 35) return { label: "F−", className: "grade-f", note: "barely functioning", rank: 14 };
+    return { label: "💀", className: "grade-skull", note: "catastrophic", rank: 15 };
+  }
+
+  function policyGradeImpact(label, beforeValue, afterValue) {
+    const beforeGrade = statusGrade(beforeValue);
+    const afterGrade = statusGrade(afterValue);
+    const change = afterValue - beforeValue;
+    const gradeChanged = beforeGrade.label !== afterGrade.label;
+    return {
+      label,
+      value: `${beforeGrade.label} → ${afterGrade.label}`,
+      word: change > 0
+        ? gradeChanged ? "grade improves" : "improves within grade"
+        : change < 0
+          ? gradeChanged ? "grade falls" : "worsens within grade"
+          : "no change",
+      tone: change > 0 ? "positive" : change < 0 ? "negative" : "neutral",
+    };
   }
 
   function hospitalGrade(value = state.priceIndex) {
-    if (value <= 105) return { label: "A", className: "grade-a", note: "excellent" };
-    if (value <= 120) return { label: "B", className: "grade-b", note: "good" };
-    if (value <= 145) return { label: "C", className: "grade-c", note: "strained" };
-    if (value <= 175) return { label: "D", className: "grade-d", note: "poor" };
-    if (value <= 205) return { label: "F", className: "grade-f", note: "failing" };
-    if (value <= 235) return { label: "X", className: "grade-x", note: "ungradable" };
+    if (value <= 95) return { label: "A+", className: "grade-a", note: "exceptional" };
+    if (value <= 100) return { label: "A", className: "grade-a", note: "excellent" };
+    if (value <= 105) return { label: "A−", className: "grade-a", note: "very good" };
+    if (value <= 110) return { label: "B+", className: "grade-b", note: "good" };
+    if (value <= 115) return { label: "B", className: "grade-b", note: "mostly reasonable" };
+    if (value <= 120) return { label: "B−", className: "grade-b", note: "creeping upward" };
+    if (value <= 128) return { label: "C+", className: "grade-c", note: "under pressure" };
+    if (value <= 137) return { label: "C", className: "grade-c", note: "strained" };
+    if (value <= 145) return { label: "C−", className: "grade-c", note: "visibly strained" };
+    if (value <= 155) return { label: "D+", className: "grade-d", note: "poor" };
+    if (value <= 165) return { label: "D", className: "grade-d", note: "seriously poor" };
+    if (value <= 175) return { label: "D−", className: "grade-d", note: "near failure" };
+    if (value <= 185) return { label: "F+", className: "grade-f", note: "failing" };
+    if (value <= 195) return { label: "F", className: "grade-f", note: "deep failure" };
+    if (value <= 205) return { label: "F−", className: "grade-f", note: "barely defensible" };
     return { label: "💀", className: "grade-skull", note: "catastrophic" };
   }
 
@@ -696,36 +742,42 @@
   function renderVitals(final = false) {
     const grade = hospitalGrade();
     const metricItems = Object.entries(metricMeta)
-      .map(([key, meta]) => `<span>${meta.short}<strong>${Math.round(state.metrics[key])}</strong></span>`)
+      .map(([key, meta]) => {
+        const metricGrade = statusGrade(state.metrics[key]);
+        return `<span>${meta.short}<strong class="hospital-grade ${metricGrade.className}" title="${metricGrade.note}">${metricGrade.label}</strong></span>`;
+      })
       .join("");
     return `<div class="compact-vitals ${final ? "final-vitals" : ""}">
       ${metricItems}
-      <span>Patient debt<strong>${money(state.patientDebt)}</strong></span>
       <span>Hospital grade<strong class="hospital-grade ${grade.className}">${grade.label}</strong></span>
     </div>`;
   }
 
   function renderSideVitals() {
     const metricItems = Object.entries(metricMeta)
-      .map(([key, meta]) => `<div class="side-metric">
-        <span>${meta.label}</span>
-        <strong>${Math.round(state.metrics[key])}</strong>
-        <i><b class="${metricClass(state.metrics[key])}" style="width:${state.metrics[key]}%"></b></i>
-      </div>`)
+      .map(([key, meta]) => {
+        const grade = statusGrade(state.metrics[key]);
+        return `<div class="side-metric">
+          <span>${meta.label}</span>
+          <strong class="hospital-grade side-grade ${grade.className}" title="${grade.note}">${grade.label}</strong>
+        </div>`;
+      })
       .join("");
     return `<section class="side-section side-vitals">
       <div class="side-heading">Hospital status</div>
       ${metricItems}
-      <div class="side-metric debt"><span>Patient debt</span><strong>${money(state.patientDebt)}</strong></div>
     </section>`;
   }
 
   function renderLedger(period) {
     const latest = state.history[state.history.length - 1];
-    const baselineNet = roundOne(period.baseRevenue - period.baseExpense);
+    const baselineCollections = patientDebtCollected(state.patientDebt);
+    const baselineNet = roundOne(period.baseRevenue + baselineCollections - period.baseExpense);
     return `<section class="side-section side-ledger" aria-label="Quarterly financial report">
       <div class="side-heading">Finances</div>
       <div><span>Last quarter in</span><strong>${latest ? money(latest.revenue) : "—"}</strong></div>
+      <div><span>Patient debt collected (8%)</span><strong>${latest ? money(latest.patientCollections) : "—"}</strong></div>
+      <div><span>Patient balances owed</span><strong>${money(state.patientDebt)}</strong></div>
       <div><span>Last quarter out</span><strong>${latest ? money(latest.expense) : "—"}</strong></div>
       <div><span>Last quarter net</span><strong class="${latest ? (latest.net < 0 ? "bad" : "good") : ""}">${latest ? money(latest.net, true) : "—"}</strong></div>
       <div><span>Before-policy net</span><strong class="${baselineNet < 0 ? "bad" : "good"}">${money(baselineNet, true)}</strong></div>
@@ -741,13 +793,14 @@
             positiveTone: choice.price >= 20 ? "negative" : "warning",
             format: (amount) => `${amount}%`,
           }),
-          policyImpact("Team", projection.metrics.workforce - state.metrics.workforce, "improves", "worsens"),
-          policyImpact("Care", projection.metrics.care - state.metrics.care, "improves", "worsens"),
+          policyGradeImpact("Team", state.metrics.workforce, projection.metrics.workforce),
+          policyGradeImpact("Care", state.metrics.care, projection.metrics.care),
           policyImpact("Cash", projection.net, "adds cash", "uses cash", {
             neutralWord: "break-even",
             format: (amount) => money(amount),
           }),
-          policyImpact("Flow", projection.metrics.flow - state.metrics.flow, "improves", "worsens"),
+          policyGradeImpact("Flow", state.metrics.flow, projection.metrics.flow),
+          policyGradeImpact("Trust", state.metrics.trust, projection.metrics.trust),
         ];
         const impactForecast = impacts
           .map((impact) => `<span class="policy-impact ${impact.tone}" aria-label="${impact.label}: ${impact.word}, ${impact.value}">
@@ -775,10 +828,11 @@
       .reverse()
       .map((item) => {
         const grade = hospitalGrade(item.priceIndex);
+        const trustGrade = statusGrade(item.trust);
         return `<div class="timeline-row">
           <span>${item.date}</span>
           <strong>${item.title}</strong>
-          <small>${money(item.net, true)} · GRADE ${grade.label} · TRUST ${item.trust}</small>
+          <small>${money(item.net, true)} · GRADE ${grade.label} · TRUST ${trustGrade.label}</small>
         </div>`;
       })
       .join("");
@@ -882,6 +936,7 @@
       revenue: projection.revenue,
       expense: projection.expense,
       net: projection.net,
+      patientCollections: projection.patientCollections,
       priceIndex: Math.round(state.priceIndex),
       patientDebt: state.patientDebt,
       trust: Math.round(state.metrics.trust),
@@ -922,6 +977,19 @@
     const moneyChange = (change) => Math.abs(change) < 0.05
       ? "— no change"
       : `${change > 0 ? "▲" : "▼"} ${money(change, true)}`;
+    const gradeMarkup = (value) => {
+      const grade = statusGrade(value);
+      return `<span class="hospital-grade ${grade.className}" title="${grade.note}">${grade.label}</span>`;
+    };
+    const gradeChange = (before, after) => {
+      const beforeGrade = statusGrade(before);
+      const afterGrade = statusGrade(after);
+      const distance = Math.abs(afterGrade.rank - beforeGrade.rank);
+      if (distance === 0) return "— same grade";
+      return afterGrade.rank < beforeGrade.rank
+        ? `▲ up ${distance} step${distance === 1 ? "" : "s"}`
+        : `▼ down ${distance} step${distance === 1 ? "" : "s"}`;
+    };
     const priceAndGrade = (value) => {
       const priceChange = Math.round(value - 100);
       const priceLabel = priceChange === 0
@@ -946,34 +1014,34 @@
       },
       {
         label: "Team",
-        before: Math.round(report.before.metrics.workforce),
-        after: Math.round(report.after.metrics.workforce),
-        change: numberChange(report.after.metrics.workforce - report.before.metrics.workforce),
+        before: gradeMarkup(report.before.metrics.workforce),
+        after: gradeMarkup(report.after.metrics.workforce),
+        change: gradeChange(report.before.metrics.workforce, report.after.metrics.workforce),
         tone: comparisonTone(report.after.metrics.workforce - report.before.metrics.workforce),
       },
       {
         label: "Care",
-        before: Math.round(report.before.metrics.care),
-        after: Math.round(report.after.metrics.care),
-        change: numberChange(report.after.metrics.care - report.before.metrics.care),
+        before: gradeMarkup(report.before.metrics.care),
+        after: gradeMarkup(report.after.metrics.care),
+        change: gradeChange(report.before.metrics.care, report.after.metrics.care),
         tone: comparisonTone(report.after.metrics.care - report.before.metrics.care),
       },
       {
         label: "Patient flow",
-        before: Math.round(report.before.metrics.flow),
-        after: Math.round(report.after.metrics.flow),
-        change: numberChange(report.after.metrics.flow - report.before.metrics.flow),
+        before: gradeMarkup(report.before.metrics.flow),
+        after: gradeMarkup(report.after.metrics.flow),
+        change: gradeChange(report.before.metrics.flow, report.after.metrics.flow),
         tone: comparisonTone(report.after.metrics.flow - report.before.metrics.flow),
       },
       {
         label: "Trust",
-        before: Math.round(report.before.metrics.trust),
-        after: Math.round(report.after.metrics.trust),
-        change: numberChange(report.after.metrics.trust - report.before.metrics.trust),
+        before: gradeMarkup(report.before.metrics.trust),
+        after: gradeMarkup(report.after.metrics.trust),
+        change: gradeChange(report.before.metrics.trust, report.after.metrics.trust),
         tone: comparisonTone(report.after.metrics.trust - report.before.metrics.trust),
       },
       {
-        label: "Patient debt",
+        label: "Patient balances",
         before: money(report.before.patientDebt),
         after: money(report.after.patientDebt),
         change: moneyChange(report.after.patientDebt - report.before.patientDebt),
@@ -1124,7 +1192,7 @@
         <div class="model-grid">
           <div><span>TIME</span><strong>8 quarters</strong><p>One continuous two-year playthrough designed for roughly 3–5 minutes.</p></div>
           <div><span>PEOPLE</span><strong>Clinicians are the good guys</strong><p>Staff absorb pressure and preserve care. Insurers and government payment systems intensify it.</p></div>
-          <div><span>MONEY</span><strong>Revenue is not cash</strong><p>Payment delays, fixed payroll, post-acute bottlenecks, price increases, debt, and borrowing compound.</p></div>
+          <div><span>MONEY</span><strong>Revenue is not cash</strong><p>The model collects 8% of patient balances each quarter. The rest remains owed while payment delays, payroll, bottlenecks, and borrowing compound.</p></div>
           <div><span>ENDING</span><strong>Doom is scheduled</strong><p>Choices determine who is protected, who pays, and what remains when the hospital closes.</p></div>
         </div>
         <p class="method-note">All organizations, characters, dollar amounts, and incidents are fictional. Policy concepts are simplified for play.</p>`);
