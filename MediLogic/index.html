@@ -1,0 +1,799 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A specialty-aware clinical zebra logic puzzle for medical students and residents.">
+  <title>The Five Unsolved Cases | The Clinical Detective</title>
+  <style>
+    :root {
+      --page: #edf0eb;
+      --surface: #fffdf8;
+      --surface-muted: #f5f1e8;
+      --ink: #1b3037;
+      --muted: #68777a;
+      --line: #d7ddd8;
+      --teal: #226763;
+      --teal-soft: #e2efec;
+      --rust: #a44732;
+      --rust-soft: #f8e8e2;
+      --gold: #c39a51;
+      --shadow: 0 10px 30px rgba(27, 48, 55, .08);
+    }
+
+    * { box-sizing: border-box; }
+    html { color-scheme: light; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      background: var(--page);
+      color: var(--ink);
+      font-family: "Segoe UI", Arial, sans-serif;
+      line-height: 1.45;
+    }
+    button, select { font: inherit; }
+    button:focus-visible, select:focus-visible, a:focus-visible {
+      outline: 3px solid var(--gold);
+      outline-offset: 2px;
+    }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    .shell { width: min(1240px, calc(100% - 32px)); margin-inline: auto; }
+
+    .topbar {
+      height: 64px;
+      background: var(--ink);
+      color: #fffdf8;
+      border-bottom: 3px solid var(--gold);
+    }
+    .topbar .shell { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+    .brand { display: flex; align-items: center; gap: 11px; font-family: Georgia, serif; font-weight: 700; letter-spacing: .01em; }
+    .lens { width: 25px; height: 25px; border: 2px solid var(--gold); border-radius: 50%; position: relative; }
+    .lens::after { content: ""; width: 10px; height: 2px; background: var(--gold); position: absolute; right: -7px; bottom: 0; transform: rotate(45deg); }
+    .top-meta { display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,.72); font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+    .top-meta span + span { border-left: 1px solid rgba(255,255,255,.22); padding-left: 10px; }
+
+    main { padding: 22px 0 44px; }
+    .puzzle-heading { min-height: 66px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+    .eyebrow { display: block; margin-bottom: 3px; color: var(--rust); font-size: .67rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+    h1 { margin: 0; font: 700 clamp(1.55rem, 3vw, 2.25rem)/1.1 Georgia, serif; letter-spacing: -.02em; }
+    .progress-summary { min-width: 190px; text-align: right; }
+    .progress-summary strong { display: block; font: 700 1.05rem Georgia, serif; }
+    .progress-summary span { color: var(--muted); font-size: .75rem; }
+    .progress-track { width: 190px; height: 4px; margin-top: 7px; margin-left: auto; overflow: hidden; background: #d4dad5; border-radius: 99px; }
+    .progress-track i { display: block; width: 0; height: 100%; background: var(--teal); transition: width 180ms ease; }
+
+    .modebar { margin-bottom: 14px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; gap: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
+    .mode-label { color: var(--muted); font-size: .72rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+    .specialty-menu { min-width: min(520px, 100%); position: relative; }
+    .specialty-menu summary { min-height: 38px; padding: 8px 36px 8px 12px; border: 1px solid var(--line); border-radius: 5px; background: var(--surface-muted); color: var(--ink); font-size: .82rem; font-weight: 700; cursor: pointer; list-style: none; }
+    .specialty-menu summary::-webkit-details-marker { display: none; }
+    .specialty-menu summary::after { content: "▾"; position: absolute; right: 13px; top: 8px; color: var(--teal); }
+    .specialty-menu[open] summary::after { transform: rotate(180deg); }
+    .specialty-popover { width: min(620px, calc(100vw - 32px)); max-height: 420px; padding: 12px; position: absolute; right: 0; top: 44px; z-index: 20; overflow: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 7px; box-shadow: 0 18px 50px rgba(27,48,55,.2); }
+    .specialty-actions { margin-bottom: 9px; display: flex; gap: 7px; }
+    .specialty-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px 12px; }
+    .specialty-option { min-height: 34px; padding: 6px 8px; display: flex; align-items: center; gap: 8px; border-radius: 4px; font-size: .79rem; cursor: pointer; }
+    .specialty-option:hover { background: var(--surface-muted); }
+    .specialty-option input { accent-color: var(--teal); }
+    .mode-note { margin: 0; color: var(--muted); font-size: .72rem; white-space: nowrap; }
+
+    .workspace { display: grid; grid-template-columns: minmax(310px, 390px) minmax(0, 1fr); gap: 16px; align-items: start; }
+    .game-panel { min-width: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow); overflow: hidden; }
+    .board-scroll { overflow-x: auto; scrollbar-color: var(--teal) transparent; }
+    .board { width: 100%; min-width: 820px; border-collapse: collapse; table-layout: fixed; }
+    .board th, .board td { border: solid var(--line); border-width: 0 1px 1px 0; }
+    .board thead th { height: 57px; padding: 7px 10px; background: var(--ink); color: white; text-align: center; }
+    .board thead th:first-child { width: 130px; position: sticky; left: 0; z-index: 3; text-align: left; color: #dcb66f; }
+    .board thead small { display: block; color: rgba(255,255,255,.58); font-size: .61rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    .board thead strong { display: block; margin-top: 2px; font: 700 1rem Georgia, serif; }
+    .board tbody th { width: 130px; padding: 9px 12px; position: sticky; left: 0; z-index: 2; background: var(--surface-muted); color: var(--ink); text-align: left; font-size: .69rem; letter-spacing: .09em; text-transform: uppercase; }
+    .board td { height: 48px; padding: 7px; background: var(--surface); }
+    .board select {
+      width: 100%;
+      height: 34px;
+      border: 1px solid #cbd3ce;
+      border-radius: 4px;
+      background: white;
+      color: var(--ink);
+      padding: 0 28px 0 9px;
+      font-size: .78rem;
+      cursor: pointer;
+    }
+    .board select.has-value { border-color: #8bb2ac; background: #f8fcfb; }
+    .board select.duplicate { border-color: var(--rust); background: var(--rust-soft); box-shadow: 0 0 0 1px var(--rust); }
+    .board select option:disabled { color: #9aa39f; background: #eef0ed; }
+
+    .controlbar { min-height: 56px; padding: 8px 12px 8px 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px; background: var(--surface-muted); border-bottom: 1px solid var(--line); }
+    .game-status { margin: 0; color: var(--muted); font-size: .82rem; }
+    .game-status strong { color: var(--ink); }
+    .game-status.is-error strong { color: var(--rust); }
+    .game-status.is-solved strong { color: var(--teal); }
+    .controls { display: flex; gap: 8px; }
+    .button { min-height: 36px; border: 1px solid var(--line); border-radius: 4px; padding: .45rem .8rem; background: white; color: var(--ink); font-size: .73rem; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; cursor: pointer; }
+    .button:hover { border-color: var(--teal); color: var(--teal); }
+    .button-primary { background: var(--teal); border-color: var(--teal); color: white; }
+    .button-primary:hover { background: #174c49; color: white; }
+    .hint-line { display: none; margin: 0; padding: 10px 16px; background: #fff7df; border-bottom: 1px solid #e6d7a9; color: #65552f; font-size: .82rem; }
+    .hint-line.is-visible { display: block; }
+
+    .clues { max-height: calc(100vh - 100px); padding: 18px 16px 14px; position: sticky; top: 14px; overflow: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow); }
+    .clues-head { margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+    .clues h2 { margin: 0; font: 700 1.3rem Georgia, serif; }
+    .legend { display: flex; gap: 14px; color: var(--muted); font-size: .69rem; }
+    .legend span { display: flex; align-items: center; gap: 5px; }
+    .legend i { width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; color: white; font-style: normal; font-size: .66rem; font-weight: 900; }
+    .legend .good { background: var(--teal); }
+    .legend .bad { background: var(--rust); }
+    .clue-list { margin: 0; padding: 0; list-style: none; }
+    .clue-list li { min-height: 40px; padding: 7px 7px 7px 34px; position: relative; break-inside: avoid-column; border-bottom: 1px solid var(--line); font: .87rem/1.45 Georgia, serif; transition: background 150ms ease, color 150ms ease, opacity 150ms ease; }
+    .clue-state { width: 20px; height: 20px; position: absolute; left: 6px; top: 8px; border: 1px solid #bdc7c1; border-radius: 50%; display: grid; place-items: center; color: transparent; font: 900 .71rem/1 "Segoe UI", sans-serif; }
+    .clue-list li.satisfied { color: #526c67; background: #f2f8f6; opacity: .72; text-decoration: line-through; text-decoration-thickness: 1px; }
+    .clue-list li.satisfied .clue-state { background: var(--teal); border-color: var(--teal); color: white; }
+    .clue-list li.contradicted { color: #7e3324; background: var(--rust-soft); }
+    .clue-list li.contradicted .clue-state { background: var(--rust); border-color: var(--rust); color: white; }
+
+    .solved-banner { display: none; margin-top: 14px; padding: 13px 16px; border-radius: 6px; background: var(--teal); color: white; align-items: center; justify-content: space-between; gap: 18px; }
+    .solved-banner.is-visible { display: flex; }
+    .solved-banner strong { font: 700 1.05rem Georgia, serif; }
+    .solved-banner span { color: rgba(255,255,255,.76); font-size: .8rem; }
+
+    .win-pop {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      padding: 20px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background: rgba(16, 35, 41, .72);
+      backdrop-filter: blur(4px);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 180ms ease, visibility 180ms ease;
+    }
+    .win-pop.is-visible { opacity: 1; visibility: visible; pointer-events: auto; }
+    .win-card {
+      width: min(460px, 100%);
+      padding: 34px 30px 28px;
+      position: relative;
+      z-index: 2;
+      overflow: hidden;
+      background: var(--surface);
+      border: 2px solid var(--gold);
+      border-radius: 10px;
+      box-shadow: 0 28px 80px rgba(9, 26, 31, .42);
+      text-align: center;
+    }
+    .win-pop.is-visible .win-card { animation: win-card-pop 620ms cubic-bezier(.18, .89, .32, 1.28) both; }
+    .win-card::before {
+      content: "CASE CLOSED";
+      padding: 5px 12px;
+      position: absolute;
+      top: 18px;
+      right: -17px;
+      color: var(--rust);
+      border: 2px solid var(--rust);
+      font-size: .62rem;
+      font-weight: 900;
+      letter-spacing: .14em;
+      transform: rotate(9deg);
+    }
+    .win-mark { width: 58px; height: 58px; margin: 0 auto 14px; display: grid; place-items: center; border-radius: 50%; background: var(--teal); color: white; font: 800 1.65rem Georgia, serif; box-shadow: 0 0 0 7px var(--teal-soft); }
+    .win-kicker { color: var(--rust); font-size: .68rem; font-weight: 900; letter-spacing: .17em; text-transform: uppercase; }
+    .win-card h2 { margin: 7px 0 8px; font: 700 clamp(1.7rem, 5vw, 2.35rem)/1.05 Georgia, serif; }
+    .win-card p { margin: 0 auto 22px; max-width: 34ch; color: var(--muted); font-size: .88rem; }
+    .win-actions { display: flex; justify-content: center; gap: 8px; }
+    .win-confetti { position: absolute; inset: 0; z-index: 1; overflow: hidden; pointer-events: none; }
+    .win-confetti i {
+      width: 9px;
+      height: 17px;
+      position: absolute;
+      top: -24px;
+      left: var(--left);
+      background: var(--confetti-color);
+      border-radius: 2px;
+      animation: confetti-fall var(--duration) var(--delay) cubic-bezier(.18, .75, .35, 1) forwards;
+    }
+    @keyframes win-card-pop {
+      0% { opacity: 0; transform: scale(.64) rotate(-4deg); }
+      65% { opacity: 1; transform: scale(1.045) rotate(1deg); }
+      100% { opacity: 1; transform: scale(1) rotate(0); }
+    }
+    @keyframes confetti-fall {
+      0% { transform: translate3d(0, -5vh, 0) rotate(0); }
+      100% { transform: translate3d(var(--drift), 112vh, 0) rotate(var(--spin)); }
+    }
+    footer { padding: 22px 0 30px; color: var(--muted); font-size: .7rem; text-align: center; }
+
+    @media (max-width: 960px) {
+      .workspace { grid-template-columns: 1fr; }
+      .clues { max-height: none; position: static; }
+    }
+    @media (max-width: 720px) {
+      .shell { width: min(100% - 20px, 1240px); }
+      .topbar { height: 56px; }
+      .top-meta span:first-child { display: none; }
+      main { padding-top: 12px; }
+      .puzzle-heading { align-items: flex-end; }
+      .progress-summary { min-width: 100px; }
+      .progress-track { width: 100px; }
+      .modebar { align-items: stretch; flex-direction: column; }
+      .specialty-menu { min-width: 0; }
+      .specialty-popover { left: 0; right: auto; }
+      .specialty-grid { grid-template-columns: 1fr; }
+      .mode-note { white-space: normal; }
+      .board { min-width: 820px; }
+      .controlbar { align-items: flex-start; flex-direction: column; }
+      .controls { width: 100%; }
+      .controls .button { flex: 1; }
+      .clues { padding-inline: 12px; }
+      .clues-head { align-items: flex-start; flex-direction: column; gap: 7px; }
+      .clue-list { columns: 1; }
+      .solved-banner { align-items: flex-start; flex-direction: column; }
+      .win-card { padding-inline: 20px; }
+      .win-actions { flex-direction: column; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+      .win-confetti { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell">
+      <div class="brand"><span class="lens" aria-hidden="true"></span><span>The Clinical Detective</span></div>
+      <div class="top-meta"><span>Einstein-style logic puzzle</span><span>Medium</span></div>
+    </div>
+  </header>
+
+  <main class="shell">
+    <div class="puzzle-heading">
+      <div>
+        <span class="eyebrow"><span id="case-number">Case 017</span> · Clinical Medicine</span>
+        <h1>The Five Unsolved Cases</h1>
+      </div>
+      <div class="progress-summary" aria-live="polite">
+        <strong id="progress-count">0 clues</strong>
+        <span>automatically applied</span>
+        <div class="progress-track" aria-hidden="true"><i id="progress-bar"></i></div>
+      </div>
+    </div>
+
+    <div class="modebar">
+      <span class="mode-label">Specialty modes</span>
+      <details class="specialty-menu" id="specialty-menu">
+        <summary id="specialty-summary">Neurology</summary>
+        <div class="specialty-popover">
+          <div class="specialty-actions">
+            <button class="button" id="select-all-specialties" type="button">Select all</button>
+            <button class="button" id="neurology-only" type="button">Neurology only</button>
+          </div>
+          <div class="specialty-grid" id="specialty-options"></div>
+        </div>
+      </details>
+      <p class="mode-note">5 cases per grid.</p>
+    </div>
+
+    <div class="workspace">
+      <aside class="clues" aria-labelledby="clues-heading">
+        <div class="clues-head">
+          <h2 id="clues-heading">Clues</h2>
+          <div class="legend" aria-label="Clue status legend">
+            <span><i class="good">✓</i> applied</span>
+            <span><i class="bad">!</i> conflict</span>
+          </div>
+        </div>
+        <ol class="clue-list" id="clue-list"></ol>
+      </aside>
+
+      <section class="game-panel" aria-label="Clinical medicine zebra puzzle">
+        <div class="board-scroll" tabindex="0" aria-label="Puzzle grid; scroll horizontally on smaller screens">
+          <table class="board" id="board"></table>
+        </div>
+        <div class="controlbar">
+          <p class="game-status" id="game-status" aria-live="polite"><strong>Begin anywhere.</strong> Clues update as you fill the grid.</p>
+          <div class="controls">
+            <button class="button" id="hint-button" type="button">Hint</button>
+            <button class="button button-primary" id="reset-button" type="button">New grid</button>
+          </div>
+        </div>
+        <p class="hint-line" id="hint-line" aria-live="polite"></p>
+      </section>
+    </div>
+
+    <div class="solved-banner" id="solved-banner" role="status">
+      <strong>Case closed — the ledger is complete.</strong>
+      <span>You correctly matched every name and case detail.</span>
+    </div>
+  </main>
+
+  <div class="win-pop" id="win-pop" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="win-title" aria-describedby="win-message">
+    <div class="win-confetti" id="win-confetti" aria-hidden="true"></div>
+    <div class="win-card">
+      <div class="win-mark" aria-hidden="true">✓</div>
+      <span class="win-kicker">Excellent deduction</span>
+      <h2 id="win-title">Congratulations—you win!</h2>
+      <p id="win-message">Every patient, history, and clinical detail is correctly matched.</p>
+      <div class="win-actions">
+        <button class="button" id="win-close" type="button">Review solution</button>
+        <button class="button button-primary" id="win-new" type="button">New case</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="shell">Educational puzzle only — not medical advice.</footer>
+
+  <script src="specialties.js"></script>
+  <script>
+    "use strict";
+
+    const slots = [
+      { id: "0900", time: "9:00 AM", position: "Consult 1" },
+      { id: "1000", time: "10:00 AM", position: "Consult 2" },
+      { id: "1100", time: "11:00 AM", position: "Consult 3" },
+      { id: "1300", time: "1:00 PM", position: "Consult 4" },
+      { id: "1400", time: "2:00 PM", position: "Consult 5" }
+    ];
+
+    const namePool = [
+      ["dorian-knox", "Dorian Knox"], ["clara-finch", "Clara Finch"], ["amara-vale", "Amara Vale"],
+      ["evelyn-march", "Evelyn March"], ["basil-reed", "Basil Reed"], ["maya-chen", "Maya Chen"],
+      ["owen-brooks", "Owen Brooks"], ["priya-shah", "Priya Shah"], ["theo-grant", "Theo Grant"],
+      ["lena-ortiz", "Lena Ortiz"], ["marcus-bell", "Marcus Bell"], ["nadia-park", "Nadia Park"],
+      ["jonah-price", "Jonah Price"], ["sylvie-hart", "Sylvie Hart"], ["ravi-mehta", "Ravi Mehta"]
+    ];
+    let nameRow = null;
+
+    const demographicRows = [
+      {
+        key: "age", label: "Age",
+        values: [["age-68", "68"], ["age-12", "12"], ["age-37", "37"], ["age-29", "29"], ["age-21", "21"]],
+        subjects: ["68-year-old patient", "12-year-old patient", "37-year-old patient", "29-year-old patient", "21-year-old patient"]
+      },
+      {
+        key: "birthplace", label: "Birthplace",
+        values: [["chicago", "Chicago"], ["phoenix", "Phoenix"], ["boston", "Boston"], ["seattle", "Seattle"], ["atlanta", "Atlanta"]],
+        subjects: ["patient born in Chicago", "patient born in Phoenix", "patient born in Boston", "patient born in Seattle", "patient born in Atlanta"]
+      },
+      {
+        key: "accompanied", label: "Accompanied By",
+        values: [["spouse", "Spouse"], ["father", "Father"], ["sister", "Sister"], ["friend", "Friend"], ["alone", "No one"]],
+        subjects: ["patient accompanied by their spouse", "patient accompanied by their father", "patient accompanied by their sister", "patient accompanied by a friend", "patient who came alone"]
+      }
+    ];
+
+    const historyRows = [
+      {
+        key: "family-history", label: "Family History",
+        values: [["fh-none", "No relevant family history"], ["fh-absence", "Family history of absence epilepsy"], ["fh-febrile", "Family history of febrile seizures"], ["fh-ms", "Family history of multiple sclerosis"], ["fh-generalized", "Family history of generalized epilepsy"]],
+        subjects: ["patient with no relevant family history", "patient with a family history of absence epilepsy", "patient with a family history of febrile seizures", "patient with a family history of multiple sclerosis", "patient with a family history of generalized epilepsy"]
+      },
+      {
+        key: "social-history", label: "Social History",
+        values: [["retired-teacher", "Social history: retired teacher"], ["middle-school", "Social history: middle-school student"], ["night-nurse", "Social history: night-shift nurse"], ["grad-student", "Social history: graduate student"], ["college-athlete", "Social history: college athlete"]],
+        subjects: ["retired teacher", "middle-school student", "night-shift nurse", "graduate student", "college athlete"]
+      },
+      {
+        key: "medical-history", label: "Medical History",
+        values: [["hypertension", "History of hypertension"], ["asthma", "History of asthma"], ["febrile-seizures", "History of febrile seizures"], ["optic-neuritis", "History of optic neuritis"], ["migraine", "History of migraine"]],
+        subjects: ["patient with a history of hypertension", "patient with a history of asthma", "patient with a history of febrile seizures", "patient with a history of optic neuritis", "patient with a history of migraine"]
+      },
+      {
+        key: "surgical-history", label: "Surgical History",
+        values: [["cataract", "History of cataract surgery"], ["tonsillectomy", "History of tonsillectomy"], ["appendectomy", "History of appendectomy"], ["acl-repair", "History of ACL repair"], ["no-surgery", "No surgical history"]],
+        subjects: ["patient with prior cataract surgery", "patient with a prior tonsillectomy", "patient with a prior appendectomy", "patient with a prior ACL repair", "patient with no prior surgery"]
+      }
+    ];
+
+    const outcomeKinds = [
+      { key: "diagnosis", label: "Diagnosis" },
+      { key: "treatment", label: "Treatment" },
+      { key: "symptom", label: "Name of Symptom" }
+    ];
+
+    let categories = {};
+    let categoryKeys = [];
+    let solution = {};
+    let clueSpecs = [];
+    let hints = [];
+    let entries = {};
+    let hintIndex = 0;
+    let hasCelebrated = false;
+    const previousSelections = { demographic: "", history: "", outcome: "" };
+    let previousNameSignature = "";
+    const selectedSpecialties = new Set(["neurology"]);
+
+    function shuffled(items) {
+      const copy = items.slice();
+      for (let index = copy.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [copy[index], copy[swapIndex]] = [copy[swapIndex], copy[index]];
+      }
+      return copy;
+    }
+
+    function pickDifferent(pool, previousKey) {
+      const choices = pool.filter(row => row.key !== previousKey);
+      return choices[Math.floor(Math.random() * choices.length)];
+    }
+
+    function makeNameClues() {
+      const names = nameRow.assignment;
+      return [
+        { text: `${names[0][1]} was the first consultation of the day.`, test: () => fixed("name", names[0][0], 0) },
+        { text: `${names[1][1]} was seen immediately before ${names[2][1]}.`, test: () => adjacent("name", names[1][0], "name", names[2][0]) },
+        { text: `${names[3][1]} was seen immediately before ${names[4][1]}.`, test: () => adjacent("name", names[3][0], "name", names[4][0]) },
+        { text: `${names[4][1]} took the final appointment.`, test: () => fixed("name", names[4][0], 4) }
+      ];
+    }
+
+    function subjectFor(row, id) {
+      return row.subjects[row.values.findIndex(value => value[0] === id)];
+    }
+
+    function makePlacementClues(row) {
+      const ids = row.assignment.map(value => value[0]);
+      const subjects = ids.map(id => subjectFor(row, id));
+      const firstName = nameRow.assignment[0];
+      const finalName = nameRow.assignment[4];
+      return [
+        { text: `${firstName[1]} was the ${subjects[0]}.`, test: () => sameGroup([["name", firstName[0]], [row.key, ids[0]]]) },
+        { text: `The ${subjects[1]} was seen immediately before the ${subjects[2]}.`, test: () => adjacent(row.key, ids[1], row.key, ids[2]) },
+        { text: `The ${subjects[3]} was seen immediately before the ${subjects[4]}.`, test: () => adjacent(row.key, ids[3], row.key, ids[4]) },
+        { text: `${finalName[1]} was the ${subjects[4]}.`, test: () => sameGroup([["name", finalName[0]], [row.key, ids[4]]]) }
+      ];
+    }
+
+    function makeOutcomeClues(row) {
+      return row.assignment.map((outcome, index) => {
+        const name = nameRow.assignment[index];
+        const clinicalCase = row.caseByValue[outcome[0]];
+        let text;
+        if (row.key === "diagnosis") {
+          text = `${name[1]} presented with ${clinicalCase.fact}; this determines the diagnosis in the grid.`;
+        } else if (row.key === "treatment") {
+          const mechanism = window.TREATMENT_MECHANISMS[clinicalCase.id];
+          text = mechanism
+            ? `${name[1]}'s ${clinicalCase.diagnosis} was treated with a therapy that ${mechanism}.`
+            : `${name[1]}'s ${clinicalCase.diagnosis} required its standard treatment.`;
+        } else {
+          text = `${name[1]}'s ${clinicalCase.diagnosis} produced the characteristic symptom in the grid.`;
+        }
+        return {
+          text,
+          test: () => sameGroup([["name", name[0]], [row.key, outcome[0]]])
+        };
+      });
+    }
+
+    function chooseSpecialtyCases() {
+      const specialtyKeys = shuffled(Array.from(selectedSpecialties));
+      const chosen = [];
+      const used = new Set();
+
+      for (const specialtyKey of specialtyKeys.slice(0, slots.length)) {
+        const candidates = shuffled(SPECIALTY_MODES[specialtyKey].cases);
+        const clinicalCase = candidates[0];
+        chosen.push(clinicalCase);
+        used.add(clinicalCase.id);
+      }
+
+      const remaining = shuffled(specialtyKeys.flatMap(key => SPECIALTY_MODES[key].cases)).filter(clinicalCase => !used.has(clinicalCase.id));
+      while (chosen.length < slots.length && remaining.length) {
+        const clinicalCase = remaining.shift();
+        chosen.push(clinicalCase);
+        used.add(clinicalCase.id);
+      }
+      return shuffled(chosen);
+    }
+
+    function buildOutcomeRow(kind, clinicalCases) {
+      const values = clinicalCases.map(clinicalCase => [
+        `${kind.key}:${clinicalCase.id}`,
+        clinicalCase[kind.key]
+      ]);
+      return {
+        key: kind.key,
+        label: kind.label,
+        values,
+        assignment: values.slice(),
+        caseByValue: Object.fromEntries(values.map((value, index) => [value[0], clinicalCases[index]]))
+      };
+    }
+
+    function updateSpecialtySummary() {
+      const labels = Array.from(selectedSpecialties).map(key => SPECIALTY_MODES[key].label);
+      document.getElementById("specialty-summary").textContent = labels.length <= 2
+        ? labels.join(" + ")
+        : `${labels.length} specialties selected`;
+    }
+
+    function renderSpecialtySelector() {
+      document.getElementById("specialty-options").innerHTML = Object.entries(SPECIALTY_MODES)
+        .sort((a, b) => a[1].label.localeCompare(b[1].label))
+        .map(([key, specialty]) => `
+          <label class="specialty-option">
+            <input type="checkbox" value="${key}"${selectedSpecialties.has(key) ? " checked" : ""}>
+            <span>${escapeHtml(specialty.label)}</span>
+          </label>`)
+        .join("");
+      updateSpecialtySummary();
+    }
+
+    function newPuzzle() {
+      hasCelebrated = false;
+      hideWinCelebration();
+      let selectedNames;
+      let nameSignature;
+      do {
+        selectedNames = shuffled(namePool).slice(0, slots.length);
+        nameSignature = selectedNames.map(name => name[0]).sort().join("|");
+      } while (nameSignature === previousNameSignature);
+      previousNameSignature = nameSignature;
+      nameRow = { key: "name", label: "Name", values: selectedNames, assignment: shuffled(selectedNames) };
+
+      const demographicTemplate = pickDifferent(demographicRows, previousSelections.demographic);
+      const historyTemplate = pickDifferent(historyRows, previousSelections.history);
+      const outcomeKind = pickDifferent(outcomeKinds, previousSelections.outcome);
+      previousSelections.demographic = demographicTemplate.key;
+      previousSelections.history = historyTemplate.key;
+      previousSelections.outcome = outcomeKind.key;
+
+      const demographic = { ...demographicTemplate, assignment: shuffled(demographicTemplate.values) };
+      const history = { ...historyTemplate, assignment: shuffled(historyTemplate.values) };
+      const outcome = buildOutcomeRow(outcomeKind, chooseSpecialtyCases());
+
+      const activeRows = [nameRow, demographic, history, outcome];
+      categories = Object.fromEntries(activeRows.map(row => [row.key, { label: row.label, options: shuffled(row.values) }]));
+      categoryKeys = activeRows.map(row => row.key);
+      solution = Object.fromEntries(slots.map((slot, position) => [
+        slot.id,
+        Object.fromEntries(activeRows.map(row => [row.key, row.assignment[position][0]]))
+      ]));
+      clueSpecs = shuffled([
+        ...makeNameClues(),
+        ...makePlacementClues(demographic),
+        ...makePlacementClues(history),
+        ...makeOutcomeClues(outcome)
+      ]);
+      hints = [
+        "Start with the two name clues that identify the first and final appointments, then resolve the adjacent pairs.",
+        `For ${demographic.label}, place the first and last matches before resolving the two adjacent pairs.`,
+        `For ${history.label}, the name clues anchor both ends of the row.`,
+        outcome.key === "diagnosis"
+          ? "Use the presentation pattern in each clinical clue to identify its diagnosis."
+          : `Use each named diagnosis to identify its characteristic ${outcome.key}.`
+      ];
+      entries = emptyEntries();
+      hintIndex = 0;
+      document.getElementById("case-number").textContent = `Case ${Math.floor(100 + Math.random() * 900)}`;
+      const hintLine = document.getElementById("hint-line");
+      hintLine.textContent = "";
+      hintLine.classList.remove("is-visible");
+      updateAll();
+    }
+
+    function emptyEntries() {
+      return Object.fromEntries(slots.map(slot => [slot.id, Object.fromEntries(categoryKeys.map(key => [key, ""]))]));
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"]/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;" })[char]);
+    }
+
+    function positionOf(field, value) {
+      return slots.findIndex(slot => entries[slot.id][field] === value);
+    }
+
+    function fixed(field, value, targetPosition) {
+      const actualPosition = positionOf(field, value);
+      const targetValue = entries[slots[targetPosition].id][field];
+      if (targetValue && targetValue !== value) return "contradicted";
+      if (actualPosition < 0) return "unresolved";
+      return actualPosition === targetPosition ? "satisfied" : "contradicted";
+    }
+
+    function adjacent(fieldA, valueA, fieldB, valueB) {
+      const a = positionOf(fieldA, valueA);
+      const b = positionOf(fieldB, valueB);
+      if (a >= 0 && a === slots.length - 1) return "contradicted";
+      if (b === 0) return "contradicted";
+      if (a < 0 || b < 0) return "unresolved";
+      return b === a + 1 ? "satisfied" : "contradicted";
+    }
+
+    function sameGroup(items) {
+      const positions = items.map(([field, value]) => positionOf(field, value));
+      const known = positions.filter(position => position >= 0);
+      if (!known.length) return "unresolved";
+      const target = known[0];
+      if (known.some(position => position !== target)) return "contradicted";
+
+      for (const [field, value] of items) {
+        const current = entries[slots[target].id][field];
+        if (current && current !== value) return "contradicted";
+      }
+
+      return positions.every(position => position === target) ? "satisfied" : "unresolved";
+    }
+
+    function duplicateKeys() {
+      const duplicates = new Set();
+      for (const field of categoryKeys) {
+        const counts = {};
+        for (const slot of slots) {
+          const value = entries[slot.id][field];
+          if (value) counts[value] = (counts[value] || 0) + 1;
+        }
+        for (const slot of slots) {
+          const value = entries[slot.id][field];
+          if (value && counts[value] > 1) duplicates.add(`${slot.id}:${field}`);
+        }
+      }
+      return duplicates;
+    }
+
+    function optionMarkup(options, value, usedValues) {
+      return `<option value="">—</option>` + options.map(([id, label]) => {
+        const selected = id === value ? " selected" : "";
+        const disabled = usedValues.has(id) && id !== value ? " disabled" : "";
+        return `<option value="${id}"${selected}${disabled}>${escapeHtml(label)}</option>`;
+      }).join("");
+    }
+
+    function renderBoard() {
+      const duplicates = duplicateKeys();
+      const headers = slots.map(slot => `<th scope="col"><small>${escapeHtml(slot.position)}</small><strong>${escapeHtml(slot.time)}</strong></th>`).join("");
+      const rows = categoryKeys.map(field => {
+        const category = categories[field];
+        const usedValues = new Set(slots.map(slot => entries[slot.id][field]).filter(Boolean));
+        const cells = slots.map(slot => {
+          const value = entries[slot.id][field];
+          const key = `${slot.id}:${field}`;
+          return `<td><select data-slot="${slot.id}" data-field="${field}" class="${value ? "has-value" : ""}${duplicates.has(key) ? " duplicate" : ""}" aria-label="${escapeHtml(category.label)} for ${escapeHtml(slot.time)}">${optionMarkup(category.options, value, usedValues)}</select></td>`;
+        }).join("");
+        return `<tr><th scope="row">${escapeHtml(category.label)}</th>${cells}</tr>`;
+      }).join("");
+      document.getElementById("board").innerHTML = `<thead><tr><th scope="col">Case ledger</th>${headers}</tr></thead><tbody>${rows}</tbody>`;
+    }
+
+    function renderClues() {
+      const clueItems = clueSpecs.map(clue => ({ clue, status: clue.test() }));
+      const orderedClues = [
+        ...clueItems.filter(item => item.status !== "satisfied"),
+        ...clueItems.filter(item => item.status === "satisfied")
+      ];
+      const statuses = clueItems.map(item => item.status);
+      document.getElementById("clue-list").innerHTML = orderedClues.map(({ clue, status }) => {
+        const symbol = status === "satisfied" ? "✓" : status === "contradicted" ? "!" : "";
+        const statusText = status === "satisfied" ? "Applied: " : status === "contradicted" ? "Conflict: " : "Not yet applied: ";
+        return `<li class="${status}"><span class="clue-state" aria-hidden="true">${symbol}</span><span class="sr-only">${statusText}</span>${escapeHtml(clue.text)}</li>`;
+      }).join("");
+
+      const satisfied = statuses.filter(status => status === "satisfied").length;
+      const contradicted = statuses.filter(status => status === "contradicted").length;
+      const duplicates = duplicateKeys().size;
+      const filled = slots.reduce((total, slot) => total + categoryKeys.filter(field => entries[slot.id][field]).length, 0);
+      const totalEntries = slots.length * categoryKeys.length;
+      const solved = filled === totalEntries && !duplicates && statuses.every(status => status === "satisfied");
+
+      document.getElementById("progress-count").textContent = `${satisfied} of ${clueSpecs.length} clues`;
+      document.getElementById("progress-bar").style.width = `${(satisfied / clueSpecs.length) * 100}%`;
+      document.getElementById("solved-banner").classList.toggle("is-visible", solved);
+      if (solved && !hasCelebrated) {
+        hasCelebrated = true;
+        showWinCelebration();
+      }
+
+      const statusElement = document.getElementById("game-status");
+      statusElement.className = `game-status${solved ? " is-solved" : contradicted || duplicates ? " is-error" : ""}`;
+      if (solved) {
+        statusElement.innerHTML = `<strong>Case closed.</strong> All ${totalEntries} entries and ${clueSpecs.length} clues agree.`;
+      } else if (duplicates) {
+        statusElement.innerHTML = `<strong>Duplicate entry.</strong> Each item may be used only once per row.`;
+      } else if (contradicted) {
+        statusElement.innerHTML = `<strong>${contradicted} clue ${contradicted === 1 ? "conflict" : "conflicts"}.</strong> Red clues contradict the current grid.`;
+      } else {
+        statusElement.innerHTML = `<strong>${filled} of ${totalEntries} entries.</strong> ${satisfied} clues automatically applied.`;
+      }
+    }
+
+    function showWinCelebration() {
+      const colors = ["#226763", "#c39a51", "#a44732", "#e2efec", "#fffdf8"];
+      document.getElementById("win-confetti").innerHTML = Array.from({ length: 34 }, (_, index) => {
+        const left = (index * 37 + 9) % 100;
+        const delay = (index % 9) * .055;
+        const duration = 1.2 + (index % 6) * .12;
+        const drift = ((index % 7) - 3) * 18;
+        const spin = 360 + (index % 5) * 180;
+        return `<i style="--left:${left}%;--delay:${delay}s;--duration:${duration}s;--drift:${drift}px;--spin:${spin}deg;--confetti-color:${colors[index % colors.length]}"></i>`;
+      }).join("");
+      const pop = document.getElementById("win-pop");
+      pop.classList.add("is-visible");
+      pop.setAttribute("aria-hidden", "false");
+      document.getElementById("win-close").focus();
+    }
+
+    function hideWinCelebration() {
+      const pop = document.getElementById("win-pop");
+      pop.classList.remove("is-visible");
+      pop.setAttribute("aria-hidden", "true");
+    }
+
+    function updateAll() {
+      renderBoard();
+      renderClues();
+    }
+
+    document.getElementById("board").addEventListener("change", event => {
+      const select = event.target.closest("select[data-slot]");
+      if (!select) return;
+      entries[select.dataset.slot][select.dataset.field] = select.value;
+      updateAll();
+    });
+
+    document.getElementById("hint-button").addEventListener("click", () => {
+      const line = document.getElementById("hint-line");
+      line.textContent = `Hint ${hintIndex + 1}: ${hints[hintIndex]}`;
+      line.classList.add("is-visible");
+      hintIndex = (hintIndex + 1) % hints.length;
+    });
+
+    document.getElementById("reset-button").addEventListener("click", () => {
+      newPuzzle();
+    });
+
+    document.getElementById("win-close").addEventListener("click", hideWinCelebration);
+
+    document.getElementById("win-new").addEventListener("click", () => {
+      newPuzzle();
+    });
+
+    document.getElementById("win-pop").addEventListener("click", event => {
+      if (event.target === event.currentTarget) hideWinCelebration();
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && document.getElementById("win-pop").classList.contains("is-visible")) {
+        hideWinCelebration();
+      }
+    });
+
+    document.getElementById("specialty-options").addEventListener("change", event => {
+      const checkbox = event.target.closest('input[type="checkbox"]');
+      if (!checkbox) return;
+
+      if (checkbox.checked) {
+        selectedSpecialties.add(checkbox.value);
+      } else if (selectedSpecialties.size > 1) {
+        selectedSpecialties.delete(checkbox.value);
+      } else {
+        checkbox.checked = true;
+        return;
+      }
+
+      updateSpecialtySummary();
+      newPuzzle();
+    });
+
+    document.getElementById("select-all-specialties").addEventListener("click", () => {
+      Object.keys(SPECIALTY_MODES).forEach(key => selectedSpecialties.add(key));
+      renderSpecialtySelector();
+      newPuzzle();
+    });
+
+    document.getElementById("neurology-only").addEventListener("click", () => {
+      selectedSpecialties.clear();
+      selectedSpecialties.add("neurology");
+      renderSpecialtySelector();
+      document.getElementById("specialty-menu").open = false;
+      newPuzzle();
+    });
+
+    renderSpecialtySelector();
+    newPuzzle();
+  </script>
+</body>
+</html>
