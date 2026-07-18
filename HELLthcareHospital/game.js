@@ -114,8 +114,8 @@
 
   const periods = [
     {
-      date: "JAN–JUN 2026",
-      year: "YEAR 1 · FIRST HALF",
+      date: "JAN–MAR 2026",
+      year: "YEAR 1 · QUARTER 1",
       status: "INHERITED STABILITY",
       adviser: "nurse",
       title: "Nothing is on fire.",
@@ -166,8 +166,8 @@
       ],
     },
     {
-      date: "JUL–DEC 2026",
-      year: "YEAR 1 · SECOND HALF",
+      date: "APR–JUN 2026",
+      year: "YEAR 1 · QUARTER 2",
       status: "ORDINARY FRICTION",
       adviser: "finance",
       title: "Still a hospital. Mostly.",
@@ -218,8 +218,8 @@
       ],
     },
     {
-      date: "JAN–JUN 2027",
-      year: "YEAR 2 · FIRST HALF",
+      date: "JUL–SEP 2026",
+      year: "YEAR 1 · QUARTER 3",
       status: "PAYMENT WEATHER",
       adviser: "insurer",
       title: "The care happened. Payment did not.",
@@ -270,8 +270,8 @@
       ],
     },
     {
-      date: "JUL–DEC 2027",
-      year: "YEAR 2 · SECOND HALF",
+      date: "OCT–DEC 2026",
+      year: "YEAR 1 · QUARTER 4",
       status: "POST-ACUTE GRIDLOCK",
       adviser: "casework",
       title: "Everyone is ready to leave. Nobody can.",
@@ -322,8 +322,8 @@
       ],
     },
     {
-      date: "JAN–JUN 2028",
-      year: "YEAR 3 · FIRST HALF",
+      date: "JAN–MAR 2027",
+      year: "YEAR 2 · QUARTER 1",
       status: "LABOR REALITY",
       adviser: "services",
       title: "Payroll has discovered inflation.",
@@ -374,8 +374,8 @@
       ],
     },
     {
-      date: "JUL–DEC 2028",
-      year: "YEAR 3 · SECOND HALF",
+      date: "APR–JUN 2027",
+      year: "YEAR 2 · QUARTER 2",
       status: "RETROACTIVE GOVERNMENT",
       adviser: "state",
       title: "The state would like its money back.",
@@ -426,8 +426,8 @@
       ],
     },
     {
-      date: "JAN–JUN 2029",
-      year: "YEAR 4 · FIRST HALF",
+      date: "JUL–SEP 2027",
+      year: "YEAR 2 · QUARTER 3",
       status: "DEBT SPIRAL",
       adviser: "advocate",
       title: "The interest is now a department.",
@@ -478,8 +478,216 @@
       ],
     },
     {
-      date: "JUL–DEC 2029",
-      year: "YEAR 4 · SECOND HALF",
+      date: "OCT–DEC 2027",
+      year: "YEAR 2 · QUARTER 4",
+      status: "CONTRACT AMBUSH",
+      adviser: "insurer",
+      title: "AmazingCare has improved the past.",
+      situation: `AmazingCare has reviewed eighteen months of paid inpatient claims and decided that $11.4 million of the care should have occurred at a lower level of service. The admissions were authorized at the time. The new determinations arrived after the appeal windows for the original claims had closed.` ,
+      pressure: `The payer will restore the hospital to its preferred network tier if you accept a discounted settlement and waive further appeals. Refusing means another round of records review, slower current payments, and a notice to patients explaining that ${hospitalName} may soon cost them more.`,
+      briefingQuote: "Nothing has been denied. AmazingCare has simply determined that the authorized care was more expensive than it should have been after it was provided. The settlement lets everyone stop discussing who approved what.",
+      baseRevenue: 27.8,
+      baseExpense: 39.1,
+      decay: { workforce: 11, care: 10, trust: 9, flow: 11 },
+      ticker: "AMAZINGCARE CORRECTION: AUTHORIZATION CONFIRMS CARE, NOT PAYMENT FOR CARE",
+      choices: [
+        {
+          mode: "care",
+          title: "Fight every downgrade",
+          text: "Keep the clinical-review team staffed and appeal every retrospective downgrade.",
+          price: 6,
+          revenue: 3.8,
+          expense: 4.2,
+          debt: 0.8,
+          effects: { workforce: 7, care: 8, trust: 5, flow: 6 },
+          adviser: "insurer",
+          quote: "Your physicians supported every appeal with the chart, the authorization, and the actual condition of the patient. AmazingCare will now review whether that level of documentation is compatible with our partnership.",
+        },
+        {
+          mode: "balance",
+          title: "Take the discounted settlement",
+          text: "Collect part of the old claims now, waive the rest, and remain in the preferred network.",
+          price: 15,
+          revenue: 7.2,
+          expense: 1.1,
+          debt: 2.6,
+          effects: { workforce: 1, care: 1, trust: -4, flow: 2 },
+          adviser: "insurer",
+          quote: "AmazingCare has released seventy-two cents on the dollar. We consider the missing twenty-eight cents a shared investment in administrative closure.",
+        },
+        {
+          mode: "extract",
+          title: "Move emergency care out of network",
+          text: `Leave the contract and apply full listed charges to emergency and inpatient care.${cite(3)}`,
+          price: 34,
+          revenue: 10.6,
+          expense: -1.4,
+          debt: 9.7,
+          effects: { workforce: -9, care: -11, trust: -20, flow: -6 },
+          adviser: "insurer",
+          quote: "Patients may continue using your emergency department. AmazingCare will continue explaining why doing so was their financial decision.",
+        },
+      ],
+    },
+    {
+      date: "JAN–MAR 2028",
+      year: "YEAR 3 · QUARTER 1",
+      status: "DISCHARGE WITHOUT DESTINATION",
+      adviser: "casework",
+      title: "The discharge plan now requires real estate.",
+      situation: `The county's last nursing facility that accepted complex Medicaid patients has suspended admissions after losing another night shift. Twenty-six hospital patients are ready for rehabilitation, skilled nursing, or supervised housing; none of those beds exists at a rate their coverage will pay.${cite(1, 2, 5)}`,
+      pressure: "The emergency department is holding admitted patients in recliners because the inpatient units cannot free beds. Case managers have called every facility within ninety miles, and families are being asked whether they can provide wound care, injections, transfers, and overnight supervision with a printed instruction packet.",
+      briefingQuote: "My team has made four hundred and twelve placement calls this week. The patients do not need an acute-care bed. They need somewhere safe, staffed, and willing to accept what insurance pays. Those are not the same thing anymore.",
+      baseRevenue: 26.8,
+      baseExpense: 40.8,
+      decay: { workforce: 12, care: 10, trust: 8, flow: 15 },
+      ticker: "DISCHARGE DESK: ALL SAFE DESTINATIONS CURRENTLY OUT OF NETWORK OR OUT OF BUSINESS",
+      choices: [
+        {
+          mode: "care",
+          title: "Buy transitional-care beds",
+          text: `Pay nursing and rehabilitation facilities directly until safe placements open.${cite(1, 2)}`,
+          price: 7,
+          revenue: 1.0,
+          expense: 7.0,
+          debt: 0.6,
+          effects: { workforce: 8, care: 11, trust: 9, flow: 18 },
+          adviser: "casework",
+          quote: "Twenty-one people left the hospital for staffed care, and five are still waiting. It cost us money because the covered discharge benefit exists mainly as a sentence in a handbook.",
+        },
+        {
+          mode: "balance",
+          title: "Open a hospital step-down unit",
+          text: "Convert an underused clinic wing into temporary beds staffed by nursing, therapy, and case management.",
+          price: 16,
+          revenue: 4.0,
+          expense: 3.2,
+          debt: 2.4,
+          effects: { workforce: 4, care: 5, trust: 1, flow: 10 },
+          adviser: "casework",
+          quote: "We created the service the rest of the system stopped funding. The patients are safer and the hospital is now paying twice for the same discharge.",
+        },
+        {
+          mode: "extract",
+          title: "Send patients home with a hotline",
+          text: `Discharge medically stable patients with written instructions and no covered in-home support.${cite(1, 2)}`,
+          price: 29,
+          revenue: 8.0,
+          expense: -2.0,
+          debt: 7.8,
+          effects: { workforce: -8, care: -16, trust: -21, flow: 13 },
+          adviser: "casework",
+          quote: "The beds opened. Three people returned by ambulance before the hotline finished its first week, and one family still thinks they failed us.",
+        },
+      ],
+    },
+    {
+      date: "APR–JUN 2028",
+      year: "YEAR 3 · QUARTER 2",
+      status: "WORKFORCE BREAKPOINT",
+      adviser: "services",
+      title: "The hospital is running on people who stayed late.",
+      situation: `Nurses, therapists, pharmacists, technicians, case managers, food-service workers, and the environmental services crew have covered vacancies for five straight quarters. They have kept every occupied unit safe, but overtime is no longer filling the schedule and experienced staff are leaving for jobs with predictable hours.${cite(5)}`,
+      pressure: "Department leaders can safely staff forty-four beds with the people currently available. The hospital is still advertising sixty. Agency vendors will cover the gap at nearly double the regular hourly cost, provided the hospital pays their invoices before it pays several of its own suppliers.",
+      briefingQuote: "My crew has not missed a discharge clean, and nursing has not closed a bed without a reason. People are leaving because the plan has been to ask the ones who care most to absorb one more impossible week.",
+      baseRevenue: 28.0,
+      baseExpense: 42.0,
+      decay: { workforce: 14, care: 12, trust: 7, flow: 12 },
+      ticker: "STAFFING OFFICE: HEROISM ENTERED AS RECURRING LABOR CATEGORY",
+      choices: [
+        {
+          mode: "care",
+          title: "Fund retention and safe staffing",
+          text: `Raise wages, stabilize schedules, and hire across clinical, therapy, casework, and hospital operations.${cite(5)}`,
+          price: 9,
+          revenue: 1.3,
+          expense: 7.6,
+          debt: 0.7,
+          effects: { workforce: 17, care: 12, trust: 8, flow: 10 },
+          adviser: "services",
+          quote: "The schedule has names on it again instead of apologies. Nobody became more dedicated this quarter; they finally had enough coworkers to do the job they were already doing.",
+        },
+        {
+          mode: "balance",
+          title: "Close one wing and consolidate staff",
+          text: `Operate fewer staffed beds and keep hospital-employed teams together.${cite(4, 5)}`,
+          price: 18,
+          revenue: 4.2,
+          expense: -1.8,
+          debt: 3.1,
+          effects: { workforce: -2, care: 0, trust: -4, flow: 3 },
+          adviser: "services",
+          quote: "Forty-four beds can be run safely by this team. The waiting room is worse, but at least the staffing board has stopped pretending sixteen imaginary employees are on their way.",
+        },
+        {
+          mode: "extract",
+          title: "Outsource the remaining support teams",
+          text: `Replace hospital-employed sanitation, food, transport, and scheduling teams with the lowest bidders.${cite(5)}`,
+          price: 32,
+          revenue: 7.9,
+          expense: -6.2,
+          debt: 8.5,
+          effects: { workforce: -20, care: -18, trust: -17, flow: -12 },
+          adviser: "services",
+          quote: "The new contractor promised the same work with half the people. The promise was fully staffed. The units were not.",
+        },
+      ],
+    },
+    {
+      date: "JUL–SEP 2028",
+      year: "YEAR 3 · QUARTER 3",
+      status: "STABILIZATION THEATER",
+      adviser: "state",
+      title: "The rescue package has eligibility problems.",
+      situation: `The state announces an emergency hospital stabilization fund two weeks after removing another $4.8 million from current Medicaid payments. ${hospitalName} qualifies for assistance only if it submits a five-year recovery plan, freezes charity-care growth, and agrees that future payment disputes cannot interrupt services.`,
+      pressure: "The application is due in twelve business days and asks the hospital to certify that it is financially stable enough to administer the grant. State officials have already included the rescue package in a press release, although no hospital has received a contract or payment schedule.",
+      briefingQuote: "The stabilization fund is intended for essential hospitals facing temporary distress. Your distress may be too established to qualify as temporary, but closing before the review is complete could negatively affect the application.",
+      baseRevenue: 27.1,
+      baseExpense: 43.4,
+      decay: { workforce: 13, care: 13, trust: 11, flow: 14 },
+      ticker: "STATEHOUSE: HOSPITAL RESCUE ANNOUNCED · FUNDS PENDING DEFINITION OF RESCUE",
+      choices: [
+        {
+          mode: "care",
+          title: "Keep services open during the appeal",
+          text: `Maintain staffing and charity care while challenging the recoupment and grant terms.${cite(4, 5)}`,
+          price: 11,
+          revenue: 2.4,
+          expense: 6.1,
+          debt: 1.0,
+          effects: { workforce: 10, care: 13, trust: 11, flow: 8 },
+          adviser: "state",
+          quote: "Your application documents substantial community benefit. The review committee has asked whether continuing to provide that benefit demonstrates insufficient cost control.",
+        },
+        {
+          mode: "balance",
+          title: "Sign the stabilization agreement",
+          text: "Accept partial funding, state oversight, service limits, and another year of payment review.",
+          price: 22,
+          revenue: 8.7,
+          expense: 1.2,
+          debt: 3.8,
+          effects: { workforce: -2, care: -1, trust: -6, flow: 0 },
+          adviser: "state",
+          quote: "The first installment will arrive after the oversight board approves your service-reduction plan. Until then, the signed agreement may be presented as evidence that the hospital has been stabilized.",
+        },
+        {
+          mode: "extract",
+          title: "Close services to qualify for aid",
+          text: `End charity clinics and inpatient psychiatry, then count the savings toward the state's recovery target.${cite(4)}`,
+          price: 39,
+          revenue: 12.4,
+          expense: -5.4,
+          debt: 10.4,
+          effects: { workforce: -21, care: -23, trust: -26, flow: -15 },
+          adviser: "state",
+          quote: "The hospital now meets the financial-improvement benchmark. The state has opened a separate review into the resulting access shortage.",
+        },
+      ],
+    },
+    {
+      date: "OCT–DEC 2028",
+      year: "YEAR 3 · QUARTER 4",
       status: "TERMINAL OPERATIONS",
       adviser: "physician",
       title: "There is no good line left.",
@@ -583,7 +791,7 @@
       headline: "BOARD APPROVES ORDERLY CLOSURE; NEIGHBORHOOD ADVISED TO PLAN AROUND IT",
       title: "Managed Decline",
       kicker: "EVERY COMPROMISE BOUGHT TIME. TIME SENT AN INVOICE.",
-      body: `You balanced, borrowed, appealed, cross-subsidized, and cut around the edges. ${hospitalName} lasts two years before a carefully managed closure removes the last full-service hospital from the neighborhood.${cite(4)}`,
+      body: `You balanced, borrowed, appealed, cross-subsidized, and cut around the edges. ${hospitalName} lasts three years before a carefully managed closure removes the last full-service hospital from the neighborhood.${cite(4)}`,
       epitaph: "No single decision killed it. That was the elegance of the arrangement.",
     },
   };
@@ -969,7 +1177,11 @@
 
   function showReport(report) {
     const finalPeriod = state.period >= periods.length;
-    const collapsed = state.cash <= -8 || state.metrics.care <= 8 || state.metrics.workforce <= 8;
+    const collapsed = (
+      state.period >= periods.length - 1 &&
+      state.metrics.care <= 3 &&
+      state.metrics.workforce <= 3
+    );
     const continueLabel = finalPeriod || collapsed ? "Open the final audit →" : "Advance to next quarter →";
     const comparisonTone = (change, inverse = false) => {
       if (Math.abs(change) < 0.05) return "same";
@@ -1084,8 +1296,8 @@
   function chooseEnding() {
     if (state.cash <= -8) return "payroll";
     if (state.metrics.care <= 18 || state.metrics.trust <= 14 || state.metrics.workforce <= 16) return "abandoned";
-    if (state.modes.care >= 5) return "beloved";
-    if (state.modes.extract >= 5) return "efficient";
+    if (state.modes.care >= 7) return "beloved";
+    if (state.modes.extract >= 7) return "efficient";
     return "managed";
   }
 
@@ -1198,7 +1410,7 @@
         <h2 id="modal-title">The spiral is structural.</h2>
         <p class="modal-intro">This is satire, not a forecast. Each period combines a fictional hospital ledger with real policy pressure points.</p>
         <div class="model-grid">
-          <div><span>TIME</span><strong>8 quarters</strong><p>One continuous two-year playthrough designed for roughly 3–5 minutes.</p></div>
+          <div><span>TIME</span><strong>12 quarters</strong><p>One continuous three-year playthrough designed for roughly 5–8 minutes.</p></div>
           <div><span>PEOPLE</span><strong>Clinicians are the good guys</strong><p>Staff absorb pressure and preserve care. Insurers and government payment systems intensify it.${cite(1, 5)}</p></div>
           <div><span>MONEY</span><strong>Revenue is not cash</strong><p>The model collects 8% of patient balances each quarter. The rest remains owed while payment delays, payroll, bottlenecks, and borrowing compound.${cite(1, 2, 3)}</p></div>
           <div><span>ENDING</span><strong>Doom is scheduled</strong><p>Choices determine who is protected, who pays, and what remains when the hospital closes.${cite(4, 6)}</p></div>
