@@ -1,9 +1,35 @@
 <!DOCTYPE html>
+<!DOCTYPE html>
 
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<script>
+  // Mobile autodetect: adds "is-mobile" class to <html> very early to avoid layout flicker.
+  (function(){
+    try{
+      var params = new URLSearchParams(location.search);
+      var forceMobile = params.get("mobile") === "1";
+      var forceDesktop = params.get("desktop") === "1";
+      if (forceDesktop) return;
+
+      var ua = navigator.userAgent || "";
+      var uaMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+      var touch = ("ontouchstart" in window) || (navigator.maxTouchPoints || 0) > 0;
+      var w = Math.min(window.innerWidth || 9999, window.innerHeight || 9999);
+      var smallScreen = w <= 900;
+
+      var uad = navigator.userAgentData;
+      var uadMobile = !!(uad && uad.mobile);
+
+      var isMobile = !!(forceMobile || uadMobile || (uaMobile && smallScreen) || (touch && smallScreen));
+      if (isMobile){
+        document.documentElement.classList.add("is-mobile");
+      }
+    }catch(e){}
+  })();
+</script>
 <title>Extraocular Muscle Simulator – Binocular Yoked (Patient View, Bilateral Sliders)</title>
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="shortcut icon" type="image/png" href="favicon.png">
@@ -1004,257 +1030,6 @@ width: fit-content;
       white-space:normal !important;
     }
 
-    /* --- Responsive layout -------------------------------------------------
-       Wide:   muscle controls | binocular stage | muscle controls
-       Tablet: binocular stage, then both control panels side by side
-       Phone:  binocular stage, then the two control panels stacked
-       --------------------------------------------------------------------- */
-    *, *::before, *::after{ box-sizing:border-box; }
-    html, body{ overflow-x:hidden; }
-    body{ min-width:280px; }
-
-    .app{
-      min-height:100svh;
-      justify-content:safe center;
-      padding:clamp(8px, 1vw, 14px);
-    }
-
-    .main{
-      display:grid;
-      grid-template-columns:minmax(205px, 0.95fr) minmax(390px, 1.35fr) minmax(205px, 0.95fr);
-      gap:clamp(8px, 0.8vw, 14px);
-      align-items:stretch;
-      width:min(100%, 1600px);
-      margin-inline:auto;
-    }
-
-    .eye-panel{
-      container-type:inline-size;
-      min-width:0;
-      width:100%;
-      max-width:none;
-      padding:clamp(10px, 0.9vw, 14px);
-    }
-
-    .controls{
-      display:flex !important;
-      min-width:0;
-      width:100%;
-      max-width:none;
-      max-height:min(680px, calc(100svh - 52px));
-      overflow-y:auto;
-      scrollbar-gutter:stable;
-    }
-
-    .eyes-row{
-      gap:clamp(8px, 2.5cqi, 14px);
-      overflow:visible;
-    }
-
-    .eye-wrapper{
-      width:clamp(112px, calc((100cqi - 42px) / 2), 260px);
-      height:auto;
-      aspect-ratio:1;
-    }
-
-    svg.vectorCanvas{
-      width:100%;
-      height:100%;
-    }
-
-    .eye-circle{
-      inset:7.7%;
-      width:auto;
-      height:auto;
-      margin:0;
-    }
-
-    .iris{
-      width:50%;
-      height:50%;
-      margin:-25% 0 0 -25%;
-    }
-
-    .pupil{
-      width:36.4%;
-      height:36.4%;
-      margin:-18.2% 0 0 -18.2%;
-    }
-
-    .corneal-highlight{
-      width:36%;
-      height:auto;
-      aspect-ratio:1;
-    }
-
-    input[type="range"]{
-      height:24px;
-      margin:-4px 0;
-      background:linear-gradient(90deg, #ef4444, #eab308, #22c55e) center / 100% 5px no-repeat;
-      cursor:pointer;
-      touch-action:pan-y;
-    }
-
-    .modal-card{
-      max-height:calc(100dvh - 28px);
-      overflow-y:auto;
-      overscroll-behavior:contain;
-    }
-
-    button:focus-visible,
-    input:focus-visible,
-    select:focus-visible{
-      outline:3px solid rgba(96,165,250,0.85);
-      outline-offset:3px;
-    }
-
-    @media (min-width: 840px) and (max-width: 1099px){
-      .main{ gap:8px; }
-      .controls{
-        gap:6px;
-        padding:10px;
-      }
-      .controls h2{ font-size:0.92rem; }
-      .slider-group{
-        margin-bottom:2px;
-        padding:6px;
-      }
-      .slider-header{ gap:4px; }
-      .muscle-name .side-tag{
-        display:block;
-        margin:2px 0 0;
-      }
-      .slider-subtext{
-        font-size:0.66rem;
-        line-height:1.25;
-      }
-      .eye-panel{ padding:10px; }
-    }
-
-    @media (min-width: 840px) and (max-height: 520px){
-      .eye-panel{ padding:8px; }
-      .eye-wrapper{ width:min(150px, calc((100cqi - 34px) / 2)); }
-      .eyes-row{ gap:8px; }
-      .ask-look{ margin-top:6px; }
-      .ask-look-grid{
-        grid-template-columns:38px auto 38px;
-        grid-template-rows:38px 38px 38px;
-        row-gap:4px;
-      }
-      .ask-btn{
-        width:38px;
-        height:38px;
-      }
-      .ask-center{
-        min-width:130px;
-        padding:6px 10px;
-        font-size:0.82rem;
-      }
-      .eye-footer{ margin-top:6px; }
-      .lesion-row{ margin-top:6px; }
-      .lesion-btn{ padding:5px 10px; }
-      .credit-footer{ display:none; }
-    }
-
-    @media (max-width: 839px){
-      .app{
-        justify-content:flex-start;
-        padding-bottom:calc(16px + env(safe-area-inset-bottom));
-      }
-
-      .main{
-        grid-template-columns:repeat(2, minmax(0, 1fr));
-        align-items:start;
-        max-width:980px;
-      }
-
-      .eye-panel{
-        grid-column:1 / -1;
-        grid-row:1;
-      }
-
-      .controls{
-        max-height:none;
-        overflow:visible;
-        scrollbar-gutter:auto;
-      }
-
-      .controls-od{ grid-column:1; grid-row:2; }
-      .controls-os{ grid-column:2; grid-row:2; }
-
-      body.game-mode .controls{ display:none !important; }
-
-      .credit-footer{
-        position:static;
-        transform:none;
-        margin:12px auto 0;
-        padding-bottom:env(safe-area-inset-bottom);
-        white-space:normal;
-      }
-    }
-
-    @media (max-width: 720px){
-      .main{
-        grid-template-columns:minmax(0, 1fr);
-        gap:10px;
-      }
-
-      .eye-panel,
-      .controls-od,
-      .controls-os{
-        grid-column:1;
-      }
-
-      .eye-panel{ grid-row:1; }
-      .controls-od{ grid-row:2; }
-      .controls-os{ grid-row:3; }
-
-      .controls,
-      .eye-panel{
-        border-radius:14px;
-        padding:10px;
-      }
-
-      .controls{ gap:8px; }
-      .slider-group{ margin-bottom:2px; }
-      .ask-look-grid{ row-gap:6px; }
-      .ask-btn{ width:44px; height:44px; }
-      .ask-center,
-      .lesion-btn,
-      .mini-btn{ min-height:44px; }
-      .modal-close{ width:44px; height:44px; }
-
-      .modal-overlay{
-        align-items:flex-start;
-        padding:8px;
-      }
-
-      .modal-card{
-        width:100%;
-        max-height:calc(100dvh - 16px);
-      }
-    }
-
-    @media (max-width: 380px){
-      .app{ padding-inline:6px; }
-      .eye-panel{ padding-inline:6px; }
-      .eyes-row{ gap:4px; }
-      .eye-label{ font-size:0.72rem; }
-      .axes-labels{ font-size:0.62rem; }
-      .ask-center{ min-width:124px; }
-      .slider-header{ align-items:flex-start; }
-      .muscle-name .side-tag{ display:block; margin:2px 0 0; }
-    }
-
-    @media (prefers-reduced-motion: reduce){
-      *, *::before, *::after{
-        scroll-behavior:auto !important;
-        transition-duration:0.01ms !important;
-        animation-duration:0.01ms !important;
-        animation-iteration-count:1 !important;
-      }
-    }
-
 </style>
 </head>
 <body>
@@ -1269,7 +1044,7 @@ width: fit-content;
 <div class="muscle-name">Medial rectus <span class="side-tag">(adduction)</span></div>
 <div class="slider-value" id="od_mrVal">50</div>
 </div>
-<input aria-label="Right eye medial rectus activation" id="od_mr" max="100" min="0" type="range" value="50"/>
+<input id="od_mr" max="100" min="0" type="range" value="50"/>
 <div class="slider-subtext">Right eye: adduction (toward nose) → left gaze.</div>
 </div>
 <div class="slider-group">
@@ -1277,7 +1052,7 @@ width: fit-content;
 <div class="muscle-name">Lateral rectus <span class="side-tag">(abduction)</span></div>
 <div class="slider-value" id="od_lrVal">50</div>
 </div>
-<input aria-label="Right eye lateral rectus activation" id="od_lr" max="100" min="0" type="range" value="50"/>
+<input id="od_lr" max="100" min="0" type="range" value="50"/>
 <div class="slider-subtext">Right eye: abduction (toward temple) → right gaze.</div>
 </div>
 <div class="slider-group">
@@ -1285,7 +1060,7 @@ width: fit-content;
 <div class="muscle-name">Superior rectus <span class="side-tag">(elevates + adducts)</span></div>
 <div class="slider-value" id="od_srVal">50</div>
 </div>
-<input aria-label="Right eye superior rectus activation" id="od_sr" max="100" min="0" type="range" value="50"/>
+<input id="od_sr" max="100" min="0" type="range" value="50"/>
 <div class="slider-subtext">Primary: elevation. Secondary: adduction, intorsion.</div>
 </div>
 <div class="slider-group">
@@ -1293,7 +1068,7 @@ width: fit-content;
 <div class="muscle-name">Inferior rectus <span class="side-tag">(depresses + adducts)</span></div>
 <div class="slider-value" id="od_irVal">50</div>
 </div>
-<input aria-label="Right eye inferior rectus activation" id="od_ir" max="100" min="0" type="range" value="50"/>
+<input id="od_ir" max="100" min="0" type="range" value="50"/>
 <div class="slider-subtext">Primary: depression. Secondary: adduction, extorsion.</div>
 </div>
 <div class="slider-group">
@@ -1301,7 +1076,7 @@ width: fit-content;
 <div class="muscle-name">Superior oblique <span class="side-tag">(depresses + abducts)</span></div>
 <div class="slider-value" id="od_soVal">50</div>
 </div>
-<input aria-label="Right eye superior oblique activation" id="od_so" max="100" min="0" type="range" value="50"/>
+<input id="od_so" max="100" min="0" type="range" value="50"/>
 <div class="slider-subtext">Primary: intorsion. Secondary: depression in adduction, abduction.</div>
 </div>
 <div class="slider-group">
@@ -1309,7 +1084,7 @@ width: fit-content;
 <div class="muscle-name">Inferior oblique <span class="side-tag">(elevates + abducts)</span></div>
 <div class="slider-value" id="od_ioVal">50</div>
 </div>
-<input aria-label="Right eye inferior oblique activation" id="od_io" max="100" min="0" type="range" value="50"/>
+<input id="od_io" max="100" min="0" type="range" value="50"/>
 <div class="slider-subtext">Primary: extorsion. Secondary: elevation in adduction, abduction.</div>
 </div>
 
@@ -1375,15 +1150,15 @@ width: fit-content;
 </div>
 <div aria-label="Ask patient to look controls" class="ask-look">
 <div class="ask-look-grid">
-<button aria-label="Ask patient to look up and right" class="ask-btn ask-upleft" id="askUpLeft" type="button">↖</button>
+<button aria-label="Ask eyes to move up-left" class="ask-btn ask-upleft" id="askUpLeft" type="button">↖</button>
 <button aria-label="Ask patient to look up" class="ask-btn ask-up" id="askUp" type="button">↑</button>
-<button aria-label="Ask patient to look up and left" class="ask-btn ask-upright" id="askUpRight" type="button">↗</button>
-<button aria-label="Ask patient to look right" class="ask-btn ask-left" id="askLeft" type="button">←</button>
+<button aria-label="Ask eyes to move up-right" class="ask-btn ask-upright" id="askUpRight" type="button">↗</button>
+<button aria-label="Ask patient to look left" class="ask-btn ask-left" id="askLeft" type="button">←</button>
 <button class="ask-center" id="askCenter" type="button" aria-label="Center gaze">Ask to Look</button>
-<button aria-label="Ask patient to look left" class="ask-btn ask-right" id="askRight" type="button">→</button>
-<button aria-label="Ask patient to look down and right" class="ask-btn ask-downleft" id="askDownLeft" type="button">↙</button>
+<button aria-label="Ask patient to look right" class="ask-btn ask-right" id="askRight" type="button">→</button>
+<button aria-label="Ask eyes to move down-left" class="ask-btn ask-downleft" id="askDownLeft" type="button">↙</button>
 <button aria-label="Ask patient to look down" class="ask-btn ask-down" id="askDown" type="button">↓</button>
-<button aria-label="Ask patient to look down and left" class="ask-btn ask-downright" id="askDownRight" type="button">↘</button>
+<button aria-label="Ask eyes to move down-right" class="ask-btn ask-downright" id="askDownRight" type="button">↘</button>
 
 </div>
 </div>
@@ -1494,7 +1269,7 @@ width: fit-content;
 <div class="muscle-name">Medial rectus <span class="side-tag">(adduction)</span></div>
 <div class="slider-value" id="os_mrVal">50</div>
 </div>
-<input aria-label="Left eye medial rectus activation" id="os_mr" max="100" min="0" type="range" value="50"/>
+<input id="os_mr" max="100" min="0" type="range" value="50"/>
 <div class="slider-subtext">Left eye: adduction (toward nose) → right gaze.</div>
 </div>
 <div class="slider-group">
@@ -1502,7 +1277,7 @@ width: fit-content;
 <div class="muscle-name">Lateral rectus <span class="side-tag">(abduction)</span></div>
 <div class="slider-value" id="os_lrVal">50</div>
 </div>
-<input aria-label="Left eye lateral rectus activation" id="os_lr" max="100" min="0" type="range" value="50"/>
+<input id="os_lr" max="100" min="0" type="range" value="50"/>
 <div class="slider-subtext">Left eye: abduction (toward temple) → left gaze.</div>
 </div>
 <div class="slider-group">
@@ -1510,7 +1285,7 @@ width: fit-content;
 <div class="muscle-name">Superior rectus <span class="side-tag">(elevates + adducts)</span></div>
 <div class="slider-value" id="os_srVal">50</div>
 </div>
-<input aria-label="Left eye superior rectus activation" id="os_sr" max="100" min="0" type="range" value="50"/>
+<input id="os_sr" max="100" min="0" type="range" value="50"/>
 <div class="slider-subtext">Primary: elevation. Secondary: adduction, intorsion.</div>
 </div>
 <div class="slider-group">
@@ -1518,7 +1293,7 @@ width: fit-content;
 <div class="muscle-name">Inferior rectus <span class="side-tag">(depresses + adducts)</span></div>
 <div class="slider-value" id="os_irVal">50</div>
 </div>
-<input aria-label="Left eye inferior rectus activation" id="os_ir" max="100" min="0" type="range" value="50"/>
+<input id="os_ir" max="100" min="0" type="range" value="50"/>
 <div class="slider-subtext">Primary: depression. Secondary: adduction, extorsion.</div>
 </div>
 <div class="slider-group">
@@ -1526,7 +1301,7 @@ width: fit-content;
 <div class="muscle-name">Superior oblique <span class="side-tag">(depresses + abducts)</span></div>
 <div class="slider-value" id="os_soVal">50</div>
 </div>
-<input aria-label="Left eye superior oblique activation" id="os_so" max="100" min="0" type="range" value="50"/>
+<input id="os_so" max="100" min="0" type="range" value="50"/>
 <div class="slider-subtext">Primary: intorsion. Secondary: depression in adduction, abduction.</div>
 </div>
 <div class="slider-group">
@@ -1534,7 +1309,7 @@ width: fit-content;
 <div class="muscle-name">Inferior oblique <span class="side-tag">(elevates + abducts)</span></div>
 <div class="slider-value" id="os_ioVal">50</div>
 </div>
-<input aria-label="Left eye inferior oblique activation" id="os_io" max="100" min="0" type="range" value="50"/>
+<input id="os_io" max="100" min="0" type="range" value="50"/>
 <div class="slider-subtext">Primary: extorsion. Secondary: elevation in adduction, abduction.</div>
 </div>
 
@@ -1936,11 +1711,11 @@ width: fit-content;
       doAsk(h, v);
     };
 
-    // Arrow positions are from the clinician's view while facing the patient:
+    // Patient-direction arrows:
     // ↑ up (v=+1)
     // ↓ down (v=-1)
-    // screen-left is patient-right gaze (h=+1)
-    // screen-right is patient-left gaze (h=-1)
+    // ← patient-left gaze (h=+1 in this app)
+    // → patient-right gaze (h=-1 in this app)
     askUpBtn.addEventListener("click", () => handleAskPress("up", 0, 1));
     askDownBtn.addEventListener("click", () => handleAskPress("down", 0, -1));
     askLeftBtn.addEventListener("click", () => handleAskPress("left", 1, 0));
@@ -2863,28 +2638,6 @@ if (mlfRightCb){
   Object.keys(OS).forEach(k=>{
     osSliders[k].addEventListener("input", ()=>setGazeFromSliders("os"));
     osSliders[k].addEventListener("change", ()=>setGazeFromSliders("os"));
-  });
-
-  // Keep the custom-styled meters fully operable from a keyboard.
-  document.querySelectorAll('input[type="range"]').forEach(slider=>{
-    slider.addEventListener("keydown", (event)=>{
-      const min = Number(slider.min || 0);
-      const max = Number(slider.max || 100);
-      const step = Number(slider.step || 1);
-      let next = Number(slider.value);
-
-      if (event.key === "ArrowRight" || event.key === "ArrowUp") next += step;
-      else if (event.key === "ArrowLeft" || event.key === "ArrowDown") next -= step;
-      else if (event.key === "PageUp") next += step * 10;
-      else if (event.key === "PageDown") next -= step * 10;
-      else if (event.key === "Home") next = min;
-      else if (event.key === "End") next = max;
-      else return;
-
-      event.preventDefault();
-      slider.value = String(Math.max(min, Math.min(max, next)));
-      slider.dispatchEvent(new Event("input", { bubbles:true }));
-    });
   });
 
   // Drag: pointer dx screen-left should map to patient-right
