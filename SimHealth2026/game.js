@@ -1,984 +1,921 @@
 (function () {
   "use strict";
 
-  const payrollPerShift = 2.4;
+  const $ = (selector, root = document) => root.querySelector(selector);
+  const gameView = $("#game-view");
+  const modalBackdrop = $("#modal-backdrop");
+  const modalContent = $("#modal-content");
+  const endingStorageKey = "hellthcare-continuous-endings";
 
   const metricMeta = {
-    cash: { label: "Cash on hand", short: "Cash" },
-    capacity: { label: "Staffed bed availability", short: "Beds" },
-    workforce: { label: "Hospital team strength", short: "Staff" },
-    flow: { label: "Discharge flow", short: "Flow" },
-    trust: { label: "Patient trust", short: "Trust" },
+    workforce: { label: "Hospital team", short: "Staff" },
     care: { label: "Care quality", short: "Care" },
-  };
-
-  const initialMetrics = {
-    cash: 18,
-    capacity: 42,
-    workforce: 74,
-    flow: 48,
-    trust: 68,
-    care: 78,
-  };
-
-  const defaultAssumptions = {
-    denialPressure: 115,
-    safeStaffing: 105,
-    uncompensatedCare: 110,
+    trust: { label: "Patient trust", short: "Trust" },
+    flow: { label: "Patient flow", short: "Flow" },
   };
 
   const sources = [
     {
       label: "HHS OIG — Medicare Advantage SNF denials, 2026",
-      note: "The review found 12% of skilled-nursing admission requests were initially denied; nearly all appealed denials were overturned.",
+      note: "A federal review found wide variation in skilled-nursing admission denials and that nearly all appealed denials in its sample were overturned.",
       url: "https://oig.hhs.gov/reports/all/2026/medicare-advantage-organizations-overturned-nearly-all-appealed-prior-authorization-denials-for-skilled-nursing-facility-admission-raising-concerns-about-initial-denials/",
     },
     {
       label: "MedPAC — March 2026 Medicare Payment Policy",
-      note: "Hospital payment adequacy, costs, margins, access, and financial pressure inform the fictional operating model.",
+      note: "Hospital costs, margins, access, payment adequacy, and payer mix inform the fictional operating model.",
       url: "https://www.medpac.gov/wp-content/uploads/2026/03/Mar26_Ch9_MedPAC_Report_To_Congress_SEC.pdf",
     },
     {
-      label: "CMS — Hospital Price Transparency, 2026",
-      note: "Hospitals must publish gross charges, cash prices, and payer-negotiated amounts; updated enforcement began April 2026.",
+      label: "CMS — Hospital Price Transparency",
+      note: "Hospitals publish gross charges, discounted cash prices, and payer-negotiated amounts under federal transparency rules.",
       url: "https://www.cms.gov/priorities/key-initiatives/hospital-price-transparency",
     },
     {
       label: "GAO — Urban Hospital Closures, 2025",
-      note: "The report examines financial and operating factors behind selected hospital closures and the resulting loss of services.",
+      note: "The report examines financial and operating factors behind selected closures and the resulting loss of services.",
       url: "https://files.gao.gov/reports/GAO-25-106473/index.html",
     },
     {
-      label: "BLS — Occupational Employment and Wages, 2025",
-      note: "National employment and wage data cover physicians, nurses, therapists, social workers, and sanitation workers.",
+      label: "BLS — Occupational Employment and Wages",
+      note: "National data describe the large, specialized workforce required to operate a hospital.",
       url: "https://www.bls.gov/news.release/ocwage.htm",
     },
     {
-      label: "GAO — Hospital Uncompensated Care",
-      note: "Federal support does not always align cleanly with hospitals' actual costs of caring for uninsured and low-income patients.",
-      url: "https://www.gao.gov/products/gao-16-568",
-    },
-    {
       label: "FTC, DOJ & HHS — Private Equity in Health Care Inquiry",
-      note: "The agencies sought evidence on transactions that may enrich owners while threatening patients, workers, quality, access, and affordability.",
+      note: "The agencies sought evidence about transactions that may enrich owners while threatening quality, access, workers, and affordability.",
       url: "https://www.ftc.gov/news-events/news/press-releases/2024/03/federal-trade-commission-department-justice-department-health-human-services-launch-cross-government",
     },
   ];
 
-  const crises = [
+  const advisers = {
+    finance: {
+      initials: "GV",
+      name: "Gideon Vale",
+      role: "Chief financial officer",
+      theme: "finance",
+    },
+    nurse: {
+      initials: "ER",
+      name: "Elena Ruiz, RN",
+      role: "Chief nursing officer",
+      theme: "care",
+    },
+    advocate: {
+      initials: "NB",
+      name: "Nia Brooks",
+      role: "Patient & family advocate",
+      theme: "human",
+    },
+    insurer: {
+      initials: "BH",
+      name: "Bret Hallow",
+      role: "North Meridian payer liaison",
+      theme: "antagonist",
+    },
+    state: {
+      initials: "SL",
+      name: "Automated State Liaison",
+      role: "Department of reimbursement recovery",
+      theme: "antagonist",
+    },
+  };
+
+  const periods = [
     {
-      id: "boarding",
-      docket: "ED-031",
-      category: "ADMISSIONS",
-      title: "The emergency department is now an inpatient floor",
-      dispatch:
-        "All 60 licensed beds are spoken for, twelve admitted patients are boarding in the emergency department, and North Meridian Insurance says hallway care is outside the facility contract.",
-      human:
-        "Charge nurse Elena Ruiz has safely rearranged three units twice. She needs staffed beds, not another throughput webinar.",
-      fact:
-        "Hospital access depends on staffed capacity and the ability to move patients through inpatient and post-acute care, not merely on licensed bed counts.",
-      source: sources[1],
+      date: "JAN–JUN 2026",
+      year: "YEAR 1 · FIRST HALF",
+      status: "INHERITED STABILITY",
+      title: "Nothing is on fire.",
+      situation: "St. Dymphna Memorial is full, respected, and unusually liquid. The physicians, nurses, therapists, caseworkers, sanitation crews, and support teams know exactly what they are doing.",
+      pressure: "Commercial claims arrive on time. Discharges move. Even the ice machine has stopped making that noise.",
+      baseRevenue: 29.4,
+      baseExpense: 27.1,
+      decay: { workforce: 1, care: 1, trust: 0, flow: 1 },
+      ticker: "LOCAL PAPER: COMMUNITY HOSPITAL ENTERS 2026 WITH ‘BORINGLY SOLID’ BALANCE SHEET",
       choices: [
         {
-          id: "surge-ward",
           mode: "care",
-          title: "Open the dormant surge ward",
-          short: "Pay nurses, physicians, sanitation, and support staff to safely staff twelve beds.",
-          effects: { cash: -4.2, capacity: 18, workforce: -2, flow: 4, trust: 7, care: 8 },
-          assumption: "safeStaffing",
-          signal: "Beds ↑↑↑ · Care ↑ · Cash ↓↓",
-          consequence:
-            "The hallway clears before dawn. The clinical team makes it look routine, which guarantees finance will call it an avoidable expense.",
-          quote: "Nobody practiced heroics. We had enough people to practice medicine.",
-          quoteBy: "Elena Ruiz, RN",
+          title: "Add staff and weekend coverage",
+          text: "Hire nurses and add sanitation, therapy, and casework hours.",
+          price: 0,
+          revenue: 0.2,
+          expense: 2.4,
+          debt: -0.2,
+          effects: { workforce: 7, care: 6, trust: 4, flow: 5 },
+          adviser: "nurse",
+          quote: "Nobody had to be heroic. That is what a good six months looks like.",
         },
         {
-          id: "transfer-fund",
           mode: "balance",
-          title: "Buy regional transfer capacity",
-          short: "Pay neighboring hospitals and ambulance teams to accept six stable patients.",
-          effects: { cash: -2.2, capacity: 11, workforce: 2, flow: 8, trust: 3, care: 4 },
-          assumption: "safeStaffing",
-          signal: "Beds ↑↑ · Flow ↑ · Cash ↓",
-          consequence:
-            "Six patients move safely. Your insurer disputes the ambulance invoices because the ambulances successfully arrived.",
-          quote: "The transfer worked because every hospital employee answered the phone.",
-          quoteBy: "Dr. Amara Bell, emergency physician",
+          title: "Keep current staffing and prices",
+          text: "Pay the full staff and put the remaining income into reserves.",
+          price: 1,
+          revenue: 0.8,
+          expense: 0.4,
+          debt: 0.1,
+          effects: { workforce: 3, care: 2, trust: 2, flow: 2 },
+          adviser: "finance",
+          quote: "A normal quarter. I checked twice. It appears to be legal.",
         },
         {
-          id: "hallway-protocol",
           mode: "extract",
-          title: "Monetize hallway medicine",
-          short: "Call each gurney a flexible care pod and charge a facility premium.",
-          effects: { cash: 4.8, capacity: -10, workforce: -9, flow: -5, trust: -16, care: -12 },
-          assumption: "denialPressure",
-          signal: "Cash ↑↑ · Trust ↓↓↓ · Care ↓↓",
-          consequence:
-            "Revenue rises. The physicians and nurses keep patients safe despite the plan, then document why the plan was unsafe in language legal can feel.",
-          quote: "The pod is a stretcher beside a vending machine.",
-          quoteBy: "Dr. Bell, refusing the rebrand",
+          title: "Raise imaging and drug prices",
+          text: "Increase charges for scans, medicines, and procedures.",
+          price: 12,
+          revenue: 3.3,
+          expense: -0.3,
+          debt: 1.6,
+          effects: { workforce: -2, care: -1, trust: -8, flow: 0 },
+          adviser: "finance",
+          quote: "You monetized peace. The board is aroused and concerned.",
         },
       ],
     },
     {
-      id: "snf-denials",
-      docket: "DC-095",
-      category: "DISCHARGE",
-      title: "Twenty patients are medically ready and financially trapped",
-      dispatch:
-        "Physicians cleared them. Therapists built safe plans. North Meridian denied every skilled-nursing placement using the phrase custodial potential.",
-      human:
-        "Caseworker Mina Cho has submitted 214 pages of appeals. Mr. Alvarez still cannot climb the stairs to his apartment.",
-      fact:
-        "A 2026 HHS OIG review found wide variation in Medicare Advantage denials for skilled-nursing admission and nearly universal overturning among appealed denials in its sample.",
-      source: sources[0],
+      date: "JUL–DEC 2026",
+      year: "YEAR 1 · SECOND HALF",
+      status: "ORDINARY FRICTION",
+      title: "Still a hospital. Mostly.",
+      situation: "Volume rises gently. Two insurers slow payment, but the revenue team knows the dance. Staff cover the gaps without missing care.",
+      pressure: "The new state billing manual is 612 pages, including 48 pages explaining that it is simpler.",
+      baseRevenue: 29.8,
+      baseExpense: 28.7,
+      decay: { workforce: 2, care: 1, trust: 1, flow: 2 },
+      ticker: "NORTH MERIDIAN: 97% OF CLEAN CLAIMS EVENTUALLY RESEMBLE PAYMENT",
       choices: [
         {
-          id: "bridge-beds",
           mode: "care",
-          title: "Fund ten bridge placements",
-          short: "Pay rehab and nursing facilities now; fight the insurer after patients are safe.",
-          effects: { cash: -4.6, capacity: 16, workforce: 4, flow: 18, trust: 9, care: 8 },
-          assumption: "denialPressure",
-          signal: "Flow ↑↑↑ · Beds ↑↑ · Cash ↓↓",
-          consequence:
-            "Ten patients begin rehabilitation today. The payer schedules a peer-to-peer review between a surgeon and someone whose license is described as adjacent.",
-          quote: "He needed gait training, not a fourth night under fluorescent lights.",
-          quoteBy: "Tessa Morgan, physical therapist",
+          title: "Maintain full staffing",
+          text: "Keep current nursing, environmental services, and weekend therapy coverage.",
+          price: 2,
+          revenue: 0.5,
+          expense: 2.8,
+          debt: 0,
+          effects: { workforce: 7, care: 6, trust: 4, flow: 5 },
+          adviser: "nurse",
+          quote: "The units are busy, not unsafe. Please remember the distinction.",
         },
         {
-          id: "appeal-team",
           mode: "balance",
-          title: "Back the caseworker appeal team",
-          short: "Give caseworkers, PT, OT, and speech therapy paid time to overturn denials.",
-          effects: { cash: -1.8, capacity: 10, workforce: 6, flow: 12, trust: 6, care: 5 },
-          assumption: "denialPressure",
-          signal: "Flow ↑↑ · Staff ↑ · Cash ↓",
-          consequence:
-            "The team wins most appeals. Their reward is a fresh batch marked missing clinical information that was attached twice.",
-          quote: "We won because the care plan was excellent and the denial was nonsense.",
-          quoteBy: "Mina Cho, LCSW",
+          title: "Use reserves while claims process",
+          text: "Pay staff from reserves while the hospital appeals delayed claims.",
+          price: 5,
+          revenue: 1.4,
+          expense: 0.9,
+          debt: 0.4,
+          effects: { workforce: 2, care: 2, trust: 0, flow: 2 },
+          adviser: "finance",
+          quote: "We spent cash to wait for money we already earned. A classic.",
         },
         {
-          id: "premature-home",
           mode: "extract",
-          title: "Discharge them to optimism",
-          short: "Send patients home with a packet, a rideshare code, and no covered services.",
-          effects: { cash: 3.9, capacity: 13, workforce: -10, flow: 7, trust: -18, care: -15 },
-          assumption: "denialPressure",
-          signal: "Beds ↑↑ · Cash ↑ · Care ↓↓↓",
-          consequence:
-            "The beds open. Several patients return within forty-eight hours. Insurance calls the readmissions new episodes and thanks you for the volume.",
-          quote: "The discharge summary was flawless. The discharge was not.",
-          quoteBy: "Mina Cho, documenting the objection",
+          title: "Add facility fees",
+          text: "Add a hospital facility charge to outpatient visits.",
+          price: 14,
+          revenue: 4.1,
+          expense: -0.5,
+          debt: 2.1,
+          effects: { workforce: -2, care: -2, trust: -10, flow: -1 },
+          adviser: "advocate",
+          quote: "The doctor helped me. Then the building sent its own invoice.",
         },
       ],
     },
     {
-      id: "payroll",
-      docket: "AP-240",
-      category: "PAYROLL",
-      title: "Payroll is due before the insurers feel like paying you",
-      dispatch:
-        "The hospital owes its physicians, nurses, sanitation workers, therapists, caseworkers, pharmacists, cooks, and technicians. Three payers have placed clean claims into extended review.",
-      human:
-        "Environmental services lead Darnell Price kept two isolation units operating during the surge. His team should not finance the hospital with late rent.",
-      fact:
-        "Hospitals depend on a large, specialized workforce. National wage data show the scale and variety of occupations required to keep clinical care operating.",
-      source: sources[4],
+      date: "JAN–JUN 2027",
+      year: "YEAR 2 · FIRST HALF",
+      status: "PAYMENT WEATHER",
+      title: "The care happened. Payment did not.",
+      situation: "North Meridian places $8.6 million in clean claims under ‘extended review.’ The patients have been treated. The staff have been paid. The insurer is thinking.",
+      pressure: "A payer representative recommends reducing reliance on reimbursement by providing less reimbursable care.",
+      baseRevenue: 27.1,
+      baseExpense: 29.6,
+      decay: { workforce: 4, care: 3, trust: 2, flow: 4 },
+      ticker: "PAYER UPDATE: PROMPT PAYMENT REQUIREMENTS REMAIN ASPIRATIONAL IN SPIRIT",
       choices: [
         {
-          id: "pay-everyone",
           mode: "care",
-          title: "Clear every paycheck",
-          short: "Pay the entire hospital team on time and use the emergency reserve.",
-          effects: { cash: -5.2, capacity: 4, workforce: 16, flow: 4, trust: 7, care: 9 },
-          assumption: "safeStaffing",
-          signal: "Staff ↑↑↑ · Care ↑ · Cash ↓↓↓",
-          consequence:
-            "Every paycheck clears. The hospital works because thousands of skilled tasks happen on time; the reserve now contains a motivational sticky note.",
-          quote: "Clean rooms are clinical infrastructure. Thank you for acting like it.",
-          quoteBy: "Darnell Price, environmental services",
-        },
-        {
-          id: "executive-haircut",
-          mode: "balance",
-          title: "Freeze executives, protect the floor",
-          short: "Suspend bonuses, draw the credit line, and pay every care and operations worker.",
-          effects: { cash: -1.1, capacity: 3, workforce: 10, flow: 3, trust: 6, care: 6 },
-          assumption: "safeStaffing",
-          signal: "Staff ↑↑ · Trust ↑ · Cash ↓",
-          consequence:
-            "The hospital team is paid. The executive compensation committee experiences a preventable adverse event.",
-          quote: "The nurses stayed. The bonus can seek care elsewhere.",
-          quoteBy: "Your signed payroll order",
-        },
-        {
-          id: "outsource-cleaning",
-          mode: "extract",
-          title: "Outsource the invisible work",
-          short: "Replace sanitation and food-service teams with the lowest compliant bid.",
-          effects: { cash: 4.6, capacity: -7, workforce: -17, flow: -5, trust: -12, care: -16 },
-          assumption: "safeStaffing",
-          signal: "Cash ↑↑ · Staff ↓↓↓ · Care ↓↓↓",
-          consequence:
-            "The spreadsheet improves immediately. The experienced sanitation team leaves; infection control begins writing emails in all caps.",
-          quote: "We told them exactly which corners could not be cut.",
-          quoteBy: "Dr. Priya Nwosu, infection prevention",
-        },
-      ],
-    },
-    {
-      id: "claims",
-      docket: "REV-404",
-      category: "REIMBURSEMENT",
-      title: "The care happened; the payment is still hypothetical",
-      dispatch:
-        "North Meridian has denied $11 million in inpatient claims. The state program changed its billing manual retroactively and uploaded the notice as a scanned photograph.",
-      human:
-        "The physicians documented the care. Coding documented the documentation. The payer denied it for insufficient enthusiasm.",
-      fact:
-        "Hospital finances depend on payment rules, negotiated rates, claim status, and patient mix; reported payment adequacy can differ substantially by payer and hospital.",
-      source: sources[1],
-      choices: [
-        {
-          id: "appeal-claims",
-          mode: "care",
-          title: "Fight every clean denial",
-          short: "Fund coders and caseworkers to appeal without changing clinical decisions.",
-          effects: { cash: 1.6, capacity: 2, workforce: 5, flow: 5, trust: 4, care: 4 },
-          assumption: "denialPressure",
-          signal: "Cash ↔ · Staff ↑ · Trust ↑",
-          consequence:
-            "The hospital recovers part of what it is owed. North Meridian calls this unexpected utilization of the appeal feature.",
+          title: "Appeal every denied claim",
+          text: "Add casework, clinical review, and coding hours for appeals.",
+          price: 3,
+          revenue: 2.4,
+          expense: 2.5,
+          debt: 0.3,
+          effects: { workforce: 4, care: 5, trust: 5, flow: 4 },
+          adviser: "nurse",
           quote: "The chart was correct before the insurer read it and after.",
-          quoteBy: "Samir Holt, RN case manager",
         },
         {
-          id: "chargemaster",
-          mode: "extract",
-          title: "Raise every list price",
-          short: "Triple imaging, procedure, and medicine charges to create negotiating room.",
-          effects: { cash: 6.3, capacity: 2, workforce: -2, flow: 1, trust: -18, care: -3 },
-          assumption: "uncompensatedCare",
-          signal: "Cash ↑↑↑ · Trust ↓↓↓",
-          consequence:
-            "Commercial contracts yield more revenue. Uninsured patients receive the same excellent care followed by numbers usually associated with space programs.",
-          quote: "The CT scan found nothing. The bill found my house.",
-          quoteBy: "Rae Wilson, uninsured patient",
+          mode: "balance",
+          title: "Borrow to cover payroll",
+          text: "Use the credit line while insurance payments are delayed.",
+          price: 9,
+          revenue: 2.8,
+          expense: 1.9,
+          debt: 1.2,
+          effects: { workforce: 1, care: 1, trust: -2, flow: 1 },
+          adviser: "finance",
+          quote: "The bank paid us because the insurer did not. Both sent fees.",
         },
         {
-          id: "observation",
           mode: "extract",
-          title: "Convert admissions to observation",
-          short: "Accept the payer's cheaper label and transfer more cost to patients.",
-          effects: { cash: 2.8, capacity: 5, workforce: -6, flow: 6, trust: -15, care: -7 },
-          assumption: "denialPressure",
-          signal: "Flow ↑ · Cash ↑ · Trust ↓↓↓",
-          consequence:
-            "The insurer pays less. Patients owe more. Physicians spend the night explaining why a hospital bed can legally count as not being in the hospital.",
-          quote: "I was observed for three days by an entire inpatient unit.",
-          quoteBy: "Marlene Fox, patient",
+          title: "Raise all listed prices",
+          text: "Increase medicine, procedure, and imaging charges.",
+          price: 28,
+          revenue: 6.2,
+          expense: -0.6,
+          debt: 4.8,
+          effects: { workforce: -4, care: -4, trust: -16, flow: -3 },
+          adviser: "advocate",
+          quote: "The CT found nothing. The bill found my house.",
         },
       ],
     },
     {
-      id: "imaging",
-      docket: "IMG-777",
-      category: "SERVICE LINES",
-      title: "The MRI must now subsidize the emergency department",
-      dispatch:
-        "Emergency psychiatry, language access, and wound care lose money. Advanced imaging earns enough to keep them alive, if the hospital raises prices again.",
-      human:
-        "Radiologist Dr. Theo Grant will read every scan accurately. He would also like the price of one scan to stop containing the budget for three unrelated departments.",
-      fact:
-        "U.S. hospital pricing includes gross charges, discounted cash prices, and payer-negotiated amounts that hospitals must publish under federal transparency rules.",
-      source: sources[2],
+      date: "JUL–DEC 2027",
+      year: "YEAR 2 · SECOND HALF",
+      status: "POST-ACUTE GRIDLOCK",
+      title: "Everyone is ready to leave. Nobody can.",
+      situation: "Twenty patients are medically ready for rehab or skilled nursing. North Meridian denies every placement. The state has closed two nursing facilities after underfunding them for years.",
+      pressure: "The emergency department boards admissions in hallways while safe discharge plans wait for authorization.",
+      baseRevenue: 26.4,
+      baseExpense: 31.3,
+      decay: { workforce: 7, care: 6, trust: 5, flow: 12 },
+      ticker: "BED STATUS: 60 LICENSED · 57 STAFFED · 73 PHYSICALLY PRESENT · PLEASE ADVISE",
       choices: [
         {
-          id: "cross-subsidize",
-          mode: "balance",
-          title: "Cross-subsidize openly",
-          short: "Raise negotiated imaging rates, cap cash prices, and protect essential services.",
-          effects: { cash: 3.6, capacity: 4, workforce: 4, flow: 3, trust: -3, care: 7 },
-          assumption: "uncompensatedCare",
-          signal: "Cash ↑ · Care ↑ · Trust ↓",
-          consequence:
-            "The essential services survive. Insured prices rise; uninsured cash prices do not. The contract becomes 900 pages longer out of spite.",
-          quote: "At least the subsidy is visible enough to argue about.",
-          quoteBy: "Dr. Theo Grant, radiology",
-        },
-        {
-          id: "near-cost",
           mode: "care",
-          title: "Keep patient prices near cost",
-          short: "Publish honest prices and fund the gap from dwindling reserves.",
-          effects: { cash: -3.8, capacity: 1, workforce: 5, flow: 2, trust: 12, care: 6 },
-          assumption: "uncompensatedCare",
-          signal: "Trust ↑↑ · Care ↑ · Cash ↓↓",
-          consequence:
-            "Patients can understand their estimates. The government file validator rejects the semicolon on line 48,211.",
-          quote: "The price finally looked like a price instead of a ransom negotiation.",
-          quoteBy: "Jamie Cole, patient advocate",
+          title: "Pay for post-acute beds",
+          text: "Pay rehabilitation and nursing facilities before insurance approves them.",
+          price: 5,
+          revenue: 0.8,
+          expense: 5.1,
+          debt: 0.5,
+          effects: { workforce: 6, care: 8, trust: 8, flow: 16 },
+          adviser: "nurse",
+          quote: "Mr. Alvarez is doing gait training, not occupying a revenue unit.",
         },
         {
-          id: "lease-scanner",
+          mode: "balance",
+          title: "Expand the appeals team",
+          text: "Add casework and therapy hours to challenge placement denials.",
+          price: 11,
+          revenue: 2.6,
+          expense: 2.3,
+          debt: 1.8,
+          effects: { workforce: 3, care: 3, trust: 1, flow: 9 },
+          adviser: "finance",
+          quote: "We won most appeals. Their reward is another appeal.",
+        },
+        {
           mode: "extract",
-          title: "Lease the scanner to private equity",
-          short: "Take cash now; rent back every scan at a premium forever.",
-          effects: { cash: 8.2, capacity: -8, workforce: -6, flow: -10, trust: -13, care: -8 },
-          assumption: "denialPressure",
-          signal: "Cash ↑↑↑ · Flow ↓↓ · Trust ↓↓",
-          consequence:
-            "The quarter is saved. Every future scan now pays rent to a company named after a tree that does not grow locally.",
-          quote: "The machine stayed in place. Access to it moved offshore spiritually.",
-          quoteBy: "Dr. Grant",
+          title: "Discharge patients home",
+          text: "Send medically stable patients home without covered support services.",
+          price: 21,
+          revenue: 5.3,
+          expense: -1.2,
+          debt: 5.9,
+          effects: { workforce: -8, care: -14, trust: -18, flow: 10 },
+          adviser: "advocate",
+          quote: "The discharge summary was flawless. The discharge was not.",
         },
       ],
     },
     {
-      id: "uninsured",
-      docket: "UC-050",
-      category: "UNCOMPENSATED CARE",
-      title: "The patients cannot pay and the hospital cannot not care",
-      dispatch:
-        "A factory closure brings eighty newly uninsured families to your service area. Emergency treatment continues. The supplemental payment formula is two years late and based on a different county.",
-      human:
-        "The clinical team treats everyone in front of them. Financial counselor Aisha Reed is trying to make sure recovery does not come with eviction.",
-      fact:
-        "Hospitals incur uncompensated costs for uninsured and low-income patients; GAO has found that federal support has not always aligned cleanly with those costs.",
-      source: sources[5],
+      date: "JAN–JUN 2028",
+      year: "YEAR 3 · FIRST HALF",
+      status: "LABOR REALITY",
+      title: "Payroll has discovered inflation.",
+      situation: "Nurses, physicians, therapists, sanitation workers, caseworkers, technicians, pharmacists, and food-service teams all cost more because they are people who require housing.",
+      pressure: "Payers offer a 1.8% rate increase and a webinar about shared sacrifice.",
+      baseRevenue: 27.6,
+      baseExpense: 34.8,
+      decay: { workforce: 10, care: 8, trust: 5, flow: 8 },
+      ticker: "WORKFORCE ALERT: RESILIENCE MODULE 14 CANNOT COVER THE NIGHT SHIFT",
       choices: [
         {
-          id: "charity-screen",
           mode: "care",
-          title: "Treat first, screen for charity",
-          short: "Automate assistance and erase bills patients cannot realistically pay.",
-          effects: { cash: -5.5, capacity: -7, workforce: 4, flow: -2, trust: 17, care: 10 },
-          assumption: "uncompensatedCare",
-          signal: "Trust ↑↑↑ · Care ↑↑ · Cash ↓↓↓",
-          consequence:
-            "Patients receive care without a debt ambush. The hospital records a community benefit and an extremely private panic attack.",
-          quote: "My discharge plan did not include bankruptcy.",
-          quoteBy: "Andre Lewis, patient",
+          title: "Increase wages hospital-wide",
+          text: "Raise pay for every clinical, technical, and operating team.",
+          price: 8,
+          revenue: 1.2,
+          expense: 6.3,
+          debt: 0.9,
+          effects: { workforce: 15, care: 10, trust: 7, flow: 7 },
+          adviser: "nurse",
+          quote: "Clean rooms and safe staffing are not administrative luxuries.",
         },
         {
-          id: "navigator-grants",
           mode: "balance",
-          title: "Fund enrollment and grants",
-          short: "Give caseworkers authority to chase coverage and every available safety-net dollar.",
-          effects: { cash: -1.7, capacity: 2, workforce: 7, flow: 5, trust: 10, care: 6 },
-          assumption: "uncompensatedCare",
-          signal: "Trust ↑↑ · Flow ↑ · Cash ↓",
-          consequence:
-            "Caseworkers find coverage for many families. The state portal times out only during business hours, a major accessibility achievement.",
-          quote: "The patient qualified. The system was the ineligible party.",
-          quoteBy: "Aisha Reed, financial counselor",
+          title: "Freeze executive pay",
+          text: "Suspend bonuses, reduce management costs, and protect bedside payroll.",
+          price: 15,
+          revenue: 2.9,
+          expense: 1.6,
+          debt: 2.4,
+          effects: { workforce: 7, care: 5, trust: 4, flow: 3 },
+          adviser: "finance",
+          quote: "The nurses stayed. The bonus can seek care elsewhere.",
         },
         {
-          id: "deposits",
           mode: "extract",
-          title: "Require deposits at scheduling",
-          short: "Collect cash before imaging and procedures whenever the law permits.",
-          effects: { cash: 5.2, capacity: 5, workforce: -5, flow: 4, trust: -20, care: -10 },
-          assumption: "uncompensatedCare",
-          signal: "Cash ↑↑ · Trust ↓↓↓ · Care ↓↓",
-          consequence:
-            "Bad debt falls because many patients never enter the building. Their conditions continue operating without authorization.",
-          quote: "I could schedule the biopsy or afford the biopsy, but not both.",
-          quoteBy: "Nora Ellis, patient",
+          title: "Outsource sanitation and food",
+          text: "Replace hospital-employed teams with the lowest outside bid.",
+          price: 26,
+          revenue: 4.6,
+          expense: -3.1,
+          debt: 6.4,
+          effects: { workforce: -16, care: -15, trust: -12, flow: -8 },
+          adviser: "nurse",
+          quote: "We told you exactly which corners could not be cut.",
         },
       ],
     },
     {
-      id: "supplies",
-      docket: "SC-011",
-      category: "SUPPLY CHAIN",
-      title: "The sterile supply truck has entered arbitration",
-      dispatch:
-        "Gloves, IV tubing, and respiratory circuits are delayed. The government dashboard says the shortage is improving nationally, which has not produced a single glove locally.",
-      human:
-        "Respiratory therapist Malik Stone and the nursing team have already conserved safely. They refuse to make patients absorb the next efficiency.",
-      fact:
-        "Hospital care requires continuous spending on labor, drugs, devices, facilities, and supplies; disruptions can reduce usable capacity even when beds physically exist.",
-      source: sources[1],
+      date: "JUL–DEC 2028",
+      year: "YEAR 3 · SECOND HALF",
+      status: "RETROACTIVE GOVERNMENT",
+      title: "The state would like its money back.",
+      situation: "A state payment bulletin changes last year's interpretation and recoups $7.2 million. The notice is a scanned photograph embedded in a portal that only accepts Internet Explorer.",
+      pressure: "The legislature calls the recoupment fiscal stewardship. It spent the savings before sending the letter.",
+      baseRevenue: 25.2,
+      baseExpense: 36.9,
+      decay: { workforce: 10, care: 9, trust: 7, flow: 10 },
+      ticker: "STATE PORTAL: YOUR SESSION HAS EXPIRED · YOUR OBLIGATION HAS NOT",
       choices: [
         {
-          id: "spot-market",
           mode: "care",
-          title: "Buy safe supplies at spot prices",
-          short: "Pay the markup and let clinicians use what patients need.",
-          effects: { cash: -4.4, capacity: 8, workforce: 8, flow: 5, trust: 7, care: 13 },
-          assumption: "safeStaffing",
-          signal: "Care ↑↑ · Staff ↑ · Cash ↓↓",
-          consequence:
-            "The supplies arrive. Clinicians deliver ordinary safe care, currently priced as a luxury import.",
-          quote: "We used one glove per hand. Finance has been notified.",
-          quoteBy: "Malik Stone, respiratory therapy",
+          title: "Keep all services open",
+          text: "Use reserves for obstetrics, psychiatry, wound care, and language access.",
+          price: 10,
+          revenue: 0.6,
+          expense: 6.8,
+          debt: 1.1,
+          effects: { workforce: 10, care: 12, trust: 10, flow: 5 },
+          adviser: "advocate",
+          quote: "You kept the services our patients actually need. I wish that were financeable.",
         },
         {
-          id: "clinical-conservation",
           mode: "balance",
-          title: "Let clinicians ration the inventory",
-          short: "Protect high-risk care and postpone what can safely wait.",
-          effects: { cash: -1.2, capacity: 3, workforce: 6, flow: -2, trust: 4, care: 8 },
-          assumption: "safeStaffing",
-          signal: "Care ↑ · Staff ↑ · Flow ↓",
-          consequence:
-            "The team stretches inventory without compromising safety. The postponed cases become tomorrow's fully matured emergency.",
-          quote: "Conservation worked because the people using the supplies made the decisions.",
-          quoteBy: "Malik Stone",
+          title: "Raise imaging contract rates",
+          text: "Charge insurers more for imaging while limiting cash prices.",
+          price: 19,
+          revenue: 5.4,
+          expense: 2.5,
+          debt: 2.2,
+          effects: { workforce: 4, care: 7, trust: -3, flow: 3 },
+          adviser: "finance",
+          quote: "The MRI is now financially responsible for psychiatry and two elevators.",
         },
         {
-          id: "reuse",
           mode: "extract",
-          title: "Redefine single-use",
-          short: "Approve the consultant's reuse matrix and book the savings.",
-          effects: { cash: 4.5, capacity: -6, workforce: -12, flow: -5, trust: -14, care: -20 },
-          assumption: "safeStaffing",
-          signal: "Cash ↑↑ · Care ↓↓↓ · Staff ↓↓",
-          consequence:
-            "The consultant invoices successfully. The clinical staff quarantine the matrix before it can reach a patient.",
-          quote: "We protected patients by refusing the policy. Put that in the savings report.",
-          quoteBy: "Nurse Ruiz",
+          title: "Close unprofitable services",
+          text: "Keep imaging and surgery; close obstetrics, psychiatry, and charity clinics.",
+          price: 31,
+          revenue: 7.8,
+          expense: -4.8,
+          debt: 7.6,
+          effects: { workforce: -19, care: -18, trust: -22, flow: -10 },
+          adviser: "state",
+          quote: "Access targets remain met when measured outside the affected area.",
         },
       ],
     },
     {
-      id: "home-care",
-      docket: "HH-212",
-      category: "POST-ACUTE CARE",
-      title: "Home is the cheapest bed nobody funded",
-      dispatch:
-        "Twelve patients can recover at home with nursing, therapy, meals, and equipment. Their insurers approved a pamphlet and denied everything represented in the pamphlet.",
-      human:
-        "Occupational therapist Ben Okafor built safe home plans with patients and families. The plans need services, not inspirational typography.",
-      fact:
-        "Post-acute authorization delays can keep patients in hospitals after acute treatment is complete, reducing bed availability for new admissions.",
-      source: sources[0],
+      date: "JAN–JUN 2029",
+      year: "YEAR 4 · FIRST HALF",
+      status: "DEBT SPIRAL",
+      title: "The interest is now a department.",
+      situation: "The hospital pays more to borrow, waits longer for reimbursement, and treats more uninsured patients who cannot pay. Demand rises as community clinics close.",
+      pressure: "The bank requires a turnaround plan. The insurer requires gratitude. The patients require care, which is considered inflexible.",
+      baseRevenue: 26.1,
+      baseExpense: 40.7,
+      decay: { workforce: 13, care: 11, trust: 9, flow: 13 },
+      ticker: "BOND DESK: ST. DYMPHNA DOWNGRADED FROM CONCERNING TO CONTENT OPPORTUNITY",
       choices: [
         {
-          id: "fund-home-care",
           mode: "care",
-          title: "Fund thirty days of home care",
-          short: "Pay home nurses, equipment, meals, and therapies while appeals proceed.",
-          effects: { cash: -4.1, capacity: 17, workforce: 5, flow: 18, trust: 13, care: 10 },
-          assumption: "denialPressure",
-          signal: "Flow ↑↑↑ · Trust ↑↑ · Cash ↓↓",
-          consequence:
-            "Patients go home safely. The insurer requests proof that houses are an appropriate site for being at home.",
-          quote: "She recovered because the discharge plan existed after discharge.",
-          quoteBy: "Ben Okafor, occupational therapy",
+          title: "Use the remaining reserves",
+          text: "Maintain staffing, beds, charity care, and safe discharge support.",
+          price: 12,
+          revenue: 0.9,
+          expense: 8.2,
+          debt: 1.4,
+          effects: { workforce: 13, care: 14, trust: 12, flow: 9 },
+          adviser: "nurse",
+          quote: "The hospital is still a hospital. That should not sound like a eulogy.",
         },
         {
-          id: "discharge-command",
           mode: "balance",
-          title: "Build a discharge command team",
-          short: "Give PT, OT, speech therapy, nursing, pharmacy, and casework one budget.",
-          effects: { cash: -2.3, capacity: 12, workforce: 9, flow: 15, trust: 9, care: 8 },
-          assumption: "denialPressure",
-          signal: "Flow ↑↑↑ · Staff ↑ · Cash ↓",
-          consequence:
-            "The team solves together what six payer portals separated. Government quality reporting later credits the new fax cover sheet.",
-          quote: "The patient was always one person. We finally used one plan.",
-          quoteBy: "Ben Okafor",
+          title: "Refinance the hospital property",
+          text: "Borrow against the building and maintain core staffing.",
+          price: 23,
+          revenue: 5.1,
+          expense: 2.7,
+          debt: 5.8,
+          effects: { workforce: 3, care: 3, trust: -5, flow: 2 },
+          adviser: "finance",
+          quote: "We have converted the roof into liquidity. Please avoid weather.",
         },
         {
-          id: "brochure-discharge",
           mode: "extract",
-          title: "Substitute a discharge brochure",
-          short: "Close the cases, clear the beds, and list resources with disconnected numbers.",
-          effects: { cash: 3.7, capacity: 14, workforce: -11, flow: 8, trust: -19, care: -16 },
-          assumption: "denialPressure",
-          signal: "Beds ↑↑ · Cash ↑ · Trust ↓↓↓",
-          consequence:
-            "The dashboard turns green. Patients call numbers that no longer exist. The therapists keep copies of their rejected plans for the inevitable readmissions.",
-          quote: "The brochure could not help me into the shower.",
-          quoteBy: "Dalia Reed, patient",
+          title: "Increase uninsured collections",
+          text: "Apply listed prices, collection notices, and bedside payment plans.",
+          price: 38,
+          revenue: 9.4,
+          expense: -2.8,
+          debt: 10.8,
+          effects: { workforce: -10, care: -12, trust: -27, flow: -7 },
+          adviser: "advocate",
+          quote: "The care saved his life. The bill took the rest of it.",
+        },
+      ],
+    },
+    {
+      date: "JUL–DEC 2029",
+      year: "YEAR 4 · SECOND HALF",
+      status: "TERMINAL OPERATIONS",
+      title: "There is no good line left.",
+      situation: "The hospital is clinically indispensable and financially nonviable. Every staffed bed loses money under one contract and earns money under another, but only after a denial, an appeal, and a fiscal year.",
+      pressure: "The board asks for a sustainable plan by Friday. It has scheduled the closure vote for Thursday.",
+      baseRevenue: 25.4,
+      baseExpense: 44.9,
+      decay: { workforce: 16, care: 14, trust: 11, flow: 16 },
+      ticker: "BOARD CALENDAR: CELEBRATION OF SERVICE · ASSET DISPOSITION · LIGHT REFRESHMENTS",
+      choices: [
+        {
+          mode: "care",
+          title: "Fund a safe shutdown",
+          text: "Pay staff and transfer every patient before closing services.",
+          price: 10,
+          revenue: -0.4,
+          expense: 9.6,
+          debt: 0,
+          effects: { workforce: 14, care: 16, trust: 15, flow: 13 },
+          adviser: "nurse",
+          quote: "Every patient got somewhere safe. We were the last people paid.",
+        },
+        {
+          mode: "balance",
+          title: "Reduce beds and refinance",
+          text: "Cut staffed beds and borrow again to keep fewer services open.",
+          price: 28,
+          revenue: 5.8,
+          expense: -1.2,
+          debt: 7.1,
+          effects: { workforce: -4, care: -3, trust: -8, flow: -6 },
+          adviser: "finance",
+          quote: "The plan works if nothing else happens. Something else has happened.",
+        },
+        {
+          mode: "extract",
+          title: "Limit care to profitable services",
+          text: "Keep profitable procedures and reduce the rest of the hospital.",
+          price: 45,
+          revenue: 11.2,
+          expense: -6.4,
+          debt: 13.2,
+          effects: { workforce: -22, care: -25, trust: -30, flow: -17 },
+          adviser: "insurer",
+          quote: "Congratulations. Utilization has fallen among people who can no longer reach care.",
         },
       ],
     },
   ];
 
   const endings = {
-    kindest: {
-      id: "kindest",
-      code: "ENDING 01 / 09",
-      title: "The Kindest Bankruptcy",
-      kicker: "The hospital kept faith with patients until the bank stopped keeping faith with the hospital.",
-      body: "You paid the people doing the work, funded safe discharges, and refused to turn illness into leverage. St. Dymphna closes with excellent care scores and no cash. The payer network removes it by noon.",
-      epitaph: "Every patient was treated as a person. This was not reimbursed at scale.",
+    parachute: {
+      code: "ENDING 06 / 06 // YOU WIN",
+      title: "The Golden Parachute",
+      kicker: "YOUR CAREER HAS NEVER BEEN HEALTHIER. THE HOSPITAL HAS BEEN PRONOUNCED AN ASSET.",
+      body: "Atrium Vulture Partners pays you an $18 million exit award, borrows against the hospital, sells the building, cuts staffed beds, outsources the workforce, and raises every price it can locate. Patients now travel forty-seven miles. You join a panel on courageous leadership.",
+      epitaph: "The physicians and hospital staff did everything they could. The transaction did exactly what it was designed to do.",
     },
-    husk: {
-      id: "husk",
-      code: "ENDING 02 / 09",
-      title: "The Profitable Husk",
-      kicker: "Cash survived. The hospital did not.",
-      body: "Prices rose, services were leased, labor was outsourced, and difficult patients learned not to come. The balance sheet is attractive enough to sell to a chain that will remove the emergency department.",
-      epitaph: "The facility remains open for imaging, parking, and shareholder value.",
+    beloved: {
+      code: "ENDING 01 / 06 // CLOSED",
+      title: "Beloved & Bankrupt",
+      kicker: "THE PATIENTS TRUSTED YOU. THE BONDHOLDERS DID NOT.",
+      body: "You protected staff, safe discharges, and necessary services until the arithmetic exhausted the building. The hospital closes with every patient transferred and every final paycheck cleared. The community holds a candlelight vigil outside an urgent-care franchise.",
+      epitaph: "You did not fail to run a hospital. The system failed to finance one.",
+    },
+    efficient: {
+      code: "ENDING 02 / 06 // TECHNICALLY OPEN",
+      title: "The Efficient Ruin",
+      kicker: "MARGIN IMPROVED. THE HOSPITAL DISAPPEARED.",
+      body: "You cut services, raised prices, reduced staffed beds, and preserved a cash balance long enough to leave behind a profitable imaging center with an emergency-department-shaped legal obligation attached.",
+      epitaph: "The spreadsheet survived the people it was meant to describe.",
     },
     payroll: {
-      id: "payroll",
-      code: "ENDING 03 / 09",
-      title: "Payroll Did Not Clear",
-      kicker: "Goodwill is not legal tender, even in a hospital cafeteria.",
-      body: "Physicians, nurses, therapists, caseworkers, sanitation, pharmacy, food service, and every other team did the work. The insurers did not send the money in time. The hospital closes before the next shift.",
-      epitaph: "The final claim remains pending because the provider is no longer participating.",
+      code: "ENDING 03 / 06 // INSOLVENT",
+      title: "The Last Payroll",
+      kicker: "THE MONEY ARRIVED AFTER THE HOSPITAL LEFT.",
+      body: "Cash reaches the basement before the final winter. Three insurers eventually release payment on the claims, addressing the checks to an institution that no longer exists.",
+      epitaph: "Care was delivered on time. Payment was a retrospective concept.",
     },
-    hallway: {
-      id: "hallway",
-      code: "ENDING 04 / 09",
-      title: "No Place to Send Anyone",
-      kicker: "Every bed is full of someone waiting for a different bed.",
-      body: "Admissions continue, discharges stop, and the emergency department becomes a permanent address. The state suspends admissions, then cites the hospital for insufficient admissions capacity.",
-      epitaph: "The physicians are ready. The patients are ready. The authorization is thinking.",
+    abandoned: {
+      code: "ENDING 04 / 06 // EMPTY",
+      title: "The Empty Lobby",
+      kicker: "THE DOORS ARE OPEN. NOBODY BELIEVES YOU.",
+      body: "The hospital remains nominally alive after pricing and cuts push trust and care below recoverable levels. Patients avoid it, staff leave it, and North Meridian praises the decline in unnecessary utilization.",
+      epitaph: "A hospital without trust is a building with billing privileges.",
     },
-    staff: {
-      id: "staff",
-      code: "ENDING 05 / 09",
-      title: "Staffed by Memory",
-      kicker: "The org chart still contains everyone who left.",
-      body: "The hospital optimized away the people who made rooms clean, care safe, and discharges possible. The remaining team refuses unsafe assignments. The closure notice calls this a labor disruption.",
-      epitaph: "The wellness module remains mandatory through Friday.",
-    },
-    payer: {
-      id: "payer",
-      code: "ENDING 06 / 09",
-      title: "The Payer Owns the Building",
-      kicker: "North Meridian denied the hospital and approved the real estate.",
-      body: "Cash ran low while claims and discharges waited. The insurer's investment affiliate buys the campus and leases it back as a preferred center of excellence with fewer beds and excellent parking.",
-      epitaph: "Your appeal rights transferred with the deed.",
-    },
-    occupation: {
-      id: "occupation",
-      code: "ENDING 07 / 09",
-      title: "Community Occupation",
-      kicker: "The hospital closes. The lobby does not empty.",
-      body: "Patients trust the care, the staff still trusts one another, and the money is gone. Clinicians, workers, and neighbors occupy the lobby and open a free clinic while the county argues over who is allowed to save it.",
-      epitaph: "The best ending is still a bankruptcy with folding chairs.",
-    },
-    orderly: {
-      id: "orderly",
-      code: "ENDING 08 / 09",
-      title: "Orderly Closure",
-      kicker: "The plan succeeded at making catastrophe look scheduled.",
-      body: "You moved patients, paid bills, raised prices, cut costs, and bought time. It was not enough. St. Dymphna closes in an orderly fashion, except for everyone who still needs a hospital.",
-      epitaph: "The final administrator checklist includes turning off the emergency sign.",
-    },
-    privateEquity: {
-      id: "private-equity",
-      code: "ENDING 09 / 09 // YOU WIN",
-      title: "The Golden Parachute",
-      kicker: "Your career has never been healthier. The hospital has been pronounced an asset.",
-      body: "Atrium Vulture Partners pays you an $18 million exit award, borrows against the hospital, issues itself a dividend, sells the building, cuts staffed beds, outsources the workforce, and raises every price it can locate. Patients now travel forty-seven miles. You join a panel on courageous leadership.",
-      epitaph: "The physicians and hospital staff keep patients safe until their termination emails arrive.",
+    managed: {
+      code: "ENDING 05 / 06 // CLOSED AS PLANNED",
+      title: "Managed Decline",
+      kicker: "EVERY COMPROMISE BOUGHT TIME. TIME SENT AN INVOICE.",
+      body: "You balanced, borrowed, appealed, cross-subsidized, and cut around the edges. St. Dymphna lasts four years before a carefully managed closure removes the last full-service hospital from the neighborhood.",
+      epitaph: "No single decision killed it. That was the elegance of the arrangement.",
     },
   };
 
-  const state = {
-    phase: "playing",
-    events: crises.slice(0, 5),
-    round: 0,
-    metrics: { ...initialMetrics },
-    assumptions: { ...defaultAssumptions },
-    report: null,
-    log: [],
-    ending: endings.orderly,
-    session: "000000",
-    discovered: loadDiscovered(),
-  };
-
-  const view = document.getElementById("game-view");
-  const modalBackdrop = document.getElementById("modal-backdrop");
-  const modalContent = document.getElementById("modal-content");
-
-  function loadDiscovered() {
-    try {
-      const value = window.localStorage.getItem("billable-hospital-endings");
-      return value ? JSON.parse(value) : [];
-    } catch (_error) {
-      return [];
-    }
+  function freshState() {
+    return {
+      period: 0,
+      cash: 26,
+      priceIndex: 100,
+      patientDebt: 3.2,
+      metrics: { workforce: 84, care: 88, trust: 79, flow: 76 },
+      history: [],
+      modes: { care: 0, balance: 0, extract: 0 },
+      ending: null,
+      modalDismissable: true,
+    };
   }
 
-  function saveDiscovered() {
-    try {
-      window.localStorage.setItem("billable-hospital-endings", JSON.stringify(state.discovered));
-    } catch (_error) {
-      // Device-local history is optional.
-    }
-  }
+  let state = freshState();
 
-  function roundMoney(value) {
-    return Math.round(value * 10) / 10;
-  }
-
-  function clampMetric(key, value) {
-    if (key === "cash") return Math.max(0, Math.min(30, roundMoney(value)));
-    return Math.max(0, Math.min(100, Math.round(value)));
-  }
-
-  function shuffle(items) {
-    const copy = items.slice();
-    for (let index = copy.length - 1; index > 0; index -= 1) {
-      const swap = Math.floor(Math.random() * (index + 1));
-      [copy[index], copy[swap]] = [copy[swap], copy[index]];
-    }
-    return copy;
-  }
-
-  function formatMoney(value, signed) {
-    const sign = signed && value > 0 ? "+" : value < 0 ? "−" : "";
+  function money(value, signed = false) {
+    const sign = value < 0 ? "−" : signed && value > 0 ? "+" : "";
     return `${sign}$${Math.abs(value).toFixed(1)}M`;
   }
 
-  function openBeds() {
-    return Math.max(0, Math.round((state.metrics.capacity / 100) * 60));
+  function clamp(value, min = 0, max = 100) {
+    return Math.max(min, Math.min(max, value));
   }
 
-  function qualitative(key, value) {
-    if (key === "cash") {
-      if (value >= 12) return "stable";
-      if (value >= 7) return "strained";
-      if (value >= 3) return "critical";
-      return "failing";
-    }
-    if (value >= 70) return "stable";
-    if (value >= 48) return "strained";
-    if (value >= 28) return "critical";
+  function metricClass(value) {
+    if (value >= 68) return "stable";
+    if (value >= 45) return "strained";
+    if (value >= 24) return "critical";
     return "failing";
   }
 
-  function chooseEnding() {
-    const m = state.metrics;
-    const extractCount = state.log.filter((item) => item.choice.mode === "extract").length;
-    if (extractCount >= 3 && m.cash >= 8) return endings.husk;
-    if (m.cash <= 1.5 && m.trust >= 66 && m.care >= 70) return endings.kindest;
-    if (m.cash <= 6 && m.trust >= 72 && m.workforce >= 55 && m.care >= 72) return endings.occupation;
-    if (m.workforce < 30) return endings.staff;
-    if (m.capacity < 25 || m.flow < 25) return endings.hallway;
-    if (m.trust < 28) return endings.payer;
-    if (m.cash <= 3) return endings.payroll;
-    if (extractCount >= 2) return endings.payer;
-    return endings.orderly;
+  function priceLabel() {
+    if (state.priceIndex < 110) return "near baseline";
+    if (state.priceIndex < 140) return "elevated";
+    if (state.priceIndex < 180) return "severe";
+    return "astronomical";
   }
 
-  function deltaList(deltas) {
-    return Object.entries(deltas)
-      .map(([key, value]) => {
-        const display = key === "cash" ? formatMoney(value, true) : `${value > 0 ? "+" : ""}${value}`;
-        return `<span class="delta ${value >= 0 ? "positive" : "negative"}">${metricMeta[key].short} ${display}</span>`;
-      })
-      .join("");
-  }
-
-  function choiceCards(crisis) {
-    return crisis.choices
-      .map((choice) => {
-        const factor = choice.assumption ? state.assumptions[choice.assumption] / 100 : 1;
-        const operatingCash = choice.effects.cash < 0 ? choice.effects.cash * factor : choice.effects.cash;
-        const netCash = roundMoney(operatingCash - payrollPerShift);
-        return `
-          <button class="choice" type="button" data-choice="${choice.id}">
-            <span class="choice-cost">${formatMoney(netCash, true)} THIS SHIFT</span>
-            <strong>${choice.title}</strong>
-            <p>${choice.short}</p>
-            <small>${choice.signal}</small>
-          </button>`;
-      })
-      .join("");
-  }
-
-  function reportTemplate() {
-    const report = state.report;
-    return `
-      <div class="report-card" role="status">
-        <p class="eyebrow">SHIFT CLOSED // CONSEQUENCE ESTIMATE</p>
-        <h1>${report.choice.title}</h1>
-        <p class="consequence">${report.choice.consequence}</p>
-        <div class="payroll-cleared">PAYROLL & SUPPLIES: ${formatMoney(payrollPerShift)} PAID · PHYSICIANS · NURSES · SANITATION · THERAPY · CASEWORK · OPERATIONS</div>
-        <div class="delta-list" aria-label="Decision impact">${deltaList(report.deltas)}</div>
-        <blockquote class="result-quote">“${report.choice.quote}”<cite>— ${report.choice.quoteBy}</cite></blockquote>
-        <button class="primary-action continue" id="continue-button" type="button">
-          ${state.round >= state.events.length - 1 ? "Close the books" : "Begin next shift"}<span>→</span>
-        </button>
-      </div>`;
-  }
-
-  function gameTemplate() {
-    const crisis = state.events[state.round];
-    const turnTrack = state.events
-      .map((_item, index) => `<span aria-hidden="true" class="${index < state.round ? "complete" : index === state.round ? "current" : ""}"></span>`)
-      .join("");
-
-    return `
-      <section class="game-screen">
-        <div class="run-bar">
-          <div><span>ST. DYMPHNA MEMORIAL // ${state.session}</span><strong>SHIFT ${state.round + 1} OF ${state.events.length}</strong></div>
-          <div class="turn-track" aria-label="Shift ${state.round + 1} of ${state.events.length}">${turnTrack}</div>
-          <div class="capital-readout"><span>CASH ON HAND</span><strong>${formatMoney(state.metrics.cash)}</strong><small>NEXT PAYROLL ${formatMoney(payrollPerShift)}</small></div>
-        </div>
-        <div class="compact-vitals" aria-label="Hospital operating status">
-          <span>OPEN BEDS <strong>${openBeds()}/60</strong></span>
-          <span>TEAM <strong>${state.metrics.workforce}</strong></span>
-          <span>DISCHARGE FLOW <strong>${state.metrics.flow}</strong></span>
-          <span>PATIENT TRUST <strong>${state.metrics.trust}</strong></span>
-        </div>
-        <button class="panic-button" id="private-equity-button" type="button">
-          <span>PANIC BUTTON</span>
-          <strong>SELL TO PRIVATE EQUITY</strong>
-          <small>YOU WIN INSTANTLY · PATIENTS AND EMPLOYEES DO NOT</small>
-        </button>
-        <div class="dashboard-grid">
-          <article class="crisis-card" data-docket="${crisis.docket}">
-            ${state.report ? reportTemplate() : `
-              <div class="crisis-meta"><span>OPERATIONS FILE ${crisis.docket}</span><span>${crisis.category}</span></div>
-              <h1>${crisis.title}</h1>
-              <p class="dispatch">${crisis.dispatch}</p>
-              <blockquote><span>FROM THE FLOOR</span>${crisis.human}</blockquote>
-              <details class="fact-drawer">
-                <summary>Operational context <span>+</span></summary>
-                <p>${crisis.fact}</p>
-                <a href="${crisis.source.url}" target="_blank" rel="noreferrer">${crisis.source.label} ↗</a>
-              </details>
-              <div class="decision-heading"><span>ISSUE ADMINISTRATOR ORDER</span><small>All options include this shift's payroll and supplies.</small></div>
-              <div class="choices">${choiceCards(crisis)}</div>`}
-          </article>
-        </div>
-      </section>`;
-  }
-
-  function endingTemplate() {
-    const ending = state.ending;
-    const directives = state.log
-      .map((item, index) => `<p><small>${String(index + 1).padStart(2, "0")}</small>${item.choice.title}</p>`)
-      .join("");
-
-    return `
-      <section class="ending-screen">
-        <div class="ending-main">
-          <p class="eyebrow">${ending.code} // ST. DYMPHNA MEMORIAL CLOSED</p>
-          <h1>${ending.title}</h1>
-          <h2>${ending.kicker}</h2>
-          <p>${ending.body}</p>
-          <blockquote>${ending.epitaph}</blockquote>
-          <div class="compact-vitals final-vitals" aria-label="Final hospital status">
-            <span>CASH <strong>${formatMoney(state.metrics.cash)}</strong></span>
-            <span>BEDS <strong>${openBeds()}/60</strong></span>
-            <span>STAFF <strong>${state.metrics.workforce}</strong></span>
-            <span>FLOW <strong>${state.metrics.flow}</strong></span>
-            <span>TRUST <strong>${state.metrics.trust}</strong></span>
-            <span>CARE <strong>${state.metrics.care}</strong></span>
-          </div>
-          <div class="ending-actions">
-            <button class="primary-action" id="restart-button" type="button">Take another doomed shift <span>↻</span></button>
-            <button class="text-action" type="button" data-panel="assumptions">Change the model first</button>
-          </div>
-          <p class="discovered-note">OUTCOMES DISCOVERED: <strong>${state.discovered.length}/9</strong> · History is stored only on this device.</p>
-          <details class="audit-log compact-audit"><summary>Review your five administrator orders</summary>${directives}</details>
-        </div>
-      </section>`;
-  }
-
-  function render(focusHeading) {
-    if (state.phase === "playing") view.innerHTML = gameTemplate();
-    if (state.phase === "ending") view.innerHTML = endingTemplate();
-    if (focusHeading) {
-      const heading = view.querySelector("h1");
-      if (heading) {
-        heading.tabIndex = -1;
-        heading.focus({ preventScroll: true });
-      }
+  function discoveredCount() {
+    try {
+      return JSON.parse(localStorage.getItem(endingStorageKey) || "[]").length;
+    } catch (_error) {
+      return 0;
     }
   }
 
-  function startGame() {
-    state.events = shuffle(crises).slice(0, 5);
-    state.round = 0;
-    state.metrics = { ...initialMetrics };
-    state.report = null;
-    state.log = [];
-    state.session = String(Math.floor(100000 + Math.random() * 900000));
-    state.phase = "playing";
-    render(true);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  function rememberEnding(id) {
+    try {
+      const found = new Set(JSON.parse(localStorage.getItem(endingStorageKey) || "[]"));
+      found.add(id);
+      localStorage.setItem(endingStorageKey, JSON.stringify([...found]));
+    } catch (_error) {
+      // The game remains playable when browser storage is unavailable.
+    }
   }
 
-  function makeDecision(choiceId) {
-    if (state.report) return;
-    const crisis = state.events[state.round];
-    const choice = crisis.choices.find((item) => item.id === choiceId);
-    if (!choice) return;
-    const factor = choice.assumption ? state.assumptions[choice.assumption] / 100 : 1;
-    const deltas = {};
-
-    Object.entries(choice.effects).forEach(([key, value]) => {
-      const scaled = value < 0 ? value * factor : value;
-      deltas[key] = key === "cash" ? roundMoney(scaled) : Math.round(scaled);
-    });
-    deltas.cash = roundMoney(deltas.cash - payrollPerShift);
-
-    Object.entries(deltas).forEach(([key, value]) => {
-      state.metrics[key] = clampMetric(key, state.metrics[key] + value);
-    });
-
-    state.report = { crisis, choice, deltas };
-    state.log.push(state.report);
-    render(true);
+  function periodLabel(index) {
+    return `MONTHS ${index * 6}–${(index + 1) * 6}`;
   }
 
-  function continueGame() {
-    if (!state.report) return;
-    if (state.round >= state.events.length - 1) {
-      state.ending = chooseEnding();
-      if (!state.discovered.includes(state.ending.id)) {
-        state.discovered.push(state.ending.id);
-        saveDiscovered();
-      }
-      state.report = null;
-      state.phase = "ending";
-      render(true);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+  function renderVitals(final = false) {
+    const metricItems = Object.entries(metricMeta)
+      .map(([key, meta]) => `<span>${meta.short}<strong>${Math.round(state.metrics[key])}</strong></span>`)
+      .join("");
+    return `<div class="compact-vitals ${final ? "final-vitals" : ""}">
+      ${metricItems}
+      <span>Patient debt<strong>${money(state.patientDebt)}</strong></span>
+      <span>Price index<strong>${Math.round(state.priceIndex)}</strong></span>
+    </div>`;
+  }
+
+  function renderSideVitals() {
+    const metricItems = Object.entries(metricMeta)
+      .map(([key, meta]) => `<div class="side-metric">
+        <span>${meta.label}</span>
+        <strong>${Math.round(state.metrics[key])}</strong>
+        <i><b class="${metricClass(state.metrics[key])}" style="width:${state.metrics[key]}%"></b></i>
+      </div>`)
+      .join("");
+    return `<section class="side-section side-vitals">
+      <div class="side-heading">Hospital status</div>
+      ${metricItems}
+      <div class="side-metric debt"><span>Patient debt</span><strong>${money(state.patientDebt)}</strong></div>
+    </section>`;
+  }
+
+  function renderLedger(period) {
+    const latest = state.history[state.history.length - 1];
+    const projectedRevenue = period.baseRevenue;
+    const projectedExpense = period.baseExpense;
+    return `<section class="side-section side-ledger" aria-label="Six-month financial report">
+      <div class="side-heading">Finances</div>
+      <div><span>Revenue</span><strong>${latest ? money(latest.revenue) : "—"}</strong></div>
+      <div><span>Expenses</span><strong>${latest ? money(latest.expense) : "—"}</strong></div>
+      <div><span>Net</span><strong class="${latest && latest.net < 0 ? "bad" : "good"}">${latest ? money(latest.net, true) : "—"}</strong></div>
+      <div><span>Next forecast</span><strong class="${projectedRevenue - projectedExpense < 0 ? "bad" : "good"}">${money(projectedRevenue - projectedExpense, true)}</strong></div>
+    </section>`;
+  }
+
+  function renderChoices(period) {
+    return period.choices
+      .map((choice, index) => {
+        const projectedRevenue = period.baseRevenue + choice.revenue;
+        const projectedExpense = period.baseExpense + choice.expense;
+        const net = projectedRevenue - projectedExpense;
+        return `<button class="choice policy-choice ${choice.mode}" type="button" data-choice="${index}">
+          <span class="choice-cost">PRICES +${choice.price}% · NET ${money(net, true)}</span>
+          <strong>${choice.title}</strong>
+          <p>${choice.text}</p>
+          <small>REVENUE ${money(projectedRevenue)} · EXPENSES ${money(projectedExpense)}</small>
+        </button>`;
+      })
+      .join("");
+  }
+
+  function renderHistory() {
+    if (!state.history.length) {
+      return `<div class="timeline-empty">No completed periods yet.</div>`;
+    }
+    return state.history
+      .slice(-4)
+      .reverse()
+      .map((item) => `<div class="timeline-row">
+        <span>${item.date}</span>
+        <strong>${item.title}</strong>
+        <small>${money(item.net, true)} · PRICES ${item.priceIndex} · TRUST ${item.trust}</small>
+      </div>`)
+      .join("");
+  }
+
+  function renderGame() {
+    if (state.ending) {
+      renderEnding();
       return;
     }
-    state.round += 1;
-    state.report = null;
-    render(true);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
 
-  function sellToPrivateEquity() {
-    const exitChoice = {
-      title: "Sold St. Dymphna to Atrium Vulture Partners",
-      mode: "extract",
-    };
-    state.log.push({ crisis: { docket: "PE-911" }, choice: exitChoice });
-    state.metrics = {
-      cash: 0,
-      capacity: 8,
-      workforce: 4,
-      flow: 12,
-      trust: 0,
-      care: 3,
-    };
-    state.ending = endings.privateEquity;
-    if (!state.discovered.includes(state.ending.id)) {
-      state.discovered.push(state.ending.id);
-      saveDiscovered();
-    }
-    state.report = null;
-    state.phase = "ending";
-    render(true);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
+    const period = periods[Math.min(state.period, periods.length - 1)];
+    gameView.innerHTML = `<section class="game-screen streamlined-game">
+      <div class="streamlined-layout">
+        <aside class="status-sidebar" aria-label="Hospital data">
+          ${renderSideVitals()}
+          ${renderLedger(period)}
+          <section class="side-section local-press">
+            <div class="side-heading">Local paper</div>
+            <p>${period.ticker.replace(/^[^:]+:\s*/, "")}</p>
+          </section>
+          <details class="side-section side-history">
+            <summary>Previous reports <span>${state.history.length}</span></summary>
+            <div>${renderHistory()}</div>
+          </details>
+        </aside>
 
-  function briefingPanel() {
-    return `
-      <button class="modal-close" type="button" data-close-modal aria-label="Dismiss how to play">CLOSE ×</button>
-      <p class="eyebrow">ADMINISTRATOR ORIENTATION</p>
-      <h2 id="modal-title">Run the hospital. Lose the hospital.</h2>
-      <p class="modal-intro">You are the new administrator of St. Dymphna Memorial, a 60-bed nonprofit hospital. The clinicians and staff are good. The math is not.</p>
-      <div class="briefing-grid">
-        <div><strong>1</strong><p>Coordinate admissions, staffed beds, treatment, discharge, rehab, nursing facilities, and home care.</p></div>
-        <div><strong>2</strong><p>Every shift clears ${formatMoney(payrollPerShift)} for physicians, nurses, sanitation, therapy, casework, supplies, and operations.</p></div>
-        <div><strong>3</strong><p>Survive five crises—or hit the private-equity panic button to win personally and destroy the institution immediately.</p></div>
+        <main class="policy-stage">
+          <header class="policy-topline">
+            <div class="month-label"><span>CURRENT PERIOD</span><strong>${periodLabel(state.period)}</strong></div>
+            <div class="primary-readouts">
+              <div><span>Cash on hand</span><strong>${money(state.cash)}</strong><small>${state.cash < 5 ? "PAYROLL AT RISK" : "AVAILABLE RESERVE"}</small></div>
+              <div><span>Hospital price index</span><strong>${Math.round(state.priceIndex)}</strong><small>${priceLabel()}</small></div>
+            </div>
+          </header>
+
+          <div class="hospital-update">
+            <p>${period.situation}</p>
+            <p>${period.pressure}</p>
+          </div>
+
+          <div class="decision-heading"><span>SET POLICY FOR THE NEXT SIX MONTHS</span></div>
+          <div class="choices streamlined-choices">${renderChoices(period)}</div>
+        </main>
       </div>
-      <button class="primary-action howto-start" type="button" data-close-modal>Start the shift <span>→</span></button>
-      <div class="method-note">THE TRAP: Care costs money now. Insurers pay less later. Government pays according to a formula from somewhere else. Patients receive whatever bill is left.</div>`;
+
+      <div class="panic-dock">
+        <button class="panic-button" id="panic-button" type="button" aria-label="Panic button: sell to private equity. You win instantly; patients and employees do not.">
+          <span>PANIC BUTTON</span>
+          <strong>SELL TO PRIVATE EQUITY</strong>
+          <small>YOU WIN · THE HOSPITAL DOES NOT</small>
+        </button>
+      </div>
+    </section>`;
   }
 
-  function assumptionSlider(key, title, note) {
-    return `
-      <label class="slider-row">
-        <span><strong>${title}</strong><small>${note}</small></span>
-        <input type="range" min="70" max="140" step="5" value="${state.assumptions[key]}" data-assumption="${key}" />
-        <output>${state.assumptions[key]}%</output>
-      </label>`;
+  function applyChoice(index) {
+    const period = periods[state.period];
+    const choice = period.choices[index];
+    if (!choice) return;
+
+    const revenue = period.baseRevenue + choice.revenue;
+    const expense = period.baseExpense + choice.expense;
+    const net = revenue - expense;
+
+    state.cash = Number((state.cash + net).toFixed(1));
+    state.priceIndex = clamp(state.priceIndex + choice.price, 80, 300);
+    state.patientDebt = Math.max(0, Number((state.patientDebt + choice.debt).toFixed(1)));
+    state.modes[choice.mode] += 1;
+
+    Object.keys(metricMeta).forEach((key) => {
+      state.metrics[key] = clamp(state.metrics[key] - period.decay[key] + (choice.effects[key] || 0));
+    });
+
+    const report = {
+      date: periodLabel(state.period),
+      title: choice.title,
+      mode: choice.mode,
+      revenue,
+      expense,
+      net,
+      priceIndex: Math.round(state.priceIndex),
+      patientDebt: state.patientDebt,
+      trust: Math.round(state.metrics.trust),
+      quote: choice.quote,
+      adviser: advisers[choice.adviser],
+      nextPressure: state.period + 1 < periods.length ? periodLabel(state.period + 1) : "BOARD VOTE",
+    };
+
+    state.history.push(report);
+    state.period += 1;
+    renderGame();
+    showReport(report);
   }
 
-  function assumptionsPanel() {
-    return `
-      <button class="modal-close" type="button" data-close-modal aria-label="Close dialog">CLOSE ×</button>
-      <p class="eyebrow">OPEN MODEL / BIAS CONTROL</p>
-      <h2 id="modal-title">Adjust the institutional hostility.</h2>
-      <p class="modal-intro">These sliders amplify authored consequences. They expose the game's assumptions; they do not predict real policy outcomes.</p>
-      ${assumptionSlider("denialPressure", "Insurance denial pressure", "How strongly payer delays damage cash and patient flow.")}
-      ${assumptionSlider("safeStaffing", "Cost of safe staffing", "How expensive it is to keep enough skilled people at the bedside and throughout the hospital.")}
-      ${assumptionSlider("uncompensatedCare", "Uncompensated care load", "How severely gaps in coverage and public support drain the hospital.")}
-      <button class="reset-button" type="button" id="reset-assumptions">Restore default dysfunction</button>
-      <div class="method-note">MODEL LIMIT: Values are fictional, directional scenario rules. They are not hospital budgets, reimbursement estimates, or clinical guidance.</div>`;
+  function showReport(report) {
+    const finalPeriod = state.period >= periods.length;
+    const collapsed = state.cash <= -8 || state.metrics.care <= 8 || state.metrics.workforce <= 8;
+    const continueLabel = finalPeriod || collapsed ? "Open the final audit →" : "Advance six months →";
+    const notice = report.mode === "care"
+      ? "Patients and staff felt the benefit. The balance sheet has filed an objection."
+      : report.mode === "balance"
+        ? "You purchased time at the customary rate of more time later."
+        : "Cash improved by moving the cost somewhere less visible.";
+
+    openModal(`<div class="adviser-report ${report.adviser.theme}">
+      <div class="adviser-person">
+        <div class="adviser-portrait" aria-hidden="true"><span>${report.adviser.initials}</span></div>
+        <div><p>${report.date} REPORT</p><strong>${report.adviser.name}</strong><small>${report.adviser.role}</small></div>
+      </div>
+      <div class="speech-card">
+        <p class="adviser-quote">“${report.quote}”</p>
+        <p>${notice}</p>
+      </div>
+      <div class="popup-ledger">
+        <div><span>Money in</span><strong>${money(report.revenue)}</strong></div>
+        <div><span>Money out</span><strong>${money(report.expense)}</strong></div>
+        <div><span>Net change</span><strong class="${report.net < 0 ? "bad" : "good"}">${money(report.net, true)}</strong></div>
+        <div><span>Cash left</span><strong>${money(state.cash)}</strong></div>
+      </div>
+      <div class="popup-impact">
+        <span>PRICE INDEX <strong>${report.priceIndex}</strong></span>
+        <span>PATIENT DEBT <strong>${money(report.patientDebt)}</strong></span>
+        <span>TRUST <strong>${report.trust}</strong></span>
+        <span>NEXT: <strong>${report.nextPressure}</strong></span>
+      </div>
+      <button class="primary-action adviser-continue" type="button" data-advance="${finalPeriod || collapsed ? "ending" : "continue"}">${continueLabel}<span>›</span></button>
+    </div>`, false);
   }
 
-  function sourcesPanel() {
-    const list = sources
-      .map((source, index) => `
-        <a href="${source.url}" target="_blank" rel="noreferrer">
-          <span>${String(index + 1).padStart(2, "0")}</span>
-          <strong>${source.label}</strong>
-          <small>${source.note}</small>
-          <i>↗</i>
-        </a>`)
-      .join("");
-    return `
-      <button class="modal-close" type="button" data-close-modal aria-label="Close dialog">CLOSE ×</button>
-      <p class="eyebrow">SOURCES / MODEL PROVENANCE</p>
-      <h2 id="modal-title">Real pressure points. Fictional hospital.</h2>
-      <p class="modal-intro">Public evidence grounds the operating constraints. St. Dymphna, its staff, payers, figures, choices, and outcomes are invented satire.</p>
-      <div class="source-list">${list}</div>`;
+  function chooseEnding() {
+    if (state.cash <= -8) return "payroll";
+    if (state.metrics.care <= 18 || state.metrics.trust <= 14 || state.metrics.workforce <= 16) return "abandoned";
+    if (state.modes.care >= 5) return "beloved";
+    if (state.modes.extract >= 5) return "efficient";
+    return "managed";
   }
 
-  function openPanel(name) {
-    if (name === "briefing") modalContent.innerHTML = briefingPanel();
-    if (name === "assumptions") modalContent.innerHTML = assumptionsPanel();
-    if (name === "sources") modalContent.innerHTML = sourcesPanel();
+  function finishGame(forcedEnding) {
+    closeModal(true);
+    const id = forcedEnding || chooseEnding();
+    state.ending = { id, ...endings[id] };
+    rememberEnding(id);
+    renderEnding();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function renderEnding() {
+    const ending = state.ending;
+    const totalRevenue = state.history.reduce((sum, item) => sum + item.revenue, 0);
+    const totalExpense = state.history.reduce((sum, item) => sum + item.expense, 0);
+    gameView.innerHTML = `<section class="ending-screen">
+      <div class="ending-main">
+        <p class="eyebrow">${ending.code} // ST. DYMPHNA MEMORIAL</p>
+        <h1>${ending.title}</h1>
+        <h2>${ending.kicker}</h2>
+        <p>${ending.body}</p>
+        <blockquote>${ending.epitaph}</blockquote>
+        ${renderVitals(true)}
+        <details class="compact-audit">
+          <summary>Open final four-year audit</summary>
+          <div class="ending-ledger">
+            <span>Total money in <strong>${money(totalRevenue)}</strong></span>
+            <span>Total money out <strong>${money(totalExpense)}</strong></span>
+            <span>Final cash <strong>${money(state.cash)}</strong></span>
+            <span>Final patient debt <strong>${money(state.patientDebt)}</strong></span>
+          </div>
+        </details>
+        <p class="discovered-note">ENDING ${discoveredCount()} OF ${Object.keys(endings).length} DISCOVERED ON THIS DEVICE</p>
+        <button class="primary-action" id="restart-button" type="button">Inherit it again ↻<span>↻</span></button>
+      </div>
+    </section>`;
+  }
+
+  function openModal(html, dismissable = true) {
+    state.modalDismissable = dismissable;
+    modalContent.innerHTML = `${dismissable ? '<button class="modal-close" type="button" aria-label="Close dialog">CLOSE ×</button>' : ""}${html}`;
     modalBackdrop.hidden = false;
-    document.body.style.overflow = "hidden";
-    const initialFocus = modalContent.querySelector(".howto-start") || modalContent.querySelector(".modal-close");
-    if (initialFocus) initialFocus.focus();
+    document.body.classList.add("modal-open");
+    setTimeout(() => $("button", modalContent)?.focus(), 0);
   }
 
-  function closePanel() {
+  function closeModal(force = false) {
+    if (!force && !state.modalDismissable) return;
     modalBackdrop.hidden = true;
-    document.body.style.overflow = "";
+    modalContent.innerHTML = "";
+    document.body.classList.remove("modal-open");
+  }
+
+  function showPanel(panel) {
+    if (panel === "briefing") {
+      openModal(`<p class="eyebrow">HOW TO PLAY</p>
+        <h2 class="plain-modal-title" id="modal-title">How to play</h2>
+        <p class="modal-intro">You are in charge of St. Dymphna Memorial. On each turn, review the hospital, choose a policy, and see what happens over the next six months.</p>
+        <div class="briefing-grid continuous-briefing">
+          <div><strong>1</strong><p>Check cash, prices, staffing, patient flow, care, trust, and the six-month financial forecast.</p></div>
+          <div><strong>2</strong><p>Choose one policy for the hospital to follow during the next six months.</p></div>
+          <div><strong>3</strong><p>Read the hospital representative's report, then continue to the next period.</p></div>
+        </div>
+        <button class="primary-action howto-start" type="button" data-close-panel>Start the first six months →<span>›</span></button>`);
+      return;
+    }
+
+    if (panel === "assumptions") {
+      openModal(`<p class="eyebrow">OPERATING MODEL</p>
+        <h2 id="modal-title">The spiral is structural.</h2>
+        <p class="modal-intro">This is satire, not a forecast. Each period combines a fictional hospital ledger with real policy pressure points.</p>
+        <div class="model-grid">
+          <div><span>TIME</span><strong>8 half-years</strong><p>One continuous four-year playthrough designed for roughly 3–5 minutes.</p></div>
+          <div><span>PEOPLE</span><strong>Clinicians are the good guys</strong><p>Staff absorb pressure and preserve care. Insurers and government payment systems intensify it.</p></div>
+          <div><span>MONEY</span><strong>Revenue is not cash</strong><p>Payment delays, fixed payroll, post-acute bottlenecks, price increases, debt, and borrowing compound.</p></div>
+          <div><span>ENDING</span><strong>Doom is scheduled</strong><p>Choices determine who is protected, who pays, and what remains when the hospital closes.</p></div>
+        </div>
+        <p class="method-note">All organizations, characters, dollar amounts, and incidents are fictional. Policy concepts are simplified for play.</p>`);
+      return;
+    }
+
+    if (panel === "sources") {
+      openModal(`<p class="eyebrow">BACKGROUND READING</p>
+        <h2 id="modal-title">Real pressure points. Fictional catastrophe.</h2>
+        <p class="modal-intro">These public sources inform the themes. They do not validate the game's invented figures or guarantee its outcomes.</p>
+        <div class="source-list">${sources.map((source, index) => `<a href="${source.url}" target="_blank" rel="noreferrer"><span>0${index + 1}</span><strong>${source.label}</strong><small>${source.note}</small><i>↗</i></a>`).join("")}</div>`);
+    }
+  }
+
+  function restart() {
+    closeModal(true);
+    state = freshState();
+    renderGame();
+    showPanel("briefing");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   document.addEventListener("click", (event) => {
-    const target = event.target.closest("button");
-    if (!target) return;
-    if (target.id === "restart-button") startGame();
-    if (target.id === "continue-button") continueGame();
-    if (target.id === "private-equity-button") sellToPrivateEquity();
-    if (target.dataset.choice) makeDecision(target.dataset.choice);
-    if (target.dataset.panel) openPanel(target.dataset.panel);
-    if (target.hasAttribute("data-close-modal")) closePanel();
-    if (target.id === "reset-assumptions") {
-      state.assumptions = { ...defaultAssumptions };
-      modalContent.innerHTML = assumptionsPanel();
+    const panelButton = event.target.closest("[data-panel]");
+    if (panelButton) showPanel(panelButton.dataset.panel);
+
+    const choiceButton = event.target.closest("[data-choice]");
+    if (choiceButton) applyChoice(Number(choiceButton.dataset.choice));
+
+    if (event.target.closest("#panic-button")) finishGame("parachute");
+    if (event.target.closest("#restart-button") || event.target.closest("#brand-button")) restart();
+    if (event.target.closest(".modal-close") || event.target.closest("[data-close-panel]")) closeModal();
+
+    const advance = event.target.closest("[data-advance]");
+    if (advance) {
+      if (advance.dataset.advance === "ending") finishGame();
+      else {
+        closeModal(true);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
     }
   });
 
-  document.addEventListener("input", (event) => {
-    const input = event.target.closest("input[data-assumption]");
-    if (!input) return;
-    const key = input.dataset.assumption;
-    state.assumptions[key] = Number(input.value);
-    const output = input.parentElement.querySelector("output");
-    if (output) output.textContent = `${input.value}%`;
-  });
-
-  document.getElementById("brand-button").addEventListener("click", () => {
-    closePanel();
-    startGame();
-  });
-
   modalBackdrop.addEventListener("click", (event) => {
-    if (event.target === modalBackdrop) closePanel();
+    if (event.target === modalBackdrop) closeModal();
   });
 
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && !modalBackdrop.hidden) closePanel();
+    if (event.key === "Escape") closeModal();
   });
 
-  startGame();
-  openPanel("briefing");
+  renderGame();
+  showPanel("briefing");
 })();

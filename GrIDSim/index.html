@@ -127,7 +127,8 @@
       min-width: 0;
     }
 
-    .how-to-play-dialog {
+    .how-to-play-dialog,
+    .settings-dialog {
       width: min(620px, calc(100% - 32px));
       max-height: calc(100vh - 32px);
       max-height: calc(100dvh - 32px);
@@ -140,17 +141,44 @@
       overflow: auto;
     }
 
-    .how-to-play-dialog::backdrop {
+    .how-to-play-dialog::backdrop,
+    .settings-dialog::backdrop {
       background: rgba(20, 27, 25, 0.62);
     }
 
-    .how-to-play-content {
+    .how-to-play-content,
+    .settings-content {
       padding: 24px;
     }
 
-    .how-to-play-content h2 {
+    .how-to-play-content h2,
+    .settings-content h2 {
       font-size: 1.5rem;
       letter-spacing: 0;
+    }
+
+    .settings-dialog {
+      width: min(480px, calc(100% - 32px));
+    }
+
+    .settings-field {
+      display: grid;
+      gap: 7px;
+      margin-top: 20px;
+    }
+
+    .settings-field label {
+      font-weight: 700;
+    }
+
+    .settings-select {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid rgba(32, 38, 36, 0.25);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--ink);
+      padding: 8px 10px;
     }
 
     .dialog-intro {
@@ -196,7 +224,7 @@
       display: grid;
       grid-template-columns: minmax(270px, 340px) minmax(560px, 1fr);
       gap: 16px;
-      align-items: stretch;
+      align-items: start;
     }
 
     .workspace > * {
@@ -214,15 +242,6 @@
     .board-area {
       min-width: 0;
       padding: 14px;
-    }
-
-    .bank-toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 12px;
     }
 
     .btn {
@@ -393,18 +412,18 @@
       background: var(--surface);
     }
 
-    .show-regions .cell[data-region="foregut"],
-    .bank-card[data-region="foregut"].show-region {
+    .show-regions .cell[data-category-index="0"],
+    .bank-card[data-category-index="0"].show-region {
       background: linear-gradient(0deg, rgba(255, 253, 248, 0.45), rgba(255, 253, 248, 0.45)), var(--foregut);
     }
 
-    .show-regions .cell[data-region="midgut"],
-    .bank-card[data-region="midgut"].show-region {
+    .show-regions .cell[data-category-index="1"],
+    .bank-card[data-category-index="1"].show-region {
       background: linear-gradient(0deg, rgba(255, 253, 248, 0.45), rgba(255, 253, 248, 0.45)), var(--midgut);
     }
 
-    .show-regions .cell[data-region="hindgut"],
-    .bank-card[data-region="hindgut"].show-region {
+    .show-regions .cell[data-category-index="2"],
+    .bank-card[data-category-index="2"].show-region {
       background: linear-gradient(0deg, rgba(255, 253, 248, 0.45), rgba(255, 253, 248, 0.45)), var(--hindgut);
     }
 
@@ -457,6 +476,10 @@
       font-size: 0.9rem;
     }
 
+    .legend[hidden] {
+      display: none;
+    }
+
     .legend-item {
       display: inline-flex;
       align-items: center;
@@ -472,22 +495,16 @@
       border: 1px solid rgba(32, 38, 36, 0.18);
     }
 
-    .swatch.foregut {
+    .swatch.category-0 {
       background: var(--foregut);
     }
 
-    .swatch.midgut {
+    .swatch.category-1 {
       background: var(--midgut);
     }
 
-    .swatch.hindgut {
+    .swatch.category-2 {
       background: var(--hindgut);
-    }
-
-    .bank-title {
-      font-size: 1rem;
-      letter-spacing: 0;
-      margin: 0 0 10px;
     }
 
     .bank-area {
@@ -495,18 +512,10 @@
       flex-direction: column;
       position: sticky;
       top: 16px;
-      align-self: stretch;
+      align-self: start;
       min-height: 0;
+      overflow: hidden;
       padding: 14px;
-    }
-
-    .bank-heading {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 10px;
-      justify-content: space-between;
-      min-width: 0;
     }
 
     .card-bank {
@@ -514,7 +523,7 @@
       grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
       gap: 8px;
       flex: 1;
-      min-height: 260px;
+      min-height: 0;
       overflow: auto;
       padding: 2px;
     }
@@ -672,7 +681,8 @@
         min-height: 44px;
       }
 
-      .how-to-play-content {
+      .how-to-play-content,
+      .settings-content {
         padding: 18px;
       }
     }
@@ -717,10 +727,6 @@
         width: 100%;
       }
 
-      .bank-toolbar {
-        align-items: stretch;
-      }
-
       .btn,
       .switch {
         width: 100%;
@@ -758,12 +764,14 @@
         grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
       }
 
-      .how-to-play-dialog {
+      .how-to-play-dialog,
+      .settings-dialog {
         width: calc(100% - 16px);
         max-height: calc(100dvh - 16px);
       }
 
-      .how-to-play-content {
+      .how-to-play-content,
+      .settings-content {
         padding: 16px;
       }
 
@@ -790,37 +798,33 @@
       <div class="brand">
         <div class="brand-mark" aria-hidden="true">GrID</div>
         <div>
-          <h1>GastroIntestinal Disease Sudoku</h1>
+          <h1 id="gameTitle">GastroIntestinal Disease Sudoku</h1>
         </div>
       </div>
       <div class="top-actions">
         <div class="color-key-group">
+          <div class="legend" id="colorKeyLegend" aria-label="Region color key">
+            <span class="legend-item"><span class="swatch category-0"></span>Foregut</span>
+            <span class="legend-item"><span class="swatch category-1"></span>Midgut</span>
+            <span class="legend-item"><span class="swatch category-2"></span>Hindgut</span>
+          </div>
           <label class="switch">
             <input type="checkbox" id="colorKeyToggle" aria-controls="colorKeyLegend" checked>
             <span>Color Key</span>
           </label>
-          <div class="legend" id="colorKeyLegend" aria-label="Region color key">
-            <span class="legend-item"><span class="swatch foregut"></span>Foregut</span>
-            <span class="legend-item"><span class="swatch midgut"></span>Midgut</span>
-            <span class="legend-item"><span class="swatch hindgut"></span>Hindgut</span>
-          </div>
         </div>
         <button class="btn btn-primary" type="button" id="hintBtn">Hint</button>
+        <button class="btn" type="button" id="settingsBtn">Settings</button>
         <button class="btn" type="button" id="howToPlayBtn">How to play</button>
       </div>
     </header>
 
     <section class="workspace" aria-label="Game board">
-      <section class="bank-area" aria-label="Card bank">
-        <div class="bank-toolbar">
-          <div class="bank-heading">
-            <h2 class="bank-title">Card bank</h2>
-          </div>
-        </div>
+      <section class="bank-area" id="bankArea" aria-label="Card bank">
         <div class="card-bank" id="cardBank" aria-label="Available cards"></div>
       </section>
 
-      <section class="board-area">
+      <section class="board-area" id="boardArea">
         <div class="board-shell" id="boardShell">
           <div class="board-status-layout">
             <div class="column-statuses" id="columnStatuses" aria-label="Column status indicators"></div>
@@ -838,16 +842,17 @@
   <dialog class="how-to-play-dialog" id="howToPlayDialog" aria-labelledby="howToPlayTitle">
     <div class="how-to-play-content">
       <h2 id="howToPlayTitle">Welcome to GrID</h2>
-      <p class="dialog-intro">A browser version of the GrID anatomy card activity: classify GI features into foregut, midgut, and hindgut regions while keeping every Sudoku unit balanced.</p>
+      <p class="dialog-intro" id="dialogIntro">A browser version of the GrID anatomy card activity: classify GI features into foregut, midgut, and hindgut regions while keeping every Sudoku unit balanced.</p>
 
       <section class="dialog-section" aria-labelledby="instructionsTitle">
         <h3 id="instructionsTitle">How to play</h3>
         <ol class="dialog-steps">
           <li>Choose a card from the card bank, then choose a cell on the board.</li>
-          <li>Each row, column, and 3x3 box must contain exactly three foregut, three midgut, and three hindgut cards.</li>
-          <li>A completed 3x3 box receives a green rim when it contains three cards from each region.</li>
+          <li id="distributionRule">Each row, column, and 3x3 box must contain exactly three foregut, three midgut, and three hindgut cards.</li>
+          <li id="boxRule">A completed 3x3 box receives a green rim when it contains three cards from each region.</li>
           <li>Row and column status boxes stay blank until full, then show a green check for a balanced distribution or a red X for an incorrect one.</li>
-          <li>Color Key shows or hides the region colors. Hint randomly places a card-bank item correctly before correcting a card already on the board.</li>
+          <li id="colorRule">Color Key shows or hides the region colors. Hint randomly places a card-bank item correctly before correcting a card already on the board.</li>
+          <li>Use Settings to switch content sets. Switching starts a fresh puzzle.</li>
         </ol>
       </section>
 
@@ -859,15 +864,28 @@
     </div>
   </dialog>
 
-  <script>
-    const regions = ["foregut", "midgut", "hindgut"];
-    const regionLabels = {
-      foregut: "Foregut",
-      midgut: "Midgut",
-      hindgut: "Hindgut"
-    };
+  <dialog class="settings-dialog" id="settingsDialog" aria-labelledby="settingsTitle">
+    <div class="settings-content">
+      <h2 id="settingsTitle">Settings</h2>
+      <div class="settings-field">
+        <label for="contentSetSelect">Content set</label>
+        <select class="settings-select" id="contentSetSelect">
+          <option value="gi-regions">GI regions (default)</option>
+          <option value="ectoderm-lineages">Ectodermal lineages</option>
+          <option value="germ-layers">Germ layers</option>
+          <option value="mesoderm-lineages">Mesodermal lineages</option>
+          <option value="brain-divisions">Brain divisions</option>
+          <option value="cerebral-arterial-territories">Cerebral arterial territories</option>
+        </select>
+      </div>
+      <div class="dialog-actions">
+        <button class="btn btn-primary" type="button" id="settingsClose">Done</button>
+      </div>
+    </div>
+  </dialog>
 
-    const cards = [
+  <script>
+    const defaultCards = [
       { id: "distal", label: "Distal", region: "hindgut", solution: 0 },
       { id: "caecum", label: "Caecum", region: "midgut", solution: 1 },
       { id: "inferior-mesenteric-ganglion", label: "Inferior mesenteric ganglion", region: "hindgut", solution: 2 },
@@ -967,6 +985,24 @@
     const columnStatuses = document.getElementById("columnStatuses");
     const colorKeyLegend = document.getElementById("colorKeyLegend");
     const howToPlayDialog = document.getElementById("howToPlayDialog");
+    const bankArea = document.getElementById("bankArea");
+    const boardArea = document.getElementById("boardArea");
+    const desktopLayout = window.matchMedia("(min-width: 861px)");
+
+    function syncPanelHeights() {
+      if (!desktopLayout.matches) {
+        bankArea.style.height = "";
+        return;
+      }
+
+      bankArea.style.height = `${Math.ceil(boardArea.getBoundingClientRect().height)}px`;
+    }
+
+    window.addEventListener("resize", syncPanelHeights);
+
+    if (typeof ResizeObserver === "function") {
+      new ResizeObserver(syncPanelHeights).observe(boardArea);
+    }
 
     document.getElementById("howToPlayBtn").addEventListener("click", openHowToPlay);
 
@@ -1325,6 +1361,7 @@
       renderBoxRims(report);
       renderUnitStatuses(report);
       renderBank();
+      syncPanelHeights();
     }
 
     render();
