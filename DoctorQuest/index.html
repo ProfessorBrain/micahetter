@@ -1383,6 +1383,152 @@
       text-transform: uppercase;
     }
 
+    .sensory-card {
+      width: min(940px, 100%);
+      overflow-x: hidden;
+    }
+
+    .sensory-board {
+      display: grid;
+      gap: 14px;
+      margin: 14px 20px 20px;
+    }
+
+    .sensory-meters {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(92px, 1fr));
+      gap: 10px;
+      align-items: end;
+    }
+
+    .sensory-column {
+      display: grid;
+      grid-template-rows: 34px 166px 22px;
+      gap: 6px;
+      min-width: 0;
+      text-align: center;
+    }
+
+    .sensory-column > strong {
+      align-self: end;
+      color: var(--maroon);
+      font-family: var(--retro-font);
+      font-size: 0.62rem;
+      line-height: 1.2;
+      text-transform: uppercase;
+    }
+
+    .sensory-meter {
+      position: relative;
+      width: 58px;
+      height: 166px;
+      margin: 0 auto;
+      overflow: hidden;
+      border: 4px ridge var(--gold);
+      background:
+        repeating-linear-gradient(to top, transparent 0 31px, rgba(33,25,35,0.22) 31px 33px),
+        #c8bea3;
+      box-shadow: inset 0 0 0 2px rgba(255,243,191,0.32);
+    }
+
+    .sensory-fill {
+      position: absolute;
+      inset: auto 0 0;
+      height: 0;
+      background: var(--meter-color);
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,0.2);
+      will-change: height;
+    }
+
+    .sensory-value {
+      position: absolute;
+      z-index: 2;
+      left: 50%;
+      top: 50%;
+      padding: 3px 2px;
+      background: rgba(247,237,207,0.82);
+      color: var(--ink);
+      font-family: var(--retro-font);
+      font-size: 0.56rem;
+      font-weight: 700;
+      transform: translate(-50%, -50%);
+    }
+
+    .sensory-lock {
+      min-width: 0;
+      color: #5d5260;
+      font-family: var(--retro-font);
+      font-size: 0.54rem;
+      line-height: 22px;
+      text-transform: uppercase;
+    }
+
+    .sensory-column.locked .sensory-meter {
+      box-shadow: inset 0 0 0 2px #fff3bf, 0 0 0 2px #39734d;
+    }
+
+    .sensory-column.locked .sensory-lock { color: #28623e; }
+
+    .sensory-tools {
+      display: grid;
+      grid-template-columns: repeat(8, minmax(70px, 1fr));
+      gap: 8px;
+    }
+
+    .sensory-tool {
+      display: grid;
+      grid-template-rows: 38px 24px;
+      place-items: center;
+      min-width: 0;
+      min-height: 70px;
+      padding: 5px 3px;
+      border: 3px outset var(--gold);
+      background: linear-gradient(180deg, #f6e2a6, #b98443);
+      color: var(--ink);
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    .sensory-tool:active { border-style: inset; }
+    .sensory-tool:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+    .sensory-tool:disabled { cursor: default; filter: grayscale(0.65); opacity: 0.64; }
+
+    .sensory-tool-icon {
+      font-family: "Segoe UI Emoji", "Apple Color Emoji", sans-serif;
+      font-size: 1.7rem;
+      line-height: 1;
+    }
+
+    .sensory-tool-label {
+      align-self: start;
+      max-width: 100%;
+      overflow-wrap: anywhere;
+      font-family: var(--retro-font);
+      font-size: 0.52rem;
+      line-height: 1.1;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .sensory-feedback {
+      min-height: 50px;
+      margin: 0;
+      padding: 10px 12px;
+      border-left: 5px solid var(--teal);
+      background: rgba(31,111,120,0.12);
+      line-height: 1.4;
+    }
+
+    .sensory-feedback.penalty {
+      border-color: #a23b3b;
+      background: rgba(162,59,59,0.12);
+    }
+
+    .sensory-feedback.success {
+      border-color: #39734d;
+      background: rgba(57,115,77,0.15);
+    }
+
     .wash-card { width: min(820px, 100%); }
 
     .wash-hud {
@@ -1840,6 +1986,17 @@
       }
       .reflex-stage { max-height: min(47vh, 390px); }
       .reflex-feedback { min-height: 78px; }
+      .sensory-board { gap: 9px; margin: 10px 12px 14px; }
+      .sensory-meters { grid-template-columns: repeat(5, minmax(52px, 1fr)); gap: 5px; }
+      .sensory-column { grid-template-rows: 30px 112px 18px; gap: 4px; }
+      .sensory-column > strong { font-size: 0.5rem; }
+      .sensory-meter { width: 44px; height: 112px; }
+      .sensory-lock { font-size: 0.46rem; line-height: 18px; }
+      .sensory-tools { grid-template-columns: repeat(4, minmax(58px, 1fr)); gap: 6px; }
+      .sensory-tool { grid-template-rows: 32px 20px; min-height: 60px; }
+      .sensory-tool-icon { font-size: 1.42rem; }
+      .sensory-tool-label { font-size: 0.45rem; }
+      .sensory-feedback { min-height: 44px; padding: 8px 10px; font-size: 0.76rem; }
     }
   </style>
 </head>
@@ -1941,6 +2098,7 @@
       sfxVolume: 35,
       timingTimer: null,
       timingFrame: null,
+      sensoryFrame: null,
       timingMarker: 0,
       timingHits: 0,
       washScore: 0,
@@ -1970,6 +2128,7 @@
       ["motorWeakness", "Motor exam", "Left-leg upper motor neuron weakness, most obvious distally; right leg and arms are normal.", "Exam"],
       ["reflexes", "Reflex pattern", "The left patellar reflex is brisk on repeated tendon strikes.", "Exam"],
       ["plantar", "Plantar response", "The left great toe extends upward, supporting an upper motor neuron lesion.", "Exam"],
+      ["lightTouch", "Light touch", "Light touch is perceived bilaterally during the screening examination.", "Exam"],
       ["dorsalColumn", "Vibration and position", "Vibration and joint position are reduced on the left below the thoracic level.", "Exam"],
       ["spinothalamic", "Pain and temperature", "Pinprick and cold are reduced on the right beginning below the lower thoracic levels.", "Exam"],
       ["sensoryLevel", "Sensory level", "A thoracic sensory level is identified: left dorsal-column loss around T8, right pain-temperature loss around T10.", "Exam"],
@@ -2748,6 +2907,7 @@
       "motorWeakness",
       "reflexes",
       "plantar",
+      "lightTouch",
       "dorsalColumn",
       "spinothalamic",
       "sensoryLevel",
@@ -2959,11 +3119,11 @@
       }
 
       if (!has(state.findings, "dorsalColumn")) {
-        return "Use the tuning fork on the patient to test vibration, then compare left and right.";
+        return "Open the physical exam and run Sensory Testing. Fill all five modality meters before their locks expire.";
       }
 
       if (!has(state.findings, "spinothalamic")) {
-        return "Use the neurotip or cold pack on the patient to map right-sided pain-temperature loss.";
+        return "Complete Sensory Testing with the feather, tuning fork, neurotip, cold stimulus, and great-toe position test.";
       }
 
       if (!has(state.findings, "sensoryLevel")) {
@@ -3046,6 +3206,10 @@
       if (state.timingFrame) {
         cancelAnimationFrame(state.timingFrame);
         state.timingFrame = null;
+      }
+      if (state.sensoryFrame) {
+        cancelAnimationFrame(state.sensoryFrame);
+        state.sensoryFrame = null;
       }
       state.washScore = 0;
       state.washTotal = 0;
@@ -3614,9 +3778,7 @@
       if (itemId === "tuningFork") {
         if (hotspotId === "patient") {
           if (!requireHandHygiene()) return;
-          addFinding("dorsalColumn");
-          removeInventory(itemId);
-          setMessage("Vibration fades early on the left great toe and ankle but is preserved on the right. Dorsal-column loss is charted.");
+          openSensoryGame();
           return;
         }
       }
@@ -3624,7 +3786,7 @@
       if (itemId === "neurotip" || itemId === "coldPack") {
         if (hotspotId === "patient") {
           if (!requireHandHygiene()) return;
-          openSpinothalamicExam();
+          openSensoryGame();
           return;
         }
       }
@@ -3902,9 +4064,7 @@
       const examButtons = [
         ["motor", "Motor Strength", "Check left-leg pyramidal weakness."],
         ["reflex", "Patellar Reflex", "Test the left knee jerk with the reflex hammer."],
-        ["vibration", "Vibration", "Use the tuning fork to test dorsal columns."],
-        ["position", "Position Sense", "Move the great toe with eyes closed."],
-        ["spinothalamic", "Pain and Temperature", "Compare bilateral pin and cold."],
+        ["sensory", "Sensory Testing", "Test five modalities before the meters decay."],
         ["sensoryLevel", "Sensory Level", "Mark where sensation normalizes."],
         ["localization", "Localize Lesion", "Combine tracts into one cord lesion."]
       ];
@@ -3915,8 +4075,9 @@
           <p>Pick focused maneuvers. Normal findings matter; crossed findings matter more.</p>
           <div class="exam-grid">
             ${examButtons.map(([id, label, detail]) => {
-              const findingId = id === "motor" ? "motorWeakness" : id === "reflex" ? "reflexes" : id === "vibration" || id === "position" ? "dorsalColumn" : id;
-              const done = has(state.findings, findingId) ? " done" : "";
+              const sensoryDone = id === "sensory" && ["lightTouch", "dorsalColumn", "spinothalamic"].every(findingId => has(state.findings, findingId));
+              const findingId = id === "motor" ? "motorWeakness" : id === "reflex" ? "reflexes" : id;
+              const done = sensoryDone || has(state.findings, findingId) ? " done" : "";
               return `<button type="button" class="exam-card${done}" data-exam="${id}"><strong>${label}</strong><span>${detail}</span></button>`;
             }).join("")}
           </div>
@@ -3953,25 +4114,7 @@
         }
         openReflexGame();
       }
-      if (exam === "vibration") {
-        if (!has(state.inventory, "tuningFork")) {
-          setMessage("Find the tuning fork in the exam cart before testing vibration.");
-          closeModal();
-          return;
-        }
-        addFinding("dorsalColumn");
-        removeInventory("tuningFork");
-        setMessage("Vibration fades early on the left great toe and ankle, but is preserved on the right. This supports dorsal-column involvement.");
-        closeModal();
-      }
-      if (exam === "position") {
-        addFinding("dorsalColumn");
-        setMessage("With eyes closed, left toe position is unreliable while the right is crisp. The combined findings support dorsal-column involvement.");
-        closeModal();
-      }
-      if (exam === "spinothalamic") {
-        openSpinothalamicExam();
-      }
+      if (exam === "sensory") openSensoryGame();
       if (exam === "sensoryLevel") {
         openSensoryLevel();
       }
@@ -3980,41 +4123,267 @@
       }
     }
 
-    function openSpinothalamicExam() {
-      if (!has(state.inventory, "neurotip") || !has(state.inventory, "coldPack")) {
-        setMessage("You need both the neurotip and cold pack from the supply cabinet to compare pain and temperature safely.");
+    function openSensoryGame() {
+      if (has(state.completed, "sensoryExam")) {
+        setMessage("The five-modality sensory examination is already documented in the chart.");
         closeModal();
         return;
       }
+
+      const requiredTools = ["tuningFork", "neurotip", "coldPack"];
+      const missingTools = requiredTools.filter(id => !has(state.inventory, id));
+      if (missingTools.length) {
+        setMessage("Sensory testing requires the tuning fork from the exam cart plus the disposable neurotip and cold pack from the supply cabinet.");
+        closeModal();
+        return;
+      }
+
+      const modalities = [
+        {
+          id: "lightTouch",
+          label: "Light touch",
+          icon: "&#129718;",
+          toolLabel: "Feather",
+          color: "#4b9b91",
+          response: "Feather applied lightly: the patient reports touch on both sides."
+        },
+        {
+          id: "vibration",
+          label: "Vibration",
+          icon: "&#127925;",
+          toolLabel: "Tuning fork",
+          color: "#c4912f",
+          response: "The vibrating fork is placed on a bony prominence and compared side to side."
+        },
+        {
+          id: "pain",
+          label: "Pain",
+          icon: "&#128205;",
+          toolLabel: "Neurotip",
+          color: "#a63f4e",
+          response: "The disposable neurotip tests pinprick with a safe, consistent stimulus."
+        },
+        {
+          id: "temperature",
+          label: "Temperature",
+          icon: "&#129482;",
+          toolLabel: "Cold stimulus",
+          color: "#397eb0",
+          response: "The cold stimulus is compared at matching points on both sides."
+        },
+        {
+          id: "proprioception",
+          label: "Position",
+          icon: "&#129462;&#8597;",
+          toolLabel: "Great toe",
+          color: "#567f4b",
+          response: "The great toe is held by its sides and moved slightly up or down with the patient's eyes closed."
+        }
+      ];
+
+      const distractors = [
+        {
+          id: "apple",
+          label: "Apple",
+          icon: "&#127822;",
+          response: "An apple can test appetite, but it is not a standardized sensory stimulus."
+        },
+        {
+          id: "spoon",
+          label: "Spoon",
+          icon: "&#129348;",
+          response: "A spoon does not isolate any of the five sensory modalities."
+        },
+        {
+          id: "rubberBand",
+          label: "Rubber band",
+          icon: "&#10160;",
+          response: "A snapped rubber band is neither calibrated nor appropriate bedside sensory testing."
+        }
+      ];
+
+      const sensoryTools = modalities.map(modality => ({
+        id: modality.id,
+        label: modality.toolLabel,
+        icon: modality.icon,
+        modalityId: modality.id,
+        response: modality.response
+      })).concat(distractors.map(tool => ({ ...tool, modalityId: null })));
+
+      for (let index = sensoryTools.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [sensoryTools[index], sensoryTools[swapIndex]] = [sensoryTools[swapIndex], sensoryTools[index]];
+      }
+
+      const meters = Object.fromEntries(modalities.map(modality => [modality.id, {
+        value: 0,
+        lockedUntil: 0
+      }]));
+      const toolById = new Map(sensoryTools.map(tool => [tool.id, tool]));
+      const boostPerClick = 20;
+      const decayPerSecond = 8;
+      const lockDuration = 5000;
+      const distractorPenalty = 9;
+      let finished = false;
+      let lastFrameTime = null;
+
       openModal(`
-        <section class="modal-card mini-card" role="dialog" aria-modal="true">
-          <div class="modal-header"><h2>Pain and Temperature Map</h2><button type="button" data-close aria-label="Close">X</button></div>
-          <p>Which pattern matches a left hemicord lesion after spinothalamic fibers cross?</p>
-          <div class="option-stack">
-            <button type="button" class="option" data-spin="wrong">Left pain-temperature loss beginning at the foot only</button>
-            <button type="button" class="option" data-spin="correct">Right pain-temperature loss beginning below the lower thoracic levels</button>
-            <button type="button" class="option" data-spin="wrong">Both arms lose temperature first</button>
-            <button type="button" class="option" data-spin="wrong">No pain-temperature change because vibration is abnormal</button>
+        <section class="modal-card sensory-card" id="sensoryGame" role="dialog" aria-modal="true" aria-labelledby="sensoryTitle">
+          <div class="modal-header"><h2 id="sensoryTitle">Five-Modality Sensory Testing</h2><button type="button" data-close aria-label="Close">X</button></div>
+          <p>Build every modality to 100% at the same time. A full meter locks briefly; unlocked meters steadily decay.</p>
+          <div class="sensory-board">
+            <div class="sensory-meters">
+              ${modalities.map(modality => `
+                <section class="sensory-column" id="sensoryColumn-${modality.id}" style="--meter-color:${modality.color}">
+                  <strong>${modality.label}</strong>
+                  <div class="sensory-meter" id="sensoryMeter-${modality.id}" role="progressbar" aria-label="${modality.label}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                    <span class="sensory-fill" id="sensoryFill-${modality.id}"></span>
+                    <span class="sensory-value" id="sensoryValue-${modality.id}">0%</span>
+                  </div>
+                  <span class="sensory-lock" id="sensoryLock-${modality.id}">ACTIVE</span>
+                </section>
+              `).join("")}
+            </div>
+            <div class="sensory-tools" aria-label="Sensory testing tools">
+              ${sensoryTools.map(tool => `
+                <button type="button" class="sensory-tool" data-sensory-tool="${tool.id}" aria-label="Use ${tool.label}" title="${tool.label}">
+                  <span class="sensory-tool-icon" aria-hidden="true">${tool.icon}</span>
+                  <span class="sensory-tool-label">${tool.label}</span>
+                </button>
+              `).join("")}
+            </div>
+            <p class="sensory-feedback" id="sensoryFeedback" aria-live="polite">Choose a bedside stimulus and work quickly across all five modalities.</p>
           </div>
-          <p class="hint" id="spinHint" style="display:none"></p>
         </section>
       `);
 
-      document.querySelectorAll("[data-spin]").forEach(button => {
-        button.addEventListener("click", () => {
-          if (button.dataset.spin === "correct") {
-            addFinding("spinothalamic");
-            removeInventory("neurotip");
-            removeInventory("coldPack");
-            setMessage("Right-sided pinprick and cold are reduced below about T10, consistent with contralateral spinothalamic involvement after a left hemicord lesion.");
-            closeModal();
-          } else {
-            const hint = document.getElementById("spinHint");
-            hint.textContent = "Spinothalamic fibers cross in the cord after ascending one or two levels, so the body deficit is contralateral and slightly lower.";
-            hint.style.display = "block";
+      const feedback = document.getElementById("sensoryFeedback");
+
+      function renderSensoryMeters(now) {
+        modalities.forEach(modality => {
+          const meter = meters[modality.id];
+          const value = Math.max(0, Math.min(100, meter.value));
+          const lockedFor = Math.max(0, meter.lockedUntil - now);
+          const column = document.getElementById("sensoryColumn-" + modality.id);
+          const progress = document.getElementById("sensoryMeter-" + modality.id);
+          document.getElementById("sensoryFill-" + modality.id).style.height = value + "%";
+          document.getElementById("sensoryValue-" + modality.id).textContent = Math.round(value) + "%";
+          document.getElementById("sensoryLock-" + modality.id).textContent = lockedFor > 0
+            ? "LOCK " + (lockedFor / 1000).toFixed(1) + "s"
+            : value > 0 ? "DECAYING" : "ACTIVE";
+          column.classList.toggle("locked", lockedFor > 0);
+          progress.setAttribute("aria-valuenow", String(Math.round(value)));
+          progress.setAttribute("aria-valuetext", lockedFor > 0
+            ? Math.round(value) + " percent, locked for " + (lockedFor / 1000).toFixed(1) + " seconds"
+            : Math.round(value) + " percent");
+        });
+      }
+
+      function finishSensoryGame() {
+        if (finished) return;
+        finished = true;
+        if (state.sensoryFrame) {
+          cancelAnimationFrame(state.sensoryFrame);
+          state.sensoryFrame = null;
+        }
+        document.querySelectorAll("[data-sensory-tool]").forEach(button => { button.disabled = true; });
+        feedback.className = "sensory-feedback success";
+        feedback.textContent = "All five modalities are secured. The sensory examination is complete.";
+        playSfx("success");
+
+        setTimeout(() => {
+          if (!document.getElementById("sensoryGame")) return;
+          markCompleted("sensoryExam");
+          addFinding("lightTouch");
+          addFinding("dorsalColumn");
+          addFinding("spinothalamic");
+          logAction("Completed five-modality sensory examination");
+          removeInventory("tuningFork");
+          removeInventory("neurotip");
+          removeInventory("coldPack");
+          closeModal();
+          setMessage("Sensory examination complete: light touch is perceived bilaterally; vibration and joint position are reduced on the left, while pinprick and cold are reduced on the right below the lower thoracic levels.");
+        }, 850);
+      }
+
+      function checkSensoryWin() {
+        if (modalities.every(modality => meters[modality.id].value >= 100)) finishSensoryGame();
+      }
+
+      function activateSensoryTool(toolId) {
+        if (finished) return;
+        const tool = toolById.get(toolId);
+        if (!tool) return;
+        const now = performance.now();
+
+        if (!tool.modalityId) {
+          modalities.forEach(modality => {
+            const meter = meters[modality.id];
+            if (meter.lockedUntil <= now) meter.value = Math.max(0, meter.value - distractorPenalty);
+          });
+          feedback.className = "sensory-feedback penalty";
+          feedback.textContent = tool.response + " Unlocked meters lose " + distractorPenalty + "%.";
+          renderSensoryMeters(now);
+          return;
+        }
+
+        const modality = modalities.find(item => item.id === tool.modalityId);
+        const meter = meters[tool.modalityId];
+        if (meter.lockedUntil > now) {
+          feedback.className = "sensory-feedback";
+          feedback.textContent = modality.label + " is locked at 100%. Switch to another modality.";
+          return;
+        }
+
+        meter.value = Math.min(100, meter.value + boostPerClick);
+        feedback.className = "sensory-feedback";
+        feedback.textContent = tool.response;
+        if (meter.value >= 100) {
+          meter.value = 100;
+          meter.lockedUntil = now + lockDuration;
+          feedback.className = "sensory-feedback success";
+          feedback.textContent = modality.label + " secured for five seconds. Switch modalities.";
+          playSfx("success");
+        }
+        renderSensoryMeters(now);
+        checkSensoryWin();
+      }
+
+      function sensoryTick(frameTime) {
+        if (finished) return;
+        if (lastFrameTime === null) lastFrameTime = frameTime;
+        const elapsedSeconds = Math.min((frameTime - lastFrameTime) / 1000, 0.1);
+        lastFrameTime = frameTime;
+
+        modalities.forEach(modality => {
+          const meter = meters[modality.id];
+          if (meter.lockedUntil > frameTime) {
+            meter.value = 100;
+            return;
           }
+          if (meter.lockedUntil) meter.lockedUntil = 0;
+          meter.value = Math.max(0, meter.value - decayPerSecond * elapsedSeconds);
+        });
+        renderSensoryMeters(frameTime);
+        state.sensoryFrame = requestAnimationFrame(sensoryTick);
+      }
+
+      document.querySelectorAll("[data-sensory-tool]").forEach(button => {
+        button.addEventListener("pointerdown", event => {
+          if (event.button !== 0) return;
+          event.preventDefault();
+          activateSensoryTool(button.dataset.sensoryTool);
+        });
+        button.addEventListener("keydown", event => {
+          if (event.repeat || (event.key !== "Enter" && event.key !== " ")) return;
+          event.preventDefault();
+          activateSensoryTool(button.dataset.sensoryTool);
         });
       });
+
+      renderSensoryMeters(performance.now());
+      state.sensoryFrame = requestAnimationFrame(sensoryTick);
+      document.querySelector("[data-sensory-tool]").focus();
     }
 
     function openSensoryLevel() {
