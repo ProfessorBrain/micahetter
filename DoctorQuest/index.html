@@ -181,7 +181,7 @@
       min-width: 220px;
       padding: 2px 6px;
       border: 3px ridge var(--gold);
-      background: rgba(247, 237, 207, 0.12);
+      background: #130b12;
       overflow: hidden;
     }
 
@@ -693,12 +693,26 @@
       align-items: center;
       justify-content: center;
       padding: 3px;
+      border: 0;
+      background: transparent;
+      color: var(--paper);
       font-family: var(--retro-font);
+      appearance: none;
+      -webkit-appearance: none;
       touch-action: none;
       user-select: none;
     }
 
     .inventory-item > * { pointer-events: none; }
+
+    .inventory-item:hover {
+      filter: brightness(1.18) drop-shadow(0 0 4px rgba(255,225,117,0.72));
+    }
+
+    .inventory-item:focus-visible {
+      outline: 2px dotted #ffe175;
+      outline-offset: -3px;
+    }
 
     .inventory-item.with-art {
       padding: 2px;
@@ -712,10 +726,19 @@
       width: 28px;
       height: 34px;
       flex: 0 0 28px;
-      border: 2px inset rgba(92,31,49,0.58);
-      background: #f7f1df;
+      border: 0;
+      background: transparent;
       object-fit: contain;
       image-rendering: pixelated;
+    }
+
+    .inventory-item-art[data-inventory-art="tuningFork"] {
+      width: 13px;
+      height: 36px;
+      flex-basis: 13px;
+      border: 0;
+      background: transparent;
+      transform: rotate(-34deg) scale(1.08);
     }
 
     .inventory-item-symbol {
@@ -728,14 +751,16 @@
     }
 
     .inventory-item.selected {
-      border-style: inset;
-      background: linear-gradient(180deg, #91d8c5, var(--teal));
+      border: 0;
+      background: transparent;
       color: var(--paper);
-      box-shadow: inset 0 0 0 2px rgba(255,243,191,0.45);
+      box-shadow: none;
+      filter: brightness(1.24) drop-shadow(0 0 6px #ffe175);
     }
 
     .inventory-item.dragging {
-      border-style: inset;
+      border: 0;
+      background: transparent;
       opacity: 0.55;
     }
 
@@ -774,6 +799,13 @@
       background: #f7f1df;
       object-fit: contain;
       image-rendering: pixelated;
+    }
+
+    .drag-ghost-art[data-inventory-art="tuningFork"] {
+      width: 15px;
+      height: 48px;
+      border: 0;
+      background: transparent;
     }
 
     .drag-ghost-symbol {
@@ -2695,7 +2727,8 @@
     };
 
     const inventoryArtwork = {
-      soapRefill: "assets/soap-refill.png"
+      soapRefill: "assets/soap-refill.png",
+      tuningFork: "assets/tuning-fork.png"
     };
 
     const inventoryEmoji = {
@@ -3913,6 +3946,7 @@
         image.className = classPrefix + "-art";
         image.src = artwork;
         image.alt = "";
+        image.dataset.inventoryArt = itemId;
         image.draggable = false;
         return image;
       }
@@ -5153,6 +5187,22 @@
         return 8 + (value * 32);
       }
 
+      function drawPixelPupil(center, radius) {
+        const pixelSize = 4;
+        const snappedRadius = Math.max(pixelSize, Math.round(radius / pixelSize) * pixelSize);
+        const cellRadius = Math.ceil(snappedRadius / pixelSize);
+        context.fillStyle = "#10131b";
+
+        for (let row = -cellRadius; row <= cellRadius; row += 1) {
+          for (let column = -cellRadius; column <= cellRadius; column += 1) {
+            const offsetX = column * pixelSize;
+            const offsetY = row * pixelSize;
+            if ((offsetX * offsetX) + (offsetY * offsetY) > snappedRadius * snappedRadius) continue;
+            context.fillRect(center.x + offsetX - (pixelSize / 2), center.y + offsetY - (pixelSize / 2), pixelSize, pixelSize);
+          }
+        }
+      }
+
       function pointerPosition(event) {
         const bounds = canvas.getBoundingClientRect();
         return {
@@ -5191,26 +5241,44 @@
         context.save();
         const lowerRadius = pupilRadius(targetMinimum);
         const upperRadius = pupilRadius(targetMaximum);
-        context.strokeStyle = inZone ? "rgba(129,226,127,0.88)" : "rgba(103,196,105,0.58)";
-        context.lineWidth = upperRadius - lowerRadius;
+        const targetRadius = (lowerRadius + upperRadius) / 2;
+        const targetWidth = upperRadius - lowerRadius;
+        context.strokeStyle = "rgba(20,48,28,0.92)";
+        context.lineWidth = targetWidth + 5;
         context.beginPath();
-        context.arc(center.x, center.y, (lowerRadius + upperRadius) / 2, 0, Math.PI * 2);
+        context.arc(center.x, center.y, targetRadius, 0, Math.PI * 2);
+        context.stroke();
+        context.strokeStyle = inZone ? "rgba(143,255,146,0.96)" : "rgba(105,232,111,0.82)";
+        context.lineWidth = targetWidth;
+        context.beginPath();
+        context.arc(center.x, center.y, targetRadius, 0, Math.PI * 2);
         context.stroke();
 
-        context.fillStyle = "#10131b";
+        drawPixelPupil(center, pupilRadius(value));
+
+        context.setLineDash([5, 4]);
+        context.strokeStyle = "rgba(171,255,173,0.94)";
+        context.lineWidth = 2;
         context.beginPath();
-        context.arc(center.x, center.y, pupilRadius(value), 0, Math.PI * 2);
-        context.fill();
+        context.arc(center.x, center.y, lowerRadius, 0, Math.PI * 2);
+        context.stroke();
+        context.beginPath();
+        context.arc(center.x, center.y, upperRadius, 0, Math.PI * 2);
+        context.stroke();
+        context.setLineDash([]);
+
         context.fillStyle = "rgba(255,255,255,0.88)";
         context.fillRect(center.x - 10, center.y - 13, 6, 6);
 
-        context.fillStyle = "rgba(33,25,35,0.8)";
-        context.fillRect(center.x - 75, 425, 150, 29);
-        context.fillStyle = inZone ? "#d7f0c9" : "#fff3bf";
-        context.font = "bold 14px 'Courier New', monospace";
-        context.textAlign = "center";
-        context.fillStyle = isDirect ? "#ffe175" : isConsensual ? "#b8e0d2" : inZone ? "#9bd38d" : "#e4d8b4";
-        context.fillText(label + ": " + (isDirect ? "DIRECT" : isConsensual ? "CONSENSUAL" : inZone ? "IN ZONE" : "DILATING"), center.x, 445);
+        const responseLabel = isDirect ? "DIRECT" : isConsensual ? "CONSENSUAL" : "";
+        if (responseLabel) {
+          context.fillStyle = "rgba(33,25,35,0.8)";
+          context.fillRect(center.x - 75, 425, 150, 29);
+          context.font = "bold 14px 'Courier New', monospace";
+          context.textAlign = "center";
+          context.fillStyle = isDirect ? "#ffe175" : "#b8e0d2";
+          context.fillText(label + ": " + responseLabel, center.x, 445);
+        }
         context.restore();
       }
 
