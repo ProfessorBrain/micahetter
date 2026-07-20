@@ -64,6 +64,31 @@
 
     .emoji-cursor.visible { display: block; }
 
+    .emoji-cursor.inventory-selected {
+      width: 54px;
+      height: 62px;
+      align-items: flex-start;
+      justify-content: flex-start;
+      transform: translate(-16%, -14%);
+    }
+
+    .emoji-cursor.inventory-selected.visible { display: flex; }
+
+    .inventory-cursor-art {
+      max-width: 48px;
+      max-height: 60px;
+      object-fit: contain;
+      image-rendering: pixelated;
+      filter: drop-shadow(2px 3px 0 rgba(0,0,0,0.58));
+    }
+
+    .inventory-cursor-symbol {
+      font-family: var(--emoji-font);
+      font-size: 34px;
+      line-height: 1;
+      filter: drop-shadow(2px 3px 0 rgba(0,0,0,0.58));
+    }
+
     .game-cabinet {
       width: min(1180px, 100%);
       height: 100%;
@@ -147,15 +172,17 @@
     }
 
     .top-inventory {
-      min-height: 40px;
+      height: 52px;
+      min-height: 52px;
+      max-height: 52px;
       display: flex;
       align-items: center;
-      gap: 8px;
       flex: 1 1 260px;
       min-width: 220px;
-      padding: 5px 8px;
+      padding: 2px 6px;
       border: 3px ridge var(--gold);
       background: rgba(247, 237, 207, 0.12);
+      overflow: hidden;
     }
 
     .toolbar-spacer { flex: 1 1 auto; }
@@ -638,22 +665,73 @@
 
     .inventory-list {
       display: flex;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       gap: 6px;
       align-items: center;
+      height: 42px;
+      min-height: 42px;
+      max-height: 42px;
       min-width: 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scrollbar-width: none;
     }
+
+    .inventory-list::-webkit-scrollbar { display: none; }
 
     .top-inventory .inventory-list { flex: 1 1 auto; }
 
     .inventory-item {
-      min-height: 30px;
-      padding: 4px 8px;
-      font-size: 0.72rem;
+      width: 42px;
+      height: 42px;
+      min-width: 42px;
+      min-height: 42px;
+      max-width: 42px;
+      max-height: 42px;
+      flex: 0 0 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3px;
       font-family: var(--retro-font);
-      white-space: nowrap;
       touch-action: none;
       user-select: none;
+    }
+
+    .inventory-item > * { pointer-events: none; }
+
+    .inventory-item.with-art {
+      padding: 2px;
+    }
+
+    .inventory-item.with-symbol {
+      padding: 3px;
+    }
+
+    .inventory-item-art {
+      width: 28px;
+      height: 34px;
+      flex: 0 0 28px;
+      border: 2px inset rgba(92,31,49,0.58);
+      background: #f7f1df;
+      object-fit: contain;
+      image-rendering: pixelated;
+    }
+
+    .inventory-item-symbol {
+      width: 30px;
+      flex: 0 0 30px;
+      font-family: var(--emoji-font);
+      font-size: 1.42rem;
+      line-height: 1;
+      text-align: center;
+    }
+
+    .inventory-item.selected {
+      border-style: inset;
+      background: linear-gradient(180deg, #91d8c5, var(--teal));
+      color: var(--paper);
+      box-shadow: inset 0 0 0 2px rgba(255,243,191,0.45);
     }
 
     .inventory-item.dragging {
@@ -681,6 +759,31 @@
     }
 
     .drag-ghost.visible { display: block; }
+
+    .drag-ghost.has-visual.visible {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 4px 9px 4px 5px;
+    }
+
+    .drag-ghost-art {
+      width: 30px;
+      height: 42px;
+      border: 2px inset rgba(92,31,49,0.58);
+      background: #f7f1df;
+      object-fit: contain;
+      image-rendering: pixelated;
+    }
+
+    .drag-ghost-symbol {
+      width: 30px;
+      flex: 0 0 30px;
+      font-family: var(--emoji-font);
+      font-size: 1.55rem;
+      line-height: 1;
+      text-align: center;
+    }
 
     .game-root.inventory-dragging .emoji-cursor { display: none !important; }
 
@@ -1157,6 +1260,430 @@
     .exam-card span { margin-top: 8px; font-size: 0.9rem; }
     .exam-card.done { background: linear-gradient(180deg, #c9e8cf, var(--clinic-green)); }
 
+    .physical-exam-card { width: min(900px, 100%); }
+
+    .physical-exam-layout {
+      display: grid;
+      grid-template-columns: 176px minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+      margin: 18px 20px 20px;
+    }
+
+    .physical-exam-portrait {
+      width: 100%;
+      aspect-ratio: 369 / 448;
+      overflow: hidden;
+      border: 5px ridge var(--gold);
+      background: #4674a1;
+      image-rendering: pixelated;
+    }
+
+    .physical-exam-portrait img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .physical-exam-panel { min-width: 0; }
+
+    .physical-exam-heading {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 42px;
+      margin-bottom: 8px;
+      border-bottom: 3px double var(--gold);
+    }
+
+    .physical-exam-heading h3 {
+      margin: 0;
+      color: var(--maroon);
+      font-family: var(--retro-font);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+    }
+
+    .exam-menu-back {
+      flex: 0 0 36px;
+      width: 36px;
+      height: 34px;
+      border: 3px outset var(--gold);
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--retro-font);
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .exam-menu-back:active { border-style: inset; }
+
+    .physical-exam-intro {
+      min-height: 42px;
+      margin: 0 0 12px;
+      line-height: 1.4;
+    }
+
+    .exam-system-grid,
+    .neuro-exam-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .exam-system-button,
+    .exam-action-button {
+      min-height: 82px;
+      padding: 10px;
+      border: 3px outset var(--gold);
+      background: linear-gradient(180deg, #f6e2a6, #b98443);
+      color: var(--ink);
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .exam-system-button strong,
+    .exam-system-button span,
+    .exam-action-button strong,
+    .exam-action-button span { display: block; }
+
+    .exam-system-button strong,
+    .exam-action-button strong {
+      font-family: var(--retro-font);
+      font-size: 0.68rem;
+      line-height: 1.2;
+      text-transform: uppercase;
+    }
+
+    .exam-system-button span,
+    .exam-action-button span {
+      margin-top: 7px;
+      font-size: 0.78rem;
+      line-height: 1.28;
+    }
+
+    .exam-system-button:active,
+    .exam-action-button:active { border-style: inset; }
+
+    .exam-system-button.done,
+    .exam-action-button.done {
+      background: linear-gradient(180deg, #c9e8cf, var(--clinic-green));
+    }
+
+    .cranial-card {
+      width: min(980px, 100%);
+      overflow-x: hidden;
+    }
+
+    .cranial-stage {
+      position: relative;
+      width: min(calc(100% - 40px), calc(55vh * 1.5), 840px);
+      aspect-ratio: 3 / 2;
+      margin: 0 auto;
+      overflow: hidden;
+      border: 5px ridge var(--gold);
+      background: #2f6ca6 url("assets/cranial-nerve-h-bg.png") center / 100% 100% no-repeat;
+      box-shadow: inset 0 0 0 3px #4b172a, 0 7px 0 rgba(33,25,35,0.24);
+      cursor: crosshair;
+      image-rendering: pixelated;
+      touch-action: none;
+      user-select: none;
+    }
+
+    .cranial-stage canvas {
+      position: absolute;
+      inset: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+      outline: none;
+      image-rendering: pixelated;
+    }
+
+    .cranial-guide-layer { pointer-events: none; }
+
+    .cranial-draw-layer { touch-action: none; }
+
+    .cranial-draw-layer:focus-visible {
+      outline: 4px solid #fff3bf;
+      outline-offset: -7px;
+    }
+
+    .cranial-feedback {
+      min-height: 48px;
+      margin: 14px 20px 10px;
+      padding: 10px 12px;
+      border-left: 5px solid var(--teal);
+      background: rgba(31,111,120,0.12);
+      line-height: 1.4;
+    }
+
+    .cranial-feedback.warning {
+      border-color: #a23b3b;
+      background: rgba(162,59,59,0.12);
+    }
+
+    .cranial-feedback.success {
+      border-color: #39734d;
+      background: rgba(57,115,77,0.15);
+    }
+
+    .cranial-actions {
+      display: flex;
+      justify-content: flex-end;
+      min-height: 44px;
+      margin: 14px 20px 16px;
+    }
+
+    .pupil-card {
+      width: min(860px, 100%);
+      overflow-x: hidden;
+    }
+
+    .pupil-hud {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 12px;
+      margin: 12px 20px;
+    }
+
+    .pupil-progress {
+      height: 22px;
+      overflow: hidden;
+      border: 3px solid var(--ink);
+      background: #b9a982;
+      box-shadow: inset 0 0 0 2px rgba(255,243,191,0.34);
+    }
+
+    .pupil-progress-fill {
+      display: block;
+      width: 0;
+      height: 100%;
+      background: linear-gradient(90deg, #39734d, #79b56f, #e3d96c);
+      transition: width 80ms linear;
+    }
+
+    .pupil-progress-text {
+      min-width: 150px;
+      font-family: var(--retro-font);
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .pupil-stage {
+      position: relative;
+      width: min(calc(100% - 40px), calc(50vh * 3 / 2), 800px);
+      aspect-ratio: 3 / 2;
+      margin: 0 auto;
+      overflow: hidden;
+      border: 3px solid #4b172a;
+      background: #211923;
+      box-shadow: 0 7px 0 rgba(33,25,35,0.24);
+      image-rendering: pixelated;
+      touch-action: none;
+      user-select: none;
+    }
+
+    .pupil-stage > img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+      image-rendering: pixelated;
+      pointer-events: none;
+    }
+
+    .pupil-stage canvas {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      outline: none;
+      image-rendering: pixelated;
+      touch-action: none;
+    }
+
+    .pupil-stage canvas:focus-visible {
+      outline: 4px solid #fff3bf;
+      outline-offset: -7px;
+    }
+
+    .pupil-status {
+      min-height: 46px;
+      margin: 12px 20px 16px;
+      padding: 9px 12px;
+      border-left: 5px solid var(--teal);
+      background: rgba(31,111,120,0.12);
+      line-height: 1.35;
+    }
+
+    .pupil-status.in-zone {
+      border-color: #39734d;
+      background: rgba(57,115,77,0.15);
+    }
+
+    .pupil-status.success {
+      border-color: var(--gold);
+      background: rgba(215,170,68,0.18);
+    }
+
+    .game-root.pupil-testing .emoji-cursor { display: none !important; }
+
+    .orifice-card {
+      width: min(900px, 100%);
+      overflow-x: hidden;
+    }
+
+    .orifice-progress-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 10px 20px;
+      color: var(--ink);
+      font-family: var(--retro-font);
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+
+    .orifice-progress-pips {
+      display: flex;
+      gap: 6px;
+    }
+
+    .orifice-progress-pips span {
+      width: 18px;
+      height: 18px;
+      border: 3px inset var(--gold);
+      background: #a69575;
+    }
+
+    .orifice-progress-pips span.lit { background: #57905f; }
+
+    .orifice-scene {
+      position: relative;
+      width: min(calc(100% - 40px), calc(47vh * 1.5), 780px);
+      aspect-ratio: 3 / 2;
+      margin: 0 auto;
+      overflow: hidden;
+      border: 5px ridge var(--gold);
+      background: #2f6ca6;
+      box-shadow: inset 0 0 0 3px #4b172a, 0 7px 0 rgba(33,25,35,0.24);
+      image-rendering: pixelated;
+    }
+
+    .orifice-scene > img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+      image-rendering: pixelated;
+      pointer-events: none;
+    }
+
+    .orifice-hotspot {
+      position: absolute;
+      z-index: 2;
+      min-width: 0;
+      min-height: 0;
+      padding: 0;
+      border: 3px dashed transparent;
+      border-radius: 50%;
+      background: transparent;
+      appearance: none;
+      -webkit-appearance: none;
+      touch-action: manipulation;
+    }
+
+    .orifice-hotspot:hover,
+    .orifice-hotspot:focus-visible {
+      border-color: #ffe175;
+      background: rgba(255,225,117,0.2);
+      outline: none;
+    }
+
+    .orifice-hotspot.examined {
+      border-color: #7ac080;
+      background: rgba(73,132,80,0.24);
+    }
+
+    .orifice-hotspot.examined::after {
+      content: "\2713";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      color: #e3f3cf;
+      font-family: var(--retro-font);
+      font-size: 1rem;
+      font-weight: 700;
+      text-shadow: 2px 2px 0 #31543a;
+      transform: translate(-50%, -50%);
+    }
+
+    .orifice-panel {
+      min-height: 132px;
+      margin: 12px 20px 16px;
+      padding: 10px 12px;
+      border-top: 3px double var(--gold);
+      color: var(--ink);
+    }
+
+    .orifice-panel h3 {
+      margin: 0 0 8px;
+      color: var(--maroon);
+      font-family: var(--retro-font);
+      font-size: 0.76rem;
+      text-transform: uppercase;
+    }
+
+    .orifice-panel p { margin: 0 0 9px; line-height: 1.35; }
+
+    .orifice-answer-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 7px;
+    }
+
+    .orifice-answer {
+      min-height: 42px;
+      padding: 7px 9px;
+      border: 3px outset var(--gold);
+      background: linear-gradient(180deg, #f6e2a6, #b98443);
+      color: var(--ink);
+      text-align: left;
+    }
+
+    .orifice-answer.wrong { background: #c98579; }
+    .orifice-answer.correct { background: #9bc69f; }
+
+    .orifice-panel-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
+
+    .mystery-egg-reveal {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--maroon);
+      font-family: var(--retro-font);
+      font-weight: 700;
+    }
+
+    .mystery-egg-reveal span {
+      font-family: var(--emoji-font);
+      font-size: 2rem;
+      line-height: 1;
+    }
+
     .mini-card { width: min(720px, 100%); }
 
     .cancellation-sheet {
@@ -1190,28 +1717,6 @@
 
     .bell.right { opacity: 0.42; }
     .bell.selected { background: var(--teal); color: var(--paper); }
-
-    .timing-meter {
-      position: relative;
-      height: 42px;
-      margin: 28px 20px 14px;
-      border: 4px solid var(--ink);
-      background: linear-gradient(90deg, var(--maroon), #8b5a2b, var(--teal));
-    }
-
-    .target-zone, .meter-marker { position: absolute; top: 0; bottom: 0; }
-    .target-zone { background: rgba(255,243,191,0.62); }
-    .meter-marker { width: 5px; background: #fff3bf; box-shadow: 0 0 0 2px var(--ink); }
-
-    .hit-pips { display: flex; gap: 8px; margin: 0 20px 18px; }
-
-    .hit-pips span {
-      width: 28px; height: 14px;
-      border: 2px solid var(--ink);
-      background: #cab88b;
-    }
-
-    .hit-pips span.lit { background: var(--teal); }
 
     .reflex-card { width: min(800px, 100%); }
 
@@ -1935,6 +2440,33 @@
       .game-header h1 { font-size: 1rem; }
       .room-scene { min-height: 0; }
       .exam-grid { grid-template-columns: 1fr; }
+      .physical-exam-layout {
+        grid-template-columns: 82px minmax(0, 1fr);
+        gap: 10px;
+        margin: 12px;
+      }
+      .exam-system-grid,
+      .neuro-exam-grid { grid-template-columns: 1fr; gap: 7px; }
+      .exam-system-button,
+      .exam-action-button { min-height: 66px; padding: 8px; }
+      .exam-system-button strong,
+      .exam-action-button strong { font-size: 0.58rem; }
+      .exam-system-button span,
+      .exam-action-button span { margin-top: 5px; font-size: 0.7rem; }
+      .physical-exam-heading h3 { font-size: 0.72rem; }
+      .physical-exam-intro { font-size: 0.76rem; }
+      .cranial-stage { width: calc(100% - 24px); max-height: 48vh; }
+      .cranial-feedback { min-height: 42px; margin: 10px 12px 8px; padding: 8px 9px; font-size: 0.74rem; }
+      .cranial-actions { margin: 0 12px 12px; }
+      .pupil-hud { grid-template-columns: 1fr; gap: 5px; margin: 9px 12px; }
+      .pupil-progress-text { min-width: 0; text-align: left; }
+      .pupil-stage { width: min(calc(100% - 24px), calc(42vh * 3 / 2)); }
+      .pupil-status { min-height: 42px; margin: 9px 12px 12px; padding: 8px 9px; font-size: 0.74rem; }
+      .orifice-progress-line { margin: 8px 12px; }
+      .orifice-scene { width: calc(100% - 24px); max-height: 40vh; }
+      .orifice-panel { min-height: 116px; margin: 9px 12px 12px; padding: 8px 9px; }
+      .orifice-answer-grid { grid-template-columns: 1fr; gap: 5px; }
+      .orifice-answer { min-height: 38px; padding: 6px 8px; font-size: 0.72rem; }
       .tool-button { flex: 0 0 48px; }
       .history-dialogue {
         grid-template-columns: 76px 1fr;
@@ -2055,6 +2587,8 @@
           <button class="hotspot" style="left:79.4%;top:47.9%;width:18.2%;height:18.1%" data-hotspot="bedsideTable"><span>Bedside table</span></button>
           <button class="hotspot" style="left:79.5%;top:62.2%;width:18.9%;height:32.6%" data-hotspot="cart"><span>Exam cart</span></button>
           <button class="hotspot" style="left:4.6%;top:36.9%;width:13.6%;height:10.6%" data-hotspot="sink"><span>Sink</span></button>
+          <button class="hotspot" style="left:18.6%;top:39.2%;width:15.5%;height:9.8%" data-hotspot="drawer"><span>Supply drawer</span></button>
+          <button class="hotspot" style="left:34.1%;top:39.1%;width:9.1%;height:19.1%" data-hotspot="fridge"><span>Refrigerator</span></button>
           <button class="hotspot" style="left:8.7%;top:6.8%;width:28.5%;height:18.4%" data-hotspot="cabinet"><span>Supply cabinets</span></button>
           <button class="hotspot" style="left:46.0%;top:18.3%;width:12.7%;height:30.6%" data-hotspot="monitor"><span>Vitals station</span></button>
           <button class="hotspot" style="left:82.0%;top:20.3%;width:9.3%;height:18.3%" data-hotspot="ct"><span>Imaging software</span></button>
@@ -2092,19 +2626,23 @@
       mode: "look",
       findings: [],
       inventory: [],
+      selectedInventoryId: "",
+      orificeAssignments: null,
       completed: [],
       actionLog: [],
       musicVolume: 65,
       sfxVolume: 35,
-      timingTimer: null,
       timingFrame: null,
       sensoryFrame: null,
+      pupilFrame: null,
       timingMarker: 0,
       timingHits: 0,
       washScore: 0,
       washTotal: 0,
       washSplats: 0
     };
+
+    let activeMinigameAutowin = null;
 
     const modeEmoji = {
       look: "\u{1F441}\uFE0F",
@@ -2123,14 +2661,20 @@
       ["urinaryUrgency", "Bladder symptom", "Recent urinary urgency raises concern for spinal cord involvement.", "History"],
       ["collateralPhone", "Collateral walking clue", "A phone video shows the left foot catching and dragging, worse than earlier stair trouble.", "History"],
       ["handHygiene", "Hand hygiene", "Hands washed before touching the patient; physical exam can proceed.", "Exam"],
-      ["auscultation", "Auscultation", "Heart rhythm is regular and lungs are clear; no acute cardiopulmonary finding explains the presentation.", "Exam"],
+      ["heentExam", "HEENT examination", "Head and face are atraumatic, pupils are equal and reactive, oropharynx is clear, and the neck is supple.", "Exam"],
+      ["cardiacExam", "Cardiovascular examination", "Regular rate and rhythm without murmur; peripheral pulses are symmetric and there is no edema.", "Exam"],
+      ["pulmonaryExam", "Pulmonary examination", "Breathing is unlabored with symmetric expansion and clear breath sounds bilaterally.", "Exam"],
+      ["abdominalExam", "Abdominal examination", "The abdomen is nondistended, soft, and nontender with normal bowel sounds.", "Exam"],
       ["vitals", "Vitals", "Stable vitals; no fever or unstable rhythm driving the presentation.", "Diagnostics"],
-      ["motorWeakness", "Motor exam", "Left-leg upper motor neuron weakness, most obvious distally; right leg and arms are normal.", "Exam"],
+      ["mentalStatus", "Mental status", "Alert, attentive, fully oriented, and able to provide a coherent history.", "Exam"],
+      ["cranialNerves", "Cranial nerve screen", "Visual fields are full, pupils are reactive, extraocular movements are intact, facial sensation and movement are symmetric, hearing is intact, palate elevation is symmetric, shoulder strength is full, and the tongue is midline.", "Exam"],
+      ["motorWeakness", "Functional motor assessment", "The walking video shows a left stiff-legged gait with foot drag, providing functional evidence of an upper motor neuron pattern when formal power testing is limited.", "Exam"],
       ["reflexes", "Reflex pattern", "The left patellar reflex is brisk on repeated tendon strikes.", "Exam"],
       ["plantar", "Plantar response", "The left great toe extends upward, supporting an upper motor neuron lesion.", "Exam"],
       ["lightTouch", "Light touch", "Light touch is perceived bilaterally during the screening examination.", "Exam"],
       ["dorsalColumn", "Vibration and position", "Vibration and joint position are reduced on the left below the thoracic level.", "Exam"],
       ["spinothalamic", "Pain and temperature", "Pinprick and cold are reduced on the right beginning below the lower thoracic levels.", "Exam"],
+      ["coordination", "Coordination", "Upper-limb and right-leg coordination are intact; left heel-to-shin is limited by the motor deficit rather than dysmetria.", "Exam"],
       ["sensoryLevel", "Sensory level", "A thoracic sensory level is identified: left dorsal-column loss around T8, right pain-temperature loss around T10.", "Exam"],
       ["localization", "Localization", "Crossed findings localize to the left thoracic hemicord, not brain, root, nerve, or muscle.", "Assessment"],
       ["mriOrder", "Imaging order", "MRI thoracic spine with and without contrast is the appropriate study.", "Diagnostics"],
@@ -2144,9 +2688,24 @@
       phoneCharger: ["Phone Charger", "A charging cable that fits the bedside phone."],
       hammer: ["Reflex Hammer", "A reflex hammer for corticospinal tract signs."],
       tuningFork: ["Tuning Fork", "For testing vibration and dorsal-column function."],
-      neurotip: ["Disposable Neurotip", "A safe, single-use pinprick tester."],
-      coldPack: ["Cold Pack", "For bedside temperature testing."],
-      patientPhone: ["Charged Phone", "Contains the walking video and useful collateral history."]
+      safetyPin: ["Safety Pin", "A clean safety pin for careful bedside sharp-dull comparison without breaking the skin."],
+      icePack: ["Ice Pack", "A wrapped cold stimulus for bedside temperature comparison."],
+      patientPhone: ["Charged Phone", "Contains the walking video and useful collateral history."],
+      mysteryEgg: ["Mystery Egg", "A small unexplained egg discovered during the ears and nose examination."]
+    };
+
+    const inventoryArtwork = {
+      soapRefill: "assets/soap-refill.png"
+    };
+
+    const inventoryEmoji = {
+      phoneCharger: "\u{1F50C}",
+      hammer: "\u{1F528}",
+      tuningFork: "\u{1F3B5}",
+      safetyPin: "\u{1F9F7}",
+      icePack: "\u{1F9CA}",
+      patientPhone: "\u{1F4F1}",
+      mysteryEgg: "\u{1F95A}"
     };
 
     const hotspotLabels = {
@@ -2156,6 +2715,8 @@
       sink: "sink",
       monitor: "monitor",
       cabinet: "cabinet",
+      drawer: "supply drawer",
+      fridge: "refrigerator",
       ct: "imaging software",
       belongings: "patient belongings",
       phone: "wall phone",
@@ -2256,6 +2817,190 @@
         findings: ["collateralPhone"]
       }
     ];
+
+    const physicalExamSystems = [
+      {
+        id: "heent",
+        label: "HEENT",
+        detail: "Head, eyes, ears, nose, throat, and neck.",
+        intro: "Inspect the head and face, then complete focused eye, mouth, and neck examination.",
+        findingId: "heentExam",
+        actions: ["headFace", "pupils", "earsNose", "oropharynxNeck"]
+      },
+      {
+        id: "cardiovascular",
+        label: "Cardiovascular",
+        detail: "Heart sounds, pulses, perfusion, and edema.",
+        intro: "Assess central and peripheral cardiovascular findings.",
+        findingId: "cardiacExam",
+        actions: ["cardiacAuscultation", "peripheralPulses", "peripheralEdema"]
+      },
+      {
+        id: "pulmonary",
+        label: "Pulmonary",
+        detail: "Respiratory effort, chest movement, and breath sounds.",
+        intro: "Inspect breathing before auscultating and comparing both lungs.",
+        findingId: "pulmonaryExam",
+        actions: ["respiratoryEffort", "lungAuscultation", "chestExpansion"]
+      },
+      {
+        id: "abdominal",
+        label: "Abdominal",
+        detail: "Inspection, bowel sounds, and palpation.",
+        intro: "Use the standard abdominal sequence: inspect, auscultate, then palpate.",
+        findingId: "abdominalExam",
+        actions: ["abdominalInspection", "bowelSounds", "abdominalPalpation"]
+      },
+      {
+        id: "neurologic",
+        label: "Neurologic",
+        detail: "Mental status, cranial nerves, motor, sensory, reflexes, coordination, and gait.",
+        intro: "Work through the neurologic examination by domain, then synthesize the tract findings.",
+        findingId: null,
+        actions: []
+      }
+    ];
+
+    const physicalExamActions = {
+      headFace: {
+        label: "Head and face",
+        detail: "Inspect for trauma, asymmetry, or temporal tenderness.",
+        result: "Head and face are atraumatic and symmetric without temporal tenderness."
+      },
+      pupils: {
+        label: "Eyes and pupils",
+        detail: "Inspect pupils, conjunctivae, and extraocular alignment.",
+        result: "Pupils are equal and reactive. Conjunctivae are clear and primary gaze is aligned."
+      },
+      earsNose: {
+        label: "Ears and nose",
+        detail: "Inspect external structures, canals, and nasal passages.",
+        result: "External ears, canals, and nasal passages show no acute abnormality."
+      },
+      oropharynxNeck: {
+        label: "Mouth and neck",
+        detail: "Inspect the oropharynx and assess neck mobility.",
+        result: "Oropharynx is clear, mucosa is moist, and the neck is supple."
+      },
+      cardiacAuscultation: {
+        label: "Heart auscultation",
+        detail: "Listen across the standard precordial areas.",
+        result: "Regular rate and rhythm with normal S1 and S2 and no audible murmur."
+      },
+      peripheralPulses: {
+        label: "Peripheral pulses",
+        detail: "Compare radial and pedal pulses bilaterally.",
+        result: "Radial and pedal pulses are symmetric with warm distal extremities."
+      },
+      peripheralEdema: {
+        label: "Edema and perfusion",
+        detail: "Inspect dependent edema and capillary refill.",
+        result: "There is no peripheral edema; capillary refill is normal."
+      },
+      respiratoryEffort: {
+        label: "Respiratory effort",
+        detail: "Inspect rate, effort, and accessory-muscle use.",
+        result: "Breathing is unlabored without accessory-muscle use."
+      },
+      lungAuscultation: {
+        label: "Lung auscultation",
+        detail: "Compare anterior and posterior breath sounds.",
+        result: "Breath sounds are clear and symmetric without wheeze or crackles."
+      },
+      chestExpansion: {
+        label: "Chest expansion",
+        detail: "Observe and palpate bilateral expansion.",
+        result: "Chest expansion is symmetric."
+      },
+      abdominalInspection: {
+        label: "Inspection",
+        detail: "Inspect contour, scars, and visible distention.",
+        result: "The abdomen is nondistended without visible mass or concerning skin change."
+      },
+      bowelSounds: {
+        label: "Bowel sounds",
+        detail: "Auscultate before palpation.",
+        result: "Bowel sounds are present and normal."
+      },
+      abdominalPalpation: {
+        label: "Palpation",
+        detail: "Assess tenderness, guarding, and organ enlargement.",
+        result: "The abdomen is soft and nontender without guarding or palpable organ enlargement."
+      }
+    };
+
+    const orificeQuestionBank = {
+      ear: [
+        {
+          prompt: "Which otoscopic finding most strongly supports acute otitis media?",
+          options: [
+            "A bulging, opaque tympanic membrane with reduced mobility",
+            "A pearly gray, mobile tympanic membrane",
+            "Pale nasal turbinates with clear discharge",
+            "Tenderness over the frontal sinus only"
+          ],
+          answer: 0,
+          explanation: "Middle-ear effusion with a bulging tympanic membrane is the key otoscopic finding in acute otitis media."
+        },
+        {
+          prompt: "Which finding best supports acute otitis externa?",
+          options: [
+            "A painless fixed dilated pupil",
+            "Pain with tragal pressure or movement of the pinna",
+            "A midline uvula with moist mucosa",
+            "A normal canal with a mobile tympanic membrane"
+          ],
+          answer: 1,
+          explanation: "Tragal or pinna tenderness with an inflamed ear canal is characteristic of otitis externa."
+        },
+        {
+          prompt: "What is the safest next step when a live insect is seen in the ear canal and the tympanic membrane is intact?",
+          options: [
+            "Probe blindly with a cotton swab",
+            "Irrigate despite a suspected tympanic membrane perforation",
+            "Immobilize it with mineral oil or lidocaine before removal",
+            "Leave it indefinitely if hearing is normal"
+          ],
+          answer: 2,
+          explanation: "Immobilizing the insect first reduces pain and movement; irrigation is avoided when perforation is possible."
+        }
+      ],
+      nose: [
+        {
+          prompt: "Which nasal examination finding is most typical of allergic rhinitis?",
+          options: [
+            "Pale, boggy turbinates with clear rhinorrhea",
+            "A unilateral black eschar in a healthy patient",
+            "A fluctuant septal mass after trauma",
+            "Purulent drainage from the ear canal"
+          ],
+          answer: 0,
+          explanation: "Allergic rhinitis commonly produces pale, edematous turbinates and clear nasal secretions."
+        },
+        {
+          prompt: "Most uncomplicated anterior nosebleeds arise from which site?",
+          options: [
+            "The optic chiasm",
+            "The mastoid air cells",
+            "The posterior pharyngeal wall",
+            "Kiesselbach's plexus on the anterior septum"
+          ],
+          answer: 3,
+          explanation: "Kiesselbach's plexus is a superficial vascular network on the anterior nasal septum and the usual source of anterior epistaxis."
+        },
+        {
+          prompt: "Which post-traumatic nasal finding requires urgent drainage to prevent cartilage injury?",
+          options: [
+            "Mild clear rhinorrhea during pollen season",
+            "A fluctuant septal hematoma",
+            "Symmetric pink turbinates",
+            "A small amount of dried anterior blood"
+          ],
+          answer: 1,
+          explanation: "A septal hematoma can compromise cartilage perfusion and requires prompt drainage."
+        }
+      ]
+    };
 
     const musicState = {
       context: null,
@@ -2808,19 +3553,6 @@
     ];
 
     const quizzes = {
-      cabinet: {
-        title: "Supply Cabinet Sorter",
-        prompt: "Choose the safe tools that best test the spinothalamic tract at the bedside.",
-        options: [
-          "Disposable neurotip and cold pack",
-          "A used needle and a space heater",
-          "A reflex hammer and stethoscope only",
-          "No testing until MRI is reviewed"
-        ],
-        answer: 0,
-        hint: "Pain and temperature sensation use the anterolateral system.",
-        success: "The cabinet unlocks. The safe sensory tools are available."
-      },
       ctSafety: {
         title: "Imaging Order Gate",
         prompt: "Choose the best study after you localize progressive Brown-Sequard-type findings to the thoracic cord.",
@@ -2904,12 +3636,15 @@
       "urinaryUrgency",
       "collateralPhone",
       "vitals",
+      "mentalStatus",
+      "cranialNerves",
       "motorWeakness",
       "reflexes",
       "plantar",
       "lightTouch",
       "dorsalColumn",
       "spinothalamic",
+      "coordination",
       "sensoryLevel",
       "localization",
       "mriOrder",
@@ -2932,12 +3667,12 @@
       return false;
     }
 
-    function requestPhysicalExam() {
+    function requestPhysicalExam(systemId) {
       if (!has(state.completed, "handHygiene")) {
         setMessage("You ask permission to perform a physical exam. The patient agrees, then points at the sink: \"Would you mind washing your hands first?\"");
         return;
       }
-      openExam();
+      openExam(systemId);
     }
 
     function installSoapRefill() {
@@ -3050,6 +3785,8 @@
         </section>
       `);
 
+      setMinigameAutowin(completeHandwashingGame);
+
       const game = document.getElementById("washGame");
       const bubbles = Array.from(document.querySelectorAll("[data-wash-bubble]"));
       const splats = Array.from(document.querySelectorAll("[data-wash-splat]"));
@@ -3095,27 +3832,43 @@
       }
 
       if (!has(state.completed, "soapInstalled")) {
-        return "Drag the Soap Refill from the inventory onto the sink, then click the sink to wash your hands.";
+        return "Select the Soap Refill and click the sink, or drag the refill onto it. Then click the sink to wash your hands.";
       }
 
       if (!has(state.completed, "handHygiene")) {
         return "Click the sink to complete hand hygiene. After that, patient exams and bedside tests are available.";
       }
 
+      if (!has(state.findings, "motorWeakness")) {
+        if (!has(state.completed, "motorVideoPrompted")) {
+          return "Open Physical Examination, choose Neurologic, then select Motor Exam. Formal power testing is limited, so this reveals the walking-video route.";
+        }
+        if (!has(state.completed, "phoneCharged") && !has(state.inventory, "phoneCharger")) {
+          return "Select GRAB and search the patient belongings for the phone charger.";
+        }
+        if (!has(state.completed, "outletRevealed")) {
+          return "Drag the Phone Charger onto the exam cart to move it and reveal the outlet.";
+        }
+        if (!has(state.completed, "phoneCharged")) {
+          return "Drag the Phone Charger onto the bedside table to charge the patient's phone.";
+        }
+        return "Drag the Charged Phone from inventory onto the patient to interpret the walking video as functional motor evidence.";
+      }
+
       if (!has(state.completed, "examTools")) {
         return "Select THINK, click the exam cart, and answer five neurology questions before three errors to unlock the exam tools.";
       }
 
-      if (!has(state.completed, "cabinet")) {
-        return "Select THINK, then click the supply cabinet to unlock the neurotip and cold pack for pain-temperature testing.";
+      if (!has(state.completed, "icePackFound")) {
+        return "Select GRAB and open the under-counter refrigerator to collect the ice pack for temperature testing.";
       }
 
-      if (!has(state.findings, "motorWeakness")) {
-        return "Select THINK, click the patient, and run Motor Strength to document left-leg upper motor neuron weakness.";
+      if (!has(state.completed, "safetyPinFound")) {
+        return "Select GRAB and open the under-counter supply drawer to collect the safety pin for pinprick testing.";
       }
 
       if (!has(state.findings, "reflexes")) {
-        return "Use the reflex hammer on the patient or run Reflexes from the exam menu.";
+        return "Open Physical Examination, choose Neurologic, then run Reflexes with the reflex hammer.";
       }
 
       if (!has(state.findings, "dorsalColumn")) {
@@ -3123,15 +3876,15 @@
       }
 
       if (!has(state.findings, "spinothalamic")) {
-        return "Complete Sensory Testing with the feather, tuning fork, neurotip, cold stimulus, and great-toe position test.";
+        return "Complete Sensory Testing with the feather, tuning fork, safety pin, ice pack, and great-toe position test.";
       }
 
       if (!has(state.findings, "sensoryLevel")) {
-        return "Open the exam menu and solve the sensory-level puzzle. The offset between T8 and T10 is the teaching gem.";
+        return "Open Physical Examination > Neurologic > Sensory Level and map the offset between the left T8 and right T10 findings.";
       }
 
       if (!has(state.findings, "localization")) {
-        return "Open the exam menu and run Localization. Combine left UMN/dorsal-column signs with right pain-temperature loss.";
+        return "Open Physical Examination > Neurologic > Localize Findings. Combine left UMN/dorsal-column signs with right pain-temperature loss.";
       }
 
       if (!has(state.completed, "ctSafety")) {
@@ -3153,9 +3906,58 @@
       return "Case complete. Chart Review now contains the final diagnosis and disposition.";
     }
 
+    function createInventoryVisual(itemId, classPrefix) {
+      const artwork = inventoryArtwork[itemId];
+      if (artwork) {
+        const image = document.createElement("img");
+        image.className = classPrefix + "-art";
+        image.src = artwork;
+        image.alt = "";
+        image.draggable = false;
+        return image;
+      }
+
+      const symbol = document.createElement("span");
+      symbol.className = classPrefix + "-symbol";
+      symbol.textContent = inventoryEmoji[itemId] || "\u{1F4E6}";
+      symbol.setAttribute("aria-hidden", "true");
+      return symbol;
+    }
+
+    function updateCursorRepresentation() {
+      const cursor = document.getElementById("emojiCursor");
+      const itemId = has(state.inventory, state.selectedInventoryId) ? state.selectedInventoryId : "";
+      if (!itemId) state.selectedInventoryId = "";
+      cursor.replaceChildren();
+      cursor.classList.toggle("inventory-selected", Boolean(itemId));
+      if (itemId) cursor.appendChild(createInventoryVisual(itemId, "inventory-cursor"));
+      else cursor.textContent = modeEmoji[state.mode];
+    }
+
+    function updateInventorySelectionUi() {
+      document.querySelectorAll(".inventory-item").forEach(button => {
+        const selected = button.dataset.inventoryId === state.selectedInventoryId;
+        button.classList.toggle("selected", selected);
+        button.setAttribute("aria-pressed", String(selected));
+      });
+      updateCursorRepresentation();
+    }
+
+    function clearSelectedInventory() {
+      if (!state.selectedInventoryId) return;
+      state.selectedInventoryId = "";
+      updateInventorySelectionUi();
+    }
+
+    function toggleSelectedInventory(itemId) {
+      if (!has(state.inventory, itemId)) return;
+      state.selectedInventoryId = state.selectedInventoryId === itemId ? "" : itemId;
+      updateInventorySelectionUi();
+    }
+
     function render() {
       document.querySelector(".game-root").dataset.mode = state.mode;
-      document.getElementById("emojiCursor").textContent = modeEmoji[state.mode];
+      updateCursorRepresentation();
       updateMusicUi();
 
       document.querySelectorAll(".tool-button").forEach(button => {
@@ -3167,20 +3969,24 @@
       inventoryList.innerHTML = "";
       state.inventory.forEach(id => {
         const item = inventoryCatalog[id];
+        const artwork = inventoryArtwork[id];
+        const symbol = inventoryEmoji[id];
         const button = document.createElement("button");
         button.type = "button";
-        button.className = "inventory-item";
+        button.className = "inventory-item" + (artwork ? " with-art" : symbol ? " with-symbol" : "");
         button.draggable = true;
         button.dataset.inventoryId = id;
-        button.setAttribute("aria-label", "Drag " + item[0] + " from inventory");
-        button.textContent = item[0];
-        button.title = item[1];
+        button.classList.toggle("selected", state.selectedInventoryId === id);
+        button.setAttribute("aria-pressed", String(state.selectedInventoryId === id));
+        button.setAttribute("aria-label", "Select or drag " + item[0] + " from inventory");
+        button.appendChild(createInventoryVisual(id, "inventory-item"));
+        button.title = item[0] + ": " + item[1];
         button.addEventListener("click", event => {
           if (inventoryDrag.suppressClick) {
             event.preventDefault();
             return;
           }
-          setMessage(item[1] + " Drag it onto a room hotspot to use it.");
+          toggleSelectedInventory(id);
         });
         button.addEventListener("pointerdown", event => beginInventoryPointer(event, id, button));
         button.addEventListener("dragstart", event => beginNativeInventoryDrag(event, id, button));
@@ -3199,10 +4005,8 @@
     }
 
     function closeModal() {
-      if (state.timingTimer) {
-        clearInterval(state.timingTimer);
-        state.timingTimer = null;
-      }
+      activeMinigameAutowin = null;
+      clearSelectedInventory();
       if (state.timingFrame) {
         cancelAnimationFrame(state.timingFrame);
         state.timingFrame = null;
@@ -3211,6 +4015,11 @@
         cancelAnimationFrame(state.sensoryFrame);
         state.sensoryFrame = null;
       }
+      if (state.pupilFrame) {
+        cancelAnimationFrame(state.pupilFrame);
+        state.pupilFrame = null;
+      }
+      document.querySelector(".game-root").classList.remove("pupil-testing");
       state.washScore = 0;
       state.washTotal = 0;
       state.washSplats = 0;
@@ -3220,10 +4029,16 @@
     }
 
     function openModal(html) {
+      activeMinigameAutowin = null;
+      clearSelectedInventory();
       const root = document.getElementById("modalRoot");
       root.innerHTML = html;
       root.className = "modal-backdrop open";
       root.querySelectorAll("[data-close]").forEach(button => button.addEventListener("click", closeModal));
+    }
+
+    function setMinigameAutowin(handler) {
+      activeMinigameAutowin = typeof handler === "function" ? handler : null;
     }
 
     function closeHistoryDialogue() {
@@ -3287,9 +4102,10 @@
                 <li>Eye and speech bubble uncover environmental clues and patient history topics.</li>
                 <li>Hand means grab, use, activate, take an item, or request a physical exam from the patient.</li>
                 <li>Stethoscope means examine, listen, or auscultate when used on the patient.</li>
-                <li>Drag inventory items from the top shelf onto room hotspots to use them.</li>
+                <li>Click an inventory item, then click a room hotspot to use it. Dragging an item directly onto a hotspot also works.</li>
                 <li>Brain starts puzzles, diagnostic tests, bedside minigames, and localization locks.</li>
                 <li>Physical exam requires hand hygiene. Restore the soap dispenser before touching the patient.</li>
+                <li>The physical exam opens by system; choose Neurologic for mental status, cranial nerves, motor, sensory, reflexes, coordination, and gait.</li>
                 <li>Use Chart Review to revisit recent actions, pertinent findings, and the next suggested move.</li>
               </ul>
             </section>
@@ -3428,6 +4244,8 @@
         </section>
       `);
 
+      setMinigameAutowin(() => completeCartQuiz("00000"));
+
       const quizCard = document.getElementById("cartQuiz");
       const quizBody = document.getElementById("cartQuizBody");
 
@@ -3551,11 +4369,6 @@
       }
 
       quizCard.addEventListener("keydown", event => {
-        if (event.key === "[") {
-          event.preventDefault();
-          completeCartQuiz("00000");
-          return;
-        }
         if (session.locked || !/^[1-5]$/.test(event.key)) return;
         const answerButton = quizBody.querySelector(`[data-cart-answer="${Number(event.key) - 1}"]`);
         if (!answerButton) return;
@@ -3571,11 +4384,6 @@
       logAction("Solved puzzle: " + quizzes[id].title);
       setMessage(quizzes[id].success);
 
-      if (id === "cabinet") {
-        addInventory("neurotip");
-        addInventory("coldPack");
-        setMessage("You collect a disposable neurotip and cold pack for spinothalamic testing.");
-      }
       if (id === "ctSafety") {
         addFinding("mriOrder");
       }
@@ -3595,6 +4403,8 @@
           <div class="modal-actions"><button type="button" class="primary-action" id="quizSubmit" disabled>Answer</button></div>
         </section>
       `);
+
+      setMinigameAutowin(() => finishQuiz(id));
 
       let selected = null;
       document.querySelectorAll(".option").forEach(button => {
@@ -3624,6 +4434,14 @@
         return;
       }
       if (id === "bedsideTable") {
+        if (has(state.findings, "motorWeakness")) {
+          setMessage("The walking video has been reviewed and its functional motor findings are charted.");
+          return;
+        }
+        if (has(state.inventory, "patientPhone")) {
+          setMessage("The charged phone contains the walking video. Select it and click the patient, or drag it onto the patient, to interpret the motor pattern.");
+          return;
+        }
         setMessage("The bedside phone battery is dead. Check the patient belongings for a charger.");
         return;
       }
@@ -3634,6 +4452,30 @@
       }
       if (id === "sink") {
         washHands();
+        return;
+      }
+      if (id === "drawer") {
+        if (has(state.completed, "safetyPinFound")) {
+          setMessage(has(state.findings, "spinothalamic")
+            ? "The safety pin has already been used for the completed sensory examination."
+            : "The safety pin is already in inventory.");
+          return;
+        }
+        markCompleted("safetyPinFound");
+        addInventory("safetyPin");
+        setMessage("You open the supply drawer and take a clean safety pin for careful pinprick comparison.");
+        return;
+      }
+      if (id === "fridge") {
+        if (has(state.completed, "icePackFound")) {
+          setMessage(has(state.findings, "spinothalamic")
+            ? "The ice pack has already been used for the completed sensory examination."
+            : "The ice pack is already in inventory.");
+          return;
+        }
+        markCompleted("icePackFound");
+        addInventory("icePack");
+        setMessage("You open the refrigerator and take a wrapped ice pack for temperature testing.");
         return;
       }
       if (id === "cart") {
@@ -3659,13 +4501,7 @@
           setMessage("You find a soap refill behind the cotton jars.");
           return;
         }
-        if (!has(state.completed, "cabinet")) {
-          setMessage("The deeper cabinet drawer is locked. Select THINK to sort the safe sensory tools.");
-          return;
-        }
-        addInventory("neurotip");
-        addInventory("coldPack");
-        setMessage("You collect the neurotip and cold pack. Pain and temperature testing is now respectable.");
+        setMessage("The upper cabinet contains routine supplies. The soap refill was the needed item here.");
         return;
       }
       if (id === "ct") {
@@ -3735,9 +4571,8 @@
           }
           markCompleted("phoneCharged");
           addInventory("patientPhone");
-          addFinding("collateralPhone");
           removeInventory(itemId);
-          setMessage("You route the charger from the outlet to the bedside phone. The phone powers on and displays a walking video: the left foot catches and drags.");
+          setMessage("You route the charger from the outlet to the bedside phone. The phone powers on; its walking video is ready to review with the patient.");
           return;
         }
         if (hotspotId === "bedsideTable") {
@@ -3747,9 +4582,8 @@
           }
           markCompleted("phoneCharged");
           addInventory("patientPhone");
-          addFinding("collateralPhone");
           removeInventory(itemId);
-          setMessage("You connect the charger to the bedside phone. The walking video shows the left foot catching and dragging.");
+          setMessage("You connect the charger to the bedside phone. Its walking video is ready to review with the patient.");
           return;
         }
       }
@@ -3757,8 +4591,10 @@
       if (itemId === "patientPhone") {
         if (hotspotId === "patient") {
           addFinding("collateralPhone");
+          addFinding("motorWeakness");
+          markCompleted("videoMotorAssessment");
           removeInventory(itemId);
-          setMessage("The video shows left-foot catching that has progressed from stairs to flat ground. Collateral history is now charted.");
+          setMessage("You review the walking video with the patient. It shows a left stiff-legged gait with foot drag, providing functional evidence of an upper motor neuron pattern when formal graded power is limited by pain and guarding.");
           return;
         }
       }
@@ -3766,7 +4602,7 @@
       if (itemId === "hammer") {
         if (hotspotId === "patient") {
           if (!requireHandHygiene()) return;
-          runExam("reflex");
+          runNeurologicExam("reflex");
           return;
         }
         if (hotspotId === "cabinet") {
@@ -3783,7 +4619,7 @@
         }
       }
 
-      if (itemId === "neurotip" || itemId === "coldPack") {
+      if (itemId === "safetyPin" || itemId === "icePack") {
         if (hotspotId === "patient") {
           if (!requireHandHygiene()) return;
           openSensoryGame();
@@ -3791,9 +4627,9 @@
         }
       }
 
-      if (itemId === "coldPack") {
+      if (itemId === "icePack") {
         if (hotspotId === "sink") {
-          setMessage("The cold pack is not useful at the sink.");
+          setMessage("The ice pack is already prepared as a wrapped cold stimulus; use it on the patient during sensory testing.");
           return;
         }
       }
@@ -3833,13 +4669,18 @@
     }
 
     function startInventoryDragVisuals(itemId, source, x, y) {
+      clearSelectedInventory();
       inventoryDrag.active = true;
       inventoryDrag.itemId = itemId;
       inventoryDrag.source = source;
       source.classList.add("dragging");
       document.querySelector(".game-root").classList.add("inventory-dragging");
       const ghost = document.getElementById("dragGhost");
-      ghost.textContent = inventoryName(itemId);
+      ghost.replaceChildren();
+      ghost.classList.add("has-visual");
+      const label = document.createElement("span");
+      label.textContent = inventoryName(itemId);
+      ghost.append(createInventoryVisual(itemId, "drag-ghost"), label);
       ghost.classList.add("visible");
       positionDragGhost(x, y);
     }
@@ -3850,7 +4691,8 @@
       document.querySelectorAll(".hotspot.drop-target").forEach(item => item.classList.remove("drop-target"));
       const ghost = document.getElementById("dragGhost");
       ghost.classList.remove("visible");
-      ghost.textContent = "";
+      ghost.classList.remove("has-visual");
+      ghost.replaceChildren();
       inventoryDrag.target = null;
     }
 
@@ -3926,6 +4768,13 @@
     }
 
     function handleHotspot(id) {
+      if (state.selectedInventoryId) {
+        const itemId = state.selectedInventoryId;
+        clearSelectedInventory();
+        handleInventoryUse(itemId, id);
+        return;
+      }
+
       if (state.mode === "grab") {
         handleGrab(id);
         return;
@@ -3941,9 +4790,7 @@
           return;
         }
         if (state.mode === "auscultate") {
-          if (!requireHandHygiene()) return;
-          addFinding("auscultation");
-          setMessage("You auscultate the patient. Heart rhythm is regular and lungs are clear; this does not explain the progressive long-tract findings.");
+          requestPhysicalExam();
           return;
         }
         setMessage("The patient is awake and worried about progressive left-leg weakness.");
@@ -3956,15 +4803,29 @@
       }
 
       if (id === "bedsideTable") {
+        if (has(state.findings, "motorWeakness")) {
+          setMessage("The walking video has been reviewed. Its functional motor findings are available in Chart Review.");
+          return;
+        }
+        if (has(state.inventory, "patientPhone")) {
+          setMessage("The charged phone contains the walking video. Drag it from inventory onto the patient to interpret the motor pattern.");
+          return;
+        }
         if (state.mode === "talk") {
-          setMessage("The bedside table holds a phone with a dead battery.");
+          setMessage(has(state.completed, "phoneCharged")
+            ? "The walking video is ready to review with the patient."
+            : "The bedside table holds a phone with a dead battery.");
           return;
         }
         if (state.mode === "think") {
-          setMessage("Collateral history is locked until the phone is charged. Find power, then review the walking video.");
+          setMessage(has(state.completed, "phoneCharged")
+            ? "Use the charged phone on the patient to interpret gait as functional motor evidence."
+            : "Functional motor interpretation is locked until the phone is charged. Find power, then review the walking video.");
           return;
         }
-        setMessage("An uncharged patient phone is on the bedside table. It may contain useful collateral history.");
+        setMessage(has(state.completed, "phoneCharged")
+          ? "The charged phone is ready for walking-video review."
+          : "An uncharged patient phone is on the bedside table. It may contain useful collateral history.");
         return;
       }
 
@@ -3996,6 +4857,32 @@
         return;
       }
 
+      if (id === "drawer") {
+        if (has(state.completed, "safetyPinFound")) {
+          setMessage(has(state.findings, "spinothalamic")
+            ? "The pinprick portion of the sensory examination is complete."
+            : "The clean safety pin from this drawer is in inventory.");
+          return;
+        }
+        setMessage(state.mode === "think"
+          ? "A clean safety pin would provide a controlled sharp stimulus for pinprick comparison. Select GRAB to search the drawer."
+          : "The under-counter supply drawer may contain a pinprick tool. Select GRAB to open it.");
+        return;
+      }
+
+      if (id === "fridge") {
+        if (has(state.completed, "icePackFound")) {
+          setMessage(has(state.findings, "spinothalamic")
+            ? "The temperature portion of the sensory examination is complete."
+            : "The wrapped ice pack from this refrigerator is in inventory.");
+          return;
+        }
+        setMessage(state.mode === "think"
+          ? "A cold stimulus is required for temperature comparison. Select GRAB to check the refrigerator."
+          : "A small clinical refrigerator sits beneath the counter. Select GRAB to open it.");
+        return;
+      }
+
       if (id === "cart") {
         if (state.mode === "think") {
           if (!has(state.completed, "examTools")) openCartQuiz();
@@ -4020,12 +4907,7 @@
           setMessage("The cabinet contains supply jars. Use GRAB to search for the soap refill.");
           return;
         }
-        if (state.mode === "think") {
-          if (!has(state.completed, "cabinet")) openQuiz("cabinet");
-          else setMessage("The cabinet is open. Neurotip and cold pack are ready for spinothalamic testing.");
-          return;
-        }
-        setMessage("The cabinet has a deeper drawer with a keypad. Select THINK to solve it.");
+        setMessage("The upper cabinet contains routine supplies, but no additional case-relevant equipment.");
         return;
       }
 
@@ -4060,67 +4942,872 @@
       }
     }
 
-    function openExam() {
-      const examButtons = [
-        ["motor", "Motor Strength", "Check left-leg pyramidal weakness."],
-        ["reflex", "Patellar Reflex", "Test the left knee jerk with the reflex hammer."],
-        ["sensory", "Sensory Testing", "Test five modalities before the meters decay."],
-        ["sensoryLevel", "Sensory Level", "Mark where sensation normalizes."],
-        ["localization", "Localize Lesion", "Combine tracts into one cord lesion."]
+    function physicalExamActionKey(actionId) {
+      return "physicalExam:" + actionId;
+    }
+
+    function physicalExamSystemDone(system) {
+      if (system.id === "neurologic") {
+        return ["mentalStatus", "cranialNerves", "motorWeakness", "reflexes", "dorsalColumn", "spinothalamic", "coordination", "collateralPhone"]
+          .every(findingId => has(state.findings, findingId));
+      }
+      return system.actions.every(actionId => has(state.completed, physicalExamActionKey(actionId)));
+    }
+
+    function neurologicExamDone(examId) {
+      if (examId === "mentalStatus") return has(state.findings, "mentalStatus");
+      if (examId === "cranialNerves") return has(state.findings, "cranialNerves");
+      if (examId === "motor") return has(state.findings, "motorWeakness");
+      if (examId === "sensory") return ["lightTouch", "dorsalColumn", "spinothalamic"].every(id => has(state.findings, id));
+      if (examId === "reflex") return has(state.findings, "reflexes");
+      if (examId === "coordination") return has(state.findings, "coordination");
+      if (examId === "gait") return has(state.findings, "collateralPhone");
+      if (examId === "sensoryLevel") return has(state.findings, "sensoryLevel");
+      if (examId === "localization") return has(state.findings, "localization");
+      return false;
+    }
+
+    function openExam(systemId) {
+      const system = physicalExamSystems.find(item => item.id === systemId) || null;
+      const neurologicActions = [
+        ["mentalStatus", "Mental Status", "Attention, orientation, language, and behavior."],
+        ["cranialNerves", "Cranial Nerves", "Focused examination of cranial nerves II-XII."],
+        ["motor", "Motor Exam", "Interpret functional motor evidence from the walking video."],
+        ["sensory", "Sensory Exam", "Complete the five-modality sensory testing game."],
+        ["reflex", "Reflexes", "Test the patellar reflex with the timing game."],
+        ["coordination", "Coordination", "Assess appendicular coordination without mistaking weakness for dysmetria."],
+        ["gait", "Gait", "Review the recorded gait because walking at bedside is unsafe."]
       ];
 
-      openModal(`
-        <section class="modal-card" role="dialog" aria-modal="true">
-          <div class="modal-header"><h2>Bedside Neuro Exam</h2><button type="button" data-close aria-label="Close">X</button></div>
-          <p>Pick focused maneuvers. Normal findings matter; crossed findings matter more.</p>
-          <div class="exam-grid">
-            ${examButtons.map(([id, label, detail]) => {
-              const sensoryDone = id === "sensory" && ["lightTouch", "dorsalColumn", "spinothalamic"].every(findingId => has(state.findings, findingId));
-              const findingId = id === "motor" ? "motorWeakness" : id === "reflex" ? "reflexes" : id;
-              const done = sensoryDone || has(state.findings, findingId) ? " done" : "";
-              return `<button type="button" class="exam-card${done}" data-exam="${id}"><strong>${label}</strong><span>${detail}</span></button>`;
+      let panelMarkup;
+      if (!system) {
+        panelMarkup = `
+          <div class="physical-exam-heading"><h3>Examination Systems</h3></div>
+          <p class="physical-exam-intro">Choose a system for a focused physical examination.</p>
+          <div class="exam-system-grid">
+            ${physicalExamSystems.map(item => `
+              <button type="button" class="exam-system-button${physicalExamSystemDone(item) ? " done" : ""}" data-exam-system="${item.id}">
+                <strong>${escapeHtml(item.label)}</strong>
+                <span>${escapeHtml(item.detail)}</span>
+              </button>
+            `).join("")}
+          </div>
+        `;
+      } else if (system.id === "neurologic") {
+        panelMarkup = `
+          <div class="physical-exam-heading">
+            <button type="button" class="exam-menu-back" data-exam-back aria-label="Back to examination systems" title="Back to systems">&#8592;</button>
+            <h3>Neurologic Examination</h3>
+          </div>
+          <p class="physical-exam-intro">${escapeHtml(system.intro)}</p>
+          <div class="neuro-exam-grid">
+            ${neurologicActions.map(([id, label, detail]) => `
+              <button type="button" class="exam-action-button${neurologicExamDone(id) ? " done" : ""}" data-neuro-exam="${id}">
+                <strong>${escapeHtml(label)}</strong>
+                <span>${escapeHtml(detail)}</span>
+              </button>
+            `).join("")}
+          </div>
+        `;
+      } else {
+        panelMarkup = `
+          <div class="physical-exam-heading">
+            <button type="button" class="exam-menu-back" data-exam-back aria-label="Back to examination systems" title="Back to systems">&#8592;</button>
+            <h3>${escapeHtml(system.label)} Examination</h3>
+          </div>
+          <p class="physical-exam-intro">${escapeHtml(system.intro)}</p>
+          <div class="exam-system-grid">
+            ${system.actions.map(actionId => {
+              const action = physicalExamActions[actionId];
+              const done = has(state.completed, physicalExamActionKey(actionId));
+              return `
+                <button type="button" class="exam-action-button${done ? " done" : ""}" data-general-exam="${actionId}">
+                  <strong>${escapeHtml(action.label)}</strong>
+                  <span>${escapeHtml(action.detail)}</span>
+                </button>
+              `;
             }).join("")}
+          </div>
+        `;
+      }
+
+      openModal(`
+        <section class="modal-card physical-exam-card" role="dialog" aria-modal="true" aria-labelledby="physicalExamTitle">
+          <div class="modal-header"><h2 id="physicalExamTitle">Physical Examination</h2><button type="button" data-close aria-label="Close">X</button></div>
+          <div class="physical-exam-layout">
+            <div class="physical-exam-portrait"><img src="assets/patient-portrait.png" alt="Portrait of the patient"></div>
+            <section class="physical-exam-panel">${panelMarkup}</section>
           </div>
         </section>
       `);
 
-      document.querySelectorAll("[data-exam]").forEach(button => {
-        button.addEventListener("click", () => runExam(button.dataset.exam));
+      document.querySelectorAll("[data-exam-system]").forEach(button => {
+        button.addEventListener("click", () => openExam(button.dataset.examSystem));
       });
+      document.querySelectorAll("[data-exam-back]").forEach(button => {
+        button.addEventListener("click", () => openExam());
+      });
+      document.querySelectorAll("[data-general-exam]").forEach(button => {
+        button.addEventListener("click", () => runPhysicalExamAction(system.id, button.dataset.generalExam, button));
+      });
+      document.querySelectorAll("[data-neuro-exam]").forEach(button => {
+        button.addEventListener("click", () => runNeurologicExam(button.dataset.neuroExam, button));
+      });
+
+      const firstControl = document.querySelector("[data-exam-system], [data-exam-back]");
+      if (firstControl) firstControl.focus();
     }
 
-    function runExam(exam) {
+    function recordPhysicalExamAction(systemId, actionId) {
+      const system = physicalExamSystems.find(item => item.id === systemId);
+      const action = physicalExamActions[actionId];
+      if (!system || !action || !system.actions.includes(actionId)) return null;
+
+      const completionId = physicalExamActionKey(actionId);
+      if (!has(state.completed, completionId)) {
+        markCompleted(completionId);
+        logAction("Examined " + system.label + ": " + action.label);
+      }
+
+      const systemComplete = system.actions.every(id => has(state.completed, physicalExamActionKey(id)));
+      if (systemComplete && system.findingId) addFinding(system.findingId);
+      return { system, action, systemComplete };
+    }
+
+    function runPhysicalExamAction(systemId, actionId, button) {
+      if (!requireHandHygiene()) {
+        closeModal();
+        return;
+      }
+      const system = physicalExamSystems.find(item => item.id === systemId);
+      const action = physicalExamActions[actionId];
+      if (!system || !action || !system.actions.includes(actionId)) return;
+
+      if (!has(state.completed, physicalExamActionKey(actionId))) {
+        if (actionId === "pupils") {
+          openPupilInspectionGame();
+          return;
+        }
+        if (actionId === "earsNose") {
+          openEarNoseInspectionGame();
+          return;
+        }
+      }
+
+      const recorded = recordPhysicalExamAction(systemId, actionId);
+      if (!recorded) return;
+      if (button) button.classList.add("done");
+      setMessage(recorded.action.result + (recorded.systemComplete ? " " + recorded.system.label + " examination complete." : ""));
+    }
+
+    function openPupilInspectionGame() {
+      const canvasWidth = 900;
+      const canvasHeight = 600;
+      const targetMinimum = 0.36;
+      const targetMaximum = 0.60;
+      const stableGoal = 5;
+      const dilationRate = 0.15;
+      const constrictRate = 0.27;
+      let pupilSize = 0.75;
+      const eyeCenters = { right: { x: 260, y: 338 }, left: { x: 637, y: 338 } };
+      let shining = false;
+      let litEye = "right";
+      let pointerId = null;
+      let pointer = { x: 450, y: 510 };
+      let stableTime = 0;
+      let lastFrameTime = null;
+      let finished = false;
+
+      openModal(`
+        <section class="modal-card pupil-card" id="pupilGame" role="dialog" aria-modal="true" aria-labelledby="pupilTitle">
+          <div class="modal-header"><h2 id="pupilTitle">Pupil and Eye Inspection</h2><button type="button" data-close aria-label="Close">X</button></div>
+          <p>Press and hold over either eye to shine the light. Pulse and alternate the light until both pupil edges remain inside the green bands.</p>
+          <div class="pupil-hud" aria-live="polite">
+            <div class="pupil-progress" aria-hidden="true"><span class="pupil-progress-fill" id="pupilProgressFill"></span></div>
+            <span class="pupil-progress-text" id="pupilProgressText">Stable 0.0 / 5.0 s</span>
+          </div>
+          <div class="pupil-stage" id="pupilStage">
+            <img src="assets/pupil-exam.png" alt="Close-up of the patient's eyes">
+            <canvas id="pupilCanvas" width="900" height="600" tabindex="0" aria-describedby="pupilStatus" aria-label="Two-eye pupillary light response game"></canvas>
+          </div>
+          <p class="pupil-status" id="pupilStatus" aria-live="polite">Light off: both pupils are dilating.</p>
+        </section>
+      `);
+
+      document.querySelector(".game-root").classList.add("pupil-testing");
+      const canvas = document.getElementById("pupilCanvas");
+      const context = canvas.getContext("2d");
+      const progressFill = document.getElementById("pupilProgressFill");
+      const progressText = document.getElementById("pupilProgressText");
+      const status = document.getElementById("pupilStatus");
+
+      function clamp(value, minimum, maximum) {
+        return Math.max(minimum, Math.min(maximum, value));
+      }
+
+      function pupilInZone(value) {
+        return value >= targetMinimum && value <= targetMaximum;
+      }
+
+      function pupilRadius(value) {
+        return 8 + (value * 32);
+      }
+
+      function pointerPosition(event) {
+        const bounds = canvas.getBoundingClientRect();
+        return {
+          x: clamp(((event.clientX - bounds.left) / bounds.width) * canvasWidth, 0, canvasWidth),
+          y: clamp(((event.clientY - bounds.top) / bounds.height) * canvasHeight, 0, canvasHeight)
+        };
+      }
+
+      function drawLightBeam() {
+        if (!shining) return;
+        const center = eyeCenters[litEye];
+        const gradient = context.createRadialGradient(center.x, center.y, 10, center.x, center.y, 150);
+        gradient.addColorStop(0, "rgba(255,247,184,0.52)");
+        gradient.addColorStop(1, "rgba(255,222,97,0)");
+        context.fillStyle = gradient;
+        context.beginPath();
+        context.arc(center.x, center.y, 150, 0, Math.PI * 2);
+        context.fill();
+
+        context.fillStyle = "rgba(255,233,137,0.22)";
+        context.beginPath();
+        context.moveTo(pointer.x, pointer.y);
+        context.lineTo(center.x - 76, center.y - 42);
+        context.lineTo(center.x + 76, center.y + 42);
+        context.closePath();
+        context.fill();
+      }
+
+      function drawEye(side, label) {
+        const center = eyeCenters[side];
+        const value = pupilSize;
+        const inZone = pupilInZone(value);
+        const isDirect = shining && litEye === side;
+        const isConsensual = shining && litEye !== side;
+
+        context.save();
+        const lowerRadius = pupilRadius(targetMinimum);
+        const upperRadius = pupilRadius(targetMaximum);
+        context.strokeStyle = inZone ? "rgba(129,226,127,0.88)" : "rgba(103,196,105,0.58)";
+        context.lineWidth = upperRadius - lowerRadius;
+        context.beginPath();
+        context.arc(center.x, center.y, (lowerRadius + upperRadius) / 2, 0, Math.PI * 2);
+        context.stroke();
+
+        context.fillStyle = "#10131b";
+        context.beginPath();
+        context.arc(center.x, center.y, pupilRadius(value), 0, Math.PI * 2);
+        context.fill();
+        context.fillStyle = "rgba(255,255,255,0.88)";
+        context.fillRect(center.x - 10, center.y - 13, 6, 6);
+
+        context.fillStyle = "rgba(33,25,35,0.8)";
+        context.fillRect(center.x - 75, 425, 150, 29);
+        context.fillStyle = inZone ? "#d7f0c9" : "#fff3bf";
+        context.font = "bold 14px 'Courier New', monospace";
+        context.textAlign = "center";
+        context.fillStyle = isDirect ? "#ffe175" : isConsensual ? "#b8e0d2" : inZone ? "#9bd38d" : "#e4d8b4";
+        context.fillText(label + ": " + (isDirect ? "DIRECT" : isConsensual ? "CONSENSUAL" : inZone ? "IN ZONE" : "DILATING"), center.x, 445);
+        context.restore();
+      }
+
+      function drawFlashlight() {
+        context.save();
+        context.font = "34px 'Segoe UI Emoji', sans-serif";
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+        context.shadowColor = "rgba(0,0,0,0.65)";
+        context.shadowOffsetX = 3;
+        context.shadowOffsetY = 3;
+        context.fillText("\u{1F526}", pointer.x, pointer.y);
+        context.restore();
+      }
+
+      function drawGame() {
+        context.clearRect(0, 0, canvasWidth, canvasHeight);
+        drawLightBeam();
+        drawEye("right", "RIGHT EYE");
+        drawEye("left", "LEFT EYE");
+        drawFlashlight();
+      }
+
+      function updateHud() {
+        const progress = Math.min(1, stableTime / stableGoal);
+        progressFill.style.width = (progress * 100) + "%";
+        progressText.textContent = "Stable " + stableTime.toFixed(1) + " / " + stableGoal.toFixed(1) + " s";
+
+        const bothInZone = pupilInZone(pupilSize);
+        status.className = "pupil-status" + (bothInZone ? " in-zone" : "");
+        if (bothInZone) {
+          status.textContent = "Both pupils are in the green zone. Keep the response stable.";
+        } else if (shining) {
+          status.textContent = "Light on the " + litEye + " eye: both pupils constrict together, directly here and consensually in the other eye.";
+        } else {
+          status.textContent = "Light off: both pupils are dilating.";
+        }
+      }
+
+      function stopPupilAnimation() {
+        if (state.pupilFrame) {
+          cancelAnimationFrame(state.pupilFrame);
+          state.pupilFrame = null;
+        }
+      }
+
+      function finishPupilGame() {
+        if (finished) return;
+        finished = true;
+        shining = false;
+        stableTime = stableGoal;
+        setMinigameAutowin(null);
+        stopPupilAnimation();
+        progressFill.style.width = "100%";
+        progressText.textContent = "Stable 5.0 / 5.0 s";
+        status.className = "pupil-status success";
+        status.textContent = "Both pupils constrict directly and consensually, then redilate symmetrically.";
+        drawGame();
+        playSfx("success");
+
+        setTimeout(() => {
+          if (!document.getElementById("pupilGame")) return;
+          const recorded = recordPhysicalExamAction("heent", "pupils");
+          closeModal();
+          if (!recorded) return;
+          setMessage(recorded.action.result + (recorded.systemComplete ? " " + recorded.system.label + " examination complete." : ""));
+        }, 900);
+      }
+
+      function pupilTick(frameTime) {
+        if (finished) return;
+        if (lastFrameTime === null) lastFrameTime = frameTime;
+        const elapsedSeconds = Math.min((frameTime - lastFrameTime) / 1000, 0.08);
+        lastFrameTime = frameTime;
+
+        if (shining) {
+          pupilSize -= constrictRate * elapsedSeconds;
+        } else {
+          pupilSize += dilationRate * elapsedSeconds;
+        }
+        pupilSize = clamp(pupilSize, 0.08, 0.96);
+
+        if (pupilInZone(pupilSize)) stableTime += elapsedSeconds;
+        else stableTime = 0;
+
+        updateHud();
+        drawGame();
+        if (stableTime >= stableGoal) {
+          finishPupilGame();
+          return;
+        }
+        state.pupilFrame = requestAnimationFrame(pupilTick);
+      }
+
+      function updatePointer(event) {
+        pointer = pointerPosition(event);
+        if (shining) litEye = pointer.x < canvasWidth / 2 ? "right" : "left";
+      }
+
+      function beginLight(event) {
+        if (event.button !== 0 || finished) return;
+        event.preventDefault();
+        pointerId = event.pointerId;
+        updatePointer(event);
+        shining = true;
+        litEye = pointer.x < canvasWidth / 2 ? "right" : "left";
+        canvas.setPointerCapture(pointerId);
+      }
+
+      function endLight(event) {
+        if (event.pointerId !== pointerId) return;
+        shining = false;
+        if (canvas.hasPointerCapture(pointerId)) canvas.releasePointerCapture(pointerId);
+        pointerId = null;
+      }
+
+      canvas.addEventListener("pointerdown", beginLight);
+      canvas.addEventListener("pointermove", updatePointer);
+      canvas.addEventListener("pointerup", endLight);
+      canvas.addEventListener("pointercancel", endLight);
+      canvas.addEventListener("lostpointercapture", () => {
+        shining = false;
+        pointerId = null;
+      });
+
+      setMinigameAutowin(finishPupilGame);
+      updateHud();
+      drawGame();
+      state.pupilFrame = requestAnimationFrame(pupilTick);
+      canvas.focus({ preventScroll: true });
+    }
+
+    function openEarNoseInspectionGame() {
+      const orifices = [
+        { id: "rightEar", label: "Patient's right ear" },
+        { id: "leftEar", label: "Patient's left ear" },
+        { id: "rightNostril", label: "Patient's right nostril" },
+        { id: "leftNostril", label: "Patient's left nostril" }
+      ];
+      let finished = false;
+
+      if (!state.orificeAssignments) {
+        const earQuestionId = Math.random() < 0.5 ? "rightEar" : "leftEar";
+        const noseQuestionId = Math.random() < 0.5 ? "rightNostril" : "leftNostril";
+        const remaining = orifices.map(item => item.id).filter(id => id !== earQuestionId && id !== noseQuestionId);
+        if (Math.random() < 0.5) remaining.reverse();
+        state.orificeAssignments = {
+          [earQuestionId]: {
+            kind: "question",
+            bank: "ear",
+            index: Math.floor(Math.random() * orificeQuestionBank.ear.length)
+          },
+          [noseQuestionId]: {
+            kind: "question",
+            bank: "nose",
+            index: Math.floor(Math.random() * orificeQuestionBank.nose.length)
+          },
+          [remaining[0]]: { kind: "empty" },
+          [remaining[1]]: { kind: "egg" }
+        };
+      }
+
+      openModal(`
+        <section class="modal-card orifice-card" id="orificeGame" role="dialog" aria-modal="true" aria-labelledby="orificeTitle">
+          <div class="modal-header"><h2 id="orificeTitle">Ears and Nose Inspection</h2><button type="button" data-close aria-label="Close">X</button></div>
+          <p>Inspect both ears and both nostrils. Two openings contain clinical questions; the remaining findings are less predictable.</p>
+          <div class="orifice-progress-line">
+            <span id="orificeProgressText">Examined 0 / 4</span>
+            <div class="orifice-progress-pips" id="orificeProgressPips" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+          </div>
+          <div class="orifice-scene" aria-label="Front-facing view of the patient">
+            <img src="assets/fronton.png" alt="Front-facing portrait of the patient">
+            <button type="button" class="orifice-hotspot" data-orifice="rightEar" style="left:34.2%;top:37.2%;width:7.4%;height:16.5%" aria-label="Inspect the patient's right ear" title="Right ear"></button>
+            <button type="button" class="orifice-hotspot" data-orifice="leftEar" style="left:59.2%;top:37.2%;width:7.4%;height:16.5%" aria-label="Inspect the patient's left ear" title="Left ear"></button>
+            <button type="button" class="orifice-hotspot" data-orifice="rightNostril" style="left:46.1%;top:47.3%;width:5.2%;height:7.2%" aria-label="Inspect the patient's right nostril" title="Right nostril"></button>
+            <button type="button" class="orifice-hotspot" data-orifice="leftNostril" style="left:51.2%;top:47.3%;width:5.2%;height:7.2%" aria-label="Inspect the patient's left nostril" title="Left nostril"></button>
+          </div>
+          <section class="orifice-panel" id="orificePanel" aria-live="polite"></section>
+        </section>
+      `);
+
+      const panel = document.getElementById("orificePanel");
+      const hotspotButtons = Array.from(document.querySelectorAll("[data-orifice]"));
+
+      function completionKey(orificeId) {
+        return "orifice:" + orificeId;
+      }
+
+      function examinedCount() {
+        return orifices.filter(item => has(state.completed, completionKey(item.id))).length;
+      }
+
+      function updateOrificeProgress() {
+        const count = examinedCount();
+        document.getElementById("orificeProgressText").textContent = "Examined " + count + " / 4";
+        document.querySelectorAll("#orificeProgressPips span").forEach((pip, index) => pip.classList.toggle("lit", index < count));
+        hotspotButtons.forEach(button => {
+          const examined = has(state.completed, completionKey(button.dataset.orifice));
+          button.classList.toggle("examined", examined);
+          button.setAttribute("aria-pressed", String(examined));
+        });
+      }
+
+      function bindBackButton() {
+        const backButton = document.getElementById("orificeBack");
+        if (backButton) backButton.addEventListener("click", renderHomePanel);
+      }
+
+      function renderHomePanel() {
+        panel.innerHTML = `
+          <h3>Choose an opening</h3>
+          <p>Select an ear or nostril on the portrait to inspect it.</p>
+        `;
+      }
+
+      function renderResult(title, text, extraMarkup = "") {
+        panel.innerHTML = `
+          <h3>${escapeHtml(title)}</h3>
+          ${extraMarkup}
+          <p>${escapeHtml(text)}</p>
+          <div class="orifice-panel-actions"><button type="button" class="primary-action" id="orificeBack">Back to Face</button></div>
+        `;
+        bindBackButton();
+      }
+
+      function finishOrificeGame() {
+        if (finished) return;
+        finished = true;
+        setMinigameAutowin(null);
+        orifices.forEach(item => markCompleted(completionKey(item.id)));
+        addInventory("mysteryEgg");
+        updateOrificeProgress();
+        hotspotButtons.forEach(button => { button.disabled = true; });
+        panel.innerHTML = `
+          <h3>Inspection complete</h3>
+          <p>Canals and nasal passages are patent without an acute abnormality. The mystery egg remains unexplained.</p>
+        `;
+        playSfx("success");
+
+        setTimeout(() => {
+          if (!document.getElementById("orificeGame")) return;
+          const recorded = recordPhysicalExamAction("heent", "earsNose");
+          closeModal();
+          if (!recorded) return;
+          setMessage(recorded.action.result + " A mystery egg was also added to inventory." + (recorded.systemComplete ? " " + recorded.system.label + " examination complete." : ""));
+        }, 900);
+      }
+
+      function markOrificeExamined(orificeId) {
+        markCompleted(completionKey(orificeId));
+        updateOrificeProgress();
+        if (examinedCount() >= orifices.length) {
+          finishOrificeGame();
+          return true;
+        }
+        return false;
+      }
+
+      function renderQuestion(orifice, assignment) {
+        const question = orificeQuestionBank[assignment.bank][assignment.index];
+        panel.innerHTML = `
+          <h3>${escapeHtml(orifice.label)}</h3>
+          <p>${escapeHtml(question.prompt)}</p>
+          <div class="orifice-answer-grid">
+            ${question.options.map((option, index) => `<button type="button" class="orifice-answer" data-orifice-answer="${index}">${escapeHtml(option)}</button>`).join("")}
+          </div>
+          <p id="orificeQuestionFeedback" hidden></p>
+        `;
+
+        const answerButtons = Array.from(panel.querySelectorAll("[data-orifice-answer]"));
+        answerButtons.forEach(button => {
+          button.addEventListener("click", () => {
+            const answerIndex = Number(button.dataset.orificeAnswer);
+            const feedback = document.getElementById("orificeQuestionFeedback");
+            if (answerIndex !== question.answer) {
+              button.classList.add("wrong");
+              feedback.hidden = false;
+              feedback.textContent = "Not quite. Inspect the finding and try again.";
+              return;
+            }
+
+            answerButtons.forEach(item => { item.disabled = true; });
+            button.classList.add("correct");
+            playSfx("success");
+            if (markOrificeExamined(orifice.id)) return;
+            renderResult(orifice.label, "Correct. " + question.explanation);
+          });
+        });
+      }
+
+      function inspectOrifice(orificeId) {
+        if (finished) return;
+        const orifice = orifices.find(item => item.id === orificeId);
+        const assignment = state.orificeAssignments[orificeId];
+        if (!orifice || !assignment) return;
+
+        if (has(state.completed, completionKey(orificeId))) {
+          renderResult(orifice.label, "This opening has already been inspected and documented.");
+          return;
+        }
+
+        if (assignment.kind === "question") {
+          renderQuestion(orifice, assignment);
+          return;
+        }
+
+        if (assignment.kind === "egg") {
+          addInventory("mysteryEgg");
+          if (markOrificeExamined(orificeId)) return;
+          renderResult(
+            orifice.label,
+            "Against all reasonable HEENT precedent, a small mystery egg is present. This is not a standard otoscopic or rhinoscopic finding.",
+            `<div class="mystery-egg-reveal"><span aria-hidden="true">&#129370;</span>Mystery Egg acquired</div>`
+          );
+          return;
+        }
+
+        if (markOrificeExamined(orificeId)) return;
+        renderResult(orifice.label, "Nothing unusual. Patent, unremarkable, and notably egg-free.");
+      }
+
+      hotspotButtons.forEach(button => button.addEventListener("click", () => inspectOrifice(button.dataset.orifice)));
+      setMinigameAutowin(finishOrificeGame);
+      updateOrificeProgress();
+      renderHomePanel();
+      if (examinedCount() >= orifices.length) finishOrificeGame();
+      else hotspotButtons[0].focus();
+    }
+
+    function motorVideoGuidance() {
+      if (has(state.findings, "motorWeakness")) {
+        return "The walking video documents a left stiff-legged gait with foot drag, providing functional upper motor neuron evidence. Formal graded power remains limited by pain and guarding.";
+      }
+      if (has(state.inventory, "patientPhone")) {
+        return "Formal graded power is limited by pain and guarding. Drag the Charged Phone from inventory onto the patient to interpret the recorded gait as functional motor evidence.";
+      }
+      if (has(state.completed, "phoneCharged")) {
+        return "The phone is charged. Retrieve its walking video and use it on the patient to complete the functional motor assessment.";
+      }
+      return "Formal graded power is limited by pain and guarding. The patient reports a walking video on her dead phone; find the charger in her belongings, reveal an outlet, and charge the phone.";
+    }
+
+    function runNeurologicExam(exam, button) {
       if (!requireHandHygiene()) {
         closeModal();
         return;
       }
 
-      if (exam === "motor") openTiming({
-        title: "Left-Leg Strength Timing",
-        prompt: "Catch the effort while the marker crosses the gold zone. Three clean observations document true weakness rather than hallway wobble.",
-        zoneStart: 58,
-        zoneEnd: 75,
-        successText: "Left ankle dorsiflexion and hip flexion are weak; the arms and right leg stay strong.",
-        onSuccess: () => {
-          addFinding("motorWeakness");
-          setMessage("Left-leg UMN weakness is documented, supporting corticospinal tract involvement.");
+      if (exam === "mentalStatus") {
+        addFinding("mentalStatus");
+        if (button) button.classList.add("done");
+        setMessage("The patient is alert, attentive, fully oriented, and provides a coherent history without aphasia or neglect.");
+        return;
+      }
+      if (exam === "cranialNerves") {
+        if (has(state.findings, "cranialNerves")) {
+          setMessage("The focused cranial nerve screen is already documented as normal.");
+          return;
         }
-      });
+        openCranialNerveGame();
+        return;
+      }
+      if (exam === "motor") {
+        markCompleted("motorVideoPrompted");
+        setMessage(motorVideoGuidance());
+        return;
+      }
+      if (exam === "sensory") {
+        openSensoryGame();
+        return;
+      }
       if (exam === "reflex") {
+        if (has(state.findings, "reflexes")) {
+          setMessage("The left patellar reflex is already documented as brisk after three accurate tendon strikes.");
+          return;
+        }
         if (!has(state.inventory, "hammer")) {
-          setMessage("Find the reflex hammer before testing reflexes.");
-          closeModal();
+          setMessage("Find the reflex hammer in the exam cart before testing reflexes.");
           return;
         }
         openReflexGame();
+        return;
       }
-      if (exam === "sensory") openSensoryGame();
+      if (exam === "coordination") {
+        addFinding("coordination");
+        if (button) button.classList.add("done");
+        setMessage("Finger-to-nose and right heel-to-shin are accurate. Left heel-to-shin is limited by weakness without clear dysmetria.");
+        return;
+      }
+      if (exam === "gait") {
+        markCompleted("motorVideoPrompted");
+        setMessage(motorVideoGuidance());
+        return;
+      }
       if (exam === "sensoryLevel") {
         openSensoryLevel();
+        return;
       }
-      if (exam === "localization") {
-        openLocalization();
+      if (exam === "localization") openLocalization();
+    }
+
+    function openCranialNerveGame() {
+      const canvasWidth = 960;
+      const canvasHeight = 640;
+      const traceWidth = 12;
+      const coverageRadius = 9;
+      const requiredCoverage = 0.9;
+      const sampleSpacing = 4;
+      const targetSegments = [
+        { label: "left vertical bar", start: { x: 270, y: 165 }, end: { x: 270, y: 475 } },
+        { label: "crossbar", start: { x: 270, y: 320 }, end: { x: 690, y: 320 } },
+        { label: "right vertical bar", start: { x: 690, y: 165 }, end: { x: 690, y: 475 } }
+      ];
+      const strokes = [];
+      let activeStroke = null;
+      let drawing = false;
+      let finished = false;
+
+      openModal(`
+        <section class="modal-card cranial-card" id="cranialGame" role="dialog" aria-modal="true" aria-labelledby="cranialTitle">
+          <div class="modal-header"><h2 id="cranialTitle">Cranial Nerve Screen: Follow My Finger</h2><button type="button" data-close aria-label="Close">X</button></div>
+          <p>Click and hold anywhere to draw a red line over the dotted H. Release and resume as often as needed.</p>
+          <div class="cranial-stage" id="cranialStage">
+            <canvas class="cranial-guide-layer" id="cranialGuideCanvas" width="960" height="640" aria-hidden="true"></canvas>
+            <canvas class="cranial-draw-layer" id="cranialCanvas" width="960" height="640" tabindex="0" aria-describedby="cranialFeedback" aria-label="Draw red lines over the dotted H"></canvas>
+          </div>
+          <p class="cranial-feedback" id="cranialFeedback" aria-live="polite" hidden></p>
+          <div class="cranial-actions"><button type="button" class="primary-action" id="cranialSubmit">Submit</button></div>
+        </section>
+      `);
+
+      const guideCanvas = document.getElementById("cranialGuideCanvas");
+      const guideContext = guideCanvas.getContext("2d");
+      const canvas = document.getElementById("cranialCanvas");
+      const context = canvas.getContext("2d");
+      const feedback = document.getElementById("cranialFeedback");
+      const submitButton = document.getElementById("cranialSubmit");
+
+      function pointerPosition(event) {
+        const bounds = canvas.getBoundingClientRect();
+        return {
+          x: ((event.clientX - bounds.left) / bounds.width) * canvasWidth,
+          y: ((event.clientY - bounds.top) / bounds.height) * canvasHeight
+        };
       }
+
+      function drawGuide() {
+        guideContext.clearRect(0, 0, canvasWidth, canvasHeight);
+        guideContext.save();
+        guideContext.strokeStyle = "rgba(255,243,191,0.94)";
+        guideContext.lineWidth = 5;
+        guideContext.setLineDash([11, 10]);
+        guideContext.shadowColor = "rgba(33,25,35,0.9)";
+        guideContext.shadowOffsetX = 3;
+        guideContext.shadowOffsetY = 3;
+        guideContext.beginPath();
+        targetSegments.forEach(segment => {
+          guideContext.moveTo(segment.start.x, segment.start.y);
+          guideContext.lineTo(segment.end.x, segment.end.y);
+        });
+        guideContext.stroke();
+        guideContext.restore();
+      }
+
+      function drawTracePoint(point) {
+        context.save();
+        context.fillStyle = "rgba(207,48,43,0.9)";
+        context.beginPath();
+        context.arc(point.x, point.y, traceWidth / 2, 0, Math.PI * 2);
+        context.fill();
+        context.restore();
+      }
+
+      function drawTraceSegment(start, end) {
+        context.save();
+        context.strokeStyle = "rgba(207,48,43,0.9)";
+        context.lineWidth = traceWidth;
+        context.lineCap = "round";
+        context.lineJoin = "round";
+        context.beginPath();
+        context.moveTo(start.x, start.y);
+        context.lineTo(end.x, end.y);
+        context.stroke();
+        context.restore();
+      }
+
+      function beginStroke(event) {
+        if (event.button !== 0 || finished) return;
+        event.preventDefault();
+        feedback.hidden = true;
+        drawing = true;
+        activeStroke = [pointerPosition(event)];
+        strokes.push(activeStroke);
+        canvas.setPointerCapture(event.pointerId);
+        drawTracePoint(activeStroke[0]);
+      }
+
+      function continueStroke(event) {
+        if (!drawing || finished || !activeStroke) return;
+        event.preventDefault();
+        const point = pointerPosition(event);
+        const previous = activeStroke[activeStroke.length - 1];
+        if (Math.hypot(point.x - previous.x, point.y - previous.y) < 1) return;
+        activeStroke.push(point);
+        drawTraceSegment(previous, point);
+      }
+
+      function endStroke(event) {
+        if (!drawing) return;
+        drawing = false;
+        activeStroke = null;
+        if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
+      }
+
+      function pointToSegmentDistance(point, start, end) {
+        const dx = end.x - start.x;
+        const dy = end.y - start.y;
+        const lengthSquared = (dx * dx) + (dy * dy);
+        if (!lengthSquared) return Math.hypot(point.x - start.x, point.y - start.y);
+        const progress = Math.max(0, Math.min(1, (((point.x - start.x) * dx) + ((point.y - start.y) * dy)) / lengthSquared));
+        const nearestX = start.x + (dx * progress);
+        const nearestY = start.y + (dy * progress);
+        return Math.hypot(point.x - nearestX, point.y - nearestY);
+      }
+
+      function traceCoversPoint(point) {
+        return strokes.some(stroke => {
+          if (stroke.length === 1) {
+            return Math.hypot(point.x - stroke[0].x, point.y - stroke[0].y) <= coverageRadius;
+          }
+          for (let index = 1; index < stroke.length; index += 1) {
+            if (pointToSegmentDistance(point, stroke[index - 1], stroke[index]) <= coverageRadius) return true;
+          }
+          return false;
+        });
+      }
+
+      function segmentCoverage(segment) {
+        const length = Math.hypot(segment.end.x - segment.start.x, segment.end.y - segment.start.y);
+        const sampleCount = Math.ceil(length / sampleSpacing);
+        let covered = 0;
+        for (let index = 0; index <= sampleCount; index += 1) {
+          const progress = index / sampleCount;
+          const point = {
+            x: segment.start.x + ((segment.end.x - segment.start.x) * progress),
+            y: segment.start.y + ((segment.end.y - segment.start.y) * progress)
+          };
+          if (traceCoversPoint(point)) covered += 1;
+        }
+        return covered / (sampleCount + 1);
+      }
+
+      function finishCranialGame() {
+        if (finished) return;
+        finished = true;
+        drawing = false;
+        activeStroke = null;
+        setMinigameAutowin(null);
+        submitButton.disabled = true;
+        feedback.hidden = false;
+        feedback.className = "cranial-feedback success";
+        feedback.textContent = "The H pattern is covered. Extraocular movements are conjugate and complete.";
+        playSfx("success");
+
+        setTimeout(() => {
+          if (!document.getElementById("cranialGame")) return;
+          markCompleted("cranialNerveGame");
+          addFinding("cranialNerves");
+          closeModal();
+          setMessage("Focused cranial nerve screen complete: visual fields are full, pupils are reactive, extraocular movements are intact, facial sensation and movement are symmetric, hearing is intact, palate elevation is symmetric, shoulder strength is full, and the tongue is midline.");
+        }, 850);
+      }
+
+      function submitTrace() {
+        if (finished) return;
+        const coverage = targetSegments.map(segmentCoverage);
+        const incompleteIndex = coverage.findIndex(value => value <= requiredCoverage);
+        if (incompleteIndex === -1) {
+          finishCranialGame();
+          return;
+        }
+
+        feedback.hidden = false;
+        feedback.className = "cranial-feedback warning";
+        feedback.textContent = "Add more red tracing to the " + targetSegments[incompleteIndex].label + ", then submit again.";
+        canvas.focus({ preventScroll: true });
+      }
+
+      canvas.addEventListener("pointerdown", beginStroke);
+      canvas.addEventListener("pointermove", continueStroke);
+      canvas.addEventListener("pointerup", endStroke);
+      canvas.addEventListener("pointercancel", endStroke);
+      submitButton.addEventListener("click", submitTrace);
+
+      setMinigameAutowin(finishCranialGame);
+      drawGuide();
+      canvas.focus({ preventScroll: true });
     }
 
     function openSensoryGame() {
@@ -4130,10 +5817,10 @@
         return;
       }
 
-      const requiredTools = ["tuningFork", "neurotip", "coldPack"];
+      const requiredTools = ["tuningFork", "safetyPin", "icePack"];
       const missingTools = requiredTools.filter(id => !has(state.inventory, id));
       if (missingTools.length) {
-        setMessage("Sensory testing requires the tuning fork from the exam cart plus the disposable neurotip and cold pack from the supply cabinet.");
+        setMessage("Sensory testing requires the tuning fork from the exam cart, the safety pin from the supply drawer, and the ice pack from the refrigerator.");
         closeModal();
         return;
       }
@@ -4158,18 +5845,18 @@
         {
           id: "pain",
           label: "Pain",
-          icon: "&#128205;",
-          toolLabel: "Neurotip",
+          icon: "&#129527;",
+          toolLabel: "Safety pin",
           color: "#a63f4e",
-          response: "The disposable neurotip tests pinprick with a safe, consistent stimulus."
+          response: "The clean safety pin provides a careful sharp stimulus without breaking the skin."
         },
         {
           id: "temperature",
           label: "Temperature",
           icon: "&#129482;",
-          toolLabel: "Cold stimulus",
+          toolLabel: "Ice pack",
           color: "#397eb0",
-          response: "The cold stimulus is compared at matching points on both sides."
+          response: "The wrapped ice pack is compared at matching points on both sides."
         },
         {
           id: "proprioception",
@@ -4299,8 +5986,8 @@
           addFinding("spinothalamic");
           logAction("Completed five-modality sensory examination");
           removeInventory("tuningFork");
-          removeInventory("neurotip");
-          removeInventory("coldPack");
+          removeInventory("safetyPin");
+          removeInventory("icePack");
           closeModal();
           setMessage("Sensory examination complete: light touch is perceived bilaterally; vibration and joint position are reduced on the left, while pinprick and cold are reduced on the right below the lower thoracic levels.");
         }, 850);
@@ -4381,6 +6068,7 @@
         });
       });
 
+      setMinigameAutowin(finishSensoryGame);
       renderSensoryMeters(performance.now());
       state.sensoryFrame = requestAnimationFrame(sensoryTick);
       document.querySelector("[data-sensory-tool]").focus();
@@ -4407,12 +6095,18 @@
         </section>
       `);
 
+      function completeSensoryLevel() {
+        addFinding("sensoryLevel");
+        setMessage("A thoracic sensory level is charted. The one-to-two-level spinothalamic offset supports hemicord localization.");
+        closeModal();
+      }
+
+      setMinigameAutowin(completeSensoryLevel);
+
       document.querySelectorAll("[data-level]").forEach(button => {
         button.addEventListener("click", () => {
           if (button.dataset.level === "correct") {
-            addFinding("sensoryLevel");
-            setMessage("A thoracic sensory level is charted. The one-to-two-level spinothalamic offset supports hemicord localization.");
-            closeModal();
+            completeSensoryLevel();
           } else {
             const hint = document.getElementById("levelHint");
             hint.textContent = button.dataset.level === "tooHigh"
@@ -4448,12 +6142,18 @@
         </section>
       `);
 
+      function completeLocalization() {
+        addFinding("localization");
+        setMessage("Localization solved: left thoracic hemicord. Left corticospinal and dorsal-column findings plus right spinothalamic loss indicate one lesion.");
+        closeModal();
+      }
+
+      setMinigameAutowin(completeLocalization);
+
       document.querySelectorAll("[data-localize]").forEach(button => {
         button.addEventListener("click", () => {
           if (button.dataset.localize === "correct") {
-            addFinding("localization");
-            setMessage("Localization solved: left thoracic hemicord. Left corticospinal and dorsal-column findings plus right spinothalamic loss indicate one lesion.");
-            closeModal();
+            completeLocalization();
           } else {
             const hint = document.getElementById("localizeHint");
             hint.textContent = "The normal arms and face, thoracic level, ipsilateral UMN/dorsal-column loss, and contralateral pain-temperature loss point to hemicord.";
@@ -4487,6 +6187,7 @@
       let hitStreak = 0;
       let missStreak = 0;
       let strikeLocked = false;
+      let reflexFinished = false;
       let lastFrameTime = null;
 
       state.timingMarker = 12;
@@ -4554,6 +6255,9 @@
       }
 
       function finishReflexSuccess() {
+        if (reflexFinished) return;
+        reflexFinished = true;
+        setMinigameAutowin(null);
         stopReflexMotion();
         feedback.className = "reflex-feedback hit";
         feedback.textContent = "Patellar tendon again. Three brisk responses in a row document left patellar hyperreflexia.";
@@ -4568,6 +6272,9 @@
       }
 
       function finishReflexFailure(lastContact) {
+        if (reflexFinished) return;
+        reflexFinished = true;
+        setMinigameAutowin(null);
         stopReflexMotion();
         feedback.className = "reflex-feedback miss";
         feedback.textContent = lastContact + " Three misses in a row end this attempt.";
@@ -4643,50 +6350,8 @@
       strikeButton.addEventListener("pointerdown", strikeFromPointer);
       stage.addEventListener("keydown", strikeFromKeyboard);
       strikeButton.addEventListener("keydown", strikeFromKeyboard);
+      setMinigameAutowin(finishReflexSuccess);
       strikeButton.focus();
-    }
-
-    function openTiming(config) {
-      state.timingMarker = 0;
-      state.timingHits = 0;
-      openModal(`
-        <section class="modal-card mini-card" role="dialog" aria-modal="true">
-          <div class="modal-header"><h2>${escapeHtml(config.title)}</h2><button type="button" data-close aria-label="Close">X</button></div>
-          <p>${escapeHtml(config.prompt)}</p>
-          <div class="timing-meter">
-            <div class="target-zone" style="left:${config.zoneStart}%;width:${config.zoneEnd - config.zoneStart}%"></div>
-            <div class="meter-marker" id="meterMarker" style="left:0%"></div>
-          </div>
-          <div class="hit-pips" id="hitPips"><span></span><span></span><span></span></div>
-          <p class="hint" id="timingHint" style="display:none"></p>
-          <div class="modal-actions"><button type="button" class="primary-action" id="strikeButton">Record Moment</button></div>
-        </section>
-      `);
-
-      state.timingTimer = setInterval(() => {
-        state.timingMarker = (state.timingMarker + 5) % 101;
-        const marker = document.getElementById("meterMarker");
-        if (marker) marker.style.left = state.timingMarker + "%";
-      }, 95);
-
-      document.getElementById("strikeButton").addEventListener("click", () => {
-        const hint = document.getElementById("timingHint");
-        if (state.timingMarker >= config.zoneStart && state.timingMarker <= config.zoneEnd) {
-          state.timingHits += 1;
-          document.querySelectorAll("#hitPips span").forEach((pip, index) => pip.classList.toggle("lit", index < state.timingHits));
-          hint.textContent = state.timingHits >= 3 ? config.successText : "Good catch. Repeat it to prove the finding.";
-          hint.style.display = "block";
-          if (state.timingHits >= 3) {
-            setTimeout(() => {
-              config.onSuccess();
-              closeModal();
-            }, 450);
-          }
-        } else {
-          hint.textContent = "Missed the useful moment. Focus on the patient movement.";
-          hint.style.display = "block";
-        }
-      });
     }
 
     function openMRI() {
@@ -4702,6 +6367,7 @@
     }
 
     function openMRIViewer() {
+      let lesionIdentified = false;
       openModal(`
         <section class="modal-card mini-card" role="dialog" aria-modal="true">
           <div class="modal-header"><h2>Final Imaging Lock</h2><button type="button" data-close aria-label="Close">X</button></div>
@@ -4715,15 +6381,26 @@
         </section>
       `);
 
+      function identifyImagingLesion() {
+        if (lesionIdentified) return;
+        lesionIdentified = true;
+        setMinigameAutowin(null);
+        markCompleted("imagingLesionFound");
+        addFinding("mriMass");
+        const hint = document.getElementById("ctHint");
+        hint.textContent = "Lesion identified. Now interpret what the imaging means for this patient.";
+        hint.style.display = "block";
+        setTimeout(() => {
+          if (document.getElementById("ctHint")) openImagingInterpretation();
+        }, 500);
+      }
+
+      setMinigameAutowin(identifyImagingLesion);
+
       document.querySelectorAll("[data-ct]").forEach(button => {
         button.addEventListener("click", () => {
           if (button.dataset.ct === "correct") {
-            markCompleted("imagingLesionFound");
-            addFinding("mriMass");
-            const hint = document.getElementById("ctHint");
-            hint.textContent = "Lesion identified. Now interpret what the imaging means for this patient.";
-            hint.style.display = "block";
-            setTimeout(openImagingInterpretation, 500);
+            identifyImagingLesion();
           } else {
             const hint = document.getElementById("ctHint");
             hint.textContent = button.dataset.ct === "cord"
@@ -4736,6 +6413,7 @@
     }
 
     function openImagingInterpretation() {
+      let interpretationComplete = false;
       openModal(`
         <section class="modal-card mini-card" role="dialog" aria-modal="true">
           <div class="modal-header"><h2>Final Diagnosis Lock</h2><button type="button" data-close aria-label="Close">X</button></div>
@@ -4750,14 +6428,26 @@
         </section>
       `);
 
+      function completeImagingInterpretation() {
+        if (interpretationComplete) return;
+        interpretationComplete = true;
+        setMinigameAutowin(null);
+        markCompleted("imagingInterpretation");
+        const hint = document.getElementById("imagingHint");
+        hint.textContent = "Correct. Confirm the radiology impression to sign the diagnosis.";
+        hint.style.display = "block";
+        setTimeout(() => {
+          if (document.getElementById("imagingHint")) openImagingReport();
+        }, 500);
+      }
+
+      setMinigameAutowin(completeImagingInterpretation);
+
       document.querySelectorAll("[data-imaging-answer]").forEach(button => {
         button.addEventListener("click", () => {
           const hint = document.getElementById("imagingHint");
           if (button.dataset.imagingAnswer === "correct") {
-            markCompleted("imagingInterpretation");
-            hint.textContent = "Correct. Confirm the radiology impression to sign the diagnosis.";
-            hint.style.display = "block";
-            setTimeout(openImagingReport, 500);
+            completeImagingInterpretation();
             return;
           }
           hint.textContent = button.dataset.imagingAnswer === "brain"
@@ -4794,7 +6484,10 @@
       `);
 
       const confirmButton = document.getElementById("confirmDiagnosis");
-      if (confirmButton) confirmButton.addEventListener("click", completeCase);
+      if (confirmButton) {
+        confirmButton.addEventListener("click", completeCase);
+        setMinigameAutowin(completeCase);
+      }
     }
 
     function completeCase() {
@@ -4815,6 +6508,7 @@
 
     document.querySelectorAll("[data-mode]").forEach(button => {
       button.addEventListener("click", () => {
+        state.selectedInventoryId = "";
         state.mode = button.dataset.mode;
         render();
       });
@@ -4835,6 +6529,7 @@
       button.addEventListener("drop", event => {
         event.preventDefault();
         const itemId = event.dataTransfer.getData("text/plain") || inventoryDrag.itemId;
+        clearSelectedInventory();
         clearInventoryDragVisuals();
         resetInventoryPointerDrag();
         handleInventoryUse(itemId, button.dataset.hotspot);
@@ -4867,7 +6562,10 @@
     });
 
     document.addEventListener("keydown", event => {
-      if (event.key === "Escape") closeToolbarMenus();
+      if (event.key === "Escape") {
+        closeToolbarMenus();
+        clearSelectedInventory();
+      }
     });
 
     document.querySelector("[data-help]").addEventListener("click", () => {
@@ -4897,6 +6595,15 @@
     document.querySelector("[data-sfx-test]").addEventListener("click", event => {
       event.stopPropagation();
       playSfx("success");
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key !== "[" || event.repeat || !activeMinigameAutowin) return;
+      if (event.target instanceof Element && event.target.closest("input, textarea, select, [contenteditable='true']")) return;
+      event.preventDefault();
+      const autowin = activeMinigameAutowin;
+      activeMinigameAutowin = null;
+      autowin();
     });
 
     document.getElementById("messageOk").addEventListener("click", closeMessagePopup);
