@@ -278,7 +278,6 @@ window.SPECIALTY_MODES = {
   geriatrics: {
     label: "Geriatrics",
     cases: [
-      { id: "geri-delirium", diagnosis: "Acute delirium", treatment: "Treat the cause and use nonpharmacologic reorientation", symptom: "Fluctuating inattention and altered awareness", fact: "an acute fluctuating change in attention and cognition during an intercurrent illness" },
       { id: "geri-polypharmacy", diagnosis: "Medication-related orthostatic hypotension", treatment: "Deprescribe contributing medications and hydrate", symptom: "Lightheadedness after standing", fact: "a reproducible blood-pressure drop on standing after several hypotensive medicines were added" },
       { id: "geri-frailty", diagnosis: "Geriatric frailty syndrome", treatment: "Progressive resistance exercise and nutrition support", symptom: "Weakness, slowness, and low activity", fact: "unintentional weight loss, exhaustion, weakness, slow gait, and diminished activity" },
       { id: "geri-falls", diagnosis: "Multifactorial fall risk", treatment: "Exercise, medication review, and home-hazard reduction", symptom: "Recurrent falls without syncope", fact: "gait impairment combined with unsafe medications and environmental hazards" },
@@ -550,7 +549,6 @@ window.CASE_DEMOGRAPHICS = {
   "path-barrett": { minAge: 40 },
   "pmr-cervical": { minAge: 30 },
   "pmr-stenosis": { minAge: 50 },
-  "geri-delirium": { minAge: 65 },
   "geri-polypharmacy": { minAge: 65 },
   "geri-frailty": { minAge: 65 },
   "geri-falls": { minAge: 65 },

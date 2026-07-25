@@ -370,11 +370,11 @@
     let slots = appointmentSchedules[0];
 
     const namePool = [
-      ["dorian-knox", "Dorian Knox", "male"], ["clara-finch", "Clara Finch", "female"], ["amara-vale", "Amara Vale", "female"],
-      ["evelyn-march", "Evelyn March", "female"], ["basil-reed", "Basil Reed", "male"], ["maya-chen", "Maya Chen", "female"],
-      ["owen-brooks", "Owen Brooks", "male"], ["priya-shah", "Priya Shah", "female"], ["theo-grant", "Theo Grant", "male"],
-      ["lena-ortiz", "Lena Ortiz", "female"], ["marcus-bell", "Marcus Bell", "male"], ["nadia-park", "Nadia Park", "female"],
-      ["jonah-price", "Jonah Price", "male"], ["sylvie-hart", "Sylvie Hart", "female"], ["ravi-mehta", "Ravi Mehta", "male"]
+      ["mary-morstan", "Mary Morstan", "female"], ["helen-stoner", "Helen Stoner", "female"], ["jane-wilkinson", "Jane Wilkinson", "female"],
+      ["violet-hunter", "Violet Hunter", "female"], ["norma-restarick", "Norma Restarick", "female"], ["carla-lemarchant", "Carla Lemarchant", "female"],
+      ["magdala-buckley", "Magdala Buckley", "female"], ["jabez-wilson", "Jabez Wilson", "male"], ["john-openshaw", "John Openshaw", "male"],
+      ["percy-trevelyan", "Percy Trevelyan", "male"], ["victor-hatherley", "Victor Hatherley", "male"], ["alexander-holder", "Alexander Holder", "male"],
+      ["hilton-cubitt", "Hilton Cubitt", "male"], ["hall-pycroft", "Hall Pycroft", "male"], ["james-mortimer", "James Mortimer", "male"]
     ];
     let nameRow = null;
 
@@ -451,6 +451,13 @@
       return keepsInitialCapital.test(diagnosis)
         ? diagnosis
         : diagnosis.charAt(0).toLowerCase() + diagnosis.slice(1);
+    }
+
+    function inlineSymptom(symptom) {
+      const keepsInitialCapital = /^(?:Kussmaul\b|[A-Z0-9]{2,}\b)/;
+      return keepsInitialCapital.test(symptom)
+        ? symptom
+        : symptom.charAt(0).toLowerCase() + symptom.slice(1);
     }
 
     function pickDifferent(pool, previousKey) {
@@ -537,26 +544,25 @@
       return row.assignment.map((outcome, index) => {
         const name = nameRow.assignment[index];
         const clinicalCase = row.caseByValue[outcome[0]];
-        const diagnosis = inlineDiagnosis(clinicalCase.diagnosis);
         let text;
         if (selectedDifficulty === "easy" && row.key === "diagnosis") {
           text = `The ${slots[index].time} patient presented with ${clinicalCase.fact}.`;
         } else if (selectedDifficulty === "easy" && row.key === "treatment") {
           const mechanism = window.TREATMENT_MECHANISMS[clinicalCase.id];
           text = mechanism
-            ? `The ${slots[index].time} patient with ${diagnosis} received a therapy that ${mechanism}.`
-            : `The ${slots[index].time} patient with ${diagnosis} required its standard treatment.`;
+            ? `The ${slots[index].time} patient's condition was managed with a therapy that ${mechanism}.`
+            : `The ${slots[index].time} patient's condition required this treatment: ${clinicalCase.treatment}.`;
         } else if (selectedDifficulty === "easy") {
-          text = `The ${slots[index].time} patient with ${diagnosis} had its characteristic symptom.`;
+          text = `The ${slots[index].time} patient's condition produced the symptom of ${inlineSymptom(clinicalCase.symptom)}.`;
         } else if (row.key === "diagnosis") {
           text = `${name[1]} presented with ${clinicalCase.fact}.`;
         } else if (row.key === "treatment") {
           const mechanism = window.TREATMENT_MECHANISMS[clinicalCase.id];
           text = mechanism
-            ? `${name[1]}'s ${diagnosis} was treated with a therapy that ${mechanism}.`
-            : `${name[1]}'s ${diagnosis} required its standard treatment.`;
+            ? `${name[1]}'s condition was managed with a therapy that ${mechanism}.`
+            : `${name[1]}'s condition required this treatment: ${clinicalCase.treatment}.`;
         } else {
-          text = `${name[1]}'s ${diagnosis} produced its characteristic symptom.`;
+          text = `${name[1]}'s condition produced the symptom of ${inlineSymptom(clinicalCase.symptom)}.`;
         }
         return {
           text,
@@ -567,13 +573,12 @@
 
     function outcomeSubject(row, outcome) {
       const clinicalCase = row.caseByValue[outcome[0]];
-      const diagnosis = inlineDiagnosis(clinicalCase.diagnosis);
       if (row.key === "diagnosis") return `diagnosis suggested by ${clinicalCase.fact}`;
       if (row.key === "treatment") {
         const mechanism = window.TREATMENT_MECHANISMS[clinicalCase.id];
-        return mechanism ? `therapy that ${mechanism}` : `standard treatment for ${diagnosis}`;
+        return mechanism ? `therapy that ${mechanism}` : `therapy identified as "${clinicalCase.treatment}"`;
       }
-      return `characteristic symptom of ${diagnosis}`;
+      return `symptom described as "${clinicalCase.symptom}"`;
     }
 
     function clueEntity(row, value) {
@@ -627,15 +632,14 @@
       if (otherRow.subjects) return `${name} was ${clueEntity(otherRow, otherValue)}.`;
 
       const clinicalCase = otherRow.caseByValue[otherValue[0]];
-      const diagnosis = inlineDiagnosis(clinicalCase.diagnosis);
       if (otherRow.key === "diagnosis") return `${name} presented with ${clinicalCase.fact}.`;
       if (otherRow.key === "treatment") {
         const mechanism = window.TREATMENT_MECHANISMS[clinicalCase.id];
         return mechanism
-          ? `${name}'s ${diagnosis} was treated with a therapy that ${mechanism}.`
-          : `${name}'s ${diagnosis} required its standard treatment.`;
+          ? `${name}'s condition was managed with a therapy that ${mechanism}.`
+          : `${name}'s condition required this treatment: ${clinicalCase.treatment}.`;
       }
-      return `${name}'s ${diagnosis} produced its characteristic symptom.`;
+      return `${name}'s condition produced the symptom of ${inlineSymptom(clinicalCase.symptom)}.`;
     }
 
     function mediumFixedClue(row, position) {

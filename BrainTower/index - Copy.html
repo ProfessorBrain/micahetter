@@ -1,0 +1,2783 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <title>Brainstem Mastermind</title>
+  <style>
+    :root {
+      --ink: #14212b;
+      --muted: #5c6b75;
+      --paper: #f7f4ed;
+      --panel: #fffdf8;
+      --line: #d8d4ca;
+      --navy: #17384e;
+      --navy-deep: #0e293b;
+      --teal: #207a78;
+      --teal-dark: #145e5d;
+      --gold: #d39a35;
+      --coral: #c96255;
+      --success: #287a55;
+      --danger: #a8433c;
+      --shadow: 0 14px 35px rgba(18, 37, 48, .13);
+      --radius: 18px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { min-width: 320px; background: #e8eceb; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 4%, rgba(32, 122, 120, .13), transparent 31rem),
+        linear-gradient(180deg, #eaf0ef 0, #f4f1ea 42rem);
+    }
+
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    button:disabled { cursor: not-allowed; opacity: .55; }
+
+    :focus-visible {
+      outline: 3px solid #0b6ed0;
+      outline-offset: 3px;
+    }
+
+    .skip-link {
+      position: fixed;
+      z-index: 1000;
+      left: 1rem;
+      top: -5rem;
+      padding: .7rem 1rem;
+      border-radius: 10px;
+      background: white;
+      color: var(--navy);
+      box-shadow: var(--shadow);
+    }
+
+    .skip-link:focus { top: 1rem; }
+
+    .visually-hidden {
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      padding: 0 !important;
+      margin: -1px !important;
+      overflow: hidden !important;
+      clip: rect(0, 0, 0, 0) !important;
+      white-space: nowrap !important;
+      border: 0 !important;
+    }
+
+    .app-header {
+      position: sticky;
+      z-index: 50;
+      top: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      min-height: 72px;
+      padding: .75rem clamp(1rem, 3vw, 2.5rem);
+      color: white;
+      background: rgba(14, 41, 59, .96);
+      box-shadow: 0 5px 22px rgba(13, 32, 43, .18);
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: .8rem;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 43px;
+      height: 43px;
+      flex: 0 0 auto;
+      border: 1px solid rgba(255, 255, 255, .45);
+      border-radius: 13px;
+      color: var(--navy-deep);
+      background:
+        linear-gradient(90deg, transparent 47%, rgba(14, 41, 59, .18) 48% 52%, transparent 53%),
+        linear-gradient(#f2c972 48%, #fbf3d8 49% 52%, #78bbb6 53%);
+      font-weight: 900;
+      letter-spacing: -.08em;
+    }
+
+    .brand-copy { min-width: 0; }
+    .brand-copy strong { display: block; font-size: 1.03rem; letter-spacing: .01em; }
+    .brand-copy span { display: block; color: #c9d9df; font-size: .75rem; }
+
+    .header-status {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: .65rem;
+      min-width: 0;
+    }
+
+    .sync-pill, .role-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      min-height: 34px;
+      padding: .35rem .65rem;
+      border: 1px solid rgba(255, 255, 255, .22);
+      border-radius: 999px;
+      color: #e6f0f2;
+      background: rgba(255, 255, 255, .08);
+      font-size: .78rem;
+      white-space: nowrap;
+    }
+
+    .auto-advance-control {
+      display: inline-flex;
+      align-items: center;
+      gap: .48rem;
+      min-height: 36px;
+      padding: .4rem .7rem;
+      border: 1px solid rgba(255, 255, 255, .3);
+      border-radius: 10px;
+      color: #eef7f8;
+      background: rgba(255, 255, 255, .08);
+      font-size: .76rem;
+      font-weight: 750;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .auto-advance-control:hover {
+      border-color: rgba(255, 255, 255, .55);
+      background: rgba(255, 255, 255, .13);
+    }
+
+    .auto-advance-control:focus-within {
+      outline: 3px solid rgba(242, 201, 114, .48);
+      outline-offset: 2px;
+    }
+
+    .auto-advance-control input {
+      width: 16px;
+      height: 16px;
+      margin: 0;
+      accent-color: var(--gold);
+      cursor: pointer;
+    }
+
+    body:not([data-view="player"]) .auto-advance-control { display: none; }
+
+    .sync-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #88d5ad;
+      box-shadow: 0 0 0 4px rgba(136, 213, 173, .12);
+    }
+
+    .header-button {
+      min-height: 36px;
+      padding: .4rem .7rem;
+      border: 1px solid rgba(255, 255, 255, .3);
+      border-radius: 10px;
+      color: white;
+      background: transparent;
+    }
+
+    .app-layout {
+      display: grid;
+      grid-template-columns: minmax(310px, 380px) minmax(0, 1fr);
+      gap: 1.25rem;
+      max-width: 1660px;
+      margin: 0 auto;
+      padding: 1.25rem;
+    }
+
+    body[data-view="player"] .app-layout { display: block; max-width: 1320px; }
+    body[data-view="player"] .facilitator-pane { display: none; }
+    body[data-view="facilitator"] .app-layout { display: block; max-width: 880px; }
+    body[data-view="facilitator"] .player-stage { display: none; }
+
+    .facilitator-pane, .player-stage { min-width: 0; }
+
+    .facilitator-pane {
+      align-self: start;
+      position: sticky;
+      top: 92px;
+      max-height: calc(100vh - 108px);
+      overflow: auto;
+      padding: 1rem;
+      border: 1px solid rgba(23, 56, 78, .16);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, .96);
+      box-shadow: var(--shadow);
+    }
+
+    body[data-view="facilitator"] .facilitator-pane {
+      position: static;
+      max-height: none;
+    }
+
+    .eyebrow {
+      margin: 0 0 .2rem;
+      color: var(--teal-dark);
+      font-size: .72rem;
+      font-weight: 850;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { font-size: clamp(1.7rem, 3vw, 2.5rem); line-height: 1.08; }
+    h2 { font-size: 1.2rem; }
+    h3 { font-size: .96rem; }
+
+    .muted { color: var(--muted); }
+    .small { font-size: .82rem; }
+
+    .console-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: .75rem;
+      padding: .2rem .15rem .85rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .console-heading h2 { margin-bottom: .15rem; }
+
+    .private-badge {
+      padding: .25rem .5rem;
+      border-radius: 999px;
+      color: #704810;
+      background: #f7e2a9;
+      font-size: .68rem;
+      font-weight: 800;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    .console-section {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--line);
+    }
+
+    .console-section:first-of-type { border-top: 0; }
+
+    .section-heading {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: .65rem;
+    }
+
+    .section-heading h3 { margin-bottom: 0; }
+
+    .field { display: grid; gap: .35rem; margin-bottom: .75rem; }
+    .field > span { color: var(--muted); font-size: .78rem; font-weight: 750; }
+
+    input, select {
+      width: 100%;
+      min-height: 43px;
+      padding: .6rem .7rem;
+      border: 1px solid #bac4c7;
+      border-radius: 10px;
+      color: var(--ink);
+      background: white;
+    }
+
+    .player-input-row {
+      display: grid;
+      grid-template-columns: 28px 1fr auto;
+      align-items: center;
+      gap: .45rem;
+      margin-bottom: .45rem;
+    }
+
+    .player-swatch {
+      width: 24px;
+      height: 24px;
+      border: 2px solid white;
+      border-radius: 8px;
+      background: var(--player);
+      box-shadow: 0 0 0 1px #a6b0b3;
+    }
+
+    .icon-button {
+      width: 35px;
+      min-height: 35px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      color: var(--muted);
+      background: white;
+    }
+
+    .button-row { display: flex; flex-wrap: wrap; gap: .5rem; }
+
+    .button {
+      min-height: 42px;
+      padding: .58rem .82rem;
+      border: 1px solid transparent;
+      border-radius: 11px;
+      font-weight: 780;
+    }
+
+    .button.primary { color: white; background: var(--teal); }
+    .button.primary:hover { background: var(--teal-dark); }
+    .button.secondary { color: var(--navy); border-color: #b9c7cc; background: white; }
+    .button.warning { color: #6a4310; border-color: #e6c879; background: #fff5d8; }
+    .button.danger { color: #7d2823; border-color: #e4aaa6; background: #fff1ef; }
+    .button.ghost { color: var(--muted); border-color: var(--line); background: transparent; }
+    .button.full { width: 100%; }
+
+    .answer-card {
+      padding: .8rem;
+      border: 1px solid #edcd79;
+      border-radius: 13px;
+      background: #fff7dc;
+    }
+
+    .answer-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: .45rem;
+      margin-top: .6rem;
+    }
+
+    .answer-grid span {
+      padding: .45rem;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .65);
+      font-size: .75rem;
+    }
+
+    .answer-grid strong { display: block; color: #6a4310; }
+
+    .request-card, .pending-card, .notice-card {
+      margin-bottom: .75rem;
+      padding: .75rem;
+      border-radius: 13px;
+    }
+
+    .request-card { border: 1px solid #8ec3c1; background: #e7f4f3; }
+    .pending-card { border: 1px solid #d5ad61; background: #fff3d7; }
+    .notice-card { border: 1px solid #bbcbd1; background: #eef4f5; }
+    .request-card h3, .pending-card h3, .notice-card h3 { margin-bottom: .35rem; }
+
+    .clue-control-list { display: grid; gap: .5rem; }
+
+    .clue-control {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: .5rem;
+      align-items: center;
+      padding: .65rem;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: white;
+    }
+
+    .clue-control.requested { border-color: #58a5a1; box-shadow: inset 4px 0 0 var(--teal); }
+    .clue-control.revealed { background: #eff5f2; }
+    .clue-control strong { display: block; font-size: .79rem; }
+    .clue-control span { color: var(--muted); font-size: .7rem; }
+    .clue-actions { display: flex; gap: .3rem; }
+    .mini-button {
+      min-height: 31px;
+      padding: .3rem .5rem;
+      border: 1px solid #b8c5c8;
+      border-radius: 8px;
+      color: var(--navy);
+      background: white;
+      font-size: .7rem;
+      font-weight: 750;
+    }
+
+    .player-stage { display: grid; gap: 1rem; }
+
+    .hero-card {
+      position: relative;
+      overflow: hidden;
+      padding: clamp(.85rem, 2vw, 1.15rem) clamp(1rem, 2.5vw, 1.4rem);
+      border: 1px solid rgba(23, 56, 78, .16);
+      border-left: 5px solid var(--teal);
+      border-radius: 14px;
+      color: var(--ink);
+      background: rgba(249, 251, 249, .96);
+      box-shadow: 0 6px 18px rgba(18, 37, 48, .07);
+    }
+
+    .hero-content { position: relative; z-index: 1; max-width: 900px; }
+    .hero-card .eyebrow { color: var(--teal-dark); }
+    .hero-card h1 {
+      max-width: 730px;
+      margin-bottom: .35rem;
+      color: var(--navy);
+      font-size: clamp(1.3rem, 2.4vw, 1.65rem);
+    }
+    .turn-strip {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: .4rem;
+      margin-top: .65rem;
+    }
+
+    .turn-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      min-height: 30px;
+      padding: .28rem .55rem;
+      border: 1px solid #c7d4d6;
+      border-radius: 999px;
+      color: #51626b;
+      background: #eef3f2;
+      font-size: .72rem;
+    }
+
+    .turn-chip strong { color: var(--navy); }
+
+    .content-card {
+      padding: clamp(1rem, 2vw, 1.4rem);
+      border: 1px solid rgba(23, 56, 78, .12);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, .96);
+      box-shadow: 0 8px 24px rgba(18, 37, 48, .08);
+    }
+
+    .content-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: .85rem;
+    }
+
+    .content-heading h2 { margin-bottom: .15rem; }
+    .content-heading p { margin-bottom: 0; }
+
+    .phase-badge {
+      flex: 0 0 auto;
+      padding: .35rem .62rem;
+      border-radius: 999px;
+      color: #155654;
+      background: #d9efec;
+      font-size: .72rem;
+      font-weight: 850;
+      text-transform: uppercase;
+    }
+
+    .clue-grid {
+      display: grid;
+      gap: .8rem;
+    }
+
+    .domain-group-buttons {
+      display: grid;
+      gap: .65rem;
+    }
+
+    .domain-group-general .domain-group-buttons {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .domain-group-cranial {
+      padding: .65rem;
+      border: 1px solid rgba(32, 122, 120, .28);
+      border-radius: 15px;
+      background: linear-gradient(135deg, rgba(32, 122, 120, .07), rgba(32, 122, 120, .025));
+    }
+
+    .domain-group-cranial .domain-group-buttons {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .domain-group-title {
+      display: flex;
+      align-items: center;
+      gap: .55rem;
+      margin: 0 .15rem .55rem;
+      color: #155654;
+      font-size: .7rem;
+      font-weight: 850;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+
+    .domain-group-title::after {
+      content: "";
+      height: 1px;
+      flex: 1;
+      background: rgba(32, 122, 120, .25);
+    }
+
+    .domain-button {
+      position: relative;
+      min-height: 102px;
+      padding: .75rem;
+      border: 1px solid #bdc8c9;
+      border-radius: 13px;
+      text-align: left;
+      color: var(--ink);
+      background: white;
+      transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+    }
+
+    .domain-button:not(:disabled):hover {
+      transform: translateY(-2px);
+      border-color: var(--teal);
+      box-shadow: 0 8px 18px rgba(32, 122, 120, .14);
+    }
+
+    .domain-button strong { display: block; margin-bottom: .35rem; }
+    .domain-button span { display: block; color: var(--muted); font-size: .75rem; line-height: 1.35; }
+    .domain-button.available::before, .domain-button.requested::before, .domain-button.revealed::before {
+      content: "";
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+    }
+    .domain-button.available::before { background: var(--teal); }
+    .domain-button.requested { border-color: var(--gold); background: #fff8e4; }
+    .domain-button.requested::before { background: var(--gold); }
+    .domain-button.revealed { border-color: #8fbaa7; background: #edf6f1; }
+    .domain-button.revealed::before { background: var(--success); }
+    .domain-button.locked { border-style: dashed; background: #f1f2ef; }
+
+    .revealed-list { display: grid; gap: .55rem; margin-bottom: 1rem; }
+
+    .revealed-clue {
+      display: grid;
+      grid-template-columns: minmax(120px, .34fr) 1fr;
+      gap: .85rem;
+      padding: .75rem .85rem;
+      border-left: 4px solid var(--teal);
+      border-radius: 10px;
+      background: #eef7f5;
+    }
+
+    .revealed-clue strong { color: var(--teal-dark); font-size: .82rem; }
+    .revealed-clue p { margin: 0; line-height: 1.45; }
+
+    .empty-state {
+      padding: .8rem;
+      border: 1px dashed #b8c2c4;
+      border-radius: 11px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, .5);
+      font-size: .85rem;
+    }
+
+    .board-shell {
+      display: grid;
+      gap: .85rem;
+      padding: clamp(.8rem, 2vw, 1.2rem);
+      border: 1px solid #b8c4c4;
+      border-radius: 16px;
+      background:
+        linear-gradient(rgba(255, 255, 255, .68), rgba(255, 255, 255, .68)),
+        repeating-linear-gradient(90deg, #d7d1c5 0 2px, transparent 2px 16px),
+        #ddd6c8;
+      box-shadow: inset 0 2px 8px rgba(25, 42, 48, .08);
+    }
+
+    .board-axis {
+      display: grid;
+      grid-template-columns: 70px repeat(4, 1fr);
+      gap: .35rem;
+      align-items: end;
+      color: var(--muted);
+      font-size: .7rem;
+      font-weight: 800;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .board-axis span:nth-child(2), .board-axis span:nth-child(3) { color: #385e73; }
+    .board-axis span:nth-child(4), .board-axis span:nth-child(5) { color: #8c4f48; }
+
+    .slice {
+      display: grid;
+      grid-template-columns: 70px 1fr;
+      gap: .45rem;
+      padding: .55rem;
+      border: 1px solid rgba(23, 56, 78, .2);
+      border-radius: 14px;
+      background: rgba(255, 253, 248, .92);
+      box-shadow: 0 7px 0 rgba(23, 56, 78, .08), 0 12px 18px rgba(23, 56, 78, .08);
+    }
+
+    .slice-label {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: .15rem;
+      min-height: 150px;
+      border-radius: 10px;
+      color: white;
+      background: linear-gradient(180deg, var(--navy), #275f72);
+      text-align: center;
+    }
+
+    .slice-label strong { font-size: .76rem; text-transform: uppercase; writing-mode: vertical-rl; transform: rotate(180deg); }
+    .slice-label span { font-size: .64rem; opacity: .78; }
+
+    .cell-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(90px, 1fr));
+      grid-template-rows: repeat(2, minmax(74px, auto));
+      gap: .4rem;
+    }
+
+    .board-cell {
+      position: relative;
+      overflow: visible;
+      min-height: 74px;
+      padding: .45rem;
+      border: 1px solid rgba(23, 56, 78, .28);
+      border-radius: 10px;
+      color: var(--ink);
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, .86), rgba(224, 234, 233, .82));
+      box-shadow: inset 0 -6px 12px rgba(23, 56, 78, .05);
+      text-align: left;
+      transition: transform .13s ease, box-shadow .13s ease, border-color .13s ease;
+    }
+
+    .board-cell[data-side="right"] {
+      background: linear-gradient(145deg, rgba(255, 255, 255, .9), rgba(242, 226, 220, .83));
+    }
+
+    .board-cell[data-depth="ventral"] { box-shadow: inset 0 -7px 0 rgba(211, 154, 53, .12); }
+    .board-cell:not(:disabled):hover { transform: translateY(-2px); border-color: var(--teal); z-index: 3; }
+    .board-cell.selected { border: 3px solid var(--gold); box-shadow: 0 0 0 4px rgba(211, 154, 53, .2); z-index: 4; }
+    .board-cell.correct { border: 3px solid var(--success); box-shadow: 0 0 0 5px rgba(40, 122, 85, .18); }
+
+    .cell-label { display: block; max-width: 78%; color: #50616b; font-size: .64rem; line-height: 1.2; }
+    .cell-row-label { position: absolute; right: .35rem; bottom: .3rem; color: #7a858b; font-size: .58rem; font-weight: 800; text-transform: uppercase; }
+
+    .wand-stack {
+      position: absolute;
+      z-index: 8;
+      left: 50%;
+      top: 48%;
+      display: flex;
+      align-items: flex-end;
+      gap: 2px;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+    }
+
+    .wand {
+      --player: #277da1;
+      position: relative;
+      display: grid;
+      place-items: center;
+      width: 23px;
+      height: 23px;
+      border: 2px solid white;
+      border-radius: 50%;
+      color: white;
+      background:
+        repeating-linear-gradient(45deg, transparent 0 4px, rgba(255,255,255,.25) 4px 6px),
+        var(--player);
+      box-shadow: 0 2px 5px rgba(14, 41, 59, .28);
+      font-size: .53rem;
+      font-weight: 900;
+    }
+
+    .wand::before {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      bottom: 18px;
+      left: 8px;
+      width: 5px;
+      height: 24px;
+      border: 1px solid rgba(255,255,255,.6);
+      border-radius: 4px 4px 0 0;
+      background: var(--player);
+      transform: rotate(calc((var(--i, 0) - 2) * 2deg));
+      transform-origin: bottom;
+    }
+
+    .feedback-tag {
+      position: absolute;
+      top: -36px;
+      left: 13px;
+      display: grid;
+      place-items: center;
+      min-width: 22px;
+      height: 22px;
+      padding: 0 .2rem;
+      border: 2px solid var(--player);
+      border-radius: 7px;
+      color: var(--navy-deep);
+      background: #fff7db;
+      font-size: .67rem;
+      font-weight: 950;
+      box-shadow: 0 2px 6px rgba(14, 41, 59, .2);
+    }
+
+    .selection-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: .85rem;
+      padding: .75rem;
+      border: 1px solid #d6b467;
+      border-radius: 12px;
+      background: #fff6dc;
+    }
+
+    .selection-bar strong { display: block; color: #68430e; }
+
+    .history-list { display: grid; gap: .5rem; }
+
+    .history-item {
+      display: grid;
+      grid-template-columns: 36px minmax(90px, .35fr) 1fr auto;
+      gap: .65rem;
+      align-items: center;
+      padding: .65rem .75rem;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: white;
+    }
+
+    .guess-number, .score-badge {
+      display: grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      font-weight: 900;
+    }
+
+    .guess-number { color: white; background: var(--player); }
+    .score-badge { color: var(--navy-deep); border: 2px solid #e5c370; background: #fff5d2; }
+    .history-item strong { display: block; font-size: .82rem; }
+    .history-item span { color: var(--muted); font-size: .75rem; }
+
+    .debrief {
+      border: 2px solid #72a68d;
+      background: linear-gradient(145deg, #f2fbf5, #fffdf8);
+    }
+
+    .debrief-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      padding-bottom: .9rem;
+      border-bottom: 1px solid #bdd8ca;
+    }
+
+    .winner-banner {
+      display: inline-flex;
+      margin-bottom: .45rem;
+      padding: .28rem .55rem;
+      border-radius: 999px;
+      color: white;
+      background: var(--success);
+      font-size: .72rem;
+      font-weight: 850;
+    }
+
+    .coordinate-answer {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: .5rem;
+      margin: 1rem 0;
+    }
+
+    .coordinate-answer div {
+      padding: .7rem;
+      border: 1px solid #b8d3c4;
+      border-radius: 10px;
+      background: white;
+    }
+
+    .coordinate-answer span { display: block; color: var(--muted); font-size: .68rem; text-transform: uppercase; }
+    .coordinate-answer strong { color: var(--success); }
+
+    .debrief-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: .8rem;
+    }
+
+    .debrief-block {
+      padding: .85rem;
+      border: 1px solid #cfdbd3;
+      border-radius: 11px;
+      background: rgba(255,255,255,.74);
+    }
+
+    .debrief-block h3 { margin-bottom: .45rem; }
+    .debrief-block ul { margin: 0; padding-left: 1.1rem; }
+    .debrief-block li { margin: .25rem 0; line-height: 1.4; }
+
+    .mode-gate {
+      position: fixed;
+      z-index: 500;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 1rem;
+      background: rgba(9, 27, 39, .82);
+      backdrop-filter: blur(10px);
+    }
+
+    .mode-gate[hidden] { display: none; }
+
+    .mode-dialog {
+      width: min(820px, 100%);
+      padding: clamp(1.25rem, 4vw, 2.2rem);
+      border: 1px solid rgba(255,255,255,.35);
+      border-radius: 24px;
+      background: var(--paper);
+      box-shadow: 0 28px 70px rgba(4, 20, 30, .34);
+    }
+
+    .mode-dialog h1 { margin-bottom: .5rem; color: var(--navy); }
+    .mode-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; margin-top: 1.25rem; }
+
+    .mode-option {
+      min-height: 160px;
+      padding: 1rem;
+      border: 1px solid #b8c4c6;
+      border-radius: 15px;
+      text-align: left;
+      color: var(--ink);
+      background: white;
+    }
+
+    .mode-option:hover { border-color: var(--teal); box-shadow: 0 9px 20px rgba(32, 122, 120, .13); }
+    .mode-icon { display: grid; place-items: center; width: 42px; height: 42px; margin-bottom: .7rem; border-radius: 12px; color: white; background: var(--teal); font-weight: 900; }
+    .mode-option strong { display: block; margin-bottom: .35rem; }
+    .mode-option span { display: block; color: var(--muted); font-size: .78rem; line-height: 1.4; }
+    .mode-quickstart {
+      display: block;
+      margin: .85rem auto 0;
+      padding: .25rem .4rem;
+      border: 0;
+      color: var(--teal-dark);
+      background: transparent;
+      font-size: .78rem;
+      font-weight: 800;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+    .mode-quickstart:hover { color: var(--navy); }
+
+    .win-celebration {
+      position: fixed;
+      z-index: 700;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      padding: 1rem;
+    }
+
+    .win-celebration[hidden] { display: none; }
+
+    .win-backdrop {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 50% 38%, rgba(45, 143, 127, .3), transparent 42%),
+        rgba(7, 24, 35, .84);
+      backdrop-filter: blur(9px);
+      animation: win-backdrop-in .24s ease-out both;
+    }
+
+    .win-confetti {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .win-confetti span {
+      position: absolute;
+      top: -12vh;
+      left: var(--x);
+      width: var(--size);
+      height: calc(var(--size) * 1.7);
+      border-radius: 2px;
+      background: var(--confetti);
+      opacity: 0;
+      animation: confetti-fall var(--duration) var(--delay) cubic-bezier(.18, .74, .42, 1) both;
+    }
+
+    .win-dialog {
+      position: relative;
+      z-index: 1;
+      width: min(470px, 100%);
+      padding: clamp(1.4rem, 5vw, 2.35rem);
+      border: 1px solid rgba(255, 255, 255, .64);
+      border-radius: 25px;
+      text-align: center;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 50% 0, rgba(242, 201, 114, .42), transparent 38%),
+        var(--paper);
+      box-shadow: 0 34px 90px rgba(0, 17, 27, .48);
+      animation: win-dialog-in .56s cubic-bezier(.2, .88, .24, 1.2) both;
+      outline: none;
+    }
+
+    .win-dialog::before {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      z-index: -1;
+      border: 1px solid rgba(32, 122, 120, .16);
+      border-radius: 18px;
+      pointer-events: none;
+    }
+
+    .win-close {
+      position: absolute;
+      top: .75rem;
+      right: .75rem;
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      padding: 0;
+      border: 1px solid #bdc9c9;
+      border-radius: 50%;
+      color: var(--muted);
+      background: rgba(255, 255, 255, .74);
+      font-size: 1.2rem;
+      line-height: 1;
+    }
+
+    .win-close:hover { color: var(--navy); border-color: var(--teal); }
+
+    .win-score {
+      display: grid;
+      place-items: center;
+      width: 112px;
+      height: 112px;
+      margin: 0 auto 1rem;
+      border: 7px solid rgba(255, 255, 255, .78);
+      border-radius: 50%;
+      color: white;
+      background: linear-gradient(145deg, var(--teal), var(--success));
+      box-shadow:
+        0 0 0 5px rgba(32, 122, 120, .2),
+        0 16px 30px rgba(27, 111, 86, .24);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 2.7rem;
+      font-weight: 800;
+      letter-spacing: -.08em;
+      animation: win-score-pulse 1.25s .42s ease-out both;
+    }
+
+    .win-score span {
+      margin-left: .08em;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 1rem;
+      letter-spacing: 0;
+    }
+
+    .win-kicker {
+      margin-bottom: .35rem;
+      color: var(--teal-dark);
+      font-size: .74rem;
+      font-weight: 900;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+    }
+
+    .win-dialog h2 {
+      margin-bottom: .55rem;
+      color: var(--navy);
+      font-size: clamp(1.7rem, 5vw, 2.35rem);
+    }
+
+    .win-case {
+      max-width: 370px;
+      margin: 0 auto 1.2rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    @keyframes win-backdrop-in {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes win-dialog-in {
+      from { opacity: 0; transform: translateY(24px) scale(.86) rotate(-1deg); }
+      to { opacity: 1; transform: translateY(0) scale(1) rotate(0); }
+    }
+
+    @keyframes win-score-pulse {
+      0% { transform: scale(.72); }
+      48% { transform: scale(1.1); }
+      72% { transform: scale(.96); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes confetti-fall {
+      0% { opacity: 0; transform: translate3d(0, -10vh, 0) rotate(0deg); }
+      10% { opacity: 1; }
+      100% { opacity: .94; transform: translate3d(var(--drift), 118vh, 0) rotate(var(--spin)); }
+    }
+
+    .toast {
+      position: fixed;
+      z-index: 600;
+      right: 1rem;
+      bottom: 1rem;
+      max-width: min(420px, calc(100vw - 2rem));
+      padding: .75rem .9rem;
+      border-radius: 12px;
+      color: white;
+      background: var(--navy-deep);
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translateY(16px);
+      pointer-events: none;
+      transition: opacity .18s ease, transform .18s ease;
+    }
+
+    .toast.show { opacity: 1; transform: translateY(0); }
+    [hidden] { display: none !important; }
+
+    @media (max-width: 1120px) {
+      .app-layout { grid-template-columns: 330px minmax(0, 1fr); }
+      .domain-group-general .domain-group-buttons,
+      .domain-group-cranial .domain-group-buttons { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 850px) {
+      .app-header { position: static; }
+      .app-layout { display: block; padding: .75rem; }
+      .facilitator-pane { position: static; max-height: none; margin-bottom: .9rem; }
+      .player-stage { gap: .75rem; }
+      .mode-options { grid-template-columns: 1fr; }
+      .mode-option { min-height: auto; }
+      .debrief-grid { grid-template-columns: 1fr; }
+      .coordinate-answer { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 620px) {
+      .brand-copy span, .role-pill, .sync-pill span:last-child { display: none; }
+      .app-header { padding: .65rem .75rem; }
+      .hero-card, .content-card { border-radius: 14px; }
+      .domain-group-buttons,
+      .domain-group-cranial .domain-group-buttons { grid-template-columns: 1fr; }
+      .board-shell { overflow-x: auto; }
+      .board-axis, .slice { min-width: 590px; }
+      .revealed-clue { grid-template-columns: 1fr; gap: .25rem; }
+      .history-item { grid-template-columns: 34px 1fr auto; }
+      .history-item > div:nth-child(3) { grid-column: 2 / 4; }
+      .selection-bar { align-items: flex-start; flex-direction: column; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+      }
+    }
+
+    @media print {
+      .app-header, .facilitator-pane, .mode-gate, .win-celebration, .button { display: none !important; }
+      .app-layout { display: block; padding: 0; }
+      .content-card, .hero-card { break-inside: avoid; box-shadow: none; }
+    }
+  </style>
+</head>
+<body data-view="single">
+  <a class="skip-link" href="#main-content">Skip to game</a>
+
+  <header class="app-header">
+    <div class="brand" aria-label="Brainstem Mastermind">
+      <div class="brand-mark" aria-hidden="true">BM</div>
+      <div class="brand-copy">
+        <strong>Brainstem Mastermind</strong>
+        <span>Structure-based localization prototype</span>
+      </div>
+    </div>
+    <div class="header-status">
+      <label class="auto-advance-control" title="Automatically reveal requested clues and score submitted wands">
+        <input id="autoAdvanceFacilitator" type="checkbox">
+        <span>Auto-advance Facilitator</span>
+      </label>
+      <span class="sync-pill"><span class="sync-dot" aria-hidden="true"></span><span id="syncStatus">Local session</span></span>
+      <span class="role-pill" id="roleLabel">Single-window mode</span>
+      <button class="header-button" id="changeViewButton" type="button">Change view</button>
+    </div>
+  </header>
+
+  <div class="app-layout">
+    <aside class="facilitator-pane" id="facilitatorPane" aria-label="Private facilitator console">
+      <div class="console-heading">
+        <div>
+          <p class="eyebrow">Private controls</p>
+          <h2>Facilitator Console</h2>
+          <p class="muted small">Keep this panel off the projected display.</p>
+        </div>
+        <span class="private-badge">Private</span>
+      </div>
+      <div id="facilitatorContent"></div>
+    </aside>
+
+    <main class="player-stage" id="main-content">
+      <section class="hero-card" aria-labelledby="caseHeading">
+        <div class="hero-content">
+          <p class="eyebrow" id="caseEyebrow">Awaiting setup</p>
+          <h1 id="caseHeading">Ready the Brainstem Tower</h1>
+          <div class="turn-strip" id="turnStrip" aria-label="Game status"></div>
+        </div>
+      </section>
+
+      <section class="content-card" id="clueSection" aria-labelledby="clueHeading">
+        <div class="content-heading">
+          <div>
+            <p class="eyebrow">Examination</p>
+            <h2 id="clueHeading">Choose a clue domain</h2>
+            <p class="muted small" id="clueInstruction">Available domains appear when the case begins.</p>
+          </div>
+          <span class="phase-badge" id="phaseBadge">Setup</span>
+        </div>
+        <div class="revealed-list" id="revealedClues"></div>
+        <div class="clue-grid" id="domainGrid"></div>
+      </section>
+
+      <section class="content-card" id="boardSection" aria-labelledby="boardHeading">
+        <div class="content-heading">
+          <div>
+            <p class="eyebrow">Localization board</p>
+            <h2 id="boardHeading">Place one digital wand</h2>
+            <p class="muted small">Select side, level, medial/lateral, and anterior/posterior in one move.</p>
+          </div>
+          <span class="phase-badge" id="boardStatus">Waiting</span>
+        </div>
+        <div class="board-shell">
+          <div class="board-axis" aria-hidden="true">
+            <span></span><span>Left lateral</span><span>Left medial</span><span>Right medial</span><span>Right lateral</span>
+          </div>
+          <div id="brainstemBoard"></div>
+        </div>
+        <div class="selection-bar" id="selectionBar" hidden>
+          <div>
+            <span class="small muted">Proposed location</span>
+            <strong id="selectionText"></strong>
+          </div>
+          <div class="button-row">
+            <button class="button ghost" id="clearSelectionButton" type="button">Clear</button>
+            <button class="button primary" id="submitGuessButton" type="button">Submit wand</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-card" aria-labelledby="historyHeading">
+        <div class="content-heading">
+          <div>
+            <p class="eyebrow">Mastermind record</p>
+            <h2 id="historyHeading">Guess history</h2>
+          </div>
+          <span class="phase-badge" id="guessCountBadge">0 guesses</span>
+        </div>
+        <div class="history-list" id="guessHistory"></div>
+      </section>
+
+      <section class="content-card debrief" id="debriefSection" aria-labelledby="debriefHeading" hidden></section>
+    </main>
+  </div>
+
+  <div class="mode-gate" id="modeGate" role="dialog" aria-modal="true" aria-labelledby="modeHeading">
+    <div class="mode-dialog">
+      <p class="eyebrow">Prototype launcher</p>
+      <h1 id="modeHeading">How will you use this screen?</h1>
+      <p class="muted">Use two windows for a private console and projected player board, or keep both together while testing.</p>
+      <div class="mode-options">
+        <button class="mode-option" type="button" data-mode="facilitator">
+          <span class="mode-icon" aria-hidden="true">F</span>
+          <strong>Facilitator Console</strong>
+          <span>Private case setup, answer, clue release, scoring, and debrief controls.</span>
+        </button>
+        <button class="mode-option" type="button" data-mode="player">
+          <span class="mode-icon" aria-hidden="true">P</span>
+          <strong>Player Display</strong>
+          <span>Public projected board with clues, wands, feedback, and guess history.</span>
+        </button>
+        <button class="mode-option" type="button" data-mode="single">
+          <span class="mode-icon" aria-hidden="true">1</span>
+          <strong>Single-Window Mode</strong>
+          <span>Facilitator controls and player board together for prototyping or small groups.</span>
+        </button>
+      </div>
+      <button class="mode-quickstart" id="singlePlayerQuickstart" type="button">Single-player quickstart</button>
+    </div>
+  </div>
+
+  <div class="win-celebration" id="winCelebration" hidden>
+    <div class="win-backdrop" data-win-dismiss aria-hidden="true"></div>
+    <div class="win-confetti" id="winConfetti" aria-hidden="true"></div>
+    <section class="win-dialog" id="winDialog" role="dialog" aria-modal="true" aria-labelledby="winTitle" aria-describedby="winCase" tabindex="-1">
+      <button class="win-close" id="winCloseButton" type="button" aria-label="Close celebration">×</button>
+      <div class="win-score" aria-label="Four out of four">4<span>/4</span></div>
+      <p class="win-kicker">Perfect localization</p>
+      <h2 id="winTitle">You found the lesion!</h2>
+      <p class="win-case" id="winCase">All four coordinates are correct.</p>
+      <button class="button primary" id="winContinueButton" type="button">Continue to debrief</button>
+    </section>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="visually-hidden" id="liveRegion" aria-live="assertive"></div>
+
+  <script>
+    "use strict";
+
+    const STORAGE_KEY = "brainstem-mastermind-state-v6";
+    const CHANNEL_NAME = "brainstem-mastermind-sync-v6";
+    const AUTO_ADVANCE_KEY = "brainstem-mastermind-auto-advance-v1";
+    const LEVELS = ["midbrain", "pons", "medulla"];
+    const PLAYER_COLORS = ["#277da1", "#d8752d", "#7a55a3", "#2f8f67", "#c04d67"];
+    const CRANIAL_DOMAIN_IDS = ["autonomic", "oculomotion", "facial", "bulbar"];
+    const DOMAIN_CATALOG = {
+      motor: { label: "Motor", short: "Strength and movement" },
+      sensory: { label: "Sensory", short: "Body touch, pain, temperature, vibration, position" },
+      oculomotion: { label: "Oculomotion", short: "Eye position, movements, gaze, and nystagmus" },
+      facial: { label: "Facial Sensorimotor", short: "Facial sensation and movement" },
+      coordination: { label: "Coordination and Gait", short: "Coordination, stance, gait, and lateropulsion" },
+      autonomic: { label: "Pupils", short: "Pupil size, symmetry, reactivity, and light-dependent anisocoria" },
+      bulbar: { label: "Bulbar Function", short: "Speech, palate, voice, swallowing, and tongue" }
+    };
+
+    const FAMILY_DEFINITIONS = [
+      {
+        id: "vm-midbrain-weber",
+        title: "Oculomotor-peduncular hemiparesis",
+        source: { right: 1, left: 2 },
+        answer: { level: "midbrain", medialLateral: "medial", ventralDorsal: "ventral" },
+        affected: ["{Ipsi} oculomotor fascicles", "{Ipsi} cerebral peduncle corticospinal and corticobulbar fibers"],
+        spared: ["Superior cerebellar peduncle outflow", "Dorsal gaze network", "Spinothalamic tract", "Medial lemniscus"],
+        domains: {
+          motor: [0, "The {contra} arm and leg are weak.", "Contralateral limb pyramidal weakness places the lesion above the decussation and favors a ventral motor pathway."],
+          sensory: [0, "Routine light touch, discriminative touch, pinprick, temperature, vibration, and joint position are preserved over the body.", "Body sensory sparing argues against extension into the spinothalamic or medial-lemniscal pathways."],
+          coordination: [0, "There is no appendicular ataxia out of proportion to weakness; gait is hemiparetic toward the weak {contra} side.", "The gait pattern follows corticospinal weakness rather than primary ataxia, supporting ventral peduncular involvement."],
+          oculomotion: [0, "The {ipsi} eyelid is ptotic, and the eye rests abducted and depressed with impaired adduction, elevation, and depression.", "An ipsilateral fascicular CN III palsy establishes the side and midbrain level."],
+          facial: [0, "There is {contra} lower facial weakness with preserved forehead movement and eye closure. Facial sensation is normal.", "Corticobulbar involvement causes a contralateral upper-motor-neuron facial pattern while trigeminal sensory and facial nuclear pathways are spared."],
+          bulbar: [0, "Articulation is mildly distorted by labial weakness; palate elevation, voice, swallowing, and tongue movement are normal.", "The speech change reflects facial weakness while nucleus ambiguus and hypoglossal systems are spared."],
+          autonomic: [0, "The {ipsi} pupil is dilated and poorly reactive; the anisocoria is greater in bright light.", "Parasympathetic CN III fibers are involved while the descending sympathetic pathway is spared."]
+        },
+        debrief: [
+          "CN III establishes the {ipsi} midbrain.",
+          "Contralateral weakness establishes ventral peduncular involvement.",
+          "Absence of disproportionate ataxia argues against a dorsomedial tegmental lesion."
+        ],
+        discriminating: "oculomotion",
+        distractor: "Dorsomedial midbrain would favor ataxia, tremor, or gaze-network findings rather than dense weakness.",
+        reviewNote: "This is a deliberately complete crossed CN III–pyramidal pattern. Partial oculomotor variants appear as separate cases.",
+        references: ["Pure midbrain infarction clinical-MRI series (PMID 7969955)", "Pure midbrain infarction series (PMID 22189277)"]
+      },
+      {
+        id: "dm-midbrain-claude",
+        title: "Oculomotor-cerebellar syndrome",
+        source: { right: 13, left: 14 },
+        answer: { level: "midbrain", medialLateral: "medial", ventralDorsal: "dorsal" },
+        affected: ["{Ipsi} oculomotor fascicles", "Decussated superior cerebellar peduncle and dentatothalamic fibers near the red-nucleus region"],
+        spared: ["Cerebral peduncle corticospinal fibers", "Spinothalamic tract", "Medial lemniscus"],
+        domains: {
+          coordination: [0, "There is marked {contra} limb dysmetria and intention tremor; gait is broad-based and unsteady.", "Involvement of already-decussated cerebellar outflow fibers produces contralateral limb ataxia and a cerebellar gait, favoring the dorsal midbrain tegmentum."],
+          motor: [0, "Power is full in all limbs.", "Corticospinal sparing argues against the ventromedial cerebral peduncle."],
+          sensory: [0, "Routine light touch, discriminative touch, pinprick, temperature, vibration, and joint position are preserved over the body.", "The spinothalamic and medial-lemniscal pathways are spared in this confined tegmental pattern."],
+          oculomotion: [0, "There is a {ipsi} oculomotor palsy with ptosis and impaired adduction, elevation, and depression.", "CN III establishes the {ipsi} midbrain."],
+          facial: [0, "Facial strength and facial sensation are normal.", "Trigeminal sensory and facial-motor pathways are spared."],
+          bulbar: [0, "Articulation is mildly ataxic; palate elevation, voice, swallowing, and tongue movement are normal.", "Lower brainstem bulbar structures are spared."],
+          autonomic: [0, "The {ipsi} pupil is dilated and poorly reactive; the anisocoria is greater in bright light.", "Parasympathetic CN III fibers are involved while descending sympathetic fibers are spared."]
+        },
+        debrief: [
+          "CN III establishes the {ipsi} midbrain.",
+          "Contralateral ataxia localizes cerebellar outflow fibers near the red-nucleus region.",
+          "Preserved strength separates this from a ventromedial peduncular lesion."
+        ],
+        discriminating: "coordination",
+        distractor: "Ventromedial midbrain would produce contralateral weakness rather than isolated cerebellar outflow signs.",
+        reviewNote: "Ataxia is contralateral because this template involves cerebellothalamic fibers after the superior cerebellar peduncle decussation.",
+        references: ["Claude syndrome lesion-localization study (PMID 11756616)", "Pure midbrain infarction clinical-MRI series (PMID 7969955)"]
+      },
+      {
+        id: "vm-pons-dch",
+        title: "Dysarthria-clumsy hand syndrome",
+        source: { right: 27, left: 28 },
+        answer: { level: "pons", medialLateral: "medial", ventralDorsal: "ventral" },
+        affected: ["Rostral paramedian pontine corticobulbar fibers", "Medial corticospinal fibers", "Adjacent corticopontine and pontocerebellar circuitry"],
+        spared: ["Dorsal tegmental ocular systems", "Medial lemniscus", "Spinothalamic tract", "Trigeminal sensory pathways", "Lower cranial-nerve nuclei"],
+        domains: {
+          motor: [0, "There is mild {contra} hand-predominant pyramidal weakness.", "A corticospinal motor pattern fits the contralateral medial pontine base."],
+          bulbar: [0, "Dysarthria is prominent; palate elevation, voice, swallowing, and tongue movement are normal.", "The dysarthria reflects corticobulbar and adjacent pontocerebellar involvement rather than nucleus ambiguus dysfunction."],
+          sensory: [0, "Routine light touch, discriminative touch, pinprick, temperature, vibration, and joint position are preserved over the body.", "A small rostral basis-pontis lesion spares the more dorsal medial lemniscus and the tegmental spinothalamic pathway; body sensory loss would imply extension beyond this archetype."],
+          oculomotion: [0, "Eye movements are full, with no gaze palsy, INO, or nystagmus.", "Dorsal pontine ocular-motor systems are spared."],
+          facial: [0, "There is mild {contra} lower facial weakness with preserved forehead movement and eye closure. Facial sensation is normal.", "Supranuclear corticobulbar involvement causes the lower facial weakness while trigeminal sensory and facial nuclear systems are spared."],
+          coordination: [1, "The {contra} hand shows dysmetria, dysrhythmia, and impaired rapid alternating movements out of proportion to its mild weakness; gait is mildly unsteady.", "Pontocerebellar involvement produces genuine hand clumsiness, while the small basis-pontis lesion causes little gait impairment."],
+          autonomic: [0, "Pupils are equal and briskly reactive to light, with no anisocoria in bright or dim illumination.", "The lateral sympathetic pathway is spared."]
+        },
+        debrief: [
+          "Dysarthria-clumsy hand is a recognized rostral pontine-base lacunar pattern.",
+          "Normal sensation and ocular movement support a small ventromedial basis-pontis lesion without dorsal tegmental extension.",
+          "Disproportionate hand dysmetria reflects adjacent pontocerebellar pathway involvement.",
+          "This syndrome has supratentorial mimics; the prototype assumes the lesion is confined to the brainstem."
+        ],
+        discriminating: "bulbar",
+        distractor: "A supratentorial lacune can mimic this pattern; within the tower, midbrain and medullary ventral lesions require their own level anchors.",
+        reviewNote: "A confined rostral basis-pontis lesion can spare all tested sensation because the medial lemniscus lies dorsally and the spinothalamic and trigeminal pathways are tegmental. Sensory loss would indicate extension.",
+        references: ["Pontine-base infarction syndromes (PMID 7762044)", "Paramedian pontine infarction topography (PMID 9099201)"]
+      },
+      {
+        id: "vl-pons-sensorimotor",
+        title: "Anterolateral pontine sensorimotor syndrome",
+        source: { right: 31, left: 32 },
+        answer: { level: "pons", medialLateral: "lateral", ventralDorsal: "ventral" },
+        affected: ["Ventrolateral basis pontis corticospinal and corticopontine fibers", "Adjacent anterolateral tegmental spinothalamic tract"],
+        spared: ["Medial lemniscus", "Dorsomedial gaze centers", "Facial nucleus and fascicles", "Spinal trigeminal system", "Vestibular nuclei"],
+        domains: {
+          motor: [0, "There is moderate {contra} arm and leg weakness.", "Corticospinal involvement places the lesion ventrally."],
+          sensory: [0, "Pinprick and temperature are reduced over the {contra} body. Routine light touch, discriminative touch, vibration, and joint position are preserved over the body.", "The spinothalamic tract is involved in a small anterolateral tegmental extension while the medial lemniscus is spared. Preserved touch reflects the intact lemniscal pathway and parallel representation of nonpainful touch."],
+          coordination: [0, "Gait combines mild {contra} weakness with disproportionate clumsiness, and the {contra} limbs are mildly ataxic beyond the degree explained by weakness.", "Mixed pyramidal, corticopontine, and pontocerebellar dysfunction supports a lateralized ventral pontine footprint."],
+          oculomotion: [0, "Eye movements are full, with no horizontal gaze palsy, INO, or nystagmus.", "Dorsal pontine ocular-motor structures are spared."],
+          facial: [0, "Facial strength and facial sensation are normal.", "Trigeminal sensory and facial-motor structures are spared."],
+          bulbar: [0, "Articulation, palate elevation, voice, swallowing, and tongue movement are normal.", "Corticobulbar pathways and lower brainstem bulbar systems are spared."],
+          autonomic: [0, "Pupils are equal and briskly reactive to light, with no anisocoria in bright or dim illumination.", "The dorsal-lateral sympathetic pathway is spared."]
+        },
+        debrief: [
+          "Corticospinal findings establish a ventral lesion.",
+          "Contralateral pain-temperature loss from spinothalamic involvement and pontocerebellar clumsiness shift the footprint laterally.",
+          "Preserved routine and discriminative touch, vibration, and joint position indicate medial-lemniscal sparing.",
+          "This quadrant is a teaching abstraction; real anterolateral pontine syndromes vary and require imaging correlation."
+        ],
+        discriminating: "sensory",
+        distractor: "Ventromedial pons is usually motor-predominant without a clear body sensory deficit.",
+        reviewNote: "Pinprick and temperature—not routine light touch—carry the sensory localization in this selected spinothalamic-extension pattern.",
+        references: ["Pontine infarction clinical-MRI correlations (PMID 12529787)", "Isolated pontine infarction series (PMID 8559368)"]
+      },
+      {
+        id: "dm-pons-one-half",
+        title: "One-and-a-half syndrome",
+        source: { right: 37, left: 38 },
+        answer: { level: "pons", medialLateral: "medial", ventralDorsal: "dorsal" },
+        affected: ["{Ipsi} PPRF or abducens nucleus", "{Ipsi} medial longitudinal fasciculus"],
+        spared: ["Ventral corticospinal fibers", "Medial lemniscus", "Spinothalamic tract", "Trigeminal sensory pathways", "Lateral vestibular systems", "Descending sympathetic pathway"],
+        domains: {
+          oculomotion: [0, "There is a {ipsi} horizontal gaze palsy plus failure of the {ipsi} eye to adduct on attempted gaze to the {contra} side; only {contra} abduction remains.", "The one-and-a-half pattern precisely localizes to the {ipsi} dorsal medial pontine tegmentum."],
+          facial: [0, "Facial strength and facial sensation are normal.", "Facial fascicles and trigeminal sensory pathways are spared."],
+          motor: [0, "Limb strength is normal.", "Ventral corticospinal fibers are spared."],
+          sensory: [0, "Routine light touch, discriminative touch, pinprick, temperature, vibration, and joint position are preserved over the body.", "The medial-lemniscal and spinothalamic pathways are spared."],
+          coordination: [0, "There is no limb dysmetria, and gait is steady when visual symptoms are controlled.", "Major cerebellar pathways are spared, so there is no primary gait ataxia."],
+          bulbar: [0, "Articulation, voice, palate movement, swallowing, and tongue movement are normal.", "Lower brainstem bulbar systems are spared."],
+          autonomic: [0, "Pupils are equal and briskly reactive to light, with no anisocoria in bright or dim illumination.", "The descending sympathetic pathway is spared."]
+        },
+        debrief: [
+          "The ipsilateral horizontal gaze center accounts for the conjugate gaze palsy.",
+          "The adjacent ipsilateral MLF accounts for the internuclear ophthalmoplegia.",
+          "Together they define the dorsomedial pontine tegmentum."
+        ],
+        discriminating: "oculomotion",
+        distractor: "Dorsomedial midbrain can cause an INO but not an ipsilateral horizontal gaze palsy.",
+        reviewNote: "The horizontal gaze palsy is nuclear or PPRF-level; an isolated abducens fascicular palsy would not produce the one-and-a-half pattern.",
+        references: ["Pontine infarction clinical-MRI correlations (PMID 12529787)", "Isolated pontine infarction series (PMID 8559368)"]
+      },
+      {
+        id: "dl-pons-aica",
+        title: "Lateral pontine / AICA pattern",
+        source: { right: 43, left: 44 },
+        answer: { level: "pons", medialLateral: "lateral", ventralDorsal: "dorsal" },
+        affected: ["{Ipsi} facial nucleus or fascicle", "{Ipsi} vestibular pathways", "{Ipsi} middle cerebellar peduncle", "{Ipsi} spinal trigeminal system", "Spinothalamic tract", "{Ipsi} descending sympathetic fibers"],
+        spared: ["Medial PPRF and MLF", "Ventral corticospinal tract", "Medial lemniscus", "Nucleus ambiguus"],
+        domains: {
+          oculomotion: [0, "Central nystagmus is present, with no horizontal gaze palsy or INO.", "Vestibular involvement causes nystagmus while the medial PPRF and MLF remain intact."],
+          facial: [0, "There is complete {ipsi} lower-motor-neuron facial weakness. Pinprick and temperature are reduced over the {ipsi} face, while facial light touch is preserved.", "Facial-nuclear and spinal-trigeminal involvement strongly identifies a lateral pontine pattern."],
+          coordination: [0, "There is {ipsi} limb dysmetria and gait ataxia; the patient has vertigo and falls toward the {ipsi} side.", "Middle cerebellar peduncle, vestibular, and cerebellar involvement produces ipsilateral dysmetria and lateropulsion."],
+          motor: [0, "There is no meaningful limb weakness.", "The ventral corticospinal tract is spared."],
+          sensory: [0, "Pinprick and temperature are reduced over the {contra} body; routine light touch, discriminative touch, vibration, and joint position are preserved over the body.", "Spinothalamic involvement produces contralateral body pain-temperature loss without medial-lemniscal loss."],
+          bulbar: [0, "Articulation is mildly distorted by labial weakness; palate elevation, voice, swallowing, and tongue movement are normal.", "The speech change reflects facial weakness while nucleus ambiguus and hypoglossal systems are spared."],
+          autonomic: [0, "The {ipsi} pupil is constricted, with mild {ipsi} upper-eyelid ptosis; the anisocoria is greater in dim light.", "Descending sympathetic fibers run laterally."]
+        },
+        debrief: [
+          "A facial nucleus or fascicle palsy establishes the pons.",
+          "Vestibular and middle-cerebellar-peduncle findings support a dorsolateral pontine footprint.",
+          "Preserved bulbar function separates this from a nucleus-ambiguus lateral medullary lesion.",
+          "The case uses a positive facial-nuclear sign rather than an otologic symptom to establish the pontine level."
+        ],
+        discriminating: "facial",
+        distractor: "Lateral medulla does not produce a facial-nucleus or facial-fascicle palsy.",
+        reviewNote: "AICA presentations vary. This selected archetype uses a positive facial-nuclear sign plus vestibulocerebellar findings for bedside localization.",
+        references: ["Pontine infarction clinical-MRI correlations (PMID 12529787)", "Isolated pontine infarction series (PMID 8559368)"]
+      },
+      {
+        id: "vm-medulla-medial",
+        title: "Classic medial medullary syndrome",
+        source: { right: 49, left: 50 },
+        answer: { level: "medulla", medialLateral: "medial", ventralDorsal: "ventral" },
+        affected: ["{Ipsi} pyramid", "{Ipsi} medial lemniscus", "{Ipsi} hypoglossal fascicle"],
+        spared: ["Nucleus ambiguus", "Spinal trigeminal system", "Vestibular nuclei", "Descending sympathetic pathway"],
+        domains: {
+          motor: [0, "The {contra} arm and leg are weak.", "Pyramidal involvement establishes a ventral medullary lesion above the decussation."],
+          sensory: [0, "Vibration, joint position, fine discriminative touch, and routine light-touch detection are reduced over the {contra} body. Pinprick and temperature are preserved.", "The medial lemniscus is involved while the spinothalamic tract is spared. Discriminative touch is more reliably impaired than simple touch detection because nonpainful touch has parallel ascending representation."],
+          coordination: [0, "There is no dysmetria beyond that caused by weakness and proprioceptive loss; gait is hemiparetic and sensory-ataxic on the {contra} side.", "Cerebellar pathways are spared; pyramid and medial-lemniscus involvement account for the gait pattern."],
+          bulbar: [0, "Articulation is lingually dysarthric, and the tongue deviates toward the {ipsi} side with {ipsi} weakness. Palate elevation, voice, and swallowing are preserved.", "A fascicular CN XII palsy fixes the side and medullary level."],
+          oculomotion: [0, "Eye movements are full, with no nystagmus, gaze palsy, or INO.", "Pontine and midbrain ocular-motor anchors are absent."],
+          facial: [0, "Facial strength and facial sensation are normal.", "Trigeminal sensory and facial-motor pathways are spared."],
+          autonomic: [0, "Pupils are equal and briskly reactive to light, with no anisocoria in bright or dim illumination.", "The lateral sympathetic pathway is spared."]
+        },
+        debrief: [
+          "CN XII identifies the {ipsi} medulla.",
+          "Contralateral weakness places the lesion in the pyramid.",
+          "Contralateral loss of vibration, position sense, and discriminative touch identifies the medial lemniscus."
+        ],
+        discriminating: "bulbar",
+        distractor: "Ventromedial pons lacks an ipsilateral hypoglossal fascicular sign.",
+        reviewNote: "This selected patient has reduced vibration, position, discriminative touch, and routine light-touch detection. In clinical practice, parallel pathways can partly preserve simple touch detection.",
+        references: ["Medial medullary infarction, 86-patient study (PMID 19628797)", "Medial medullary infarction series (Neurology 1996;47:1141–1147)"]
+      },
+      {
+        id: "dl-medulla-wallenberg",
+        title: "Classic lateral medullary syndrome",
+        source: { right: 67, left: 68 },
+        answer: { level: "medulla", medialLateral: "lateral", ventralDorsal: "dorsal" },
+        affected: ["{Ipsi} nucleus ambiguus", "{Ipsi} vestibular nuclei", "{Ipsi} spinal trigeminal system", "{Ipsi} sympathetic fibers", "{Ipsi} inferior cerebellar peduncle", "Spinothalamic tract"],
+        spared: ["Pyramid", "Medial lemniscus", "Facial nucleus"],
+        domains: {
+          bulbar: [0, "Speech is dysarthric, with dysphagia, hoarseness, and reduced {ipsi} palatal elevation. Tongue movement is normal.", "Nucleus ambiguus involvement is a powerful lateral medullary anchor while the hypoglossal system is spared."],
+          sensory: [0, "Pinprick and temperature are reduced over the {contra} body; routine light touch, discriminative touch, vibration, and joint position are preserved over the body in this classic confined pattern.", "Spinothalamic involvement produces contralateral body pain-temperature loss while the medial lemniscus is spared."],
+          autonomic: [0, "The {ipsi} pupil is constricted, with mild {ipsi} upper-eyelid ptosis; the anisocoria is greater in dim light.", "Descending sympathetic fibers run dorsolaterally."],
+          coordination: [0, "There is {ipsi} limb dysmetria and lateropulsion; the patient cannot stand unaided and falls toward the {ipsi} side.", "Inferior cerebellar peduncle and vestibular involvement produce ipsilateral ataxia and marked lateropulsion."],
+          motor: [0, "Limb strength is preserved.", "The medial pyramid is spared."],
+          oculomotion: [0, "Nystagmus is present, with no horizontal gaze palsy or INO.", "Vestibular involvement produces nystagmus while pontine gaze pathways are spared."],
+          facial: [0, "Pinprick and temperature are reduced over the {ipsi} face, while facial light touch and facial movement are preserved.", "Spinal-trigeminal involvement supplies the ipsilateral facial sensory deficit; preserved facial-motor function argues against a lateral pontine lesion."]
+        },
+        debrief: [
+          "Dysphagia and hoarseness localize to the ipsilateral nucleus ambiguus.",
+          "Crossed pain-temperature loss confirms a lateral brainstem lesion.",
+          "Ipsilateral miosis, mild ptosis, and anisocoria that increases in dim light, together with ipsilateral ataxia, complete the dorsolateral medullary pattern.",
+          "Clinical lateral medullary sensory patterns are variable; this case intentionally uses the classic dissociated pattern produced by a confined posterolateral lesion."
+        ],
+        discriminating: "bulbar",
+        distractor: "Dorsolateral pons is excluded by nucleus ambiguus findings and preserved facial strength.",
+        reviewNote: "The classic crossed pain-temperature pattern is selected for teaching, but real lateral medullary sensory patterns are diverse and often incomplete.",
+        references: ["Wallenberg clinical-MRI correlation study (PMID 8503798)", "Lateral medullary sensory-pattern study (PMID 9409346)"]
+      },
+      {
+        id: "vm-midbrain-partial-iii-corticobulbar",
+        title: "Partial oculomotor palsy with corticobulbar-predominant weakness",
+        source: { right: 3, left: 4 },
+        evidence: "Strong",
+        difficulty: "Core",
+        answer: { level: "midbrain", medialLateral: "medial", ventralDorsal: "ventral" },
+        affected: ["Medial {ipsi} oculomotor fascicles", "Medial cerebral peduncle corticobulbar and corticospinal fibers"],
+        spared: ["Red-nucleus and superior cerebellar peduncle region", "Medial longitudinal fasciculus", "Spinothalamic tract", "Medial lemniscus"],
+        domains: {
+          motor: [0, "There is mild {contra} hand-predominant pyramidal weakness with brisk limb reflexes on that side.", "Corticospinal involvement localizes to the ventral cerebral peduncle."],
+          sensory: [0, "Routine light touch, discriminative touch, pinprick, temperature, vibration, and joint position are preserved over the body.", "The medial lemniscus and spinothalamic tract are spared."],
+          oculomotion: [0, "The {ipsi} eyelid is mildly ptotic, and the {ipsi} eye has impaired adduction and depression without a full third-nerve palsy.", "A partial ipsilateral fascicular CN III deficit establishes the midbrain side and level."],
+          facial: [0, "There is {contra} lower facial weakness with preserved forehead movement and eye closure. Facial sensation is normal.", "Corticobulbar involvement causes a contralateral upper-motor-neuron facial pattern while trigeminal sensory and facial nuclear pathways are spared."],
+          coordination: [0, "There is no intention tremor or dysmetria after accounting for weakness; gait is mildly hemiparetic toward the {contra} side.", "Preserved cerebellar coordination argues against a dorsal tegmental lesion."],
+          autonomic: [0, "Pupils are equal and briskly reactive to light, with no anisocoria in bright or dim illumination.", "This patient has a pupil-sparing partial fascicular CN III pattern; descending sympathetic fibers are spared."],
+          bulbar: [0, "Speech is dysarthric; palate elevation, voice, swallowing, and tongue movement are normal.", "Dysarthria reflects supranuclear corticobulbar involvement rather than a nucleus ambiguus lesion."]
+        },
+        debrief: [
+          "Even a partial fascicular CN III deficit is a positive midbrain anchor.",
+          "Contralateral lower facial and hand-predominant pyramidal weakness identifies the medial cerebral peduncle.",
+          "Preserved coordination separates this ventral pattern from Claude-type dorsal tegmental disease."
+        ],
+        discriminating: "oculomotion",
+        distractor: "Rostral pontine dysarthria-clumsy hand syndrome lacks a fascicular CN III deficit.",
+        reviewNote: "Sectoral CN III fascicular deficits vary between patients; this selected template requires a reproducible adduction/depression deficit on the lesion side.",
+        references: ["Pure midbrain infarction clinical-MRI series (PMID 7969955)", "Pure midbrain infarction series (PMID 22189277)"]
+      },
+      {
+        id: "vm-midbrain-subtle-iii-pure-motor",
+        title: "Peduncular motor syndrome with a subtle oculomotor anchor",
+        source: { right: 5, left: 6 },
+        evidence: "Moderate",
+        difficulty: "Intermediate",
+        answer: { level: "midbrain", medialLateral: "medial", ventralDorsal: "ventral" },
+        affected: ["Corticospinal fibers in the {ipsi} cerebral peduncle", "A small sector of the {ipsi} oculomotor fascicle"],
+        spared: ["Medial lemniscus", "Spinothalamic tract", "Superior cerebellar peduncle", "Tectal gaze network"],
+        domains: {
+          motor: [0, "There is dense {contra} arm-and-leg pyramidal weakness.", "A lesion above the pyramidal decussation accounts for contralateral limb weakness; the absence of ataxia favors the ventral peduncle."],
+          sensory: [0, "Routine light touch, discriminative touch, pinprick, temperature, vibration, and joint position are preserved over the body.", "A pure motor pattern indicates sparing of the ascending body sensory tracts."],
+          oculomotion: [0, "The {ipsi} eye has a small but reproducible adduction deficit with diplopia; there is no ptosis.", "This subtle fascicular CN III sign is the essential positive anchor for a ventromedial midbrain lesion."],
+          facial: [0, "There is {contra} lower facial weakness with preserved forehead movement and eye closure. Facial sensation is normal.", "Corticobulbar involvement causes a contralateral upper-motor-neuron facial pattern while trigeminal sensory and facial nuclear pathways are spared."],
+          coordination: [0, "There is no dysmetria out of proportion to weakness; gait is hemiparetic toward the {contra} side.", "Cerebellar outflow pathways are spared."],
+          autonomic: [0, "Pupils are equal and briskly reactive to light, with no anisocoria in bright or dim illumination.", "The involved CN III fascicular sector is pupil-sparing, and the lateral sympathetic pathway is spared."],
+          bulbar: [0, "There is mild spastic dysarthria; palate elevation, voice, swallowing, and tongue movement are normal.", "The speech change is corticobulbar rather than lower motor neuron bulbar dysfunction."]
+        },
+        debrief: [
+          "The motor syndrome alone is not level-specific.",
+          "A confirmed ipsilateral fascicular CN III sign is what makes this a fair midbrain case.",
+          "If the ocular deficit is absent or equivocal, the case should not be used for exact-cell scoring."
+        ],
+        discriminating: "oculomotion",
+        distractor: "A ventromedial pontine or medullary motor lesion can look identical unless the subtle CN III finding is real.",
+        reviewNote: "Retained only with the positive CN III finding. Without that finding, pure motor hemiparesis cannot be assigned reliably to a specific brainstem level.",
+        references: ["Pure midbrain infarction clinical-MRI series (PMID 7969955)", "Pure midbrain infarction series (PMID 22189277)"]
+      },
+      {
+        id: "dm-midbrain-ino-vertical-gaze",
+        title: "Internuclear ophthalmoplegia with vertical-gaze dysfunction",
+        source: { right: 15, left: 16 },
+        evidence: "Strong",
+        difficulty: "Core",
+        answer: { level: "midbrain", medialLateral: "medial", ventralDorsal: "dorsal" },
+        affected: ["{Ipsi} medial longitudinal fasciculus", "Paramedian rostral-midbrain vertical-saccade network"],
+        spared: ["Cerebral peduncle", "Spinothalamic tract", "Medial lemniscus", "Ventrolateral substantia nigra region"],
+        domains: {
+          oculomotion: [0, "The {ipsi} eye fails to adduct on horizontal gaze, with abducting nystagmus of the {contra} eye; vertical saccades are also limited.", "An ipsilateral INO supplies the side, while vertical-saccade dysfunction supplies the dorsal midbrain level."],
+          facial: [0, "Facial strength and facial sensation are normal.", "Trigeminal sensory and facial-motor pathways are spared."],
+          motor: [0, "Strength, tone, and reflexes are symmetric.", "The ventral cerebral peduncle is spared."],
+          sensory: [0, "Routine light touch, discriminative touch, pinprick, temperature, vibration, and joint position are preserved over the body.", "Major ascending body sensory pathways are spared."],
+          coordination: [0, "There is no appendicular dysmetria; gait is mildly unsteady without a cerebellar pattern.", "Superior cerebellar peduncle outflow is not meaningfully involved."],
+          autonomic: [0, "Pupils are equal and briskly reactive to light, with no anisocoria in bright or dim illumination.", "The pretectal pupillary and descending sympathetic pathways are spared in this confined template."],
+          bulbar: [0, "Articulation, palate elevation, voice, swallowing, and tongue movement are normal.", "Pontine and medullary bulbar systems are spared."]
+        },
+        debrief: [
+          "An INO alone can arise in the pons or midbrain.",
+          "Vertical-saccade dysfunction narrows the level to the paramedian dorsal midbrain.",
+          "The side of the INO, not the vertical-gaze deficit, supplies the lesion side."
+        ],
+        discriminating: "oculomotion",
+        distractor: "A dorsomedial pontine lesion can cause an INO but should not cause a primary vertical-saccade syndrome.",
+        reviewNote: "The vertical-gaze abnormality is bilateral in this patient and is not used to lateralize the case; the ipsilateral INO provides the side.",
+        references: ["Pure midbrain infarction clinical-MRI series (PMID 7969955)", "Pure midbrain infarction series (PMID 22189277)"]
+      },
+      {
+        id: "dm-midbrain-red-nucleus-tremor",
+        title: "Cerebellothalamic tremor with a partial oculomotor sign",
+        source: { right: 17, left: 18 },
+        evidence: "Moderate",
+        difficulty: "Intermediate",
+        answer: { level: "midbrain", medialLateral: "medial", ventralDorsal: "dorsal" },
+        affected: ["Dentatothalamic and superior cerebellar peduncle outflow fibers near the red-nucleus region", "A small sector of the {ipsi} oculomotor fascicle"],
+        spared: ["Cerebral peduncle corticospinal fibers", "Spinothalamic tract", "Medial lemniscus"],
+        domains: {
+          coordination: [0, "The {contra} arm has coarse intention tremor, dysmetria, and decomposition of movement; gait is ataxic but strength is full.", "Disruption of already-decussated cerebellothalamic outflow produces contralateral tremor and dysmetria."],
+          oculomotion: [0, "There is a partial {ipsi} CN III fascicular deficit with impaired adduction and mild ptosis.", "The partial third-nerve sign establishes the side and midbrain level."],
+          facial: [0, "Facial strength and facial sensation are normal.", "Trigeminal sensory and facial-motor pathways are spared."],
+          motor: [0, "Power is full, and reflexes are symmetric.", "Cerebral peduncle corticospinal fibers are spared."],
+          sensory: [0, "Routine light touch, discriminative touch, pinprick, temperature, vibration, and joint position are preserved over the body.", "The major ascending body sensory pathways are spared."],
+          autonomic: [0, "Pupils are equal and briskly reactive to light, with no anisocoria in bright or dim illumination.", "The partial CN III deficit is pupil-sparing in this template."],
+          bulbar: [0, "Speech is mildly ataxic; palate elevation, voice, swallowing, and tongue movement are normal.", "The dysarthria is cerebellar, not a lower cranial-nerve deficit."]
+        },
+        debrief: [
+          "The partial CN III deficit anchors the ipsilateral midbrain.",
+          "Contralateral intention tremor and dysmetria reflect cerebellothalamic fibers near, not necessarily within, the red nucleus.",
+          "Full strength excludes a peduncular Weber-type pattern."
+        ],
+        discriminating: "coordination",
+        distractor: "A ventrolateral nigral lesion produces bradykinesia and rigidity rather than dysmetria and intention tremor.",
+        reviewNote: "The teaching target is the dorsal medial cerebellothalamic fiber region. It does not imply that red-nucleus injury alone explains the syndrome.",
+        references: ["Claude syndrome lesion-localization study (PMID 11756616)", "Pure midbrain infarction clinical-MRI series (PMID 7969955)"]
+      },
+      {
+        id: "dm-pons-facial-colliculus",
+        title: "Facial colliculus syndrome",
+        source: { right: 39, left: 40 },
+        evidence: "Strong",
+        difficulty: "Core",
+        answer: { level: "pons", medialLateral: "medial", ventralDorsal: "dorsal" },
+        affected: ["{Ipsi} abducens nucleus or immediately adjacent PPRF", "Looping {ipsi} facial fascicle at the facial colliculus"],
+        spared: ["Ventral corticospinal tract", "Medial lemniscus", "Spinothalamic tract", "Lateral vestibular and sympathetic pathways"],
+        domains: {
+          oculomotion: [0, "Neither eye can look toward the {ipsi} side; horizontal gaze toward the {contra} side is preserved.", "An abducens nuclear or PPRF lesion produces the horizontal gaze palsy."],
+          facial: [0, "The entire {ipsi} face—including the forehead and eye closure—is weak. Facial sensation is normal.", "The looping facial fascicle produces an ipsilateral LMN facial palsy while trigeminal sensory pathways are spared."],
+          motor: [0, "Limb strength, tone, and reflexes are normal.", "The ventral corticospinal tract is spared."],
+          sensory: [0, "Routine light touch, discriminative touch, pinprick, temperature, vibration, and joint position are preserved over the body.", "The lesion is confined away from spinothalamic and medial-lemniscal pathways."],
+          coordination: [0, "There is no limb dysmetria; gait is steady when visual symptoms are controlled.", "Major cerebellar and vestibular pathways are spared."],
+          autonomic: [0, "Pupils are equal and briskly reactive to light, with no anisocoria in bright or dim illumination.", "The descending sympathetic pathway is spared."],
+          bulbar: [0, "Articulation is distorted, but palate elevation, voice, swallowing, and tongue movement are normal.", "The articulation change is caused by pontine facial weakness; lower medullary bulbar structures are spared."]
+        },
+        debrief: [
+          "An abducens nuclear or PPRF lesion causes a conjugate gaze palsy, not merely isolated abduction weakness.",
+          "The adjacent looping facial fascicle causes an ipsilateral complete LMN facial palsy.",
+          "Together they define the facial colliculus in the dorsal medial pons."
+        ],
+        discriminating: "oculomotion",
+        distractor: "A dorsolateral pontine lesion may affect CN VII but usually lacks an abducens nuclear horizontal gaze palsy.",
+        reviewNote: "The card deliberately describes a gaze palsy. If only the ipsilateral eye cannot abduct, the lesion could be an abducens fascicle or peripheral nerve and is less specific.",
+        references: ["Pontine infarction clinical-MRI series (PMID 8559368)", "Pontine infarction clinical-MRI correlations (PMID 12529787)"]
+      },
+      {
+        id: "dm-pons-ino-lemniscus",
+        title: "Internuclear ophthalmoplegia with medial-lemniscal loss",
+        source: { right: 41, left: 42 },
+        evidence: "Strong",
+        difficulty: "Core",
+        answer: { level: "pons", medialLateral: "medial", ventralDorsal: "dorsal" },
+        affected: ["{Ipsi} medial longitudinal fasciculus", "Medial lemniscus in the medial pontine tegmentum"],
+        spared: ["PPRF and abducens nucleus", "Corticospinal tract", "Spinothalamic tract", "Trigeminal sensory pathways"],
+        domains: {
+          oculomotion: [0, "The {ipsi} eye fails to adduct on gaze toward the {contra} side, with abducting nystagmus of the {contra} eye; conjugate gaze toward the {ipsi} side is preserved.", "An isolated ipsilateral INO localizes to the MLF without a PPRF or abducens nuclear gaze palsy."],
+          facial: [0, "Facial strength and facial sensation are normal.", "Trigeminal sensory and facial-motor pathways are spared."],
+          sensory: [0, "Vibration, joint position, discriminative touch, and routine light-touch detection are reduced over the {contra} body. Pinprick and temperature are preserved over the body.", "Medial-lemniscal involvement causes contralateral dorsal-column modality loss while the spinothalamic tract remains intact."],
+          motor: [0, "Strength, tone, and reflexes are symmetric.", "The ventral corticospinal tract is spared."],
+          coordination: [0, "The {contra} limbs become unsteady when visual feedback is removed, and Romberg testing is positive; there is no true dysmetria with the eyes open.", "The imbalance is sensory ataxia from proprioceptive loss rather than cerebellar dysfunction."],
+          autonomic: [0, "Pupils are equal and briskly reactive to light, with no anisocoria in bright or dim illumination.", "The lateral descending sympathetic pathway is spared."],
+          bulbar: [0, "Articulation, palate elevation, voice, swallowing, and tongue movement are normal.", "Lower brainstem bulbar structures are spared."]
+        },
+        debrief: [
+          "The ipsilateral INO identifies the medial longitudinal fasciculus.",
+          "Contralateral vibration, position, and discriminative-touch loss identifies the medial lemniscus.",
+          "Their compact combination favors the dorsal medial pontine tegmentum."
+        ],
+        discriminating: "sensory",
+        distractor: "A dorsal medial midbrain lesion may cause an INO, but vertical-gaze or CN III findings would be expected if it extended into the nearby midbrain gaze network.",
+        reviewNote: "Routine light-touch loss is allowed but not required; discriminative touch, vibration, and position are the more reliable medial-lemniscal findings.",
+        references: ["Pontine infarction clinical-MRI series (PMID 8559368)", "Pontine infarction clinical-MRI correlations (PMID 12529787)"]
+      },
+      {
+        id: "dl-pons-crossed-sensory-facial",
+        title: "Crossed pain-temperature syndrome with a facial-fascicle anchor",
+        source: { right: 45, left: 46 },
+        evidence: "Strong",
+        difficulty: "Core",
+        answer: { level: "pons", medialLateral: "lateral", ventralDorsal: "dorsal" },
+        affected: ["{Ipsi} spinal trigeminal system", "Spinothalamic tract", "{Ipsi} vestibular structures", "A limited segment of the {ipsi} facial fascicle"],
+        spared: ["Corticospinal tract", "Medial lemniscus", "PPRF and MLF", "Nucleus ambiguus"],
+        domains: {
+          sensory: [0, "Pinprick and temperature are reduced over the {contra} body. Routine light touch, discriminative touch, vibration, and joint position are preserved over the body.", "Spinothalamic involvement causes contralateral body pain-temperature loss without medial-lemniscal loss."],
+          oculomotion: [0, "Central nystagmus is present, with no horizontal gaze palsy or INO.", "Vestibular involvement produces nystagmus while medial pontine gaze pathways are spared."],
+          facial: [0, "Pinprick and temperature are reduced over the {ipsi} face, while facial light touch is preserved. There is also mild weakness of the {ipsi} forehead, eye closure, and lower face.", "Spinal-trigeminal sensory loss plus a limited ipsilateral facial-fascicle sign supplies a positive dorsolateral pontine anchor."],
+          coordination: [0, "Vertigo and gait lateropulsion toward the {ipsi} side are present, without major limb dysmetria.", "Vestibular involvement supports a dorsolateral brainstem footprint."],
+          motor: [0, "Limb strength, tone, and reflexes are normal.", "The ventral corticospinal tract is spared."],
+          autonomic: [0, "Pupils are equal and briskly reactive to light, with no anisocoria in bright or dim illumination.", "The descending sympathetic pathway is spared in this confined pattern."],
+          bulbar: [0, "Articulation, palate elevation, voice, swallowing, and tongue movement are normal.", "Nucleus ambiguus and hypoglossal systems are spared."]
+        },
+        debrief: [
+          "Crossed facial and body pain-temperature loss establishes a lateral brainstem lesion.",
+          "The ipsilateral LMN facial-fascicle sign provides the positive pontine-level anchor.",
+          "The vestibular and facial-fascicle combination establishes the dorsolateral pontine level."
+        ],
+        discriminating: "facial",
+        distractor: "A small dorsolateral medullary lesion can produce the same crossed sensory pattern, but it cannot produce a facial-fascicle LMN palsy.",
+        reviewNote: "The source card lacked a positive pontine-level finding and was not unique versus lateral medulla. A limited, anatomically contiguous facial-fascicle sign was added for fair bedside localization.",
+        references: ["Pontine infarction clinical-MRI series (PMID 8559368)", "Pontine infarction clinical-MRI correlations (PMID 12529787)"]
+      },
+      {
+        id: "dm-medulla-dorsal-column",
+        title: "Dorsal-column nucleus syndrome",
+        source: { right: 61, left: 62 },
+        evidence: "Moderate",
+        difficulty: "Intermediate",
+        answer: { level: "medulla", medialLateral: "medial", ventralDorsal: "dorsal" },
+        affected: ["{Ipsi} gracile and cuneate nuclei or pre-decussation dorsal-column fibers"],
+        spared: ["Pyramid", "Spinothalamic tract", "Nucleus ambiguus", "Hypoglossal fascicle", "Lateral vestibular and sympathetic pathways"],
+        domains: {
+          sensory: [0, "Vibration, joint position, discriminative touch, and routine light-touch detection are reduced in the {ipsi} limbs. Pinprick and temperature are preserved over the body.", "Ipsilateral dorsal-column modality loss places the lesion before the internal arcuate fiber decussation in the caudal dorsal medulla."],
+          coordination: [0, "Gait is stamping and unstable, Romberg testing is strongly positive, and {ipsi} limb targeting worsens when the eyes are closed; there is no primary dysmetria with visual guidance.", "This is sensory ataxia from proprioceptive loss, not cerebellar ataxia."],
+          motor: [0, "Strength, tone, and reflexes are symmetric.", "The ventral pyramid is spared."],
+          oculomotion: [0, "Eye movements are full, with no nystagmus, skew deviation, or abnormal head-impulse response.", "Ocular-motor and vestibulo-ocular pathways are spared."],
+          facial: [0, "Facial strength and facial sensation are normal.", "Trigeminal sensory and facial-motor pathways are spared."],
+          autonomic: [0, "Pupils are equal and briskly reactive to light, with no anisocoria in bright or dim illumination.", "The lateral sympathetic pathway is spared."],
+          bulbar: [0, "Articulation, palate elevation, voice, swallowing, and tongue movement are normal.", "Hypoglossal fascicles and nucleus ambiguus are spared."]
+        },
+        debrief: [
+          "Within a confirmed brainstem process, ipsilateral dorsal-column modality loss means the pathway has not yet crossed.",
+          "That places the lesion in the caudal dorsal medulla at the gracile/cuneate nuclei or internal arcuate fibers before decussation.",
+          "A positive Romberg with preserved strength distinguishes sensory ataxia from pyramidal or cerebellar gait dysfunction."
+        ],
+        discriminating: "sensory",
+        distractor: "A spinal cord, root, or peripheral lesion is more common outside the game's confirmed-brainstem frame.",
+        reviewNote: "This is an advanced anatomy case. It is fair only when the session premise has already established an intracranial brainstem lesion; otherwise spinal and peripheral localizations remain important.",
+        references: ["Medullary infarction clinical-anatomical literature", "Dorsal-column decussation anatomy"]
+      },
+      {
+        id: "dl-medulla-bulbar-predominant",
+        title: "Nucleus ambiguus-predominant lateral medullary syndrome",
+        source: { right: 69, left: 70 },
+        evidence: "Strong",
+        difficulty: "Core",
+        answer: { level: "medulla", medialLateral: "lateral", ventralDorsal: "dorsal" },
+        affected: ["{Ipsi} nucleus ambiguus", "Nearby {ipsi} vestibular nuclei and inferior cerebellar peduncle"],
+        spared: ["Pyramid", "Medial lemniscus", "Most of the spinothalamic and spinal trigeminal systems", "Facial nucleus"],
+        domains: {
+          bulbar: [0, "Speech is dysarthric, with severe dysphagia, hoarseness, reduced {ipsi} palatal elevation, and a weak gag response on the {ipsi} side. Tongue movement is normal.", "A focal nucleus ambiguus syndrome is a strong lateral medullary level and side anchor while the hypoglossal system is spared."],
+          coordination: [0, "There is vertigo and marked lateropulsion toward the {ipsi} side, with mild {ipsi} limb dysmetria.", "Vestibular and inferior cerebellar peduncle involvement establishes the dorsal lateral footprint."],
+          sensory: [0, "Pinprick, temperature, routine light touch, discriminative touch, vibration, and joint position are preserved over the body.", "The spinothalamic and medial-lemniscal pathways are spared in this bulbar-predominant variant."],
+          motor: [0, "Limb strength, tone, and reflexes are normal.", "The medial pyramid is spared."],
+          oculomotion: [0, "Nystagmus is present, with no horizontal gaze palsy or INO.", "Vestibular involvement produces nystagmus while pontine gaze pathways are spared."],
+          facial: [0, "Facial strength and facial sensation are normal.", "Preserved trigeminal sensory and facial-motor function argues against a dorsolateral pontine syndrome."],
+          autonomic: [0, "Pupils are equal and briskly reactive to light, with no anisocoria in bright or dim illumination.", "The descending sympathetic pathway is spared in this restricted variant."]
+        },
+        debrief: [
+          "Severe dysphagia and hoarseness identify the ipsilateral nucleus ambiguus and therefore the medulla.",
+          "Central vestibular signs and ipsilateral lateropulsion place the lesion dorsolaterally.",
+          "A lateral medullary infarct can be bulbar-predominant without the classic crossed sensory syndrome."
+        ],
+        discriminating: "bulbar",
+        distractor: "A peripheral vagal lesion can cause hoarseness and dysphagia but should not cause central nystagmus, ipsilateral limb dysmetria, or lateropulsion.",
+        reviewNote: "Hiccups are supportive but not localizing by themselves; the nucleus ambiguus and central vestibular-cerebellar findings carry the localization.",
+        references: ["Wallenberg clinical-MRI correlation study (PMID 8503798)", "Lateral medullary sensory-pattern study (PMID 9409346)"]
+      }
+    ];
+
+    function fillTokens(value, side) {
+      const other = side === "right" ? "left" : "right";
+      const tokens = {
+        "{ipsi}": side,
+        "{Ipsi}": capitalize(side),
+        "{contra}": other,
+        "{Contra}": capitalize(other)
+      };
+      return Object.entries(tokens).reduce((text, [token, replacement]) => text.split(token).join(replacement), value);
+    }
+
+    function capitalize(value) {
+      return value ? value.charAt(0).toUpperCase() + value.slice(1) : "";
+    }
+
+    function makeCase(family, side) {
+      const domains = Object.keys(DOMAIN_CATALOG).map(id => {
+        const values = family.domains[id];
+        return {
+          id,
+          label: DOMAIN_CATALOG[id].label,
+          unlockAfterGuess: values[0],
+          finding: fillTokens(values[1], side),
+          facilitatorExplanation: fillTokens(values[2], side)
+        };
+      });
+      return {
+        id: `${family.id}-${side}`,
+        title: `${capitalize(side)} ${capitalize(family.answer.ventralDorsal)} ${capitalize(family.answer.medialLateral)} ${capitalize(family.answer.level)}: ${family.title}`,
+        familyTitle: family.title,
+        evidence: family.evidence || "Strong",
+        difficulty: family.difficulty || "Core",
+        sourceCaseNumber: family.source[side],
+        answer: { side, ...family.answer },
+        affectedStructures: family.affected.map(item => fillTokens(item, side)),
+        sparedStructures: family.spared.map(item => fillTokens(item, side)),
+        domains,
+        debrief: family.debrief.map(item => fillTokens(item, side)),
+        discriminatingDomain: family.discriminating,
+        closestDistractor: fillTokens(family.distractor, side),
+        reviewNote: fillTokens(
+          family.reviewNote || "Confined teaching pattern; real lesions vary with rostrocaudal extent and vascular territory.",
+          side
+        ),
+        references: family.references || []
+      };
+    }
+
+    const caseLibrary = FAMILY_DEFINITIONS.flatMap(family => ["right", "left"].map(side => makeCase(family, side)));
+
+    function defaultState() {
+      return {
+        version: 6,
+        sessionId: `session-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        phase: "setup",
+        caseId: null,
+        players: [],
+        activePlayerIndex: 0,
+        guesses: [],
+        revealedDomainIds: [],
+        requestedDomainId: null,
+        overrideUnlocked: [],
+        pendingGuess: null,
+        winnerPlayerId: null,
+        statusMessage: "Set up players and choose a case.",
+        updatedAt: Date.now()
+      };
+    }
+
+    function randomCaseId(excludeId = null) {
+      const availableCases = caseLibrary.filter(item => item.id !== excludeId);
+      return availableCases[Math.floor(Math.random() * availableCases.length)]?.id || null;
+    }
+
+    let gameState = loadState() || defaultState();
+    let setupPlayers = gameState.players.length >= 1
+      ? gameState.players.map(player => ({ ...player }))
+      : [
+          { id: "player-1", name: "Player 1", color: PLAYER_COLORS[0], initials: "P1" }
+        ];
+    let setupCaseId = randomCaseId();
+    let selectedCellId = null;
+    let viewMode = "single";
+    let autoAdvanceFacilitator = loadAutoAdvancePreference();
+    let playerWindow = null;
+    let syncChannel = null;
+    let toastTimer = null;
+    let lastCelebratedWinId = null;
+
+    const elements = {
+      body: document.body,
+      modeGate: document.getElementById("modeGate"),
+      autoAdvanceToggle: document.getElementById("autoAdvanceFacilitator"),
+      roleLabel: document.getElementById("roleLabel"),
+      syncStatus: document.getElementById("syncStatus"),
+      facilitatorContent: document.getElementById("facilitatorContent"),
+      caseEyebrow: document.getElementById("caseEyebrow"),
+      caseHeading: document.getElementById("caseHeading"),
+      turnStrip: document.getElementById("turnStrip"),
+      revealedClues: document.getElementById("revealedClues"),
+      domainGrid: document.getElementById("domainGrid"),
+      clueHeading: document.getElementById("clueHeading"),
+      clueInstruction: document.getElementById("clueInstruction"),
+      phaseBadge: document.getElementById("phaseBadge"),
+      brainstemBoard: document.getElementById("brainstemBoard"),
+      boardStatus: document.getElementById("boardStatus"),
+      selectionBar: document.getElementById("selectionBar"),
+      selectionText: document.getElementById("selectionText"),
+      guessHistory: document.getElementById("guessHistory"),
+      guessCountBadge: document.getElementById("guessCountBadge"),
+      debriefSection: document.getElementById("debriefSection"),
+      winCelebration: document.getElementById("winCelebration"),
+      winConfetti: document.getElementById("winConfetti"),
+      winDialog: document.getElementById("winDialog"),
+      winTitle: document.getElementById("winTitle"),
+      winCase: document.getElementById("winCase"),
+      winCloseButton: document.getElementById("winCloseButton"),
+      winContinueButton: document.getElementById("winContinueButton"),
+      toast: document.getElementById("toast"),
+      liveRegion: document.getElementById("liveRegion")
+    };
+
+    init();
+
+    function init() {
+      buildBoard();
+      setupSync();
+      bindStaticEvents();
+      elements.autoAdvanceToggle.checked = autoAdvanceFacilitator;
+      const requestedView = new URLSearchParams(location.search).get("view");
+      if (["player", "facilitator", "single"].includes(requestedView)) {
+        setViewMode(requestedView, false);
+        elements.modeGate.hidden = true;
+      } else {
+        render();
+      }
+      sendEnvelope({ type: "REQUEST_STATE" });
+    }
+
+    function bindStaticEvents() {
+      document.querySelectorAll("[data-mode]").forEach(button => {
+        button.addEventListener("click", () => {
+          setViewMode(button.dataset.mode);
+          elements.modeGate.hidden = true;
+        });
+      });
+      document.getElementById("singlePlayerQuickstart").addEventListener("click", startSinglePlayerQuickstart);
+      document.getElementById("changeViewButton").addEventListener("click", () => {
+        elements.modeGate.hidden = false;
+        elements.modeGate.querySelector("[data-mode]").focus();
+      });
+      document.getElementById("clearSelectionButton").addEventListener("click", clearSelection);
+      document.getElementById("submitGuessButton").addEventListener("click", submitGuess);
+      elements.autoAdvanceToggle.addEventListener("change", () => {
+        setAutoAdvanceFacilitator(elements.autoAdvanceToggle.checked);
+      });
+      elements.winCloseButton.addEventListener("click", dismissWinCelebration);
+      elements.winContinueButton.addEventListener("click", dismissWinCelebration);
+      elements.winCelebration.addEventListener("click", event => {
+        if (event.target.matches("[data-win-dismiss]")) dismissWinCelebration();
+      });
+      document.addEventListener("keydown", handleWinCelebrationKeydown);
+    }
+
+    function setViewMode(mode, announce = true) {
+      viewMode = mode;
+      document.body.dataset.view = mode;
+      elements.roleLabel.textContent = {
+        single: "Single-window mode",
+        facilitator: "Facilitator console",
+        player: "Player display"
+      }[mode];
+      if (announce) showToast(`${elements.roleLabel.textContent} selected.`);
+      render();
+    }
+
+    function startSinglePlayerQuickstart() {
+      gameState = defaultState();
+      setupPlayers = [
+        { id: "player-1", name: "Player 1", color: PLAYER_COLORS[0], initials: "P1" }
+      ];
+      setupCaseId = randomCaseId();
+      selectedCellId = null;
+      viewMode = "player";
+      document.body.dataset.view = "player";
+      elements.roleLabel.textContent = "Player display";
+      autoAdvanceFacilitator = true;
+      elements.autoAdvanceToggle.checked = true;
+      try { localStorage.setItem(AUTO_ADVANCE_KEY, "true"); } catch (error) {}
+      elements.modeGate.hidden = true;
+      startCase(setupCaseId);
+    }
+
+    function setupSync() {
+      try {
+        syncChannel = new BroadcastChannel(CHANNEL_NAME);
+        syncChannel.addEventListener("message", event => receiveEnvelope(event.data));
+        elements.syncStatus.textContent = "Display sync ready";
+      } catch (error) {
+        elements.syncStatus.textContent = "Single-window ready";
+      }
+      window.addEventListener("storage", event => {
+        if (event.key === STORAGE_KEY && event.newValue) {
+          try { adoptState(JSON.parse(event.newValue)); } catch (error) {}
+        }
+        if (event.key === AUTO_ADVANCE_KEY) {
+          autoAdvanceFacilitator = event.newValue === "true";
+          elements.autoAdvanceToggle.checked = autoAdvanceFacilitator;
+          const advanced = autoAdvanceFacilitator && autoAdvancePendingFacilitatorAction();
+          if (!advanced) render();
+        }
+      });
+      window.addEventListener("message", event => receiveEnvelope(event.data));
+    }
+
+    function sendEnvelope(message) {
+      const envelope = { brainstemMastermind: true, ...message };
+      try { syncChannel?.postMessage(envelope); } catch (error) {}
+      try {
+        if (window.opener && !window.opener.closed) window.opener.postMessage(envelope, "*");
+      } catch (error) {}
+      try {
+        if (playerWindow && !playerWindow.closed) playerWindow.postMessage(envelope, "*");
+      } catch (error) {}
+    }
+
+    function receiveEnvelope(envelope) {
+      if (!envelope || envelope.brainstemMastermind !== true) return;
+      if (envelope.type === "STATE") adoptState(envelope.state);
+      if (envelope.type === "REQUEST_STATE") sendEnvelope({ type: "STATE", state: gameState });
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function loadAutoAdvancePreference() {
+      try {
+        return localStorage.getItem(AUTO_ADVANCE_KEY) === "true";
+      } catch (error) {
+        return false;
+      }
+    }
+
+    function setAutoAdvanceFacilitator(enabled) {
+      autoAdvanceFacilitator = Boolean(enabled);
+      elements.autoAdvanceToggle.checked = autoAdvanceFacilitator;
+      try { localStorage.setItem(AUTO_ADVANCE_KEY, String(autoAdvanceFacilitator)); } catch (error) {}
+      showToast(autoAdvanceFacilitator
+        ? "Auto-advance Facilitator enabled."
+        : "Auto-advance Facilitator disabled.");
+      const advanced = autoAdvanceFacilitator && autoAdvancePendingFacilitatorAction();
+      if (!advanced) render();
+    }
+
+    function shouldAutoAdvanceFacilitator() {
+      return viewMode === "player" && autoAdvanceFacilitator;
+    }
+
+    function autoAdvancePendingFacilitatorAction() {
+      if (!shouldAutoAdvanceFacilitator()) return false;
+      const requested = getCase()?.domains.find(domain =>
+        domain.id === gameState.requestedDomainId &&
+        !gameState.revealedDomainIds.includes(domain.id)
+      );
+      if (requested) {
+        revealDomain(requested.id);
+        return true;
+      }
+      if (gameState.phase === "facilitator-confirmation" && gameState.pendingGuess) {
+        scorePendingGuess();
+        return true;
+      }
+      return false;
+    }
+
+    function persistState() {
+      gameState.updatedAt = Date.now();
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(gameState)); } catch (error) {}
+      sendEnvelope({ type: "STATE", state: gameState });
+      render();
+    }
+
+    function adoptState(nextState) {
+      if (!nextState || nextState.version !== 6) return;
+      if (nextState.updatedAt < gameState.updatedAt && nextState.sessionId === gameState.sessionId) return;
+      const wasComplete = gameState.phase === "debrief";
+      gameState = nextState;
+      if (gameState.players?.length >= 1) setupPlayers = gameState.players.map(player => ({ ...player }));
+      selectedCellId = null;
+      if (gameState.phase !== "debrief") dismissWinCelebration(false);
+      const advanced = autoAdvancePendingFacilitatorAction();
+      if (!advanced) render();
+      if (!advanced && !wasComplete && gameState.phase === "debrief") maybeShowWinCelebration();
+    }
+
+    function getCase() {
+      return caseLibrary.find(item => item.id === gameState.caseId) || null;
+    }
+
+    function getActivePlayer() {
+      return gameState.players[gameState.activePlayerIndex] || null;
+    }
+
+    function getWinner() {
+      return gameState.players.find(player => player.id === gameState.winnerPlayerId) || null;
+    }
+
+    function buildBoard() {
+      elements.brainstemBoard.innerHTML = "";
+      LEVELS.forEach(level => {
+        const slice = document.createElement("section");
+        slice.className = "slice";
+        slice.setAttribute("aria-labelledby", `${level}-label`);
+        const label = document.createElement("div");
+        label.className = "slice-label";
+        label.innerHTML = `<strong id="${level}-label">${capitalize(level)}</strong><span>axial slice</span>`;
+        const grid = document.createElement("div");
+        grid.className = "cell-grid";
+        const order = [
+          ["left", "lateral"], ["left", "medial"], ["right", "medial"], ["right", "lateral"]
+        ];
+        ["dorsal", "ventral"].forEach(depth => {
+          order.forEach(([side, medialLateral]) => {
+            const id = `${level}-${side}-${medialLateral}-${depth}`;
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "board-cell";
+            button.id = `cell-${id}`;
+            button.dataset.cellId = id;
+            button.dataset.level = level;
+            button.dataset.side = side;
+            button.dataset.medialLateral = medialLateral;
+            button.dataset.depth = depth;
+            button.setAttribute("aria-label", coordinateLabel(parseCellId(id)));
+            button.innerHTML = `<span class="cell-label">${capitalize(side)} ${medialLateral}</span><span class="cell-row-label">${depth === "dorsal" ? "posterior" : "anterior"}</span><span class="wand-stack" aria-hidden="true"></span>`;
+            button.addEventListener("click", () => selectCell(id));
+            grid.appendChild(button);
+          });
+        });
+        slice.append(label, grid);
+        elements.brainstemBoard.appendChild(slice);
+      });
+    }
+
+    function parseCellId(id) {
+      const [level, side, medialLateral, ventralDorsal] = id.split("-");
+      return { level, side, medialLateral, ventralDorsal };
+    }
+
+    function coordinateId(coordinate) {
+      return `${coordinate.level}-${coordinate.side}-${coordinate.medialLateral}-${coordinate.ventralDorsal}`;
+    }
+
+    function coordinateLabel(coordinate) {
+      const depth = coordinate.ventralDorsal === "ventral" ? "anterior (ventral)" : "posterior (dorsal)";
+      return `${capitalize(coordinate.side)} ${coordinate.medialLateral}, ${depth} ${coordinate.level}`;
+    }
+
+    function canPlaceWand() {
+      return gameState.phase === "place-wand" && !!getActivePlayer();
+    }
+
+    function selectCell(id) {
+      if (!canPlaceWand()) return;
+      selectedCellId = id;
+      renderBoard();
+      const coordinate = parseCellId(id);
+      elements.selectionText.textContent = coordinateLabel(coordinate);
+      elements.selectionBar.hidden = false;
+      elements.selectionBar.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+
+    function clearSelection() {
+      selectedCellId = null;
+      renderBoard();
+      elements.selectionBar.hidden = true;
+    }
+
+    function submitGuess() {
+      if (!selectedCellId || !canPlaceWand()) return;
+      gameState.pendingGuess = {
+        id: `pending-${Date.now()}`,
+        playerId: getActivePlayer().id,
+        coordinate: parseCellId(selectedCellId)
+      };
+      gameState.phase = "facilitator-confirmation";
+      gameState.statusMessage = `${getActivePlayer().name} placed a wand. Awaiting facilitator confirmation.`;
+      selectedCellId = null;
+      if (shouldAutoAdvanceFacilitator()) {
+        scorePendingGuess();
+        return;
+      }
+      persistState();
+      announce(gameState.statusMessage);
+    }
+
+    function celebrationId() {
+      const winningGuess = [...gameState.guesses].reverse().find(guess => guess.score === 4);
+      return winningGuess ? `${gameState.sessionId}:${winningGuess.id}` : null;
+    }
+
+    function confettiMarkup() {
+      const colors = ["#f2c972", "#2f9c8f", "#277da1", "#d8752d", "#c04d67", "#7a55a3"];
+      return Array.from({ length: 42 }, (_, index) => {
+        const x = (index * 37 + 7) % 101;
+        const size = 6 + (index * 5) % 7;
+        const duration = 2.3 + ((index * 13) % 12) / 10;
+        const delay = ((index * 7) % 9) / 10;
+        const drift = -75 + (index * 29) % 151;
+        const spin = 360 + (index * 83) % 720;
+        return `<span style="--x:${x}%;--size:${size}px;--duration:${duration}s;--delay:${delay}s;--drift:${drift}px;--spin:${spin}deg;--confetti:${colors[index % colors.length]}"></span>`;
+      }).join("");
+    }
+
+    function maybeShowWinCelebration() {
+      if (gameState.phase !== "debrief" || viewMode === "facilitator") return false;
+      const winner = getWinner();
+      const currentCase = getCase();
+      const id = celebrationId();
+      if (!winner || !currentCase || !id || id === lastCelebratedWinId) return false;
+      lastCelebratedWinId = id;
+      elements.winTitle.textContent = `${winner.name} found the lesion!`;
+      elements.winCase.textContent = `${currentCase.title}. All four localization coordinates are correct.`;
+      elements.winConfetti.innerHTML = confettiMarkup();
+      elements.winCelebration.hidden = false;
+      document.body.classList.add("is-celebrating");
+      requestAnimationFrame(() => elements.winDialog.focus());
+      return true;
+    }
+
+    function dismissWinCelebration(restoreFocus = true) {
+      if (elements.winCelebration.hidden) return;
+      elements.winCelebration.hidden = true;
+      elements.winConfetti.innerHTML = "";
+      document.body.classList.remove("is-celebrating");
+      if (!restoreFocus) return;
+      elements.debriefSection.setAttribute("tabindex", "-1");
+      elements.debriefSection.focus();
+    }
+
+    function handleWinCelebrationKeydown(event) {
+      if (elements.winCelebration.hidden) return;
+      if (event.key === "Escape") {
+        event.preventDefault();
+        dismissWinCelebration();
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const focusable = [elements.winCloseButton, elements.winContinueButton];
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (!focusable.includes(document.activeElement)) {
+        event.preventDefault();
+        (event.shiftKey ? last : first).focus();
+        return;
+      }
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+
+    function scorePendingGuess() {
+      const currentCase = getCase();
+      const pending = gameState.pendingGuess;
+      if (!currentCase || !pending) return;
+      const score = ["side", "level", "medialLateral", "ventralDorsal"]
+        .reduce((total, key) => total + (pending.coordinate[key] === currentCase.answer[key] ? 1 : 0), 0);
+      const record = {
+        id: `guess-${Date.now()}`,
+        number: gameState.guesses.length + 1,
+        playerId: pending.playerId,
+        coordinate: pending.coordinate,
+        score,
+        clueDomainId: gameState.requestedDomainId,
+        timestamp: Date.now()
+      };
+      gameState.guesses.push(record);
+      gameState.pendingGuess = null;
+      gameState.requestedDomainId = null;
+      if (score === 4) {
+        gameState.phase = "debrief";
+        gameState.winnerPlayerId = pending.playerId;
+        gameState.statusMessage = `${playerById(pending.playerId).name} localized all four coordinates.`;
+      } else {
+        gameState.activePlayerIndex = (gameState.activePlayerIndex + 1) % gameState.players.length;
+        gameState.phase = "choose-domain";
+        gameState.statusMessage = `${score} of 4 coordinates correct. ${getActivePlayer().name} chooses the next domain.`;
+      }
+      persistState();
+      announce(gameState.statusMessage);
+      if (score === 4) maybeShowWinCelebration();
+    }
+
+    function reconsiderPendingGuess() {
+      if (!gameState.pendingGuess) return;
+      gameState.pendingGuess = null;
+      gameState.phase = "place-wand";
+      gameState.statusMessage = `${getActivePlayer().name}, reconsider the wand placement before scoring.`;
+      persistState();
+      announce(gameState.statusMessage);
+    }
+
+    function cancelPendingGuess() {
+      if (!gameState.pendingGuess) return;
+      gameState.pendingGuess = null;
+      gameState.phase = "place-wand";
+      gameState.statusMessage = "The pending wand was canceled. Choose a location.";
+      persistState();
+    }
+
+    function requestDomain(domainId) {
+      if (gameState.phase !== "choose-domain") return;
+      const domain = getCase()?.domains.find(item => item.id === domainId);
+      if (!domain || !isDomainUnlocked(domain) || gameState.revealedDomainIds.includes(domainId)) return;
+      gameState.requestedDomainId = domainId;
+      gameState.statusMessage = `${getActivePlayer().name} requested ${domain.label}.`;
+      if (shouldAutoAdvanceFacilitator()) {
+        revealDomain(domainId);
+        return;
+      }
+      persistState();
+      announce(`${domain.label} requested. Awaiting facilitator reveal.`);
+    }
+
+    function revealDomain(domainId) {
+      const domain = getCase()?.domains.find(item => item.id === domainId);
+      if (!domain || !isDomainUnlocked(domain) || gameState.requestedDomainId !== domainId) return;
+      if (!gameState.revealedDomainIds.includes(domainId)) gameState.revealedDomainIds.push(domainId);
+      gameState.phase = "place-wand";
+      gameState.statusMessage = `${domain.label} revealed. ${getActivePlayer().name} must place one wand.`;
+      persistState();
+      announce(`${domain.label}: ${domain.finding}`);
+    }
+
+    function toggleDomainOverride(domainId) {
+      const list = gameState.overrideUnlocked;
+      gameState.overrideUnlocked = list.includes(domainId)
+        ? list.filter(id => id !== domainId)
+        : [...list, domainId];
+      persistState();
+    }
+
+    function isDomainUnlocked(domain) {
+      return domain.unlockAfterGuess <= gameState.guesses.length || gameState.overrideUnlocked.includes(domain.id);
+    }
+
+    function startCase(caseId) {
+      const names = setupPlayers.map((player, index) => player.name.trim() || `Player ${index + 1}`);
+      setupPlayers = setupPlayers.slice(0, 5).map((player, index) => ({
+        ...player,
+        name: names[index],
+        initials: initialsFor(names[index]),
+        color: PLAYER_COLORS[index]
+      }));
+      gameState = {
+        ...defaultState(),
+        sessionId: gameState.sessionId,
+        phase: "choose-domain",
+        caseId,
+        players: setupPlayers.map(player => ({ ...player })),
+        statusMessage: `${setupPlayers[0].name} chooses the first examination domain.`
+      };
+      persistState();
+      announce("Case started. " + gameState.statusMessage);
+    }
+
+    function resetToSetup() {
+      if (!confirm("End this case and return to setup? Guess history will be cleared.")) return;
+      gameState = defaultState();
+      setupCaseId = randomCaseId();
+      setupPlayers = [
+        { id: "player-1", name: "Player 1", color: PLAYER_COLORS[0], initials: "P1" }
+      ];
+      persistState();
+    }
+
+    function startNewCase() {
+      const caseId = randomCaseId(gameState.caseId);
+      if (!caseId || !confirm("Start a new random case and clear the current case history?")) return;
+      setupPlayers = gameState.players.map(player => ({ ...player }));
+      setupCaseId = caseId;
+      selectedCellId = null;
+      dismissWinCelebration(false);
+      startCase(caseId);
+    }
+
+    function openPlayerDisplay() {
+      const cleanUrl = location.href.split("?")[0].split("#")[0];
+      playerWindow = window.open(`${cleanUrl}?view=player`, "brainstem-mastermind-player");
+      if (!playerWindow) {
+        showToast("The browser blocked the player window. Allow pop-ups, then try again.");
+        return;
+      }
+      setTimeout(() => sendEnvelope({ type: "STATE", state: gameState }), 500);
+      showToast("Player display opened.");
+    }
+
+    function addSetupPlayer() {
+      if (setupPlayers.length >= 5) return;
+      const index = setupPlayers.length;
+      setupPlayers.push({
+        id: `player-${index + 1}`,
+        name: `Player ${index + 1}`,
+        color: PLAYER_COLORS[index],
+        initials: `P${index + 1}`
+      });
+      renderFacilitator();
+    }
+
+    function removeSetupPlayer(index) {
+      if (setupPlayers.length <= 1) return;
+      setupPlayers.splice(index, 1);
+      setupPlayers = setupPlayers.map((player, playerIndex) => ({
+        ...player,
+        id: `player-${playerIndex + 1}`,
+        name: /^Player \d+$/.test(player.name) ? `Player ${playerIndex + 1}` : player.name,
+        initials: /^Player \d+$/.test(player.name) ? `P${playerIndex + 1}` : player.initials,
+        color: PLAYER_COLORS[playerIndex]
+      }));
+      renderFacilitator();
+    }
+
+    function initialsFor(name) {
+      return name.trim().split(/\s+/).map(part => part[0]).join("").slice(0, 2).toUpperCase() || "P";
+    }
+
+    function playerById(id) {
+      return gameState.players.find(player => player.id === id) || { name: "Player", initials: "P", color: "#60737c" };
+    }
+
+    function render() {
+      renderFacilitator();
+      renderPlayer();
+    }
+
+    function renderFacilitator() {
+      const container = elements.facilitatorContent;
+      const currentCase = getCase();
+      if (gameState.phase === "setup" || !currentCase) {
+        container.innerHTML = setupMarkup();
+        bindSetupEvents();
+        return;
+      }
+
+      const active = getActivePlayer();
+      const requested = currentCase.domains.find(domain => domain.id === gameState.requestedDomainId);
+      const pending = gameState.pendingGuess;
+      container.innerHTML = `
+        <section class="console-section">
+          <div class="section-heading"><h3>Case status</h3><span class="small muted">${gameState.guesses.length} guesses</span></div>
+          <div class="answer-card">
+            <p class="eyebrow">Hidden answer</p>
+            <strong>${escapeHtml(currentCase.title)}</strong>
+            <p class="small muted">Library case ${currentCase.sourceCaseNumber} · ${currentCase.evidence}/${currentCase.difficulty}</p>
+            <div class="answer-grid">
+              <span><strong>Side</strong>${capitalize(currentCase.answer.side)}</span>
+              <span><strong>Level</strong>${capitalize(currentCase.answer.level)}</span>
+              <span><strong>Axis</strong>${capitalize(currentCase.answer.medialLateral)}</span>
+              <span><strong>Depth</strong>${capitalize(currentCase.answer.ventralDorsal)}</span>
+            </div>
+          </div>
+          <div class="notice-card" style="margin-top:.7rem">
+            <h3>Active turn</h3>
+            <p class="small"><strong>${escapeHtml(active?.name || "—")}</strong> · ${phaseLabel(gameState.phase)}</p>
+            <p class="small muted">${escapeHtml(gameState.statusMessage)}</p>
+          </div>
+        </section>
+
+        ${requested && !gameState.revealedDomainIds.includes(requested.id) ? `
+          <section class="console-section">
+            <div class="request-card">
+              <h3>Domain requested</h3>
+              <p class="small"><strong>${escapeHtml(requested.label)}</strong></p>
+              <p class="small">${escapeHtml(requested.finding)}</p>
+              <p class="small muted">${escapeHtml(requested.facilitatorExplanation)}</p>
+              <button class="button primary full" type="button" data-action="reveal" data-domain="${requested.id}">Reveal to players</button>
+            </div>
+          </section>` : ""}
+
+        ${pending ? `
+          <section class="console-section">
+            <div class="pending-card">
+              <h3>Wand awaiting confirmation</h3>
+              <p><strong>${escapeHtml(playerById(pending.playerId).name)}</strong></p>
+              <p class="small">${escapeHtml(coordinateLabel(pending.coordinate))}</p>
+              <div class="button-row">
+                <button class="button primary" type="button" data-action="score">Score wand</button>
+                <button class="button warning" type="button" data-action="reconsider">Reconsider</button>
+                <button class="button ghost" type="button" data-action="cancel">Cancel</button>
+              </div>
+            </div>
+          </section>` : ""}
+
+        <section class="console-section">
+          <div class="section-heading"><h3>Clue controls</h3><span class="small muted">Override allowed</span></div>
+          <div class="clue-control-list">
+            ${currentCase.domains.map(domain => clueControlMarkup(domain)).join("")}
+          </div>
+        </section>
+
+        <section class="console-section">
+          <div class="section-heading"><h3>Facilitator notes</h3></div>
+          <p class="small"><strong>Library tier:</strong> ${escapeHtml(currentCase.evidence)} evidence · ${escapeHtml(currentCase.difficulty)}</p>
+          <p class="small"><strong>Affected:</strong> ${escapeHtml(currentCase.affectedStructures.join("; "))}</p>
+          <p class="small"><strong>Spared:</strong> ${escapeHtml(currentCase.sparedStructures.join("; "))}</p>
+          <p class="small muted"><strong>Closest distractor:</strong> ${escapeHtml(currentCase.closestDistractor)}</p>
+          <p class="small muted"><strong>Anatomy audit:</strong> ${escapeHtml(currentCase.reviewNote)}</p>
+          ${currentCase.references.length ? `<p class="small muted"><strong>Evidence base:</strong> ${escapeHtml(currentCase.references.join("; "))}</p>` : ""}
+        </section>
+
+        <section class="console-section">
+          <div class="section-heading"><h3>Display and session</h3></div>
+          <div class="button-row">
+            <button class="button secondary" type="button" data-action="open-player">Open player display</button>
+            <button class="button ghost" type="button" data-action="new-case">New Case</button>
+            <button class="button danger" type="button" data-action="new-setup">End case</button>
+          </div>
+        </section>
+      `;
+      bindFacilitatorEvents();
+    }
+
+    function setupMarkup() {
+      const caseOptions = LEVELS.map(level => {
+        const options = caseLibrary
+          .filter(item => item.answer.level === level)
+          .sort((a, b) => a.sourceCaseNumber - b.sourceCaseNumber)
+          .map(item => `<option value="${item.id}" ${item.id === setupCaseId ? "selected" : ""}>#${item.sourceCaseNumber} · ${escapeHtml(item.title)} · ${escapeHtml(item.evidence)}/${escapeHtml(item.difficulty)}</option>`)
+          .join("");
+        return `<optgroup label="${capitalize(level)}">${options}</optgroup>`;
+      }).join("");
+      return `
+        <section class="console-section">
+          <div class="section-heading"><h3>1. Players</h3><span class="small muted">1–5 · custom names optional</span></div>
+          <div id="setupPlayerList">
+            ${setupPlayers.map((player, index) => `
+              <div class="player-input-row">
+                <span class="player-swatch" style="--player:${player.color}" aria-hidden="true"></span>
+                <input type="text" maxlength="28" value="${escapeAttribute(player.name)}" data-player-index="${index}" aria-label="Player ${index + 1} name">
+                <button class="icon-button" type="button" data-remove-player="${index}" aria-label="Remove Player ${index + 1}" ${setupPlayers.length <= 1 ? "disabled" : ""}>×</button>
+              </div>`).join("")}
+          </div>
+          <button class="button ghost full" type="button" id="addPlayerButton" ${setupPlayers.length >= 5 ? "disabled" : ""}>Add player</button>
+        </section>
+        <section class="console-section">
+          <div class="section-heading"><h3>2. Curated case</h3><span class="small muted">${caseLibrary.length} cases · ${FAMILY_DEFINITIONS.length} mirrored patterns</span></div>
+          <label class="field">
+            <span>Case library selection</span>
+            <select id="caseSelect">${caseOptions}</select>
+          </label>
+          <p class="small muted">A random case is selected by default. Cases begin without a free presenting-symptom clue; every clinical finding is acquired through a player-selected examination domain.</p>
+        </section>
+        <section class="console-section">
+          <button class="button primary full" type="button" id="startCaseButton">Start case</button>
+          <button class="button secondary full" style="margin-top:.5rem" type="button" id="setupOpenPlayerButton">Open player display</button>
+        </section>
+      `;
+    }
+
+    function clueControlMarkup(domain) {
+      const revealed = gameState.revealedDomainIds.includes(domain.id);
+      const unlocked = isDomainUnlocked(domain);
+      const requested = gameState.requestedDomainId === domain.id;
+      const status = revealed ? "Revealed" : unlocked ? "Available" : `Locked until guess ${domain.unlockAfterGuess}`;
+      return `
+        <div class="clue-control ${revealed ? "revealed" : ""} ${requested ? "requested" : ""}">
+          <div>
+            <strong>${escapeHtml(domain.label)}</strong>
+            <span>${status}${requested && !revealed ? " · requested" : ""}</span>
+          </div>
+          <div class="clue-actions">
+            ${!unlocked ? `<button class="mini-button" type="button" data-action="override" data-domain="${domain.id}">Unlock</button>` : ""}
+          </div>
+        </div>`;
+    }
+
+    function bindSetupEvents() {
+      document.querySelectorAll("[data-player-index]").forEach(input => {
+        input.addEventListener("input", () => {
+          setupPlayers[Number(input.dataset.playerIndex)].name = input.value;
+        });
+      });
+      document.querySelectorAll("[data-remove-player]").forEach(button => {
+        button.addEventListener("click", () => removeSetupPlayer(Number(button.dataset.removePlayer)));
+      });
+      document.getElementById("addPlayerButton")?.addEventListener("click", addSetupPlayer);
+      const caseSelect = document.getElementById("caseSelect");
+      caseSelect?.addEventListener("change", () => {
+        setupCaseId = caseSelect.value;
+      });
+      document.getElementById("startCaseButton")?.addEventListener("click", () => startCase(caseSelect?.value || setupCaseId));
+      document.getElementById("setupOpenPlayerButton")?.addEventListener("click", openPlayerDisplay);
+    }
+
+    function bindFacilitatorEvents() {
+      elements.facilitatorContent.querySelectorAll("[data-action]").forEach(button => {
+        button.addEventListener("click", () => {
+          const action = button.dataset.action;
+          const domainId = button.dataset.domain;
+          if (action === "reveal") revealDomain(domainId);
+          if (action === "override") toggleDomainOverride(domainId);
+          if (action === "score") scorePendingGuess();
+          if (action === "reconsider") reconsiderPendingGuess();
+          if (action === "cancel") cancelPendingGuess();
+          if (action === "open-player") openPlayerDisplay();
+          if (action === "new-case") startNewCase();
+          if (action === "new-setup") resetToSetup();
+        });
+      });
+    }
+
+    function renderPlayer() {
+      const currentCase = getCase();
+      const active = getActivePlayer();
+      const inSetup = !currentCase || gameState.phase === "setup";
+      elements.caseEyebrow.textContent = inSetup ? "Awaiting setup" : "Case in progress";
+      elements.caseHeading.textContent = inSetup ? "Ready the Brainstem Tower" : "Localize the lesion";
+      elements.phaseBadge.textContent = phaseLabel(gameState.phase);
+      elements.turnStrip.innerHTML = inSetup ? `
+        <span class="turn-chip">1–5 players</span>
+        <span class="turn-chip">24 locations</span>
+      ` : `
+        <span class="turn-chip">Player: <strong>${escapeHtml(active?.name || "Player 1")}</strong></span>
+        <span class="turn-chip">Guess ${gameState.guesses.length + 1}</span>
+      `;
+      renderDomains(currentCase);
+      renderBoard();
+      renderHistory();
+      renderDebrief(currentCase);
+    }
+
+    function renderDomains(currentCase) {
+      if (!currentCase) {
+        elements.clueHeading.textContent = "Choose a clue domain";
+        elements.clueInstruction.textContent = "Available domains appear when the case begins.";
+        elements.revealedClues.innerHTML = `<div class="empty-state">No findings have been revealed.</div>`;
+        const setupDomains = Object.entries(DOMAIN_CATALOG).map(([id, domain]) => ({ id, ...domain }));
+        elements.domainGrid.innerHTML = renderDomainGroups(setupDomains, domain => `
+          <button class="domain-button locked" type="button" disabled>
+            <strong>${escapeHtml(domain.label)}</strong><span>Waiting for case setup</span>
+          </button>`);
+        return;
+      }
+
+      const canRequest = gameState.phase === "choose-domain" && !gameState.requestedDomainId;
+      elements.clueHeading.textContent = canRequest
+        ? `${getActivePlayer().name}, choose a clue domain`
+        : gameState.phase === "choose-domain"
+          ? "Clue request sent"
+          : "Revealed findings";
+      elements.clueInstruction.textContent = gameState.phase === "choose-domain" && gameState.requestedDomainId
+        ? "Awaiting facilitator approval and reveal."
+        : instructionForPhase(gameState.phase);
+      const revealed = currentCase.domains.filter(domain => gameState.revealedDomainIds.includes(domain.id));
+      elements.revealedClues.innerHTML = revealed.length
+        ? revealed.map(domain => `<article class="revealed-clue"><strong>${escapeHtml(domain.label)}</strong><p>${escapeHtml(domain.finding)}</p></article>`).join("")
+        : `<div class="empty-state">No findings revealed yet. Choose one of the available examination domains.</div>`;
+
+      elements.domainGrid.innerHTML = renderDomainGroups(currentCase.domains, domain => {
+        const isRevealed = gameState.revealedDomainIds.includes(domain.id);
+        const isRequested = gameState.requestedDomainId === domain.id && !isRevealed;
+        const unlocked = isDomainUnlocked(domain);
+        const stateClass = isRevealed ? "revealed" : isRequested ? "requested" : unlocked ? "available" : "locked";
+        const statusText = isRevealed ? "Finding revealed" : isRequested ? "Awaiting facilitator" : unlocked ? "Available to request" : `Unlocks after ${domain.unlockAfterGuess} guess${domain.unlockAfterGuess === 1 ? "" : "es"}`;
+        return `
+          <button class="domain-button ${stateClass}" type="button" data-domain-request="${domain.id}"
+            ${(!canRequest || !unlocked || isRevealed || isRequested) ? "disabled" : ""}
+            aria-label="${escapeAttribute(domain.label)}, ${statusText}">
+            <strong>${escapeHtml(domain.label)}</strong>
+            <span>${escapeHtml(statusText)}</span>
+          </button>`;
+      });
+
+      elements.domainGrid.querySelectorAll("[data-domain-request]").forEach(button => {
+        button.addEventListener("click", () => requestDomain(button.dataset.domainRequest));
+      });
+    }
+
+    function renderDomainGroups(domains, renderButton) {
+      const cranialDomains = CRANIAL_DOMAIN_IDS
+        .map(id => domains.find(domain => domain.id === id))
+        .filter(Boolean);
+      const generalDomains = domains.filter(domain => !CRANIAL_DOMAIN_IDS.includes(domain.id));
+      return `
+        <div class="domain-group domain-group-general">
+          <div class="domain-group-buttons">${generalDomains.map(renderButton).join("")}</div>
+        </div>
+        <div class="domain-group domain-group-cranial" role="group" aria-label="Cranial nerve examination">
+          <p class="domain-group-title">Cranial nerve examination</p>
+          <div class="domain-group-buttons">${cranialDomains.map(renderButton).join("")}</div>
+        </div>`;
+    }
+
+    function renderBoard() {
+      const canPlace = canPlaceWand();
+      const currentCase = getCase();
+      const recentGuesses = gameState.guesses.slice(-16);
+      document.querySelectorAll(".board-cell").forEach(cell => {
+        const id = cell.dataset.cellId;
+        cell.disabled = !canPlace;
+        cell.classList.toggle("selected", selectedCellId === id);
+        const isCorrect = currentCase && gameState.phase === "debrief" && coordinateId(currentCase.answer) === id;
+        cell.classList.toggle("correct", Boolean(isCorrect));
+        const stack = cell.querySelector(".wand-stack");
+        const guesses = recentGuesses.filter(guess => coordinateId(guess.coordinate) === id);
+        stack.innerHTML = guesses.map((guess, index) => {
+          const player = playerById(guess.playerId);
+          return `<span class="wand" style="--player:${player.color};--i:${index}" title="Guess ${guess.number}, ${escapeAttribute(player.name)}, ${guess.score} of 4"><span>${escapeHtml(player.initials)}</span><span class="feedback-tag">${guess.score}</span></span>`;
+        }).join("");
+      });
+      elements.boardStatus.textContent = canPlace ? "Place wand" : gameState.phase === "facilitator-confirmation" ? "Awaiting score" : gameState.phase === "debrief" ? "Answer shown" : "Waiting";
+      if (!selectedCellId) elements.selectionBar.hidden = true;
+    }
+
+    function renderHistory() {
+      const count = gameState.guesses.length;
+      elements.guessCountBadge.textContent = `${count} guess${count === 1 ? "" : "es"}`;
+      if (!count) {
+        elements.guessHistory.innerHTML = `<div class="empty-state">Scored wands will appear here with 0–4 feedback.</div>`;
+        return;
+      }
+      elements.guessHistory.innerHTML = [...gameState.guesses].reverse().map(guess => {
+        const player = playerById(guess.playerId);
+        return `
+          <article class="history-item" style="--player:${player.color}">
+            <span class="guess-number">${guess.number}</span>
+            <div><strong>${escapeHtml(player.name)}</strong><span>${escapeHtml(player.initials)}</span></div>
+            <div><strong>${escapeHtml(coordinateLabel(guess.coordinate))}</strong><span>Four-coordinate wand placement</span></div>
+            <span class="score-badge" aria-label="${guess.score} of 4 coordinates correct">${guess.score}</span>
+          </article>`;
+      }).join("");
+    }
+
+    function renderDebrief(currentCase) {
+      if (!currentCase || gameState.phase !== "debrief") {
+        elements.debriefSection.hidden = true;
+        elements.debriefSection.innerHTML = "";
+        return;
+      }
+      const winner = getWinner();
+      const discriminating = currentCase.domains.find(domain => domain.id === currentCase.discriminatingDomain);
+      elements.debriefSection.hidden = false;
+      elements.debriefSection.innerHTML = `
+        <div class="debrief-header">
+          <div>
+            <span class="winner-banner">${escapeHtml(winner?.name || "Winner")} · 4 of 4</span>
+            <h2 id="debriefHeading">Debrief: ${escapeHtml(currentCase.familyTitle)}</h2>
+            <p class="muted">${escapeHtml(currentCase.title)}</p>
+          </div>
+          <span class="phase-badge">Complete</span>
+        </div>
+        <div class="coordinate-answer">
+          <div><span>Side</span><strong>${capitalize(currentCase.answer.side)}</strong></div>
+          <div><span>Level</span><strong>${capitalize(currentCase.answer.level)}</strong></div>
+          <div><span>Axis</span><strong>${capitalize(currentCase.answer.medialLateral)}</strong></div>
+          <div><span>Depth</span><strong>${capitalize(currentCase.answer.ventralDorsal)}</strong></div>
+        </div>
+        <div class="debrief-grid">
+          <article class="debrief-block">
+            <h3>Affected structures</h3>
+            <ul>${currentCase.affectedStructures.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+          </article>
+          <article class="debrief-block">
+            <h3>Spared structures</h3>
+            <ul>${currentCase.sparedStructures.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+          </article>
+          <article class="debrief-block">
+            <h3>Localization logic</h3>
+            <ul>${currentCase.debrief.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+          </article>
+          <article class="debrief-block">
+            <h3>Best discriminator</h3>
+            <p><strong>${escapeHtml(discriminating?.label || "")}:</strong> ${escapeHtml(discriminating?.finding || "")}</p>
+            <p class="small muted"><strong>Closest distractor:</strong> ${escapeHtml(currentCase.closestDistractor)}</p>
+          </article>
+        </div>
+      `;
+    }
+
+    function phaseLabel(phase) {
+      return {
+        setup: "Setup",
+        "choose-domain": "Choose domain",
+        "place-wand": "Place wand",
+        "facilitator-confirmation": "Confirm wand",
+        debrief: "Debrief"
+      }[phase] || capitalize(phase.replaceAll("-", " "));
+    }
+
+    function instructionForPhase(phase) {
+      return {
+        setup: "Available domains appear when the case begins.",
+        "choose-domain": shouldAutoAdvanceFacilitator()
+          ? "Choose one available domain. Its finding will be revealed automatically."
+          : "Request one available domain. The facilitator controls the reveal.",
+        "place-wand": "Use the revealed evidence, then place exactly one wand.",
+        "facilitator-confirmation": shouldAutoAdvanceFacilitator()
+          ? "The submitted wand is being scored automatically."
+          : "The facilitator may score, request reconsideration, or cancel the pending wand.",
+        debrief: "The answer and localization logic are now visible."
+      }[phase] || "";
+    }
+
+    function showToast(message) {
+      clearTimeout(toastTimer);
+      elements.toast.textContent = message;
+      elements.toast.classList.add("show");
+      toastTimer = setTimeout(() => elements.toast.classList.remove("show"), 3200);
+    }
+
+    function announce(message) {
+      elements.liveRegion.textContent = "";
+      requestAnimationFrame(() => elements.liveRegion.textContent = message);
+      showToast(message);
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function escapeAttribute(value) {
+      return escapeHtml(value).replaceAll("`", "&#096;");
+    }
+  </script>
+</body>
+</html>

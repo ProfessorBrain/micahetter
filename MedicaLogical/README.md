@@ -9,7 +9,7 @@ Open [`index.html`](./index.html) directly in a web browser. It is the project e
 ## Included gameplay
 
 - Four-patient, medium-difficulty logic puzzle
-- 27 selectable adult specialty modes with 187 clinical cases
+- 27 selectable adult specialty modes with 186 clinical cases
 - Single-specialty and mixed-specialty puzzle generation
 - Diagnosis, mechanism-of-action treatment, and symptom knowledge clues
 - Compact appointment-by-appointment logic table
