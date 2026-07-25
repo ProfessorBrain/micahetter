@@ -38,7 +38,7 @@
     button { font: inherit; }
 
     .game-root {
-      --game-pad: clamp(6px, 1.5vh, 24px);
+      --game-pad: clamp(4px, 1vh, 14px);
       height: 100dvh;
       min-height: 0;
       display: flex;
@@ -90,7 +90,7 @@
     }
 
     .game-cabinet {
-      width: min(1180px, 100%);
+      width: min(1320px, 100%);
       height: 100%;
       min-height: 0;
       margin: 0 auto;
@@ -106,11 +106,18 @@
     }
 
     .game-header {
-      padding: clamp(7px, 1.4vh, 16px) 20px clamp(5px, 1vh, 12px);
-      border-bottom: 4px solid #130b12;
+      padding: 4px 12px;
+      border-bottom: 3px solid #130b12;
       background:
         linear-gradient(90deg, rgba(126, 166, 135, 0.36), transparent 32%),
         linear-gradient(180deg, #5c1f31 0%, #341927 100%);
+    }
+
+    .game-header > div {
+      min-width: 0;
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
     }
 
     .top-toolbar {
@@ -118,28 +125,28 @@
       z-index: 10;
       display: flex;
       align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      padding: clamp(6px, 1vh, 10px) 12px;
-      border-bottom: 4px solid #130b12;
+      gap: 6px;
+      flex-wrap: nowrap;
+      padding: 3px 8px;
+      border-bottom: 3px solid #130b12;
       background: linear-gradient(180deg, #34213a, var(--ink));
     }
 
     .tool-strip {
       display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
+      gap: 5px;
+      flex-wrap: nowrap;
       align-items: stretch;
       flex: 0 0 auto;
     }
 
     .tool-button {
       position: relative;
-      min-height: 48px;
-      min-width: 48px;
-      width: 48px;
-      height: 48px;
-      flex: 0 0 48px;
+      min-height: 42px;
+      min-width: 42px;
+      width: 42px;
+      height: 42px;
+      flex: 0 0 42px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -167,18 +174,18 @@
 
     .tool-icon {
       font-family: var(--emoji-font);
-      font-size: 1.35rem;
+      font-size: 1.22rem;
       line-height: 1;
     }
 
     .top-inventory {
-      height: 52px;
-      min-height: 52px;
-      max-height: 52px;
+      height: 46px;
+      min-height: 46px;
+      max-height: 46px;
       display: flex;
       align-items: center;
-      flex: 1 1 260px;
-      min-width: 220px;
+      flex: 1 1 220px;
+      min-width: 140px;
       padding: 2px 6px;
       border: 3px ridge var(--gold);
       background: #130b12;
@@ -191,19 +198,19 @@
       position: relative;
       display: flex;
       align-items: stretch;
-      flex: 0 1 172px;
+      flex: 0 1 136px;
     }
 
     .settings-menu {
-      flex: 0 0 48px;
+      flex: 0 0 42px;
     }
 
     .toolbar-menu-button,
     .chart-review-button {
       position: relative;
       z-index: 30;
-      min-height: 48px;
-      height: 48px;
+      min-height: 42px;
+      height: 42px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -224,7 +231,8 @@
     }
 
     .chart-review-button {
-      flex: 0 1 172px;
+      min-width: 112px;
+      flex: 0 1 136px;
     }
 
     .toolbar-menu-button:after { content: "\25BE"; margin-left: 8px; }
@@ -323,18 +331,24 @@
     .eyebrow {
       color: #f2ce77;
       font-family: var(--retro-font);
-      font-size: 0.78rem;
+      flex: 0 0 auto;
+      font-size: 0.64rem;
       text-transform: uppercase;
+      white-space: nowrap;
     }
 
     .game-header h1 {
+      min-width: 0;
       color: #fff3bf;
-      font-size: clamp(1.08rem, 2.4vw, 1.62rem);
+      font-size: clamp(0.9rem, 1.65vw, 1.18rem);
       line-height: 1.08;
+      overflow: hidden;
+      text-overflow: ellipsis;
       text-shadow: 2px 2px 0 #1b1019;
+      white-space: nowrap;
     }
 
-    .game-header .eyebrow { margin-top: 4px; }
+    .game-header .eyebrow { margin-top: 0; }
 
     .adventure-frame {
       min-height: 0;
@@ -668,9 +682,9 @@
       flex-wrap: nowrap;
       gap: 6px;
       align-items: center;
-      height: 42px;
-      min-height: 42px;
-      max-height: 42px;
+      height: 36px;
+      min-height: 36px;
+      max-height: 36px;
       min-width: 0;
       overflow-x: auto;
       overflow-y: hidden;
@@ -682,13 +696,13 @@
     .top-inventory .inventory-list { flex: 1 1 auto; }
 
     .inventory-item {
-      width: 42px;
-      height: 42px;
-      min-width: 42px;
-      min-height: 42px;
-      max-width: 42px;
-      max-height: 42px;
-      flex: 0 0 42px;
+      width: 36px;
+      height: 36px;
+      min-width: 36px;
+      min-height: 36px;
+      max-width: 36px;
+      max-height: 36px;
+      flex: 0 0 36px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -724,7 +738,7 @@
 
     .inventory-item-art {
       width: 28px;
-      height: 34px;
+      height: 32px;
       flex: 0 0 28px;
       border: 0;
       background: transparent;
@@ -734,7 +748,7 @@
 
     .inventory-item-art[data-inventory-art="tuningFork"] {
       width: 13px;
-      height: 36px;
+      height: 32px;
       flex-basis: 13px;
       border: 0;
       background: transparent;
@@ -1716,6 +1730,163 @@
       line-height: 1;
     }
 
+    .lung-card {
+      width: min(960px, 100%);
+      overflow-x: hidden;
+    }
+
+    .game-root.lung-testing .emoji-cursor { display: none !important; }
+    .game-root.cursor-active.lung-testing .lung-field { cursor: crosshair; }
+
+    .lung-card > .lung-instructions {
+      margin: 10px 16px 8px;
+      font-size: 0.78rem;
+      line-height: 1.35;
+    }
+
+    .lung-game-grid {
+      display: block;
+      margin: 8px 16px;
+    }
+
+    .lung-stage {
+      position: relative;
+      width: min(100%, calc(48vh * 3 / 2), 760px);
+      aspect-ratio: 3 / 2;
+      justify-self: center;
+      margin-inline: auto;
+      overflow: hidden;
+      border: 5px ridge var(--gold);
+      background: #315867;
+      box-shadow: inset 0 0 0 3px #301925, 0 7px 0 rgba(33,25,35,0.24);
+      image-rendering: pixelated;
+      user-select: none;
+      touch-action: none;
+    }
+
+    .lung-stage canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      image-rendering: pixelated;
+      pointer-events: none;
+    }
+
+    .lung-field {
+      position: absolute;
+      z-index: 2;
+      min-width: 0;
+      min-height: 0;
+      padding: 0;
+      border: 3px dashed rgba(247,237,207,0.58);
+      border-radius: 8px;
+      background: rgba(247,237,207,0.08);
+      color: #fff3bf;
+      appearance: none;
+      -webkit-appearance: none;
+      touch-action: none;
+    }
+
+    .lung-field::after {
+      content: "\1FA7A";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      font-family: var(--emoji-font);
+      font-size: clamp(16px, 3.2cqh, 28px);
+      opacity: 0.5;
+      filter: drop-shadow(2px 2px 0 rgba(33,25,35,0.62));
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .lung-field:hover,
+    .lung-field:focus-visible {
+      border-color: #fff3bf;
+      background: rgba(255,243,191,0.14);
+      outline: none;
+    }
+
+    .lung-field.holding {
+      border-style: solid;
+      border-color: #fff3bf;
+      background: rgba(31,111,120,0.24);
+      animation: none;
+    }
+
+    .lung-field.completed {
+      border-style: solid;
+      border-color: #83d58a;
+      background: rgba(57,115,77,0.25);
+      box-shadow: inset 0 0 0 2px rgba(33,25,35,0.58);
+      animation: none;
+    }
+
+    .lung-field.completed::after {
+      content: "\2713";
+      font-family: var(--retro-font);
+      font-size: clamp(18px, 4cqh, 32px);
+      font-weight: 700;
+      opacity: 1;
+    }
+
+    .lung-hold-ring {
+      position: absolute;
+      z-index: 4;
+      display: none;
+      width: 40px;
+      height: 40px;
+      border: 5px solid #ffe175;
+      border-radius: 50%;
+      box-shadow: 0 0 0 3px rgba(33,25,35,0.72), 0 0 18px rgba(255,225,117,0.62);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      will-change: width, height;
+    }
+
+    .lung-hold-ring.visible { display: block; }
+    .lung-hold-ring.active { border-color: #fff3bf; }
+    .lung-hold-ring.late { border-color: #d34d49; box-shadow: 0 0 0 3px rgba(33,25,35,0.72), 0 0 18px rgba(211,77,73,0.66); }
+
+    .lung-progress-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 8px 16px;
+      color: var(--maroon);
+      font-family: var(--retro-font);
+      font-size: 0.66rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .lung-progress-pips { display: flex; gap: 6px; }
+
+    .lung-progress-pips span {
+      width: 22px;
+      height: 14px;
+      border: 2px solid var(--ink);
+      background: #a69575;
+    }
+
+    .lung-progress-pips span.lit { background: #57905f; }
+
+    .lung-status {
+      min-height: 46px;
+      margin: 8px 16px 14px;
+      padding: 8px 10px;
+      border-left: 5px solid var(--teal);
+      background: rgba(31,111,120,0.12);
+      color: var(--ink);
+      font-size: 0.76rem;
+      line-height: 1.35;
+    }
+
+    .lung-status.success { border-color: #39734d; background: rgba(57,115,77,0.16); }
+    .lung-status.miss { border-color: #b43c37; background: rgba(180,60,55,0.13); }
+
     .mini-card { width: min(720px, 100%); }
 
     .cancellation-sheet {
@@ -2337,6 +2508,264 @@
       transform: rotate(-2deg);
     }
 
+    .ehr-card {
+      width: min(1040px, 100%);
+      max-height: min(94vh, 820px);
+      background: #b8c0ad;
+    }
+
+    .ehr-shell {
+      display: grid;
+      gap: 8px;
+      padding: 12px 14px 14px;
+    }
+
+    .ehr-status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 10px;
+      border: 3px inset #d7aa44;
+      background: #17261f;
+      color: #71ef8e;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+    }
+
+    .ehr-status-light {
+      width: 11px;
+      height: 11px;
+      flex: 0 0 11px;
+      background: #58dd79;
+      box-shadow: 0 0 0 2px #07110b, 0 0 9px #58dd79;
+    }
+
+    .ehr-findings-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .ehr-finding-panel {
+      min-width: 0;
+      border: 3px ridge #d7aa44;
+      background: #f7edcf;
+      color: #211923;
+    }
+
+    .ehr-finding-panel h3,
+    .ehr-code-panel h3 {
+      margin: 0;
+      padding: 8px 10px;
+      border-bottom: 3px solid #211923;
+      background: #1f6f78;
+      color: #fff3bf;
+      font-size: 0.76rem;
+      text-transform: uppercase;
+    }
+
+    .ehr-finding-list {
+      display: grid;
+      gap: 7px;
+      max-height: 136px;
+      margin: 0;
+      padding: 10px 12px 12px 28px;
+      overflow: auto;
+      font-size: 0.67rem;
+      line-height: 1.35;
+    }
+
+    .ehr-finding-list strong { color: #5c1f31; }
+    .ehr-empty { margin: 12px; color: #655b60; font-size: 0.68rem; }
+
+    .ehr-code-panel {
+      border: 3px ridge #d7aa44;
+      background: #e8e2cf;
+    }
+
+    .icd-code-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+      padding: 8px;
+    }
+
+    .icd-option {
+      display: grid;
+      grid-template-columns: 88px minmax(0, 1fr);
+      align-items: center;
+      gap: 9px;
+      min-height: 46px;
+      padding: 6px 9px;
+      border: 3px outset #d7aa44;
+      background: #f7edcf;
+      color: #211923;
+      text-align: left;
+    }
+
+    .icd-option strong {
+      color: #5c1f31;
+      font-size: 0.88rem;
+    }
+
+    .icd-option span { font-size: 0.66rem; line-height: 1.25; }
+    .icd-option.selected { border-style: inset; background: #a8d1c4; }
+
+    .ehr-feedback {
+      min-height: 40px;
+      margin: 0;
+      padding: 9px 11px;
+      border-left: 5px solid #1f6f78;
+      background: rgba(31,111,120,0.12);
+      color: #211923;
+      font-size: 0.69rem;
+      line-height: 1.35;
+    }
+
+    .ehr-feedback.error { border-color: #a23b3b; background: rgba(162,59,59,0.12); }
+    .ehr-feedback.success { border-color: #39734d; background: rgba(57,115,77,0.15); }
+
+    .final-mode-backdrop {
+      z-index: 100;
+      place-items: stretch;
+      padding: 0;
+      background: #000;
+    }
+
+    .final-assessment-mode {
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      overflow: hidden;
+      background: #000;
+      color: #f7edcf;
+    }
+
+    .final-mode-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      padding: 10px 18px;
+      border-bottom: 3px solid #d7aa44;
+      background: #10090f;
+      color: #e6bd58;
+      text-transform: uppercase;
+    }
+
+    .final-mode-heading strong { font-size: 0.9rem; }
+    .final-mode-heading span { color: #b9afa9; font-size: 0.62rem; }
+
+    .final-void {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(180px, 28%) minmax(0, 1fr);
+      align-items: center;
+      gap: clamp(18px, 4vw, 58px);
+      width: min(1080px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: clamp(18px, 5vh, 56px) 0;
+    }
+
+    .final-patient-frame {
+      width: min(100%, 300px);
+      margin: 0 auto;
+      border: 5px solid #d7aa44;
+      background: #1d2830;
+      box-shadow: 0 0 0 4px #5c1f31, 12px 14px 0 rgba(92,31,49,0.35);
+    }
+
+    .final-patient-frame img {
+      display: block;
+      width: 100%;
+      height: auto;
+      image-rendering: pixelated;
+    }
+
+    .final-dialogue-panel {
+      min-width: 0;
+      max-height: 100%;
+      overflow: auto;
+      border: 5px solid #d7aa44;
+      background: #201820;
+      box-shadow: inset 0 0 0 4px #5c1f31;
+    }
+
+    .final-progress {
+      display: flex;
+      gap: 7px;
+      padding: 14px 18px 0;
+    }
+
+    .final-progress span {
+      width: 30px;
+      height: 8px;
+      border: 1px solid #d7aa44;
+      background: #4b4248;
+    }
+
+    .final-progress span.complete { background: #62b579; }
+    .final-speaker { margin: 14px 18px 6px; color: #e6bd58; font-size: 0.7rem; text-transform: uppercase; }
+
+    .final-prompt {
+      min-height: 74px;
+      margin: 0;
+      padding: 0 18px 16px;
+      color: #fff3bf;
+      font-size: clamp(0.82rem, 2vw, 1rem);
+      line-height: 1.48;
+    }
+
+    .final-options {
+      display: grid;
+      gap: 9px;
+      padding: 0 18px 16px;
+    }
+
+    .final-choice {
+      min-height: 54px;
+      padding: 10px 12px;
+      border: 3px outset #d7aa44;
+      background: #f0dfad;
+      color: #211923;
+      font-size: 0.72rem;
+      line-height: 1.35;
+      text-align: left;
+    }
+
+    .final-choice:disabled { opacity: 0.56; }
+
+    .final-response {
+      min-height: 58px;
+      margin: 0 18px 16px;
+      padding: 10px 12px;
+      border-left: 5px solid #1f6f78;
+      background: #0b2226;
+      color: #d8ece3;
+      font-size: 0.7rem;
+      line-height: 1.4;
+    }
+
+    .final-response.retry { border-color: #b84c45; background: #2b1118; color: #f4c7bd; }
+
+    .final-continue {
+      width: calc(100% - 36px);
+      min-height: 48px;
+      margin: 0 18px 18px;
+    }
+
+    .final-complete {
+      align-self: center;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .final-complete h2 { margin: 0 0 14px; color: #e6bd58; font-size: clamp(1.25rem, 4vw, 2.2rem); }
+    .final-complete p { max-width: 720px; margin: 0 auto; line-height: 1.55; }
+
     .help-modal {
       width: min(780px, 100%);
     }
@@ -2458,18 +2887,27 @@
 
     @media (max-width: 980px) {
       .review-layout { grid-template-columns: 1fr; }
+      .ehr-findings-grid { grid-template-columns: 1fr; }
+      .ehr-finding-list { max-height: 126px; }
       .toolbar-spacer { display: none; }
-      .top-inventory { flex: 1 1 100%; min-width: 0; }
-      .toolbar-menu { flex: 1 1 180px; }
-      .settings-menu { flex: 0 0 48px; }
-      .chart-review-button { flex: 1 1 180px; }
+      .top-inventory { flex: 1 1 160px; min-width: 110px; }
+      .toolbar-menu { flex: 0 0 42px; }
+      .settings-menu { flex: 0 0 42px; }
+      .chart-review-button { flex: 0 1 126px; }
       .toolbar-menu-button { width: 100%; justify-content: center; }
       .menu-panel { left: 0; right: auto; width: min(320px, 92vw); }
     }
 
     @media (max-width: 700px) {
-      .game-root { padding: 10px; }
-      .game-header h1 { font-size: 1rem; }
+      .game-root { padding: 4px; }
+      .game-header { padding: 3px 8px; }
+      .game-header > div { gap: 8px; }
+      .game-header h1 { font-size: 0.86rem; }
+      .game-header .eyebrow { font-size: 0.56rem; }
+      .top-toolbar { gap: 4px; padding: 3px 5px; }
+      .tool-strip { gap: 3px; }
+      .top-inventory { flex: 1 1 90px; min-width: 72px; padding-inline: 3px; }
+      .chart-review-button { min-width: 92px; padding-inline: 5px; font-size: 0.66rem; }
       .room-scene { min-height: 0; }
       .exam-grid { grid-template-columns: 1fr; }
       .physical-exam-layout {
@@ -2499,7 +2937,13 @@
       .orifice-panel { min-height: 116px; margin: 9px 12px 12px; padding: 8px 9px; }
       .orifice-answer-grid { grid-template-columns: 1fr; gap: 5px; }
       .orifice-answer { min-height: 38px; padding: 6px 8px; font-size: 0.72rem; }
-      .tool-button { flex: 0 0 48px; }
+      .lung-card > .lung-instructions { margin: 7px 10px 5px; font-size: 0.68rem; }
+      .lung-game-grid { margin: 5px 10px; }
+      .lung-stage { width: min(100%, calc(42vh * 3 / 2)); }
+      .lung-progress-line { margin: 6px 10px; font-size: 0.56rem; }
+      .lung-progress-pips span { width: 16px; height: 11px; }
+      .lung-status { min-height: 40px; margin: 6px 10px 9px; padding: 6px 8px; font-size: 0.66rem; }
+      .tool-button { flex: 0 0 42px; }
       .history-dialogue {
         grid-template-columns: 76px 1fr;
         gap: 8px;
@@ -2516,6 +2960,20 @@
         margin-top: 8px;
       }
       .modal-backdrop { padding: 8px; }
+      .final-mode-backdrop { padding: 0; }
+      .icd-code-list { grid-template-columns: 1fr; }
+      .final-void {
+        grid-template-columns: 104px minmax(0, 1fr);
+        gap: 12px;
+        width: calc(100% - 18px);
+        padding: 12px 0;
+      }
+      .final-mode-heading { padding: 8px 10px; }
+      .final-mode-heading strong { font-size: 0.72rem; }
+      .final-patient-frame { border-width: 3px; box-shadow: 0 0 0 2px #5c1f31; }
+      .final-dialogue-panel { border-width: 3px; }
+      .final-prompt { min-height: 58px; font-size: 0.76rem; }
+      .final-choice { min-height: 44px; padding: 8px 9px; font-size: 0.64rem; }
       .wash-hud {
         grid-template-columns: 1fr;
         gap: 6px;
@@ -2653,6 +3111,7 @@
   <div class="modal-backdrop" id="modalRoot"></div>
 
   <script src="assets/er-midi-data.js"></script>
+  <script src="assets/the-trial-midi-data.js"></script>
   <script>
     const state = {
       mode: "look",
@@ -2662,16 +3121,20 @@
       orificeAssignments: null,
       completed: [],
       actionLog: [],
+      pendingMessages: [],
       musicVolume: 65,
       sfxVolume: 35,
       timingFrame: null,
       sensoryFrame: null,
       pupilFrame: null,
+      lungFrame: null,
+      lungBreathSource: null,
       timingMarker: 0,
       timingHits: 0,
       washScore: 0,
       washTotal: 0,
-      washSplats: 0
+      washSplats: 0,
+      finalDialogueStep: 0
     };
 
     let activeMinigameAutowin = null;
@@ -2709,7 +3172,7 @@
       ["coordination", "Coordination", "Upper-limb and right-leg coordination are intact; left heel-to-shin is limited by the motor deficit rather than dysmetria.", "Exam"],
       ["sensoryLevel", "Sensory level", "A thoracic sensory level is identified: left dorsal-column loss around T8, right pain-temperature loss around T10.", "Exam"],
       ["localization", "Localization", "Crossed findings localize to the left thoracic hemicord, not brain, root, nerve, or muscle.", "Assessment"],
-      ["mriOrder", "Imaging order", "MRI thoracic spine with and without contrast is the appropriate study.", "Diagnostics"],
+      ["icdCode", "Problem code", "G83.81 - Brown-Sequard syndrome was selected from the focused ICD-10-CM list.", "Assessment"],
       ["mriMass", "MRI finding", "MRI shows a left-sided posterolateral thoracic mass compressing the cord.", "Diagnostics"],
       ["finalDiagnosis", "Final diagnosis", "Brown-Sequard syndrome from left thoracic hemicord compression by a posterolateral mass.", "Assessment"],
       ["neurosurgery", "Disposition", "Urgent neurosurgical evaluation is needed for compressive myelopathy.", "Management"]
@@ -2874,7 +3337,7 @@
         detail: "Respiratory effort, chest movement, and breath sounds.",
         intro: "Inspect breathing before auscultating and comparing both lungs.",
         findingId: "pulmonaryExam",
-        actions: ["respiratoryEffort", "lungAuscultation", "chestExpansion"]
+        actions: ["respiratoryEffort", "lungAuscultation"]
       },
       {
         id: "abdominal",
@@ -2931,19 +3394,14 @@
         result: "There is no peripheral edema; capillary refill is normal."
       },
       respiratoryEffort: {
-        label: "Respiratory effort",
-        detail: "Inspect rate, effort, and accessory-muscle use.",
-        result: "Breathing is unlabored without accessory-muscle use."
+        label: "Effort and expansion",
+        detail: "Inspect respiratory rate and effort, then observe and palpate bilateral chest expansion.",
+        result: "Breathing is unlabored without accessory-muscle use, and chest expansion is symmetric."
       },
       lungAuscultation: {
         label: "Lung auscultation",
-        detail: "Compare anterior and posterior breath sounds.",
+        detail: "Compare representative posterior fields through a complete respiratory cycle.",
         result: "Breath sounds are clear and symmetric without wheeze or crackles."
-      },
-      chestExpansion: {
-        label: "Chest expansion",
-        detail: "Observe and palpate bilateral expansion.",
-        result: "Chest expansion is symmetric."
       },
       abdominalInspection: {
         label: "Inspection",
@@ -3046,6 +3504,8 @@
       timer: null,
       loopStart: 0,
       nextNote: 0,
+      trackId: "room",
+      scheduledSources: [],
       lastSuccessSound: -10
     };
 
@@ -3235,9 +3695,15 @@
       return { notes, loopDuration };
     }
 
+    function musicSourceFor(trackId) {
+      return trackId === "final"
+        ? window.DOCTORQUEST_TRIAL_MIDI_BASE64
+        : window.SCUMMNEURO_ER_MIDI_BASE64;
+    }
+
     function ensureMusicLoaded() {
       if (musicState.loaded) return true;
-      const source = window.SCUMMNEURO_ER_MIDI_BASE64;
+      const source = musicSourceFor(musicState.trackId);
       if (!source) {
         setMusicStatus("Music data is missing.");
         return false;
@@ -3254,6 +3720,30 @@
         setMusicStatus("Could not read music.");
         return false;
       }
+    }
+
+    function stopScheduledMusicSources() {
+      musicState.scheduledSources.forEach(source => {
+        try { source.stop(); } catch (error) {}
+      });
+      musicState.scheduledSources = [];
+    }
+
+    function switchMusicTrack(trackId, forcePlay = false) {
+      const shouldPlay = musicState.playing || forcePlay;
+      clearInterval(musicState.timer);
+      musicState.timer = null;
+      stopScheduledMusicSources();
+      if (musicState.master && musicState.context) {
+        musicState.master.gain.setTargetAtTime(0, musicState.context.currentTime, 0.02);
+      }
+      musicState.playing = false;
+      musicState.loaded = false;
+      musicState.notes = [];
+      musicState.nextNote = 0;
+      musicState.trackId = trackId;
+      if (shouldPlay) startMusic();
+      else updateMusicUi();
     }
 
     function setMusicVolume(percent) {
@@ -3380,6 +3870,10 @@
 
       oscillator.connect(gain);
       gain.connect(musicState.master);
+      musicState.scheduledSources.push(oscillator);
+      oscillator.addEventListener("ended", () => {
+        musicState.scheduledSources = musicState.scheduledSources.filter(source => source !== oscillator);
+      }, { once: true });
       oscillator.start(when);
       oscillator.stop(end + 0.05);
     }
@@ -3440,6 +3934,7 @@
       musicState.playing = false;
       clearInterval(musicState.timer);
       musicState.timer = null;
+      stopScheduledMusicSources();
       if (musicState.master && musicState.context) {
         musicState.master.gain.setTargetAtTime(0, musicState.context.currentTime, 0.03);
       }
@@ -3585,23 +4080,101 @@
       }
     ];
 
-    const quizzes = {
-      ctSafety: {
-        title: "Imaging Order Gate",
-        prompt: "Choose the best study after you localize progressive Brown-Sequard-type findings to the thoracic cord.",
-        options: [
-          "MRI thoracic spine with and without contrast",
-          "Noncontrast CT head only",
-          "Peripheral nerve ultrasound",
-          "MRI brain without localizing signs"
-        ],
-        answer: 0,
-        hint: "The lesion localizes to thoracic cord, and a compressive mass needs MRI characterization.",
-        success: "The order is accepted. The final imaging sequence is now available."
-      }
-    };
+    const pertinentNeurologicExamFindings = [
+      "mentalStatus",
+      "cranialNerves",
+      "motorWeakness",
+      "lightTouch",
+      "dorsalColumn",
+      "spinothalamic",
+      "reflexes",
+      "coordination",
+      "collateralPhone"
+    ];
 
-    const requiredFinalFindings = ["chiefConcern", "timeCourse", "motorWeakness", "reflexes", "dorsalColumn", "spinothalamic", "sensoryLevel", "localization", "mriMass", "finalDiagnosis", "neurosurgery"];
+    const icdCodeOptions = [
+      { code: "G83.81", label: "Brown-Sequard syndrome", correct: true },
+      { code: "I63.9", label: "Cerebral infarction, unspecified", feedback: "The normal face and arms plus crossed long-tract findings below a thoracic level do not fit a cerebral infarction." },
+      { code: "M54.16", label: "Radiculopathy, lumbar region", feedback: "A lumbar root cannot account for an upper motor neuron pattern and contralateral pain-temperature loss." },
+      { code: "G62.9", label: "Polyneuropathy, unspecified", feedback: "Polyneuropathy is generally distal and symmetric; this examination shows a focal hemicord pattern." }
+    ];
+
+    const finalAssessmentDialogue = [
+      {
+        patient: "The screen says the scan is back. What did it show?",
+        options: [
+          {
+            text: "You have Brown-Sequard syndrome secondary to an enhancing intradural extramedullary lesion.",
+            feedback: "The words are accurate but not yet useful to the patient. Explain the finding and connect it to what she has experienced."
+          },
+          {
+            text: "The MRI shows a mass pressing on the left side of the spinal cord in your mid-back. That pressure explains the changes in strength and sensation we found.",
+            correct: true
+          },
+          {
+            text: "It is not a stroke, so I think we can stop worrying.",
+            feedback: "Avoid false reassurance. Spinal cord compression is urgent even though it is not a cerebral stroke."
+          }
+        ],
+        response: "A mass pressing on my spinal cord... Is that why each leg feels different?"
+      },
+      {
+        patient: "Is that why each leg feels different?",
+        options: [
+          {
+            text: "Yes. Pressure on one half of the cord can affect strength and position sense on that side while affecting pain and temperature on the other side.",
+            correct: true
+          },
+          {
+            text: "Probably, although the sensory examination was too inconsistent to interpret.",
+            feedback: "The crossed sensory pattern is internally coherent and central to the localization. Explain it plainly instead of dismissing it."
+          },
+          {
+            text: "No. The two kinds of numbness are unrelated coincidences.",
+            feedback: "The asymmetry is the clue: the pathways travel and cross differently within the spinal cord."
+          }
+        ],
+        response: "That finally makes sense. What needs to happen now?"
+      },
+      {
+        patient: "What needs to happen now?",
+        options: [
+          {
+            text: "We can arrange a routine clinic visit in several months and repeat the scan if you feel worse.",
+            feedback: "Progressive weakness and MRI-confirmed cord compression require urgent specialty evaluation, not routine follow-up."
+          },
+          {
+            text: "You should walk around the ward so we can see whether the weakness settles down.",
+            feedback: "Her near falls make unsupported walking unsafe, and activity does not treat mechanical cord compression."
+          },
+          {
+            text: "We will keep you in the hospital, protect you from falls, and contact the neurosurgical spine team urgently. They will determine whether decompression and tissue diagnosis are needed.",
+            correct: true
+          }
+        ],
+        response: "Urgent surgery sounds frightening. Are you sure I will be able to walk normally again?"
+      },
+      {
+        patient: "Urgent surgery sounds frightening. Are you sure I will be able to walk normally again?",
+        options: [
+          {
+            text: "I understand why this is frightening. I cannot promise the outcome, but acting quickly gives us the best chance to prevent further injury and recover function. We will explain each step and stay with you through it.",
+            correct: true
+          },
+          {
+            text: "Yes. Surgery will definitely restore everything to normal.",
+            feedback: "Do not promise an outcome that cannot be guaranteed. Offer honest uncertainty, urgency, and support."
+          },
+          {
+            text: "That question is better answered after the operation.",
+            feedback: "Acknowledge the fear now. The patient needs an honest prognosis frame and a clear immediate plan."
+          }
+        ],
+        response: "Thank you for being honest. Please tell me what happens first."
+      }
+    ];
+
+    const requiredFinalFindings = ["chiefConcern", "timeCourse", "motorWeakness", "reflexes", "dorsalColumn", "spinothalamic", "icdCode", "mriMass", "finalDiagnosis", "neurosurgery"];
 
     function has(list, id) { return list.indexOf(id) !== -1; }
 
@@ -3612,8 +4185,20 @@
       document.getElementById("messageOk").focus();
     }
 
+    function flushQueuedMessage() {
+      const popup = document.getElementById("messagePopup");
+      if (!popup.hidden || !state.pendingMessages.length) return;
+      setMessage(state.pendingMessages.shift());
+    }
+
+    function queueMessage(text) {
+      state.pendingMessages.push(text);
+      setTimeout(flushQueuedMessage, 0);
+    }
+
     function closeMessagePopup() {
       document.getElementById("messagePopup").hidden = true;
+      setTimeout(flushQueuedMessage, 0);
     }
 
     function logAction(text) {
@@ -3631,6 +4216,7 @@
         const finding = allFindings.find(item => item.id === id);
         logAction("Charted finding: " + (finding ? finding.label : id));
       }
+      maybeCompleteEhrUpdate();
       render();
     }
 
@@ -3680,7 +4266,7 @@
       "coordination",
       "sensoryLevel",
       "localization",
-      "mriOrder",
+      "icdCode",
       "mriMass",
       "finalDiagnosis",
       "neurosurgery"
@@ -3692,6 +4278,17 @@
 
     function finalReady() {
       return requiredFinalFindings.every(id => has(state.findings, id));
+    }
+
+    function pertinentNeurologicExamComplete() {
+      return pertinentNeurologicExamFindings.every(id => has(state.findings, id));
+    }
+
+    function maybeCompleteEhrUpdate() {
+      if (has(state.completed, "ehrUpdateComplete") || !pertinentNeurologicExamComplete()) return;
+      markCompleted("ehrUpdateComplete");
+      logAction("EHR update completed; imaging workstation available");
+      queueMessage("A soft chime comes from the computer. The EHR system update appears to have finished, and the imaging workstation is now ready for use.");
     }
 
     function requireHandHygiene() {
@@ -3872,6 +4469,14 @@
         return "Click the sink to complete hand hygiene. After that, patient exams and bedside tests are available.";
       }
 
+      if (!has(state.findings, "mentalStatus")) {
+        return "Open Physical Examination, choose Neurologic, and document Mental Status.";
+      }
+
+      if (!has(state.findings, "cranialNerves")) {
+        return "Open Physical Examination > Neurologic and complete the Cranial Nerves screen.";
+      }
+
       if (!has(state.findings, "motorWeakness")) {
         if (!has(state.completed, "motorVideoPrompted")) {
           return "Open Physical Examination, choose Neurologic, then select Motor Exam. Formal power testing is limited, so this reveals the walking-video route.";
@@ -3880,7 +4485,7 @@
           return "Select GRAB and search the patient belongings for the phone charger.";
         }
         if (!has(state.completed, "outletRevealed")) {
-          return "Drag the Phone Charger onto the exam cart to move it and reveal the outlet.";
+          return "Drag the Phone Charger onto the exam cart to plug it into the outlet mounted on the cart's side.";
         }
         if (!has(state.completed, "phoneCharged")) {
           return "Drag the Phone Charger onto the bedside table to charge the patient's phone.";
@@ -3912,28 +4517,28 @@
         return "Complete Sensory Testing with the feather, tuning fork, safety pin, ice pack, and great-toe position test.";
       }
 
-      if (!has(state.findings, "sensoryLevel")) {
-        return "Open Physical Examination > Neurologic > Sensory Level and map the offset between the left T8 and right T10 findings.";
+      if (!has(state.findings, "coordination")) {
+        return "Open Physical Examination > Neurologic and document Coordination.";
       }
 
-      if (!has(state.findings, "localization")) {
-        return "Open Physical Examination > Neurologic > Localize Findings. Combine left UMN/dorsal-column signs with right pain-temperature loss.";
+      if (!has(state.completed, "ehrUpdateComplete")) {
+        return "Finish every case-relevant neurologic examination element. The imaging workstation is still completing its EHR update.";
       }
 
-      if (!has(state.completed, "ctSafety")) {
-        return "Select THINK, then click the imaging software to order the correct study: MRI thoracic spine with and without contrast.";
+      if (!has(state.completed, "icdCodeConfirmed")) {
+        return "Select THINK and open the imaging workstation. Review the pertinent findings and choose the best ICD-10-CM problem code.";
       }
 
       if (!has(state.completed, "imagingLesionFound")) {
         return "Use the imaging software to inspect the MRI, then click the left posterolateral thoracic cord compression.";
       }
 
-      if (!has(state.completed, "imagingInterpretation")) {
-        return "Interpret the imaging pattern: connect the left thoracic cord compression to Brown-Sequard syndrome.";
+      if (!has(state.completed, "imagingReportConfirmed")) {
+        return "Review the released MRI report, then begin the final assessment-and-plan conversation.";
       }
 
-      if (!has(state.completed, "imagingReportConfirmed")) {
-        return "Confirm the imaging report and sign the final diagnosis to complete the room.";
+      if (!has(state.completed, "finalAssessmentComplete")) {
+        return "Complete the final conversation with clear, urgent, and empathetic assessment and planning.";
       }
 
       return "Case complete. Chart Review now contains the final diagnosis and disposition.";
@@ -4053,6 +4658,15 @@
         cancelAnimationFrame(state.pupilFrame);
         state.pupilFrame = null;
       }
+      if (state.lungFrame) {
+        cancelAnimationFrame(state.lungFrame);
+        state.lungFrame = null;
+      }
+      if (state.lungBreathSource) {
+        try { state.lungBreathSource.stop(); } catch (error) {}
+        state.lungBreathSource = null;
+      }
+      document.querySelector(".game-root").classList.remove("lung-testing");
       document.querySelector(".game-root").classList.remove("pupil-testing");
       state.washScore = 0;
       state.washTotal = 0;
@@ -4060,6 +4674,7 @@
       const root = document.getElementById("modalRoot");
       root.className = "modal-backdrop";
       root.innerHTML = "";
+      setTimeout(flushQueuedMessage, 0);
     }
 
     function openModal(html) {
@@ -4413,55 +5028,6 @@
       renderQuestion();
     }
 
-    function finishQuiz(id) {
-      markCompleted(id);
-      logAction("Solved puzzle: " + quizzes[id].title);
-      setMessage(quizzes[id].success);
-
-      if (id === "ctSafety") {
-        addFinding("mriOrder");
-      }
-      closeModal();
-    }
-
-    function openQuiz(id) {
-      const quiz = quizzes[id];
-      openModal(`
-        <section class="modal-card quiz-card" role="dialog" aria-modal="true">
-          <div class="modal-header"><h2>${escapeHtml(quiz.title)}</h2><button type="button" data-close aria-label="Close">X</button></div>
-          <p>${escapeHtml(quiz.prompt)}</p>
-          <div class="option-stack">
-            ${quiz.options.map((option, index) => `<button type="button" class="option" data-answer="${index}">${escapeHtml(option)}</button>`).join("")}
-          </div>
-          <p class="hint" id="quizHint" style="display:none"></p>
-          <div class="modal-actions"><button type="button" class="primary-action" id="quizSubmit" disabled>Answer</button></div>
-        </section>
-      `);
-
-      setMinigameAutowin(() => finishQuiz(id));
-
-      let selected = null;
-      document.querySelectorAll(".option").forEach(button => {
-        button.addEventListener("click", () => {
-          selected = Number(button.dataset.answer);
-          document.querySelectorAll(".option").forEach(item => item.classList.remove("selected"));
-          button.classList.add("selected");
-          document.getElementById("quizSubmit").disabled = false;
-          document.getElementById("quizHint").style.display = "none";
-        });
-      });
-
-      document.getElementById("quizSubmit").addEventListener("click", () => {
-        if (selected === quiz.answer) {
-          finishQuiz(id);
-        } else {
-          const hint = document.getElementById("quizHint");
-          hint.textContent = quiz.hint;
-          hint.style.display = "block";
-        }
-      });
-    }
-
     function handleGrab(id) {
       if (id === "patient") {
         requestPhysicalExam();
@@ -4520,7 +5086,7 @@
         addInventory("hammer");
         addInventory("tuningFork");
         markCompleted("outletRevealed");
-        setMessage("You collect the reflex hammer and tuning fork. Moving the cart also reveals an outlet for the patient's phone.");
+        setMessage("You collect the reflex hammer and tuning fork. A power outlet is mounted on the side of the cart.");
         return;
       }
       if (id === "monitor") {
@@ -4539,11 +5105,9 @@
         return;
       }
       if (id === "ct") {
-        if (!has(state.completed, "ctSafety")) {
-          setMessage("Imaging order requires localization. Select THINK to start the imaging puzzle.");
-          return;
-        }
-        openMRI();
+        setMessage(has(state.completed, "ehrUpdateComplete")
+          ? "The EHR update is complete. Select THINK to open the imaging workstation."
+          : "The computer is occupied by an EHR system update. Imaging software is unavailable until the pertinent neurologic examination is complete.");
         return;
       }
       if (id === "phone") {
@@ -4600,7 +5164,7 @@
         if (hotspotId === "cart") {
           if (!has(state.completed, "outletRevealed")) {
             markCompleted("outletRevealed");
-            setMessage("You move the cart and reveal an outlet. Connect the charger to the phone.");
+            setMessage("You plug the charger into the outlet on the side of the cart. Connect the other end to the phone.");
             return;
           }
           markCompleted("phoneCharged");
@@ -4611,7 +5175,7 @@
         }
         if (hotspotId === "bedsideTable") {
           if (!has(state.completed, "outletRevealed")) {
-            setMessage("The charger fits the phone, but the battery needs power. Move the exam cart to find the outlet.");
+            setMessage("The charger fits the phone, but it still needs power. Plug it into the outlet on the side of the exam cart first.");
             return;
           }
           markCompleted("phoneCharged");
@@ -4669,15 +5233,7 @@
       }
 
       if (hotspotId === "ct") {
-        if (!has(state.findings, "localization")) {
-          setMessage("Imaging order requires localization before MRI review.");
-          return;
-        }
-        if (!has(state.completed, "ctSafety")) {
-          openQuiz("ctSafety");
-          return;
-        }
-        openMRI();
+        setMessage("Inventory items are not needed at the workstation. Select THINK and click the computer.");
         return;
       }
 
@@ -4827,7 +5383,7 @@
           requestPhysicalExam();
           return;
         }
-        setMessage("The patient is awake and worried about progressive left-leg weakness.");
+        setMessage("The patient sits upright in bed, alert and watchful. The blanket is slightly rumpled around her left foot.");
         return;
       }
 
@@ -4922,11 +5478,11 @@
           if (!has(state.completed, "examTools")) openCartQuiz();
           else {
             markCompleted("outletRevealed");
-            setMessage("The exam cart is open. Reflex hammer and tuning fork are available; an outlet is visible behind the cart.");
+            setMessage("The exam cart is open. Reflex hammer and tuning fork are available, and a power outlet is mounted on the cart's side.");
           }
           return;
         }
-        setMessage("The exam cart has tools inside, a rapid-fire quiz lock on its screen, and possibly an outlet behind it. This is a THINK or GRAB problem.");
+        setMessage("The exam cart has tools inside, a rapid-fire quiz lock on its screen, and a power outlet mounted on its side. This is a THINK or GRAB problem.");
         return;
       }
 
@@ -4946,19 +5502,13 @@
       }
 
       if (id === "ct") {
-        if (!has(state.findings, "localization")) {
-          setMessage("The imaging software displays: Localize first.");
-          return;
-        }
         if (state.mode === "think") {
-          if (!has(state.completed, "ctSafety")) {
-            openQuiz("ctSafety");
-            return;
-          }
-          openMRI();
+          openImagingWorkstation();
           return;
         }
-        setMessage("Use THINK on the imaging software to make a localization-driven imaging decision.");
+        setMessage(has(state.completed, "ehrUpdateComplete")
+          ? "The EHR update is complete. Use THINK on the computer to review the case and access imaging."
+          : "The computer displays an EHR system update. Imaging software will not load yet.");
         return;
       }
 
@@ -4982,8 +5532,7 @@
 
     function physicalExamSystemDone(system) {
       if (system.id === "neurologic") {
-        return ["mentalStatus", "cranialNerves", "motorWeakness", "reflexes", "dorsalColumn", "spinothalamic", "coordination", "collateralPhone"]
-          .every(findingId => has(state.findings, findingId));
+        return pertinentNeurologicExamComplete();
       }
       return system.actions.every(actionId => has(state.completed, physicalExamActionKey(actionId)));
     }
@@ -5126,12 +5675,391 @@
           openEarNoseInspectionGame();
           return;
         }
+        if (actionId === "lungAuscultation") {
+          openLungAuscultationGame();
+          return;
+        }
       }
 
       const recorded = recordPhysicalExamAction(systemId, actionId);
       if (!recorded) return;
       if (button) button.classList.add("done");
       setMessage(recorded.action.result + (recorded.systemComplete ? " " + recorded.system.label + " examination complete." : ""));
+    }
+
+    function openLungAuscultationGame() {
+      const cycleDuration = 4200;
+      const inspirationFraction = 0.43;
+      const startTolerance = 0.075;
+      const releaseTolerance = 280;
+      const fieldOrder = [
+        { id: "rightUpper", label: "patient's right upper field" },
+        { id: "leftUpper", label: "patient's left upper field" },
+        { id: "rightLower", label: "patient's right lower field" },
+        { id: "leftLower", label: "patient's left lower field" }
+      ];
+      const completedFields = new Set();
+      const cycleOrigin = performance.now();
+      let holding = null;
+      let finished = false;
+      let breathBuffer = null;
+
+      openModal(`
+        <section class="modal-card lung-card" id="lungGame" role="dialog" aria-modal="true" aria-labelledby="lungTitle">
+          <div class="modal-header"><h2 id="lungTitle">Posterior Lung Auscultation</h2><button type="button" data-close aria-label="Close">X</button></div>
+          <p class="lung-instructions">At each field, press as the circle begins expanding. Hold through one expansion and contraction, then release when the circle returns to its smallest size.</p>
+          <div class="lung-game-grid">
+            <div class="lung-stage" id="lungStage">
+              <canvas id="lungCanvas" width="450" height="300" aria-hidden="true"></canvas>
+              <button type="button" class="lung-field" data-lung-field="rightUpper" style="left:24%;top:30%;width:21%;height:22%" aria-label="Auscultate the patient's right upper posterior lung field" title="Right upper field"></button>
+              <button type="button" class="lung-field" data-lung-field="leftUpper" style="left:55%;top:30%;width:21%;height:22%" aria-label="Auscultate the patient's left upper posterior lung field" title="Left upper field"></button>
+              <button type="button" class="lung-field" data-lung-field="rightLower" style="left:26%;top:55%;width:20%;height:25%" aria-label="Auscultate the patient's right lower posterior lung field" title="Right lower field"></button>
+              <button type="button" class="lung-field" data-lung-field="leftLower" style="left:54%;top:55%;width:20%;height:25%" aria-label="Auscultate the patient's left lower posterior lung field" title="Left lower field"></button>
+              <div class="lung-hold-ring" id="lungHoldRing" aria-hidden="true"></div>
+            </div>
+          </div>
+          <div class="lung-progress-line">
+            <span id="lungProgressText">Fields heard 0 / 4</span>
+            <div class="lung-progress-pips" id="lungProgressPips" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+          </div>
+          <p class="lung-status" id="lungStatus" aria-live="polite">Choose any lung field. Press when the cursor circle begins expanding.</p>
+        </section>
+      `);
+
+      document.querySelector(".game-root").classList.add("lung-testing");
+      const stage = document.getElementById("lungStage");
+      const canvas = document.getElementById("lungCanvas");
+      const context = canvas.getContext("2d");
+      const fieldButtons = Array.from(document.querySelectorAll("[data-lung-field]"));
+      const holdRing = document.getElementById("lungHoldRing");
+      const progressText = document.getElementById("lungProgressText");
+      const status = document.getElementById("lungStatus");
+
+      function drawPatientBack() {
+        context.imageSmoothingEnabled = false;
+        context.fillStyle = "#315867";
+        context.fillRect(0, 0, 450, 300);
+        context.fillStyle = "#3f7180";
+        for (let y = 0; y < 300; y += 18) {
+          for (let x = (y / 18) % 2 === 0 ? 0 : 9; x < 450; x += 36) {
+            context.fillRect(x, y, 18, 8);
+          }
+        }
+
+        context.fillStyle = "#33243a";
+        context.fillRect(126, 236, 198, 64);
+        context.fillStyle = "#4b3153";
+        context.fillRect(138, 224, 174, 76);
+        context.fillStyle = "#201723";
+        context.fillRect(148, 248, 154, 12);
+
+        context.fillStyle = "#a95643";
+        context.fillRect(203, 65, 44, 37);
+        context.fillStyle = "#c46e50";
+        context.beginPath();
+        context.moveTo(174, 91);
+        context.lineTo(276, 91);
+        context.lineTo(340, 126);
+        context.lineTo(307, 258);
+        context.lineTo(143, 258);
+        context.lineTo(110, 126);
+        context.closePath();
+        context.fill();
+
+        context.fillStyle = "#d1845d";
+        context.beginPath();
+        context.moveTo(186, 96);
+        context.lineTo(225, 88);
+        context.lineTo(264, 96);
+        context.lineTo(287, 242);
+        context.lineTo(163, 242);
+        context.closePath();
+        context.fill();
+
+        context.fillStyle = "rgba(132,63,48,0.28)";
+        context.fillRect(222, 104, 6, 132);
+        context.fillRect(164, 125, 44, 7);
+        context.fillRect(242, 125, 44, 7);
+        context.fillRect(167, 183, 39, 6);
+        context.fillRect(244, 183, 39, 6);
+
+        context.fillStyle = "#397b7c";
+        context.beginPath();
+        context.moveTo(110, 126);
+        context.lineTo(151, 105);
+        context.lineTo(164, 260);
+        context.lineTo(111, 269);
+        context.lineTo(82, 169);
+        context.closePath();
+        context.fill();
+        context.beginPath();
+        context.moveTo(340, 126);
+        context.lineTo(299, 105);
+        context.lineTo(286, 260);
+        context.lineTo(339, 269);
+        context.lineTo(368, 169);
+        context.closePath();
+        context.fill();
+        context.fillStyle = "#255a60";
+        context.fillRect(108, 150, 18, 102);
+        context.fillRect(324, 150, 18, 102);
+        context.fillStyle = "#62a4a0";
+        context.fillRect(116, 140, 7, 84);
+        context.fillRect(327, 140, 7, 84);
+
+        context.fillStyle = "#7a675f";
+        context.beginPath();
+        context.arc(225, 53, 45, 0, Math.PI * 2);
+        context.fill();
+        context.fillStyle = "#514943";
+        context.fillRect(184, 34, 82, 25);
+        context.fillRect(193, 20, 64, 20);
+        context.fillRect(203, 13, 44, 14);
+        context.fillStyle = "#93847c";
+        context.fillRect(198, 23, 12, 9);
+        context.fillRect(226, 17, 15, 8);
+        context.fillRect(250, 32, 10, 11);
+
+        context.fillStyle = "#f2ce77";
+        context.fillRect(218, 96, 14, 5);
+        context.fillStyle = "#5c1f31";
+        context.fillRect(220, 101, 10, 4);
+      }
+
+      function cycleStateAt(timestamp) {
+        const elapsed = Math.max(0, timestamp - cycleOrigin);
+        const cycleIndex = Math.floor(elapsed / cycleDuration);
+        const phase = (elapsed % cycleDuration) / cycleDuration;
+        const cycleStart = cycleOrigin + (cycleIndex * cycleDuration);
+        return { phase, cycleStart };
+      }
+
+      function setLungStatus(message, kind = "") {
+        status.className = "lung-status" + (kind ? " " + kind : "");
+        status.textContent = message;
+      }
+
+      function renderLungProgress() {
+        progressText.textContent = "Fields heard " + completedFields.size + " / " + fieldOrder.length;
+        document.querySelectorAll("#lungProgressPips span").forEach((pip, index) => {
+          pip.classList.toggle("lit", index < completedFields.size);
+        });
+        fieldButtons.forEach(button => {
+          const done = completedFields.has(button.dataset.lungField);
+          button.classList.toggle("completed", done);
+          button.disabled = done;
+        });
+      }
+
+      function stopBreathSound() {
+        if (!state.lungBreathSource) return;
+        try { state.lungBreathSource.stop(); } catch (error) {}
+        state.lungBreathSource = null;
+      }
+
+      function scheduleBreathSound(fieldId) {
+        const audioContext = musicState.context;
+        if (!audioContext || !musicState.sfxMaster || !holding || holding.fieldId !== fieldId || finished) return;
+        const seconds = cycleDuration / 1000;
+        const sampleCount = Math.ceil(audioContext.sampleRate * seconds);
+        if (!breathBuffer || breathBuffer.sampleRate !== audioContext.sampleRate) {
+          breathBuffer = audioContext.createBuffer(1, sampleCount, audioContext.sampleRate);
+          const samples = breathBuffer.getChannelData(0);
+          let smoothedNoise = 0;
+          for (let index = 0; index < samples.length; index += 1) {
+            smoothedNoise = (smoothedNoise * 0.72) + (((Math.random() * 2) - 1) * 0.28);
+            samples[index] = smoothedNoise;
+          }
+        }
+
+        stopBreathSound();
+        const source = audioContext.createBufferSource();
+        const filter = audioContext.createBiquadFilter();
+        const gain = audioContext.createGain();
+        const now = audioContext.currentTime;
+        const inspirationEnd = now + (seconds * inspirationFraction);
+        const end = now + seconds;
+        source.buffer = breathBuffer;
+        filter.type = "bandpass";
+        filter.frequency.value = 650;
+        filter.Q.value = 0.55;
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.linearRampToValueAtTime(0.15, now + (seconds * 0.24));
+        gain.gain.linearRampToValueAtTime(0.045, inspirationEnd);
+        gain.gain.linearRampToValueAtTime(0.085, inspirationEnd + (seconds * 0.22));
+        gain.gain.exponentialRampToValueAtTime(0.0001, end);
+        source.connect(filter);
+        filter.connect(gain);
+        gain.connect(musicState.sfxMaster);
+        source.start(now);
+        source.stop(end + 0.03);
+        state.lungBreathSource = source;
+        source.onended = () => {
+          if (state.lungBreathSource === source) state.lungBreathSource = null;
+        };
+      }
+
+      function startBreathSound(fieldId) {
+        if (!ensureAudioContext() || state.sfxVolume <= 0) return;
+        const audioContext = musicState.context;
+        if (audioContext.state === "suspended") {
+          audioContext.resume().then(() => scheduleBreathSound(fieldId)).catch(() => {});
+          return;
+        }
+        scheduleBreathSound(fieldId);
+      }
+
+      function clearHoldVisuals(attempt) {
+        const button = fieldButtons.find(item => item.dataset.lungField === attempt.fieldId);
+        if (button) button.classList.remove("holding");
+        holdRing.classList.remove("active", "late");
+        stopBreathSound();
+      }
+
+      function finishLungGame() {
+        if (finished) return;
+        finished = true;
+        if (holding) {
+          const attempt = holding;
+          holding = null;
+          const heldButton = fieldButtons.find(button => button.dataset.lungField === attempt.fieldId);
+          if (heldButton && heldButton.hasPointerCapture(attempt.pointerId)) heldButton.releasePointerCapture(attempt.pointerId);
+          clearHoldVisuals(attempt);
+        }
+        fieldOrder.forEach(field => completedFields.add(field.id));
+        renderLungProgress();
+        setMinigameAutowin(null);
+        if (state.lungFrame) {
+          cancelAnimationFrame(state.lungFrame);
+          state.lungFrame = null;
+        }
+        setLungStatus("All four posterior fields are clear and symmetric through complete respiratory cycles.", "success");
+        playSfx("success");
+
+        setTimeout(() => {
+          if (!document.getElementById("lungGame")) return;
+          const recorded = recordPhysicalExamAction("pulmonary", "lungAuscultation");
+          closeModal();
+          if (!recorded) return;
+          setMessage(recorded.action.result + (recorded.systemComplete ? " " + recorded.system.label + " examination complete." : ""));
+        }, 900);
+      }
+
+      function beginLungHold(event) {
+        if (finished || holding || event.button !== 0) return;
+        const fieldId = event.currentTarget.dataset.lungField;
+        const field = fieldOrder.find(item => item.id === fieldId);
+        if (!field || completedFields.has(fieldId)) return;
+
+        const now = performance.now();
+        const cycle = cycleStateAt(now);
+        if (cycle.phase > startTolerance) {
+          setLungStatus("Wait for the cursor circle to finish contracting and begin expanding, then press and hold.", "miss");
+          return;
+        }
+
+        event.preventDefault();
+        const bounds = stage.getBoundingClientRect();
+        holding = {
+          fieldId,
+          pointerId: event.pointerId,
+          targetTime: cycle.cycleStart + cycleDuration
+        };
+        event.currentTarget.classList.add("holding");
+        event.currentTarget.setPointerCapture(event.pointerId);
+        holdRing.style.left = (event.clientX - bounds.left) + "px";
+        holdRing.style.top = (event.clientY - bounds.top) + "px";
+        holdRing.classList.add("visible", "active");
+        setLungStatus("Listening at the " + field.label + ". Hold while the circle expands and contracts.");
+        startBreathSound(fieldId);
+      }
+
+      function endLungHold(event) {
+        if (!holding || event.pointerId !== holding.pointerId) return;
+        event.preventDefault();
+        const attempt = holding;
+        holding = null;
+        if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+        clearHoldVisuals(attempt);
+
+        const timingError = performance.now() - attempt.targetTime;
+        if (Math.abs(timingError) <= releaseTolerance) {
+          const completed = fieldOrder.find(field => field.id === attempt.fieldId);
+          completedFields.add(attempt.fieldId);
+          renderLungProgress();
+          playSfx("success");
+          if (completedFields.size === fieldOrder.length) {
+            finishLungGame();
+            return;
+          }
+          setLungStatus("Complete cycle heard at the " + completed.label + ". Choose any remaining field.", "success");
+          return;
+        }
+
+        renderLungProgress();
+        if (timingError < 0) {
+          const phase = cycleStateAt(performance.now()).phase;
+          const phaseName = phase < inspirationFraction ? "expansion" : "contraction";
+          setLungStatus("Released during " + phaseName + ". Keep listening until the circle returns to its smallest size.", "miss");
+        } else {
+          setLungStatus("Held too long. Release as the cursor circle finishes contracting.", "miss");
+        }
+      }
+
+      function cancelLungHold(event) {
+        if (!holding || event.pointerId !== holding.pointerId) return;
+        const attempt = holding;
+        holding = null;
+        clearHoldVisuals(attempt);
+        renderLungProgress();
+        setLungStatus("Listening interrupted. Try again when the cursor circle begins expanding.", "miss");
+      }
+
+      function positionLungRing(event) {
+        const bounds = stage.getBoundingClientRect();
+        const x = Math.max(0, Math.min(bounds.width, event.clientX - bounds.left));
+        const y = Math.max(0, Math.min(bounds.height, event.clientY - bounds.top));
+        holdRing.style.left = x + "px";
+        holdRing.style.top = y + "px";
+        holdRing.classList.add("visible");
+      }
+
+      function lungTick(frameTime) {
+        if (finished || !document.getElementById("lungGame")) return;
+        const cycle = cycleStateAt(frameTime);
+        const inspiring = cycle.phase < inspirationFraction;
+        const expansion = inspiring
+          ? cycle.phase / inspirationFraction
+          : 1 - ((cycle.phase - inspirationFraction) / (1 - inspirationFraction));
+        const ringSize = 40 + (Math.max(0, Math.min(1, expansion)) * 76);
+        holdRing.style.width = ringSize.toFixed(1) + "px";
+        holdRing.style.height = ringSize.toFixed(1) + "px";
+
+        if (holding) {
+          const remaining = holding.targetTime - frameTime;
+          holdRing.classList.toggle("late", remaining < -releaseTolerance);
+        }
+
+        state.lungFrame = requestAnimationFrame(lungTick);
+      }
+
+      drawPatientBack();
+      stage.addEventListener("pointerenter", positionLungRing);
+      stage.addEventListener("pointermove", positionLungRing);
+      stage.addEventListener("pointerleave", () => {
+        if (!holding) holdRing.classList.remove("visible");
+      });
+      fieldButtons.forEach(button => {
+        button.addEventListener("pointerdown", beginLungHold);
+        button.addEventListener("pointerup", endLungHold);
+        button.addEventListener("pointercancel", cancelLungHold);
+        button.addEventListener("lostpointercapture", cancelLungHold);
+      });
+      setMinigameAutowin(finishLungGame);
+      renderLungProgress();
+      state.lungFrame = requestAnimationFrame(lungTick);
+      const firstField = fieldButtons.find(button => button.dataset.lungField === fieldOrder[0].id);
+      if (firstField) firstField.focus({ preventScroll: true });
     }
 
     function openPupilInspectionGame() {
@@ -5618,7 +6546,7 @@
       if (has(state.completed, "phoneCharged")) {
         return "The phone is charged. Retrieve its walking video and use it on the patient to complete the functional motor assessment.";
       }
-      return "Formal graded power is limited by pain and guarding. The patient reports a walking video on her dead phone; find the charger in her belongings, reveal an outlet, and charge the phone.";
+      return "Formal graded power is limited by pain and guarding. The patient reports a walking video on her dead phone; find the charger, plug it into the outlet on the side of the cart, and charge the phone.";
     }
 
     function runNeurologicExam(exam, button) {
@@ -5700,13 +6628,12 @@
       openModal(`
         <section class="modal-card cranial-card" id="cranialGame" role="dialog" aria-modal="true" aria-labelledby="cranialTitle">
           <div class="modal-header"><h2 id="cranialTitle">Cranial Nerve Screen: Follow My Finger</h2><button type="button" data-close aria-label="Close">X</button></div>
-          <p>Click and hold anywhere to draw a red line over the dotted H. Release and resume as often as needed.</p>
+          <p>Click and hold to trace the entire dotted H in one continuous movement. Releasing checks the trace.</p>
           <div class="cranial-stage" id="cranialStage">
             <canvas class="cranial-guide-layer" id="cranialGuideCanvas" width="960" height="640" aria-hidden="true"></canvas>
             <canvas class="cranial-draw-layer" id="cranialCanvas" width="960" height="640" tabindex="0" aria-describedby="cranialFeedback" aria-label="Draw red lines over the dotted H"></canvas>
           </div>
           <p class="cranial-feedback" id="cranialFeedback" aria-live="polite" hidden></p>
-          <div class="cranial-actions"><button type="button" class="primary-action" id="cranialSubmit">Submit</button></div>
         </section>
       `);
 
@@ -5715,7 +6642,6 @@
       const canvas = document.getElementById("cranialCanvas");
       const context = canvas.getContext("2d");
       const feedback = document.getElementById("cranialFeedback");
-      const submitButton = document.getElementById("cranialSubmit");
 
       function pointerPosition(event) {
         const bounds = canvas.getBoundingClientRect();
@@ -5769,6 +6695,8 @@
         if (event.button !== 0 || finished) return;
         event.preventDefault();
         feedback.hidden = true;
+        context.clearRect(0, 0, canvasWidth, canvasHeight);
+        strokes.length = 0;
         drawing = true;
         activeStroke = [pointerPosition(event)];
         strokes.push(activeStroke);
@@ -5784,13 +6712,6 @@
         if (Math.hypot(point.x - previous.x, point.y - previous.y) < 1) return;
         activeStroke.push(point);
         drawTraceSegment(previous, point);
-      }
-
-      function endStroke(event) {
-        if (!drawing) return;
-        drawing = false;
-        activeStroke = null;
-        if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
       }
 
       function pointToSegmentDistance(point, start, end) {
@@ -5837,7 +6758,6 @@
         drawing = false;
         activeStroke = null;
         setMinigameAutowin(null);
-        submitButton.disabled = true;
         feedback.hidden = false;
         feedback.className = "cranial-feedback success";
         feedback.textContent = "The H pattern is covered. Extraocular movements are conjugate and complete.";
@@ -5852,6 +6772,16 @@
         }, 850);
       }
 
+      function clearTrace(message) {
+        drawing = false;
+        activeStroke = null;
+        strokes.length = 0;
+        context.clearRect(0, 0, canvasWidth, canvasHeight);
+        feedback.hidden = false;
+        feedback.className = "cranial-feedback warning";
+        feedback.textContent = message;
+      }
+
       function submitTrace() {
         if (finished) return;
         const coverage = targetSegments.map(segmentCoverage);
@@ -5861,17 +6791,32 @@
           return;
         }
 
-        feedback.hidden = false;
-        feedback.className = "cranial-feedback warning";
-        feedback.textContent = "Add more red tracing to the " + targetSegments[incompleteIndex].label + ", then submit again.";
+        clearTrace("Trace reset. Keep holding and cover the " + targetSegments[incompleteIndex].label + " as part of one continuous H.");
         canvas.focus({ preventScroll: true });
+      }
+
+      function endStroke(event) {
+        if (!drawing) return;
+        continueStroke(event);
+        drawing = false;
+        activeStroke = null;
+        if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
+        submitTrace();
+      }
+
+      function cancelStroke(event) {
+        if (!drawing) return;
+        drawing = false;
+        activeStroke = null;
+        if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
+        clearTrace("Trace reset. Keep the pointer held down for the entire H.");
       }
 
       canvas.addEventListener("pointerdown", beginStroke);
       canvas.addEventListener("pointermove", continueStroke);
       canvas.addEventListener("pointerup", endStroke);
-      canvas.addEventListener("pointercancel", endStroke);
-      submitButton.addEventListener("click", submitTrace);
+      canvas.addEventListener("pointercancel", cancelStroke);
+      canvas.addEventListener("lostpointercapture", cancelStroke);
 
       setMinigameAutowin(finishCranialGame);
       drawGuide();
@@ -6422,13 +7367,104 @@
       strikeButton.focus();
     }
 
+    function ehrFindingListMarkup(findings) {
+      if (!findings.length) return `<p class="ehr-empty">No pertinent findings documented in this section.</p>`;
+      return `<ul class="ehr-finding-list">${findings.map(finding => `
+        <li><strong>${escapeHtml(finding.label)}:</strong> ${escapeHtml(finding.detail)}</li>
+      `).join("")}</ul>`;
+    }
+
+    function openImagingWorkstation() {
+      if (!has(state.completed, "ehrUpdateComplete")) {
+        setMessage("EHR SYSTEM UPDATE IN PROGRESS. Imaging software is unavailable until the pertinent neurologic examination is complete.");
+        return;
+      }
+      if (!has(state.completed, "icdCodeConfirmed")) {
+        openEhrCodingWorkstation();
+        return;
+      }
+      openMRI();
+    }
+
+    function openEhrCodingWorkstation() {
+      const historyFindings = discoveredFindings().filter(finding => finding.group === "History");
+      const examFindings = discoveredFindings().filter(finding => finding.group === "Exam" && pertinentNeurologicExamFindings.includes(finding.id));
+      let selectedCode = "";
+      let submitted = false;
+
+      openModal(`
+        <section class="modal-card ehr-card" role="dialog" aria-modal="true" aria-labelledby="ehrTitle">
+          <div class="modal-header"><h2 id="ehrTitle">EHR Problem List / Imaging Release</h2><button type="button" data-close aria-label="Close">X</button></div>
+          <div class="ehr-shell">
+            <div class="ehr-status-bar"><span>System update complete / imaging held for problem coding</span><span class="ehr-status-light" aria-hidden="true"></span></div>
+            <div class="ehr-findings-grid">
+              <section class="ehr-finding-panel"><h3>Pertinent History</h3>${ehrFindingListMarkup(historyFindings)}</section>
+              <section class="ehr-finding-panel"><h3>Pertinent Neurologic Exam</h3>${ehrFindingListMarkup(examFindings)}</section>
+            </div>
+            <section class="ehr-code-panel">
+              <h3>Select the ICD-10-CM code that best captures the neurologic syndrome</h3>
+              <div class="icd-code-list">
+                ${icdCodeOptions.map(option => `
+                  <button type="button" class="icd-option" data-icd-code="${escapeHtml(option.code)}">
+                    <strong>${escapeHtml(option.code)}</strong><span>${escapeHtml(option.label)}</span>
+                  </button>
+                `).join("")}
+              </div>
+            </section>
+            <p class="ehr-feedback" id="ehrFeedback" aria-live="polite">Review the crossed long-tract pattern, then choose one code.</p>
+            <div class="modal-actions" style="margin:0"><button type="button" class="primary-action" id="ehrCodeSubmit" disabled>Release Imaging</button></div>
+          </div>
+        </section>
+      `);
+
+      const feedback = document.getElementById("ehrFeedback");
+      const submitButton = document.getElementById("ehrCodeSubmit");
+
+      function confirmCorrectCode() {
+        if (submitted) return;
+        submitted = true;
+        markCompleted("icdCodeConfirmed");
+        addFinding("localization");
+        addFinding("icdCode");
+        logAction("Entered ICD-10-CM G83.81 and released thoracic MRI");
+        setMinigameAutowin(null);
+        document.querySelectorAll("[data-icd-code]").forEach(button => { button.disabled = true; });
+        submitButton.disabled = true;
+        feedback.className = "ehr-feedback success";
+        feedback.textContent = "G83.81 accepted. The imaging study is now available.";
+        playSfx("success");
+        setTimeout(() => {
+          if (document.getElementById("ehrTitle")) openMRIViewer();
+        }, 700);
+      }
+
+      setMinigameAutowin(confirmCorrectCode);
+
+      document.querySelectorAll("[data-icd-code]").forEach(button => {
+        button.addEventListener("click", () => {
+          selectedCode = button.dataset.icdCode;
+          document.querySelectorAll("[data-icd-code]").forEach(item => item.classList.toggle("selected", item === button));
+          submitButton.disabled = false;
+          feedback.className = "ehr-feedback";
+          feedback.textContent = "Selected " + selectedCode + ". Release imaging when ready.";
+        });
+      });
+
+      submitButton.addEventListener("click", () => {
+        const option = icdCodeOptions.find(item => item.code === selectedCode);
+        if (!option) return;
+        if (option.correct) {
+          confirmCorrectCode();
+          return;
+        }
+        feedback.className = "ehr-feedback error";
+        feedback.textContent = option.feedback;
+      });
+    }
+
     function openMRI() {
       if (!has(state.completed, "imagingLesionFound")) {
         openMRIViewer();
-        return;
-      }
-      if (!has(state.completed, "imagingInterpretation")) {
-        openImagingInterpretation();
         return;
       }
       openImagingReport();
@@ -6438,12 +7474,12 @@
       let lesionIdentified = false;
       openModal(`
         <section class="modal-card mini-card" role="dialog" aria-modal="true">
-          <div class="modal-header"><h2>Final Imaging Lock</h2><button type="button" data-close aria-label="Close">X</button></div>
-          <p>The MRI is finally available. Click the left posterolateral cord compression before making the diagnosis.</p>
-          <div class="ct-scan">
+          <div class="modal-header"><h2>Released Imaging</h2><button type="button" data-close aria-label="Close">X</button></div>
+          <p>G83.81 has released the thoracic MRI. Identify the focal abnormality that confirms the clinical hemicord syndrome.</p>
+          <div class="ct-scan" aria-label="Axial thoracic MRI">
             <button type="button" class="ct-zone correct" data-ct="correct" aria-label="left posterolateral thoracic cord mass"></button>
-            <button type="button" class="ct-zone ventricle" data-ct="cord" aria-label="central cord"></button>
-            <button type="button" class="ct-zone artifact" data-ct="artifact" aria-label="posterior artifact"></button>
+            <button type="button" class="ct-zone ventricle" data-ct="cord" aria-label="central thoracic cord"></button>
+            <button type="button" class="ct-zone artifact" data-ct="artifact" aria-label="posterior imaging artifact"></button>
           </div>
           <p class="hint" id="ctHint" style="display:none"></p>
         </section>
@@ -6456,11 +7492,12 @@
         markCompleted("imagingLesionFound");
         addFinding("mriMass");
         const hint = document.getElementById("ctHint");
-        hint.textContent = "Lesion identified. Now interpret what the imaging means for this patient.";
+        hint.textContent = "Confirmed: a left posterolateral mass compresses the thoracic hemicord. Opening the report...";
         hint.style.display = "block";
+        playSfx("success");
         setTimeout(() => {
-          if (document.getElementById("ctHint")) openImagingInterpretation();
-        }, 500);
+          if (document.getElementById("ctHint")) openImagingReport();
+        }, 750);
       }
 
       setMinigameAutowin(identifyImagingLesion);
@@ -6469,60 +7506,12 @@
         button.addEventListener("click", () => {
           if (button.dataset.ct === "correct") {
             identifyImagingLesion();
-          } else {
-            const hint = document.getElementById("ctHint");
-            hint.textContent = button.dataset.ct === "cord"
-              ? "The cord is the structure being compressed; the mass is eccentrically left and posterior-lateral."
-              : "That streak is not the lesion. Look for asymmetric compression of the thoracic cord.";
-            hint.style.display = "block";
-          }
-        });
-      });
-    }
-
-    function openImagingInterpretation() {
-      let interpretationComplete = false;
-      openModal(`
-        <section class="modal-card mini-card" role="dialog" aria-modal="true">
-          <div class="modal-header"><h2>Final Diagnosis Lock</h2><button type="button" data-close aria-label="Close">X</button></div>
-          <p>The exam localizes to the left thoracic hemicord, and MRI shows a left posterolateral mass compressing the cord. What does this most likely represent?</p>
-          <div class="option-stack">
-            <button type="button" class="option" data-imaging-answer="correct">Brown-Sequard syndrome from left thoracic hemicord compression</button>
-            <button type="button" class="option" data-imaging-answer="brain">Right MCA stroke with neglect</button>
-            <button type="button" class="option" data-imaging-answer="root">Left lumbosacral radiculopathy</button>
-            <button type="button" class="option" data-imaging-answer="nerve">Length-dependent peripheral neuropathy</button>
-          </div>
-          <p class="hint" id="imagingHint" style="display:none"></p>
-        </section>
-      `);
-
-      function completeImagingInterpretation() {
-        if (interpretationComplete) return;
-        interpretationComplete = true;
-        setMinigameAutowin(null);
-        markCompleted("imagingInterpretation");
-        const hint = document.getElementById("imagingHint");
-        hint.textContent = "Correct. Confirm the radiology impression to sign the diagnosis.";
-        hint.style.display = "block";
-        setTimeout(() => {
-          if (document.getElementById("imagingHint")) openImagingReport();
-        }, 500);
-      }
-
-      setMinigameAutowin(completeImagingInterpretation);
-
-      document.querySelectorAll("[data-imaging-answer]").forEach(button => {
-        button.addEventListener("click", () => {
-          const hint = document.getElementById("imagingHint");
-          if (button.dataset.imagingAnswer === "correct") {
-            completeImagingInterpretation();
             return;
           }
-          hint.textContent = button.dataset.imagingAnswer === "brain"
-            ? "A cortical stroke would not explain a thoracic sensory level with crossed body findings and normal face/arms."
-            : button.dataset.imagingAnswer === "root"
-              ? "A single root lesion would not produce ipsilateral UMN/dorsal-column signs plus contralateral pain-temperature loss."
-              : "Peripheral neuropathy is usually distal and symmetric; this case has a focal hemicord pattern.";
+          const hint = document.getElementById("ctHint");
+          hint.textContent = button.dataset.ct === "cord"
+            ? "That is the compressed cord. Look for the eccentric structure displacing it from the left posterolateral side."
+            : "That streak is artifact. Compare the contour around the left posterolateral cord.";
           hint.style.display = "block";
         });
       });
@@ -6532,7 +7521,7 @@
       openModal(`
         <section class="modal-card mini-card" role="dialog" aria-modal="true">
           <div class="modal-header"><h2>Imaging Report</h2><button type="button" data-close aria-label="Close">X</button></div>
-          <p>Confirm the report against your localization before closing the room.</p>
+          <p>The imaging confirms the syndrome selected in the EHR. Review the report before speaking with the patient.</p>
           <div class="report-sheet">
             <h3>MRI Thoracic Spine With and Without Contrast</h3>
             <dl>
@@ -6542,30 +7531,99 @@
             </dl>
             <p class="report-impression">Impression: left thoracic hemicord compression causing Brown-Sequard syndrome. Urgent neurosurgical evaluation is recommended.</p>
           </div>
-          ${has(state.completed, "caseComplete") ? `<span class="case-complete-stamp">Case complete</span>` : ""}
-          <div class="modal-actions">
-            ${has(state.completed, "caseComplete")
-              ? `<button type="button" class="primary-action" data-close>OK</button>`
-              : `<button type="button" class="primary-action" id="confirmDiagnosis">Confirm Diagnosis</button>`}
+          <div class="modal-actions"><button type="button" class="primary-action" id="beginFinalAssessment">Begin Final Assessment &amp; Plan</button></div>
+        </section>
+      `);
+
+      document.getElementById("beginFinalAssessment").addEventListener("click", beginFinalAssessmentMode);
+      setMinigameAutowin(beginFinalAssessmentMode);
+    }
+
+    function beginFinalAssessmentMode() {
+      if (!has(state.completed, "imagingReportConfirmed")) markCompleted("imagingReportConfirmed");
+      addFinding("finalDiagnosis");
+      logAction("Confirmed Brown-Sequard syndrome from left thoracic cord compression");
+      state.finalDialogueStep = 0;
+      switchMusicTrack("final", true);
+      renderFinalAssessmentStep();
+    }
+
+    function renderFinalAssessmentStep() {
+      const stepIndex = state.finalDialogueStep;
+      const step = finalAssessmentDialogue[stepIndex];
+      if (!step) {
+        completeFinalAssessment();
+        return;
+      }
+
+      openModal(`
+        <section class="final-assessment-mode" id="finalAssessmentMode" role="dialog" aria-modal="true" aria-labelledby="finalModeTitle">
+          <header class="final-mode-heading"><strong id="finalModeTitle">Final Assessment and Plan</strong><span>Conversation ${stepIndex + 1} / ${finalAssessmentDialogue.length}</span></header>
+          <div class="final-void">
+            <figure class="final-patient-frame"><img src="assets/patient-portrait.png" alt="The patient listening in the darkened conversation view"></figure>
+            <section class="final-dialogue-panel">
+              <div class="final-progress" aria-hidden="true">${finalAssessmentDialogue.map((item, index) => `<span class="${index < stepIndex ? "complete" : ""}"></span>`).join("")}</div>
+              <p class="final-speaker">Patient</p>
+              <p class="final-prompt">${escapeHtml(step.patient)}</p>
+              <div class="final-options">
+                ${step.options.map((option, index) => `<button type="button" class="final-choice" data-final-choice="${index}">${escapeHtml(option.text)}</button>`).join("")}
+              </div>
+              <p class="final-response" id="finalResponse" aria-live="polite" hidden></p>
+              <button type="button" class="primary-action final-continue" id="finalContinue" hidden>${stepIndex === finalAssessmentDialogue.length - 1 ? "Complete Plan" : "Continue"}</button>
+            </section>
           </div>
         </section>
       `);
 
-      const confirmButton = document.getElementById("confirmDiagnosis");
-      if (confirmButton) {
-        confirmButton.addEventListener("click", completeCase);
-        setMinigameAutowin(completeCase);
-      }
+      const root = document.getElementById("modalRoot");
+      root.className = "modal-backdrop open final-mode-backdrop";
+      const response = document.getElementById("finalResponse");
+      const continueButton = document.getElementById("finalContinue");
+
+      document.querySelectorAll("[data-final-choice]").forEach(button => {
+        button.addEventListener("click", () => {
+          const option = step.options[Number(button.dataset.finalChoice)];
+          if (!option.correct) {
+            response.hidden = false;
+            response.className = "final-response retry";
+            response.textContent = option.feedback;
+            return;
+          }
+
+          document.querySelectorAll("[data-final-choice]").forEach(item => { item.disabled = true; });
+          response.hidden = false;
+          response.className = "final-response";
+          response.textContent = "Patient: \"" + step.response + "\"";
+          continueButton.hidden = false;
+          playSfx("success");
+          continueButton.focus();
+        });
+      });
+
+      continueButton.addEventListener("click", () => {
+        state.finalDialogueStep += 1;
+        renderFinalAssessmentStep();
+      });
+      setMinigameAutowin(completeFinalAssessment);
     }
 
-    function completeCase() {
-      if (!has(state.completed, "imagingReportConfirmed")) markCompleted("imagingReportConfirmed");
+    function completeFinalAssessment() {
+      setMinigameAutowin(null);
+      if (!has(state.completed, "finalAssessmentComplete")) markCompleted("finalAssessmentComplete");
       if (!has(state.completed, "caseComplete")) markCompleted("caseComplete");
-      addFinding("finalDiagnosis");
       addFinding("neurosurgery");
-      logAction("Completed Case 01: confirmed Brown-Sequard syndrome from thoracic cord compression");
-      closeModal();
-      setMessage("Diagnosis confirmed: Brown-Sequard syndrome from left thoracic hemicord compression by a posterolateral mass. Urgent neurosurgical evaluation ends the room.");
+      logAction("Completed Case 01 with an urgent, patient-centered assessment and plan");
+
+      openModal(`
+        <section class="final-assessment-mode" role="dialog" aria-modal="true" aria-labelledby="caseCompleteTitle">
+          <header class="final-mode-heading"><strong>Final Assessment and Plan</strong><span>Case 01 complete</span></header>
+          <div class="final-complete">
+            <h2 id="caseCompleteTitle">Case 01 Complete</h2>
+            <p>You recognized Brown-Sequard syndrome, confirmed left thoracic hemicord compression, and explained an urgent neurosurgical plan with honesty and empathy.</p>
+          </div>
+        </section>
+      `);
+      document.getElementById("modalRoot").className = "modal-backdrop open final-mode-backdrop";
     }
 
     document.addEventListener("pointerdown", event => {
