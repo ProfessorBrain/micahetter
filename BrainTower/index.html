@@ -139,6 +139,38 @@
       white-space: nowrap;
     }
 
+    .round-shortcut-hint {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      min-height: 34px;
+      padding: .3rem .58rem;
+      border: 1px solid rgba(242, 201, 114, .34);
+      border-radius: 999px;
+      color: #f5e5ba;
+      background: rgba(242, 201, 114, .08);
+      font-size: .72rem;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    .round-shortcut-hint kbd {
+      display: grid;
+      place-items: center;
+      min-width: 22px;
+      min-height: 22px;
+      padding: 0 .3rem;
+      border: 1px solid rgba(255, 255, 255, .45);
+      border-bottom-width: 2px;
+      border-radius: 6px;
+      color: white;
+      background: rgba(255, 255, 255, .1);
+      font: inherit;
+      font-weight: 900;
+    }
+
+    body:not([data-view="single"]) .round-shortcut-hint { display: none; }
+
     .auto-advance-control {
       display: inline-flex;
       align-items: center;
@@ -434,7 +466,7 @@
     }
 
     body[data-view="player"] .domain-group-general .domain-group-buttons {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     body[data-view="player"] .domain-group-cranial .domain-group-buttons {
@@ -530,8 +562,46 @@
       gap: .65rem;
     }
 
+    .domain-group-general {
+      display: grid;
+      gap: .65rem;
+    }
+
     .domain-group-general .domain-group-buttons {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .sensory-domain-pair {
+      padding: .65rem;
+      border: 1px solid rgba(64, 98, 129, .3);
+      border-radius: 15px;
+      background: linear-gradient(135deg, rgba(61, 103, 139, .09), rgba(61, 103, 139, .025));
+    }
+
+    .sensory-domain-pair-heading {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: .65rem;
+      margin: 0 .15rem .55rem;
+    }
+
+    .sensory-domain-pair-heading strong {
+      color: var(--navy);
+      font-size: .7rem;
+      font-weight: 850;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+
+    .sensory-domain-pair-heading span {
+      color: var(--muted);
+      font-size: .68rem;
+    }
+
+    .sensory-domain-pair .domain-button {
+      border-color: rgba(64, 98, 129, .36);
+      background: rgba(255, 255, 255, .92);
     }
 
     .domain-group-cranial {
@@ -599,6 +669,25 @@
     .domain-button.revealed { border-color: #8fbaa7; background: #edf6f1; }
     .domain-button.revealed::before { background: var(--success); }
     .domain-button.locked { border-style: dashed; background: #f1f2ef; }
+
+    .domain-button.debrief-finding {
+      min-height: 126px;
+      border-color: #72a68d;
+      background: linear-gradient(145deg, #f1f9f4, #fffdf8);
+    }
+
+    .domain-button.debrief-finding:disabled {
+      cursor: default;
+      opacity: 1;
+    }
+
+    .domain-button.debrief-finding span {
+      color: #40545f;
+      font-size: .76rem;
+      line-height: 1.46;
+    }
+
+    .clue-grid.showing-debrief-findings + .revealed-findings { display: none; }
 
     .revealed-findings {
       display: grid;
@@ -1383,7 +1472,7 @@
     }
 
     @media (max-width: 620px) {
-      .brand-copy span, .role-pill, .sync-pill span:last-child { display: none; }
+      .brand-copy span, .role-pill, .sync-pill span:last-child, .round-shortcut-hint span { display: none; }
       .app-header { padding: .65rem .75rem; }
       .hero-card, .content-card { border-radius: 14px; }
       .domain-group-buttons,
@@ -1434,7 +1523,8 @@
         <span>Auto-advance Facilitator</span>
       </label>
       <span class="sync-pill"><span class="sync-dot" aria-hidden="true"></span><span id="syncStatus">Local session</span></span>
-      <span class="role-pill" id="roleLabel">Single-window mode</span>
+      <span class="role-pill" id="roleLabel">Prototype mode</span>
+      <span class="round-shortcut-hint" title="Press the left bracket key to win the current round"><kbd>[</kbd><span>Win round</span></span>
       <button class="header-button" id="changeViewButton" type="button">Change view</button>
     </div>
   </header>
@@ -1548,7 +1638,7 @@
         </button>
         <button class="mode-option" type="button" data-mode="single">
           <span class="mode-icon" aria-hidden="true">1</span>
-          <strong>Single-Window Mode</strong>
+          <strong>Prototype Mode</strong>
           <span>Facilitator controls and player board together for prototyping or small groups.</span>
         </button>
       </div>
@@ -1575,8 +1665,8 @@
   <script>
     "use strict";
 
-    const STORAGE_KEY = "brainstem-mastermind-state-v6";
-    const CHANNEL_NAME = "brainstem-mastermind-sync-v6";
+    const STORAGE_KEY = "brainstem-mastermind-state-v7";
+    const CHANNEL_NAME = "brainstem-mastermind-sync-v7";
     const AUTO_ADVANCE_KEY = "brainstem-mastermind-auto-advance-v1";
     const LEVELS = ["midbrain", "pons", "medulla"];
     const BOARD_FACES = [
@@ -1617,12 +1707,13 @@
     const CRANIAL_DOMAIN_IDS = ["autonomic", "oculomotion", "facial", "bulbar"];
     const DOMAIN_CATALOG = {
       motor: { label: "Motor", short: "Strength and movement" },
-      sensory: { label: "Sensory", short: "Body touch, pain, temperature, vibration, position" },
+      touchVibration: { label: "Light touch / vibration", short: "Body light touch, vibration, discriminative touch, and joint position" },
+      painTemperature: { label: "Pain / temperature", short: "Body pinprick and temperature" },
       oculomotion: { label: "Oculomotion", short: "Eye position, movements, gaze, and nystagmus" },
       facial: { label: "Facial Sensorimotor", short: "Facial sensation and movement" },
       coordination: { label: "Coordination and Gait", short: "Coordination, stance, gait, and lateropulsion" },
       autonomic: { label: "Pupils", short: "Pupil size, symmetry, reactivity, and light-dependent anisocoria" },
-      bulbar: { label: "Bulbar Function", short: "Speech, palate, voice, swallowing, and tongue" }
+      bulbar: { label: "Bulbar Function", short: "Palate, voice, swallowing, gag, and tongue" }
     };
 
     const FAMILY_DEFINITIONS = [
@@ -1635,11 +1726,12 @@
         spared: ["Superior cerebellar peduncle outflow", "Dorsal gaze network", "Spinothalamic tract", "Medial lemniscus"],
         domains: {
           motor: [0, "The {contra} arm and leg are weak.", "Contralateral limb pyramidal weakness places the lesion above the decussation and favors a ventral motor pathway."],
-          sensory: [0, "Routine light touch, discriminative touch, pinprick, temperature, vibration, and joint position are preserved over the body.", "Body sensory sparing argues against extension into the spinothalamic or medial-lemniscal pathways."],
+          touchVibration: [0, "Routine light touch, discriminative touch, vibration, and joint position are preserved over the body.", "The medial lemniscus and parallel nonpainful-touch pathways are spared."],
+          painTemperature: [0, "Pinprick and temperature are preserved over the body.", "The spinothalamic tract is spared."],
           coordination: [0, "There is no appendicular ataxia out of proportion to weakness; gait is hemiparetic toward the weak {contra} side.", "The gait pattern follows corticospinal weakness rather than primary ataxia, supporting ventral peduncular involvement."],
           oculomotion: [0, "The {ipsi} eyelid is ptotic, and the eye rests abducted and depressed with impaired adduction, elevation, and depression.", "An ipsilateral fascicular CN III palsy establishes the side and midbrain level."],
           facial: [0, "There is {contra} lower facial weakness with preserved forehead movement and eye closure. Facial sensation is normal.", "Corticobulbar involvement causes a contralateral upper-motor-neuron facial pattern while trigeminal sensory and facial nuclear pathways are spared."],
-          bulbar: [0, "Articulation is mildly distorted by labial weakness; palate elevation, voice, swallowing, and tongue movement are normal.", "The speech change reflects facial weakness while nucleus ambiguus and hypoglossal systems are spared."],
+          bulbar: [0, "Palate elevation, voice, swallowing, and tongue movement are normal.", "Nucleus ambiguus and hypoglossal systems are spared."],
           autonomic: [0, "The {ipsi} pupil is dilated and poorly reactive; the anisocoria is greater in bright light.", "Parasympathetic CN III fibers are involved while the descending sympathetic pathway is spared."]
         },
         debrief: [
@@ -1662,10 +1754,11 @@
         domains: {
           coordination: [0, "There is marked {contra} limb dysmetria and intention tremor; gait is broad-based and unsteady.", "Involvement of already-decussated cerebellar outflow fibers produces contralateral limb ataxia and a cerebellar gait, favoring the dorsal midbrain tegmentum."],
           motor: [0, "Power is full in all limbs.", "Corticospinal sparing argues against the ventromedial cerebral peduncle."],
-          sensory: [0, "Routine light touch, discriminative touch, pinprick, temperature, vibration, and joint position are preserved over the body.", "The spinothalamic and medial-lemniscal pathways are spared in this confined tegmental pattern."],
+          touchVibration: [0, "Routine light touch, discriminative touch, vibration, and joint position are preserved over the body.", "The medial lemniscus is spared in this confined tegmental pattern."],
+          painTemperature: [0, "Pinprick and temperature are preserved over the body.", "The spinothalamic tract is spared in this confined tegmental pattern."],
           oculomotion: [0, "There is a {ipsi} oculomotor palsy with ptosis and impaired adduction, elevation, and depression.", "CN III establishes the {ipsi} midbrain."],
           facial: [0, "Facial strength and facial sensation are normal.", "Trigeminal sensory and facial-motor pathways are spared."],
-          bulbar: [0, "Articulation is mildly ataxic; palate elevation, voice, swallowing, and tongue movement are normal.", "Lower brainstem bulbar structures are spared."],
+          bulbar: [0, "Palate elevation, voice, swallowing, and tongue movement are normal.", "Lower brainstem bulbar structures are spared."],
           autonomic: [0, "The {ipsi} pupil is dilated and poorly reactive; the anisocoria is greater in bright light.", "Parasympathetic CN III fibers are involved while descending sympathetic fibers are spared."]
         },
         debrief: [
@@ -1688,7 +1781,8 @@
         domains: {
           motor: [0, "There is mild {contra} hand-predominant pyramidal weakness.", "A corticospinal motor pattern fits the contralateral medial pontine base."],
           bulbar: [0, "Dysarthria is prominent; palate elevation, voice, swallowing, and tongue movement are normal.", "The dysarthria reflects corticobulbar and adjacent pontocerebellar involvement rather than nucleus ambiguus dysfunction."],
-          sensory: [0, "Routine light touch, discriminative touch, pinprick, temperature, vibration, and joint position are preserved over the body.", "A small rostral basis-pontis lesion spares the more dorsal medial lemniscus and the tegmental spinothalamic pathway; body sensory loss would imply extension beyond this archetype."],
+          touchVibration: [0, "Routine light touch, discriminative touch, vibration, and joint position are preserved over the body.", "A small rostral basis-pontis lesion spares the more dorsal medial lemniscus."],
+          painTemperature: [0, "Pinprick and temperature are preserved over the body.", "A small rostral basis-pontis lesion spares the tegmental spinothalamic pathway."],
           oculomotion: [0, "Eye movements are full, with no gaze palsy, INO, or nystagmus.", "Dorsal pontine ocular-motor systems are spared."],
           facial: [0, "There is mild {contra} lower facial weakness with preserved forehead movement and eye closure. Facial sensation is normal.", "Supranuclear corticobulbar involvement causes the lower facial weakness while trigeminal sensory and facial nuclear systems are spared."],
           coordination: [1, "The {contra} hand shows dysmetria, dysrhythmia, and impaired rapid alternating movements out of proportion to its mild weakness; gait is mildly unsteady.", "Pontocerebellar involvement produces genuine hand clumsiness, while the small basis-pontis lesion causes little gait impairment."],
@@ -1714,11 +1808,12 @@
         spared: ["Medial lemniscus", "Dorsomedial gaze centers", "Facial nucleus and fascicles", "Spinal trigeminal system", "Vestibular nuclei"],
         domains: {
           motor: [0, "There is moderate {contra} arm and leg weakness.", "Corticospinal involvement places the lesion ventrally."],
-          sensory: [0, "Pinprick and temperature are reduced over the {contra} body. Routine light touch, discriminative touch, vibration, and joint position are preserved over the body.", "The spinothalamic tract is involved in a small anterolateral tegmental extension while the medial lemniscus is spared. Preserved touch reflects the intact lemniscal pathway and parallel representation of nonpainful touch."],
+          touchVibration: [0, "Routine light touch, discriminative touch, vibration, and joint position are preserved over the body.", "The medial lemniscus and parallel nonpainful-touch pathways are spared."],
+          painTemperature: [0, "Pinprick and temperature are reduced over the {contra} body.", "The spinothalamic tract is involved in a small anterolateral tegmental extension."],
           coordination: [0, "Gait combines mild {contra} weakness with disproportionate clumsiness, and the {contra} limbs are mildly ataxic beyond the degree explained by weakness.", "Mixed pyramidal, corticopontine, and pontocerebellar dysfunction supports a lateralized ventral pontine footprint."],
           oculomotion: [0, "Eye movements are full, with no horizontal gaze palsy, INO, or nystagmus.", "Dorsal pontine ocular-motor structures are spared."],
           facial: [0, "Facial strength and facial sensation are normal.", "Trigeminal sensory and facial-motor structures are spared."],
-          bulbar: [0, "Articulation, palate elevation, voice, swallowing, and tongue movement are normal.", "Corticobulbar pathways and lower brainstem bulbar systems are spared."],
+          bulbar: [0, "Palate elevation, voice, swallowing, and tongue movement are normal.", "Lower brainstem bulbar systems are spared."],
           autonomic: [0, "Pupils are equal and briskly reactive to light, with no anisocoria in bright or dim illumination.", "The dorsal-lateral sympathetic pathway is spared."]
         },
         debrief: [
@@ -1727,7 +1822,7 @@
           "Preserved routine and discriminative touch, vibration, and joint position indicate medial-lemniscal sparing.",
           "This quadrant is a teaching abstraction; real anterolateral pontine syndromes vary and require imaging correlation."
         ],
-        discriminating: "sensory",
+        discriminating: "painTemperature",
         distractor: "Ventromedial pons is usually motor-predominant without a clear body sensory deficit.",
         reviewNote: "Pinprick and temperature—not routine light touch—carry the sensory localization in this selected spinothalamic-extension pattern.",
         references: ["Pontine infarction clinical-MRI correlations (PMID 12529787)", "Isolated pontine infarction series (PMID 8559368)"]
@@ -1743,9 +1838,10 @@
           oculomotion: [0, "There is a {ipsi} horizontal gaze palsy plus failure of the {ipsi} eye to adduct on attempted gaze to the {contra} side; only {contra} abduction remains.", "The one-and-a-half pattern precisely localizes to the {ipsi} dorsal medial pontine tegmentum."],
           facial: [0, "Facial strength and facial sensation are normal.", "Facial fascicles and trigeminal sensory pathways are spared."],
           motor: [0, "Limb strength is normal.", "Ventral corticospinal fibers are spared."],
-          sensory: [0, "Routine light touch, discriminative touch, pinprick, temperature, vibration, and joint position are preserved over the body.", "The medial-lemniscal and spinothalamic pathways are spared."],
+          touchVibration: [0, "Routine light touch, discriminative touch, vibration, and joint position are preserved over the body.", "The medial lemniscus is spared."],
+          painTemperature: [0, "Pinprick and temperature are preserved over the body.", "The spinothalamic tract is spared."],
           coordination: [0, "There is no limb dysmetria, and gait is steady when visual symptoms are controlled.", "Major cerebellar pathways are spared, so there is no primary gait ataxia."],
-          bulbar: [0, "Articulation, voice, palate movement, swallowing, and tongue movement are normal.", "Lower brainstem bulbar systems are spared."],
+          bulbar: [0, "Palate movement, voice, swallowing, and tongue movement are normal.", "Lower brainstem bulbar systems are spared."],
           autonomic: [0, "Pupils are equal and briskly reactive to light, with no anisocoria in bright or dim illumination.", "The descending sympathetic pathway is spared."]
         },
         debrief: [
@@ -1770,8 +1866,9 @@
           facial: [0, "There is complete {ipsi} lower-motor-neuron facial weakness. Pinprick and temperature are reduced over the {ipsi} face, while facial light touch is preserved.", "Facial-nuclear and spinal-trigeminal involvement strongly identifies a lateral pontine pattern."],
           coordination: [0, "There is {ipsi} limb dysmetria and gait ataxia; the patient has vertigo and falls toward the {ipsi} side.", "Middle cerebellar peduncle, vestibular, and cerebellar involvement produces ipsilateral dysmetria and lateropulsion."],
           motor: [0, "There is no meaningful limb weakness.", "The ventral corticospinal tract is spared."],
-          sensory: [0, "Pinprick and temperature are reduced over the {contra} body; routine light touch, discriminative touch, vibration, and joint position are preserved over the body.", "Spinothalamic involvement produces contralateral body pain-temperature loss without medial-lemniscal loss."],
-          bulbar: [0, "Articulation is mildly distorted by labial weakness; palate elevation, voice, swallowing, and tongue movement are normal.", "The speech change reflects facial weakness while nucleus ambiguus and hypoglossal systems are spared."],
+          touchVibration: [0, "Routine light touch, discriminative touch, vibration, and joint position are preserved over the body.", "The medial lemniscus is spared."],
+          painTemperature: [0, "Pinprick and temperature are reduced over the {contra} body.", "Spinothalamic involvement produces contralateral body pain-temperature loss."],
+          bulbar: [0, "Palate elevation, voice, swallowing, and tongue movement are normal.", "Nucleus ambiguus and hypoglossal systems are spared."],
           autonomic: [0, "The {ipsi} pupil is constricted, with mild {ipsi} upper-eyelid ptosis; the anisocoria is greater in dim light.", "Descending sympathetic fibers run laterally."]
         },
         debrief: [
@@ -1794,9 +1891,10 @@
         spared: ["Nucleus ambiguus", "Spinal trigeminal system", "Vestibular nuclei", "Descending sympathetic pathway"],
         domains: {
           motor: [0, "The {contra} arm and leg are weak.", "Pyramidal involvement establishes a ventral medullary lesion above the decussation."],
-          sensory: [0, "Vibration, joint position, fine discriminative touch, and routine light-touch detection are reduced over the {contra} body. Pinprick and temperature are preserved.", "The medial lemniscus is involved while the spinothalamic tract is spared. Discriminative touch is more reliably impaired than simple touch detection because nonpainful touch has parallel ascending representation."],
+          touchVibration: [0, "Vibration, joint position, fine discriminative touch, and routine light-touch detection are reduced over the {contra} body.", "The medial lemniscus is involved. Discriminative touch is more reliably impaired than simple touch detection because nonpainful touch has parallel ascending representation."],
+          painTemperature: [0, "Pinprick and temperature are preserved over the body.", "The spinothalamic tract is spared."],
           coordination: [0, "There is no dysmetria beyond that caused by weakness and proprioceptive loss; gait is hemiparetic and sensory-ataxic on the {contra} side.", "Cerebellar pathways are spared; pyramid and medial-lemniscus involvement account for the gait pattern."],
-          bulbar: [0, "Articulation is lingually dysarthric, and the tongue deviates toward the {ipsi} side with {ipsi} weakness. Palate elevation, voice, and swallowing are preserved.", "A fascicular CN XII palsy fixes the side and medullary level."],
+          bulbar: [0, "The tongue deviates toward the {ipsi} side with {ipsi} weakness. Palate elevation, voice, and swallowing are preserved.", "A fascicular CN XII palsy fixes the side and medullary level."],
           oculomotion: [0, "Eye movements are full, with no nystagmus, gaze palsy, or INO.", "Pontine and midbrain ocular-motor anchors are absent."],
           facial: [0, "Facial strength and facial sensation are normal.", "Trigeminal sensory and facial-motor pathways are spared."],
           autonomic: [0, "Pupils are equal and briskly reactive to light, with no anisocoria in bright or dim illumination.", "The lateral sympathetic pathway is spared."]
@@ -1819,8 +1917,9 @@
         affected: ["{Ipsi} nucleus ambiguus", "{Ipsi} vestibular nuclei", "{Ipsi} spinal trigeminal system", "{Ipsi} sympathetic fibers", "{Ipsi} inferior cerebellar peduncle", "Spinothalamic tract"],
         spared: ["Pyramid", "Medial lemniscus", "Facial nucleus"],
         domains: {
-          bulbar: [0, "Speech is dysarthric, with dysphagia, hoarseness, and reduced {ipsi} palatal elevation. Tongue movement is normal.", "Nucleus ambiguus involvement is a powerful lateral medullary anchor while the hypoglossal system is spared."],
-          sensory: [0, "Pinprick and temperature are reduced over the {contra} body; routine light touch, discriminative touch, vibration, and joint position are preserved over the body in this classic confined pattern.", "Spinothalamic involvement produces contralateral body pain-temperature loss while the medial lemniscus is spared."],
+          bulbar: [0, "There is dysphagia, hoarseness, and reduced {ipsi} palatal elevation. Tongue movement is normal.", "Nucleus ambiguus involvement is a powerful lateral medullary anchor while the hypoglossal system is spared."],
+          touchVibration: [0, "Routine light touch, discriminative touch, vibration, and joint position are preserved over the body in this classic confined pattern.", "The medial lemniscus is spared."],
+          painTemperature: [0, "Pinprick and temperature are reduced over the {contra} body.", "Spinothalamic involvement produces contralateral body pain-temperature loss."],
           autonomic: [0, "The {ipsi} pupil is constricted, with mild {ipsi} upper-eyelid ptosis; the anisocoria is greater in dim light.", "Descending sympathetic fibers run dorsolaterally."],
           coordination: [0, "There is {ipsi} limb dysmetria and lateropulsion; the patient cannot stand unaided and falls toward the {ipsi} side.", "Inferior cerebellar peduncle and vestibular involvement produce ipsilateral ataxia and marked lateropulsion."],
           motor: [0, "Limb strength is preserved.", "The medial pyramid is spared."],
@@ -1849,12 +1948,13 @@
         spared: ["Red-nucleus and superior cerebellar peduncle region", "Medial longitudinal fasciculus", "Spinothalamic tract", "Medial lemniscus"],
         domains: {
           motor: [0, "There is mild {contra} hand-predominant pyramidal weakness with brisk limb reflexes on that side.", "Corticospinal involvement localizes to the ventral cerebral peduncle."],
-          sensory: [0, "Routine light touch, discriminative touch, pinprick, temperature, vibration, and joint position are preserved over the body.", "The medial lemniscus and spinothalamic tract are spared."],
+          touchVibration: [0, "Routine light touch, discriminative touch, vibration, and joint position are preserved over the body.", "The medial lemniscus is spared."],
+          painTemperature: [0, "Pinprick and temperature are preserved over the body.", "The spinothalamic tract is spared."],
           oculomotion: [0, "The {ipsi} eyelid is mildly ptotic, and the {ipsi} eye has impaired adduction and depression without a full third-nerve palsy.", "A partial ipsilateral fascicular CN III deficit establishes the midbrain side and level."],
           facial: [0, "There is {contra} lower facial weakness with preserved forehead movement and eye closure. Facial sensation is normal.", "Corticobulbar involvement causes a contralateral upper-motor-neuron facial pattern while trigeminal sensory and facial nuclear pathways are spared."],
           coordination: [0, "There is no intention tremor or dysmetria after accounting for weakness; gait is mildly hemiparetic toward the {contra} side.", "Preserved cerebellar coordination argues against a dorsal tegmental lesion."],
           autonomic: [0, "Pupils are equal and briskly reactive to light, with no anisocoria in bright or dim illumination.", "This patient has a pupil-sparing partial fascicular CN III pattern; descending sympathetic fibers are spared."],
-          bulbar: [0, "Speech is dysarthric; palate elevation, voice, swallowing, and tongue movement are normal.", "Dysarthria reflects supranuclear corticobulbar involvement rather than a nucleus ambiguus lesion."]
+          bulbar: [0, "Palate elevation, voice, swallowing, and tongue movement are normal.", "Nucleus ambiguus and hypoglossal systems are spared."]
         },
         debrief: [
           "Even a partial fascicular CN III deficit is a positive midbrain anchor.",
@@ -1877,12 +1977,13 @@
         spared: ["Medial lemniscus", "Spinothalamic tract", "Superior cerebellar peduncle", "Tectal gaze network"],
         domains: {
           motor: [0, "There is dense {contra} arm-and-leg pyramidal weakness.", "A lesion above the pyramidal decussation accounts for contralateral limb weakness; the absence of ataxia favors the ventral peduncle."],
-          sensory: [0, "Routine light touch, discriminative touch, pinprick, temperature, vibration, and joint position are preserved over the body.", "A pure motor pattern indicates sparing of the ascending body sensory tracts."],
+          touchVibration: [0, "Routine light touch, discriminative touch, vibration, and joint position are preserved over the body.", "The medial-lemniscal and nonpainful-touch pathways are spared in this pure motor pattern."],
+          painTemperature: [0, "Pinprick and temperature are preserved over the body.", "The spinothalamic tract is spared in this pure motor pattern."],
           oculomotion: [0, "The {ipsi} eye has a small but reproducible adduction deficit with diplopia; there is no ptosis.", "This subtle fascicular CN III sign is the essential positive anchor for a ventromedial midbrain lesion."],
           facial: [0, "There is {contra} lower facial weakness with preserved forehead movement and eye closure. Facial sensation is normal.", "Corticobulbar involvement causes a contralateral upper-motor-neuron facial pattern while trigeminal sensory and facial nuclear pathways are spared."],
           coordination: [0, "There is no dysmetria out of proportion to weakness; gait is hemiparetic toward the {contra} side.", "Cerebellar outflow pathways are spared."],
           autonomic: [0, "Pupils are equal and briskly reactive to light, with no anisocoria in bright or dim illumination.", "The involved CN III fascicular sector is pupil-sparing, and the lateral sympathetic pathway is spared."],
-          bulbar: [0, "There is mild spastic dysarthria; palate elevation, voice, swallowing, and tongue movement are normal.", "The speech change is corticobulbar rather than lower motor neuron bulbar dysfunction."]
+          bulbar: [0, "Palate elevation, voice, swallowing, and tongue movement are normal.", "Lower cranial-nerve motor systems are spared."]
         },
         debrief: [
           "The motor syndrome alone is not level-specific.",
@@ -1907,10 +2008,11 @@
           oculomotion: [0, "The {ipsi} eye fails to adduct on horizontal gaze, with abducting nystagmus of the {contra} eye; vertical saccades are also limited.", "An ipsilateral INO supplies the side, while vertical-saccade dysfunction supplies the dorsal midbrain level."],
           facial: [0, "Facial strength and facial sensation are normal.", "Trigeminal sensory and facial-motor pathways are spared."],
           motor: [0, "Strength, tone, and reflexes are symmetric.", "The ventral cerebral peduncle is spared."],
-          sensory: [0, "Routine light touch, discriminative touch, pinprick, temperature, vibration, and joint position are preserved over the body.", "Major ascending body sensory pathways are spared."],
+          touchVibration: [0, "Routine light touch, discriminative touch, vibration, and joint position are preserved over the body.", "The medial lemniscus is spared."],
+          painTemperature: [0, "Pinprick and temperature are preserved over the body.", "The spinothalamic tract is spared."],
           coordination: [0, "There is no appendicular dysmetria; gait is mildly unsteady without a cerebellar pattern.", "Superior cerebellar peduncle outflow is not meaningfully involved."],
           autonomic: [0, "Pupils are equal and briskly reactive to light, with no anisocoria in bright or dim illumination.", "The pretectal pupillary and descending sympathetic pathways are spared in this confined template."],
-          bulbar: [0, "Articulation, palate elevation, voice, swallowing, and tongue movement are normal.", "Pontine and medullary bulbar systems are spared."]
+          bulbar: [0, "Palate elevation, voice, swallowing, and tongue movement are normal.", "Pontine and medullary bulbar systems are spared."]
         },
         debrief: [
           "An INO alone can arise in the pons or midbrain.",
@@ -1936,9 +2038,10 @@
           oculomotion: [0, "There is a partial {ipsi} CN III fascicular deficit with impaired adduction and mild ptosis.", "The partial third-nerve sign establishes the side and midbrain level."],
           facial: [0, "Facial strength and facial sensation are normal.", "Trigeminal sensory and facial-motor pathways are spared."],
           motor: [0, "Power is full, and reflexes are symmetric.", "Cerebral peduncle corticospinal fibers are spared."],
-          sensory: [0, "Routine light touch, discriminative touch, pinprick, temperature, vibration, and joint position are preserved over the body.", "The major ascending body sensory pathways are spared."],
+          touchVibration: [0, "Routine light touch, discriminative touch, vibration, and joint position are preserved over the body.", "The medial lemniscus is spared."],
+          painTemperature: [0, "Pinprick and temperature are preserved over the body.", "The spinothalamic tract is spared."],
           autonomic: [0, "Pupils are equal and briskly reactive to light, with no anisocoria in bright or dim illumination.", "The partial CN III deficit is pupil-sparing in this template."],
-          bulbar: [0, "Speech is mildly ataxic; palate elevation, voice, swallowing, and tongue movement are normal.", "The dysarthria is cerebellar, not a lower cranial-nerve deficit."]
+          bulbar: [0, "Palate elevation, voice, swallowing, and tongue movement are normal.", "Lower cranial-nerve motor systems are spared."]
         },
         debrief: [
           "The partial CN III deficit anchors the ipsilateral midbrain.",
@@ -1963,10 +2066,11 @@
           oculomotion: [0, "Neither eye can look toward the {ipsi} side; horizontal gaze toward the {contra} side is preserved.", "An abducens nuclear or PPRF lesion produces the horizontal gaze palsy."],
           facial: [0, "The entire {ipsi} face—including the forehead and eye closure—is weak. Facial sensation is normal.", "The looping facial fascicle produces an ipsilateral LMN facial palsy while trigeminal sensory pathways are spared."],
           motor: [0, "Limb strength, tone, and reflexes are normal.", "The ventral corticospinal tract is spared."],
-          sensory: [0, "Routine light touch, discriminative touch, pinprick, temperature, vibration, and joint position are preserved over the body.", "The lesion is confined away from spinothalamic and medial-lemniscal pathways."],
+          touchVibration: [0, "Routine light touch, discriminative touch, vibration, and joint position are preserved over the body.", "The lesion is confined away from the medial lemniscus."],
+          painTemperature: [0, "Pinprick and temperature are preserved over the body.", "The lesion is confined away from the spinothalamic tract."],
           coordination: [0, "There is no limb dysmetria; gait is steady when visual symptoms are controlled.", "Major cerebellar and vestibular pathways are spared."],
           autonomic: [0, "Pupils are equal and briskly reactive to light, with no anisocoria in bright or dim illumination.", "The descending sympathetic pathway is spared."],
-          bulbar: [0, "Articulation is distorted, but palate elevation, voice, swallowing, and tongue movement are normal.", "The articulation change is caused by pontine facial weakness; lower medullary bulbar structures are spared."]
+          bulbar: [0, "Palate elevation, voice, swallowing, and tongue movement are normal.", "Lower medullary bulbar structures are spared."]
         },
         debrief: [
           "An abducens nuclear or PPRF lesion causes a conjugate gaze palsy, not merely isolated abduction weakness.",
@@ -1990,18 +2094,19 @@
         domains: {
           oculomotion: [0, "The {ipsi} eye fails to adduct on gaze toward the {contra} side, with abducting nystagmus of the {contra} eye; conjugate gaze toward the {ipsi} side is preserved.", "An isolated ipsilateral INO localizes to the MLF without a PPRF or abducens nuclear gaze palsy."],
           facial: [0, "Facial strength and facial sensation are normal.", "Trigeminal sensory and facial-motor pathways are spared."],
-          sensory: [0, "Vibration, joint position, discriminative touch, and routine light-touch detection are reduced over the {contra} body. Pinprick and temperature are preserved over the body.", "Medial-lemniscal involvement causes contralateral dorsal-column modality loss while the spinothalamic tract remains intact."],
+          touchVibration: [0, "Vibration, joint position, discriminative touch, and routine light-touch detection are reduced over the {contra} body.", "Medial-lemniscal involvement causes contralateral dorsal-column modality loss."],
+          painTemperature: [0, "Pinprick and temperature are preserved over the body.", "The spinothalamic tract remains intact."],
           motor: [0, "Strength, tone, and reflexes are symmetric.", "The ventral corticospinal tract is spared."],
           coordination: [0, "The {contra} limbs become unsteady when visual feedback is removed; there is no true dysmetria with the eyes open.", "The imbalance is sensory ataxia from proprioceptive loss rather than cerebellar dysfunction."],
           autonomic: [0, "Pupils are equal and briskly reactive to light, with no anisocoria in bright or dim illumination.", "The lateral descending sympathetic pathway is spared."],
-          bulbar: [0, "Articulation, palate elevation, voice, swallowing, and tongue movement are normal.", "Lower brainstem bulbar structures are spared."]
+          bulbar: [0, "Palate elevation, voice, swallowing, and tongue movement are normal.", "Lower brainstem bulbar structures are spared."]
         },
         debrief: [
           "The ipsilateral INO identifies the medial longitudinal fasciculus.",
           "Contralateral vibration, position, and discriminative-touch loss identifies the medial lemniscus.",
           "Their compact combination favors the dorsal medial pontine tegmentum."
         ],
-        discriminating: "sensory",
+        discriminating: "touchVibration",
         distractor: "A dorsal medial midbrain lesion may cause an INO, but vertical-gaze or CN III findings would be expected if it extended into the nearby midbrain gaze network.",
         reviewNote: "Routine light-touch loss is allowed but not required; discriminative touch, vibration, and position are the more reliable medial-lemniscal findings.",
         references: ["Pontine infarction clinical-MRI series (PMID 8559368)", "Pontine infarction clinical-MRI correlations (PMID 12529787)"]
@@ -2016,13 +2121,14 @@
         affected: ["{Ipsi} spinal trigeminal system", "Spinothalamic tract", "{Ipsi} vestibular structures", "A limited segment of the {ipsi} facial fascicle"],
         spared: ["Corticospinal tract", "Medial lemniscus", "PPRF and MLF", "Nucleus ambiguus"],
         domains: {
-          sensory: [0, "Pinprick and temperature are reduced over the {contra} body. Routine light touch, discriminative touch, vibration, and joint position are preserved over the body.", "Spinothalamic involvement causes contralateral body pain-temperature loss without medial-lemniscal loss."],
+          touchVibration: [0, "Routine light touch, discriminative touch, vibration, and joint position are preserved over the body.", "The medial lemniscus is spared."],
+          painTemperature: [0, "Pinprick and temperature are reduced over the {contra} body.", "Spinothalamic involvement causes contralateral body pain-temperature loss."],
           oculomotion: [0, "Central nystagmus is present, with no horizontal gaze palsy or INO.", "Vestibular involvement produces nystagmus while medial pontine gaze pathways are spared."],
           facial: [0, "Pinprick and temperature are reduced over the {ipsi} face, while facial light touch is preserved. There is also mild weakness of the {ipsi} forehead, eye closure, and lower face.", "Spinal-trigeminal sensory loss plus a limited ipsilateral facial-fascicle sign supplies a positive dorsolateral pontine anchor."],
           coordination: [0, "Vertigo and gait lateropulsion toward the {ipsi} side are present, without major limb dysmetria.", "Vestibular involvement supports a dorsolateral brainstem footprint."],
           motor: [0, "Limb strength, tone, and reflexes are normal.", "The ventral corticospinal tract is spared."],
           autonomic: [0, "Pupils are equal and briskly reactive to light, with no anisocoria in bright or dim illumination.", "The descending sympathetic pathway is spared in this confined pattern."],
-          bulbar: [0, "Articulation, palate elevation, voice, swallowing, and tongue movement are normal.", "Nucleus ambiguus and hypoglossal systems are spared."]
+          bulbar: [0, "Palate elevation, voice, swallowing, and tongue movement are normal.", "Nucleus ambiguus and hypoglossal systems are spared."]
         },
         debrief: [
           "Crossed facial and body pain-temperature loss establishes a lateral brainstem lesion.",
@@ -2044,20 +2150,21 @@
         affected: ["{Ipsi} gracile and cuneate nuclei or pre-decussation dorsal-column fibers"],
         spared: ["Pyramid", "Spinothalamic tract", "Nucleus ambiguus", "Hypoglossal fascicle", "Lateral vestibular and sympathetic pathways"],
         domains: {
-          sensory: [0, "Vibration, joint position, discriminative touch, and routine light-touch detection are reduced in the {ipsi} limbs. Pinprick and temperature are preserved over the body.", "Ipsilateral dorsal-column modality loss places the lesion before the internal arcuate fiber decussation in the caudal dorsal medulla."],
+          touchVibration: [0, "Vibration, joint position, discriminative touch, and routine light-touch detection are reduced in the {ipsi} limbs.", "Ipsilateral dorsal-column modality loss places the lesion before the internal arcuate fiber decussation in the caudal dorsal medulla."],
+          painTemperature: [0, "Pinprick and temperature are preserved over the body.", "The spinothalamic tract is spared."],
           coordination: [0, "Gait is stamping and unstable, and {ipsi} limb targeting worsens when the eyes are closed; there is no primary dysmetria with visual guidance.", "This is sensory ataxia from proprioceptive loss, not cerebellar ataxia."],
           motor: [0, "Strength, tone, and reflexes are symmetric.", "The ventral pyramid is spared."],
           oculomotion: [0, "Eye movements are full, with no nystagmus, skew deviation, or abnormal head-impulse response.", "Ocular-motor and vestibulo-ocular pathways are spared."],
           facial: [0, "Facial strength and facial sensation are normal.", "Trigeminal sensory and facial-motor pathways are spared."],
           autonomic: [0, "Pupils are equal and briskly reactive to light, with no anisocoria in bright or dim illumination.", "The lateral sympathetic pathway is spared."],
-          bulbar: [0, "Articulation, palate elevation, voice, swallowing, and tongue movement are normal.", "Hypoglossal fascicles and nucleus ambiguus are spared."]
+          bulbar: [0, "Palate elevation, voice, swallowing, and tongue movement are normal.", "Hypoglossal fascicles and nucleus ambiguus are spared."]
         },
         debrief: [
           "Within a confirmed brainstem process, ipsilateral dorsal-column modality loss means the pathway has not yet crossed.",
           "That places the lesion in the caudal dorsal medulla at the gracile/cuneate nuclei or internal arcuate fibers before decussation.",
           "Worsening instability without visual feedback, together with preserved strength, distinguishes sensory ataxia from pyramidal or cerebellar gait dysfunction."
         ],
-        discriminating: "sensory",
+        discriminating: "touchVibration",
         distractor: "A spinal cord, root, or peripheral lesion is more common outside the game's confirmed-brainstem frame.",
         reviewNote: "This is an advanced anatomy case. It is fair only when the session premise has already established an intracranial brainstem lesion; otherwise spinal and peripheral localizations remain important.",
         references: ["Medullary infarction clinical-anatomical literature", "Dorsal-column decussation anatomy"]
@@ -2072,9 +2179,10 @@
         affected: ["{Ipsi} nucleus ambiguus", "Nearby {ipsi} vestibular nuclei and inferior cerebellar peduncle"],
         spared: ["Pyramid", "Medial lemniscus", "Most of the spinothalamic and spinal trigeminal systems", "Facial nucleus"],
         domains: {
-          bulbar: [0, "Speech is dysarthric, with severe dysphagia, hoarseness, reduced {ipsi} palatal elevation, and a weak gag response on the {ipsi} side. Tongue movement is normal.", "A focal nucleus ambiguus syndrome is a strong lateral medullary level and side anchor while the hypoglossal system is spared."],
+          bulbar: [0, "There is severe dysphagia, hoarseness, reduced {ipsi} palatal elevation, and a weak gag response on the {ipsi} side. Tongue movement is normal.", "A focal nucleus ambiguus syndrome is a strong lateral medullary level and side anchor while the hypoglossal system is spared."],
           coordination: [0, "There is vertigo and marked lateropulsion toward the {ipsi} side, with mild {ipsi} limb dysmetria.", "Vestibular and inferior cerebellar peduncle involvement establishes the dorsal lateral footprint."],
-          sensory: [0, "Pinprick, temperature, routine light touch, discriminative touch, vibration, and joint position are preserved over the body.", "The spinothalamic and medial-lemniscal pathways are spared in this bulbar-predominant variant."],
+          touchVibration: [0, "Routine light touch, discriminative touch, vibration, and joint position are preserved over the body.", "The medial lemniscus is spared in this bulbar-predominant variant."],
+          painTemperature: [0, "Pinprick and temperature are preserved over the body.", "The spinothalamic tract is spared in this bulbar-predominant variant."],
           motor: [0, "Limb strength, tone, and reflexes are normal.", "The medial pyramid is spared."],
           oculomotion: [0, "Nystagmus is present, with no horizontal gaze palsy or INO.", "Vestibular involvement produces nystagmus while pontine gaze pathways are spared."],
           facial: [0, "Facial strength and facial sensation are normal.", "Preserved trigeminal sensory and facial-motor function argues against a dorsolateral pontine syndrome."],
@@ -2144,7 +2252,7 @@
 
     function defaultState() {
       return {
-        version: 6,
+        version: 7,
         sessionId: `session-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
         phase: "setup",
         caseId: null,
@@ -2259,6 +2367,7 @@
       elements.winCelebration.addEventListener("click", event => {
         if (event.target.matches("[data-win-dismiss]")) dismissWinCelebration();
       });
+      document.addEventListener("keydown", handleRoundWinShortcut);
       document.addEventListener("keydown", handleWinCelebrationKeydown);
     }
 
@@ -2266,7 +2375,7 @@
       viewMode = mode;
       document.body.dataset.view = mode;
       elements.roleLabel.textContent = {
-        single: "Single-window mode",
+        single: "Prototype mode",
         facilitator: "Facilitator console",
         player: "Player display"
       }[mode];
@@ -2297,7 +2406,7 @@
         syncChannel.addEventListener("message", event => receiveEnvelope(event.data));
         elements.syncStatus.textContent = "Display sync ready";
       } catch (error) {
-        elements.syncStatus.textContent = "Single-window ready";
+        elements.syncStatus.textContent = "Prototype ready";
       }
       window.addEventListener("storage", event => {
         if (event.key === STORAGE_KEY && event.newValue) {
@@ -2387,7 +2496,7 @@
     }
 
     function adoptState(nextState) {
-      if (!nextState || nextState.version !== 6) return;
+      if (!nextState || nextState.version !== 7) return;
       if (nextState.updatedAt < gameState.updatedAt && nextState.sessionId === gameState.sessionId) return;
       const wasComplete = gameState.phase === "debrief";
       gameState = nextState;
@@ -2588,6 +2697,13 @@
       return gameState.phase === "place-wand" && !!getActivePlayer();
     }
 
+    function allCluesRevealed(currentCase = getCase()) {
+      return Boolean(
+        currentCase?.domains.length &&
+        currentCase.domains.every(domain => gameState.revealedDomainIds.includes(domain.id))
+      );
+    }
+
     function selectCell(id) {
       if (!canPlaceWand()) return;
       selectedCellId = id;
@@ -2693,6 +2809,31 @@
       }
     }
 
+    function handleRoundWinShortcut(event) {
+      const isLeftBracket = event.key === "[" || (event.code === "BracketLeft" && !event.shiftKey);
+      if (!isLeftBracket || event.repeat || event.altKey || event.ctrlKey || event.metaKey) return;
+      event.preventDefault();
+      winCurrentRound();
+    }
+
+    function winCurrentRound() {
+      const currentCase = getCase();
+      const activePlayer = getActivePlayer();
+      if (!currentCase || !activePlayer || gameState.phase === "setup" || gameState.phase === "debrief") {
+        showToast("There is no active round to win.");
+        return;
+      }
+      selectedCellId = null;
+      gameState.pendingGuess = {
+        id: `shortcut-${Date.now()}`,
+        playerId: activePlayer.id,
+        coordinate: { ...currentCase.answer }
+      };
+      gameState.phase = "facilitator-confirmation";
+      gameState.statusMessage = `${activePlayer.name} used the [ shortcut.`;
+      scorePendingGuess();
+    }
+
     function scorePendingGuess() {
       const currentCase = getCase();
       const pending = gameState.pendingGuess;
@@ -2717,8 +2858,13 @@
         gameState.statusMessage = `${playerById(pending.playerId).name} localized all four coordinates.`;
       } else {
         gameState.activePlayerIndex = (gameState.activePlayerIndex + 1) % gameState.players.length;
-        gameState.phase = "choose-domain";
-        gameState.statusMessage = `${score} of 4 coordinates correct. ${getActivePlayer().name} chooses the next domain.`;
+        if (allCluesRevealed(currentCase)) {
+          gameState.phase = "place-wand";
+          gameState.statusMessage = `${score} of 4 coordinates correct. All clues are revealed; ${getActivePlayer().name} places another wand.`;
+        } else {
+          gameState.phase = "choose-domain";
+          gameState.statusMessage = `${score} of 4 coordinates correct. ${getActivePlayer().name} chooses the next domain.`;
+        }
       }
       persistState();
       announce(gameState.statusMessage);
@@ -3065,6 +3211,7 @@
 
     function renderDomains(currentCase) {
       if (!currentCase) {
+        elements.domainGrid.classList.remove("showing-debrief-findings");
         elements.clueHeading.textContent = "Choose a clue domain";
         elements.clueInstruction.textContent = "Available domains appear when the case begins.";
         elements.revealedClues.innerHTML = `<div class="empty-state">No findings have been revealed.</div>`;
@@ -3076,12 +3223,19 @@
         return;
       }
 
+      const isDebrief = gameState.phase === "debrief";
+      elements.domainGrid.classList.toggle("showing-debrief-findings", isDebrief);
+      const allRevealed = allCluesRevealed(currentCase);
       const canRequest = gameState.phase === "choose-domain" && !gameState.requestedDomainId;
-      elements.clueHeading.textContent = canRequest
-        ? `${getActivePlayer().name}, choose a clue domain`
-        : gameState.phase === "choose-domain"
-          ? "Clue request sent"
-          : "Examination clues";
+      elements.clueHeading.textContent = isDebrief
+        ? "Complete examination findings"
+        : allRevealed
+          ? "All clues revealed"
+          : canRequest
+            ? `${getActivePlayer().name}, choose a clue domain`
+            : gameState.phase === "choose-domain"
+              ? "Clue request sent"
+              : "Examination clues";
       elements.clueInstruction.textContent = gameState.phase === "choose-domain" && gameState.requestedDomainId
         ? "Awaiting facilitator approval and reveal."
         : instructionForPhase(gameState.phase);
@@ -3097,8 +3251,24 @@
         const isRevealed = gameState.revealedDomainIds.includes(domain.id);
         const isRequested = gameState.requestedDomainId === domain.id && !isRevealed;
         const unlocked = isDomainUnlocked(domain);
-        const stateClass = isRevealed ? "revealed" : isRequested ? "requested" : unlocked ? "available" : "locked";
-        const statusText = isRevealed ? "Finding revealed" : isRequested ? "Awaiting facilitator" : unlocked ? "Available to request" : `Unlocks after ${domain.unlockAfterGuess} guess${domain.unlockAfterGuess === 1 ? "" : "es"}`;
+        const stateClass = isDebrief
+          ? "revealed debrief-finding"
+          : isRevealed
+            ? "revealed"
+            : isRequested
+              ? "requested"
+              : unlocked
+                ? "available"
+                : "locked";
+        const statusText = isDebrief
+          ? domain.finding
+          : isRevealed
+            ? "Finding revealed"
+            : isRequested
+              ? "Awaiting facilitator"
+              : unlocked
+                ? "Available to request"
+                : `Unlocks after ${domain.unlockAfterGuess} guess${domain.unlockAfterGuess === 1 ? "" : "es"}`;
         return `
           <button class="domain-button ${stateClass}" type="button" data-domain-request="${domain.id}"
             ${(!canRequest || !unlocked || isRevealed || isRequested) ? "disabled" : ""}
@@ -3117,10 +3287,23 @@
       const cranialDomains = CRANIAL_DOMAIN_IDS
         .map(id => domains.find(domain => domain.id === id))
         .filter(Boolean);
-      const generalDomains = domains.filter(domain => !CRANIAL_DOMAIN_IDS.includes(domain.id));
+      const sensoryDomainIds = ["touchVibration", "painTemperature"];
+      const sensoryDomains = sensoryDomainIds
+        .map(id => domains.find(domain => domain.id === id))
+        .filter(Boolean);
+      const generalDomains = domains.filter(domain =>
+        !CRANIAL_DOMAIN_IDS.includes(domain.id) && !sensoryDomainIds.includes(domain.id)
+      );
       return `
         <div class="domain-group domain-group-general">
           <div class="domain-group-buttons">${generalDomains.map(renderButton).join("")}</div>
+          <div class="sensory-domain-pair" role="group" aria-label="Body sensory examination">
+            <div class="sensory-domain-pair-heading">
+              <strong>Body sensory examination</strong>
+              <span>Request separately</span>
+            </div>
+            <div class="domain-group-buttons">${sensoryDomains.map(renderButton).join("")}</div>
+          </div>
         </div>
         <div class="domain-group domain-group-cranial" role="group" aria-label="Cranial nerve examination">
           <p class="domain-group-title">Cranial nerve examination</p>
@@ -3238,11 +3421,13 @@
         "choose-domain": shouldAutoAdvanceFacilitator()
           ? "Choose one available domain. Its finding will be revealed automatically."
           : "Request one available domain. The facilitator controls the reveal.",
-        "place-wand": "Use the revealed evidence, then place exactly one wand.",
+        "place-wand": allCluesRevealed()
+          ? "All findings are revealed. Continue placing one wand per turn until all four coordinates are correct."
+          : "Use the revealed evidence, then place exactly one wand.",
         "facilitator-confirmation": shouldAutoAdvanceFacilitator()
           ? "The submitted wand is being scored automatically."
           : "The facilitator may score, request reconsideration, or cancel the pending wand.",
-        debrief: "The answer and localization logic are now visible."
+        debrief: "Review the pertinent finding on every examination clue, then compare the localization logic."
       }[phase] || "";
     }
 
