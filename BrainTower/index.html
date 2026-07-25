@@ -1711,7 +1711,7 @@
       painTemperature: { label: "Pain / temperature", short: "Body pinprick and temperature" },
       oculomotion: { label: "Oculomotion", short: "Eye position, movements, gaze, and nystagmus" },
       facial: { label: "Facial Sensorimotor", short: "Facial sensation and movement" },
-      coordination: { label: "Coordination and Gait", short: "Coordination, stance, gait, and lateropulsion" },
+      coordination: { label: "Coordination and Gait", short: "Coordination, stance, gait, and tendency to fall" },
       autonomic: { label: "Pupils", short: "Pupil size, symmetry, reactivity, and light-dependent anisocoria" },
       bulbar: { label: "Bulbar Function", short: "Palate, voice, swallowing, gag, and tongue" }
     };
@@ -1864,7 +1864,7 @@
         domains: {
           oculomotion: [0, "Central nystagmus is present, with no horizontal gaze palsy or INO.", "Vestibular involvement causes nystagmus while the medial PPRF and MLF remain intact."],
           facial: [0, "There is complete {ipsi} lower-motor-neuron facial weakness. Pinprick and temperature are reduced over the {ipsi} face, while facial light touch is preserved.", "Facial-nuclear and spinal-trigeminal involvement strongly identifies a lateral pontine pattern."],
-          coordination: [0, "There is {ipsi} limb dysmetria and gait ataxia; the patient has vertigo and falls toward the {ipsi} side.", "Middle cerebellar peduncle, vestibular, and cerebellar involvement produces ipsilateral dysmetria and lateropulsion."],
+          coordination: [0, "There is {ipsi} limb dysmetria and gait ataxia; the patient has vertigo and falls toward the {ipsi} side.", "Middle cerebellar peduncle, vestibular, and cerebellar involvement produces ipsilateral dysmetria and a tendency to fall toward that side."],
           motor: [0, "There is no meaningful limb weakness.", "The ventral corticospinal tract is spared."],
           touchVibration: [0, "Routine light touch, discriminative touch, vibration, and joint position are preserved over the body.", "The medial lemniscus is spared."],
           painTemperature: [0, "Pinprick and temperature are reduced over the {contra} body.", "Spinothalamic involvement produces contralateral body pain-temperature loss."],
@@ -1917,11 +1917,11 @@
         affected: ["{Ipsi} nucleus ambiguus", "{Ipsi} vestibular nuclei", "{Ipsi} spinal trigeminal system", "{Ipsi} sympathetic fibers", "{Ipsi} inferior cerebellar peduncle", "Spinothalamic tract"],
         spared: ["Pyramid", "Medial lemniscus", "Facial nucleus"],
         domains: {
-          bulbar: [0, "There is dysphagia, hoarseness, and reduced {ipsi} palatal elevation. Tongue movement is normal.", "Nucleus ambiguus involvement is a powerful lateral medullary anchor while the hypoglossal system is spared."],
+          bulbar: [0, "There is dysphagia and hoarseness, and the uvula deviates toward the {contra} side. Tongue movement is normal.", "Nucleus ambiguus involvement is a powerful lateral medullary anchor while the hypoglossal system is spared."],
           touchVibration: [0, "Routine light touch, discriminative touch, vibration, and joint position are preserved over the body in this classic confined pattern.", "The medial lemniscus is spared."],
           painTemperature: [0, "Pinprick and temperature are reduced over the {contra} body.", "Spinothalamic involvement produces contralateral body pain-temperature loss."],
           autonomic: [0, "The {ipsi} pupil is constricted, with mild {ipsi} upper-eyelid ptosis; the anisocoria is greater in dim light.", "Descending sympathetic fibers run dorsolaterally."],
-          coordination: [0, "There is {ipsi} limb dysmetria and lateropulsion; the patient cannot stand unaided and falls toward the {ipsi} side.", "Inferior cerebellar peduncle and vestibular involvement produce ipsilateral ataxia and marked lateropulsion."],
+          coordination: [0, "There is {ipsi} limb dysmetria; the patient cannot stand unaided and falls toward the {ipsi} side.", "Inferior cerebellar peduncle and vestibular involvement produce ipsilateral ataxia and a marked tendency to fall toward that side."],
           motor: [0, "Limb strength is preserved.", "The medial pyramid is spared."],
           oculomotion: [0, "Nystagmus is present, with no horizontal gaze palsy or INO.", "Vestibular involvement produces nystagmus while pontine gaze pathways are spared."],
           facial: [0, "Pinprick and temperature are reduced over the {ipsi} face, while facial light touch and facial movement are preserved.", "Spinal-trigeminal involvement supplies the ipsilateral facial sensory deficit; preserved facial-motor function argues against a lateral pontine lesion."]
@@ -2125,7 +2125,7 @@
           painTemperature: [0, "Pinprick and temperature are reduced over the {contra} body.", "Spinothalamic involvement causes contralateral body pain-temperature loss."],
           oculomotion: [0, "Central nystagmus is present, with no horizontal gaze palsy or INO.", "Vestibular involvement produces nystagmus while medial pontine gaze pathways are spared."],
           facial: [0, "Pinprick and temperature are reduced over the {ipsi} face, while facial light touch is preserved. There is also mild weakness of the {ipsi} forehead, eye closure, and lower face.", "Spinal-trigeminal sensory loss plus a limited ipsilateral facial-fascicle sign supplies a positive dorsolateral pontine anchor."],
-          coordination: [0, "Vertigo and gait lateropulsion toward the {ipsi} side are present, without major limb dysmetria.", "Vestibular involvement supports a dorsolateral brainstem footprint."],
+          coordination: [0, "Vertigo and a tendency to fall toward the {ipsi} side are present, without major limb dysmetria.", "Vestibular involvement supports a dorsolateral brainstem footprint."],
           motor: [0, "Limb strength, tone, and reflexes are normal.", "The ventral corticospinal tract is spared."],
           autonomic: [0, "Pupils are equal and briskly reactive to light, with no anisocoria in bright or dim illumination.", "The descending sympathetic pathway is spared in this confined pattern."],
           bulbar: [0, "Palate elevation, voice, swallowing, and tongue movement are normal.", "Nucleus ambiguus and hypoglossal systems are spared."]
@@ -2179,8 +2179,8 @@
         affected: ["{Ipsi} nucleus ambiguus", "Nearby {ipsi} vestibular nuclei and inferior cerebellar peduncle"],
         spared: ["Pyramid", "Medial lemniscus", "Most of the spinothalamic and spinal trigeminal systems", "Facial nucleus"],
         domains: {
-          bulbar: [0, "There is severe dysphagia, hoarseness, reduced {ipsi} palatal elevation, and a weak gag response on the {ipsi} side. Tongue movement is normal.", "A focal nucleus ambiguus syndrome is a strong lateral medullary level and side anchor while the hypoglossal system is spared."],
-          coordination: [0, "There is vertigo and marked lateropulsion toward the {ipsi} side, with mild {ipsi} limb dysmetria.", "Vestibular and inferior cerebellar peduncle involvement establishes the dorsal lateral footprint."],
+          bulbar: [0, "There is severe dysphagia and hoarseness, the uvula deviates toward the {contra} side, and the gag response is weak on the {ipsi} side. Tongue movement is normal.", "A focal nucleus ambiguus syndrome is a strong lateral medullary level and side anchor while the hypoglossal system is spared."],
+          coordination: [0, "There is vertigo and a marked tendency to fall toward the {ipsi} side, with mild {ipsi} limb dysmetria.", "Vestibular and inferior cerebellar peduncle involvement establishes the dorsal lateral footprint."],
           touchVibration: [0, "Routine light touch, discriminative touch, vibration, and joint position are preserved over the body.", "The medial lemniscus is spared in this bulbar-predominant variant."],
           painTemperature: [0, "Pinprick and temperature are preserved over the body.", "The spinothalamic tract is spared in this bulbar-predominant variant."],
           motor: [0, "Limb strength, tone, and reflexes are normal.", "The medial pyramid is spared."],
@@ -2190,11 +2190,11 @@
         },
         debrief: [
           "Severe dysphagia and hoarseness identify the ipsilateral nucleus ambiguus and therefore the medulla.",
-          "Central vestibular signs and ipsilateral lateropulsion place the lesion dorsolaterally.",
+          "Central vestibular signs and a tendency to fall toward the affected side place the lesion dorsolaterally.",
           "A lateral medullary infarct can be bulbar-predominant without the classic crossed sensory syndrome."
         ],
         discriminating: "bulbar",
-        distractor: "A peripheral vagal lesion can cause hoarseness and dysphagia but should not cause central nystagmus, ipsilateral limb dysmetria, or lateropulsion.",
+        distractor: "A peripheral vagal lesion can cause hoarseness and dysphagia but should not cause central nystagmus, ipsilateral limb dysmetria, or a tendency to fall toward the affected side.",
         reviewNote: "Hiccups are supportive but not localizing by themselves; the nucleus ambiguus and central vestibular-cerebellar findings carry the localization.",
         references: ["Wallenberg clinical-MRI correlation study (PMID 8503798)", "Lateral medullary sensory-pattern study (PMID 9409346)"]
       }
