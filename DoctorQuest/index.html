@@ -188,7 +188,7 @@
       min-width: 140px;
       padding: 2px 6px;
       border: 3px ridge var(--gold);
-      background: #130b12;
+      background: #302831;
       overflow: hidden;
     }
 
@@ -1730,6 +1730,520 @@
       line-height: 1;
     }
 
+    .mental-clock-card {
+      width: min(780px, 100%);
+      overflow-x: hidden;
+    }
+
+    .mental-clock-card > .mental-clock-instructions {
+      margin: 14px 18px 10px;
+      font-size: 0.78rem;
+      line-height: 1.4;
+    }
+
+    .mental-clock-housing {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 14px;
+      margin: 12px 18px;
+      padding: 18px;
+      border: 5px ridge var(--gold);
+      background:
+        repeating-linear-gradient(0deg, rgba(255,243,191,0.06) 0 5px, transparent 5px 11px),
+        #693d35;
+      box-shadow: inset 0 0 0 4px #301925, 0 7px 0 rgba(33,25,35,0.24);
+      perspective: 700px;
+    }
+
+    .mental-clock-unit {
+      display: grid;
+      justify-items: stretch;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .mental-clock-label {
+      color: #fff3bf;
+      font-family: var(--retro-font);
+      font-size: 0.64rem;
+      font-weight: 700;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .mental-clock-adjust {
+      width: 100%;
+      min-height: 38px;
+      padding: 3px 8px;
+      border: 3px outset var(--gold);
+      background: #d4b15c;
+      color: #301925;
+      font-family: var(--retro-font);
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .mental-clock-adjust:hover,
+    .mental-clock-adjust:focus-visible {
+      background: #f2cf71;
+      outline: 3px solid #78c7c4;
+      outline-offset: 2px;
+    }
+
+    .mental-flip-display {
+      position: relative;
+      display: flex;
+      overflow: hidden;
+      border: 4px inset #0e0e10;
+      background: #17191b;
+      box-shadow: 0 0 0 3px #b88b3d, inset 0 0 12px rgba(0,0,0,0.92);
+      transform-style: preserve-3d;
+    }
+
+    .mental-flip-display::after {
+      content: "";
+      position: absolute;
+      z-index: 2;
+      left: 0;
+      right: 0;
+      top: calc(50% - 2px);
+      height: 4px;
+      background: #050607;
+      box-shadow: 0 -1px 0 #4b4d4e, 0 2px 0 #2d111a;
+      pointer-events: none;
+    }
+
+    .mental-flip-display.flip-up {
+      animation: mental-flip-up 180ms steps(3, end);
+    }
+
+    .mental-flip-display.flip-down {
+      animation: mental-flip-down 180ms steps(3, end);
+    }
+
+    .mental-flip-display.correct {
+      box-shadow: 0 0 0 3px #83d58a, inset 0 0 16px rgba(57,115,77,0.62);
+    }
+
+    .mental-flip-digit {
+      display: grid;
+      width: 42px;
+      height: 72px;
+      place-items: center;
+      border-right: 2px solid #070809;
+      color: #f4d56f;
+      font-family: var(--retro-font);
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1;
+      text-shadow: 2px 2px 0 #6e2b2b;
+    }
+
+    .mental-flip-digit:last-child { border-right: 0; }
+
+    .mental-clock-status {
+      min-height: 46px;
+      margin: 10px 18px 16px;
+      padding: 9px 11px;
+      border-left: 5px solid var(--teal);
+      background: rgba(31,111,120,0.12);
+      color: var(--ink);
+      font-size: 0.76rem;
+      line-height: 1.35;
+    }
+
+    .mental-clock-status.success {
+      border-color: #39734d;
+      background: rgba(57,115,77,0.16);
+    }
+
+    @keyframes mental-flip-up {
+      0% { transform: rotateX(0deg); filter: brightness(1); }
+      48% { transform: rotateX(-82deg); filter: brightness(0.55); }
+      52% { transform: rotateX(82deg); filter: brightness(0.55); }
+      100% { transform: rotateX(0deg); filter: brightness(1); }
+    }
+
+    @keyframes mental-flip-down {
+      0% { transform: rotateX(0deg); filter: brightness(1); }
+      48% { transform: rotateX(82deg); filter: brightness(0.55); }
+      52% { transform: rotateX(-82deg); filter: brightness(0.55); }
+      100% { transform: rotateX(0deg); filter: brightness(1); }
+    }
+
+    .expansion-card {
+      width: min(960px, 100%);
+      overflow-x: hidden;
+    }
+
+    .game-root.expansion-testing .emoji-cursor { display: none !important; }
+
+    .expansion-card > .expansion-instructions {
+      margin: 10px 16px 8px;
+      font-size: 0.76rem;
+      line-height: 1.35;
+    }
+
+    .expansion-rhythm-hud {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: center;
+      gap: 12px;
+      margin: 8px 16px;
+      padding: 7px 10px;
+      border-block: 3px solid var(--ink);
+      background: #24323b;
+      color: #f7edcf;
+    }
+
+    .expansion-rate {
+      color: #ffdf72;
+      font-family: var(--retro-font);
+      font-size: 0.72rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .expansion-phase {
+      min-width: 0;
+      color: #bde6e8;
+      font-family: var(--retro-font);
+      font-size: 0.62rem;
+      text-align: right;
+      text-transform: uppercase;
+    }
+
+    .expansion-stage {
+      position: relative;
+      width: min(100%, calc(50vh * 1.75), 840px);
+      aspect-ratio: 7 / 4;
+      margin: 8px auto;
+      overflow: hidden;
+      border: 5px ridge var(--gold);
+      background: #223a44;
+      box-shadow: inset 0 0 0 3px #301925, 0 7px 0 rgba(33,25,35,0.24);
+      user-select: none;
+    }
+
+    .expansion-stage canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      image-rendering: pixelated;
+    }
+
+    .expansion-answer-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin: 8px 16px;
+    }
+
+    .expansion-choice {
+      min-height: 46px;
+      padding: 8px 12px;
+      border: 3px outset var(--gold);
+      background: linear-gradient(180deg, #f6e2a6, #b98443);
+      color: var(--ink);
+      font-family: var(--retro-font);
+      font-size: 0.66rem;
+      font-weight: 700;
+    }
+
+    .expansion-choice:hover,
+    .expansion-choice:focus-visible {
+      filter: brightness(1.08);
+      outline: 3px solid var(--teal);
+      outline-offset: 2px;
+    }
+
+    .expansion-choice.wrong {
+      border-style: inset;
+      background: #c98579;
+    }
+
+    .expansion-choice.correct {
+      border-style: inset;
+      background: #9bc69f;
+    }
+
+    .expansion-status {
+      min-height: 46px;
+      margin: 8px 16px 14px;
+      padding: 8px 10px;
+      border-left: 5px solid var(--teal);
+      background: rgba(31,111,120,0.12);
+      color: var(--ink);
+      font-size: 0.74rem;
+      line-height: 1.35;
+    }
+
+    .expansion-status.success {
+      border-color: #39734d;
+      background: rgba(57,115,77,0.16);
+    }
+
+    .expansion-status.wrong {
+      border-color: #b43c37;
+      background: rgba(180,60,55,0.13);
+    }
+
+    .abdominal-inspection-card {
+      width: min(940px, 100%);
+      overflow-x: hidden;
+    }
+
+    .game-root.abdominal-testing .emoji-cursor { display: none !important; }
+
+    .abdominal-inspection-card > .abdominal-instructions {
+      margin: 10px 16px 8px;
+      font-size: 0.76rem;
+      line-height: 1.35;
+    }
+
+    .abdominal-quadrant-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 4px;
+      margin: 8px 16px;
+      padding: 5px;
+      border-block: 3px solid var(--ink);
+      background: #24323b;
+    }
+
+    .abdominal-quadrant-meter {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      gap: 7px;
+      min-width: 0;
+      padding: 6px 8px;
+      border: 2px solid #687b80;
+      background: #31454c;
+      color: #f7edcf;
+      font-family: var(--retro-font);
+      font-size: 0.62rem;
+    }
+
+    .abdominal-quadrant-meter strong { color: #ffdf72; }
+
+    .abdominal-quadrant-meter span {
+      min-width: 0;
+      text-align: right;
+    }
+
+    .abdominal-quadrant-meter.complete {
+      border-color: #83d58a;
+      background: #2d5c41;
+    }
+
+    .abdominal-quadrant-meter.complete strong,
+    .abdominal-quadrant-meter.complete span { color: #e7f6dc; }
+
+    .abdominal-stage {
+      position: relative;
+      width: min(100%, calc(51vh * 1.68), 840px);
+      aspect-ratio: 840 / 500;
+      margin: 8px auto;
+      overflow: hidden;
+      border: 5px ridge var(--gold);
+      background: #315867;
+      box-shadow: inset 0 0 0 3px #301925, 0 7px 0 rgba(33,25,35,0.24);
+      touch-action: none;
+      user-select: none;
+    }
+
+    .abdominal-stage canvas {
+      position: absolute;
+      inset: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+      image-rendering: pixelated;
+      touch-action: none;
+    }
+
+    .abdominal-base-canvas { pointer-events: none; }
+
+    .abdominal-scratch-canvas {
+      cursor: crosshair;
+      pointer-events: auto;
+    }
+
+    .abdominal-stage.scratching .abdominal-scratch-canvas { cursor: none; }
+
+    .abdominal-brush-ring {
+      position: absolute;
+      z-index: 3;
+      display: none;
+      width: 58px;
+      height: 58px;
+      border: 3px dashed rgba(255,225,117,0.88);
+      border-radius: 50%;
+      box-shadow: 0 0 0 2px rgba(33,25,35,0.52);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .abdominal-brush-ring.visible { display: block; }
+
+    .abdominal-status {
+      min-height: 46px;
+      margin: 8px 16px 14px;
+      padding: 8px 10px;
+      border-left: 5px solid var(--teal);
+      background: rgba(31,111,120,0.12);
+      color: var(--ink);
+      font-size: 0.74rem;
+      line-height: 1.35;
+    }
+
+    .abdominal-status.success {
+      border-color: #39734d;
+      background: rgba(57,115,77,0.16);
+    }
+
+    .cardiac-card {
+      width: min(980px, 100%);
+      overflow-x: hidden;
+    }
+
+    .game-root.cardiac-testing .emoji-cursor { display: none !important; }
+
+    .cardiac-card > .cardiac-instructions {
+      margin: 10px 16px 8px;
+      font-size: 0.76rem;
+      line-height: 1.35;
+    }
+
+    .cardiac-rhythm-hud {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 12px;
+      margin: 8px 16px;
+      padding: 7px 10px;
+      border-block: 3px solid var(--ink);
+      background: #24323b;
+      color: #f7edcf;
+    }
+
+    .cardiac-rate {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: #ffdf72;
+      font-family: var(--retro-font);
+      font-size: 0.72rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .cardiac-beat-lamp {
+      display: grid;
+      width: 26px;
+      height: 26px;
+      place-items: center;
+      color: #8c2638;
+      font-family: var(--emoji-font);
+      font-size: 1.05rem;
+      line-height: 1;
+      transform: scale(0.86);
+    }
+
+    .cardiac-beat-lamp.beat {
+      color: #ff5964;
+      filter: drop-shadow(0 0 5px rgba(255,89,100,0.75));
+      transform: scale(1.12);
+    }
+
+    .cardiac-phase {
+      min-width: 0;
+      font-family: var(--retro-font);
+      font-size: 0.62rem;
+      line-height: 1.35;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .cardiac-valves {
+      color: #9de2af;
+      font-size: 0.68rem;
+      line-height: 1.25;
+      text-align: right;
+    }
+
+    .cardiac-stage {
+      position: relative;
+      width: min(100%, calc(51vh * 1.68), 840px);
+      aspect-ratio: 840 / 500;
+      margin: 8px auto;
+      overflow: hidden;
+      border: 5px ridge var(--gold);
+      background: #182831;
+      box-shadow: inset 0 0 0 3px #301925, 0 7px 0 rgba(33,25,35,0.24);
+      touch-action: none;
+      user-select: none;
+    }
+
+    .cardiac-stage canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      image-rendering: pixelated;
+      cursor: grab;
+      touch-action: none;
+    }
+
+    .cardiac-stage.dragging canvas { cursor: grabbing; }
+
+    .cardiac-progress-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 8px 16px;
+      color: var(--maroon);
+      font-family: var(--retro-font);
+      font-size: 0.66rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .cardiac-progress-pips { display: flex; gap: 6px; }
+
+    .cardiac-progress-pips span {
+      width: 30px;
+      height: 14px;
+      border: 2px solid var(--ink);
+      background: #a69575;
+    }
+
+    .cardiac-progress-pips span.lit { background: #bd3545; }
+
+    .cardiac-status {
+      min-height: 46px;
+      margin: 8px 16px 14px;
+      padding: 8px 10px;
+      border-left: 5px solid var(--teal);
+      background: rgba(31,111,120,0.12);
+      color: var(--ink);
+      font-size: 0.74rem;
+      line-height: 1.35;
+    }
+
+    .cardiac-status.success {
+      border-color: #39734d;
+      background: rgba(57,115,77,0.16);
+    }
+
+    .cardiac-status.blocked {
+      border-color: #b43c37;
+      background: rgba(180,60,55,0.13);
+    }
+
     .lung-card {
       width: min(960px, 100%);
       overflow-x: hidden;
@@ -1920,6 +2434,146 @@
 
     .bell.right { opacity: 0.42; }
     .bell.selected { background: var(--teal); color: var(--paper); }
+
+    .coordination-card {
+      width: min(820px, 100%);
+      overflow-x: hidden;
+    }
+
+    .coordination-board {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(120px, 1fr));
+      gap: 18px 44px;
+      width: min(590px, calc(100% - 40px));
+      min-height: 330px;
+      margin: 14px auto 10px;
+      padding: 24px 42px;
+      border: 5px ridge var(--gold);
+      background: #396b70;
+      box-shadow:
+        inset 0 0 0 4px #173b42,
+        inset 0 0 0 8px rgba(247,237,207,0.22),
+        0 8px 0 rgba(33,25,35,0.24);
+    }
+
+    .coordination-target {
+      position: relative;
+      display: grid;
+      place-items: center;
+      min-width: 0;
+      min-height: 132px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .coordination-target:focus-visible {
+      outline: 3px solid #fff3bf;
+      outline-offset: 3px;
+    }
+
+    .coordination-ring {
+      --coordination-ring-scale: 2.25;
+      position: absolute;
+      width: 70px;
+      height: 70px;
+      border: 4px solid #f6e2a6;
+      border-radius: 50%;
+      opacity: 0;
+      box-shadow: 0 0 0 2px rgba(33,25,35,0.42);
+      transform: scale(var(--coordination-ring-scale));
+      pointer-events: none;
+      will-change: transform;
+    }
+
+    .coordination-target.active .coordination-ring { opacity: 0.9; }
+
+    .coordination-target.in-window .coordination-ring {
+      border-color: #8ee09d;
+      box-shadow: 0 0 0 2px #173b42, 0 0 12px rgba(142,224,157,0.7);
+    }
+
+    .coordination-core {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      place-items: center;
+      width: 70px;
+      height: 70px;
+      border: 5px outset var(--gold);
+      border-radius: 50%;
+      background: #f7edcf;
+      color: var(--maroon);
+      box-shadow: 4px 5px 0 rgba(33,25,35,0.44);
+      font-family: var(--retro-font);
+      font-size: 1.1rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .coordination-target.active .coordination-core {
+      background: #fff3bf;
+      box-shadow: 0 0 0 4px #173b42, 4px 5px 0 rgba(33,25,35,0.44);
+    }
+
+    .coordination-target.completed .coordination-core {
+      border-style: inset;
+      background: #78b888;
+      color: #132d25;
+    }
+
+    .coordination-target.completed .coordination-ring { display: none; }
+
+    .coordination-progress-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 8px 20px;
+      color: var(--maroon);
+      font-family: var(--retro-font);
+      font-size: 0.66rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .coordination-progress {
+      display: flex;
+      gap: 7px;
+    }
+
+    .coordination-progress span {
+      width: 28px;
+      height: 14px;
+      border: 2px solid var(--ink);
+      background: #a69575;
+    }
+
+    .coordination-progress span.lit { background: #57905f; }
+
+    .coordination-feedback {
+      min-height: 52px;
+      margin: 8px 20px 16px;
+      padding: 9px 11px;
+      border-left: 5px solid var(--teal);
+      background: rgba(31,111,120,0.12);
+      color: var(--ink);
+      font-size: 0.76rem;
+      line-height: 1.4;
+    }
+
+    .coordination-feedback.hit {
+      border-color: #39734d;
+      background: rgba(57,115,77,0.16);
+    }
+
+    .coordination-feedback.miss {
+      border-color: #b43c37;
+      background: rgba(180,60,55,0.13);
+    }
 
     .reflex-card { width: min(800px, 100%); }
 
@@ -2937,6 +3591,36 @@
       .orifice-panel { min-height: 116px; margin: 9px 12px 12px; padding: 8px 9px; }
       .orifice-answer-grid { grid-template-columns: 1fr; gap: 5px; }
       .orifice-answer { min-height: 38px; padding: 6px 8px; font-size: 0.72rem; }
+      .mental-clock-card > .mental-clock-instructions { margin: 9px 10px 6px; font-size: 0.68rem; }
+      .mental-clock-housing { gap: 5px; margin: 7px 10px; padding: 10px 6px; }
+      .mental-clock-label { font-size: 0.52rem; }
+      .mental-clock-adjust { min-height: 32px; padding: 2px 4px; font-size: 0.82rem; }
+      .mental-flip-digit { width: 29px; height: 54px; font-size: 1.35rem; }
+      .mental-clock-status { min-height: 40px; margin: 7px 10px 10px; padding: 7px 8px; font-size: 0.66rem; }
+      .expansion-card > .expansion-instructions { margin: 7px 10px 5px; font-size: 0.66rem; }
+      .expansion-rhythm-hud { gap: 6px; margin: 5px 10px; padding: 5px 7px; }
+      .expansion-rate { font-size: 0.58rem; }
+      .expansion-phase { font-size: 0.52rem; }
+      .expansion-stage { width: min(100%, calc(40vh * 1.75)); margin-block: 5px; }
+      .expansion-answer-row { gap: 6px; margin: 6px 10px; }
+      .expansion-choice { min-height: 40px; padding: 6px; font-size: 0.55rem; }
+      .expansion-status { min-height: 40px; margin: 6px 10px 9px; padding: 6px 8px; font-size: 0.64rem; }
+      .abdominal-inspection-card > .abdominal-instructions { margin: 7px 10px 5px; font-size: 0.66rem; }
+      .abdominal-quadrant-strip { gap: 3px; margin: 5px 10px; padding: 3px; }
+      .abdominal-quadrant-meter { grid-template-columns: 1fr; gap: 3px; padding: 4px; font-size: 0.52rem; }
+      .abdominal-quadrant-meter span { text-align: left; }
+      .abdominal-stage { width: min(100%, calc(42vh * 1.68)); margin-block: 5px; }
+      .abdominal-status { min-height: 40px; margin: 6px 10px 9px; padding: 6px 8px; font-size: 0.64rem; }
+      .cardiac-card > .cardiac-instructions { margin: 7px 10px 5px; font-size: 0.66rem; }
+      .cardiac-rhythm-hud { gap: 6px; margin: 5px 10px; padding: 5px 7px; }
+      .cardiac-rate { font-size: 0.58rem; }
+      .cardiac-beat-lamp { width: 20px; height: 20px; font-size: 0.86rem; }
+      .cardiac-phase { font-size: 0.5rem; }
+      .cardiac-valves { font-size: 0.56rem; }
+      .cardiac-stage { width: min(100%, calc(42vh * 1.68)); margin-block: 5px; }
+      .cardiac-progress-line { margin: 6px 10px; font-size: 0.56rem; }
+      .cardiac-progress-pips span { width: 22px; height: 11px; }
+      .cardiac-status { min-height: 40px; margin: 6px 10px 9px; padding: 6px 8px; font-size: 0.64rem; }
       .lung-card > .lung-instructions { margin: 7px 10px 5px; font-size: 0.68rem; }
       .lung-game-grid { margin: 5px 10px; }
       .lung-stage { width: min(100%, calc(42vh * 3 / 2)); }
@@ -3001,6 +3685,20 @@
       .cart-answer { grid-template-columns: 36px minmax(0, 1fr); font-size: 0.72rem; }
       .cart-feedback-actions { grid-template-columns: 1fr; }
       .cart-feedback-actions .primary-action { width: 100%; }
+      .coordination-card > p { margin: 9px 12px 5px; font-size: 0.7rem; }
+      .coordination-board {
+        gap: 8px 20px;
+        width: calc(100% - 24px);
+        min-height: 256px;
+        margin: 8px auto 6px;
+        padding: 12px 18px;
+      }
+      .coordination-target { min-height: 108px; }
+      .coordination-ring,
+      .coordination-core { width: 58px; height: 58px; }
+      .coordination-progress-line { margin: 6px 12px; font-size: 0.55rem; }
+      .coordination-progress span { width: 20px; height: 11px; }
+      .coordination-feedback { min-height: 40px; margin: 6px 12px 10px; padding: 7px 8px; font-size: 0.66rem; }
       .reflex-layout {
         grid-template-columns: 1fr;
         gap: 12px;
@@ -3038,9 +3736,8 @@
         <div class="tool-strip" aria-label="Action tools">
           <button class="tool-button selected" type="button" data-mode="look" aria-label="Look" title="Look"><span class="tool-icon" aria-hidden="true">&#128065;&#65039;</span></button>
           <button class="tool-button" type="button" data-mode="talk" aria-label="Talk" title="Talk"><span class="tool-icon" aria-hidden="true">&#128172;</span></button>
-          <button class="tool-button" type="button" data-mode="grab" aria-label="Grab" title="Grab / use / activate / take"><span class="tool-icon" aria-hidden="true">&#9995;</span></button>
-          <button class="tool-button" type="button" data-mode="auscultate" aria-label="Auscultate" title="Examine / listen / auscultate"><span class="tool-icon" aria-hidden="true">&#129658;</span></button>
-          <button class="tool-button" type="button" data-mode="think" aria-label="Think" title="Think / solve puzzle"><span class="tool-icon" aria-hidden="true">&#129504;</span></button>
+          <button class="tool-button" type="button" data-mode="grab" aria-label="Hand" title="Hand / grab / use / activate / examine"><span class="tool-icon" aria-hidden="true">&#9995;</span></button>
+          <button class="tool-button" type="button" data-mode="think" aria-label="Think" title="Think / use / activate / examine"><span class="tool-icon" aria-hidden="true">&#129504;</span></button>
         </div>
 
         <div class="top-inventory" aria-label="Inventory">
@@ -3116,7 +3813,7 @@
     const state = {
       mode: "look",
       findings: [],
-      inventory: [],
+      inventory: ["stethoscope"],
       selectedInventoryId: "",
       orificeAssignments: null,
       completed: [],
@@ -3127,6 +3824,8 @@
       timingFrame: null,
       sensoryFrame: null,
       pupilFrame: null,
+      expansionFrame: null,
+      cardiacFrame: null,
       lungFrame: null,
       lungBreathSource: null,
       timingMarker: 0,
@@ -3137,13 +3836,21 @@
       finalDialogueStep: 0
     };
 
+    // Future cases can replace these values without changing the expansion game.
+    const casePhysiology = {
+      respiratoryRate: 14,
+      rightExpansionDepth: 0.88,
+      leftExpansionDepth: 0.88
+    };
+
     let activeMinigameAutowin = null;
+    let activeMessageDismiss = null;
+    let activePhysicalExamMinigameOrigin = "";
 
     const modeEmoji = {
       look: "\u{1F441}\uFE0F",
       talk: "\u{1F4AC}",
       grab: "\u270B",
-      auscultate: "\u{1FA7A}",
       think: "\u{1F9E0}"
     };
 
@@ -3160,7 +3867,7 @@
       ["cardiacExam", "Cardiovascular examination", "Regular rate and rhythm without murmur; peripheral pulses are symmetric and there is no edema.", "Exam"],
       ["pulmonaryExam", "Pulmonary examination", "Breathing is unlabored with symmetric expansion and clear breath sounds bilaterally.", "Exam"],
       ["abdominalExam", "Abdominal examination", "The abdomen is nondistended, soft, and nontender with normal bowel sounds.", "Exam"],
-      ["vitals", "Vitals", "Stable vitals; no fever or unstable rhythm driving the presentation.", "Diagnostics"],
+      ["vitals", "Vitals", "T 36.8 C, BP 128/76 mm Hg, HR 72/min, RR 18/min, SpO2 98% on room air.", "Diagnostics"],
       ["mentalStatus", "Mental status", "Alert, attentive, fully oriented, and able to provide a coherent history.", "Exam"],
       ["cranialNerves", "Cranial nerve screen", "Visual fields are full, pupils are reactive, extraocular movements are intact, facial sensation and movement are symmetric, hearing is intact, palate elevation is symmetric, shoulder strength is full, and the tongue is midline.", "Exam"],
       ["motorWeakness", "Functional motor assessment", "The walking video shows a left stiff-legged gait with foot drag, providing functional evidence of an upper motor neuron pattern when formal power testing is limited.", "Exam"],
@@ -3179,6 +3886,7 @@
     ].map(([id, label, detail, group]) => ({ id, label, detail, group }));
 
     const inventoryCatalog = {
+      stethoscope: ["Stethoscope", "A reusable stethoscope for bedside examination and auscultation."],
       soapRefill: ["Soap Refill", "A standard soap dispenser cartridge for hand hygiene before the exam."],
       phoneCharger: ["Phone Charger", "A charging cable that fits the bedside phone."],
       hammer: ["Reflex Hammer", "A reflex hammer for corticospinal tract signs."],
@@ -3195,6 +3903,7 @@
     };
 
     const inventoryEmoji = {
+      stethoscope: "\u{1FA7A}",
       phoneCharger: "\u{1F50C}",
       hammer: "\u{1F528}",
       tuningFork: "\u{1F3B5}",
@@ -4178,8 +4887,9 @@
 
     function has(list, id) { return list.indexOf(id) !== -1; }
 
-    function setMessage(text) {
+    function setMessage(text, onDismiss = null) {
       const popup = document.getElementById("messagePopup");
+      activeMessageDismiss = typeof onDismiss === "function" ? onDismiss : null;
       document.getElementById("messageText").textContent = text;
       popup.hidden = false;
       document.getElementById("messageOk").focus();
@@ -4198,6 +4908,9 @@
 
     function closeMessagePopup() {
       document.getElementById("messagePopup").hidden = true;
+      const onDismiss = activeMessageDismiss;
+      activeMessageDismiss = null;
+      if (onDismiss) setTimeout(onDismiss, 0);
       setTimeout(flushQueuedMessage, 0);
     }
 
@@ -4303,6 +5016,18 @@
         return;
       }
       openExam(systemId);
+    }
+
+    function reportPhysicalExamMinigame(systemId, message) {
+      const resumeSystemId = activePhysicalExamMinigameOrigin === systemId ? systemId : "";
+      activePhysicalExamMinigameOrigin = "";
+      closeModal();
+      setMessage(message, resumeSystemId ? () => openExam(resumeSystemId) : null);
+    }
+
+    function launchPhysicalExamMinigame(systemId, openGame) {
+      activePhysicalExamMinigameOrigin = systemId;
+      openGame();
     }
 
     function installSoapRefill() {
@@ -4458,7 +5183,7 @@
       }
 
       if (!has(state.completed, "soapRefillFound")) {
-        return "Select GRAB and click the supply cabinet to find the missing soap refill. The patient would like clean hands before the exam.";
+        return "Select HAND or THINK and click the supply cabinet to find the missing soap refill. The patient would like clean hands before the exam.";
       }
 
       if (!has(state.completed, "soapInstalled")) {
@@ -4482,7 +5207,7 @@
           return "Open Physical Examination, choose Neurologic, then select Motor Exam. Formal power testing is limited, so this reveals the walking-video route.";
         }
         if (!has(state.completed, "phoneCharged") && !has(state.inventory, "phoneCharger")) {
-          return "Select GRAB and search the patient belongings for the phone charger.";
+          return "Select HAND or THINK and search the patient belongings for the phone charger.";
         }
         if (!has(state.completed, "outletRevealed")) {
           return "Drag the Phone Charger onto the exam cart to plug it into the outlet mounted on the cart's side.";
@@ -4494,15 +5219,15 @@
       }
 
       if (!has(state.completed, "examTools")) {
-        return "Select THINK, click the exam cart, and answer five neurology questions before three errors to unlock the exam tools.";
+        return "Select HAND or THINK, click the exam cart, and answer five neurology questions before three errors to unlock the exam tools.";
       }
 
       if (!has(state.completed, "icePackFound")) {
-        return "Select GRAB and open the under-counter refrigerator to collect the ice pack for temperature testing.";
+        return "Select HAND or THINK and open the under-counter refrigerator to collect the ice pack for temperature testing.";
       }
 
       if (!has(state.completed, "safetyPinFound")) {
-        return "Select GRAB and open the under-counter supply drawer to collect the safety pin for pinprick testing.";
+        return "Select HAND or THINK and open the under-counter supply drawer to collect the safety pin for pinprick testing.";
       }
 
       if (!has(state.findings, "reflexes")) {
@@ -4526,7 +5251,7 @@
       }
 
       if (!has(state.completed, "icdCodeConfirmed")) {
-        return "Select THINK and open the imaging workstation. Review the pertinent findings and choose the best ICD-10-CM problem code.";
+        return "Select HAND or THINK and open the imaging workstation. Review the pertinent findings and choose the best ICD-10-CM problem code.";
       }
 
       if (!has(state.completed, "imagingLesionFound")) {
@@ -4645,6 +5370,7 @@
 
     function closeModal() {
       activeMinigameAutowin = null;
+      activePhysicalExamMinigameOrigin = "";
       clearSelectedInventory();
       if (state.timingFrame) {
         cancelAnimationFrame(state.timingFrame);
@@ -4658,6 +5384,14 @@
         cancelAnimationFrame(state.pupilFrame);
         state.pupilFrame = null;
       }
+      if (state.expansionFrame) {
+        cancelAnimationFrame(state.expansionFrame);
+        state.expansionFrame = null;
+      }
+      if (state.cardiacFrame) {
+        cancelAnimationFrame(state.cardiacFrame);
+        state.cardiacFrame = null;
+      }
       if (state.lungFrame) {
         cancelAnimationFrame(state.lungFrame);
         state.lungFrame = null;
@@ -4666,6 +5400,9 @@
         try { state.lungBreathSource.stop(); } catch (error) {}
         state.lungBreathSource = null;
       }
+      document.querySelector(".game-root").classList.remove("expansion-testing");
+      document.querySelector(".game-root").classList.remove("abdominal-testing");
+      document.querySelector(".game-root").classList.remove("cardiac-testing");
       document.querySelector(".game-root").classList.remove("lung-testing");
       document.querySelector(".game-root").classList.remove("pupil-testing");
       state.washScore = 0;
@@ -4749,10 +5486,9 @@
               <ul class="help-list">
                 <li>Pick an emoji verb, then click a hotspot in the room.</li>
                 <li>Eye and speech bubble uncover environmental clues and patient history topics.</li>
-                <li>Hand means grab, use, activate, take an item, or request a physical exam from the patient.</li>
-                <li>Stethoscope means examine, listen, or auscultate when used on the patient.</li>
+                <li>Hand and Think are interchangeable action tools. Either one can grab, activate, operate equipment, start puzzles, or request a physical exam.</li>
+                <li>The stethoscope begins in inventory. Select it and click the patient, or drag it onto the patient, to request a physical exam.</li>
                 <li>Click an inventory item, then click a room hotspot to use it. Dragging an item directly onto a hotspot also works.</li>
-                <li>Brain starts puzzles, diagnostic tests, bedside minigames, and localization locks.</li>
                 <li>Physical exam requires hand hygiene. Restore the soap dispenser before touching the patient.</li>
                 <li>The physical exam opens by system; choose Neurologic for mental status, cranial nerves, motor, sensory, reflexes, coordination, and gait.</li>
                 <li>Use Chart Review to revisit recent actions, pertinent findings, and the next suggested move.</li>
@@ -5028,7 +5764,7 @@
       renderQuestion();
     }
 
-    function handleGrab(id) {
+    function handleAction(id) {
       if (id === "patient") {
         requestPhysicalExam();
         return;
@@ -5080,7 +5816,7 @@
       }
       if (id === "cart") {
         if (!has(state.completed, "examTools")) {
-          setMessage("The exam cart is locked. Select THINK, then click it to start the five-question neurology access test.");
+          openCartQuiz();
           return;
         }
         addInventory("hammer");
@@ -5091,7 +5827,7 @@
       }
       if (id === "monitor") {
         addFinding("vitals");
-        setMessage("You activate the monitor controls. Vitals are stable, which leaves the long-tract mystery in the spotlight.");
+        setMessage("T 36.8 C, BP 128/76 mm Hg, HR 72/min, RR 18/min, SpO2 98% on room air.");
         return;
       }
       if (id === "cabinet") {
@@ -5105,9 +5841,7 @@
         return;
       }
       if (id === "ct") {
-        setMessage(has(state.completed, "ehrUpdateComplete")
-          ? "The EHR update is complete. Select THINK to open the imaging workstation."
-          : "The computer is occupied by an EHR system update. Imaging software is unavailable until the pertinent neurologic examination is complete.");
+        openImagingWorkstation();
         return;
       }
       if (id === "phone") {
@@ -5133,6 +5867,11 @@
 
     function handleInventoryUse(itemId, hotspotId) {
       if (!itemId || !has(state.inventory, itemId)) return;
+
+      if (itemId === "stethoscope" && hotspotId === "patient") {
+        requestPhysicalExam();
+        return;
+      }
 
       if (hotspotId === "door") {
         setMessage("Using " + inventoryName(itemId) + " on the ward door has no effect. Future specialty rooms are not available yet.");
@@ -5233,7 +5972,7 @@
       }
 
       if (hotspotId === "ct") {
-        setMessage("Inventory items are not needed at the workstation. Select THINK and click the computer.");
+        setMessage("Inventory items are not needed at the workstation. Select HAND or THINK and click the computer.");
         return;
       }
 
@@ -5365,8 +6104,8 @@
         return;
       }
 
-      if (state.mode === "grab") {
-        handleGrab(id);
+      if (state.mode === "grab" || state.mode === "think") {
+        handleAction(id);
         return;
       }
 
@@ -5375,20 +6114,7 @@
           openPatientHistory();
           return;
         }
-        if (state.mode === "think") {
-          requestPhysicalExam();
-          return;
-        }
-        if (state.mode === "auscultate") {
-          requestPhysicalExam();
-          return;
-        }
         setMessage("The patient sits upright in bed, alert and watchful. The blanket is slightly rumpled around her left foot.");
-        return;
-      }
-
-      if (state.mode === "auscultate") {
-        setMessage("Use the stethoscope on the patient to auscultate.");
         return;
       }
 
@@ -5407,12 +6133,6 @@
             : "The bedside table holds a phone with a dead battery.");
           return;
         }
-        if (state.mode === "think") {
-          setMessage(has(state.completed, "phoneCharged")
-            ? "Use the charged phone on the patient to interpret gait as functional motor evidence."
-            : "Functional motor interpretation is locked until the phone is charged. Find power, then review the walking video.");
-          return;
-        }
         setMessage(has(state.completed, "phoneCharged")
           ? "The charged phone is ready for walking-video review."
           : "An uncharged patient phone is on the bedside table. It may contain useful collateral history.");
@@ -5424,23 +6144,13 @@
           setMessage("The patient says, \"My charger might be in there.\"");
           return;
         }
-        if (state.mode === "think") {
-          setMessage("The phone needs power before collateral history is available. Check the belongings bag for a charger.");
-          return;
-        }
-        setMessage("A coat and leather bag sit on the chair. Select GRAB to search them for the phone charger.");
+        setMessage("A coat and leather bag sit on the chair. Select HAND or THINK to search them for the phone charger.");
         return;
       }
 
       if (id === "sink") {
         if (state.mode === "talk") {
           setMessage("Use the sink for hand hygiene before the exam.");
-          return;
-        }
-        if (state.mode === "think") {
-          setMessage(has(state.completed, "soapInstalled")
-            ? "Soap and water are available for hand hygiene before the neurologic exam."
-            : "The dispenser is empty. Search the supply cabinet for a refill.");
           return;
         }
         washHands();
@@ -5454,9 +6164,7 @@
             : "The clean safety pin from this drawer is in inventory.");
           return;
         }
-        setMessage(state.mode === "think"
-          ? "A clean safety pin would provide a controlled sharp stimulus for pinprick comparison. Select GRAB to search the drawer."
-          : "The under-counter supply drawer may contain a pinprick tool. Select GRAB to open it.");
+        setMessage("The under-counter supply drawer may contain a pinprick tool. Select HAND or THINK to open it.");
         return;
       }
 
@@ -5467,34 +6175,24 @@
             : "The wrapped ice pack from this refrigerator is in inventory.");
           return;
         }
-        setMessage(state.mode === "think"
-          ? "A cold stimulus is required for temperature comparison. Select GRAB to check the refrigerator."
-          : "A small clinical refrigerator sits beneath the counter. Select GRAB to open it.");
+        setMessage("A small clinical refrigerator sits beneath the counter. Select HAND or THINK to open it.");
         return;
       }
 
       if (id === "cart") {
-        if (state.mode === "think") {
-          if (!has(state.completed, "examTools")) openCartQuiz();
-          else {
-            markCompleted("outletRevealed");
-            setMessage("The exam cart is open. Reflex hammer and tuning fork are available, and a power outlet is mounted on the cart's side.");
-          }
-          return;
-        }
-        setMessage("The exam cart has tools inside, a rapid-fire quiz lock on its screen, and a power outlet mounted on its side. This is a THINK or GRAB problem.");
+        setMessage("The exam cart has tools inside, a rapid-fire quiz lock on its screen, and a power outlet mounted on its side. Use HAND or THINK to operate it.");
         return;
       }
 
       if (id === "monitor") {
         addFinding("vitals");
-        setMessage("The monitor shows stable vitals. Useful, but the mystery is written in long tracts.");
+        setMessage("T 36.8 C, BP 128/76 mm Hg, HR 72/min, RR 18/min, SpO2 98% on room air.");
         return;
       }
 
       if (id === "cabinet") {
         if (!has(state.completed, "soapRefillFound")) {
-          setMessage("The cabinet contains supply jars. Use GRAB to search for the soap refill.");
+          setMessage("The cabinet contains supply jars. Use HAND or THINK to search for the soap refill.");
           return;
         }
         setMessage("The upper cabinet contains routine supplies, but no additional case-relevant equipment.");
@@ -5502,12 +6200,8 @@
       }
 
       if (id === "ct") {
-        if (state.mode === "think") {
-          openImagingWorkstation();
-          return;
-        }
         setMessage(has(state.completed, "ehrUpdateComplete")
-          ? "The EHR update is complete. Use THINK on the computer to review the case and access imaging."
+          ? "The EHR update is complete. Use HAND or THINK on the computer to review the case and access imaging."
           : "The computer displays an EHR system update. Imaging software will not load yet.");
         return;
       }
@@ -5558,7 +6252,7 @@
         ["motor", "Motor Exam", "Interpret functional motor evidence from the walking video."],
         ["sensory", "Sensory Exam", "Complete the five-modality sensory testing game."],
         ["reflex", "Reflexes", "Test the patellar reflex with the timing game."],
-        ["coordination", "Coordination", "Assess appendicular coordination without mistaking weakness for dysmetria."],
+        ["coordination", "Coordination", "Complete the four-target appendicular timing sequence."],
         ["gait", "Gait", "Review the recorded gait because walking at bedside is unsafe."]
       ];
 
@@ -5667,16 +6361,28 @@
       if (!system || !action || !system.actions.includes(actionId)) return;
 
       if (!has(state.completed, physicalExamActionKey(actionId))) {
+        if (actionId === "respiratoryEffort") {
+          launchPhysicalExamMinigame(systemId, openPulmonaryExpansionGame);
+          return;
+        }
+        if (actionId === "abdominalInspection") {
+          launchPhysicalExamMinigame(systemId, openAbdominalInspectionGame);
+          return;
+        }
         if (actionId === "pupils") {
-          openPupilInspectionGame();
+          launchPhysicalExamMinigame(systemId, openPupilInspectionGame);
           return;
         }
         if (actionId === "earsNose") {
-          openEarNoseInspectionGame();
+          launchPhysicalExamMinigame(systemId, openEarNoseInspectionGame);
+          return;
+        }
+        if (actionId === "cardiacAuscultation") {
+          launchPhysicalExamMinigame(systemId, openCardiacAuscultationGame);
           return;
         }
         if (actionId === "lungAuscultation") {
-          openLungAuscultationGame();
+          launchPhysicalExamMinigame(systemId, openLungAuscultationGame);
           return;
         }
       }
@@ -5685,6 +6391,1311 @@
       if (!recorded) return;
       if (button) button.classList.add("done");
       setMessage(recorded.action.result + (recorded.systemComplete ? " " + recorded.system.label + " examination complete." : ""));
+    }
+
+    function openPulmonaryExpansionGame() {
+      const canvasWidth = 840;
+      const canvasHeight = 480;
+      const respiratoryRate = Math.max(4, Math.min(60, Number(casePhysiology.respiratoryRate) || 14));
+      const rightDepth = Math.max(0.25, Math.min(1, Number(casePhysiology.rightExpansionDepth) || 0.88));
+      const leftDepth = Math.max(0.25, Math.min(1, Number(casePhysiology.leftExpansionDepth) || 0.88));
+      const cycleDuration = 60000 / respiratoryRate;
+      const inspirationFraction = 0.40;
+      const symmetricDepth = Math.abs(rightDepth - leftDepth) <= 0.05;
+      const cycleOrigin = performance.now();
+      let finished = false;
+      let lastRenderedPhase = "";
+
+      openModal(`
+        <section class="modal-card expansion-card" id="pulmonaryExpansionGame" role="dialog" aria-modal="true" aria-labelledby="pulmonaryExpansionTitle">
+          <div class="modal-header"><h2 id="pulmonaryExpansionTitle">Chest Expansion</h2><button type="button" data-close aria-label="Close">X</button></div>
+          <p class="expansion-instructions">Observe several breaths. Both sides share one respiratory rhythm; compare how deeply the right and left hemithoraces expand using the moving chest walls and excursion meters.</p>
+          <div class="expansion-rhythm-hud" aria-live="polite">
+            <div class="expansion-rate">${respiratoryRate} BREATHS / MIN</div>
+            <div class="expansion-phase" id="expansionPhase">Inspiration</div>
+          </div>
+          <div class="expansion-stage">
+            <canvas id="expansionCanvas" width="${canvasWidth}" height="${canvasHeight}" aria-describedby="expansionStatus" aria-label="Animated comparison of right and left pulmonary expansion"></canvas>
+          </div>
+          <div class="expansion-answer-row" aria-label="Choose the chest expansion finding">
+            <button type="button" class="expansion-choice" data-expansion-answer="symmetric">= Symmetric depth</button>
+            <button type="button" class="expansion-choice" data-expansion-answer="asymmetric">&#8800; Asymmetric depth</button>
+          </div>
+          <p class="expansion-status" id="expansionStatus" aria-live="polite">Watch the peak excursion on both meters, then choose the finding.</p>
+        </section>
+      `);
+
+      document.querySelector(".game-root").classList.add("expansion-testing");
+      const canvas = document.getElementById("expansionCanvas");
+      const context = canvas.getContext("2d");
+      const phaseLabel = document.getElementById("expansionPhase");
+      const status = document.getElementById("expansionStatus");
+      const answerButtons = Array.from(document.querySelectorAll("[data-expansion-answer]"));
+
+      function easeInOut(value) {
+        return 0.5 - (Math.cos(Math.PI * value) * 0.5);
+      }
+
+      function breathStateAt(timestamp) {
+        const elapsed = Math.max(0, timestamp - cycleOrigin);
+        const phase = (elapsed % cycleDuration) / cycleDuration;
+        if (phase < inspirationFraction) {
+          return {
+            name: "inspiration",
+            excursion: easeInOut(phase / inspirationFraction)
+          };
+        }
+        return {
+          name: "expiration",
+          excursion: 1 - easeInOut((phase - inspirationFraction) / (1 - inspirationFraction))
+        };
+      }
+
+      function setExpansionStatus(message, kind = "") {
+        status.className = "expansion-status" + (kind ? " " + kind : "");
+        status.textContent = message;
+      }
+
+      function drawMeter(x, depth, excursion, side) {
+        const top = 132;
+        const bottom = 372;
+        const height = bottom - top;
+        const fillHeight = Math.max(10, height * depth * excursion);
+        context.fillStyle = "#101b22";
+        context.fillRect(x - 17, top, 34, height);
+        context.strokeStyle = "#d7ca93";
+        context.lineWidth = 3;
+        context.strokeRect(x - 17, top, 34, height);
+
+        context.fillStyle = "#53a6b5";
+        context.fillRect(x - 11, bottom - fillHeight, 22, fillHeight);
+        context.fillStyle = "#aee6e6";
+        context.fillRect(x - 7, bottom - fillHeight, 6, fillHeight);
+
+        context.strokeStyle = "#f7edcf";
+        context.lineWidth = 2;
+        for (let index = 0; index <= 4; index += 1) {
+          const tickY = bottom - ((height / 4) * index);
+          context.beginPath();
+          context.moveTo(x + 18, tickY);
+          context.lineTo(x + 27, tickY);
+          context.stroke();
+        }
+
+        const peakY = bottom - (height * depth);
+        context.strokeStyle = "#ffdf72";
+        context.lineWidth = 3;
+        context.beginPath();
+        context.moveTo(x - 24, peakY);
+        context.lineTo(x + 24, peakY);
+        context.stroke();
+
+        context.fillStyle = "#f7edcf";
+        context.font = '700 11px "Courier New", monospace';
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+        context.fillText("DEPTH", x, 111);
+        context.fillText(side, x, 393);
+      }
+
+      function drawHemithorax(options) {
+        const {
+          medialX,
+          outerX,
+          direction,
+          depth,
+          excursion,
+          labelX,
+          label
+        } = options;
+        const displacement = 34 * depth * excursion;
+        const movingOuterX = outerX + (direction * displacement);
+        const lungCenterX = ((medialX + movingOuterX) / 2) - (direction * 6);
+        const lungWidth = Math.abs(medialX - movingOuterX) * 0.56;
+        const lungHeight = 215 + (26 * depth * excursion);
+        const diaphragmY = 356 + (15 * depth * excursion);
+
+        context.fillStyle = "#7d554b";
+        context.fillRect(medialX - 11, 88, 22, 302);
+        context.fillStyle = "#c89b78";
+        for (let y = 98; y < 382; y += 28) {
+          context.fillRect(medialX - 15, y, 30, 12);
+        }
+
+        context.fillStyle = "#c87859";
+        context.strokeStyle = "#5b3031";
+        context.lineWidth = 8;
+        context.beginPath();
+        context.moveTo(medialX, 76);
+        context.bezierCurveTo(
+          medialX + (direction * 58),
+          72,
+          movingOuterX - (direction * 18),
+          105,
+          movingOuterX,
+          175
+        );
+        context.bezierCurveTo(
+          movingOuterX + (direction * 8),
+          264,
+          movingOuterX - (direction * 10),
+          354,
+          medialX,
+          414
+        );
+        context.lineTo(medialX, 76);
+        context.closePath();
+        context.fill();
+        context.stroke();
+
+        context.fillStyle = "#5a8994";
+        context.strokeStyle = "#214953";
+        context.lineWidth = 6;
+        context.beginPath();
+        context.ellipse(
+          lungCenterX,
+          240,
+          lungWidth / 2,
+          lungHeight / 2,
+          direction * -0.06,
+          0,
+          Math.PI * 2
+        );
+        context.fill();
+        context.stroke();
+
+        context.fillStyle = "rgba(156,218,214,0.38)";
+        context.beginPath();
+        context.ellipse(
+          lungCenterX - (direction * 9),
+          222,
+          lungWidth * 0.20,
+          lungHeight * 0.35,
+          direction * -0.06,
+          0,
+          Math.PI * 2
+        );
+        context.fill();
+
+        context.strokeStyle = "#d9c696";
+        context.lineWidth = 5;
+        context.lineCap = "square";
+        for (let index = 0; index < 6; index += 1) {
+          const ribY = 126 + (index * 42);
+          context.beginPath();
+          context.moveTo(medialX, ribY);
+          context.quadraticCurveTo(
+            (medialX + movingOuterX) / 2,
+            ribY - 21,
+            movingOuterX - (direction * 10),
+            ribY + 15
+          );
+          context.stroke();
+        }
+
+        context.strokeStyle = "#ffe1ad";
+        context.lineWidth = 7;
+        context.beginPath();
+        context.moveTo(medialX, diaphragmY);
+        context.quadraticCurveTo(
+          (medialX + movingOuterX) / 2,
+          diaphragmY - 35,
+          movingOuterX - (direction * 12),
+          diaphragmY
+        );
+        context.stroke();
+
+        context.fillStyle = "rgba(17,24,32,0.82)";
+        context.fillRect(labelX - 79, 28, 158, 30);
+        context.fillStyle = "#f7edcf";
+        context.font = '700 13px "Courier New", monospace';
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+        context.fillText(label, labelX, 43);
+      }
+
+      function drawExpansionScene(timestamp) {
+        const breath = breathStateAt(timestamp);
+        context.imageSmoothingEnabled = false;
+        context.fillStyle = "#223a44";
+        context.fillRect(0, 0, canvasWidth, canvasHeight);
+        context.fillStyle = "#2c4b55";
+        for (let y = 0; y < canvasHeight; y += 20) {
+          for (let x = (y / 20) % 2 === 0 ? 0 : 10; x < canvasWidth; x += 40) {
+            context.fillRect(x, y, 20, 8);
+          }
+        }
+
+        context.fillStyle = "#111820";
+        context.fillRect(416, 0, 8, canvasHeight);
+        context.fillStyle = "#d7aa44";
+        context.fillRect(419, 0, 2, canvasHeight);
+
+        drawHemithorax({
+          medialX: 370,
+          outerX: 112,
+          direction: -1,
+          depth: rightDepth,
+          excursion: breath.excursion,
+          labelX: 230,
+          label: "PATIENT'S RIGHT"
+        });
+        drawHemithorax({
+          medialX: 470,
+          outerX: 728,
+          direction: 1,
+          depth: leftDepth,
+          excursion: breath.excursion,
+          labelX: 610,
+          label: "PATIENT'S LEFT"
+        });
+
+        drawMeter(48, rightDepth, breath.excursion, "R");
+        drawMeter(792, leftDepth, breath.excursion, "L");
+      }
+
+      function finishExpansionAssessment(selectedButton = null) {
+        if (finished) return;
+        finished = true;
+        const correctAnswer = symmetricDepth ? "symmetric" : "asymmetric";
+        answerButtons.forEach(button => {
+          button.disabled = true;
+          button.classList.toggle("correct", button.dataset.expansionAnswer === correctAnswer);
+        });
+        if (selectedButton) selectedButton.classList.add("correct");
+        setMinigameAutowin(null);
+        if (state.expansionFrame) {
+          cancelAnimationFrame(state.expansionFrame);
+          state.expansionFrame = null;
+        }
+        const finding = symmetricDepth
+          ? "Both hemithoraces expand to the same depth at " + respiratoryRate + " breaths per minute."
+          : "The hemithoraces move at the same rate but reach different expansion depths.";
+        setExpansionStatus(finding, "success");
+        playSfx("success");
+
+        setTimeout(() => {
+          if (!document.getElementById("pulmonaryExpansionGame")) return;
+          const recorded = recordPhysicalExamAction("pulmonary", "respiratoryEffort");
+          if (!recorded) {
+            closeModal();
+            return;
+          }
+          reportPhysicalExamMinigame(
+            "pulmonary",
+            recorded.action.result + (recorded.systemComplete ? " " + recorded.system.label + " examination complete." : "")
+          );
+        }, 1000);
+      }
+
+      function chooseExpansionAnswer(event) {
+        if (finished) return;
+        const button = event.currentTarget;
+        const chosenSymmetric = button.dataset.expansionAnswer === "symmetric";
+        if (chosenSymmetric === symmetricDepth) {
+          finishExpansionAssessment(button);
+          return;
+        }
+        answerButtons.forEach(item => item.classList.remove("wrong"));
+        button.classList.add("wrong");
+        setExpansionStatus("The respiratory rhythm is shared. Compare the peak height reached by the right and left depth meters.", "wrong");
+        playSfx("click");
+      }
+
+      function expansionTick(frameTime) {
+        if (finished || !document.getElementById("pulmonaryExpansionGame")) return;
+        const breath = breathStateAt(frameTime);
+        if (breath.name !== lastRenderedPhase) {
+          lastRenderedPhase = breath.name;
+          phaseLabel.textContent = breath.name === "inspiration" ? "Inspiration: chest walls expanding" : "Expiration: chest walls returning";
+        }
+        drawExpansionScene(frameTime);
+        state.expansionFrame = requestAnimationFrame(expansionTick);
+      }
+
+      answerButtons.forEach(button => button.addEventListener("click", chooseExpansionAnswer));
+      setMinigameAutowin(() => finishExpansionAssessment());
+      state.expansionFrame = requestAnimationFrame(expansionTick);
+      answerButtons[0].focus({ preventScroll: true });
+    }
+
+    function openAbdominalInspectionGame() {
+      const canvasWidth = 840;
+      const canvasHeight = 500;
+      const brushRadius = 46;
+      const completionThreshold = 0.66;
+      const quadrants = [
+        {
+          id: "ruq",
+          label: "RUQ",
+          x0: 240,
+          y0: 132,
+          x1: 420,
+          y1: 276,
+          finding: "RUQ inspected: smooth contour without visible bulge or discoloration.",
+          samples: [],
+          complete: false
+        },
+        {
+          id: "luq",
+          label: "LUQ",
+          x0: 420,
+          y0: 132,
+          x1: 600,
+          y1: 276,
+          finding: "LUQ inspected: no visible scar, bruising, or asymmetry.",
+          samples: [],
+          complete: false
+        },
+        {
+          id: "rlq",
+          label: "RLQ",
+          x0: 240,
+          y0: 276,
+          x1: 420,
+          y1: 420,
+          finding: "RLQ inspected: no distention or focal protrusion.",
+          samples: [],
+          complete: false
+        },
+        {
+          id: "llq",
+          label: "LLQ",
+          x0: 420,
+          y0: 276,
+          x1: 600,
+          y1: 420,
+          finding: "LLQ inspected: skin is intact and the contour remains symmetric.",
+          samples: [],
+          complete: false
+        }
+      ];
+      let scratchPointerId = null;
+      let finished = false;
+
+      quadrants.forEach(quadrant => {
+        for (let y = quadrant.y0 + 9; y < quadrant.y1; y += 14) {
+          for (let x = quadrant.x0 + 9; x < quadrant.x1; x += 14) {
+            quadrant.samples.push({ x, y, revealed: false });
+          }
+        }
+      });
+
+      openModal(`
+        <section class="modal-card abdominal-inspection-card" id="abdominalInspectionGame" role="dialog" aria-modal="true" aria-labelledby="abdominalInspectionTitle">
+          <div class="modal-header"><h2 id="abdominalInspectionTitle">Abdominal Inspection</h2><button type="button" data-close aria-label="Close">X</button></div>
+          <p class="abdominal-instructions">Press and drag across the translucent inspection layer. Expose enough of each quadrant to assess contour, symmetry, scars, and visible skin changes.</p>
+          <div class="abdominal-quadrant-strip" id="abdominalQuadrantStrip">
+            ${quadrants.map(quadrant => `
+              <div class="abdominal-quadrant-meter" data-abdominal-meter="${quadrant.id}">
+                <strong>${quadrant.label}</strong><span>0%</span>
+              </div>
+            `).join("")}
+          </div>
+          <div class="abdominal-stage" id="abdominalStage">
+            <canvas class="abdominal-base-canvas" id="abdominalBaseCanvas" width="${canvasWidth}" height="${canvasHeight}" aria-hidden="true"></canvas>
+            <canvas class="abdominal-scratch-canvas" id="abdominalScratchCanvas" width="${canvasWidth}" height="${canvasHeight}" tabindex="0" aria-describedby="abdominalStatus" aria-label="Scratch-reveal examination of the four abdominal quadrants"></canvas>
+            <div class="abdominal-brush-ring" id="abdominalBrushRing" aria-hidden="true"></div>
+          </div>
+          <p class="abdominal-status" id="abdominalStatus" aria-live="polite">Begin with any quadrant and inspect the entire visible abdomen.</p>
+        </section>
+      `);
+
+      document.querySelector(".game-root").classList.add("abdominal-testing");
+      const stage = document.getElementById("abdominalStage");
+      const baseCanvas = document.getElementById("abdominalBaseCanvas");
+      const scratchCanvas = document.getElementById("abdominalScratchCanvas");
+      const baseContext = baseCanvas.getContext("2d");
+      const scratchContext = scratchCanvas.getContext("2d");
+      const brushRing = document.getElementById("abdominalBrushRing");
+      const status = document.getElementById("abdominalStatus");
+
+      function drawAbdominalBase() {
+        baseContext.imageSmoothingEnabled = false;
+        baseContext.fillStyle = "#315867";
+        baseContext.fillRect(0, 0, canvasWidth, canvasHeight);
+        baseContext.fillStyle = "#3d6c78";
+        for (let y = 0; y < canvasHeight; y += 20) {
+          for (let x = (y / 20) % 2 === 0 ? 0 : 10; x < canvasWidth; x += 40) {
+            baseContext.fillRect(x, y, 20, 8);
+          }
+        }
+
+        baseContext.fillStyle = "#b96950";
+        baseContext.strokeStyle = "#542d31";
+        baseContext.lineWidth = 8;
+        baseContext.beginPath();
+        baseContext.moveTo(286, 72);
+        baseContext.bezierCurveTo(242, 90, 222, 152, 230, 230);
+        baseContext.lineTo(244, 430);
+        baseContext.bezierCurveTo(300, 466, 540, 466, 596, 430);
+        baseContext.lineTo(610, 230);
+        baseContext.bezierCurveTo(618, 152, 598, 90, 554, 72);
+        baseContext.closePath();
+        baseContext.fill();
+        baseContext.stroke();
+
+        baseContext.fillStyle = "#ca7858";
+        baseContext.beginPath();
+        baseContext.moveTo(301, 93);
+        baseContext.bezierCurveTo(268, 132, 260, 218, 270, 315);
+        baseContext.bezierCurveTo(277, 392, 318, 425, 420, 432);
+        baseContext.bezierCurveTo(522, 425, 563, 392, 570, 315);
+        baseContext.bezierCurveTo(580, 218, 572, 132, 539, 93);
+        baseContext.closePath();
+        baseContext.fill();
+
+        baseContext.fillStyle = "#397b7c";
+        baseContext.fillRect(270, 62, 300, 70);
+        baseContext.fillStyle = "#255a60";
+        baseContext.fillRect(270, 112, 300, 20);
+        baseContext.fillStyle = "#62a4a0";
+        for (let x = 284; x < 558; x += 24) baseContext.fillRect(x, 75, 12, 8);
+
+        baseContext.fillStyle = "#6a526c";
+        baseContext.fillRect(238, 414, 364, 86);
+        baseContext.fillStyle = "#4b3153";
+        baseContext.fillRect(252, 428, 336, 72);
+        baseContext.fillStyle = "#8e7190";
+        for (let x = 266; x < 580; x += 32) baseContext.fillRect(x, 444, 18, 8);
+
+        baseContext.strokeStyle = "rgba(111,53,44,0.55)";
+        baseContext.lineWidth = 5;
+        baseContext.beginPath();
+        baseContext.moveTo(300, 155);
+        baseContext.quadraticCurveTo(345, 188, 400, 181);
+        baseContext.moveTo(540, 155);
+        baseContext.quadraticCurveTo(495, 188, 440, 181);
+        baseContext.stroke();
+
+        baseContext.strokeStyle = "rgba(147,76,56,0.55)";
+        baseContext.lineWidth = 3;
+        baseContext.beginPath();
+        baseContext.moveTo(420, 185);
+        baseContext.lineTo(420, 404);
+        baseContext.moveTo(304, 276);
+        baseContext.quadraticCurveTo(420, 287, 536, 276);
+        baseContext.stroke();
+
+        baseContext.fillStyle = "#7b3d35";
+        baseContext.fillRect(411, 282, 18, 12);
+        baseContext.fillStyle = "#4f2729";
+        baseContext.fillRect(416, 285, 8, 7);
+
+        baseContext.setLineDash([9, 8]);
+        baseContext.strokeStyle = "rgba(255,243,191,0.48)";
+        baseContext.lineWidth = 2;
+        baseContext.beginPath();
+        baseContext.moveTo(420, 132);
+        baseContext.lineTo(420, 420);
+        baseContext.moveTo(240, 276);
+        baseContext.lineTo(600, 276);
+        baseContext.stroke();
+        baseContext.setLineDash([]);
+
+        baseContext.fillStyle = "rgba(33,25,35,0.72)";
+        baseContext.font = '700 15px "Courier New", monospace';
+        baseContext.textAlign = "center";
+        baseContext.textBaseline = "middle";
+        baseContext.fillText("RUQ", 330, 210);
+        baseContext.fillText("LUQ", 510, 210);
+        baseContext.fillText("RLQ", 330, 345);
+        baseContext.fillText("LLQ", 510, 345);
+
+        baseContext.fillStyle = "#f7edcf";
+        baseContext.fillRect(245, 104, 128, 24);
+        baseContext.fillRect(467, 104, 128, 24);
+        baseContext.fillStyle = "#301925";
+        baseContext.font = '700 11px "Courier New", monospace';
+        baseContext.fillText("PATIENT'S RIGHT", 309, 116);
+        baseContext.fillText("PATIENT'S LEFT", 531, 116);
+      }
+
+      function drawInspectionLayer() {
+        scratchContext.imageSmoothingEnabled = false;
+        scratchContext.clearRect(0, 0, canvasWidth, canvasHeight);
+        scratchContext.fillStyle = "rgba(83,96,103,0.48)";
+        scratchContext.fillRect(225, 118, 390, 316);
+        scratchContext.fillStyle = "rgba(207,216,213,0.13)";
+        for (let y = 120; y < 434; y += 18) {
+          for (let x = 228 + ((y / 18) % 2 === 0 ? 0 : 9); x < 612; x += 36) {
+            scratchContext.fillRect(x, y, 18, 7);
+          }
+        }
+        scratchContext.strokeStyle = "rgba(247,237,207,0.58)";
+        scratchContext.lineWidth = 3;
+        scratchContext.setLineDash([10, 8]);
+        scratchContext.beginPath();
+        scratchContext.moveTo(420, 124);
+        scratchContext.lineTo(420, 428);
+        scratchContext.moveTo(231, 276);
+        scratchContext.lineTo(609, 276);
+        scratchContext.stroke();
+        scratchContext.setLineDash([]);
+      }
+
+      function pointerCoordinates(event) {
+        const bounds = scratchCanvas.getBoundingClientRect();
+        return {
+          x: ((event.clientX - bounds.left) / bounds.width) * canvasWidth,
+          y: ((event.clientY - bounds.top) / bounds.height) * canvasHeight,
+          displayX: event.clientX - bounds.left,
+          displayY: event.clientY - bounds.top,
+          scale: bounds.width / canvasWidth
+        };
+      }
+
+      function positionBrush(point) {
+        const diameter = brushRadius * 2 * point.scale;
+        brushRing.style.left = point.displayX + "px";
+        brushRing.style.top = point.displayY + "px";
+        brushRing.style.width = diameter + "px";
+        brushRing.style.height = diameter + "px";
+        brushRing.classList.add("visible");
+      }
+
+      function setAbdominalStatus(message, success = false) {
+        status.className = "abdominal-status" + (success ? " success" : "");
+        status.textContent = message;
+      }
+
+      function quadrantPercent(quadrant) {
+        const revealed = quadrant.samples.filter(sample => sample.revealed).length;
+        return quadrant.samples.length ? revealed / quadrant.samples.length : 0;
+      }
+
+      function renderQuadrantProgress() {
+        quadrants.forEach(quadrant => {
+          const meter = document.querySelector('[data-abdominal-meter="' + quadrant.id + '"]');
+          const percent = quadrant.complete ? 100 : Math.round(quadrantPercent(quadrant) * 100);
+          meter.classList.toggle("complete", quadrant.complete);
+          meter.querySelector("span").textContent = quadrant.complete ? "INSPECTED" : percent + "%";
+        });
+      }
+
+      function completeQuadrant(quadrant) {
+        if (quadrant.complete) return;
+        quadrant.complete = true;
+        quadrant.samples.forEach(sample => { sample.revealed = true; });
+        scratchContext.clearRect(
+          quadrant.x0 - 3,
+          quadrant.y0 - 3,
+          (quadrant.x1 - quadrant.x0) + 6,
+          (quadrant.y1 - quadrant.y0) + 6
+        );
+        playSfx("click");
+        setAbdominalStatus(quadrant.finding, true);
+      }
+
+      function scratchAt(point) {
+        if (finished) return;
+        scratchContext.save();
+        scratchContext.globalCompositeOperation = "destination-out";
+        scratchContext.fillStyle = "#000";
+        scratchContext.beginPath();
+        scratchContext.arc(point.x, point.y, brushRadius, 0, Math.PI * 2);
+        scratchContext.fill();
+        scratchContext.restore();
+
+        let sampleChanged = false;
+        quadrants.forEach(quadrant => {
+          if (quadrant.complete) return;
+          quadrant.samples.forEach(sample => {
+            if (sample.revealed) return;
+            if (Math.hypot(sample.x - point.x, sample.y - point.y) <= brushRadius) {
+              sample.revealed = true;
+              sampleChanged = true;
+            }
+          });
+          if (quadrantPercent(quadrant) >= completionThreshold) completeQuadrant(quadrant);
+        });
+        if (!sampleChanged) return;
+        renderQuadrantProgress();
+        if (quadrants.every(quadrant => quadrant.complete)) finishAbdominalInspection();
+      }
+
+      function beginScratch(event) {
+        if (finished || event.button !== 0) return;
+        event.preventDefault();
+        scratchPointerId = event.pointerId;
+        scratchCanvas.setPointerCapture(event.pointerId);
+        stage.classList.add("scratching");
+        const point = pointerCoordinates(event);
+        positionBrush(point);
+        scratchAt(point);
+      }
+
+      function moveScratch(event) {
+        const point = pointerCoordinates(event);
+        positionBrush(point);
+        if (scratchPointerId !== event.pointerId || finished) return;
+        event.preventDefault();
+        scratchAt(point);
+      }
+
+      function endScratch(event) {
+        if (scratchPointerId !== event.pointerId) return;
+        scratchPointerId = null;
+        stage.classList.remove("scratching");
+        brushRing.classList.remove("visible");
+        if (scratchCanvas.hasPointerCapture(event.pointerId)) scratchCanvas.releasePointerCapture(event.pointerId);
+      }
+
+      function cancelScratch(event) {
+        if (scratchPointerId !== event.pointerId) return;
+        scratchPointerId = null;
+        stage.classList.remove("scratching");
+        brushRing.classList.remove("visible");
+      }
+
+      function finishAbdominalInspection() {
+        if (finished) return;
+        finished = true;
+        const activePointerId = scratchPointerId;
+        scratchPointerId = null;
+        stage.classList.remove("scratching");
+        brushRing.classList.remove("visible");
+        if (activePointerId !== null && scratchCanvas.hasPointerCapture(activePointerId)) {
+          scratchCanvas.releasePointerCapture(activePointerId);
+        }
+        quadrants.forEach(quadrant => {
+          quadrant.complete = true;
+          quadrant.samples.forEach(sample => { sample.revealed = true; });
+        });
+        scratchContext.clearRect(0, 0, canvasWidth, canvasHeight);
+        renderQuadrantProgress();
+        setMinigameAutowin(null);
+        setAbdominalStatus("All four quadrants are visible. Contour is symmetric without distention, visible mass, or concerning skin change.", true);
+        playSfx("success");
+
+        setTimeout(() => {
+          if (!document.getElementById("abdominalInspectionGame")) return;
+          const recorded = recordPhysicalExamAction("abdominal", "abdominalInspection");
+          if (!recorded) {
+            closeModal();
+            return;
+          }
+          reportPhysicalExamMinigame(
+            "abdominal",
+            recorded.action.result + (recorded.systemComplete ? " " + recorded.system.label + " examination complete." : "")
+          );
+        }, 1000);
+      }
+
+      drawAbdominalBase();
+      drawInspectionLayer();
+      renderQuadrantProgress();
+      scratchCanvas.addEventListener("pointerenter", event => positionBrush(pointerCoordinates(event)));
+      scratchCanvas.addEventListener("pointermove", moveScratch);
+      scratchCanvas.addEventListener("pointerleave", () => {
+        if (scratchPointerId === null) brushRing.classList.remove("visible");
+      });
+      scratchCanvas.addEventListener("pointerdown", beginScratch);
+      scratchCanvas.addEventListener("pointerup", endScratch);
+      scratchCanvas.addEventListener("pointercancel", cancelScratch);
+      scratchCanvas.addEventListener("lostpointercapture", cancelScratch);
+      setMinigameAutowin(finishAbdominalInspection);
+      scratchCanvas.focus({ preventScroll: true });
+    }
+
+    function openCardiacAuscultationGame() {
+      const canvasWidth = 840;
+      const canvasHeight = 500;
+      const cycleDuration = 60000 / 80;
+      const diastoleFraction = 0.60;
+      const cycleOrigin = performance.now();
+      const pathTolerance = 58;
+      const sharedNodes = [
+        null,
+        { x: 335, y: 190, label: "right atrium" },
+        { x: 365, y: 335, label: "right ventricle" },
+        { x: 700, y: 255, label: "lungs" },
+        { x: 520, y: 190, label: "left atrium" },
+        { x: 500, y: 335, label: "left ventricle" },
+        { x: 650, y: 72, label: "aorta" }
+      ];
+      const valves = {
+        1: { label: "Tricuspid", short: "TV", opensDuring: "diastole", at: 0.50 },
+        2: { label: "Pulmonic", short: "PV", opensDuring: "systole", at: 0.46 },
+        4: { label: "Mitral", short: "MV", opensDuring: "diastole", at: 0.50 },
+        5: { label: "Aortic", short: "AV", opensDuring: "systole", at: 0.48 }
+      };
+      const cells = [
+        {
+          id: "ivcOne",
+          number: 1,
+          originName: "IVC",
+          origin: { x: 130, y: 405 },
+          offset: { x: -11, y: -7 },
+          stage: 0,
+          progress: 0,
+          passedGate: false,
+          done: false
+        },
+        {
+          id: "ivcTwo",
+          number: 2,
+          originName: "IVC",
+          origin: { x: 158, y: 440 },
+          offset: { x: 11, y: 8 },
+          stage: 0,
+          progress: 0,
+          passedGate: false,
+          done: false
+        },
+        {
+          id: "svc",
+          number: 3,
+          originName: "SVC",
+          origin: { x: 145, y: 68 },
+          offset: { x: 0, y: 0 },
+          stage: 0,
+          progress: 0,
+          passedGate: false,
+          done: false
+        }
+      ];
+      let dragging = null;
+      let finished = false;
+      let lastDiastoleSoundCycle = -1;
+      let lastSystoleSoundCycle = -1;
+      let lastRenderedPhase = "";
+
+      openModal(`
+        <section class="modal-card cardiac-card" id="cardiacGame" role="dialog" aria-modal="true" aria-labelledby="cardiacTitle">
+          <div class="modal-header"><h2 id="cardiacTitle">Cardiac Auscultation: Follow the Flow</h2><button type="button" data-close aria-label="Close">X</button></div>
+          <p class="cardiac-instructions">Guide all three red cells through one-way circulation. Drag from venous return through the right heart, lungs, left heart, and aorta. A closed valve will hold the cell until the cardiac phase changes.</p>
+          <div class="cardiac-rhythm-hud" aria-live="polite">
+            <div class="cardiac-rate"><span class="cardiac-beat-lamp" id="cardiacBeatLamp" aria-hidden="true">&#9829;</span><span>80 BPM</span></div>
+            <div class="cardiac-phase" id="cardiacPhase">Diastole</div>
+            <div class="cardiac-valves" id="cardiacValveSummary">Tricuspid + mitral open</div>
+          </div>
+          <div class="cardiac-stage" id="cardiacStage">
+            <canvas id="cardiacCanvas" width="${canvasWidth}" height="${canvasHeight}" tabindex="0" aria-describedby="cardiacStatus" aria-label="Four-chamber heart circulation drag game"></canvas>
+          </div>
+          <div class="cardiac-progress-line">
+            <span id="cardiacProgressText">Cells delivered 0 / 3</span>
+            <div class="cardiac-progress-pips" id="cardiacProgressPips" aria-hidden="true"><span></span><span></span><span></span></div>
+          </div>
+          <p class="cardiac-status" id="cardiacStatus" aria-live="polite">Select any red cell and drag it in the direction of the arrows.</p>
+        </section>
+      `);
+
+      document.querySelector(".game-root").classList.add("cardiac-testing");
+      const stage = document.getElementById("cardiacStage");
+      const canvas = document.getElementById("cardiacCanvas");
+      const context = canvas.getContext("2d");
+      const beatLamp = document.getElementById("cardiacBeatLamp");
+      const phaseLabel = document.getElementById("cardiacPhase");
+      const valveSummary = document.getElementById("cardiacValveSummary");
+      const progressText = document.getElementById("cardiacProgressText");
+      const status = document.getElementById("cardiacStatus");
+
+      function clamp(value, minimum, maximum) {
+        return Math.max(minimum, Math.min(maximum, value));
+      }
+
+      function cycleStateAt(timestamp) {
+        const elapsed = Math.max(0, timestamp - cycleOrigin);
+        const cycleIndex = Math.floor(elapsed / cycleDuration);
+        const phase = (elapsed % cycleDuration) / cycleDuration;
+        const name = phase < diastoleFraction ? "diastole" : "systole";
+        return { phase, name, cycleIndex };
+      }
+
+      function valveIsOpen(valve, phaseName) {
+        return valve.opensDuring === phaseName;
+      }
+
+      function routePoint(cell, index) {
+        if (index === 0) return cell.origin;
+        const base = sharedNodes[index];
+        const offsetScale = index === 3 || index === 6 ? 0.62 : 1;
+        return {
+          x: base.x + (cell.offset.x * offsetScale),
+          y: base.y + (cell.offset.y * offsetScale)
+        };
+      }
+
+      function cellPosition(cell) {
+        if (cell.stage >= sharedNodes.length - 1) return routePoint(cell, sharedNodes.length - 1);
+        const start = routePoint(cell, cell.stage);
+        const end = routePoint(cell, cell.stage + 1);
+        return {
+          x: start.x + ((end.x - start.x) * cell.progress),
+          y: start.y + ((end.y - start.y) * cell.progress)
+        };
+      }
+
+      function setCardiacStatus(message, kind = "") {
+        if (status.textContent === message && status.dataset.kind === kind) return;
+        status.className = "cardiac-status" + (kind ? " " + kind : "");
+        status.dataset.kind = kind;
+        status.textContent = message;
+      }
+
+      function renderCardiacProgress() {
+        const delivered = cells.filter(cell => cell.done).length;
+        progressText.textContent = "Cells delivered " + delivered + " / " + cells.length;
+        document.querySelectorAll("#cardiacProgressPips span").forEach((pip, index) => {
+          pip.classList.toggle("lit", index < delivered);
+        });
+      }
+
+      function playHeartSound(kind) {
+        const audioContext = musicState.context;
+        if (!audioContext || audioContext.state !== "running" || state.sfxVolume <= 0) return;
+        const now = audioContext.currentTime;
+        if (kind === "s1") {
+          scheduleSfxTone(64, now, 0.09, 0.08, "sine");
+          scheduleSfxTone(78, now + 0.035, 0.075, 0.055, "triangle");
+          return;
+        }
+        scheduleSfxTone(92, now, 0.065, 0.07, "sine");
+        scheduleSfxTone(116, now + 0.026, 0.05, 0.05, "triangle");
+      }
+
+      function drawFlow(start, end, color) {
+        context.lineCap = "square";
+        context.lineJoin = "bevel";
+        context.strokeStyle = "#111820";
+        context.lineWidth = 30;
+        context.beginPath();
+        context.moveTo(start.x, start.y);
+        context.lineTo(end.x, end.y);
+        context.stroke();
+        context.strokeStyle = color;
+        context.lineWidth = 19;
+        context.beginPath();
+        context.moveTo(start.x, start.y);
+        context.lineTo(end.x, end.y);
+        context.stroke();
+      }
+
+      function drawArrow(start, end, color, position = 0.72) {
+        const x = start.x + ((end.x - start.x) * position);
+        const y = start.y + ((end.y - start.y) * position);
+        const angle = Math.atan2(end.y - start.y, end.x - start.x);
+        context.save();
+        context.translate(x, y);
+        context.rotate(angle);
+        context.fillStyle = color;
+        context.beginPath();
+        context.moveTo(13, 0);
+        context.lineTo(-8, -9);
+        context.lineTo(-8, 9);
+        context.closePath();
+        context.fill();
+        context.restore();
+      }
+
+      function drawLabel(lines, x, y, width) {
+        const height = lines.length * 15 + 8;
+        context.fillStyle = "rgba(17,24,32,0.82)";
+        context.fillRect(x - (width / 2), y - 13, width, height);
+        context.fillStyle = "#f7edcf";
+        context.font = '700 12px "Courier New", monospace';
+        context.textAlign = "center";
+        context.textBaseline = "top";
+        lines.forEach((line, index) => context.fillText(line, x, y - 9 + (index * 15)));
+      }
+
+      function drawValve(stageIndex, valve, phaseName) {
+        const start = sharedNodes[stageIndex];
+        const end = sharedNodes[stageIndex + 1];
+        const x = start.x + ((end.x - start.x) * valve.at);
+        const y = start.y + ((end.y - start.y) * valve.at);
+        const angle = Math.atan2(end.y - start.y, end.x - start.x);
+        const open = valveIsOpen(valve, phaseName);
+        context.save();
+        context.translate(x, y);
+        context.rotate(angle);
+        context.strokeStyle = open ? "#7dda91" : "#ffcf5c";
+        context.lineWidth = 7;
+        context.lineCap = "square";
+        context.beginPath();
+        if (open) {
+          context.moveTo(-9, -16);
+          context.lineTo(9, -7);
+          context.moveTo(-9, 16);
+          context.lineTo(9, 7);
+        } else {
+          context.moveTo(0, -20);
+          context.lineTo(0, -2);
+          context.moveTo(0, 2);
+          context.lineTo(0, 20);
+        }
+        context.stroke();
+        context.restore();
+
+        const normalX = -Math.sin(angle);
+        const normalY = Math.cos(angle);
+        const labelX = x + (normalX * 30);
+        const labelY = y + (normalY * 30);
+        context.fillStyle = open ? "#285f39" : "#6b3137";
+        context.fillRect(labelX - 15, labelY - 9, 30, 18);
+        context.fillStyle = "#fff3bf";
+        context.font = '700 11px "Courier New", monospace';
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+        context.fillText(valve.short, labelX, labelY);
+      }
+
+      function drawBloodCell(cell, selected) {
+        const point = cellPosition(cell);
+        const bright = cell.stage >= 3;
+        if (selected) {
+          context.strokeStyle = "#ffe175";
+          context.lineWidth = 3;
+          context.strokeRect(point.x - 20, point.y - 20, 40, 40);
+        }
+        context.fillStyle = "#561d2a";
+        context.fillRect(point.x - 14, point.y - 10, 28, 20);
+        context.fillRect(point.x - 10, point.y - 14, 20, 28);
+        context.fillStyle = bright ? "#f0575f" : "#c23a49";
+        context.fillRect(point.x - 11, point.y - 8, 22, 16);
+        context.fillRect(point.x - 8, point.y - 11, 16, 22);
+        context.fillStyle = bright ? "#9e2737" : "#7d2435";
+        context.fillRect(point.x - 6, point.y - 4, 12, 8);
+        context.fillStyle = "#fff3bf";
+        context.font = '700 10px "Courier New", monospace';
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+        context.fillText(String(cell.number), point.x, point.y);
+      }
+
+      function drawHeartScene(timestamp) {
+        const cycle = cycleStateAt(timestamp);
+        context.imageSmoothingEnabled = false;
+        context.fillStyle = "#182831";
+        context.fillRect(0, 0, canvasWidth, canvasHeight);
+
+        context.fillStyle = "#213b46";
+        for (let y = 0; y < canvasHeight; y += 24) {
+          for (let x = (y / 24) % 2 === 0 ? 0 : 12; x < canvasWidth; x += 48) {
+            context.fillRect(x, y, 24, 8);
+          }
+        }
+
+        context.fillStyle = "#618b9c";
+        context.beginPath();
+        context.ellipse(674, 215, 43, 72, -0.12, 0, Math.PI * 2);
+        context.fill();
+        context.beginPath();
+        context.ellipse(738, 215, 43, 72, 0.12, 0, Math.PI * 2);
+        context.fill();
+        context.strokeStyle = "#d5c88d";
+        context.lineWidth = 6;
+        context.beginPath();
+        context.moveTo(706, 116);
+        context.lineTo(706, 170);
+        context.moveTo(706, 167);
+        context.lineTo(674, 194);
+        context.moveTo(706, 167);
+        context.lineTo(738, 194);
+        context.stroke();
+
+        context.fillStyle = "#6f273b";
+        context.strokeStyle = "#2a111b";
+        context.lineWidth = 10;
+        context.beginPath();
+        context.moveTo(425, 105);
+        context.bezierCurveTo(350, 55, 260, 105, 270, 218);
+        context.bezierCurveTo(280, 345, 386, 437, 438, 464);
+        context.bezierCurveTo(505, 418, 615, 318, 608, 190);
+        context.bezierCurveTo(603, 86, 500, 65, 425, 105);
+        context.closePath();
+        context.fill();
+        context.stroke();
+
+        context.fillStyle = "#315f83";
+        context.strokeStyle = "#163349";
+        context.lineWidth = 6;
+        context.beginPath();
+        context.ellipse(335, 190, 72, 66, -0.08, 0, Math.PI * 2);
+        context.fill();
+        context.stroke();
+        context.beginPath();
+        context.ellipse(365, 335, 78, 89, -0.16, 0, Math.PI * 2);
+        context.fill();
+        context.stroke();
+
+        context.fillStyle = "#a83b50";
+        context.strokeStyle = "#5e1e30";
+        context.beginPath();
+        context.ellipse(520, 190, 64, 62, 0.08, 0, Math.PI * 2);
+        context.fill();
+        context.stroke();
+        context.fillStyle = "#8f2d43";
+        context.beginPath();
+        context.ellipse(500, 335, 77, 96, 0.15, 0, Math.PI * 2);
+        context.fill();
+        context.stroke();
+
+        const blue = "#3d91b5";
+        const red = "#c94755";
+        const svc = { x: 145, y: 68 };
+        const ivcOne = { x: 130, y: 405 };
+        const ivcTwo = { x: 158, y: 440 };
+        drawFlow(svc, sharedNodes[1], blue);
+        drawFlow(ivcOne, sharedNodes[1], blue);
+        drawFlow(ivcTwo, sharedNodes[1], blue);
+        drawFlow(sharedNodes[1], sharedNodes[2], blue);
+        drawFlow(sharedNodes[2], sharedNodes[3], blue);
+        drawFlow(sharedNodes[3], sharedNodes[4], red);
+        drawFlow(sharedNodes[4], sharedNodes[5], red);
+        drawFlow(sharedNodes[5], sharedNodes[6], red);
+
+        drawArrow(svc, sharedNodes[1], "#d9f4ff", 0.58);
+        drawArrow(ivcOne, sharedNodes[1], "#d9f4ff", 0.54);
+        drawArrow(sharedNodes[1], sharedNodes[2], "#d9f4ff", 0.77);
+        drawArrow(sharedNodes[2], sharedNodes[3], "#d9f4ff", 0.72);
+        drawArrow(sharedNodes[3], sharedNodes[4], "#ffe0d9", 0.70);
+        drawArrow(sharedNodes[4], sharedNodes[5], "#ffe0d9", 0.76);
+        drawArrow(sharedNodes[5], sharedNodes[6], "#ffe0d9", 0.76);
+
+        drawLabel(["RIGHT", "ATRIUM"], 321, 132, 82);
+        drawLabel(["RIGHT", "VENTRICLE"], 342, 372, 100);
+        drawLabel(["LEFT", "ATRIUM"], 538, 132, 82);
+        drawLabel(["LEFT", "VENTRICLE"], 519, 372, 100);
+        drawLabel(["LUNGS"], 706, 119, 62);
+        drawLabel(["SVC"], 78, 45, 50);
+        drawLabel(["IVC"], 78, 430, 50);
+        drawLabel(["AORTA"], 650, 25, 68);
+
+        Object.entries(valves).forEach(([stageIndex, valve]) => {
+          drawValve(Number(stageIndex), valve, cycle.name);
+        });
+
+        context.fillStyle = "#f7edcf";
+        context.font = '700 11px "Courier New", monospace';
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+        context.fillText("O2", 674, 214);
+        context.fillText("O2", 738, 214);
+
+        cells.forEach(cell => drawBloodCell(cell, Boolean(dragging && dragging.cell === cell)));
+      }
+
+      function pointerCoordinates(event) {
+        const bounds = canvas.getBoundingClientRect();
+        return {
+          x: ((event.clientX - bounds.left) / bounds.width) * canvasWidth,
+          y: ((event.clientY - bounds.top) / bounds.height) * canvasHeight
+        };
+      }
+
+      function projectOntoSegment(point, start, end) {
+        const dx = end.x - start.x;
+        const dy = end.y - start.y;
+        const lengthSquared = (dx * dx) + (dy * dy);
+        const raw = lengthSquared
+          ? (((point.x - start.x) * dx) + ((point.y - start.y) * dy)) / lengthSquared
+          : 0;
+        const progress = clamp(raw, 0, 1);
+        const projectedX = start.x + (dx * progress);
+        const projectedY = start.y + (dy * progress);
+        return {
+          progress,
+          distance: Math.hypot(point.x - projectedX, point.y - projectedY)
+        };
+      }
+
+      function describeCellLocation(cell) {
+        if (cell.stage === 0) return cell.originName;
+        return sharedNodes[Math.min(cell.stage, sharedNodes.length - 1)].label;
+      }
+
+      function updateDraggedCell(timestamp) {
+        if (!dragging || dragging.cell.done) return;
+        const cell = dragging.cell;
+        const start = routePoint(cell, cell.stage);
+        const end = routePoint(cell, cell.stage + 1);
+        const projection = projectOntoSegment(dragging.pointer, start, end);
+        if (projection.distance > pathTolerance) {
+          setCardiacStatus("Keep the red cell over the highlighted circulation path.", "blocked");
+          return;
+        }
+
+        const wantedProgress = Math.max(cell.progress, projection.progress);
+        const valve = valves[cell.stage];
+        const phase = cycleStateAt(timestamp);
+        if (valve && !cell.passedGate) {
+          const gateOpen = valveIsOpen(valve, phase.name);
+          if (!gateOpen) {
+            const stoppingPoint = valve.at - 0.09;
+            cell.progress = Math.max(cell.progress, Math.min(wantedProgress, stoppingPoint));
+            if (projection.progress >= stoppingPoint) {
+              setCardiacStatus(
+                valve.label + " valve is closed during " + phase.name + ". Hold the cell here until " + valve.opensDuring + ".",
+                "blocked"
+              );
+            }
+            return;
+          }
+          if (wantedProgress >= valve.at) {
+            cell.passedGate = true;
+            setCardiacStatus(cell.number + " passed the " + valve.label.toLowerCase() + " valve during " + phase.name + ".");
+            playSfx("click");
+          }
+        }
+
+        cell.progress = wantedProgress;
+        if (cell.progress < 0.93) return;
+
+        cell.stage += 1;
+        cell.progress = 0;
+        cell.passedGate = false;
+        if (cell.stage >= sharedNodes.length - 1) {
+          cell.stage = sharedNodes.length - 1;
+          cell.done = true;
+          const deliveredPointerId = dragging.pointerId;
+          dragging = null;
+          stage.classList.remove("dragging");
+          if (canvas.hasPointerCapture(deliveredPointerId)) canvas.releasePointerCapture(deliveredPointerId);
+          renderCardiacProgress();
+          playSfx("success");
+          const delivered = cells.filter(item => item.done).length;
+          if (delivered === cells.length) {
+            finishCardiacGame();
+          } else {
+            setCardiacStatus("Cell " + cell.number + " reached the aorta. Select another red cell.", "success");
+          }
+          return;
+        }
+
+        const arrival = sharedNodes[cell.stage].label;
+        if (cell.stage === 3) {
+          setCardiacStatus("Cell " + cell.number + " reached the lungs and is now oxygenated. Continue toward the left atrium.", "success");
+        } else {
+          setCardiacStatus("Cell " + cell.number + " reached the " + arrival + ". Continue in the direction of the arrows.");
+        }
+      }
+
+      function beginCardiacDrag(event) {
+        if (finished || event.button !== 0) return;
+        const point = pointerCoordinates(event);
+        const cell = cells
+          .filter(item => !item.done)
+          .map(item => ({ item, distance: Math.hypot(point.x - cellPosition(item).x, point.y - cellPosition(item).y) }))
+          .sort((a, b) => a.distance - b.distance)[0];
+        if (!cell || cell.distance > 28) {
+          setCardiacStatus("Select one of the numbered red cells before tracing the circulation path.", "blocked");
+          return;
+        }
+
+        event.preventDefault();
+        dragging = {
+          cell: cell.item,
+          pointerId: event.pointerId,
+          pointer: point
+        };
+        stage.classList.add("dragging");
+        canvas.setPointerCapture(event.pointerId);
+        setCardiacStatus(
+          "Cell " + cell.item.number + " selected at the " + describeCellLocation(cell.item) + ". Drag forward with the arrows."
+        );
+      }
+
+      function moveCardiacDrag(event) {
+        if (!dragging || event.pointerId !== dragging.pointerId) return;
+        event.preventDefault();
+        dragging.pointer = pointerCoordinates(event);
+      }
+
+      function endCardiacDrag(event) {
+        if (!dragging || event.pointerId !== dragging.pointerId) return;
+        event.preventDefault();
+        const cell = dragging.cell;
+        dragging = null;
+        stage.classList.remove("dragging");
+        if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
+        if (!cell.done && !finished) {
+          setCardiacStatus(
+            "Cell " + cell.number + " is at the " + describeCellLocation(cell) + ". Drag it forward again when ready."
+          );
+        }
+      }
+
+      function cancelCardiacDrag(event) {
+        if (!dragging || event.pointerId !== dragging.pointerId) return;
+        dragging = null;
+        stage.classList.remove("dragging");
+        if (!finished) setCardiacStatus("Drag interrupted. Select a red cell to continue.", "blocked");
+      }
+
+      function finishCardiacGame() {
+        if (finished) return;
+        finished = true;
+        const activePointerId = dragging ? dragging.pointerId : null;
+        cells.forEach(cell => {
+          cell.stage = sharedNodes.length - 1;
+          cell.progress = 0;
+          cell.passedGate = true;
+          cell.done = true;
+        });
+        dragging = null;
+        stage.classList.remove("dragging");
+        if (activePointerId !== null && canvas.hasPointerCapture(activePointerId)) {
+          canvas.releasePointerCapture(activePointerId);
+        }
+        renderCardiacProgress();
+        drawHeartScene(performance.now());
+        setMinigameAutowin(null);
+        if (state.cardiacFrame) {
+          cancelAnimationFrame(state.cardiacFrame);
+          state.cardiacFrame = null;
+        }
+        setCardiacStatus("All three cells completed one-way circulation. The rhythm is regular at 80 beats per minute.", "success");
+        playSfx("success");
+
+        setTimeout(() => {
+          if (!document.getElementById("cardiacGame")) return;
+          const recorded = recordPhysicalExamAction("cardiovascular", "cardiacAuscultation");
+          if (!recorded) {
+            closeModal();
+            return;
+          }
+          reportPhysicalExamMinigame(
+            "cardiovascular",
+            recorded.action.result + (recorded.systemComplete ? " " + recorded.system.label + " examination complete." : "")
+          );
+        }, 1000);
+      }
+
+      function cardiacTick(frameTime) {
+        if (finished || !document.getElementById("cardiacGame")) return;
+        const cycle = cycleStateAt(frameTime);
+        if (cycle.cycleIndex !== lastDiastoleSoundCycle) {
+          lastDiastoleSoundCycle = cycle.cycleIndex;
+          playHeartSound("s2");
+        }
+        if (cycle.phase >= diastoleFraction && cycle.cycleIndex !== lastSystoleSoundCycle) {
+          lastSystoleSoundCycle = cycle.cycleIndex;
+          playHeartSound("s1");
+        }
+        if (cycle.name !== lastRenderedPhase) {
+          lastRenderedPhase = cycle.name;
+          phaseLabel.textContent = cycle.name === "diastole" ? "Diastole: ventricular filling" : "Systole: ventricular ejection";
+          valveSummary.textContent = cycle.name === "diastole"
+            ? "Tricuspid + mitral open"
+            : "Pulmonic + aortic open";
+        }
+        beatLamp.classList.toggle("beat", cycle.phase >= diastoleFraction && cycle.phase < diastoleFraction + 0.14);
+        if (dragging) updateDraggedCell(frameTime);
+        drawHeartScene(frameTime);
+        if (!finished) state.cardiacFrame = requestAnimationFrame(cardiacTick);
+      }
+
+      canvas.addEventListener("pointerdown", beginCardiacDrag);
+      canvas.addEventListener("pointermove", moveCardiacDrag);
+      canvas.addEventListener("pointerup", endCardiacDrag);
+      canvas.addEventListener("pointercancel", cancelCardiacDrag);
+      canvas.addEventListener("lostpointercapture", cancelCardiacDrag);
+      renderCardiacProgress();
+      setMinigameAutowin(finishCardiacGame);
+      state.cardiacFrame = requestAnimationFrame(cardiacTick);
+      canvas.focus({ preventScroll: true });
     }
 
     function openLungAuscultationGame() {
@@ -5939,9 +7950,14 @@
         setTimeout(() => {
           if (!document.getElementById("lungGame")) return;
           const recorded = recordPhysicalExamAction("pulmonary", "lungAuscultation");
-          closeModal();
-          if (!recorded) return;
-          setMessage(recorded.action.result + (recorded.systemComplete ? " " + recorded.system.label + " examination complete." : ""));
+          if (!recorded) {
+            closeModal();
+            return;
+          }
+          reportPhysicalExamMinigame(
+            "pulmonary",
+            recorded.action.result + (recorded.systemComplete ? " " + recorded.system.label + " examination complete." : "")
+          );
         }, 900);
       }
 
@@ -6270,9 +8286,14 @@
         setTimeout(() => {
           if (!document.getElementById("pupilGame")) return;
           const recorded = recordPhysicalExamAction("heent", "pupils");
-          closeModal();
-          if (!recorded) return;
-          setMessage(recorded.action.result + (recorded.systemComplete ? " " + recorded.system.label + " examination complete." : ""));
+          if (!recorded) {
+            closeModal();
+            return;
+          }
+          reportPhysicalExamMinigame(
+            "heent",
+            recorded.action.result + (recorded.systemComplete ? " " + recorded.system.label + " examination complete." : "")
+          );
         }, 900);
       }
 
@@ -6449,9 +8470,14 @@
         setTimeout(() => {
           if (!document.getElementById("orificeGame")) return;
           const recorded = recordPhysicalExamAction("heent", "earsNose");
-          closeModal();
-          if (!recorded) return;
-          setMessage(recorded.action.result + " A mystery egg was also added to inventory." + (recorded.systemComplete ? " " + recorded.system.label + " examination complete." : ""));
+          if (!recorded) {
+            closeModal();
+            return;
+          }
+          reportPhysicalExamMinigame(
+            "heent",
+            recorded.action.result + " A mystery egg was also added to inventory." + (recorded.systemComplete ? " " + recorded.system.label + " examination complete." : "")
+          );
         }, 900);
       }
 
@@ -6549,16 +8575,171 @@
       return "Formal graded power is limited by pain and guarding. The patient reports a walking video on her dead phone; find the charger, plug it into the outlet on the side of the cart, and charge the phone.";
     }
 
+    function openMentalStatusExamGame() {
+      const today = new Date();
+      const target = {
+        month: today.getMonth() + 1,
+        day: today.getDate(),
+        year: today.getFullYear()
+      };
+      const modules = {
+        month: { label: "Month", minimum: 1, maximum: 12, digits: 2 },
+        day: { label: "Day", minimum: 1, maximum: 31, digits: 2 },
+        year: { label: "Year", minimum: target.year - 20, maximum: target.year + 2, digits: 4 }
+      };
+      const values = {};
+      let finished = false;
+
+      function randomInteger(minimum, maximum) {
+        return minimum + Math.floor(Math.random() * ((maximum - minimum) + 1));
+      }
+
+      do {
+        values.month = randomInteger(modules.month.minimum, modules.month.maximum);
+        values.day = randomInteger(modules.day.minimum, modules.day.maximum);
+        values.year = randomInteger(modules.year.minimum, modules.year.maximum);
+      } while (values.month === target.month && values.day === target.day && values.year === target.year);
+
+      function digitMarkup(part) {
+        return String(values[part])
+          .padStart(modules[part].digits, "0")
+          .split("")
+          .map(digit => `<span class="mental-flip-digit">${digit}</span>`)
+          .join("");
+      }
+
+      openModal(`
+        <section class="modal-card mental-clock-card" id="mentalStatusGame" role="dialog" aria-modal="true" aria-labelledby="mentalStatusTitle">
+          <div class="modal-header"><h2 id="mentalStatusTitle">Mental Status: Orientation to Date</h2><button type="button" data-close aria-label="Close">X</button></div>
+          <p class="mental-clock-instructions">Set the clock to today's date on your local calendar. Use the arrows to roll the month, day, and year forward or backward.</p>
+          <div class="mental-clock-housing">
+            ${Object.keys(modules).map(part => `
+              <section class="mental-clock-unit" aria-labelledby="mentalLabel-${part}">
+                <span class="mental-clock-label" id="mentalLabel-${part}">${modules[part].label}</span>
+                <button type="button" class="mental-clock-adjust" data-mental-part="${part}" data-mental-delta="1" aria-label="Increase ${modules[part].label.toLowerCase()}">&#9650;</button>
+                <div class="mental-flip-display" id="mentalDisplay-${part}" role="status" aria-label="${modules[part].label} ${values[part]}">
+                  ${digitMarkup(part)}
+                </div>
+                <button type="button" class="mental-clock-adjust" data-mental-part="${part}" data-mental-delta="-1" aria-label="Decrease ${modules[part].label.toLowerCase()}">&#9660;</button>
+              </section>
+            `).join("")}
+          </div>
+          <p class="mental-clock-status" id="mentalClockStatus" aria-live="polite">Align all three modules with the current local date.</p>
+        </section>
+      `);
+
+      const status = document.getElementById("mentalClockStatus");
+      const controls = Array.from(document.querySelectorAll("[data-mental-part]"));
+      const formattedDate = today.toLocaleDateString(undefined, {
+        month: "long",
+        day: "numeric",
+        year: "numeric"
+      });
+
+      function valueMatches(part) {
+        return values[part] === target[part];
+      }
+
+      function renderModule(part, direction = 0) {
+        const display = document.getElementById("mentalDisplay-" + part);
+        const digits = String(values[part]).padStart(modules[part].digits, "0").split("");
+        display.querySelectorAll(".mental-flip-digit").forEach((element, index) => {
+          element.textContent = digits[index];
+        });
+        display.setAttribute("aria-label", modules[part].label + " " + values[part]);
+        display.classList.toggle("correct", valueMatches(part));
+        if (!direction) return;
+
+        display.classList.remove("flip-up", "flip-down");
+        void display.offsetWidth;
+        display.classList.add(direction > 0 ? "flip-up" : "flip-down");
+        clearTimeout(display.flipTimer);
+        display.flipTimer = setTimeout(() => {
+          display.classList.remove("flip-up", "flip-down");
+        }, 200);
+      }
+
+      function wrapValue(value, minimum, maximum) {
+        if (value > maximum) return minimum;
+        if (value < minimum) return maximum;
+        return value;
+      }
+
+      function dateIsCorrect() {
+        return Object.keys(modules).every(valueMatches);
+      }
+
+      function finishMentalStatusExam() {
+        if (finished) return;
+        finished = true;
+        Object.keys(modules).forEach(part => {
+          values[part] = target[part];
+          renderModule(part);
+        });
+        controls.forEach(button => { button.disabled = true; });
+        setMinigameAutowin(null);
+        status.className = "mental-clock-status success";
+        status.textContent = "Correctly oriented to " + formattedDate + ".";
+        playSfx("success");
+
+        setTimeout(() => {
+          if (!document.getElementById("mentalStatusGame")) return;
+          markCompleted("mentalStatusDateGame");
+          addFinding("mentalStatus");
+          reportPhysicalExamMinigame(
+            "neurologic",
+            "The patient correctly identifies " + formattedDate + " and is alert, attentive, fully oriented, and able to provide a coherent history."
+          );
+        }, 900);
+      }
+
+      function adjustDate(event) {
+        if (finished) return;
+        const button = event.currentTarget;
+        const part = button.dataset.mentalPart;
+        const direction = Number(button.dataset.mentalDelta);
+        const module = modules[part];
+        values[part] = wrapValue(values[part] + direction, module.minimum, module.maximum);
+        renderModule(part, direction);
+        playSfx("click");
+
+        if (dateIsCorrect()) {
+          finishMentalStatusExam();
+          return;
+        }
+        const matchedCount = Object.keys(modules).filter(valueMatches).length;
+        status.className = "mental-clock-status";
+        status.textContent = matchedCount
+          ? matchedCount + " of 3 date modules correctly oriented."
+          : "Align all three modules with the current local date.";
+      }
+
+      controls.forEach(button => button.addEventListener("click", adjustDate));
+      Object.keys(modules).forEach(part => renderModule(part));
+      setMinigameAutowin(finishMentalStatusExam);
+      controls[0].focus({ preventScroll: true });
+    }
+
     function runNeurologicExam(exam, button) {
       if (!requireHandHygiene()) {
         closeModal();
         return;
       }
+      const launchedFromExamMenu = Boolean(document.querySelector(".physical-exam-card"));
+      const launchNeurologicGame = openGame => {
+        if (launchedFromExamMenu) {
+          launchPhysicalExamMinigame("neurologic", openGame);
+          return;
+        }
+        openGame();
+      };
 
       if (exam === "mentalStatus") {
-        addFinding("mentalStatus");
-        if (button) button.classList.add("done");
-        setMessage("The patient is alert, attentive, fully oriented, and provides a coherent history without aphasia or neglect.");
+        if (has(state.findings, "mentalStatus")) {
+          setMessage("The patient is already documented as alert, attentive, and fully oriented.");
+          return;
+        }
+        launchNeurologicGame(openMentalStatusExamGame);
         return;
       }
       if (exam === "cranialNerves") {
@@ -6566,7 +8747,7 @@
           setMessage("The focused cranial nerve screen is already documented as normal.");
           return;
         }
-        openCranialNerveGame();
+        launchNeurologicGame(openCranialNerveGame);
         return;
       }
       if (exam === "motor") {
@@ -6575,7 +8756,7 @@
         return;
       }
       if (exam === "sensory") {
-        openSensoryGame();
+        launchNeurologicGame(openSensoryGame);
         return;
       }
       if (exam === "reflex") {
@@ -6587,13 +8768,15 @@
           setMessage("Find the reflex hammer in the exam cart before testing reflexes.");
           return;
         }
-        openReflexGame();
+        launchNeurologicGame(openReflexGame);
         return;
       }
       if (exam === "coordination") {
-        addFinding("coordination");
-        if (button) button.classList.add("done");
-        setMessage("Finger-to-nose and right heel-to-shin are accurate. Left heel-to-shin is limited by weakness without clear dysmetria.");
+        if (has(state.findings, "coordination")) {
+          setMessage("Coordination is already documented: upper-limb and right-leg testing are accurate, while left heel-to-shin is limited by weakness without clear dysmetria.");
+          return;
+        }
+        launchNeurologicGame(openCoordinationGame);
         return;
       }
       if (exam === "gait") {
@@ -6767,8 +8950,10 @@
           if (!document.getElementById("cranialGame")) return;
           markCompleted("cranialNerveGame");
           addFinding("cranialNerves");
-          closeModal();
-          setMessage("Focused cranial nerve screen complete: visual fields are full, pupils are reactive, extraocular movements are intact, facial sensation and movement are symmetric, hearing is intact, palate elevation is symmetric, shoulder strength is full, and the tongue is midline.");
+          reportPhysicalExamMinigame(
+            "neurologic",
+            "Focused cranial nerve screen complete: visual fields are full, pupils are reactive, extraocular movements are intact, facial sensation and movement are symmetric, hearing is intact, palate elevation is symmetric, shoulder strength is full, and the tongue is midline."
+          );
         }, 850);
       }
 
@@ -7001,8 +9186,10 @@
           removeInventory("tuningFork");
           removeInventory("safetyPin");
           removeInventory("icePack");
-          closeModal();
-          setMessage("Sensory examination complete: light touch is perceived bilaterally; vibration and joint position are reduced on the left, while pinprick and cold are reduced on the right below the lower thoracic levels.");
+          reportPhysicalExamMinigame(
+            "neurologic",
+            "Sensory examination complete: light touch is perceived bilaterally; vibration and joint position are reduced on the left, while pinprick and cold are reduced on the right below the lower thoracic levels."
+          );
         }, 850);
       }
 
@@ -7176,6 +9363,150 @@
       });
     }
 
+    function openCoordinationGame() {
+      const targetCount = 4;
+      const cycleDuration = 2100;
+      const hitWindowStart = 0.86;
+      let activeTarget = 0;
+      let cycleElapsed = 0;
+      let lastFrameTime = null;
+      let finished = false;
+
+      openModal(`
+        <section class="modal-card coordination-card" role="dialog" aria-modal="true" aria-labelledby="coordinationTitle">
+          <div class="modal-header"><h2 id="coordinationTitle">Coordination Sequence</h2><button type="button" data-close aria-label="Close">X</button></div>
+          <p>Four targets activate in order. Click the active button when its closing ring reaches the button edge.</p>
+          <div class="coordination-board" id="coordinationBoard">
+            ${Array.from({ length: targetCount }, (_, index) => `
+              <button type="button" class="coordination-target${index === 0 ? " active" : ""}" data-coordination-target="${index}" aria-label="Coordination target ${index + 1}">
+                <span class="coordination-ring" aria-hidden="true"></span>
+                <span class="coordination-core" aria-hidden="true">${index + 1}</span>
+              </button>
+            `).join("")}
+          </div>
+          <div class="coordination-progress-line">
+            <span id="coordinationStation">Target 1 of 4</span>
+            <div class="coordination-progress" id="coordinationProgress" aria-label="0 of 4 targets complete">
+              <span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+          <p class="coordination-feedback" id="coordinationFeedback" aria-live="polite">Follow the outer ring on target 1 and click as it meets the central button.</p>
+        </section>
+      `);
+
+      const board = document.getElementById("coordinationBoard");
+      const targets = Array.from(document.querySelectorAll("[data-coordination-target]"));
+      const progress = document.getElementById("coordinationProgress");
+      const progressPips = Array.from(progress.querySelectorAll("span"));
+      const station = document.getElementById("coordinationStation");
+      const feedback = document.getElementById("coordinationFeedback");
+
+      function stopCoordinationMotion() {
+        if (!state.timingFrame) return;
+        cancelAnimationFrame(state.timingFrame);
+        state.timingFrame = null;
+      }
+
+      function renderCoordinationTargets() {
+        targets.forEach((target, index) => {
+          const completed = index < activeTarget || finished;
+          const active = index === activeTarget && !finished;
+          target.classList.toggle("completed", completed);
+          target.classList.toggle("active", active);
+          target.disabled = completed || finished;
+          target.querySelector(".coordination-core").textContent = completed ? "\u2713" : String(index + 1);
+        });
+        progressPips.forEach((pip, index) => pip.classList.toggle("lit", index < activeTarget || finished));
+        progress.setAttribute("aria-label", (finished ? targetCount : activeTarget) + " of " + targetCount + " targets complete");
+        station.textContent = finished ? "Sequence complete" : "Target " + (activeTarget + 1) + " of " + targetCount;
+      }
+
+      function finishCoordinationGame() {
+        if (finished) return;
+        finished = true;
+        activeTarget = targetCount;
+        setMinigameAutowin(null);
+        stopCoordinationMotion();
+        renderCoordinationTargets();
+        feedback.className = "coordination-feedback hit";
+        feedback.textContent = "All four targets were acquired in sequence with accurate timing.";
+        playSfx("success");
+
+        setTimeout(() => {
+          if (!document.getElementById("coordinationBoard")) return;
+          addFinding("coordination");
+          reportPhysicalExamMinigame(
+            "neurologic",
+            "Finger-to-nose and right heel-to-shin are accurate. Left heel-to-shin is limited by weakness without clear dysmetria."
+          );
+        }, 750);
+      }
+
+      function advanceCoordinationTarget() {
+        activeTarget += 1;
+        cycleElapsed = 0;
+        lastFrameTime = null;
+        if (activeTarget >= targetCount) {
+          finishCoordinationGame();
+          return;
+        }
+        renderCoordinationTargets();
+        feedback.className = "coordination-feedback hit";
+        feedback.textContent = "Accurate timing. Target " + (activeTarget + 1) + " is now active.";
+      }
+
+      function attemptCoordinationTarget(event) {
+        if (finished) return;
+        const selectedTarget = Number(event.currentTarget.dataset.coordinationTarget);
+        if (selectedTarget !== activeTarget) {
+          feedback.className = "coordination-feedback miss";
+          feedback.textContent = "Targets are tested in order. Follow the closing ring on target " + (activeTarget + 1) + ".";
+          return;
+        }
+
+        const cycleProgress = cycleElapsed / cycleDuration;
+        if (cycleProgress < hitWindowStart) {
+          cycleElapsed = 0;
+          lastFrameTime = null;
+          feedback.className = "coordination-feedback miss";
+          feedback.textContent = "Too early. Let the outer ring reach the edge of the central button.";
+          return;
+        }
+
+        playSfx("success");
+        advanceCoordinationTarget();
+      }
+
+      function animateCoordination(frameTime) {
+        if (finished || !board.isConnected) return;
+        if (lastFrameTime === null) lastFrameTime = frameTime;
+        const frameDelta = Math.min(frameTime - lastFrameTime, 100);
+        lastFrameTime = frameTime;
+        cycleElapsed += frameDelta;
+
+        if (cycleElapsed >= cycleDuration) {
+          cycleElapsed %= cycleDuration;
+          feedback.className = "coordination-feedback";
+          feedback.textContent = "The ring closed. Keep target " + (activeTarget + 1) + " in view and catch the next cycle.";
+        }
+
+        const cycleProgress = cycleElapsed / cycleDuration;
+        const ringScale = 1 + ((1 - cycleProgress) * 1.25);
+        const target = targets[activeTarget];
+        if (target) {
+          target.querySelector(".coordination-ring").style.setProperty("--coordination-ring-scale", ringScale.toFixed(3));
+          target.classList.toggle("in-window", cycleProgress >= hitWindowStart);
+        }
+        state.timingFrame = requestAnimationFrame(animateCoordination);
+      }
+
+      targets.forEach(target => target.addEventListener("click", attemptCoordinationTarget));
+      renderCoordinationTargets();
+      setMinigameAutowin(finishCoordinationGame);
+      state.timingFrame = requestAnimationFrame(animateCoordination);
+      targets[0].focus({ preventScroll: true });
+    }
+
     function reflexContactAt(position) {
       if (position < 22) {
         return "You struck the distal quadriceps above the knee. Muscle is not the patellar tendon.";
@@ -7279,8 +9610,10 @@
           if (!document.getElementById("reflexStage")) return;
           addFinding("reflexes");
           removeInventory("hammer");
-          closeModal();
-          setMessage("Repeated left patellar tendon strikes produce a brisk knee jerk, supporting corticospinal tract involvement.");
+          reportPhysicalExamMinigame(
+            "neurologic",
+            "Repeated left patellar tendon strikes produce a brisk knee jerk, supporting corticospinal tract involvement."
+          );
         }, 900);
       }
 
@@ -7294,8 +9627,10 @@
         strikeButton.textContent = "Attempt ended";
         setTimeout(() => {
           if (!document.getElementById("reflexStage")) return;
-          closeModal();
-          setMessage("\"Maybe try again later,\" the patient says. The reflex hammer remains available for another attempt.");
+          reportPhysicalExamMinigame(
+            "neurologic",
+            "\"Maybe try again later,\" the patient says. The reflex hammer remains available for another attempt."
+          );
         }, 1150);
       }
 
