@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta
+      name="description"
+      content="A local research interface for exploring dialysis-facility and public-transit proximity."
+    />
+    <title>Dialysis &amp; Transit Explorer</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#explorer-controls">Skip to explorer controls</a>
+
+    <main class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true"><span></span></span>
+          <div>
+            <strong>Dialysis &amp; Transit Explorer</strong>
+            <small>Local Phase 1 research project</small>
+          </div>
+        </div>
+
+        <form class="location-search" id="location-form">
+          <label class="sr-only" for="location-search">
+            Search by city, ZIP code, or address
+          </label>
+          <span class="search-glyph" aria-hidden="true"></span>
+          <input
+            id="location-search"
+            name="location"
+            placeholder="City, ZIP code, or address"
+            type="search"
+          />
+          <button type="submit">Go</button>
+        </form>
+
+        <div class="topbar-actions">
+          <button class="text-button" id="methods-shortcut" type="button">
+            Data &amp; methods
+          </button>
+          <span class="local-status">
+            <span aria-hidden="true"></span>
+            Local site
+          </span>
+        </div>
+      </header>
+
+      <div class="notice-bar" id="notice-bar" hidden role="status">
+        <span id="notice-text"></span>
+        <button aria-label="Dismiss notice" id="notice-close" type="button">
+          ×
+        </button>
+      </div>
+
+      <div class="workspace" id="workspace">
+        <aside
+          class="side-panel"
+          id="explorer-controls"
+          aria-label="Explorer controls"
+        >
+          <div class="panel-heading">
+            <div>
+              <span class="eyebrow">Geographic proximity</span>
+              <h1>Explore the space between care and transit.</h1>
+            </div>
+            <button
+              aria-label="Collapse explorer controls"
+              class="panel-close"
+              id="panel-close"
+              type="button"
+            >
+              ‹
+            </button>
+          </div>
+
+          <p class="methods-notice">
+            Straight-line distance is context—not proof of a usable trip,
+            accessible path, or available service.
+          </p>
+
+          <nav
+            aria-label="Explorer sections"
+            class="panel-tabs"
+            id="panel-tabs"
+            role="tablist"
+          >
+            <button
+              aria-controls="panel-layers"
+              aria-selected="true"
+              class="is-active"
+              data-tab="layers"
+              id="tab-layers"
+              role="tab"
+              tabindex="0"
+              type="button"
+            >
+              Layers
+            </button>
+            <button
+              aria-controls="panel-filters"
+              aria-selected="false"
+              data-tab="filters"
+              id="tab-filters"
+              role="tab"
+              tabindex="-1"
+              type="button"
+            >
+              Filters
+            </button>
+            <button
+              aria-controls="panel-analytics"
+              aria-selected="false"
+              data-tab="analytics"
+              id="tab-analytics"
+              role="tab"
+              tabindex="-1"
+              type="button"
+            >
+              Analytics
+            </button>
+            <button
+              aria-controls="panel-methods"
+              aria-selected="false"
+              data-tab="methods"
+              id="tab-methods"
+              role="tab"
+              tabindex="-1"
+              type="button"
+            >
+              Data &amp; Methods
+            </button>
+          </nav>
+
+          <div class="panel-content">
+            <section
+              aria-labelledby="tab-layers"
+              id="panel-layers"
+              role="tabpanel"
+            >
+              <div class="control-section">
+                <div class="section-title">
+                  <div>
+                    <span>Map layers</span>
+                    <small>Illustrative until source ingestion</small>
+                  </div>
+                  <span class="count-badge" id="layer-count">2 active</span>
+                </div>
+
+                <label class="toggle-row">
+                  <span
+                    class="legend-symbol legend-symbol--facility"
+                    aria-hidden="true"
+                  ></span>
+                  <span class="toggle-copy">
+                    <strong>Dialysis facilities</strong>
+                    <small>CMS Medicare-certified facilities</small>
+                  </span>
+                  <span class="switch">
+                    <input
+                      aria-label="Dialysis facilities"
+                      checked
+                      data-layer-toggle="facility"
+                      type="checkbox"
+                    />
+                    <span aria-hidden="true"></span>
+                  </span>
+                </label>
+
+                <label class="toggle-row">
+                  <span
+                    class="legend-symbol legend-symbol--transit"
+                    aria-hidden="true"
+                  ></span>
+                  <span class="toggle-copy">
+                    <strong>Public transit stops</strong>
+                    <small>BTS National Transit Map stops</small>
+                  </span>
+                  <span class="switch">
+                    <input
+                      aria-label="Public transit stops"
+                      checked
+                      data-layer-toggle="transit"
+                      type="checkbox"
+                    />
+                    <span aria-hidden="true"></span>
+                  </span>
+                </label>
+              </div>
+
+              <div class="control-section">
+                <label class="field-label" for="state-select">
+                  Analysis extent
+                </label>
+                <div class="select-wrap">
+                  <select id="state-select">
+                    <option value="">National viewport</option>
+                    <option value="AZ">Arizona</option>
+                    <option value="CA">California</option>
+                    <option value="CO">Colorado</option>
+                    <option value="FL">Florida</option>
+                    <option value="IL">Illinois</option>
+                    <option value="NY">New York</option>
+                    <option value="TX">Texas</option>
+                  </select>
+                </div>
+                <p class="field-help" id="extent-description">
+                  Current national viewport
+                </p>
+              </div>
+
+              <div class="control-section">
+                <div class="section-title">
+                  <span>Proximity threshold</span>
+                  <strong id="radius-readout">400 m</strong>
+                </div>
+                <div
+                  aria-label="Proximity threshold"
+                  class="radius-options"
+                  id="radius-options"
+                  role="group"
+                >
+                  <button aria-pressed="false" data-radius="250" type="button">
+                    250
+                  </button>
+                  <button
+                    aria-pressed="true"
+                    class="is-active"
+                    data-radius="400"
+                    type="button"
+                  >
+                    400
+                  </button>
+                  <button aria-pressed="false" data-radius="800" type="button">
+                    800
+                  </button>
+                  <button aria-pressed="false" data-radius="1600" type="button">
+                    1,600
+                  </button>
+                </div>
+                <p class="field-help">
+                  Geodesic straight-line distance; calculated in meters.
+                </p>
+              </div>
+
+              <button
+                class="primary-action"
+                disabled
+                title="Source-backed analytics begin after data ingestion."
+                type="button"
+              >
+                Analysis available after data load
+              </button>
+            </section>
+
+            <section
+              aria-labelledby="tab-filters"
+              hidden
+              id="panel-filters"
+              role="tabpanel"
+            >
+              <div class="empty-panel">
+                <span class="empty-icon" aria-hidden="true">≡</span>
+                <h2>Filters are staged for source data.</h2>
+                <p>
+                  Ownership, chain, late-shift, station-count, geocode, stop
+                  type, wheelchair, and agency filters will populate from the
+                  current source snapshots.
+                </p>
+              </div>
+            </section>
+
+            <section
+              aria-labelledby="tab-analytics"
+              hidden
+              id="panel-analytics"
+              role="tabpanel"
+            >
+              <div class="empty-panel">
+                <span class="empty-icon" aria-hidden="true">▥</span>
+                <h2>Analytics need a validated snapshot.</h2>
+                <p>
+                  Summary cards, the distance distribution, facility table,
+                  and CSV export remain intentionally empty until reproducible
+                  spatial metrics are loaded.
+                </p>
+              </div>
+            </section>
+
+            <section
+              aria-labelledby="tab-methods"
+              hidden
+              id="panel-methods"
+              role="tabpanel"
+            >
+              <div class="methods-panel">
+                <span class="eyebrow">Interpret with care</span>
+                <h2>What this explorer will measure</h2>
+                <p>
+                  Phase 1 compares approximate facility coordinates with
+                  fixed-route transit stops using geodesic straight-line
+                  distance.
+                </p>
+                <dl>
+                  <div>
+                    <dt>Dialysis source</dt>
+                    <dd>CMS Provider Data Catalog</dd>
+                  </div>
+                  <div>
+                    <dt>Transit source</dt>
+                    <dd>USDOT/BTS National Transit Map</dd>
+                  </div>
+                  <div>
+                    <dt>Facility geocoding</dt>
+                    <dd>U.S. Census Geocoder</dd>
+                  </div>
+                </dl>
+                <div class="caution-card">
+                  Proximity does not measure schedules, walking barriers,
+                  safety, weather exposure, disability access, or trip
+                  feasibility.
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <footer class="panel-footer">
+            <span>Source snapshots</span>
+            <strong>Pending first validated import</strong>
+          </footer>
+        </aside>
+
+        <section class="map-stage" aria-label="National map explorer">
+          <div class="map-preview" id="map-preview" aria-hidden="true">
+            <div class="map-land map-land--west"></div>
+            <div class="map-land map-land--east"></div>
+
+            <span
+              class="preview-cluster preview-cluster--facility cluster-a"
+              data-layer="facility"
+              ><span>34</span></span
+            >
+            <span
+              class="preview-cluster preview-cluster--facility cluster-b"
+              data-layer="facility"
+              ><span>18</span></span
+            >
+            <span
+              class="preview-cluster preview-cluster--facility cluster-c"
+              data-layer="facility"
+              ><span>42</span></span
+            >
+            <span
+              class="preview-cluster preview-cluster--transit cluster-d"
+              data-layer="transit"
+              >96</span
+            >
+            <span
+              class="preview-cluster preview-cluster--transit cluster-e"
+              data-layer="transit"
+              >61</span
+            >
+            <span
+              class="preview-cluster preview-cluster--transit cluster-f"
+              data-layer="transit"
+              >127</span
+            >
+          </div>
+
+          <button class="panel-open" hidden id="panel-open" type="button">
+            <span aria-hidden="true">›</span>
+            Explore
+          </button>
+
+          <div class="map-context">
+            <span class="context-dot" aria-hidden="true"></span>
+            <span>
+              <strong id="region-readout">United States</strong>
+              <small id="map-state-readout">400 m threshold · zoom 4</small>
+            </span>
+          </div>
+
+          <div class="preview-label">
+            <span>Local interface preview</span>
+            <small>No network or source data loaded</small>
+          </div>
+
+          <div class="map-controls" aria-label="Map controls">
+            <button aria-label="Zoom in" id="zoom-in" type="button">+</button>
+            <button aria-label="Zoom out" id="zoom-out" type="button">−</button>
+            <button
+              aria-label="Reset to national view"
+              class="reset-control"
+              id="reset-view"
+              type="button"
+            >
+              US
+            </button>
+          </div>
+
+          <div class="map-legend" aria-label="Map legend">
+            <strong>Legend</strong>
+            <span>
+              <i class="legend-symbol legend-symbol--facility"></i>
+              Dialysis facility
+            </span>
+            <span>
+              <i class="legend-symbol legend-symbol--transit"></i>
+              Transit stop
+            </span>
+            <small>Preview counts are illustrative, not source data.</small>
+          </div>
+
+          <div class="map-attribution">
+            Planned sources: CMS · U.S. Census Bureau · USDOT/BTS
+          </div>
+
+          <p class="sr-only" id="layer-announcement" aria-live="polite">
+            Dialysis layer on. Transit layer on. Threshold 400 meters.
+          </p>
+        </section>
+      </div>
+    </main>
+  </body>
+</html>

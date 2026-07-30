@@ -1,10 +1,33 @@
 # Dialysis & Transit Explorer
 
+The primary local site is [`index.html`](index.html) in this directory. Open it
+directly in a browser—no installation, server, credentials, or internet
+connection is required.
+
 The Dialysis & Transit Explorer is a read-only research application for
 examining geographic proximity between Medicare-certified dialysis facilities
 and fixed-route public transportation stops. Phase 1 measures straight-line
 distance only; it does not establish that a transit trip is available,
 accessible, safe, or feasible.
+
+## Open the local site
+
+Double-click `index.html`, or use a small local server if preferred:
+
+```text
+python -m http.server 8080
+```
+
+Then visit `http://localhost:8080`.
+
+The root site uses only:
+
+- `index.html`
+- `styles.css`
+- `app.js`
+
+It deliberately shows illustrative interface symbols until validated CMS and
+BTS source data are ingested.
 
 This repository currently contains **Epic 1: Repository and local platform**:
 
@@ -41,7 +64,7 @@ tests/fixtures/    Cross-service deterministic fixtures
 The interface remains usable as an explicitly labeled preview when map
 credentials are absent.
 
-## Quick start with Docker
+## Optional full platform with Docker
 
 1. Copy `.env.example` to `.env`.
 2. Replace the local database passwords.
