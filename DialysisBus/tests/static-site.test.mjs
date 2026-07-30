@@ -12,6 +12,8 @@ test("root index is a self-contained local entry point", async () => {
   assert.match(html, /src="\.\/app\.js"/);
   assert.match(html, /Explore the space between care and transit\./);
   assert.match(html, /Straight-line distance is context/);
+  assert.match(html, /Dialysis &amp; transit workspace/);
+  assert.doesNotMatch(html, /No network or source data loaded/);
   assert.match(html, /Preview counts are illustrative, not source data\./);
   assert.doesNotMatch(html, /https?:\/\//);
 
