@@ -6,16 +6,21 @@
       name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover"
     />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta
       name="description"
-      content="A local research interface for exploring dialysis-facility and public-transit proximity."
+      content="Explore demonstration dialysis-facility and public-transit proximity on an interactive Google map."
     />
+    <meta name="theme-color" content="#0b5955" />
     <title>Dialysis &amp; Transit Explorer</title>
     <link rel="stylesheet" href="./styles.css" />
+    <script src="./config.js"></script>
+    <script src="./sample-data.js"></script>
     <script src="./app.js" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#explorer-controls">Skip to explorer controls</a>
+    <a class="skip-link skip-link--map" href="#map-stage">Skip to map</a>
 
     <main class="app-shell">
       <header class="topbar">
@@ -23,21 +28,24 @@
           <span class="brand-mark" aria-hidden="true"><span></span></span>
           <div>
             <strong>Dialysis &amp; Transit Explorer</strong>
-            <small>Local Phase 1 research project</small>
+            <small>Phase 1 demonstration workspace</small>
           </div>
         </div>
 
-        <form class="location-search" id="location-form">
+        <form class="location-search" id="location-form" role="search">
           <label class="sr-only" for="location-search">
             Search by city, ZIP code, or address
           </label>
           <span class="search-glyph" aria-hidden="true"></span>
           <input
+            autocomplete="off"
             id="location-search"
+            list="fixture-location-suggestions"
             name="location"
             placeholder="City, ZIP code, or address"
             type="search"
           />
+          <datalist id="fixture-location-suggestions"></datalist>
           <button type="submit">Go</button>
         </form>
 
@@ -45,12 +53,18 @@
           <button class="text-button" id="methods-shortcut" type="button">
             Data &amp; methods
           </button>
-          <span class="local-status">
+          <span class="demo-status" title="The bundled records are fictional">
             <span aria-hidden="true"></span>
-            Local site
+            Demo data
           </span>
         </div>
       </header>
+
+      <div class="fixture-banner" role="note">
+        <strong>Demonstration mode.</strong>
+        Facilities, stops, and metrics are synthetic fixtures—not published CMS
+        or BTS results.
+      </div>
 
       <div class="notice-bar" id="notice-bar" hidden role="status">
         <span id="notice-text"></span>
@@ -148,9 +162,9 @@
                 <div class="section-title">
                   <div>
                     <span>Map layers</span>
-                    <small>Illustrative until source ingestion</small>
+                    <small>Bundled deterministic fixtures</small>
                   </div>
-                  <span class="count-badge" id="layer-count">2 active</span>
+                  <span class="count-badge" id="layer-count">2 selected</span>
                 </div>
 
                 <label class="toggle-row">
@@ -160,7 +174,7 @@
                   ></span>
                   <span class="toggle-copy">
                     <strong>Dialysis facilities</strong>
-                    <small>CMS Medicare-certified facilities</small>
+                    <small>CMS-shaped demonstration records</small>
                   </span>
                   <span class="switch">
                     <input
@@ -180,13 +194,47 @@
                   ></span>
                   <span class="toggle-copy">
                     <strong>Public transit stops</strong>
-                    <small>BTS National Transit Map stops</small>
+                    <small>BTS-shaped demonstration records</small>
                   </span>
                   <span class="switch">
                     <input
                       aria-label="Public transit stops"
                       checked
                       data-layer-toggle="transit"
+                      type="checkbox"
+                    />
+                    <span aria-hidden="true"></span>
+                  </span>
+                </label>
+
+                <label class="toggle-row toggle-row--conditional">
+                  <span class="line-symbol" aria-hidden="true"></span>
+                  <span class="toggle-copy">
+                    <strong>Nearest-stop line</strong>
+                    <small>Available after selecting a facility</small>
+                  </span>
+                  <span class="switch">
+                    <input
+                      aria-label="Nearest-stop connection line"
+                      data-selection-layer="line"
+                      disabled
+                      type="checkbox"
+                    />
+                    <span aria-hidden="true"></span>
+                  </span>
+                </label>
+
+                <label class="toggle-row toggle-row--conditional">
+                  <span class="circle-symbol" aria-hidden="true"></span>
+                  <span class="toggle-copy">
+                    <strong>Threshold circle</strong>
+                    <small>Active radius around selected facility</small>
+                  </span>
+                  <span class="switch">
+                    <input
+                      aria-label="Facility threshold circle"
+                      data-selection-layer="circle"
+                      disabled
                       type="checkbox"
                     />
                     <span aria-hidden="true"></span>
@@ -200,7 +248,7 @@
                 </label>
                 <div class="select-wrap">
                   <select id="state-select">
-                    <option value="">National viewport</option>
+                    <option value="">Current map viewport</option>
                     <option value="AZ">Arizona</option>
                     <option value="CA">California</option>
                     <option value="CO">Colorado</option>
@@ -211,8 +259,15 @@
                   </select>
                 </div>
                 <p class="field-help" id="extent-description">
-                  Current national viewport
+                  Current map viewport—not an administrative-area statistic
                 </p>
+                <button
+                  class="secondary-action"
+                  id="analyze-viewport"
+                  type="button"
+                >
+                  Analyze current map
+                </button>
               </div>
 
               <div class="control-section">
@@ -244,19 +299,33 @@
                     1,600
                   </button>
                 </div>
+                <form class="custom-radius" id="custom-radius-form">
+                  <label for="custom-radius">Custom meters</label>
+                  <input
+                    id="custom-radius"
+                    inputmode="numeric"
+                    max="5000"
+                    min="100"
+                    name="radius"
+                    placeholder="100–5,000"
+                    type="number"
+                  />
+                  <button type="submit">Apply</button>
+                </form>
                 <p class="field-help">
-                  Geodesic straight-line distance; calculated in meters.
+                  Geodesic straight-line distance. Values 1,000 m and above are
+                  also shown in miles.
                 </p>
               </div>
 
-              <button
-                class="primary-action"
-                disabled
-                title="Source-backed analytics begin after data ingestion."
-                type="button"
-              >
-                Analysis available after data load
-              </button>
+              <div class="button-grid">
+                <button class="secondary-action" id="current-location" type="button">
+                  Use current location
+                </button>
+                <button class="secondary-action" id="copy-view-link" type="button">
+                  Copy view link
+                </button>
+              </div>
             </section>
 
             <section
@@ -265,15 +334,131 @@
               id="panel-filters"
               role="tabpanel"
             >
-              <div class="empty-panel">
-                <span class="empty-icon" aria-hidden="true">≡</span>
-                <h2>Filters are staged for source data.</h2>
-                <p>
-                  Ownership, chain, late-shift, station-count, geocode, stop
-                  type, wheelchair, and agency filters will populate from the
-                  current source snapshots.
-                </p>
-              </div>
+              <form id="filters-form">
+                <div class="control-section control-section--first">
+                  <div class="section-title">
+                    <div>
+                      <span>Facility filters</span>
+                      <small id="facility-filter-count">18 records available</small>
+                    </div>
+                  </div>
+
+                  <label class="checkbox-row">
+                    <input checked id="filter-in-center" type="checkbox" />
+                    <span>
+                      <strong>Offers in-center hemodialysis</strong>
+                      <small>Enabled by default</small>
+                    </span>
+                  </label>
+
+                  <label class="field-label" for="filter-ownership">Ownership</label>
+                  <div class="select-wrap">
+                    <select id="filter-ownership">
+                      <option value="">All ownership types</option>
+                      <option value="For-profit">For-profit</option>
+                      <option value="Non-profit">Non-profit</option>
+                      <option value="Government/other">Government/other</option>
+                    </select>
+                  </div>
+
+                  <label class="field-label" for="filter-chain-owned">
+                    Chain owned
+                  </label>
+                  <div class="select-wrap">
+                    <select id="filter-chain-owned">
+                      <option value="">All</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+
+                  <label class="field-label" for="filter-chain">
+                    Chain organization
+                  </label>
+                  <div class="select-wrap">
+                    <select id="filter-chain">
+                      <option value="">All organizations</option>
+                    </select>
+                  </div>
+
+                  <label class="field-label" for="filter-late-shift">
+                    Late shift
+                  </label>
+                  <div class="select-wrap">
+                    <select id="filter-late-shift">
+                      <option value="">All</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                      <option value="Unknown">Unknown</option>
+                    </select>
+                  </div>
+
+                  <div class="number-pair">
+                    <label>
+                      <span>Minimum stations</span>
+                      <input id="filter-stations-min" min="0" type="number" />
+                    </label>
+                    <label>
+                      <span>Maximum stations</span>
+                      <input id="filter-stations-max" min="0" type="number" />
+                    </label>
+                  </div>
+
+                  <label class="field-label" for="filter-geocode">
+                    Geocoding status
+                  </label>
+                  <div class="select-wrap">
+                    <select id="filter-geocode">
+                      <option value="matched">Matched only</option>
+                      <option value="">All, including unresolved</option>
+                      <option value="exact">Exact</option>
+                      <option value="non_exact">Non-exact</option>
+                      <option value="manual_override">Manual override</option>
+                      <option value="unresolved">Unresolved only</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="control-section">
+                  <div class="section-title">
+                    <span>Transit filters</span>
+                  </div>
+
+                  <label class="field-label" for="filter-stop-type">Stop type</label>
+                  <div class="select-wrap">
+                    <select id="filter-stop-type">
+                      <option value="">All stop types</option>
+                    </select>
+                  </div>
+
+                  <label class="field-label" for="filter-wheelchair">
+                    Wheelchair indication
+                  </label>
+                  <div class="select-wrap">
+                    <select id="filter-wheelchair">
+                      <option value="">All statuses</option>
+                      <option value="Indicated accessible">
+                        Indicated accessible
+                      </option>
+                      <option value="Indicated not accessible">
+                        Indicated not accessible
+                      </option>
+                      <option value="Unknown">Unknown</option>
+                    </select>
+                  </div>
+
+                  <label class="field-label" for="filter-agency">Agency</label>
+                  <div class="select-wrap">
+                    <select id="filter-agency">
+                      <option value="">All agencies</option>
+                    </select>
+                  </div>
+                </div>
+
+                <button class="primary-action" id="reset-filters" type="button">
+                  Reset all filters
+                </button>
+              </form>
             </section>
 
             <section
@@ -282,14 +467,106 @@
               id="panel-analytics"
               role="tabpanel"
             >
-              <div class="empty-panel">
-                <span class="empty-icon" aria-hidden="true">▥</span>
-                <h2>Analytics need a validated snapshot.</h2>
-                <p>
-                  Summary cards, the distance distribution, facility table,
-                  and CSV export remain intentionally empty until reproducible
-                  spatial metrics are loaded.
-                </p>
+              <div class="analytics-heading">
+                <div>
+                  <span class="eyebrow">Demonstration analytics</span>
+                  <h2 id="analytics-extent-title">Current map viewport</h2>
+                </div>
+                <button class="export-button" id="export-csv" type="button">
+                  Export CSV
+                </button>
+              </div>
+
+              <div class="analytics-summary" id="analytics-summary">
+                <article>
+                  <span>Facilities included</span>
+                  <strong id="metric-facilities">0</strong>
+                </article>
+                <article>
+                  <span>Within threshold</span>
+                  <strong id="metric-within">0</strong>
+                </article>
+                <article>
+                  <span>Share within threshold</span>
+                  <strong id="metric-percentage">0%</strong>
+                </article>
+                <article>
+                  <span>Median nearest stop</span>
+                  <strong id="metric-median">—</strong>
+                </article>
+                <article>
+                  <span>25th / 75th percentile</span>
+                  <strong id="metric-quartiles">—</strong>
+                </article>
+                <article>
+                  <span>Transit stops in extent</span>
+                  <strong id="metric-stops">0</strong>
+                </article>
+              </div>
+
+              <p class="analytics-note" id="analytics-excluded">
+                0 unresolved geocodes excluded from spatial analytics.
+              </p>
+
+              <div class="distribution-section">
+                <div class="section-title">
+                  <span>Nearest-stop distance distribution</span>
+                  <small>Table-equivalent values appear beside each bar</small>
+                </div>
+                <div
+                  aria-label="Nearest-stop distance distribution"
+                  class="distribution"
+                  id="distance-distribution"
+                  role="img"
+                ></div>
+              </div>
+
+              <div class="facility-results">
+                <div class="section-title">
+                  <span>Facility results</span>
+                  <small id="result-count">0 rows</small>
+                </div>
+                <div class="table-scroll">
+                  <table id="facility-table">
+                    <caption class="sr-only">
+                      Filtered dialysis facility proximity results
+                    </caption>
+                    <thead>
+                      <tr>
+                        <th scope="col">
+                          <button data-sort="name" type="button">Facility</button>
+                        </th>
+                        <th scope="col">
+                          <button data-sort="location" type="button">
+                            City / state
+                          </button>
+                        </th>
+                        <th scope="col">
+                          <button data-sort="ownership" type="button">
+                            Ownership
+                          </button>
+                        </th>
+                        <th scope="col">
+                          <button data-sort="stations" type="button">
+                            Stations
+                          </button>
+                        </th>
+                        <th scope="col">
+                          <button data-sort="nearestDistance" type="button">
+                            Nearest stop
+                          </button>
+                        </th>
+                        <th scope="col">
+                          <button data-sort="stopCount" type="button">
+                            Stops in radius
+                          </button>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody id="facility-table-body"></tbody>
+                  </table>
+                </div>
+                <div class="facility-cards" id="facility-cards"></div>
               </div>
             </section>
 
@@ -301,42 +578,83 @@
             >
               <div class="methods-panel">
                 <span class="eyebrow">Interpret with care</span>
-                <h2>What this explorer will measure</h2>
+                <h2>What this explorer measures</h2>
                 <p>
-                  Phase 1 compares approximate facility coordinates with
-                  fixed-route transit stops using geodesic straight-line
-                  distance.
+                  This local demonstration compares fictional, CMS-shaped
+                  facility records with fictional, BTS-shaped fixed-route stop
+                  records using geodesic straight-line distance.
                 </p>
                 <dl>
                   <div>
-                    <dt>Dialysis source</dt>
-                    <dd>CMS Provider Data Catalog</dd>
+                    <dt>Facility model</dt>
+                    <dd>CMS Provider Data Catalog fields</dd>
                   </div>
                   <div>
-                    <dt>Transit source</dt>
-                    <dd>USDOT/BTS National Transit Map</dd>
+                    <dt>Transit model</dt>
+                    <dd>USDOT/BTS National Transit Map fields</dd>
                   </div>
                   <div>
-                    <dt>Facility geocoding</dt>
-                    <dd>U.S. Census Geocoder</dd>
+                    <dt>Geocoding model</dt>
+                    <dd>U.S. Census Geocoder statuses</dd>
+                  </div>
+                  <div>
+                    <dt>Fixture prepared</dt>
+                    <dd>July 29, 2026</dd>
                   </div>
                 </dl>
+
+                <h3>Source limitations represented by the final product</h3>
+                <ul>
+                  <li>
+                    CMS listings can include facilities with changed operating
+                    status or availability.
+                  </li>
+                  <li>
+                    National Transit Map coverage and source validity vary by
+                    agency and snapshot.
+                  </li>
+                  <li>
+                    National Transit Map data support research—not navigation or
+                    real-time trip planning.
+                  </li>
+                  <li>
+                    Address-range facility coordinates are approximate, and
+                    unresolved records remain visible in the table.
+                  </li>
+                </ul>
+
                 <div class="caution-card">
                   Proximity does not measure schedules, walking barriers,
-                  safety, weather exposure, disability access, or trip
-                  feasibility.
+                  safety, weather exposure, disability access, paratransit
+                  eligibility, or trip feasibility.
                 </div>
+
+                <h3>Accessibility and privacy</h3>
+                <p>
+                  Every result is available in a table alternative. Search text
+                  remains in the active browser interaction and is not logged or
+                  stored by this static site.
+                </p>
+                <nav class="policy-links" aria-label="Site policies">
+                  <a href="./accessibility.html">Accessibility</a>
+                  <a href="./privacy.html">Privacy</a>
+                  <a href="./terms.html">Terms of use</a>
+                </nav>
               </div>
             </section>
           </div>
 
           <footer class="panel-footer">
-            <span>Source snapshots</span>
-            <strong>Pending first validated import</strong>
+            <span>Fixture snapshot</span>
+            <strong>v1.0.0 · prepared July 29, 2026</strong>
           </footer>
         </aside>
 
-        <section class="map-stage" aria-label="National map explorer">
+        <section
+          class="map-stage"
+          id="map-stage"
+          aria-label="National map explorer"
+        >
           <div
             class="google-map"
             id="google-map"
@@ -345,11 +663,11 @@
 
           <div class="map-setup-backdrop" id="map-setup-backdrop">
             <form class="map-setup" id="map-setup">
-              <span class="eyebrow">One-time local setup</span>
-              <h2>Connect the actual Google map</h2>
+              <span class="eyebrow">Map configuration</span>
+              <h2>Connect the Google basemap</h2>
               <p>
-                This project has no map credentials yet. Add a Google Maps
-                Platform browser key to load the interactive basemap.
+                The hosted site loads its key from GitHub configuration. For
+                local use, enter a referrer-restricted browser key here.
               </p>
 
               <label for="map-api-key">Maps JavaScript API key</label>
@@ -373,7 +691,7 @@
               </div>
 
               <label for="map-id">
-                Vector Map ID <span>(optional)</span>
+                Vector Map ID <span>(optional locally)</span>
               </label>
               <input
                 autocomplete="off"
@@ -388,10 +706,14 @@
                 Load Google map
               </button>
               <p class="map-setup-status" id="map-setup-status" role="status">
-                Saved only in this browser. Use a key restricted to
-                <strong>http://localhost/*</strong>.
+                The interface, filters, analytics, details, and CSV export work
+                even before the basemap is connected.
               </p>
             </form>
+          </div>
+
+          <div class="map-loading" hidden id="map-loading" role="status">
+            Updating map layers…
           </div>
 
           <button class="panel-open" hidden id="panel-open" type="button">
@@ -402,7 +724,7 @@
           <div class="map-context">
             <span class="context-dot" aria-hidden="true"></span>
             <span>
-              <strong id="region-readout">United States</strong>
+              <strong id="region-readout">Current map viewport</strong>
               <small id="map-state-readout">400 m threshold · zoom 4</small>
             </span>
           </div>
@@ -427,7 +749,7 @@
           </div>
 
           <div class="map-legend" aria-label="Map legend">
-            <strong>Legend</strong>
+            <strong>Demonstration layers</strong>
             <span>
               <i class="legend-symbol legend-symbol--facility"></i>
               Dialysis facility
@@ -436,12 +758,62 @@
               <i class="legend-symbol legend-symbol--transit"></i>
               Transit stop
             </span>
-            <small>Source-backed facility and stop layers are pending.</small>
+            <small>Clusters split into fixture points as the map zooms in.</small>
           </div>
 
           <div class="map-attribution">
-            Research sources: CMS · U.S. Census Bureau · USDOT/BTS
+            Fixture models: CMS · U.S. Census Bureau · USDOT/BTS
           </div>
+
+          <aside
+            aria-labelledby="facility-detail-title"
+            class="detail-drawer"
+            hidden
+            id="facility-detail"
+          >
+            <button
+              aria-label="Close facility details"
+              class="detail-close"
+              id="facility-detail-close"
+              type="button"
+            >
+              ×
+            </button>
+            <span class="eyebrow">Demonstration facility</span>
+            <h2 id="facility-detail-title"></h2>
+            <p class="detail-address" id="facility-detail-address"></p>
+            <div id="facility-detail-content"></div>
+            <div class="detail-actions">
+              <button id="detail-toggle-line" type="button">
+                Show nearest-stop line
+              </button>
+              <button id="detail-toggle-circle" type="button">
+                Show threshold circle
+              </button>
+            </div>
+            <div class="caution-card">
+              Proximity is not proof of usable transit access.
+            </div>
+          </aside>
+
+          <aside
+            aria-labelledby="stop-detail-title"
+            class="stop-card"
+            hidden
+            id="stop-detail"
+          >
+            <button
+              aria-label="Close transit stop details"
+              class="detail-close"
+              id="stop-detail-close"
+              type="button"
+            >
+              ×
+            </button>
+            <span class="eyebrow">Demonstration transit stop</span>
+            <h2 id="stop-detail-title"></h2>
+            <div id="stop-detail-content"></div>
+          </aside>
 
           <p class="sr-only" id="layer-announcement" aria-live="polite">
             Dialysis layer on. Transit layer on. Threshold 400 meters.

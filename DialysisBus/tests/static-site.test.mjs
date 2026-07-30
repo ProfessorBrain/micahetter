@@ -1,45 +1,137 @@
 import assert from "node:assert/strict";
 import { access, readFile } from "node:fs/promises";
 import test from "node:test";
+import vm from "node:vm";
 
 const root = new URL("../", import.meta.url);
 
-test("root index is a local entry point with live-map setup", async () => {
+test("root entry point contains the complete explorer surfaces", async () => {
   const html = await readFile(new URL("index.html", root), "utf8");
 
   assert.match(html, /<title>Dialysis &amp; Transit Explorer<\/title>/);
   assert.match(html, /href="\.\/styles\.css"/);
+  assert.match(html, /src="\.\/config\.js"/);
+  assert.match(html, /src="\.\/sample-data\.js"/);
   assert.match(html, /src="\.\/app\.js"/);
-  assert.match(html, /Explore the space between care and transit\./);
-  assert.match(html, /Straight-line distance is context/);
   assert.match(html, /id="google-map"/);
-  assert.match(html, /Connect the actual Google map/);
-  assert.match(html, /id="map-api-key"/);
-  assert.match(html, /id="map-id"/);
-  assert.match(html, /id="forget-map-key"/);
-  assert.doesNotMatch(html, /No network or source data loaded/);
-  assert.doesNotMatch(html, /class="map-preview"/);
-  assert.match(html, /Source-backed facility and stop layers are pending\./);
+  assert.match(html, /id="panel-layers"/);
+  assert.match(html, /id="panel-filters"/);
+  assert.match(html, /id="panel-analytics"/);
+  assert.match(html, /id="panel-methods"/);
+  assert.match(html, /id="custom-radius"/);
+  assert.match(html, /id="facility-table"/);
+  assert.match(html, /id="facility-detail"/);
+  assert.match(html, /id="stop-detail"/);
+  assert.match(html, /id="export-csv"/);
+  assert.match(html, /id="current-location"/);
+  assert.match(html, /list="fixture-location-suggestions"/);
+  assert.match(html, /id="fixture-location-suggestions"/);
+  assert.match(html, /Demonstration mode/);
+  assert.doesNotMatch(html, /available after data load/i);
+  assert.doesNotMatch(html, /filters are staged/i);
+  assert.doesNotMatch(html, /analytics need a validated snapshot/i);
   assert.doesNotMatch(html, /<(?:script|link)[^>]+https?:\/\//);
 
-  await Promise.all([
-    access(new URL("styles.css", root)),
-    access(new URL("app.js", root)),
-  ]);
+  await Promise.all(
+    [
+      "accessibility.html",
+      "app.js",
+      "config.js",
+      "privacy.html",
+      "sample-data.js",
+      "styles.css",
+      "terms.html",
+    ].map((path) => access(new URL(path, root))),
+  );
 });
 
-test("local script includes the required shell interactions", async () => {
+test("demonstration dataset is deterministic, multi-state, and explicit", async () => {
+  const source = await readFile(new URL("sample-data.js", root), "utf8");
+  const context = vm.createContext({ window: {} });
+  vm.runInContext(source, context);
+  const data = context.window.DIALYSIS_TRANSIT_SAMPLE_DATA;
+
+  assert.equal(data.metadata.mode, "demonstration");
+  assert.match(data.metadata.notice, /fictional/i);
+  assert.ok(data.facilities.length >= 18);
+  assert.ok(data.stops.length >= 20);
+
+  const ccns = data.facilities.map((facility) => facility.ccn);
+  assert.equal(new Set(ccns).size, ccns.length);
+  assert.deepEqual(
+    [...new Set(data.facilities.map((facility) => facility.state))].sort(),
+    ["AZ", "CA", "CO", "FL", "IL", "NY", "TX"],
+  );
+  assert.ok(
+    data.facilities.some((facility) => facility.geocodeStatus === "no_match"),
+  );
+  assert.ok(
+    data.facilities.every((facility) =>
+      facility.name.includes("demonstration"),
+    ),
+  );
+});
+
+test("client script implements every anticipated local workflow", async () => {
   const script = await readFile(new URL("app.js", root), "utf8");
 
-  assert.match(script, /setActiveTab/);
-  assert.match(script, /updateLayerState/);
-  assert.match(script, /selectRadius/);
-  assert.match(script, /selectState/);
-  assert.match(script, /workspace--panel-closed/);
+  for (const expected of [
+    "distanceMeters",
+    "percentile",
+    "calculateResults",
+    "renderDistribution",
+    "renderTable",
+    "selectFacility",
+    "selectStop",
+    "updateSelectionOverlays",
+    "AdvancedMarkerElement",
+    'importLibrary("maps")',
+    'importLibrary("marker")',
+    'importLibrary("places")',
+    "geocoder.geocode",
+    "navigator.geolocation.getCurrentPosition",
+    "serializeState",
+    "restoreStateFromUrl",
+    "copyViewLink",
+    "exportCsv",
+    "populateLocationSuggestions",
+    "Blob",
+    "formula",
+  ]) {
+    if (expected === "formula") {
+      assert.match(script, /\^\[=\+\\\-@\]/);
+    } else {
+      assert.ok(script.includes(expected), `missing ${expected}`);
+    }
+  }
+
   assert.match(script, /maps\.googleapis\.com\/maps\/api\/js/);
-  assert.match(script, /google\.maps\.importLibrary\("maps"\)/);
-  assert.match(script, /google\.maps\.importLibrary\("geocoding"\)/);
-  assert.match(script, /window\.localStorage/);
-  assert.match(script, /geocoder\.geocode/);
-  assert.match(script, /googleMap\.panTo/);
+  assert.match(
+    script,
+    /nextRadius < 100 \|\| nextRadius > 5000/,
+  );
+  assert.match(script, /dialysis-transit-explorer_\$\{date\}/);
+  assert.match(script, /synthetic_demonstration_fixture/);
+  assert.match(script, /parameters\.has\("lat"\)/);
+  assert.match(script, /googlePlacesAutocomplete/);
+});
+
+test("public map configuration exposes the explicit demo integration switch", async () => {
+  const config = await readFile(new URL("config.js", root), "utf8");
+
+  assert.match(config, /googleMapsApiKey:\s*"AIza/);
+  assert.match(config, /googlePlacesAutocomplete:\s*false/);
+});
+
+test("policy pages preserve the required limitations", async () => {
+  const [accessibility, privacy, terms] = await Promise.all([
+    readFile(new URL("accessibility.html", root), "utf8"),
+    readFile(new URL("privacy.html", root), "utf8"),
+    readFile(new URL("terms.html", root), "utf8"),
+  ]);
+
+  assert.match(accessibility, /table equivalents/i);
+  assert.match(privacy, /does not save or transmit/i);
+  assert.match(terms, /Straight-line proximity does not establish/i);
+  assert.match(terms, /synthetic fixtures/i);
 });

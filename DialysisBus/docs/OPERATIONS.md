@@ -1,10 +1,32 @@
 # Operations
 
+## GitHub Pages demonstration
+
+The root static site requires no build. In the current
+`ProfessorBrain/micahetter` repository, configure GitHub Pages to publish the
+`main` branch from `/ (root)`, then open `/DialysisBus/` beneath the Pages
+origin. All browser assets use relative paths and are safe at that subpath.
+
+The public demonstration map key is stored in `config.js`. Restrict it to the
+required Google Maps APIs and the Pages origin. The local fixture autocomplete
+is the default and needs no Places service. Arbitrary address lookup requires
+Geocoding API; Google's Places widget additionally requires Places API (New)
+and `googlePlacesAutocomplete: true`. A deployment is a normal commit to
+`main`; rollback uses a revert commit so repository history remains intact.
+
+Before publishing:
+
+1. Run `node --check app.js` and `node --check sample-data.js`.
+2. Run `node --test tests/static-site.test.mjs`.
+3. Serve the directory locally and verify map, filters, analytics, details,
+   URL restoration, and CSV export.
+4. Confirm every fixture remains visibly labeled as demonstration data.
+
 ## Local startup
 
 1. Copy `.env.example` to `.env`.
 2. Replace the local database passwords.
-3. Add restricted Google Maps credentials if a live basemap is required.
+3. Add restricted Google Maps credentials if testing the containerized web app.
 4. Run `make bootstrap`.
 5. Run `make dev`.
 

@@ -6,6 +6,16 @@ The Dialysis & Transit Explorer is an exploratory, read-only tool. It will
 compare Medicare-certified dialysis-facility locations with public
 transportation stops and report reproducible geographic-proximity measures.
 
+## Demonstration dataset
+
+The root GitHub Pages site currently uses deterministic synthetic records in
+`sample-data.js`. The fixture fields mirror the planned CMS, Census, and
+USDOT/BTS contracts so map, filter, detail, analytic, and export behavior can be
+tested without implying that the displayed values are official findings.
+Facility-to-stop distances are calculated in the browser with the haversine
+formula on a spherical Earth radius of 6,371,008.8 meters. Production results
+must instead use PostGIS geography operations as specified below.
+
 ## Planned authoritative sources
 
 - Dialysis facilities: CMS Provider Data Catalog dataset `23ew-n7w9`
@@ -35,9 +45,10 @@ Stop proximity is not proof of practical transit access. It does not measure:
 Facility coordinates produced by address-range geocoding are approximate.
 National Transit Map coverage and freshness vary by agency and snapshot.
 
-## Epic 1 status
+## Static demonstration status
 
-The current interface uses clearly labeled illustrative symbols when no source
-snapshot exists. No illustrative count is presented as a real facility or stop
-measurement. Source dates, row counts, and hashes will appear only after the
-ETL and validation epics are complete.
+The interface contains synthetic facility and stop records across seven states,
+including matched, overridden, tied, and unmatched geocoding cases. Every
+record name and exported row is labeled as demonstration data. Official source
+dates, row counts, hashes, and validation reports will appear only after the
+production ETL and validation epics are complete.
