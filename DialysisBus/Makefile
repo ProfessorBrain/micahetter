@@ -1,6 +1,6 @@
 COMPOSE := docker compose -f infra/docker-compose.yml
 
-.PHONY: bootstrap db migrate ingest-sample ingest-production compute-metrics dev static-test test lint e2e qa-report down
+.PHONY: bootstrap db migrate ingest-sample ingest-production compute-metrics dev refresh-public-data static-test test lint e2e qa-report down
 
 bootstrap:
 	$(COMPOSE) build
@@ -24,9 +24,14 @@ compute-metrics:
 dev:
 	$(COMPOSE) up --build
 
+refresh-public-data:
+	node scripts/build-public-data.mjs
+
 static-test:
 	node --check app.js
 	node --check sample-data.js
+	node --check public-data.js
+	node --check scripts/build-public-data.mjs
 	node --test tests/static-site.test.mjs
 
 test: static-test

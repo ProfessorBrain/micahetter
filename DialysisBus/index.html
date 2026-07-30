@@ -9,12 +9,13 @@
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta
       name="description"
-      content="Explore demonstration dialysis-facility and public-transit proximity on an interactive Google map."
+      content="Explore nationwide CMS dialysis facilities and USDOT/BTS public-transit stops on an interactive Google map."
     />
     <meta name="theme-color" content="#0b5955" />
     <title>Dialysis &amp; Transit Explorer</title>
     <link rel="stylesheet" href="./styles.css" />
     <script src="./config.js"></script>
+    <script src="./public-data.js"></script>
     <script src="./sample-data.js"></script>
     <script src="./app.js" defer></script>
   </head>
@@ -28,7 +29,7 @@
           <span class="brand-mark" aria-hidden="true"><span></span></span>
           <div>
             <strong>Dialysis &amp; Transit Explorer</strong>
-            <small>Phase 1 demonstration workspace</small>
+            <small>Nationwide public-data explorer</small>
           </div>
         </div>
 
@@ -40,12 +41,12 @@
           <input
             autocomplete="off"
             id="location-search"
-            list="fixture-location-suggestions"
+            list="facility-location-suggestions"
             name="location"
             placeholder="City, ZIP code, or address"
             type="search"
           />
-          <datalist id="fixture-location-suggestions"></datalist>
+          <datalist id="facility-location-suggestions"></datalist>
           <button type="submit">Go</button>
         </form>
 
@@ -53,17 +54,17 @@
           <button class="text-button" id="methods-shortcut" type="button">
             Data &amp; methods
           </button>
-          <span class="demo-status" title="The bundled records are fictional">
+          <span class="demo-status" title="CMS, Census, and USDOT/BTS public data">
             <span aria-hidden="true"></span>
-            Demo data
+            Public data
           </span>
         </div>
       </header>
 
       <div class="fixture-banner" role="note">
-        <strong>Demonstration mode.</strong>
-        Facilities, stops, and metrics are synthetic fixtures—not published CMS
-        or BTS results.
+        <strong>Public-source snapshot.</strong>
+        Facilities come from CMS and the Census Geocoder; BTS transit stops
+        load for the active viewport at street-level zoom.
       </div>
 
       <div class="notice-bar" id="notice-bar" hidden role="status">
@@ -162,7 +163,7 @@
                 <div class="section-title">
                   <div>
                     <span>Map layers</span>
-                    <small>Bundled deterministic fixtures</small>
+                    <small>Nationwide public sources</small>
                   </div>
                   <span class="count-badge" id="layer-count">2 selected</span>
                 </div>
@@ -174,7 +175,7 @@
                   ></span>
                   <span class="toggle-copy">
                     <strong>Dialysis facilities</strong>
-                    <small>CMS-shaped demonstration records</small>
+                    <small>CMS directory · Census-geocoded</small>
                   </span>
                   <span class="switch">
                     <input
@@ -194,7 +195,7 @@
                   ></span>
                   <span class="toggle-copy">
                     <strong>Public transit stops</strong>
-                    <small>BTS-shaped demonstration records</small>
+                    <small>BTS National Transit Map · zoom 10+</small>
                   </span>
                   <span class="switch">
                     <input
@@ -339,15 +340,15 @@
                   <div class="section-title">
                     <div>
                       <span>Facility filters</span>
-                      <small id="facility-filter-count">18 records available</small>
+                      <small id="facility-filter-count">Loading CMS records…</small>
                     </div>
                   </div>
 
                   <label class="checkbox-row">
-                    <input checked id="filter-in-center" type="checkbox" />
+                    <input id="filter-in-center" type="checkbox" />
                     <span>
                       <strong>Offers in-center hemodialysis</strong>
-                      <small>Enabled by default</small>
+                      <small>Optional service filter</small>
                     </span>
                   </label>
 
@@ -469,7 +470,7 @@
             >
               <div class="analytics-heading">
                 <div>
-                  <span class="eyebrow">Demonstration analytics</span>
+                  <span class="eyebrow">Viewport analytics</span>
                   <h2 id="analytics-extent-title">Current map viewport</h2>
                 </div>
                 <button class="export-button" id="export-csv" type="button">
@@ -580,9 +581,10 @@
                 <span class="eyebrow">Interpret with care</span>
                 <h2>What this explorer measures</h2>
                 <p>
-                  This local demonstration compares fictional, CMS-shaped
-                  facility records with fictional, BTS-shaped fixed-route stop
-                  records using geodesic straight-line distance.
+                  This explorer compares CMS dialysis-facility records,
+                  geocoded through the U.S. Census Bureau, with fixed-route
+                  stops loaded from the USDOT/BTS National Transit Map using
+                  geodesic straight-line distance.
                 </p>
                 <dl>
                   <div>
@@ -598,8 +600,8 @@
                     <dd>U.S. Census Geocoder statuses</dd>
                   </div>
                   <div>
-                    <dt>Fixture prepared</dt>
-                    <dd>July 29, 2026</dd>
+                    <dt>Data prepared</dt>
+                    <dd id="methods-prepared-date">Loading source manifest…</dd>
                   </div>
                 </dl>
 
@@ -645,8 +647,8 @@
           </div>
 
           <footer class="panel-footer">
-            <span>Fixture snapshot</span>
-            <strong>v1.0.0 · prepared July 29, 2026</strong>
+            <span>Public data snapshot</span>
+            <strong id="snapshot-readout">Loading source manifest…</strong>
           </footer>
         </aside>
 
@@ -725,7 +727,7 @@
             <span class="context-dot" aria-hidden="true"></span>
             <span>
               <strong id="region-readout">Current map viewport</strong>
-              <small id="map-state-readout">400 m threshold · zoom 4</small>
+              <small id="map-state-readout">400 m threshold · zoom 3</small>
             </span>
           </div>
 
@@ -749,7 +751,7 @@
           </div>
 
           <div class="map-legend" aria-label="Map legend">
-            <strong>Demonstration layers</strong>
+            <strong>Public data layers</strong>
             <span>
               <i class="legend-symbol legend-symbol--facility"></i>
               Dialysis facility
@@ -758,11 +760,11 @@
               <i class="legend-symbol legend-symbol--transit"></i>
               Transit stop
             </span>
-            <small>Clusters split into fixture points as the map zooms in.</small>
+            <small>Facility clusters split into points; BTS stops load at zoom 10+.</small>
           </div>
 
           <div class="map-attribution">
-            Fixture models: CMS · U.S. Census Bureau · USDOT/BTS
+            Sources: CMS · U.S. Census Bureau · USDOT/BTS
           </div>
 
           <aside
@@ -779,7 +781,7 @@
             >
               ×
             </button>
-            <span class="eyebrow">Demonstration facility</span>
+            <span class="eyebrow">CMS dialysis facility</span>
             <h2 id="facility-detail-title"></h2>
             <p class="detail-address" id="facility-detail-address"></p>
             <div id="facility-detail-content"></div>
@@ -810,7 +812,7 @@
             >
               ×
             </button>
-            <span class="eyebrow">Demonstration transit stop</span>
+            <span class="eyebrow">BTS National Transit Map stop</span>
             <h2 id="stop-detail-title"></h2>
             <div id="stop-detail-content"></div>
           </aside>

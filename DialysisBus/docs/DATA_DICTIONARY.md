@@ -1,17 +1,20 @@
 # Data dictionary
 
-## Static demonstration records
+## Static GitHub Pages records
 
-`sample-data.js` contains two browser-only arrays:
+`public-data.js` contains the published browser-only facility array:
 
-- `facilities`, keyed by fictional six-character CCN values and shaped like the
-  required CMS facility fields; and
-- `stops`, keyed by deterministic fixture IDs and shaped like the required
-  National Transit Map stop fields.
+- `facilities`, keyed by CMS Certification Number and containing normalized CMS
+  listing attributes plus Census geocode status, matched address, latitude,
+  longitude, benchmark, and source snapshot date.
 
-Nearest-stop distance and active-radius counts are derived at runtime and are
-never represented as official source measurements. Exported records include
-`data_mode=synthetic_demonstration_fixture`.
+The `stops` array is populated at runtime from National Transit Map fields for
+the visible zoom-10-or-closer viewport. Nearest-stop distance and active-radius
+counts are derived in the browser and are never represented as official source
+measurements. Exported records include `data_mode=public_snapshot`.
+
+`sample-data.js` retains fictional deterministic facilities and stops for
+fallback testing only.
 
 ## Production schema
 

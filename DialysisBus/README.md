@@ -4,11 +4,11 @@ The primary deliverable is the GitHub Pages-compatible static site at
 [`index.html`](index.html). It has no build step and uses relative asset paths,
 so it works from a repository subdirectory as well as from a local HTTP server.
 
-The current site is a complete **Phase 1 interaction demonstration**. It uses a
-real Google Maps basemap plus a bundled deterministic fixture dataset so every
-workflow can be exercised without a database or data-source download. Every
-fixture is fictional and labeled “demonstration”; the site does not present
-fixture metrics as CMS or USDOT/BTS findings.
+The current site is a complete **Phase 1 public-data explorer**. It uses a real
+Google Maps basemap, a published nationwide CMS facility snapshot geocoded
+through the U.S. Census Bureau, and live viewport queries to the USDOT/BTS
+National Transit Map. The generated source manifest records the source URLs,
+snapshot date, facility count, and geocoding coverage.
 
 ## Open locally
 
@@ -21,7 +21,7 @@ python -m http.server 8080
 Then open `http://localhost:8080`.
 
 The committed `config.js` contains the public demonstration Google Maps browser
-key. A separate production key is not required for this demo. Browser keys are
+key. A separate production key is not required for this site. Browser keys are
 visible to visitors by design, so restrict the key in Google Cloud to:
 
 - Maps JavaScript API
@@ -30,7 +30,8 @@ visible to visitors by design, so restrict the key in Google Cloud to:
   `https://professorbrain.github.io/*`
 - local referrers only when local map testing is required
 
-The bundled city, ZIP, and address autocomplete works without Places billing.
+The bundled city and ZIP suggestions plus facility-index search work without
+Places billing.
 To add Google's Places widget, enable Places API (New) and set
 `googlePlacesAutocomplete: true` in `config.js`. `config.example.js` documents
 the configuration shape. A locally entered key is stored only in that browser
@@ -59,7 +60,9 @@ unchanged at `https://<account>.github.io/<repository>/`.
 ## Implemented user workflows
 
 - Real Google Maps JavaScript basemap with a vector Map ID.
-- Low-zoom state clusters and high-zoom facility/stop points.
+- Low-zoom nationwide state clusters and high-zoom facility points.
+- BTS transit-stop loading for the active viewport at zoom level 10 or closer;
+  dense 2,000-record responses ask the user to zoom further.
 - Facility and transit layer toggles.
 - State selection, current viewport analysis, national reset, zoom controls,
   current-location navigation, and city/ZIP/address search.
@@ -87,7 +90,10 @@ index.html             Main explorer
 styles.css             Responsive visual system
 app.js                 Map, filters, analytics, details, URL state, export
 sample-data.js         Synthetic deterministic Phase 1 fixtures
-config.js              Published Google Maps demonstration configuration
+public-data.js         Generated nationwide CMS/Census facility snapshot
+data/source-manifest.json  Snapshot provenance and record counts
+scripts/build-public-data.mjs  Reproducible CMS/Census refresh
+config.js              Published Google Maps browser configuration
 config.example.js      Configuration template
 accessibility.html     Accessibility statement
 privacy.html           Privacy notice
@@ -102,8 +108,19 @@ Run the root checks:
 ```text
 node --check app.js
 node --check sample-data.js
+node --check public-data.js
+node --check scripts/build-public-data.mjs
 node --test tests/static-site.test.mjs
 ```
+
+Refresh the published facility snapshot from the official CMS and Census APIs:
+
+```text
+node scripts/build-public-data.mjs
+```
+
+The synthetic `sample-data.js` file remains only as a deterministic fallback
+and test fixture; it is not selected when `public-data.js` loads normally.
 
 The repository also retains the original Epic 1 production-platform scaffold:
 
@@ -116,10 +133,10 @@ infra/             Docker Compose and service images
 docs/              Design, methods, operations, and data dictionary
 ```
 
-That scaffold is the path for replacing fixtures with validated national CMS,
-Census-geocoded, and USDOT/BTS snapshots. Full source ingestion, production
-PostGIS analytics, and national API performance acceptance are not implied by
-the static demonstration dataset.
+That scaffold remains the path for scheduled ingestion, PostGIS materialized
+metrics, and bounded national APIs. The GitHub Pages edition performs
+facility-to-stop calculations only against the BTS stops loaded for the current
+street-level viewport.
 
 ## Interpretation
 

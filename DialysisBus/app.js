@@ -1,25 +1,37 @@
 (() => {
   "use strict";
 
-  const DATA = window.DIALYSIS_TRANSIT_SAMPLE_DATA;
+  const DATA =
+    window.DIALYSIS_TRANSIT_PUBLIC_DATA ||
+    window.DIALYSIS_TRANSIT_SAMPLE_DATA;
   if (!DATA) {
-    throw new Error("The bundled demonstration dataset could not be loaded.");
+    throw new Error("The dialysis and transit dataset could not be loaded.");
   }
+  const IS_PUBLIC_DATA = DATA.metadata.mode === "public_snapshot";
+  const TRANSIT_MIN_ZOOM = 10;
+  const TRANSIT_RECORD_LIMIT = 2000;
+  const TRANSIT_SERVICE_URL =
+    "https://services.arcgis.com/xOi1kZaI0eWDREZv/arcgis/rest/services/NTAD_National_Transit_Map_Stops/FeatureServer/0/query";
 
   const MAP_STORAGE_KEY = "dialysisTransitGoogleMaps";
   const MAP_CALLBACK = "__dialysisTransitGoogleMapsReady";
   const NATIONAL_VIEW = {
-    center: { lat: 39.5, lng: -98.35 },
+    center: { lat: 37.5, lng: -112 },
     name: "Current map viewport",
-    zoom: 4,
+    zoom: 3,
   };
   const NATIONAL_BOUNDS = {
-    east: -66,
-    north: 50,
-    south: 24,
-    west: -125,
+    east: -60,
+    north: 72,
+    south: -15,
+    west: 130,
   };
   const STATE_VIEWS = {
+    AS: {
+      center: { lat: -14.271, lng: -170.132 },
+      name: "American Samoa",
+      zoom: 9,
+    },
     AZ: {
       center: { lat: 34.2744, lng: -111.6602 },
       name: "Arizona",
@@ -55,6 +67,74 @@
       name: "Texas",
       zoom: 6,
     },
+    MP: {
+      center: { lat: 15.18, lng: 145.75 },
+      name: "Northern Mariana Islands",
+      zoom: 9,
+    },
+    VI: {
+      center: { lat: 18.3358, lng: -64.8963 },
+      name: "U.S. Virgin Islands",
+      zoom: 9,
+    },
+  };
+  const STATE_NAMES = {
+    AK: "Alaska",
+    AL: "Alabama",
+    AR: "Arkansas",
+    AS: "American Samoa",
+    AZ: "Arizona",
+    CA: "California",
+    CO: "Colorado",
+    CT: "Connecticut",
+    DC: "District of Columbia",
+    DE: "Delaware",
+    FL: "Florida",
+    GA: "Georgia",
+    GU: "Guam",
+    HI: "Hawaii",
+    IA: "Iowa",
+    ID: "Idaho",
+    IL: "Illinois",
+    IN: "Indiana",
+    KS: "Kansas",
+    KY: "Kentucky",
+    LA: "Louisiana",
+    MA: "Massachusetts",
+    MD: "Maryland",
+    ME: "Maine",
+    MI: "Michigan",
+    MN: "Minnesota",
+    MO: "Missouri",
+    MP: "Northern Mariana Islands",
+    MS: "Mississippi",
+    MT: "Montana",
+    NC: "North Carolina",
+    ND: "North Dakota",
+    NE: "Nebraska",
+    NH: "New Hampshire",
+    NJ: "New Jersey",
+    NM: "New Mexico",
+    NV: "Nevada",
+    NY: "New York",
+    OH: "Ohio",
+    OK: "Oklahoma",
+    OR: "Oregon",
+    PA: "Pennsylvania",
+    PR: "Puerto Rico",
+    RI: "Rhode Island",
+    SC: "South Carolina",
+    SD: "South Dakota",
+    TN: "Tennessee",
+    TX: "Texas",
+    UT: "Utah",
+    VA: "Virginia",
+    VI: "U.S. Virgin Islands",
+    VT: "Vermont",
+    WA: "Washington",
+    WI: "Wisconsin",
+    WV: "West Virginia",
+    WY: "Wyoming",
   };
   const MATCHED_GEOCODES = new Set([
     "exact",
@@ -93,7 +173,7 @@
       chain: "",
       chainOwned: "",
       geocode: "matched",
-      inCenter: true,
+      inCenter: false,
       lateShift: "",
       ownership: "",
       stationsMax: "",
@@ -134,6 +214,9 @@
     stops: [],
   };
   let mapIdleTimer = null;
+  let lastTransitQueryKey = "";
+  let transitFetchController = null;
+  let transitLoadState = IS_PUBLIC_DATA ? "zoom" : "bundled";
 
   const $ = (selector) => document.querySelector(selector);
   const $$ = (selector) => [...document.querySelectorAll(selector)];
@@ -236,11 +319,44 @@
   }
 
   function matchesExtent(record) {
+    if (
+      IS_PUBLIC_DATA &&
+      Number.isFinite(record.lat) &&
+      Number.isFinite(record.lng)
+    ) {
+      return pointInBounds(record, state.extentBounds);
+    }
     if (state.selectedState) return record.state === state.selectedState;
     if (!Number.isFinite(record.lat) || !Number.isFinite(record.lng)) {
       return true;
     }
     return pointInBounds(record, state.extentBounds);
+  }
+
+  function buildStateViews() {
+    groupByState(DATA.facilities).forEach((facilities, stateCode) => {
+      const latitudes = facilities.map((facility) => facility.lat);
+      const longitudes = facilities.map((facility) => facility.lng);
+      const latitudeSpan = Math.max(...latitudes) - Math.min(...latitudes);
+      const longitudeSpan =
+        Math.max(...longitudes) - Math.min(...longitudes);
+      const maximumSpan = Math.max(latitudeSpan, longitudeSpan);
+      const zoom =
+        maximumSpan > 30
+          ? 4
+          : maximumSpan > 15
+            ? 5
+            : maximumSpan > 7
+              ? 6
+              : maximumSpan > 3
+                ? 7
+                : 8;
+      STATE_VIEWS[stateCode] = {
+        center: clusterPosition(facilities),
+        name: STATE_NAMES[stateCode] || stateCode,
+        zoom,
+      };
+    });
   }
 
   function matchesFacilityFilters(facility, includeGeocode = true) {
@@ -463,6 +579,26 @@
       ? `${view.name} selected-state extent`
       : "Current map viewport—not an administrative-area statistic";
 
+    if (IS_PUBLIC_DATA && stateCode) {
+      const stateFacilities = DATA.facilities.filter(
+        (facility) =>
+          facility.state === stateCode &&
+          Number.isFinite(facility.lat) &&
+          Number.isFinite(facility.lng),
+      );
+      if (stateFacilities.length) {
+        state.extentBounds = {
+          east: Math.max(...stateFacilities.map((facility) => facility.lng)),
+          north: Math.max(...stateFacilities.map((facility) => facility.lat)),
+          south: Math.min(...stateFacilities.map((facility) => facility.lat)),
+          west: Math.min(...stateFacilities.map((facility) => facility.lng)),
+        };
+      }
+    }
+    if (IS_PUBLIC_DATA && view.zoom < TRANSIT_MIN_ZOOM) {
+      clearRuntimeTransitStops("zoom");
+    }
+
     if (moveMap) {
       state.center = { ...view.center };
       state.zoom = view.zoom;
@@ -494,31 +630,59 @@
     updateUrl();
   }
 
+  function replaceSelectOptions(element, values, labelForValue) {
+    while (element.options.length > 1) element.remove(1);
+    [...new Set(values.filter(Boolean))]
+      .sort((first, second) =>
+        String(labelForValue?.(first) || first).localeCompare(
+          String(labelForValue?.(second) || second),
+        ),
+      )
+      .forEach((value) => {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = labelForValue?.(value) || value;
+        element.append(option);
+      });
+  }
+
+  function populateTransitFilterOptions() {
+    replaceSelectOptions(
+      $("#filter-stop-type"),
+      [
+        state.filters.stopType,
+        ...DATA.stops.map((stop) => stop.type),
+      ],
+    );
+    replaceSelectOptions(
+      $("#filter-agency"),
+      [state.filters.agency, ...DATA.stops.map((stop) => stop.agency)],
+    );
+    $("#filter-stop-type").value = state.filters.stopType;
+    $("#filter-agency").value = state.filters.agency;
+  }
+
   function populateFilterOptions() {
-    const optionTargets = [
-      {
-        element: $("#filter-chain"),
-        values: DATA.facilities.map((facility) => facility.chain),
-      },
-      {
-        element: $("#filter-stop-type"),
-        values: DATA.stops.map((stop) => stop.type),
-      },
-      {
-        element: $("#filter-agency"),
-        values: DATA.stops.map((stop) => stop.agency),
-      },
-    ];
-    optionTargets.forEach(({ element, values }) => {
-      [...new Set(values)]
-        .sort((first, second) => first.localeCompare(second))
-        .forEach((value) => {
-          const option = document.createElement("option");
-          option.value = value;
-          option.textContent = value;
-          element.append(option);
-        });
-    });
+    replaceSelectOptions(
+      elements.stateSelect,
+      DATA.facilities.map((facility) => facility.state),
+      (stateCode) => STATE_NAMES[stateCode] || stateCode,
+    );
+    replaceSelectOptions(
+      $("#filter-chain"),
+      DATA.facilities.map((facility) => facility.chain),
+    );
+    populateTransitFilterOptions();
+  }
+
+  function clearRuntimeTransitStops(nextLoadState = "zoom") {
+    if (!IS_PUBLIC_DATA) return;
+    transitFetchController?.abort();
+    transitFetchController = null;
+    lastTransitQueryKey = "";
+    transitLoadState = nextLoadState;
+    DATA.stops = [];
+    populateTransitFilterOptions();
   }
 
   function setMetric(id, value) {
@@ -546,7 +710,10 @@
         count: counts[bin.key],
         label: bin.label,
       })),
-      { count: unresolvedCount, label: "No valid geocode" },
+      {
+        count: unresolvedCount,
+        label: IS_PUBLIC_DATA ? "Not calculated" : "No valid geocode",
+      },
     ];
     const maximum = Math.max(1, ...rows.map((row) => row.count));
     elements.distanceDistribution.innerHTML = rows
@@ -569,7 +736,9 @@
   }
 
   function renderTable(metrics) {
-    elements.facilityTableBody.innerHTML = metrics
+    const tableMetrics = metrics.slice(0, 300);
+    const cardMetrics = metrics.slice(0, 100);
+    elements.facilityTableBody.innerHTML = tableMetrics
       .map(
         (facility) => `
           <tr>
@@ -587,7 +756,12 @@
             <td>${facility.stations}</td>
             <td>
               ${formatDistance(facility.nearestDistance, true)}
-              <small>${escapeHtml(facility.nearestStop?.name || "No valid geocode")}</small>
+              <small>${escapeHtml(
+                facility.nearestStop?.name ||
+                  (Number.isFinite(facility.lat)
+                    ? "Zoom in to load BTS stops"
+                    : "No valid geocode"),
+              )}</small>
             </td>
             <td>${facility.stopCount ?? "—"}</td>
           </tr>
@@ -595,7 +769,7 @@
       )
       .join("");
 
-    elements.facilityCards.innerHTML = metrics
+    elements.facilityCards.innerHTML = cardMetrics
       .map(
         (facility) => `
           <article>
@@ -646,8 +820,8 @@
     const upperQuartile = percentile(validDistances, 0.75);
 
     elements.analyticsExtentTitle.textContent = currentExtentLabel();
-    setMetric("metric-facilities", String(results.metrics.length));
-    setMetric("metric-within", String(facilitiesWithin));
+    setMetric("metric-facilities", results.metrics.length.toLocaleString());
+    setMetric("metric-within", facilitiesWithin.toLocaleString());
     setMetric("metric-percentage", `${percentage.toFixed(1)}%`);
     setMetric("metric-median", formatDistance(median));
     setMetric(
@@ -656,14 +830,37 @@
         ? "—"
         : `${formatDistance(lowerQuartile)} / ${formatDistance(upperQuartile)}`,
     );
-    setMetric("metric-stops", String(results.stops.length));
-    elements.analyticsExcluded.textContent =
-      `${results.unresolvedInPopulation} unresolved geocode` +
-      `${results.unresolvedInPopulation === 1 ? "" : "s"} excluded from spatial analytics.`;
+    setMetric("metric-stops", results.stops.length.toLocaleString());
+    const geocodeMessage = IS_PUBLIC_DATA
+      ? `${(
+          DATA.metadata.facilityCount -
+          DATA.metadata.geocodedFacilityCount
+        ).toLocaleString()} nationwide CMS record${
+          DATA.metadata.facilityCount -
+            DATA.metadata.geocodedFacilityCount ===
+          1
+            ? ""
+            : "s"
+        } could not be Census-geocoded and are not mapped.`
+      : `${results.unresolvedInPopulation} unresolved geocode` +
+        `${results.unresolvedInPopulation === 1 ? "" : "s"} excluded from spatial analytics.`;
+    const transitMessage = !IS_PUBLIC_DATA
+      ? ""
+      : transitLoadState === "zoom"
+        ? ` Zoom to level ${TRANSIT_MIN_ZOOM} or closer to load official BTS transit stops.`
+        : transitLoadState === "loading"
+          ? " Loading BTS transit stops for this viewport…"
+          : transitLoadState === "limited"
+            ? ` Showing the first ${TRANSIT_RECORD_LIMIT.toLocaleString()} BTS stops in this viewport; zoom in for complete local results.`
+            : transitLoadState === "error"
+              ? " BTS transit stops are temporarily unavailable for this viewport."
+              : " Nearest-stop metrics use the BTS stops loaded for this viewport.";
+    elements.analyticsExcluded.textContent = geocodeMessage + transitMessage;
     elements.resultCount.textContent =
-      `${results.metrics.length} row${results.metrics.length === 1 ? "" : "s"}`;
+      `${results.metrics.length.toLocaleString()} row${results.metrics.length === 1 ? "" : "s"}` +
+      `${results.metrics.length > 300 ? " · first 300 displayed" : ""}`;
     elements.facilityFilterCount.textContent =
-      `${results.metrics.length} of ${DATA.facilities.length} records shown`;
+      `${results.metrics.length.toLocaleString()} of ${DATA.facilities.length.toLocaleString()} records shown`;
     renderDistribution(results.metrics);
     renderTable(results.metrics);
   }
@@ -740,7 +937,7 @@
         ${detailRow("Wheelchair field", escapeHtml(nearestStop?.wheelchair || "—"))}
         ${detailRow("Nearest distance", formatDistance(facility.nearestDistance, true))}
         ${detailRow("Stops in threshold", facility.stopCount === null ? "Not calculated" : String(facility.stopCount))}
-        ${detailRow("Fixture snapshot", escapeHtml(facility.snapshotDate))}
+        ${detailRow("Source snapshot", escapeHtml(facility.snapshotDate))}
       </dl>
     `;
     elements.facilityDetail.hidden = false;
@@ -783,7 +980,7 @@
         ${detailRow("Agency", escapeHtml(stop.agency))}
         ${detailRow("NTD ID", escapeHtml(stop.ntdId))}
         ${detailRow("Wheelchair field", escapeHtml(stop.wheelchair))}
-        ${detailRow("Fixture snapshot", escapeHtml(stop.snapshotDate))}
+        ${detailRow("Source snapshot", escapeHtml(stop.snapshotDate))}
       </dl>
     `;
     elements.stopDetail.hidden = false;
@@ -933,6 +1130,134 @@
     };
   }
 
+  function transitStopType(attributes) {
+    if (attributes.stop_type_text) {
+      return String(attributes.stop_type_text).replace(/^"+|"+$/g, "");
+    }
+    return (
+      {
+        0: "Stop or platform",
+        1: "Station",
+        2: "Station entrance or exit",
+        3: "Generic node",
+        4: "Boarding area",
+      }[String(attributes.location_type)] || "Transit stop"
+    );
+  }
+
+  function wheelchairStatus(value) {
+    if (String(value) === "1") return "Indicated accessible";
+    if (String(value) === "2") return "Indicated not accessible";
+    return "Unknown";
+  }
+
+  function mapTransitFeature(feature) {
+    const attributes = feature.attributes || {};
+    const lat = Number(attributes.stop_lat);
+    const lng = Number(attributes.stop_lon);
+    return {
+      agency: attributes.ntd_id
+        ? `NTD ${attributes.ntd_id}`
+        : "Agency not listed",
+      id: `bts-${attributes.OBJECTID}`,
+      lat,
+      lng,
+      name: attributes.stop_name || "Unnamed transit stop",
+      ntdId: attributes.ntd_id || "",
+      objectId: String(attributes.OBJECTID || ""),
+      snapshotDate:
+        attributes.download_date ||
+        DATA.metadata.transitSnapshotDate ||
+        DATA.metadata.preparedAt,
+      state: state.selectedState || "",
+      stopId: attributes.stop_id || "",
+      type: transitStopType(attributes),
+      wheelchair: wheelchairStatus(attributes.wheelchair_boarding),
+    };
+  }
+
+  async function loadTransitStopsForViewport() {
+    if (!IS_PUBLIC_DATA || !googleMap || !state.layers.transit) return;
+    if (state.zoom < TRANSIT_MIN_ZOOM) {
+      const hadStops = DATA.stops.length > 0;
+      clearRuntimeTransitStops("zoom");
+      if (hadStops) {
+        renderAll();
+      }
+      return;
+    }
+
+    const bounds = state.extentBounds;
+    const queryKey = [
+      bounds.west,
+      bounds.south,
+      bounds.east,
+      bounds.north,
+    ]
+      .map((value) => Number(value).toFixed(4))
+      .join(",");
+    if (queryKey === lastTransitQueryKey) return;
+    lastTransitQueryKey = queryKey;
+    transitFetchController?.abort();
+    const requestController = new AbortController();
+    transitFetchController = requestController;
+    transitLoadState = "loading";
+    elements.mapLoading.hidden = false;
+    renderAnalytics(lastResults);
+
+    const parameters = new URLSearchParams({
+      f: "json",
+      geometry: `${bounds.west},${bounds.south},${bounds.east},${bounds.north}`,
+      geometryType: "esriGeometryEnvelope",
+      inSR: "4326",
+      orderByFields: "OBJECTID",
+      outFields:
+        "OBJECTID,ntd_id,stop_id,stop_name,stop_lat,stop_lon,location_type,wheelchair_boarding,stop_type_text,download_date",
+      resultRecordCount: String(TRANSIT_RECORD_LIMIT),
+      returnGeometry: "false",
+      spatialRel: "esriSpatialRelIntersects",
+      where: "1=1",
+    });
+
+    try {
+      const response = await fetch(`${TRANSIT_SERVICE_URL}?${parameters}`, {
+        signal: requestController.signal,
+      });
+      if (!response.ok) {
+        throw new Error(`BTS service returned ${response.status}`);
+      }
+      const payload = await response.json();
+      if (payload.error) {
+        throw new Error(payload.error.message || "BTS query failed");
+      }
+      DATA.stops = (payload.features || [])
+        .map(mapTransitFeature)
+        .filter(
+          (stop) =>
+            Number.isFinite(stop.lat) && Number.isFinite(stop.lng),
+        );
+      transitLoadState = payload.exceededTransferLimit
+        ? "limited"
+        : "loaded";
+      populateTransitFilterOptions();
+      renderAll();
+    } catch (error) {
+      if (error.name === "AbortError") return;
+      lastTransitQueryKey = "";
+      transitLoadState = "error";
+      DATA.stops = [];
+      populateTransitFilterOptions();
+      renderAll();
+      showNotice(
+        "BTS transit stops could not be loaded for this viewport. The CMS facility layer remains available.",
+      );
+    } finally {
+      if (transitFetchController === requestController) {
+        elements.mapLoading.hidden = true;
+      }
+    }
+  }
+
   function renderMapOverlays() {
     if (!googleMap || !AdvancedMarkerElement) return;
     clearMapMarkers();
@@ -952,9 +1277,15 @@
             cluster: true,
             kind: "facility",
             label: String(records.length),
-            onClick: () => applySelectedState(stateCode),
+            onClick: () => {
+              if (state.selectedState === stateCode && googleMap) {
+                googleMap.setZoom(Math.max(8, state.zoom + 2));
+              } else {
+                applySelectedState(stateCode);
+              }
+            },
             position: clusterPosition(records),
-            title: `${records.length} demonstration dialysis facilities in ${STATE_VIEWS[stateCode]?.name || stateCode}`,
+            title: `${records.length.toLocaleString()} dialysis facilities in ${STATE_VIEWS[stateCode]?.name || stateCode}`,
           });
         });
       } else {
@@ -971,7 +1302,7 @@
       }
     }
 
-    if (state.layers.transit) {
+    if (state.layers.transit && (!IS_PUBLIC_DATA || !useClusters)) {
       if (useClusters) {
         groupByState(results.stops).forEach((records, stateCode) => {
           addMapMarker({
@@ -980,7 +1311,7 @@
             label: String(records.length),
             onClick: () => applySelectedState(stateCode),
             position: clusterPosition(records),
-            title: `${records.length} demonstration transit stops in ${STATE_VIEWS[stateCode]?.name || stateCode}`,
+            title: `${records.length.toLocaleString()} transit stops in ${STATE_VIEWS[stateCode]?.name || stateCode}`,
           });
         });
       } else {
@@ -1125,13 +1456,12 @@
   }
 
   function populateLocationSuggestions() {
-    const suggestionList = $("#fixture-location-suggestions");
+    const suggestionList = $("#facility-location-suggestions");
     const suggestions = new Set();
     DATA.facilities.forEach((facility) => {
       suggestions.add(facility.city);
       suggestions.add(`${facility.city}, ${facility.state}`);
       suggestions.add(facility.zip);
-      suggestions.add(facility.address);
     });
     [...suggestions]
       .sort((a, b) => a.localeCompare(b))
@@ -1193,10 +1523,23 @@
             };
           }
           if (Number.isFinite(currentZoom)) state.zoom = currentZoom;
+          if (
+            IS_PUBLIC_DATA &&
+            state.selectedState &&
+            state.zoom >
+              (STATE_VIEWS[state.selectedState]?.zoom || 6) + 1
+          ) {
+            state.selectedState = "";
+            elements.stateSelect.value = "";
+            elements.regionReadout.textContent = "Current map viewport";
+            elements.extentDescription.textContent =
+              "Current map viewport—not an administrative-area statistic";
+          }
           updateMapReadout();
-          if (!state.selectedState) renderAll();
-          renderMapOverlays();
+          if (IS_PUBLIC_DATA || !state.selectedState) renderAll();
+          else renderMapOverlays();
           updateUrl();
+          loadTransitStopsForViewport();
         }, 300);
       });
 
@@ -1210,7 +1553,11 @@
       setConnectionStatus("Google Maps connected", true);
       await initializeSearchServices();
       renderAll();
-      showNotice("The live Google basemap and demonstration layers are ready.");
+      showNotice(
+        IS_PUBLIC_DATA
+          ? "The Google basemap and nationwide CMS facility snapshot are ready. Zoom in to load BTS transit stops."
+          : "The live Google basemap and demonstration layers are ready.",
+      );
     } catch {
       handleMapLoadFailure(
         "Google Maps loaded but could not initialize. Check Maps JavaScript API, vector Map ID, and billing.",
@@ -1265,6 +1612,7 @@
   }
 
   function navigateToGoogleResult(label, geometry) {
+    clearRuntimeTransitStops("loading");
     state.selectedState = "";
     elements.stateSelect.value = "";
     elements.regionReadout.textContent = label;
@@ -1279,7 +1627,7 @@
     showNotice(`Map moved to ${label}.`);
   }
 
-  function navigateToFixtureResult(query) {
+  function navigateToFacilityResult(query) {
     const normalizedQuery = query.trim().toLowerCase();
     const matches = DATA.facilities.filter((facility) => {
       const searchable = [
@@ -1298,6 +1646,7 @@
         Number.isFinite(facility.lat) && Number.isFinite(facility.lng),
     );
     if (!mappableMatches.length) return false;
+    clearRuntimeTransitStops("loading");
 
     const center = {
       lat:
@@ -1324,14 +1673,14 @@
       googleMap.setZoom(13);
     }
     showNotice(
-      `Map moved to ${mappableMatches[0].city} using the bundled fixture index.`,
+      `Map moved to ${mappableMatches[0].city} using the facility index.`,
     );
     updateUrl();
     return true;
   }
 
   async function navigateToPlace(query) {
-    if (navigateToFixtureResult(query)) return;
+    if (navigateToFacilityResult(query)) return;
     if (!googleMap || !geocoder) {
       showNotice("Connect Google Maps before searching for a place.");
       elements.mapSetupBackdrop.hidden = false;
@@ -1346,14 +1695,14 @@
       });
       const result = response.results[0];
       if (!result) {
-        if (!navigateToFixtureResult(query)) {
+        if (!navigateToFacilityResult(query)) {
           showNotice(`No map result was found for “${query}”.`);
         }
         return;
       }
       navigateToGoogleResult(result.formatted_address, result.geometry);
     } catch {
-      if (!navigateToFixtureResult(query)) {
+      if (!navigateToFacilityResult(query)) {
         showNotice(
           "Google could not complete that search. Check that Geocoding API is enabled.",
         );
@@ -1369,7 +1718,7 @@
     if (!state.layers.transit) parameters.set("stops", "off");
     Object.entries(state.filters).forEach(([key, value]) => {
       if (key === "inCenter") {
-        if (!value) parameters.set("inCenter", "no");
+        if (value) parameters.set("inCenter", "yes");
       } else if (
         value !== "" &&
         !(key === "geocode" && value === "matched")
@@ -1420,7 +1769,7 @@
     filterKeys.forEach((key) => {
       if (parameters.has(key)) state.filters[key] = parameters.get(key);
     });
-    state.filters.inCenter = parameters.get("inCenter") !== "no";
+    state.filters.inCenter = parameters.get("inCenter") === "yes";
 
     const latitude = Number(parameters.get("lat"));
     const longitude = Number(parameters.get("lng"));
@@ -1493,6 +1842,7 @@
     showNotice("Waiting for browser location permission…");
     navigator.geolocation.getCurrentPosition(
       (position) => {
+        clearRuntimeTransitStops("loading");
         state.selectedState = "";
         elements.stateSelect.value = "";
         const center = {
@@ -1524,7 +1874,7 @@
       chain: "",
       chainOwned: "",
       geocode: "matched",
-      inCenter: true,
+      inCenter: false,
       lateShift: "",
       ownership: "",
       stationsMax: "",
@@ -1594,9 +1944,11 @@
       state.radius,
       currentExtentLabel(),
       facility.snapshotDate,
-      facility.nearestStop?.snapshotDate ?? DATA.metadata.preparedAt,
+      facility.nearestStop?.snapshotDate ??
+        DATA.metadata.transitSnapshotDate ??
+        DATA.metadata.preparedAt,
       exportedAt,
-      "synthetic_demonstration_fixture",
+      DATA.metadata.mode,
     ]);
     const csv = [headers, ...rows]
       .map((row) => row.map(csvCell).join(","))
@@ -1614,7 +1966,7 @@
     link.remove();
     URL.revokeObjectURL(url);
     showNotice(
-      `${rows.length} demonstration facility row${rows.length === 1 ? "" : "s"} exported.`,
+      `${rows.length.toLocaleString()} facility row${rows.length === 1 ? "" : "s"} exported.`,
     );
   }
 
@@ -1644,6 +1996,13 @@
       toggle.addEventListener("change", () => {
         state.layers[toggle.dataset.layerToggle] = toggle.checked;
         updateLayerState();
+        if (
+          toggle.dataset.layerToggle === "transit" &&
+          toggle.checked
+        ) {
+          lastTransitQueryKey = "";
+          loadTransitStopsForViewport();
+        }
         updateUrl();
       });
     });
@@ -1794,6 +2153,7 @@
   }
 
   function initialize() {
+    buildStateViews();
     populateFilterOptions();
     populateLocationSuggestions();
     restoreStateFromUrl();
@@ -1801,6 +2161,19 @@
     bindEvents();
     updateLayerState();
     renderAll();
+
+    if (IS_PUBLIC_DATA) {
+      const preparedDate = DATA.metadata.preparedAt || "current build";
+      $("#methods-prepared-date").textContent =
+        `${preparedDate} · ${DATA.metadata.facilityCount.toLocaleString()} CMS facilities`;
+      $("#snapshot-readout").textContent =
+        `${DATA.metadata.geocodedFacilityCount.toLocaleString()} geocoded of ${DATA.metadata.facilityCount.toLocaleString()} CMS facilities`;
+    } else {
+      $("#methods-prepared-date").textContent =
+        DATA.metadata.preparedAt || "Fallback fixture";
+      $("#snapshot-readout").textContent =
+        `${DATA.facilities.length} fallback test facilities`;
+    }
 
     const hostedConfiguration = window.DIALYSIS_TRANSIT_CONFIG || {};
     const storedCredentials = readStoredCredentials();
