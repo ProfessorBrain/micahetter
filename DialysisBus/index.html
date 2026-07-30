@@ -337,40 +337,61 @@
         </aside>
 
         <section class="map-stage" aria-label="National map explorer">
-          <div class="map-preview" id="map-preview" aria-hidden="true">
-            <div class="map-land map-land--west"></div>
-            <div class="map-land map-land--east"></div>
+          <div
+            class="google-map"
+            id="google-map"
+            aria-label="Interactive Google map of the United States"
+          ></div>
 
-            <span
-              class="preview-cluster preview-cluster--facility cluster-a"
-              data-layer="facility"
-              ><span>34</span></span
-            >
-            <span
-              class="preview-cluster preview-cluster--facility cluster-b"
-              data-layer="facility"
-              ><span>18</span></span
-            >
-            <span
-              class="preview-cluster preview-cluster--facility cluster-c"
-              data-layer="facility"
-              ><span>42</span></span
-            >
-            <span
-              class="preview-cluster preview-cluster--transit cluster-d"
-              data-layer="transit"
-              >96</span
-            >
-            <span
-              class="preview-cluster preview-cluster--transit cluster-e"
-              data-layer="transit"
-              >61</span
-            >
-            <span
-              class="preview-cluster preview-cluster--transit cluster-f"
-              data-layer="transit"
-              >127</span
-            >
+          <div class="map-setup-backdrop" id="map-setup-backdrop">
+            <form class="map-setup" id="map-setup">
+              <span class="eyebrow">One-time local setup</span>
+              <h2>Connect the actual Google map</h2>
+              <p>
+                This project has no map credentials yet. Add a Google Maps
+                Platform browser key to load the interactive basemap.
+              </p>
+
+              <label for="map-api-key">Maps JavaScript API key</label>
+              <div class="credential-field">
+                <input
+                  autocomplete="off"
+                  id="map-api-key"
+                  name="apiKey"
+                  placeholder="AIza…"
+                  required
+                  spellcheck="false"
+                  type="password"
+                />
+                <button
+                  aria-label="Show API key"
+                  id="toggle-api-key"
+                  type="button"
+                >
+                  Show
+                </button>
+              </div>
+
+              <label for="map-id">
+                Vector Map ID <span>(optional)</span>
+              </label>
+              <input
+                autocomplete="off"
+                id="map-id"
+                name="mapId"
+                placeholder="Uses Google’s demo vector map when blank"
+                spellcheck="false"
+                type="text"
+              />
+
+              <button class="map-connect-button" id="map-connect" type="submit">
+                Load Google map
+              </button>
+              <p class="map-setup-status" id="map-setup-status" role="status">
+                Saved only in this browser. Use a key restricted to
+                <strong>http://localhost/*</strong>.
+              </p>
+            </form>
           </div>
 
           <button class="panel-open" hidden id="panel-open" type="button">
@@ -386,9 +407,10 @@
             </span>
           </div>
 
-          <div class="preview-label">
-            <span>Dialysis &amp; transit workspace</span>
-            <small>Local Phase 1 interface</small>
+          <div class="map-connection-status" id="map-connection-status">
+            <span aria-hidden="true"></span>
+            <strong id="map-connection-text">Map setup required</strong>
+            <button hidden id="forget-map-key" type="button">Forget key</button>
           </div>
 
           <div class="map-controls" aria-label="Map controls">
@@ -414,11 +436,11 @@
               <i class="legend-symbol legend-symbol--transit"></i>
               Transit stop
             </span>
-            <small>Preview counts are illustrative, not source data.</small>
+            <small>Source-backed facility and stop layers are pending.</small>
           </div>
 
           <div class="map-attribution">
-            Planned sources: CMS · U.S. Census Bureau · USDOT/BTS
+            Research sources: CMS · U.S. Census Bureau · USDOT/BTS
           </div>
 
           <p class="sr-only" id="layer-announcement" aria-live="polite">

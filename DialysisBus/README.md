@@ -1,8 +1,9 @@
 # Dialysis & Transit Explorer
 
-The primary local site is [`index.html`](index.html) in this directory. Open it
-directly in a browser—no installation, server, credentials, or internet
-connection is required.
+The primary local site is [`index.html`](index.html) in this directory. The
+interface itself has no build step. Its interactive basemap uses the Google
+Maps JavaScript API and therefore needs an internet connection plus a Google
+Maps Platform browser key.
 
 The Dialysis & Transit Explorer is a read-only research application for
 examining geographic proximity between Medicare-certified dialysis facilities
@@ -12,7 +13,8 @@ accessible, safe, or feasible.
 
 ## Open the local site
 
-Double-click `index.html`, or use a small local server if preferred:
+Serve this directory locally so the Google Maps browser key can be restricted
+to a localhost HTTP referrer:
 
 ```text
 python -m http.server 8080
@@ -20,14 +22,26 @@ python -m http.server 8080
 
 Then visit `http://localhost:8080`.
 
-The root site uses only:
+The root project files are:
 
 - `index.html`
 - `styles.css`
 - `app.js`
 
-It deliberately shows illustrative interface symbols until validated CMS and
-BTS source data are ingested.
+The map setup panel accepts a Maps JavaScript API key and an optional vector Map
+ID. After the first successful connection, those values are stored only in that
+browser's local storage; they are not written into the repository. When the Map
+ID is blank, the site uses Google's demo vector Map ID.
+
+Enable the **Maps JavaScript API** and **Geocoding API** for the key, enable
+billing for its Google Cloud project, and restrict the browser key to
+`http://localhost/*`. See Google's documentation for
+[loading the Maps JavaScript API](https://developers.google.com/maps/documentation/javascript/load-maps-js-api)
+and [creating a vector Map ID](https://developers.google.com/maps/documentation/javascript/map-ids/get-map-id).
+
+CMS facility and BTS transit-stop layers remain unavailable until validated
+source data are ingested. The real basemap, map navigation, state extents, zoom,
+reset, and place search work independently of those later data layers.
 
 This repository currently contains **Epic 1: Repository and local platform**:
 
@@ -59,10 +73,11 @@ tests/fixtures/    Cross-service deterministic fixtures
 - Docker Desktop with Compose v2
 - Node.js 22 or later for running the web app outside Docker
 - Python 3.11 or later for running the API outside Docker
-- A Google Maps Platform browser key and vector map ID for the live basemap
+- A Google Maps Platform browser key for the live basemap
+- A project-specific vector Map ID for production styling (optional locally)
 
-The interface remains usable as an explicitly labeled preview when map
-credentials are absent.
+The interface remains available when credentials are absent, but the map area
+shows the local setup panel until a browser key is supplied.
 
 ## Optional full platform with Docker
 
