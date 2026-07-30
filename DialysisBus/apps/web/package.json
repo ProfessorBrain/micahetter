@@ -1,0 +1,49 @@
+{
+  "name": "dialysis-transit-explorer-web",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "dev": "node build/run-vinext.mjs dev",
+    "build": "node build/run-vinext.mjs build",
+    "start": "node build/run-vinext.mjs start",
+    "test": "vitest run",
+    "test:rendered": "npm run build && node --test tests/rendered-html.test.mjs",
+    "test:all": "npm run test && npm run test:rendered",
+    "e2e": "playwright test",
+    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next"
+  },
+  "dependencies": {
+    "@deck.gl/core": "9.3.7",
+    "@deck.gl/google-maps": "9.3.7",
+    "@deck.gl/layers": "9.3.7",
+    "next": "16.2.6",
+    "react": "19.2.6",
+    "react-dom": "19.2.6"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "1.37.1",
+    "@playwright/test": "1.62.0",
+    "@tailwindcss/postcss": "4.2.1",
+    "@testing-library/jest-dom": "7.0.0",
+    "@testing-library/react": "16.3.2",
+    "@types/node": "22.19.19",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "6.0.2",
+    "@vitejs/plugin-rsc": "0.5.26",
+    "eslint": "9.39.4",
+    "eslint-config-next": "16.2.6",
+    "jsdom": "30.0.1",
+    "react-server-dom-webpack": "19.2.6",
+    "tailwindcss": "4.2.1",
+    "typescript": "5.9.3",
+    "vinext": "0.0.50",
+    "vite": "8.0.13",
+    "vitest": "4.1.10",
+    "wrangler": "4.92.0"
+  },
+  "type": "module"
+}

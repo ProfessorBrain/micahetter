@@ -1,0 +1,31 @@
+[project]
+name = "dialysis-transit-explorer-api"
+version = "0.1.0"
+description = "Read-only spatial API for the Dialysis & Transit Explorer"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi==0.141.1",
+  "httpx==0.28.1",
+  "psycopg[binary]==3.3.4",
+  "pydantic==2.13.4",
+  "sqlalchemy==2.0.51",
+  "uvicorn[standard]==0.52.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest==9.1.1",
+  "ruff==0.16.0",
+]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+pythonpath = ["."]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
