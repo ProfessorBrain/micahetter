@@ -16,11 +16,12 @@ counts are derived in the browser from each facility's own selection and are
 never represented as official source measurements. Exported records include
 `data_mode=public_snapshot`.
 
-The center-distance heatmap does not add a stored source field. Its runtime
-points contain the facility CCN, coordinates, nearest-other-facility distance,
-nearest facility name, and a normalized color value based on the visible 10th
-and 90th percentile distances. The normalized value is assigned to one of five
-equal-width color bands for display.
+The transit-distance heatmap does not add a stored source field. Its runtime
+points contain the facility CCN, coordinates, nearest eligible transit-stop
+distance, nearest stop name, and a normalized color value. Relative mode uses
+the visible 10th and 90th percentile nearest-stop distances; meter mode uses
+the configured fixed cutoffs. The normalized value is assigned to one of five
+color bands for display.
 
 Transit-filter state is represented by `stopQuery`, `stopType`, `wheelchair`,
 `agency`, and `withinRadius`. CSV exports record these values as

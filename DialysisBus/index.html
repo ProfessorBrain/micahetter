@@ -192,14 +192,14 @@
                     aria-hidden="true"
                   ></span>
                   <span class="toggle-copy">
-                    <strong>Center-distance heatmap</strong>
-                    <small>Relative or fixed meter bands from green to red</small>
+                    <strong>Transit-distance heatmap</strong>
+                    <small>Distance to the nearest eligible transit stop</small>
                   </span>
                   <span class="switch">
                     <input
-                      aria-label="Dialysis center distance heatmap"
+                      aria-label="Dialysis facility to transit stop distance heatmap"
                       checked
-                      data-layer-toggle="centerDistanceHeatmap"
+                      data-layer-toggle="transitDistanceHeatmap"
                       type="checkbox"
                     />
                     <span aria-hidden="true"></span>
@@ -663,14 +663,13 @@
                   counts update with the filters.
                 </p>
                 <p>
-                  The optional center-distance heatmap compares every visible,
-                  filtered dialysis facility with its nearest other visible
-                  facility. Relative mode divides the visible distance scale
+                  The optional transit-distance heatmap colors every visible,
+                  filtered dialysis facility by its distance to the nearest
+                  eligible transit stop selected from the active viewport.
+                  Relative mode divides the visible nearest-stop distance scale
                   into five bands. Meter-range mode applies four user-defined
-                  cutoffs. When only one facility is visible, meter-range mode
-                  compares it with its nearest other published, geocoded
-                  facility so its color remains visible. Both modes run from
-                  green through green-yellow, yellow, and yellow-red to red.
+                  cutoffs directly to the nearest-stop distance. Both modes run
+                  from green through green-yellow, yellow, and yellow-red to red.
                 </p>
                 <dl>
                   <div>
@@ -738,11 +737,12 @@
                     filtered result with provenance fields.
                   </p>
                   <p>
-                    The center-distance heatmap is optional and supplementary.
+                    The transit-distance heatmap is optional and supplementary.
                     Its legend provides text labels for all five distance bands
                     and either the relative endpoints or fixed meter ranges.
                     Visible facility marker descriptions also state the
-                    nearest-other-center distance, so color is not the only cue.
+                    nearest eligible transit-stop distance, so color is not the
+                    only cue.
                   </p>
                   <p>
                     Transit filter availability, active-filter totals,
@@ -836,8 +836,8 @@
                   <h2 id="settings-dialog-title">Heatmap meter ranges</h2>
                   <p>
                     Set the four fixed cutoffs used when “Meter ranges” is
-                    selected in Layers. These ranges stay consistent as the map
-                    moves.
+                    selected in Layers. Each cutoff is applied to a facility's
+                    nearest eligible transit-stop distance.
                   </p>
                   <fieldset class="heatmap-scale-settings">
                     <legend>Fixed meter cutoffs</legend>
@@ -1023,11 +1023,11 @@
             <div
               class="distance-heatmap-key"
               hidden
-              id="center-distance-heatmap-legend"
+              id="transit-distance-heatmap-legend"
             >
               <span>
                 <i class="legend-symbol legend-symbol--heatmap"></i>
-                Nearest other dialysis center
+                Distance to nearest eligible transit stop
               </span>
               <div class="heatmap-gradient" aria-hidden="true"></div>
               <div class="heatmap-labels">
@@ -1052,7 +1052,7 @@
                   <small data-heatmap-range-label="4"></small>
                 </span>
               </div>
-              <small id="center-distance-heatmap-scale"></small>
+              <small id="transit-distance-heatmap-scale"></small>
             </div>
             <small>BTS markers show only the three closest stops per visible facility.</small>
           </div>

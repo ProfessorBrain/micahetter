@@ -58,8 +58,9 @@ test("root entry point contains the complete explorer surfaces", async () => {
   assert.doesNotMatch(html, /Facilities come from CMS and the Census Geocoder/);
   assert.match(html, /Three closest per visible facility · zoom 10\+/);
   assert.match(html, /Closest 3 in radius/);
-  assert.match(html, /data-layer-toggle="centerDistanceHeatmap"/);
-  assert.match(html, /id="center-distance-heatmap-legend"/);
+  assert.match(html, /data-layer-toggle="transitDistanceHeatmap"/);
+  assert.match(html, /id="transit-distance-heatmap-legend"/);
+  assert.match(html, /Distance to nearest eligible transit stop/);
   assert.match(html, /name="heatmap-scale-mode"/);
   assert.match(html, /value="relative"/);
   assert.match(html, /value="meters"/);
@@ -78,7 +79,7 @@ test("root entry point contains the complete explorer surfaces", async () => {
   assert.ok(settingsDialog);
   assert.ok(methodsDialog);
   const heatmapToggle = layersPanel.match(
-    /<input[^>]+data-layer-toggle="centerDistanceHeatmap"[^>]*>/,
+    /<input[^>]+data-layer-toggle="transitDistanceHeatmap"[^>]*>/,
   )?.[0];
   assert.ok(heatmapToggle);
   assert.match(heatmapToggle, /checked/);
@@ -110,7 +111,7 @@ test("root entry point contains the complete explorer surfaces", async () => {
   assert.match(html, /id="reset-transit-filters"/);
   assert.match(html, /id="transit-filter-count" role="status"/);
   assert.match(html, /Agency \/ NTD ID/);
-  assert.match(html, /Relative or fixed meter bands from green to red/);
+  assert.match(html, /Distance to the nearest eligible transit stop/);
   assert.match(html, /Very short/);
   assert.match(html, /Very long/);
   assert.match(styles, /#86a850 20% 40%/);
@@ -223,15 +224,14 @@ test("client script implements every anticipated local workflow", async () => {
     "updateSelectionOverlays",
     "AdvancedMarkerElement",
     "loadTransitStopsForViewport",
-    "calculateNearestFacilityDistances",
-    "calculateSingleFacilityHeatmapSummary",
+    "calculateTransitDistanceHeatmapSummary",
     "applyHeatmapScale",
     "heatmapBandIndexForDistance",
     "validateHeatmapMeterBreaks",
     "resetHeatmapMeterRanges",
     "heatmapColor",
-    "createCenterDistanceHeatmapOverlay",
-    "centerDistanceHeatmap",
+    "createTransitDistanceHeatmapOverlay",
+    "transitDistanceHeatmap",
     "fromLatLngToDivPixel",
     "selectClosestStopsForFacilities",
     "stopMatchesTransitFilters",
@@ -272,7 +272,7 @@ test("client script implements every anticipated local workflow", async () => {
   assert.match(script, /closest_3_stops_within_threshold/);
   assert.match(
     script,
-    /centerDistanceHeatmap: true/,
+    /transitDistanceHeatmap: true/,
   );
   assert.match(
     script,
@@ -281,6 +281,10 @@ test("client script implements every anticipated local workflow", async () => {
   assert.match(
     script,
     /parameters\.get\("heatmap"\) !== "off"/,
+  );
+  assert.match(
+    script,
+    /!state\.layers\.transit && !state\.layers\.transitDistanceHeatmap/,
   );
   assert.match(script, /parameters\.set\("heatmapScale", "meters"\)/);
   assert.match(script, /"heatmapBreaks"/);
@@ -303,9 +307,11 @@ test("client script implements every anticipated local workflow", async () => {
   assert.doesNotMatch(script, /Analytics now use the current map viewport/);
   assert.doesNotMatch(script, /copyViewLink/);
   assert.doesNotMatch(script, /navigator\.clipboard/);
+  assert.doesNotMatch(script, /calculateNearestFacilityDistances/);
+  assert.doesNotMatch(script, /Nearest other dialysis center/);
 });
 
-test("spatial calculations keep closest stops and center distances correct", async () => {
+test("spatial calculations keep closest stops and transit heatmap distances correct", async () => {
   const source = await readFile(new URL("app.js", root), "utf8");
   const context = vm.createContext({
     AbortController,
@@ -383,19 +389,37 @@ test("spatial calculations keep closest stops and center distances correct", asy
     false,
   );
 
-  const heatmapSummary = explorer.calculateNearestFacilityDistances([
-    { ccn: "A", lat: 0, lng: 0, name: "A" },
-    { ccn: "B", lat: 0, lng: 0.01, name: "B" },
-    { ccn: "C", lat: 0, lng: 0.05, name: "C" },
+  const heatmapSummary = explorer.calculateTransitDistanceHeatmapSummary([
+    {
+      ccn: "A",
+      lat: 0,
+      lng: 0,
+      nearestDistance: 197,
+      nearestStop: { name: "Stop A" },
+    },
+    {
+      ccn: "B",
+      lat: 0,
+      lng: 0.01,
+      nearestDistance: 1000,
+      nearestStop: { name: "Stop B" },
+    },
+    {
+      ccn: "C",
+      lat: 0,
+      lng: 0.05,
+      nearestDistance: 5000,
+      nearestStop: { name: "Stop C" },
+    },
   ]);
   const firstPoint = heatmapSummary.points.find((point) => point.ccn === "A");
   const isolatedPoint = heatmapSummary.points.find(
     (point) => point.ccn === "C",
   );
   assert.equal(heatmapSummary.points.length, 3);
-  assert.ok(firstPoint.nearestDistance > 1100);
-  assert.ok(firstPoint.nearestDistance < 1120);
-  assert.ok(isolatedPoint.nearestDistance > firstPoint.nearestDistance * 3);
+  assert.equal(firstPoint.nearestDistance, 197);
+  assert.equal(firstPoint.nearestStopName, "Stop A");
+  assert.equal(isolatedPoint.nearestDistance, 5000);
   assert.equal(firstPoint.normalizedDistance, 0);
   assert.equal(isolatedPoint.normalizedDistance, 1);
   assert.deepEqual(Array.from(explorer.heatmapColor(0.1)), [25, 135, 84]);
@@ -419,6 +443,10 @@ test("spatial calculations keep closest stops and center distances correct", asy
     explorer.heatmapBandIndexForDistance(4001, [1000, 2000, 3000, 4000]),
     4,
   );
+  assert.equal(
+    explorer.heatmapBandIndexForDistance(197, [500, 1000, 2500, 5000]),
+    0,
+  );
   const meterSummary = explorer.applyHeatmapScale(
     heatmapSummary,
     "meters",
@@ -426,45 +454,40 @@ test("spatial calculations keep closest stops and center distances correct", asy
   );
   assert.equal(
     meterSummary.points.find((point) => point.ccn === "A").normalizedDistance,
-    0.3,
+    0.1,
   );
   assert.equal(
     meterSummary.points.find((point) => point.ccn === "C").normalizedDistance,
     0.9,
   );
-  const singletonFacility = { ccn: "ONLY", lat: 0, lng: 0, name: "Only" };
-  const singletonSummary = explorer.calculateSingleFacilityHeatmapSummary(
-    singletonFacility,
-    [
-      singletonFacility,
-      { ccn: "NEAR", lat: 0, lng: 0.01, name: "Nearby" },
-    ],
-  );
+  const singletonSummary = explorer.calculateTransitDistanceHeatmapSummary([
+    {
+      ccn: "ONLY",
+      lat: 0,
+      lng: 0,
+      nearestDistance: 197,
+      nearestStop: { name: "Nearby stop" },
+    },
+  ]);
   assert.equal(singletonSummary.points.length, 1);
-  assert.equal(singletonSummary.points[0].nearestFacilityName, "Nearby");
-  assert.ok(singletonSummary.points[0].nearestDistance > 1100);
-  assert.equal(
-    explorer.applyHeatmapScale(
-      singletonSummary,
-      "meters",
-      [1000, 2000, 3000, 4000],
-    ).points[0].normalizedDistance,
-    0.3,
+  assert.equal(singletonSummary.points[0].nearestStopName, "Nearby stop");
+  assert.equal(singletonSummary.points[0].nearestDistance, 197);
+  const scaledSingleton = explorer.applyHeatmapScale(
+    singletonSummary,
+    "meters",
+    [500, 1000, 2500, 5000],
   );
-  const unavailableSingleton = explorer.calculateSingleFacilityHeatmapSummary(
-    singletonFacility,
-    [singletonFacility],
+  assert.equal(scaledSingleton.points[0].normalizedDistance, 0.1);
+  assert.deepEqual(
+    Array.from(
+      explorer.heatmapColor(scaledSingleton.points[0].normalizedDistance),
+    ),
+    [25, 135, 84],
   );
-  assert.equal(unavailableSingleton.points.length, 1);
-  assert.equal(unavailableSingleton.points[0].comparisonUnavailable, true);
-  assert.equal(
-    explorer.applyHeatmapScale(
-      unavailableSingleton,
-      "meters",
-      [1000, 2000, 3000, 4000],
-    ).points[0].normalizedDistance,
-    0.9,
-  );
+  const unavailableSummary = explorer.calculateTransitDistanceHeatmapSummary([
+    { ccn: "NO-STOP", lat: 0, lng: 0, nearestDistance: null },
+  ]);
+  assert.equal(unavailableSummary.points.length, 0);
 });
 
 test("public map configuration obfuscates the demo key without breaking startup", async () => {

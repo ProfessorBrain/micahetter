@@ -28,10 +28,10 @@ Before publishing:
 5. Confirm each visible facility contributes no more than three closest stops,
    shared stops render once, and capped 2,000-candidate responses show the
    zoom-in warning.
-6. Turn on the center-distance heatmap and confirm all five discrete color bands
-   and labels appear, the endpoint distances update after panning, zooming, and
-   applying facility filters, and the layer can be disabled without hiding
-   facility or transit markers.
+6. Turn on the transit-distance heatmap and confirm all five discrete color
+   bands and labels appear, each facility's color matches its nearest eligible
+   transit-stop distance, a single visible facility remains colored, and the
+   layer can be disabled without hiding facility or transit markers.
 7. At zoom level 10 or closer, verify transit name/ID search, counted select
    options, wheelchair and agency filters, the active-radius constraint, live
    candidate/display totals, URL restoration, and the transit-only reset.

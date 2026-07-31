@@ -61,13 +61,13 @@ unchanged at `https://<account>.github.io/<repository>/`.
   The map retains up to the three closest eligible stops per visible facility,
   displays shared stops once, and asks the user to zoom further when a dense
   response reaches the 2,000-candidate limit.
-- Facility, transit, and center-distance heatmap layer toggles. The heatmap
-  colors each visible facility by its nearest other visible facility using five
-  bands: green, green-yellow, yellow, yellow-red, and red from shortest to
-  longest distance. Users choose the relative or meter scale in Layers and edit
-  the four fixed meter cutoffs from the top-bar Settings popup. In meter mode,
-  a lone visible facility uses its nearest other published, geocoded facility
-  so the heatmap remains visible.
+- Facility, transit, and transit-distance heatmap layer toggles. The heatmap
+  colors each visible facility by its nearest eligible transit-stop distance
+  using five bands: green, green-yellow, yellow, yellow-red, and red from
+  shortest to longest distance. Users choose the relative or meter scale in
+  Layers and edit the four fixed meter cutoffs from the top-bar Settings popup.
+  A single visible facility remains colored whenever it has a calculated
+  nearest-stop distance.
 - State selection, current viewport analysis, national reset, zoom controls,
   and current-location navigation.
 - URL restoration for map center, zoom, state, radius, layers, heatmap scale,

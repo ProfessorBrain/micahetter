@@ -49,25 +49,28 @@ Phase 1 uses geodesic straight-line distance in meters. PostGIS geography
 operations will calculate nearest-stop distance and counts within 250, 400,
 800, and 1,600 meters, plus validated custom radii from 100 to 5,000 meters.
 
-## Center-distance heatmap
+## Transit-distance heatmap
 
-The optional center-distance heatmap is calculated entirely in the browser
-from the visible facilities that pass the active facility filters. For each
-geocoded facility, a three-dimensional spatial tree identifies the nearest
-other visible facility; spherical chord distance is then converted to geodesic
-meters. The map uses the 10th and 90th percentiles of the visible nearest-center
-distances as the green and red endpoints, with a green-to-yellow-to-red
-range between them. That normalized range is divided into five equal-width
+The optional transit-distance heatmap is calculated entirely in the browser
+from each visible, filtered facility's nearest eligible transit stop. It uses
+the same per-facility closest-stop selection as the Analytics table and detail
+panel, so stop-name/ID, type, wheelchair, agency, and optional active-radius
+filters affect the heatmap consistently. A facility is colored whenever its
+nearest-stop distance is available, including when it is the only visible
+facility.
+
+Relative mode uses the 10th and 90th percentiles of the visible nearest-stop
+distances as the green and red endpoints. Meter-range mode applies the four
+configured cutoffs directly to each nearest-stop distance. Both modes use five
 bands: green, a color halfway between green and yellow, yellow, a color halfway
 between yellow and red, and red. Values outside the endpoints are clamped. The
-legend reports the current endpoint distances and labels all five bands, and
-facility marker descriptions expose the individual nearest-center distance
-while the layer is active.
+legend reports the active distances, and facility marker descriptions expose
+the individual nearest eligible transit-stop distance while the layer is
+active.
 
-This is a relative viewport comparison, so colors can change when the map
-extent or facility filters change. It does not measure travel time, road
-distance, service capacity, or whether nearby facilities have available
-appointments.
+Relative colors can change when the map extent or filters change. The heatmap
+does not measure travel time, road distance, route availability, schedule
+compatibility, or pedestrian accessibility.
 
 ## Interpretation
 

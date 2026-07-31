@@ -194,7 +194,7 @@
       wheelchair: "",
     },
     layers: {
-      centerDistanceHeatmap: true,
+      transitDistanceHeatmap: true,
       facility: true,
       transit: true,
     },
@@ -220,8 +220,8 @@
   let AdvancedMarkerElement = null;
   let mapMarkers = [];
   let nearestLine = null;
-  let centerDistanceHeatmapOverlay = null;
-  let heatmapFacilitiesCache = null;
+  let transitDistanceHeatmapOverlay = null;
+  let heatmapMetricsCache = null;
   let heatmapSummaryCache = null;
   let pendingCredentials = null;
   let lastResults = {
@@ -245,8 +245,8 @@
   const elements = {
     analyticsExcluded: $("#analytics-excluded"),
     analyticsExtentTitle: $("#analytics-extent-title"),
-    centerDistanceHeatmapLegend: $("#center-distance-heatmap-legend"),
-    centerDistanceHeatmapScale: $("#center-distance-heatmap-scale"),
+    transitDistanceHeatmapLegend: $("#transit-distance-heatmap-legend"),
+    transitDistanceHeatmapScale: $("#transit-distance-heatmap-scale"),
     customRadius: $("#custom-radius"),
     detailLineButton: $("#detail-toggle-line"),
     distanceDistribution: $("#distance-distribution"),
@@ -334,94 +334,25 @@
     );
   }
 
-  function facilityUnitVector(facility) {
-    const latitude = radians(facility.lat);
-    const longitude = radians(facility.lng);
-    const latitudeRadius = Math.cos(latitude);
-    return [
-      latitudeRadius * Math.cos(longitude),
-      latitudeRadius * Math.sin(longitude),
-      Math.sin(latitude),
-    ];
-  }
-
-  function buildFacilitySpatialTree(points, depth = 0) {
-    if (!points.length) return null;
-    const axis = depth % 3;
-    points.sort(
-      (first, second) => first.vector[axis] - second.vector[axis],
-    );
-    const middle = Math.floor(points.length / 2);
-    return {
-      axis,
-      left: buildFacilitySpatialTree(points.slice(0, middle), depth + 1),
-      point: points[middle],
-      right: buildFacilitySpatialTree(points.slice(middle + 1), depth + 1),
-    };
-  }
-
-  function squaredVectorDistance(first, second) {
-    return first.reduce(
-      (total, coordinate, index) =>
-        total + (coordinate - second[index]) ** 2,
-      0,
-    );
-  }
-
-  function findNearestFacilityPoint(
-    node,
-    target,
-    best = { distanceSquared: Number.POSITIVE_INFINITY, point: null },
-  ) {
-    if (!node) return best;
-    let nextBest = best;
-    if (node.point !== target) {
-      const distanceSquared = squaredVectorDistance(
-        node.point.vector,
-        target.vector,
-      );
-      if (distanceSquared < nextBest.distanceSquared) {
-        nextBest = { distanceSquared, point: node.point };
-      }
-    }
-
-    const axisDelta = target.vector[node.axis] - node.point.vector[node.axis];
-    const nearBranch = axisDelta < 0 ? node.left : node.right;
-    const farBranch = axisDelta < 0 ? node.right : node.left;
-    nextBest = findNearestFacilityPoint(nearBranch, target, nextBest);
-    if (axisDelta ** 2 < nextBest.distanceSquared) {
-      nextBest = findNearestFacilityPoint(farBranch, target, nextBest);
-    }
-    return nextBest;
-  }
-
-  function calculateNearestFacilityDistances(facilities) {
-    const spatialPoints = facilities
+  function calculateTransitDistanceHeatmapSummary(facilities) {
+    const points = facilities
       .filter(
         (facility) =>
-          Number.isFinite(facility.lat) && Number.isFinite(facility.lng),
+          Number.isFinite(facility.lat) &&
+          Number.isFinite(facility.lng) &&
+          Number.isFinite(facility.nearestDistance),
       )
       .map((facility) => ({
-        facility,
-        vector: facilityUnitVector(facility),
+        ccn: facility.ccn,
+        lat: facility.lat,
+        lng: facility.lng,
+        nearestDistance: facility.nearestDistance,
+        nearestStopName: facility.nearestStop?.name || "",
       }));
-    if (spatialPoints.length < 2) {
+    if (!points.length) {
       return { lowerDistance: null, points: [], upperDistance: null };
     }
 
-    const spatialTree = buildFacilitySpatialTree([...spatialPoints]);
-    const points = spatialPoints.map((point) => {
-      const nearest = findNearestFacilityPoint(spatialTree, point);
-      const chordLength = Math.sqrt(nearest.distanceSquared);
-      const angularDistance = 2 * Math.asin(Math.min(1, chordLength / 2));
-      return {
-        ccn: point.facility.ccn,
-        lat: point.facility.lat,
-        lng: point.facility.lng,
-        nearestDistance: angularDistance * EARTH_RADIUS_METERS,
-        nearestFacilityName: nearest.point?.facility.name || "",
-      };
-    });
     const distances = points.map((point) => point.nearestDistance);
     const lowerDistance = percentile(distances, 0.1);
     const upperDistance = percentile(distances, 0.9);
@@ -440,57 +371,6 @@
         ),
       })),
       upperDistance,
-    };
-  }
-
-  function calculateSingleFacilityHeatmapSummary(
-    facility,
-    comparisonFacilities,
-  ) {
-    if (
-      !facility ||
-      !Number.isFinite(facility.lat) ||
-      !Number.isFinite(facility.lng)
-    ) {
-      return { lowerDistance: null, points: [], upperDistance: null };
-    }
-
-    let nearestDistance = Number.POSITIVE_INFINITY;
-    let nearestFacility = null;
-    comparisonFacilities.forEach((candidate) => {
-      const sameFacility =
-        candidate === facility ||
-        (candidate.ccn && facility.ccn && candidate.ccn === facility.ccn);
-      if (
-        sameFacility ||
-        !Number.isFinite(candidate.lat) ||
-        !Number.isFinite(candidate.lng)
-      ) {
-        return;
-      }
-      const candidateDistance = distanceMeters(facility, candidate);
-      if (candidateDistance < nearestDistance) {
-        nearestDistance = candidateDistance;
-        nearestFacility = candidate;
-      }
-    });
-
-    const comparisonUnavailable = !nearestFacility;
-    const distance = comparisonUnavailable ? null : nearestDistance;
-    return {
-      lowerDistance: distance,
-      points: [
-        {
-          ccn: facility.ccn,
-          comparisonUnavailable,
-          lat: facility.lat,
-          lng: facility.lng,
-          nearestDistance: distance,
-          nearestFacilityName: nearestFacility?.name || "",
-          normalizedDistance: comparisonUnavailable ? 1 : 0,
-        },
-      ],
-      upperDistance: distance,
     };
   }
 
@@ -950,7 +830,7 @@
     elements.layerAnnouncement.textContent =
       `Dialysis layer ${state.layers.facility ? "on" : "off"}. ` +
       `Transit layer ${state.layers.transit ? "on" : "off"}. ` +
-      `Center-distance heatmap ${state.layers.centerDistanceHeatmap ? "on" : "off"}. ` +
+      `Transit-distance heatmap ${state.layers.transitDistanceHeatmap ? "on" : "off"}. ` +
       `Heatmap scale ${state.heatmapScale.mode === "meters" ? "fixed meter ranges" : "relative distances"}. ` +
       `Threshold ${state.radius} meters.`;
     renderMapOverlays();
@@ -1645,7 +1525,13 @@
   }
 
   async function loadTransitStopsForViewport() {
-    if (!IS_PUBLIC_DATA || !googleMap || !state.layers.transit) return;
+    if (
+      !IS_PUBLIC_DATA ||
+      !googleMap ||
+      (!state.layers.transit && !state.layers.transitDistanceHeatmap)
+    ) {
+      return;
+    }
     if (state.zoom < TRANSIT_MIN_ZOOM) {
       const hadStops =
         DATA.stops.length > 0 || transitCandidateStops.length > 0;
@@ -1729,8 +1615,8 @@
     }
   }
 
-  function createCenterDistanceHeatmapOverlay() {
-    class CenterDistanceHeatmapOverlay extends window.google.maps.OverlayView {
+  function createTransitDistanceHeatmapOverlay() {
+    class TransitDistanceHeatmapOverlay extends window.google.maps.OverlayView {
       constructor() {
         super();
         this.animationFrame = null;
@@ -1740,7 +1626,7 @@
 
       onAdd() {
         this.canvas = document.createElement("canvas");
-        this.canvas.className = "center-distance-heatmap-canvas";
+        this.canvas.className = "transit-distance-heatmap-canvas";
         this.getPanes().overlayLayer.append(this.canvas);
       }
 
@@ -1864,63 +1750,52 @@
       }
     }
 
-    return new CenterDistanceHeatmapOverlay();
+    return new TransitDistanceHeatmapOverlay();
   }
 
-  function updateCenterDistanceHeatmap(facilities) {
-    if (!state.layers.centerDistanceHeatmap) {
-      elements.centerDistanceHeatmapLegend.hidden = true;
-      centerDistanceHeatmapOverlay?.setMap(null);
-      centerDistanceHeatmapOverlay = null;
+  function updateTransitDistanceHeatmap(facilities) {
+    if (!state.layers.transitDistanceHeatmap) {
+      elements.transitDistanceHeatmapLegend.hidden = true;
+      transitDistanceHeatmapOverlay?.setMap(null);
+      transitDistanceHeatmapOverlay = null;
       return null;
     }
 
-    elements.centerDistanceHeatmapLegend.hidden = false;
-    if (heatmapFacilitiesCache !== facilities) {
-      heatmapFacilitiesCache = facilities;
-      heatmapSummaryCache = calculateNearestFacilityDistances(facilities);
+    elements.transitDistanceHeatmapLegend.hidden = false;
+    if (heatmapMetricsCache !== facilities) {
+      heatmapMetricsCache = facilities;
+      heatmapSummaryCache =
+        calculateTransitDistanceHeatmapSummary(facilities);
     }
-    const mappableFacilities = facilities.filter(
-      (facility) =>
-        Number.isFinite(facility.lat) && Number.isFinite(facility.lng),
-    );
-    const heatmapSummary =
-      state.heatmapScale.mode === "meters" &&
-      !heatmapSummaryCache?.points.length &&
-      mappableFacilities.length === 1
-        ? calculateSingleFacilityHeatmapSummary(
-            mappableFacilities[0],
-            DATA.facilities,
-          )
-        : heatmapSummaryCache;
     const scaledSummary = applyHeatmapScale(
-      heatmapSummary,
+      heatmapSummaryCache,
       state.heatmapScale.mode,
       state.heatmapScale.meterBreaks,
     );
     if (!scaledSummary?.points.length) {
-      elements.centerDistanceHeatmapScale.textContent =
-        "At least two visible, geocoded facilities are required.";
-      centerDistanceHeatmapOverlay?.setPoints([]);
+      elements.transitDistanceHeatmapScale.textContent =
+        transitLoadState === "zoom"
+          ? `Zoom to level ${TRANSIT_MIN_ZOOM}+ to calculate nearest-stop distances.`
+          : transitLoadState === "loading"
+            ? "Loading eligible transit stops for the heatmap…"
+            : "No eligible nearest-stop distances are available for the current view and filters.";
+      transitDistanceHeatmapOverlay?.setPoints([]);
       return scaledSummary;
     }
 
     if (state.heatmapScale.mode === "meters") {
-      elements.centerDistanceHeatmapScale.textContent = scaledSummary.points.some(
-        (point) => point.comparisonUnavailable,
-      )
-        ? "Fixed meter ranges · no comparison center available; shown as very long"
-        : `Fixed meter ranges · red above ${state.heatmapScale.meterBreaks[3].toLocaleString()} m`;
+      elements.transitDistanceHeatmapScale.textContent =
+        `Fixed meter ranges · red above ${state.heatmapScale.meterBreaks[3].toLocaleString()} m`;
     } else {
-      elements.centerDistanceHeatmapScale.textContent =
+      elements.transitDistanceHeatmapScale.textContent =
         `Relative scale: green ≤ ${formatDistance(scaledSummary.lowerDistance)} · ` +
         `red ≥ ${formatDistance(scaledSummary.upperDistance)}`;
     }
-    if (!centerDistanceHeatmapOverlay) {
-      centerDistanceHeatmapOverlay = createCenterDistanceHeatmapOverlay();
-      centerDistanceHeatmapOverlay.setMap(googleMap);
+    if (!transitDistanceHeatmapOverlay) {
+      transitDistanceHeatmapOverlay = createTransitDistanceHeatmapOverlay();
+      transitDistanceHeatmapOverlay.setMap(googleMap);
     }
-    centerDistanceHeatmapOverlay.setPoints(scaledSummary.points);
+    transitDistanceHeatmapOverlay.setPoints(scaledSummary.points);
     return scaledSummary;
   }
 
@@ -1931,7 +1806,7 @@
       ? lastResults
       : calculateResults();
     const useClusters = state.zoom < 8;
-    const heatmapSummary = updateCenterDistanceHeatmap(results.metrics);
+    const heatmapSummary = updateTransitDistanceHeatmap(results.metrics);
     const heatmapPointByFacility = new Map(
       (heatmapSummary?.points || []).map((point) => [point.ccn, point]),
     );
@@ -1968,9 +1843,7 @@
             position: { lat: facility.lat, lng: facility.lng },
             selected: state.selectedFacility?.ccn === facility.ccn,
             title: heatmapPoint
-              ? heatmapPoint.comparisonUnavailable
-                ? `${facility.name}. No other dialysis center is available for comparison.`
-                : `${facility.name}. Nearest other dialysis center: ${formatDistance(heatmapPoint.nearestDistance)}.`
+              ? `${facility.name}. Nearest eligible transit stop${heatmapPoint.nearestStopName ? `, ${heatmapPoint.nearestStopName}` : ""}: ${formatDistance(heatmapPoint.nearestDistance)}.`
               : facility.name,
           });
         });
@@ -2048,8 +1921,8 @@
   }
 
   function handleMapLoadFailure(message) {
-    centerDistanceHeatmapOverlay?.setMap(null);
-    centerDistanceHeatmapOverlay = null;
+    transitDistanceHeatmapOverlay?.setMap(null);
+    transitDistanceHeatmapOverlay = null;
     googleMap = null;
     elements.mapSetupBackdrop.hidden = false;
     elements.mapConnect.disabled = false;
@@ -2197,7 +2070,7 @@
     if (state.radius !== 400) parameters.set("radius", String(state.radius));
     if (!state.layers.facility) parameters.set("facilities", "off");
     if (!state.layers.transit) parameters.set("stops", "off");
-    if (!state.layers.centerDistanceHeatmap) parameters.set("heatmap", "off");
+    if (!state.layers.transitDistanceHeatmap) parameters.set("heatmap", "off");
     if (state.heatmapScale.mode === "meters") {
       parameters.set("heatmapScale", "meters");
       parameters.set(
@@ -2244,7 +2117,7 @@
     }
     state.layers.facility = parameters.get("facilities") !== "off";
     state.layers.transit = parameters.get("stops") !== "off";
-    state.layers.centerDistanceHeatmap = parameters.get("heatmap") !== "off";
+    state.layers.transitDistanceHeatmap = parameters.get("heatmap") !== "off";
     if (parameters.get("heatmapScale") === "meters") {
       state.heatmapScale.mode = "meters";
       const meterBreaks = validateHeatmapMeterBreaks(
@@ -2514,7 +2387,9 @@
         state.layers[toggle.dataset.layerToggle] = toggle.checked;
         updateLayerState();
         if (
-          toggle.dataset.layerToggle === "transit" &&
+          ["transit", "transitDistanceHeatmap"].includes(
+            toggle.dataset.layerToggle,
+          ) &&
           toggle.checked
         ) {
           lastTransitQueryKey = "";
@@ -2754,8 +2629,7 @@
   window.DialysisTransitExplorer = {
     applyHeatmapScale,
     calculateResults,
-    calculateNearestFacilityDistances,
-    calculateSingleFacilityHeatmapSummary,
+    calculateTransitDistanceHeatmapSummary,
     distanceMeters,
     exportCsv,
     formatDistance,
