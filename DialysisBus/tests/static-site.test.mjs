@@ -88,6 +88,7 @@ test("root entry point contains the complete explorer surfaces", async () => {
   assert.match(methodsDialog, /id="methods-accessibility-title"/);
   assert.match(methodsDialog, /id="methods-privacy-title"/);
   assert.match(methodsDialog, /id="methods-terms-title"/);
+  assert.match(methodsDialog, /class="about-credit">by Micah Etter, MD<\/p>/);
   assert.match(methodsDialog, /No care or transportation advice/);
   assert.doesNotMatch(methodsDialog, /Browser storage/);
   assert.doesNotMatch(methodsDialog, /Permitted use/);
