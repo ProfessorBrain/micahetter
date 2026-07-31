@@ -193,6 +193,8 @@ test("client script implements every anticipated local workflow", async () => {
   }
 
   assert.match(script, /maps\.googleapis\.com\/maps\/api\/js/);
+  assert.match(script, /gestureHandling: "greedy"/);
+  assert.doesNotMatch(script, /gestureHandling: "cooperative"/);
   assert.match(
     script,
     /nextRadius < 100 \|\| nextRadius > 5000/,

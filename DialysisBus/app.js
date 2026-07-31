@@ -1984,7 +1984,7 @@
         center: state.center,
         clickableIcons: false,
         fullscreenControl: false,
-        gestureHandling: "cooperative",
+        gestureHandling: "greedy",
         mapId: pendingCredentials.mapId || "DEMO_MAP_ID",
         mapTypeControl: false,
         streetViewControl: false,
