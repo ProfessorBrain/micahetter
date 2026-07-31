@@ -2079,11 +2079,9 @@
       setConnectionStatus("Google Maps connected", true);
       await initializeSearchServices();
       renderAll();
-      showNotice(
-        IS_PUBLIC_DATA
-          ? "The Google basemap and nationwide CMS facility snapshot are ready. Zoom in to show the three closest BTS stops per facility."
-          : "The live Google basemap and demonstration layers are ready.",
-      );
+      if (!IS_PUBLIC_DATA) {
+        showNotice("The live Google basemap and demonstration layers are ready.");
+      }
     } catch {
       handleMapLoadFailure(
         "Google Maps loaded but could not initialize. Check Maps JavaScript API, vector Map ID, and billing.",

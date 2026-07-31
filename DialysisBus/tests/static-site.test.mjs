@@ -34,7 +34,8 @@ test("root entry point contains the complete explorer surfaces", async () => {
   assert.match(html, /id="current-location"/);
   assert.match(html, /list="facility-location-suggestions"/);
   assert.match(html, /id="facility-location-suggestions"/);
-  assert.match(html, /Public-source snapshot/);
+  assert.doesNotMatch(html, /Public-source snapshot/);
+  assert.doesNotMatch(html, /Facilities come from CMS and the Census Geocoder/);
   assert.match(html, /Three closest per visible facility · zoom 10\+/);
   assert.match(html, /Closest 3 in radius/);
   assert.match(html, /data-layer-toggle="centerDistanceHeatmap"/);
@@ -202,6 +203,10 @@ test("client script implements every anticipated local workflow", async () => {
   assert.match(script, /transit_stop_name_or_id_filter/);
   assert.match(script, /methodsDialog\.showModal\(\)/);
   assert.match(script, /methodsDialogTrigger\.focus\(\)/);
+  assert.doesNotMatch(
+    script,
+    /The Google basemap and nationwide CMS facility snapshot are ready/,
+  );
 });
 
 test("spatial calculations keep closest stops and center distances correct", async () => {
