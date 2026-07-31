@@ -23,6 +23,9 @@ test("root entry point contains the complete explorer surfaces", async () => {
   assert.match(html, /id="panel-analytics"/);
   assert.match(html, /<dialog[^>]+id="methods-dialog"/s);
   assert.match(html, /id="methods-dialog-close"/);
+  assert.match(html, /id="settings-shortcut"/);
+  assert.match(html, /<dialog[^>]+id="settings-dialog"/s);
+  assert.match(html, /id="settings-dialog-close"/);
   assert.match(html, /aria-haspopup="dialog"/);
   assert.doesNotMatch(html, /class="demo-status"/);
   assert.doesNotMatch(html, /Public data snapshot/);
@@ -56,6 +59,20 @@ test("root entry point contains the complete explorer surfaces", async () => {
   assert.match(html, /value="meters"/);
   assert.match(html, /id="heatmap-meter-range-form"/);
   assert.match(html, /data-heatmap-break="3"/);
+  const layersPanel = html.match(
+    /<section[^>]+id="panel-layers"[\s\S]*?<\/section>/,
+  )?.[0];
+  const settingsDialog = html.match(
+    /<dialog[^>]+id="settings-dialog"[\s\S]*?<\/dialog>/,
+  )?.[0];
+  assert.ok(layersPanel);
+  assert.ok(settingsDialog);
+  assert.match(layersPanel, /heatmap-scale-settings--sidebar/);
+  assert.match(layersPanel, /name="heatmap-scale-mode"/);
+  assert.doesNotMatch(layersPanel, /id="heatmap-meter-range-form"/);
+  assert.match(settingsDialog, /heatmap-scale-settings/);
+  assert.match(settingsDialog, /id="heatmap-meter-range-form"/);
+  assert.doesNotMatch(settingsDialog, /name="heatmap-scale-mode"/);
   assert.match(html, /id="filter-stop-query"/);
   assert.match(html, /id="filter-within-radius"/);
   assert.match(html, /id="reset-transit-filters"/);
@@ -165,6 +182,8 @@ test("client script implements every anticipated local workflow", async () => {
     "calculateResults",
     "openMethodsDialog",
     "closeMethodsDialog",
+    "openSettingsDialog",
+    "closeSettingsDialog",
     "renderDistribution",
     "renderTable",
     "selectFacility",
@@ -225,6 +244,8 @@ test("client script implements every anticipated local workflow", async () => {
   assert.match(script, /transit_stop_name_or_id_filter/);
   assert.match(script, /methodsDialog\.showModal\(\)/);
   assert.match(script, /methodsDialogTrigger\.focus\(\)/);
+  assert.match(script, /settingsDialog\.showModal\(\)/);
+  assert.match(script, /settingsDialogTrigger\.focus\(\)/);
   assert.doesNotMatch(
     script,
     /The Google basemap and nationwide CMS facility snapshot are ready/,
@@ -396,6 +417,7 @@ test("policy pages preserve the required limitations", async () => {
   ]);
 
   assert.match(accessibility, /table equivalents/i);
+  assert.match(accessibility, /Settings and Data &amp; Methods open as modal dialogs/i);
   assert.match(accessibility, /heatmap is optional and supplementary/i);
   assert.match(privacy, /does not save or transmit/i);
   assert.match(terms, /Straight-line proximity does not establish/i);

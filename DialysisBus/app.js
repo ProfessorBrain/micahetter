@@ -234,6 +234,7 @@
   let mapIdleTimer = null;
   let filterInputTimer = null;
   let methodsDialogTrigger = null;
+  let settingsDialogTrigger = null;
   let lastTransitQueryKey = "";
   let transitFetchController = null;
   let transitLoadState = IS_PUBLIC_DATA ? "zoom" : "bundled";
@@ -281,6 +282,8 @@
     radiusReadout: $("#radius-readout"),
     regionReadout: $("#region-readout"),
     resultCount: $("#result-count"),
+    settingsDialog: $("#settings-dialog"),
+    settingsDialogClose: $("#settings-dialog-close"),
     stateSelect: $("#state-select"),
     stopDetail: $("#stop-detail"),
     stopDetailContent: $("#stop-detail-content"),
@@ -520,8 +523,6 @@
     $$('[name="heatmap-scale-mode"]').forEach((input) => {
       input.checked = input.value === state.heatmapScale.mode;
     });
-    elements.heatmapMeterRangeForm.hidden =
-      state.heatmapScale.mode !== "meters";
     elements.heatmapRangeInputs.forEach((input, index) => {
       input.value = state.heatmapScale.meterBreaks[index];
     });
@@ -872,6 +873,17 @@
 
   function closeMethodsDialog() {
     if (elements.methodsDialog.open) elements.methodsDialog.close();
+  }
+
+  function openSettingsDialog() {
+    if (elements.settingsDialog.open) return;
+    settingsDialogTrigger = document.activeElement;
+    elements.settingsDialog.showModal();
+    elements.settingsDialogClose.focus();
+  }
+
+  function closeSettingsDialog() {
+    if (elements.settingsDialog.open) elements.settingsDialog.close();
   }
 
   function updateLayerState() {
@@ -2729,6 +2741,22 @@
       }
       methodsDialogTrigger = null;
     });
+    $("#settings-shortcut").addEventListener("click", () => {
+      openSettingsDialog();
+    });
+    elements.settingsDialogClose.addEventListener(
+      "click",
+      closeSettingsDialog,
+    );
+    elements.settingsDialog.addEventListener("click", (event) => {
+      if (event.target === elements.settingsDialog) closeSettingsDialog();
+    });
+    elements.settingsDialog.addEventListener("close", () => {
+      if (settingsDialogTrigger instanceof HTMLElement) {
+        settingsDialogTrigger.focus();
+      }
+      settingsDialogTrigger = null;
+    });
 
     $("#zoom-in").addEventListener("click", () => {
       state.zoom = Math.min(22, state.zoom + 1);
@@ -2786,7 +2814,7 @@
     });
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape") {
-        if (elements.methodsDialog.open) return;
+        if (elements.methodsDialog.open || elements.settingsDialog.open) return;
         if (!elements.stopDetail.hidden) {
           elements.stopDetail.hidden = true;
           state.selectedStop = null;

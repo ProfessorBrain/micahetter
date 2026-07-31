@@ -69,8 +69,8 @@ unchanged at `https://<account>.github.io/<repository>/`.
 - Facility, transit, and center-distance heatmap layer toggles. The heatmap
   colors each visible facility by its nearest other visible facility using five
   bands: green, green-yellow, yellow, yellow-red, and red from shortest to
-  longest distance. Users can choose a relative visible-distance scale or set
-  four fixed meter cutoffs for the five bands.
+  longest distance. Users choose the relative or meter scale in Layers and edit
+  the four fixed meter cutoffs from the top-bar Settings popup.
 - State selection, current viewport analysis, national reset, zoom controls,
   current-location navigation, and city/ZIP/address search.
 - URL restoration for map center, zoom, state, radius, layers, heatmap scale,
@@ -90,8 +90,8 @@ unchanged at `https://<account>.github.io/<repository>/`.
 - CSV spreadsheet-formula injection protection.
 - Table-based map alternative, keyboard tabs, visible focus, live-region
   announcements, reduced-motion support, and mobile bottom-sheet behavior.
-- Accessible Data & Methods popup plus Accessibility, Privacy, and Terms of Use
-  content.
+- Accessible Settings and Data & Methods popups plus Accessibility, Privacy,
+  and Terms of Use content.
 
 ## Static site files
 

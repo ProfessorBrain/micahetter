@@ -52,6 +52,15 @@
 
         <div class="topbar-actions">
           <button
+            aria-controls="settings-dialog"
+            aria-haspopup="dialog"
+            class="text-button"
+            id="settings-shortcut"
+            type="button"
+          >
+            Settings
+          </button>
+          <button
             aria-controls="methods-dialog"
             aria-haspopup="dialog"
             class="text-button"
@@ -212,7 +221,7 @@
                   </span>
                 </label>
 
-                <fieldset class="heatmap-scale-settings">
+                <fieldset class="heatmap-scale-settings heatmap-scale-settings--sidebar">
                   <legend>Heatmap distance scale</legend>
                   <div class="heatmap-mode-options">
                     <label>
@@ -233,64 +242,9 @@
                       <span>Meter ranges</span>
                     </label>
                   </div>
-                  <form hidden id="heatmap-meter-range-form">
-                    <div class="heatmap-meter-grid">
-                      <label>
-                        <span>Very short max (m)</span>
-                        <input
-                          data-heatmap-break="0"
-                          inputmode="numeric"
-                          max="1000000"
-                          min="1"
-                          step="50"
-                          type="number"
-                          value="500"
-                        />
-                      </label>
-                      <label>
-                        <span>Short max (m)</span>
-                        <input
-                          data-heatmap-break="1"
-                          inputmode="numeric"
-                          max="1000000"
-                          min="1"
-                          step="50"
-                          type="number"
-                          value="1000"
-                        />
-                      </label>
-                      <label>
-                        <span>Medium max (m)</span>
-                        <input
-                          data-heatmap-break="2"
-                          inputmode="numeric"
-                          max="1000000"
-                          min="1"
-                          step="50"
-                          type="number"
-                          value="2500"
-                        />
-                      </label>
-                      <label>
-                        <span>Long max (m)</span>
-                        <input
-                          data-heatmap-break="3"
-                          inputmode="numeric"
-                          max="1000000"
-                          min="1"
-                          step="50"
-                          type="number"
-                          value="5000"
-                        />
-                      </label>
-                    </div>
-                    <button class="secondary-action--compact" type="submit">
-                      Apply meter ranges
-                    </button>
-                    <p id="heatmap-meter-range-help" role="status">
-                      Very long begins above 5,000 m.
-                    </p>
-                  </form>
+                  <p class="field-help">
+                    Adjust meter cutoffs from Settings in the top bar.
+                  </p>
                 </fieldset>
 
                 <label class="toggle-row toggle-row--conditional">
@@ -791,6 +745,93 @@
                   <a href="./privacy.html">Privacy</a>
                   <a href="./terms.html">Terms of use</a>
                 </nav>
+                </div>
+              </div>
+            </dialog>
+
+            <dialog
+              aria-labelledby="settings-dialog-title"
+              class="methods-dialog settings-dialog"
+              id="settings-dialog"
+            >
+              <div class="methods-dialog__surface">
+                <button
+                  aria-label="Close settings"
+                  class="methods-dialog__close"
+                  id="settings-dialog-close"
+                  type="button"
+                >
+                  ×
+                </button>
+                <div class="methods-panel settings-panel">
+                  <span class="eyebrow">Map display</span>
+                  <h2 id="settings-dialog-title">Heatmap meter ranges</h2>
+                  <p>
+                    Set the four fixed cutoffs used when “Meter ranges” is
+                    selected in Layers. These ranges stay consistent as the map
+                    moves.
+                  </p>
+                  <fieldset class="heatmap-scale-settings">
+                    <legend>Fixed meter cutoffs</legend>
+                    <form id="heatmap-meter-range-form">
+                      <div class="heatmap-meter-grid">
+                        <label>
+                          <span>Very short max (m)</span>
+                          <input
+                            data-heatmap-break="0"
+                            inputmode="numeric"
+                            max="1000000"
+                            min="1"
+                            step="50"
+                            type="number"
+                            value="500"
+                          />
+                        </label>
+                        <label>
+                          <span>Short max (m)</span>
+                          <input
+                            data-heatmap-break="1"
+                            inputmode="numeric"
+                            max="1000000"
+                            min="1"
+                            step="50"
+                            type="number"
+                            value="1000"
+                          />
+                        </label>
+                        <label>
+                          <span>Medium max (m)</span>
+                          <input
+                            data-heatmap-break="2"
+                            inputmode="numeric"
+                            max="1000000"
+                            min="1"
+                            step="50"
+                            type="number"
+                            value="2500"
+                          />
+                        </label>
+                        <label>
+                          <span>Long max (m)</span>
+                          <input
+                            data-heatmap-break="3"
+                            inputmode="numeric"
+                            max="1000000"
+                            min="1"
+                            step="50"
+                            type="number"
+                            value="5000"
+                          />
+                        </label>
+                      </div>
+                      <button class="secondary-action--compact" type="submit">
+                        Apply meter ranges
+                      </button>
+                      <p id="heatmap-meter-range-help" role="status">
+                        Very long begins above 5,000 m.
+                      </p>
+                    </form>
+                  </fieldset>
                 </div>
               </div>
             </dialog>

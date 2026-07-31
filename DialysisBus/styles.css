@@ -536,13 +536,7 @@ a:focus-visible,
 }
 
 #heatmap-meter-range-form {
-  border-top: 1px solid #d7e0dc;
-  margin-top: 9px;
-  padding-top: 9px;
-}
-
-#heatmap-meter-range-form[hidden] {
-  display: none;
+  margin-top: 0;
 }
 
 .heatmap-meter-grid {
@@ -1097,6 +1091,14 @@ td small {
 
 .methods-dialog__close:hover {
   background: var(--teal-pale);
+}
+
+.settings-dialog {
+  max-width: 560px;
+}
+
+.settings-dialog .heatmap-scale-settings {
+  margin: 18px 0 0;
 }
 
 .methods-panel h2 {
@@ -1713,8 +1715,12 @@ td small {
     grid-template-columns: minmax(230px, 0.9fr) minmax(280px, 1.2fr) auto;
   }
 
+  .topbar-actions {
+    gap: 10px;
+  }
+
   .text-button {
-    display: none;
+    font-size: 10px;
   }
 
   .workspace {
@@ -1760,8 +1766,15 @@ td small {
   }
 
   .topbar-actions {
+    gap: 6px;
     grid-column: 2;
     grid-row: 1;
+  }
+
+  .text-button {
+    font-size: 8px;
+    min-height: 36px;
+    padding: 4px 2px;
   }
 
   .workspace,
