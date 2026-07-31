@@ -83,7 +83,7 @@ unchanged at `https://<account>.github.io/<repository>/`.
 - Summary metrics, quartiles, distance distribution, sortable table, and
   responsive facility cards.
 - Facility detail drawer and transit-stop detail card.
-- Nearest-stop line and threshold-circle overlays for selected facilities.
+- Nearest-stop line overlay for selected facilities.
 - CSV export with metric, extent, provenance, and UTC timestamp fields.
 - CSV spreadsheet-formula injection protection.
 - Table-based map alternative, keyboard tabs, visible focus, live-region

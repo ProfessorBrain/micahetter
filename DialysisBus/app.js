@@ -202,7 +202,6 @@
     selectedState: "",
     selectedStop: null,
     selectionLayers: {
-      circle: false,
       line: false,
     },
     sort: {
@@ -217,7 +216,6 @@
   let autocomplete = null;
   let AdvancedMarkerElement = null;
   let mapMarkers = [];
-  let thresholdCircle = null;
   let nearestLine = null;
   let centerDistanceHeatmapOverlay = null;
   let heatmapFacilitiesCache = null;
@@ -246,7 +244,6 @@
     centerDistanceHeatmapLegend: $("#center-distance-heatmap-legend"),
     centerDistanceHeatmapScale: $("#center-distance-heatmap-scale"),
     customRadius: $("#custom-radius"),
-    detailCircleButton: $("#detail-toggle-circle"),
     detailLineButton: $("#detail-toggle-line"),
     distanceDistribution: $("#distance-distribution"),
     extentDescription: $("#extent-description"),
@@ -1300,7 +1297,6 @@
 
   function closeFacilityDetail() {
     state.selectedFacility = null;
-    state.selectionLayers.circle = false;
     state.selectionLayers.line = false;
     elements.facilityDetail.hidden = true;
     $$("[data-selection-layer]").forEach((toggle) => {
@@ -1339,13 +1335,8 @@
     elements.detailLineButton.textContent = state.selectionLayers.line
       ? "Hide nearest-stop line"
       : "Show nearest-stop line";
-    elements.detailCircleButton.textContent = state.selectionLayers.circle
-      ? "Hide threshold circle"
-      : "Show threshold circle";
     $('[data-selection-layer="line"]').checked =
       state.selectionLayers.line;
-    $('[data-selection-layer="circle"]').checked =
-      state.selectionLayers.circle;
   }
 
   function toggleSelectionLayer(layer) {
@@ -1359,10 +1350,6 @@
   }
 
   function clearSelectionOverlays() {
-    if (thresholdCircle) {
-      thresholdCircle.setMap(null);
-      thresholdCircle = null;
-    }
     if (nearestLine) {
       nearestLine.setMap(null);
       nearestLine = null;
@@ -1379,18 +1366,6 @@
       !Number.isFinite(facility.lng)
     ) {
       return;
-    }
-    if (state.selectionLayers.circle) {
-      thresholdCircle = new window.google.maps.Circle({
-        center: { lat: facility.lat, lng: facility.lng },
-        fillColor: "#d66b3d",
-        fillOpacity: 0.12,
-        map: googleMap,
-        radius: state.radius,
-        strokeColor: "#a84526",
-        strokeOpacity: 0.8,
-        strokeWeight: 2,
-      });
     }
     if (state.selectionLayers.line && facility.nearestStop) {
       nearestLine = new window.google.maps.Polyline({
@@ -2711,9 +2686,6 @@
     });
     elements.detailLineButton.addEventListener("click", () =>
       toggleSelectionLayer("line"),
-    );
-    elements.detailCircleButton.addEventListener("click", () =>
-      toggleSelectionLayer("circle"),
     );
 
     $("#notice-close").addEventListener("click", () => {
