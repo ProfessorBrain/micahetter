@@ -2621,16 +2621,6 @@
       state.extentBounds = { ...NATIONAL_BOUNDS };
       applySelectedState("");
     });
-    $("#analyze-viewport").addEventListener("click", () => {
-      state.selectedState = "";
-      elements.stateSelect.value = "";
-      elements.regionReadout.textContent = "Current map viewport";
-      elements.extentDescription.textContent =
-        "Current map viewport—not an administrative-area statistic";
-      renderAll();
-      updateUrl();
-      showNotice("Analytics now use the current map viewport.");
-    });
     $("#current-location").addEventListener("click", useCurrentLocation);
     $("#copy-view-link").addEventListener("click", copyViewLink);
 
