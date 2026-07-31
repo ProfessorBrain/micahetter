@@ -38,6 +38,9 @@ Before publishing:
 7. At zoom level 10 or closer, verify transit name/ID search, counted select
    options, wheelchair and agency filters, the active-radius constraint, live
    candidate/display totals, URL restoration, and the transit-only reset.
+8. Open the Data & Methods popup and verify close-button, Escape, backdrop,
+   scrolling, focus containment, and focus-return behavior on desktop and
+   mobile widths.
 
 ## Local startup
 

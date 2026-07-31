@@ -21,7 +21,11 @@ test("root entry point contains the complete explorer surfaces", async () => {
   assert.match(html, /id="panel-layers"/);
   assert.match(html, /id="panel-filters"/);
   assert.match(html, /id="panel-analytics"/);
-  assert.match(html, /id="panel-methods"/);
+  assert.match(html, /<dialog[^>]+id="methods-dialog"/s);
+  assert.match(html, /id="methods-dialog-close"/);
+  assert.match(html, /aria-haspopup="dialog"/);
+  assert.doesNotMatch(html, /id="panel-methods"/);
+  assert.doesNotMatch(html, /data-tab="methods"/);
   assert.match(html, /id="custom-radius"/);
   assert.match(html, /id="facility-table"/);
   assert.match(html, /id="facility-detail"/);
@@ -142,6 +146,8 @@ test("client script implements every anticipated local workflow", async () => {
     "distanceMeters",
     "percentile",
     "calculateResults",
+    "openMethodsDialog",
+    "closeMethodsDialog",
     "renderDistribution",
     "renderTable",
     "selectFacility",
@@ -194,6 +200,8 @@ test("client script implements every anticipated local workflow", async () => {
   assert.match(script, /parameters\.set\("heatmap", "on"\)/);
   assert.match(script, /parameters\.set\("withinRadius", "yes"\)/);
   assert.match(script, /transit_stop_name_or_id_filter/);
+  assert.match(script, /methodsDialog\.showModal\(\)/);
+  assert.match(script, /methodsDialogTrigger\.focus\(\)/);
 });
 
 test("spatial calculations keep closest stops and center distances correct", async () => {

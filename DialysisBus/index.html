@@ -51,7 +51,13 @@
         </form>
 
         <div class="topbar-actions">
-          <button class="text-button" id="methods-shortcut" type="button">
+          <button
+            aria-controls="methods-dialog"
+            aria-haspopup="dialog"
+            class="text-button"
+            id="methods-shortcut"
+            type="button"
+          >
             Data &amp; methods
           </button>
           <span class="demo-status" title="CMS, Census, and USDOT/BTS public data">
@@ -140,17 +146,6 @@
               type="button"
             >
               Analytics
-            </button>
-            <button
-              aria-controls="panel-methods"
-              aria-selected="false"
-              data-tab="methods"
-              id="tab-methods"
-              role="tab"
-              tabindex="-1"
-              type="button"
-            >
-              Data &amp; Methods
             </button>
           </nav>
 
@@ -655,15 +650,23 @@
               </div>
             </section>
 
-            <section
-              aria-labelledby="tab-methods"
-              hidden
-              id="panel-methods"
-              role="tabpanel"
+            <dialog
+              aria-labelledby="methods-dialog-title"
+              class="methods-dialog"
+              id="methods-dialog"
             >
-              <div class="methods-panel">
+              <div class="methods-dialog__surface">
+                <button
+                  aria-label="Close data and methods"
+                  class="methods-dialog__close"
+                  id="methods-dialog-close"
+                  type="button"
+                >
+                  ×
+                </button>
+                <div class="methods-panel">
                 <span class="eyebrow">Interpret with care</span>
-                <h2>What this explorer measures</h2>
+                <h2 id="methods-dialog-title">What this explorer measures</h2>
                 <p>
                   This explorer compares CMS dialysis-facility records,
                   geocoded through the U.S. Census Bureau, with fixed-route
@@ -745,8 +748,9 @@
                   <a href="./privacy.html">Privacy</a>
                   <a href="./terms.html">Terms of use</a>
                 </nav>
+                </div>
               </div>
-            </section>
+            </dialog>
           </div>
 
           <footer class="panel-footer">

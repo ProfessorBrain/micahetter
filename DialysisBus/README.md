@@ -88,7 +88,8 @@ unchanged at `https://<account>.github.io/<repository>/`.
 - CSV spreadsheet-formula injection protection.
 - Table-based map alternative, keyboard tabs, visible focus, live-region
   announcements, reduced-motion support, and mobile bottom-sheet behavior.
-- Data & Methods, Accessibility, Privacy, and Terms of Use content.
+- Accessible Data & Methods popup plus Accessibility, Privacy, and Terms of Use
+  content.
 
 ## Static site files
 

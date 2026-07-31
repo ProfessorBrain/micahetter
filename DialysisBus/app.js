@@ -230,6 +230,7 @@
   };
   let mapIdleTimer = null;
   let filterInputTimer = null;
+  let methodsDialogTrigger = null;
   let lastTransitQueryKey = "";
   let transitFetchController = null;
   let transitLoadState = IS_PUBLIC_DATA ? "zoom" : "bundled";
@@ -268,6 +269,8 @@
     mapSetupBackdrop: $("#map-setup-backdrop"),
     mapSetupStatus: $("#map-setup-status"),
     mapStateReadout: $("#map-state-readout"),
+    methodsDialog: $("#methods-dialog"),
+    methodsDialogClose: $("#methods-dialog-close"),
     noticeBar: $("#notice-bar"),
     noticeText: $("#notice-text"),
     panelClose: $("#panel-close"),
@@ -782,6 +785,17 @@
     $$("[role='tabpanel']").forEach((panel) => {
       panel.hidden = panel.id !== `panel-${tabName}`;
     });
+  }
+
+  function openMethodsDialog() {
+    if (elements.methodsDialog.open) return;
+    methodsDialogTrigger = document.activeElement;
+    elements.methodsDialog.showModal();
+    elements.methodsDialogClose.focus();
+  }
+
+  function closeMethodsDialog() {
+    if (elements.methodsDialog.open) elements.methodsDialog.close();
   }
 
   function updateLayerState() {
@@ -2617,9 +2631,20 @@
       elements.panelClose.focus();
     });
     $("#methods-shortcut").addEventListener("click", () => {
-      elements.workspace.classList.remove("workspace--panel-closed");
-      elements.panelOpen.hidden = true;
-      setActiveTab("methods", true);
+      openMethodsDialog();
+    });
+    elements.methodsDialogClose.addEventListener(
+      "click",
+      closeMethodsDialog,
+    );
+    elements.methodsDialog.addEventListener("click", (event) => {
+      if (event.target === elements.methodsDialog) closeMethodsDialog();
+    });
+    elements.methodsDialog.addEventListener("close", () => {
+      if (methodsDialogTrigger instanceof HTMLElement) {
+        methodsDialogTrigger.focus();
+      }
+      methodsDialogTrigger = null;
     });
 
     $("#zoom-in").addEventListener("click", () => {
@@ -2698,6 +2723,7 @@
     });
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape") {
+        if (elements.methodsDialog.open) return;
         if (!elements.stopDetail.hidden) {
           elements.stopDetail.hidden = true;
           state.selectedStop = null;

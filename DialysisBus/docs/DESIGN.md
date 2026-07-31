@@ -154,7 +154,7 @@ The importer must paginate because the ArcGIS service has a record limit. Query 
 
 ### 6.4 Data attribution and limitations
 
-The user interface must include a Data & Methods panel stating:
+The user interface must include a Data & Methods modal dialog stating:
 
 - CMS data represent Medicare-certified dialysis facilities and may include facilities that are closed, temporarily inactive, specialized, or not accepting new patients unless the source explicitly indicates otherwise.
 - National Transit Map coverage and source validity vary by agency and snapshot.
@@ -175,7 +175,7 @@ On first load:
 - Display transit-stop aggregate clusters, not raw stops.
 - Set proximity threshold to **400 meters**.
 - Use all facility ownership and service filters.
-- Show a brief methods notice and a link to the full Data & Methods panel.
+- Show a brief methods notice and a button for the full Data & Methods dialog.
 - Do not automatically run expensive national facility-stop count queries until the initial aggregate metrics are available.
 
 ### 7.2 Map layers
@@ -726,12 +726,16 @@ Left-panel tabs:
 1. **Layers**
 2. **Filters**
 3. **Analytics**
-4. **Data & Methods**
+
+Open **Data & Methods** from the application bar as a modal dialog with a
+labeled close button, Escape and backdrop dismissal, internal scrolling, and
+focus restoration.
 
 ### 14.2 Mobile layout
 
 - Full-screen map.
-- Bottom sheet for layers, filters, analytics, and details.
+- Bottom sheet for layers, filters, analytics, and details; Data & Methods
+  remains a modal dialog.
 - Search and state controls remain available.
 - Preserve a minimum touch target of 44 by 44 CSS pixels.
 - Avoid showing the full facility table on narrow screens; provide cards and CSV export.
