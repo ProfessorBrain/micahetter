@@ -24,6 +24,7 @@ test("root entry point contains the complete explorer surfaces", async () => {
   assert.match(html, /<dialog[^>]+id="methods-dialog"/s);
   assert.match(html, /id="methods-dialog-close"/);
   assert.match(html, /aria-haspopup="dialog"/);
+  assert.doesNotMatch(html, /class="demo-status"/);
   assert.doesNotMatch(html, /id="panel-methods"/);
   assert.doesNotMatch(html, /data-tab="methods"/);
   assert.match(html, /id="custom-radius"/);
