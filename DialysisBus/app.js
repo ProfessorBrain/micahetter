@@ -2311,19 +2311,6 @@
     updateMapReadout();
   }
 
-  function copyViewLink() {
-    updateUrl();
-    const url = window.location.href;
-    if (navigator.clipboard?.writeText) {
-      navigator.clipboard
-        .writeText(url)
-        .then(() => showNotice("Shareable analysis link copied."))
-        .catch(() => showNotice(`Copy this analysis link: ${url}`));
-    } else {
-      showNotice(`Copy this analysis link: ${url}`);
-    }
-  }
-
   function useCurrentLocation() {
     if (!navigator.geolocation) {
       showNotice("Current-location access is not available in this browser.");
@@ -2622,8 +2609,6 @@
       applySelectedState("");
     });
     $("#current-location").addEventListener("click", useCurrentLocation);
-    $("#copy-view-link").addEventListener("click", copyViewLink);
-
     $("#location-form").addEventListener("submit", (event) => {
       event.preventDefault();
       const query = String(

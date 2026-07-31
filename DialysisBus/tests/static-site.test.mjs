@@ -31,6 +31,8 @@ test("root entry point contains the complete explorer surfaces", async () => {
   assert.doesNotMatch(html, /Google Maps connected/);
   assert.doesNotMatch(html, /id="analyze-viewport"/);
   assert.doesNotMatch(html, /Analyze current map/);
+  assert.doesNotMatch(html, /id="copy-view-link"/);
+  assert.doesNotMatch(html, /Copy view link/);
   assert.doesNotMatch(html, /Threshold circle/i);
   assert.doesNotMatch(html, /data-selection-layer="circle"/);
   assert.doesNotMatch(html, /id="panel-methods"/);
@@ -183,7 +185,6 @@ test("client script implements every anticipated local workflow", async () => {
     "navigator.geolocation.getCurrentPosition",
     "serializeState",
     "restoreStateFromUrl",
-    "copyViewLink",
     "exportCsv",
     "populateLocationSuggestions",
     "Blob",
@@ -225,6 +226,8 @@ test("client script implements every anticipated local workflow", async () => {
   assert.doesNotMatch(script, /Google Maps connected/);
   assert.doesNotMatch(script, /#analyze-viewport/);
   assert.doesNotMatch(script, /Analytics now use the current map viewport/);
+  assert.doesNotMatch(script, /copyViewLink/);
+  assert.doesNotMatch(script, /navigator\.clipboard/);
 });
 
 test("spatial calculations keep closest stops and center distances correct", async () => {
