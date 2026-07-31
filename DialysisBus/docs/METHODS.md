@@ -41,6 +41,23 @@ Phase 1 uses geodesic straight-line distance in meters. PostGIS geography
 operations will calculate nearest-stop distance and counts within 250, 400,
 800, and 1,600 meters, plus validated custom radii from 100 to 5,000 meters.
 
+## Center-distance heatmap
+
+The optional center-distance heatmap is calculated entirely in the browser
+from the visible facilities that pass the active facility filters. For each
+geocoded facility, a three-dimensional spatial tree identifies the nearest
+other visible facility; spherical chord distance is then converted to geodesic
+meters. The map uses the 10th and 90th percentiles of the visible nearest-center
+distances as the green and red endpoints, with a green-to-yellow-to-red
+gradient between them. Values outside those endpoints are clamped. The legend
+reports the current endpoint distances, and facility marker descriptions expose
+the individual nearest-center distance while the layer is active.
+
+This is a relative viewport comparison, so colors can change when the map
+extent or facility filters change. It does not measure travel time, road
+distance, service capacity, or whether nearby facilities have available
+appointments.
+
 ## Interpretation
 
 Stop proximity is not proof of practical transit access. It does not measure:

@@ -209,6 +209,25 @@
                   </span>
                 </label>
 
+                <label class="toggle-row">
+                  <span
+                    class="legend-symbol legend-symbol--heatmap"
+                    aria-hidden="true"
+                  ></span>
+                  <span class="toggle-copy">
+                    <strong>Center-distance heatmap</strong>
+                    <small>Green: nearby centers · red: isolated centers</small>
+                  </span>
+                  <span class="switch">
+                    <input
+                      aria-label="Dialysis center distance heatmap"
+                      data-layer-toggle="centerDistanceHeatmap"
+                      type="checkbox"
+                    />
+                    <span aria-hidden="true"></span>
+                  </span>
+                </label>
+
                 <label class="toggle-row toggle-row--conditional">
                   <span class="line-symbol" aria-hidden="true"></span>
                   <span class="toggle-copy">
@@ -589,6 +608,13 @@
                   closest eligible stops per visible facility and shows a
                   shared stop only once.
                 </p>
+                <p>
+                  The optional center-distance heatmap compares every visible,
+                  filtered dialysis facility with its nearest other visible
+                  facility. Green represents the shortest tenth of those
+                  distances, red represents the longest tenth, and yellow
+                  represents the range between them.
+                </p>
                 <dl>
                   <div>
                     <dt>Facility model</dt>
@@ -636,9 +662,12 @@
 
                 <h3>Accessibility and privacy</h3>
                 <p>
-                  Every result is available in a table alternative. Search text
-                  remains in the active browser interaction and is not logged or
-                  stored by this static site.
+                  Facility and transit results are available in a table
+                  alternative. The optional heatmap is supplementary; its text
+                  legend reports the active distance endpoints, and visible
+                  facility marker descriptions report individual distances.
+                  Search text remains in the active browser interaction and is
+                  not logged or stored by this static site.
                 </p>
                 <nav class="policy-links" aria-label="Site policies">
                   <a href="./accessibility.html">Accessibility</a>
@@ -763,6 +792,22 @@
               <i class="legend-symbol legend-symbol--transit"></i>
               Transit stop
             </span>
+            <div
+              class="distance-heatmap-key"
+              hidden
+              id="center-distance-heatmap-legend"
+            >
+              <span>
+                <i class="legend-symbol legend-symbol--heatmap"></i>
+                Nearest other dialysis center
+              </span>
+              <div class="heatmap-gradient" aria-hidden="true"></div>
+              <div class="heatmap-labels" aria-hidden="true">
+                <span>Short distance</span>
+                <span>Long distance</span>
+              </div>
+              <small id="center-distance-heatmap-scale"></small>
+            </div>
             <small>BTS markers show only the three closest stops per visible facility.</small>
           </div>
 

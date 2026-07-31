@@ -30,6 +30,9 @@ test("root entry point contains the complete explorer surfaces", async () => {
   assert.match(html, /Public-source snapshot/);
   assert.match(html, /Three closest per visible facility · zoom 10\+/);
   assert.match(html, /Closest 3 in radius/);
+  assert.match(html, /data-layer-toggle="centerDistanceHeatmap"/);
+  assert.match(html, /id="center-distance-heatmap-legend"/);
+  assert.match(html, /Green: nearby centers · red: isolated centers/);
   assert.doesNotMatch(html, /available after data load/i);
   assert.doesNotMatch(html, /filters are staged/i);
   assert.doesNotMatch(html, /analytics need a validated snapshot/i);
@@ -134,6 +137,10 @@ test("client script implements every anticipated local workflow", async () => {
     "updateSelectionOverlays",
     "AdvancedMarkerElement",
     "loadTransitStopsForViewport",
+    "calculateNearestFacilityDistances",
+    "createCenterDistanceHeatmapOverlay",
+    "centerDistanceHeatmap",
+    "fromLatLngToDivPixel",
     "selectClosestStopsForFacilities",
     "CLOSEST_STOPS_PER_FACILITY",
     "closestStopIdsByFacility",
@@ -170,9 +177,10 @@ test("client script implements every anticipated local workflow", async () => {
   assert.match(script, /googlePlacesAutocomplete/);
   assert.match(script, /\.slice\(0, limit\)/);
   assert.match(script, /closest_3_stops_within_threshold/);
+  assert.match(script, /parameters\.set\("heatmap", "on"\)/);
 });
 
-test("closest-stop selection keeps three per facility and deduplicates shared stops", async () => {
+test("spatial calculations keep closest stops and center distances correct", async () => {
   const source = await readFile(new URL("app.js", root), "utf8");
   const context = vm.createContext({
     AbortController,
@@ -194,8 +202,8 @@ test("closest-stop selection keeps three per facility and deduplicates shared st
     },
   });
   vm.runInContext(source, context);
-  const selectClosestStops =
-    context.window.DialysisTransitExplorer.selectClosestStopsForFacilities;
+  const explorer = context.window.DialysisTransitExplorer;
+  const selectClosestStops = explorer.selectClosestStopsForFacilities;
   const facilities = [
     { ccn: "A", lat: 0, lng: 0 },
     { ccn: "B", lat: 0, lng: 0.0045 },
@@ -213,6 +221,22 @@ test("closest-stop selection keeps three per facility and deduplicates shared st
     selection.stops.find((stop) => stop.id === "stop-3").relatedFacilityCount,
     2,
   );
+
+  const heatmapSummary = explorer.calculateNearestFacilityDistances([
+    { ccn: "A", lat: 0, lng: 0, name: "A" },
+    { ccn: "B", lat: 0, lng: 0.01, name: "B" },
+    { ccn: "C", lat: 0, lng: 0.05, name: "C" },
+  ]);
+  const firstPoint = heatmapSummary.points.find((point) => point.ccn === "A");
+  const isolatedPoint = heatmapSummary.points.find(
+    (point) => point.ccn === "C",
+  );
+  assert.equal(heatmapSummary.points.length, 3);
+  assert.ok(firstPoint.nearestDistance > 1100);
+  assert.ok(firstPoint.nearestDistance < 1120);
+  assert.ok(isolatedPoint.nearestDistance > firstPoint.nearestDistance * 3);
+  assert.equal(firstPoint.normalizedDistance, 0);
+  assert.equal(isolatedPoint.normalizedDistance, 1);
 });
 
 test("public map configuration exposes the explicit demo integration switch", async () => {
@@ -230,6 +254,7 @@ test("policy pages preserve the required limitations", async () => {
   ]);
 
   assert.match(accessibility, /table equivalents/i);
+  assert.match(accessibility, /heatmap is optional and supplementary/i);
   assert.match(privacy, /does not save or transmit/i);
   assert.match(terms, /Straight-line proximity does not establish/i);
   assert.match(terms, /public CMS facility records/i);

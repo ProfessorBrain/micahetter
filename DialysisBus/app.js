@@ -9,6 +9,7 @@
   }
   const IS_PUBLIC_DATA = DATA.metadata.mode === "public_snapshot";
   const CLOSEST_STOPS_PER_FACILITY = 3;
+  const EARTH_RADIUS_METERS = 6371008.8;
   const TRANSIT_MIN_ZOOM = 10;
   const TRANSIT_RECORD_LIMIT = 2000;
   const TRANSIT_SERVICE_URL =
@@ -183,6 +184,7 @@
       wheelchair: "",
     },
     layers: {
+      centerDistanceHeatmap: false,
       facility: true,
       transit: true,
     },
@@ -208,6 +210,9 @@
   let mapMarkers = [];
   let thresholdCircle = null;
   let nearestLine = null;
+  let centerDistanceHeatmapOverlay = null;
+  let heatmapFacilitiesCache = null;
+  let heatmapSummaryCache = null;
   let pendingCredentials = null;
   let lastResults = {
     facilities: [],
@@ -227,6 +232,8 @@
   const elements = {
     analyticsExcluded: $("#analytics-excluded"),
     analyticsExtentTitle: $("#analytics-extent-title"),
+    centerDistanceHeatmapLegend: $("#center-distance-heatmap-legend"),
+    centerDistanceHeatmapScale: $("#center-distance-heatmap-scale"),
     customRadius: $("#custom-radius"),
     detailCircleButton: $("#detail-toggle-circle"),
     detailLineButton: $("#detail-toggle-line"),
@@ -270,7 +277,6 @@
   }
 
   function distanceMeters(first, second) {
-    const earthRadius = 6371008.8;
     const latitudeDelta = radians(second.lat - first.lat);
     const longitudeDelta = radians(second.lng - first.lng);
     const firstLatitude = radians(first.lat);
@@ -280,7 +286,7 @@
       Math.cos(firstLatitude) *
         Math.cos(secondLatitude) *
         Math.sin(longitudeDelta / 2) ** 2;
-    return 2 * earthRadius * Math.asin(Math.sqrt(a));
+    return 2 * EARTH_RADIUS_METERS * Math.asin(Math.sqrt(a));
   }
 
   function formatDistance(value, includeMetricTitle = false) {
@@ -305,6 +311,130 @@
     const weight = position - lowerIndex;
     return (
       sorted[lowerIndex] * (1 - weight) + sorted[upperIndex] * weight
+    );
+  }
+
+  function facilityUnitVector(facility) {
+    const latitude = radians(facility.lat);
+    const longitude = radians(facility.lng);
+    const latitudeRadius = Math.cos(latitude);
+    return [
+      latitudeRadius * Math.cos(longitude),
+      latitudeRadius * Math.sin(longitude),
+      Math.sin(latitude),
+    ];
+  }
+
+  function buildFacilitySpatialTree(points, depth = 0) {
+    if (!points.length) return null;
+    const axis = depth % 3;
+    points.sort(
+      (first, second) => first.vector[axis] - second.vector[axis],
+    );
+    const middle = Math.floor(points.length / 2);
+    return {
+      axis,
+      left: buildFacilitySpatialTree(points.slice(0, middle), depth + 1),
+      point: points[middle],
+      right: buildFacilitySpatialTree(points.slice(middle + 1), depth + 1),
+    };
+  }
+
+  function squaredVectorDistance(first, second) {
+    return first.reduce(
+      (total, coordinate, index) =>
+        total + (coordinate - second[index]) ** 2,
+      0,
+    );
+  }
+
+  function findNearestFacilityPoint(
+    node,
+    target,
+    best = { distanceSquared: Number.POSITIVE_INFINITY, point: null },
+  ) {
+    if (!node) return best;
+    let nextBest = best;
+    if (node.point !== target) {
+      const distanceSquared = squaredVectorDistance(
+        node.point.vector,
+        target.vector,
+      );
+      if (distanceSquared < nextBest.distanceSquared) {
+        nextBest = { distanceSquared, point: node.point };
+      }
+    }
+
+    const axisDelta = target.vector[node.axis] - node.point.vector[node.axis];
+    const nearBranch = axisDelta < 0 ? node.left : node.right;
+    const farBranch = axisDelta < 0 ? node.right : node.left;
+    nextBest = findNearestFacilityPoint(nearBranch, target, nextBest);
+    if (axisDelta ** 2 < nextBest.distanceSquared) {
+      nextBest = findNearestFacilityPoint(farBranch, target, nextBest);
+    }
+    return nextBest;
+  }
+
+  function calculateNearestFacilityDistances(facilities) {
+    const spatialPoints = facilities
+      .filter(
+        (facility) =>
+          Number.isFinite(facility.lat) && Number.isFinite(facility.lng),
+      )
+      .map((facility) => ({
+        facility,
+        vector: facilityUnitVector(facility),
+      }));
+    if (spatialPoints.length < 2) {
+      return { lowerDistance: null, points: [], upperDistance: null };
+    }
+
+    const spatialTree = buildFacilitySpatialTree([...spatialPoints]);
+    const points = spatialPoints.map((point) => {
+      const nearest = findNearestFacilityPoint(spatialTree, point);
+      const chordLength = Math.sqrt(nearest.distanceSquared);
+      const angularDistance = 2 * Math.asin(Math.min(1, chordLength / 2));
+      return {
+        ccn: point.facility.ccn,
+        lat: point.facility.lat,
+        lng: point.facility.lng,
+        nearestDistance: angularDistance * EARTH_RADIUS_METERS,
+        nearestFacilityName: nearest.point?.facility.name || "",
+      };
+    });
+    const distances = points.map((point) => point.nearestDistance);
+    const lowerDistance = percentile(distances, 0.1);
+    const upperDistance = percentile(distances, 0.9);
+    const distanceSpan = Math.max(1, upperDistance - lowerDistance);
+
+    return {
+      lowerDistance,
+      points: points.map((point) => ({
+        ...point,
+        normalizedDistance: Math.max(
+          0,
+          Math.min(
+            1,
+            (point.nearestDistance - lowerDistance) / distanceSpan,
+          ),
+        ),
+      })),
+      upperDistance,
+    };
+  }
+
+  function heatmapColor(normalizedDistance) {
+    const green = [25, 135, 84];
+    const yellow = [242, 201, 76];
+    const red = [200, 60, 60];
+    const start = normalizedDistance <= 0.5 ? green : yellow;
+    const end = normalizedDistance <= 0.5 ? yellow : red;
+    const progress =
+      normalizedDistance <= 0.5
+        ? normalizedDistance * 2
+        : (normalizedDistance - 0.5) * 2;
+    return start.map((channel, index) =>
+      Math.round(channel + (end[index] - channel) * progress),
     );
   }
 
@@ -618,6 +748,7 @@
     elements.layerAnnouncement.textContent =
       `Dialysis layer ${state.layers.facility ? "on" : "off"}. ` +
       `Transit layer ${state.layers.transit ? "on" : "off"}. ` +
+      `Center-distance heatmap ${state.layers.centerDistanceHeatmap ? "on" : "off"}. ` +
       `Threshold ${state.radius} meters.`;
     renderMapOverlays();
   }
@@ -1348,6 +1479,175 @@
     }
   }
 
+  function createCenterDistanceHeatmapOverlay() {
+    class CenterDistanceHeatmapOverlay extends window.google.maps.OverlayView {
+      constructor() {
+        super();
+        this.animationFrame = null;
+        this.canvas = null;
+        this.points = [];
+      }
+
+      onAdd() {
+        this.canvas = document.createElement("canvas");
+        this.canvas.className = "center-distance-heatmap-canvas";
+        this.getPanes().overlayLayer.append(this.canvas);
+      }
+
+      draw() {
+        if (!this.canvas) return;
+        if (this.animationFrame) {
+          window.cancelAnimationFrame(this.animationFrame);
+        }
+        this.animationFrame = window.requestAnimationFrame(() => {
+          this.animationFrame = null;
+          this.drawCanvas();
+        });
+      }
+
+      drawCanvas() {
+        const map = this.getMap();
+        const projection = this.getProjection();
+        if (!map || !projection || !this.canvas) return;
+        const mapContainer = map.getDiv();
+        const width = mapContainer.clientWidth;
+        const height = mapContainer.clientHeight;
+        if (!width || !height) return;
+        const center = map.getCenter();
+        if (!center) return;
+        const centerPixel = projection.fromLatLngToDivPixel(center);
+        if (!centerPixel) return;
+        const left = centerPixel.x - width / 2;
+        const top = centerPixel.y - height / 2;
+        const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+        this.canvas.style.left = `${left}px`;
+        this.canvas.style.top = `${top}px`;
+        this.canvas.style.width = `${width}px`;
+        this.canvas.style.height = `${height}px`;
+        this.canvas.width = Math.round(width * pixelRatio);
+        this.canvas.height = Math.round(height * pixelRatio);
+
+        const context = this.canvas.getContext("2d");
+        if (!context) return;
+        context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+        context.clearRect(0, 0, width, height);
+        const zoom = map.getZoom() || 0;
+        const cellSize = Math.max(12, 34 - zoom * 1.5);
+        const buckets = new Map();
+
+        this.points.forEach((point) => {
+          const pixel = projection.fromLatLngToDivPixel(
+            new window.google.maps.LatLng(point.lat, point.lng),
+          );
+          if (!pixel) return;
+          const x = pixel.x - left;
+          const y = pixel.y - top;
+          if (x < -80 || x > width + 80 || y < -80 || y > height + 80) {
+            return;
+          }
+          const key =
+            `${Math.floor(x / cellSize)}:` + `${Math.floor(y / cellSize)}`;
+          const bucket = buckets.get(key) || {
+            count: 0,
+            normalizedDistance: 0,
+            x: 0,
+            y: 0,
+          };
+          bucket.count += 1;
+          bucket.normalizedDistance += point.normalizedDistance;
+          bucket.x += x;
+          bucket.y += y;
+          buckets.set(key, bucket);
+        });
+
+        const heatPoints = [...buckets.values()]
+          .map((bucket) => ({
+            count: bucket.count,
+            normalizedDistance:
+              bucket.normalizedDistance / bucket.count,
+            x: bucket.x / bucket.count,
+            y: bucket.y / bucket.count,
+          }))
+          .sort(
+            (first, second) =>
+              second.normalizedDistance - first.normalizedDistance,
+          );
+        const baseRadius = Math.max(24, Math.min(64, 25 + zoom * 2.5));
+
+        heatPoints.forEach((point) => {
+          const [red, green, blue] = heatmapColor(
+            point.normalizedDistance,
+          );
+          const radius =
+            baseRadius * Math.min(1.45, 1 + Math.log2(point.count) * 0.08);
+          const gradient = context.createRadialGradient(
+            point.x,
+            point.y,
+            0,
+            point.x,
+            point.y,
+            radius,
+          );
+          gradient.addColorStop(0, `rgba(${red}, ${green}, ${blue}, 0.72)`);
+          gradient.addColorStop(0.35, `rgba(${red}, ${green}, ${blue}, 0.42)`);
+          gradient.addColorStop(0.72, `rgba(${red}, ${green}, ${blue}, 0.16)`);
+          gradient.addColorStop(1, `rgba(${red}, ${green}, ${blue}, 0)`);
+          context.fillStyle = gradient;
+          context.beginPath();
+          context.arc(point.x, point.y, radius, 0, Math.PI * 2);
+          context.fill();
+        });
+      }
+
+      onRemove() {
+        if (this.animationFrame) {
+          window.cancelAnimationFrame(this.animationFrame);
+        }
+        this.canvas?.remove();
+        this.animationFrame = null;
+        this.canvas = null;
+      }
+
+      setPoints(points) {
+        this.points = points;
+        this.draw();
+      }
+    }
+
+    return new CenterDistanceHeatmapOverlay();
+  }
+
+  function updateCenterDistanceHeatmap(facilities) {
+    if (!state.layers.centerDistanceHeatmap) {
+      elements.centerDistanceHeatmapLegend.hidden = true;
+      centerDistanceHeatmapOverlay?.setMap(null);
+      centerDistanceHeatmapOverlay = null;
+      return null;
+    }
+
+    elements.centerDistanceHeatmapLegend.hidden = false;
+    if (heatmapFacilitiesCache !== facilities) {
+      heatmapFacilitiesCache = facilities;
+      heatmapSummaryCache = calculateNearestFacilityDistances(facilities);
+    }
+    if (!heatmapSummaryCache?.points.length) {
+      elements.centerDistanceHeatmapScale.textContent =
+        "At least two visible, geocoded facilities are required.";
+      centerDistanceHeatmapOverlay?.setPoints([]);
+      return heatmapSummaryCache;
+    }
+
+    elements.centerDistanceHeatmapScale.textContent =
+      `Green ≤ ${formatDistance(heatmapSummaryCache.lowerDistance)} · ` +
+      `red ≥ ${formatDistance(heatmapSummaryCache.upperDistance)}`;
+    if (!centerDistanceHeatmapOverlay) {
+      centerDistanceHeatmapOverlay = createCenterDistanceHeatmapOverlay();
+      centerDistanceHeatmapOverlay.setMap(googleMap);
+    }
+    centerDistanceHeatmapOverlay.setPoints(heatmapSummaryCache.points);
+    return heatmapSummaryCache;
+  }
+
   function renderMapOverlays() {
     if (!googleMap || !AdvancedMarkerElement) return;
     clearMapMarkers();
@@ -1355,6 +1655,10 @@
       ? lastResults
       : calculateResults();
     const useClusters = state.zoom < 8;
+    const heatmapSummary = updateCenterDistanceHeatmap(results.metrics);
+    const heatmapPointByFacility = new Map(
+      (heatmapSummary?.points || []).map((point) => [point.ccn, point]),
+    );
 
     if (state.layers.facility) {
       const mappableFacilities = results.metrics.filter(
@@ -1380,13 +1684,16 @@
         });
       } else {
         mappableFacilities.forEach((facility) => {
+          const heatmapPoint = heatmapPointByFacility.get(facility.ccn);
           addMapMarker({
             kind: "facility",
             label: "+",
             onClick: () => selectFacility(facility.ccn, false),
             position: { lat: facility.lat, lng: facility.lng },
             selected: state.selectedFacility?.ccn === facility.ccn,
-            title: facility.name,
+            title: heatmapPoint
+              ? `${facility.name}. Nearest other dialysis center: ${formatDistance(heatmapPoint.nearestDistance)}.`
+              : facility.name,
           });
         });
       }
@@ -1471,6 +1778,8 @@
   }
 
   function handleMapLoadFailure(message) {
+    centerDistanceHeatmapOverlay?.setMap(null);
+    centerDistanceHeatmapOverlay = null;
     googleMap = null;
     geocoder = null;
     elements.mapSetupBackdrop.hidden = false;
@@ -1806,6 +2115,7 @@
     if (state.radius !== 400) parameters.set("radius", String(state.radius));
     if (!state.layers.facility) parameters.set("facilities", "off");
     if (!state.layers.transit) parameters.set("stops", "off");
+    if (state.layers.centerDistanceHeatmap) parameters.set("heatmap", "on");
     Object.entries(state.filters).forEach(([key, value]) => {
       if (key === "inCenter") {
         if (value) parameters.set("inCenter", "yes");
@@ -1843,6 +2153,7 @@
     }
     state.layers.facility = parameters.get("facilities") !== "off";
     state.layers.transit = parameters.get("stops") !== "off";
+    state.layers.centerDistanceHeatmap = parameters.get("heatmap") === "on";
 
     const filterKeys = [
       "agency",
@@ -2286,6 +2597,7 @@
 
   window.DialysisTransitExplorer = {
     calculateResults,
+    calculateNearestFacilityDistances,
     distanceMeters,
     exportCsv,
     formatDistance,

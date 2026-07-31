@@ -16,6 +16,11 @@ counts are derived in the browser from each facility's own selection and are
 never represented as official source measurements. Exported records include
 `data_mode=public_snapshot`.
 
+The center-distance heatmap does not add a stored source field. Its runtime
+points contain the facility CCN, coordinates, nearest-other-facility distance,
+nearest facility name, and a normalized color value based on the visible 10th
+and 90th percentile distances.
+
 `sample-data.js` retains fictional deterministic facilities and stops for
 fallback testing only.
 
