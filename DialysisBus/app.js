@@ -217,8 +217,6 @@
   };
 
   let googleMap = null;
-  let geocoder = null;
-  let autocomplete = null;
   let AdvancedMarkerElement = null;
   let mapMarkers = [];
   let nearestLine = null;
@@ -1985,7 +1983,6 @@
     centerDistanceHeatmapOverlay?.setMap(null);
     centerDistanceHeatmapOverlay = null;
     googleMap = null;
-    geocoder = null;
     elements.mapSetupBackdrop.hidden = false;
     elements.mapConnect.disabled = false;
     elements.mapConnect.textContent = "Try again";
@@ -1993,85 +1990,6 @@
     if (!window.DIALYSIS_TRANSIT_CONFIG?.googleMapsApiKey) {
       clearCredentials();
     }
-  }
-
-  async function initializeSearchServices() {
-    try {
-      const { Geocoder } =
-        await window.google.maps.importLibrary("geocoding");
-      geocoder = new Geocoder();
-    } catch {
-      geocoder = null;
-    }
-
-    if (!window.DIALYSIS_TRANSIT_CONFIG?.googlePlacesAutocomplete) {
-      return;
-    }
-
-    try {
-      const places = await window.google.maps.importLibrary("places");
-      if (places.PlaceAutocompleteElement) {
-        const originalInput = $("#location-search");
-        const placeAutocomplete = new places.PlaceAutocompleteElement({
-          includedRegionCodes: ["us"],
-        });
-        placeAutocomplete.id = "google-place-search";
-        placeAutocomplete.className = "google-place-search";
-        placeAutocomplete.placeholder = originalInput.placeholder;
-        placeAutocomplete.setAttribute(
-          "aria-label",
-          "Search by city, ZIP code, or address",
-        );
-        originalInput.hidden = true;
-        originalInput.insertAdjacentElement("afterend", placeAutocomplete);
-        placeAutocomplete.addEventListener("input", () => {
-          originalInput.value = String(placeAutocomplete.value || "");
-        });
-        placeAutocomplete.addEventListener("gmp-select", async (event) => {
-          const place = event.placePrediction?.toPlace();
-          if (!place) return;
-          await place.fetchFields({
-            fields: [
-              "displayName",
-              "formattedAddress",
-              "location",
-              "viewport",
-            ],
-          });
-          if (place.location) {
-            navigateToGoogleResult(
-              place.formattedAddress ||
-                place.displayName ||
-                "selected place",
-              {
-                location: place.location,
-                viewport: place.viewport,
-              },
-            );
-          }
-        });
-        autocomplete = placeAutocomplete;
-      }
-    } catch {
-      autocomplete = null;
-    }
-  }
-
-  function populateLocationSuggestions() {
-    const suggestionList = $("#facility-location-suggestions");
-    const suggestions = new Set();
-    DATA.facilities.forEach((facility) => {
-      suggestions.add(facility.city);
-      suggestions.add(`${facility.city}, ${facility.state}`);
-      suggestions.add(facility.zip);
-    });
-    [...suggestions]
-      .sort((a, b) => a.localeCompare(b))
-      .forEach((value) => {
-        const option = document.createElement("option");
-        option.value = value;
-        suggestionList.append(option);
-      });
   }
 
   async function initializeGoogleMap() {
@@ -2149,7 +2067,6 @@
       elements.mapSetupBackdrop.hidden = true;
       elements.mapConnect.disabled = false;
       elements.mapConnect.textContent = "Load Google map";
-      await initializeSearchServices();
       renderAll();
       if (!IS_PUBLIC_DATA) {
         showNotice("The live Google basemap and demonstration layers are ready.");
@@ -2204,105 +2121,6 @@
       );
     };
     document.head.append(script);
-  }
-
-  function navigateToGoogleResult(label, geometry) {
-    clearRuntimeTransitStops("loading");
-    state.selectedState = "";
-    elements.stateSelect.value = "";
-    elements.regionReadout.textContent = label;
-    elements.extentDescription.textContent =
-      "Current map viewport—not an administrative-area statistic";
-    if (geometry.viewport) {
-      googleMap.fitBounds(geometry.viewport);
-    } else {
-      googleMap.panTo(geometry.location);
-      googleMap.setZoom(14);
-    }
-    showNotice(`Map moved to ${label}.`);
-  }
-
-  function navigateToFacilityResult(query) {
-    const normalizedQuery = query.trim().toLowerCase();
-    const matches = DATA.facilities.filter((facility) => {
-      const searchable = [
-        facility.address,
-        facility.city,
-        facility.name,
-        facility.state,
-        facility.zip,
-      ]
-        .join(" ")
-        .toLowerCase();
-      return searchable.includes(normalizedQuery);
-    });
-    const mappableMatches = matches.filter(
-      (facility) =>
-        Number.isFinite(facility.lat) && Number.isFinite(facility.lng),
-    );
-    if (!mappableMatches.length) return false;
-    clearRuntimeTransitStops("loading");
-
-    const center = {
-      lat:
-        mappableMatches.reduce(
-          (total, facility) => total + facility.lat,
-          0,
-        ) / mappableMatches.length,
-      lng:
-        mappableMatches.reduce(
-          (total, facility) => total + facility.lng,
-          0,
-        ) / mappableMatches.length,
-    };
-    state.selectedState = "";
-    elements.stateSelect.value = "";
-    state.center = center;
-    state.zoom = 13;
-    elements.regionReadout.textContent =
-      `${mappableMatches[0].city}, ${mappableMatches[0].state}`;
-    elements.extentDescription.textContent =
-      "Current map viewport—not an administrative-area statistic";
-    if (googleMap) {
-      googleMap.setCenter(center);
-      googleMap.setZoom(13);
-    }
-    showNotice(
-      `Map moved to ${mappableMatches[0].city} using the facility index.`,
-    );
-    updateUrl();
-    return true;
-  }
-
-  async function navigateToPlace(query) {
-    if (navigateToFacilityResult(query)) return;
-    if (!googleMap || !geocoder) {
-      showNotice("Connect Google Maps before searching for a place.");
-      elements.mapSetupBackdrop.hidden = false;
-      elements.mapApiKey.focus();
-      return;
-    }
-
-    try {
-      const response = await geocoder.geocode({
-        address: query,
-        region: "US",
-      });
-      const result = response.results[0];
-      if (!result) {
-        if (!navigateToFacilityResult(query)) {
-          showNotice(`No map result was found for “${query}”.`);
-        }
-        return;
-      }
-      navigateToGoogleResult(result.formatted_address, result.geometry);
-    } catch {
-      if (!navigateToFacilityResult(query)) {
-        showNotice(
-          "Google could not complete that search. Check that Geocoding API is enabled.",
-        );
-      }
-    }
   }
 
   function serializeState() {
@@ -2789,15 +2607,6 @@
       applySelectedState("");
     });
     $("#current-location").addEventListener("click", useCurrentLocation);
-    $("#location-form").addEventListener("submit", (event) => {
-      event.preventDefault();
-      const query = String(
-        autocomplete?.value || $("#location-search").value,
-      ).trim();
-      if (query) navigateToPlace(query);
-      else showNotice("Enter a city, ZIP code, or address to navigate.");
-    });
-
     $("#map-setup").addEventListener("submit", (event) => {
       event.preventDefault();
       loadGoogleMaps({
@@ -2840,7 +2649,6 @@
   function initialize() {
     buildStateViews();
     populateFilterOptions();
-    populateLocationSuggestions();
     restoreStateFromUrl();
     syncControlsFromState();
     bindEvents();

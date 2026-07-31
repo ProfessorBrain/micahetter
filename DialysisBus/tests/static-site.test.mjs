@@ -46,8 +46,8 @@ test("root entry point contains the complete explorer surfaces", async () => {
   assert.match(html, /id="stop-detail"/);
   assert.match(html, /id="export-csv"/);
   assert.match(html, /id="current-location"/);
-  assert.match(html, /list="facility-location-suggestions"/);
-  assert.match(html, /id="facility-location-suggestions"/);
+  assert.doesNotMatch(html, /id="location-form"/);
+  assert.doesNotMatch(html, /id="location-search"/);
   assert.doesNotMatch(html, /Public-source snapshot/);
   assert.doesNotMatch(html, /Facilities come from CMS and the Census Geocoder/);
   assert.match(html, /Three closest per visible facility · zoom 10\+/);
@@ -88,6 +88,7 @@ test("root entry point contains the complete explorer surfaces", async () => {
   assert.match(methodsDialog, /id="methods-privacy-title"/);
   assert.match(methodsDialog, /id="methods-terms-title"/);
   assert.match(methodsDialog, /No care or transportation advice/);
+  assert.doesNotMatch(methodsDialog, /Browser storage/);
   assert.doesNotMatch(methodsDialog, /class="policy-links"/);
   assert.doesNotMatch(html, /href="\.\/accessibility\.html"/);
   assert.doesNotMatch(html, /href="\.\/privacy\.html"/);
@@ -227,13 +228,10 @@ test("client script implements every anticipated local workflow", async () => {
     "TRANSIT_RECORD_LIMIT",
     'importLibrary("maps")',
     'importLibrary("marker")',
-    'importLibrary("places")',
-    "geocoder.geocode",
     "navigator.geolocation.getCurrentPosition",
     "serializeState",
     "restoreStateFromUrl",
     "exportCsv",
-    "populateLocationSuggestions",
     "Blob",
     "formula",
   ]) {
@@ -254,7 +252,9 @@ test("client script implements every anticipated local workflow", async () => {
   assert.match(script, /dialysis-transit-explorer_\$\{date\}/);
   assert.match(script, /DATA\.metadata\.mode/);
   assert.match(script, /parameters\.has\("lat"\)/);
-  assert.match(script, /googlePlacesAutocomplete/);
+  assert.doesNotMatch(script, /googlePlacesAutocomplete/);
+  assert.doesNotMatch(script, /location-search/);
+  assert.doesNotMatch(script, /geocoder\.geocode/);
   assert.match(script, /\.slice\(0, limit\)/);
   assert.match(script, /closest_3_stops_within_threshold/);
   assert.match(
@@ -431,7 +431,7 @@ test("public map configuration obfuscates the demo key without breaking startup"
 
   assert.doesNotMatch(config, /googleMapsApiKey:\s*"AIza/);
   assert.match(config, /window\.atob\(encodedMapKey\)/);
-  assert.match(config, /googlePlacesAutocomplete:\s*false/);
+  assert.doesNotMatch(config, /googlePlacesAutocomplete/);
   vm.createContext(context);
   vm.runInContext(config, context);
   assert.match(

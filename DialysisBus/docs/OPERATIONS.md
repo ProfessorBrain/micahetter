@@ -7,12 +7,9 @@ The root static site requires no build. In the current
 `main` branch from `/ (root)`, then open `/DialysisBus/` beneath the Pages
 origin. All browser assets use relative paths and are safe at that subpath.
 
-The public browser map key is stored in `config.js`. Restrict it to the required
-Google Maps APIs and the Pages origin. The local facility index is the default
-and needs no Places service. Arbitrary address lookup requires
-Geocoding API; Google's Places widget additionally requires Places API (New)
-and `googlePlacesAutocomplete: true`. A deployment is a normal commit to
-`main`; rollback uses a revert commit so repository history remains intact.
+The public browser map key is stored in `config.js`. Restrict it to the Maps
+JavaScript API and the Pages origin. A deployment is a normal commit to `main`;
+rollback uses a revert commit so repository history remains intact.
 
 Refresh the facility snapshot with `node scripts/build-public-data.mjs`. The
 script retrieves the current CMS listing, submits the addresses to the Census

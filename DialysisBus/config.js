@@ -9,6 +9,5 @@
   window.DIALYSIS_TRANSIT_CONFIG = {
     googleMapsApiKey: window.atob(encodedMapKey),
     googleMapId: "",
-    googlePlacesAutocomplete: false,
   };
 })();

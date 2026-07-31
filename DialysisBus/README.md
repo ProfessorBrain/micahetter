@@ -26,17 +26,12 @@ repository. This is obfuscation, not secrecy: browser keys remain visible in
 network requests by design, so restrict the key in Google Cloud to:
 
 - Maps JavaScript API
-- Geocoding API, when arbitrary address searches are required
 - the exact GitHub Pages referrer, such as
   `https://professorbrain.github.io/*`
 - local referrers only when local map testing is required
 
-The bundled city and ZIP suggestions plus facility-index search work without
-Places billing.
-To add Google's Places widget, enable Places API (New) and set
-`googlePlacesAutocomplete: true` in `config.js`. `config.example.js` documents
-the configuration shape. A locally entered key is stored only in that browser
-and is never used when the committed configuration already supplies a key.
+A locally entered key is stored only in that browser and is never used when the
+committed configuration already supplies a key.
 
 ## GitHub Pages
 
@@ -72,7 +67,7 @@ unchanged at `https://<account>.github.io/<repository>/`.
   longest distance. Users choose the relative or meter scale in Layers and edit
   the four fixed meter cutoffs from the top-bar Settings popup.
 - State selection, current viewport analysis, national reset, zoom controls,
-  current-location navigation, and city/ZIP/address search.
+  and current-location navigation.
 - URL restoration for map center, zoom, state, radius, layers, heatmap scale,
   and filters.
 - Preset thresholds at 250, 400, 800, and 1,600 meters.
@@ -155,8 +150,7 @@ three.
 Phase 1 measures geodesic straight-line proximity. It does not establish route
 availability, schedule compatibility, pedestrian accessibility, paratransit
 eligibility, safety, weather exposure, or whether an individual can complete a
-trip. No patient data, accounts, or persistent address-search history belong in
-this project.
+trip. No patient data or accounts belong in this project.
 
 See [docs/DESIGN.md](docs/DESIGN.md), [docs/METHODS.md](docs/METHODS.md),
 [docs/DATA_DICTIONARY.md](docs/DATA_DICTIONARY.md), and
