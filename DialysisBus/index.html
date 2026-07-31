@@ -64,7 +64,8 @@
       <div class="fixture-banner" role="note">
         <strong>Public-source snapshot.</strong>
         Facilities come from CMS and the Census Geocoder; BTS transit stops
-        load for the active viewport at street-level zoom.
+        load for the active viewport at street-level zoom, with only the three
+        closest stops per visible facility displayed.
       </div>
 
       <div class="notice-bar" id="notice-bar" hidden role="status">
@@ -195,7 +196,7 @@
                   ></span>
                   <span class="toggle-copy">
                     <strong>Public transit stops</strong>
-                    <small>BTS National Transit Map · zoom 10+</small>
+                    <small>Three closest per visible facility · zoom 10+</small>
                   </span>
                   <span class="switch">
                     <input
@@ -500,7 +501,7 @@
                   <strong id="metric-quartiles">—</strong>
                 </article>
                 <article>
-                  <span>Transit stops in extent</span>
+                  <span>Nearby stops displayed</span>
                   <strong id="metric-stops">0</strong>
                 </article>
               </div>
@@ -559,7 +560,7 @@
                         </th>
                         <th scope="col">
                           <button data-sort="stopCount" type="button">
-                            Stops in radius
+                            Closest 3 in radius
                           </button>
                         </th>
                       </tr>
@@ -584,7 +585,9 @@
                   This explorer compares CMS dialysis-facility records,
                   geocoded through the U.S. Census Bureau, with fixed-route
                   stops loaded from the USDOT/BTS National Transit Map using
-                  geodesic straight-line distance.
+                  geodesic straight-line distance. It displays up to the three
+                  closest eligible stops per visible facility and shows a
+                  shared stop only once.
                 </p>
                 <dl>
                   <div>
@@ -760,7 +763,7 @@
               <i class="legend-symbol legend-symbol--transit"></i>
               Transit stop
             </span>
-            <small>Facility clusters split into points; BTS stops load at zoom 10+.</small>
+            <small>BTS markers show only the three closest stops per visible facility.</small>
           </div>
 
           <div class="map-attribution">

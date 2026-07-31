@@ -8,6 +8,7 @@
     throw new Error("The dialysis and transit dataset could not be loaded.");
   }
   const IS_PUBLIC_DATA = DATA.metadata.mode === "public_snapshot";
+  const CLOSEST_STOPS_PER_FACILITY = 3;
   const TRANSIT_MIN_ZOOM = 10;
   const TRANSIT_RECORD_LIMIT = 2000;
   const TRANSIT_SERVICE_URL =
@@ -217,6 +218,8 @@
   let lastTransitQueryKey = "";
   let transitFetchController = null;
   let transitLoadState = IS_PUBLIC_DATA ? "zoom" : "bundled";
+  let transitCandidateStops = [...DATA.stops];
+  let closestStopIdsByFacility = new Map();
 
   const $ = (selector) => document.querySelector(selector);
   const $$ = (selector) => [...document.querySelectorAll(selector)];
@@ -420,6 +423,68 @@
     return true;
   }
 
+  function selectClosestStopsForFacilities(
+    facilities,
+    candidateStops,
+    limit = CLOSEST_STOPS_PER_FACILITY,
+  ) {
+    const selectedStops = new Map();
+    const stopIdsByFacility = new Map();
+
+    facilities.forEach((facility) => {
+      if (!Number.isFinite(facility.lat) || !Number.isFinite(facility.lng)) {
+        stopIdsByFacility.set(facility.ccn, []);
+        return;
+      }
+
+      const closestStops = candidateStops
+        .map((stop) => ({
+          distance: distanceMeters(facility, stop),
+          stop,
+        }))
+        .sort((first, second) => first.distance - second.distance)
+        .slice(0, limit);
+
+      stopIdsByFacility.set(
+        facility.ccn,
+        closestStops.map((candidate) => candidate.stop.id),
+      );
+      closestStops.forEach((candidate) => {
+        const existing = selectedStops.get(candidate.stop.id);
+        if (existing) {
+          existing.closestFacilityDistance = Math.min(
+            existing.closestFacilityDistance,
+            candidate.distance,
+          );
+          existing.relatedFacilityCount += 1;
+          return;
+        }
+        selectedStops.set(candidate.stop.id, {
+          ...candidate.stop,
+          closestFacilityDistance: candidate.distance,
+          relatedFacilityCount: 1,
+        });
+      });
+    });
+
+    return {
+      stopIdsByFacility,
+      stops: [...selectedStops.values()].sort(
+        (first, second) =>
+          first.closestFacilityDistance - second.closestFacilityDistance,
+      ),
+    };
+  }
+
+  function refreshClosestTransitStops(facilities) {
+    const selection = selectClosestStopsForFacilities(
+      facilities,
+      transitCandidateStops.filter(matchesStopFilters),
+    );
+    closestStopIdsByFacility = selection.stopIdsByFacility;
+    DATA.stops = selection.stops;
+  }
+
   function enrichFacilities(facilities, stops) {
     return facilities.map((facility) => {
       if (!Number.isFinite(facility.lat) || !Number.isFinite(facility.lng)) {
@@ -430,8 +495,25 @@
           stopCount: null,
         };
       }
+      if (
+        IS_PUBLIC_DATA &&
+        !["limited", "loaded"].includes(transitLoadState)
+      ) {
+        return {
+          ...facility,
+          nearestDistance: null,
+          nearestStop: null,
+          stopCount: null,
+        };
+      }
 
-      const orderedStops = stops
+      const closestStopIds = new Set(
+        closestStopIdsByFacility.get(facility.ccn) || [],
+      );
+      const facilityStops = closestStopIdsByFacility.has(facility.ccn)
+        ? stops.filter((stop) => closestStopIds.has(stop.id))
+        : stops;
+      const orderedStops = facilityStops
         .map((stop) => ({
           distance: distanceMeters(facility, stop),
           stop,
@@ -487,6 +569,7 @@
     const facilities = DATA.facilities.filter((facility) =>
       matchesFacilityFilters(facility),
     );
+    refreshClosestTransitStops(facilities);
     const stops = DATA.stops.filter(matchesStopFilters);
     const metrics = sortFacilities(enrichFacilities(facilities, stops));
     const unresolvedInPopulation = DATA.facilities.filter(
@@ -647,16 +730,17 @@
   }
 
   function populateTransitFilterOptions() {
+    const optionStops = transitCandidateStops;
     replaceSelectOptions(
       $("#filter-stop-type"),
       [
         state.filters.stopType,
-        ...DATA.stops.map((stop) => stop.type),
+        ...optionStops.map((stop) => stop.type),
       ],
     );
     replaceSelectOptions(
       $("#filter-agency"),
-      [state.filters.agency, ...DATA.stops.map((stop) => stop.agency)],
+      [state.filters.agency, ...optionStops.map((stop) => stop.agency)],
     );
     $("#filter-stop-type").value = state.filters.stopType;
     $("#filter-agency").value = state.filters.agency;
@@ -681,6 +765,8 @@
     transitFetchController = null;
     lastTransitQueryKey = "";
     transitLoadState = nextLoadState;
+    transitCandidateStops = [];
+    closestStopIdsByFacility = new Map();
     DATA.stops = [];
     populateTransitFilterOptions();
   }
@@ -759,7 +845,7 @@
               <small>${escapeHtml(
                 facility.nearestStop?.name ||
                   (Number.isFinite(facility.lat)
-                    ? "Zoom in to load BTS stops"
+                    ? "Zoom in to calculate closest stops"
                     : "No valid geocode"),
               )}</small>
             </td>
@@ -779,7 +865,7 @@
             </button>
             <dl>
               <div><dt>Nearest stop</dt><dd>${formatDistance(facility.nearestDistance)}</dd></div>
-              <div><dt>Stops in radius</dt><dd>${facility.stopCount ?? "—"}</dd></div>
+              <div><dt>Closest 3 in radius</dt><dd>${facility.stopCount ?? "—"}</dd></div>
               <div><dt>Stations</dt><dd>${facility.stations}</dd></div>
             </dl>
           </article>
@@ -847,14 +933,14 @@
     const transitMessage = !IS_PUBLIC_DATA
       ? ""
       : transitLoadState === "zoom"
-        ? ` Zoom to level ${TRANSIT_MIN_ZOOM} or closer to load official BTS transit stops.`
+        ? ` Zoom to level ${TRANSIT_MIN_ZOOM} or closer to identify each facility's three closest BTS stops.`
         : transitLoadState === "loading"
-          ? " Loading BTS transit stops for this viewport…"
+          ? " Loading BTS candidates and selecting the three closest stops per facility…"
           : transitLoadState === "limited"
-            ? ` Showing the first ${TRANSIT_RECORD_LIMIT.toLocaleString()} BTS stops in this viewport; zoom in for complete local results.`
+            ? ` Closest-stop selection evaluated the first ${TRANSIT_RECORD_LIMIT.toLocaleString()} BTS candidates in this viewport; zoom in for a complete local result.`
             : transitLoadState === "error"
               ? " BTS transit stops are temporarily unavailable for this viewport."
-              : " Nearest-stop metrics use the BTS stops loaded for this viewport.";
+              : " Showing up to three closest BTS stops for each visible CMS facility; shared stops are displayed once.";
     elements.analyticsExcluded.textContent = geocodeMessage + transitMessage;
     elements.resultCount.textContent =
       `${results.metrics.length.toLocaleString()} row${results.metrics.length === 1 ? "" : "s"}` +
@@ -936,7 +1022,7 @@
         ${detailRow("Stop type / agency", nearestStop ? `${escapeHtml(nearestStop.type)} · ${escapeHtml(nearestStop.agency)}` : "—")}
         ${detailRow("Wheelchair field", escapeHtml(nearestStop?.wheelchair || "—"))}
         ${detailRow("Nearest distance", formatDistance(facility.nearestDistance, true))}
-        ${detailRow("Stops in threshold", facility.stopCount === null ? "Not calculated" : String(facility.stopCount))}
+        ${detailRow("Closest 3 in threshold", facility.stopCount === null ? "Not calculated" : String(facility.stopCount))}
         ${detailRow("Source snapshot", escapeHtml(facility.snapshotDate))}
       </dl>
     `;
@@ -974,12 +1060,13 @@
     elements.stopDetailTitle.textContent = stop.name;
     elements.stopDetailContent.innerHTML = `
       <dl class="detail-grid">
-        ${detailRow("Source object ID", String(stop.sourceObjectId))}
+        ${detailRow("Source object ID", String(stop.objectId ?? stop.sourceObjectId))}
         ${detailRow("Stop ID", escapeHtml(stop.stopId))}
         ${detailRow("Type", escapeHtml(stop.type))}
         ${detailRow("Agency", escapeHtml(stop.agency))}
         ${detailRow("NTD ID", escapeHtml(stop.ntdId))}
         ${detailRow("Wheelchair field", escapeHtml(stop.wheelchair))}
+        ${detailRow("Closest-stop match", `${stop.relatedFacilityCount || 1} visible facilit${(stop.relatedFacilityCount || 1) === 1 ? "y" : "ies"}`)}
         ${detailRow("Source snapshot", escapeHtml(stop.snapshotDate))}
       </dl>
     `;
@@ -1179,7 +1266,8 @@
   async function loadTransitStopsForViewport() {
     if (!IS_PUBLIC_DATA || !googleMap || !state.layers.transit) return;
     if (state.zoom < TRANSIT_MIN_ZOOM) {
-      const hadStops = DATA.stops.length > 0;
+      const hadStops =
+        DATA.stops.length > 0 || transitCandidateStops.length > 0;
       clearRuntimeTransitStops("zoom");
       if (hadStops) {
         renderAll();
@@ -1230,7 +1318,7 @@
       if (payload.error) {
         throw new Error(payload.error.message || "BTS query failed");
       }
-      DATA.stops = (payload.features || [])
+      transitCandidateStops = (payload.features || [])
         .map(mapTransitFeature)
         .filter(
           (stop) =>
@@ -1245,6 +1333,8 @@
       if (error.name === "AbortError") return;
       lastTransitQueryKey = "";
       transitLoadState = "error";
+      transitCandidateStops = [];
+      closestStopIdsByFacility = new Map();
       DATA.stops = [];
       populateTransitFilterOptions();
       renderAll();
@@ -1555,7 +1645,7 @@
       renderAll();
       showNotice(
         IS_PUBLIC_DATA
-          ? "The Google basemap and nationwide CMS facility snapshot are ready. Zoom in to load BTS transit stops."
+          ? "The Google basemap and nationwide CMS facility snapshot are ready. Zoom in to show the three closest BTS stops per facility."
           : "The live Google basemap and demonstration layers are ready.",
       );
     } catch {
@@ -1904,7 +1994,7 @@
       "dialysis_stations",
       "nearest_stop_name",
       "nearest_stop_distance_m",
-      "stops_within_threshold",
+      "closest_3_stops_within_threshold",
       "geocode_status",
       "cms_ccn",
       "facility_latitude",
@@ -2201,8 +2291,11 @@
     formatDistance,
     getState: () => JSON.parse(JSON.stringify(state)),
     percentile,
+    selectClosestStopsForFacilities,
     updateRadius,
   };
 
-  initialize();
+  if (!window.DIALYSIS_TRANSIT_DISABLE_AUTO_INIT) {
+    initialize();
+  }
 })();

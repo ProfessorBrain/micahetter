@@ -232,7 +232,7 @@ async function main() {
         "USDOT/BTS National Transit Map Stops ArcGIS feature service",
       geocoderSource: "U.S. Census Geocoder Public_AR_Current",
       notice:
-        "Public-source snapshot. Transit stops load from BTS for the active map viewport.",
+        "Public-source snapshot. The site selects three closest stops per visible facility from BTS viewport candidates.",
       facilityCount: facilities.length,
       geocodedFacilityCount: matched,
     },
@@ -255,6 +255,8 @@ async function main() {
     },
     transit: {
       mode: "runtime viewport query",
+      selection:
+        "three closest eligible stops per visible facility; shared stops deduplicated",
       source:
         "https://services.arcgis.com/xOi1kZaI0eWDREZv/arcgis/rest/services/NTAD_National_Transit_Map_Stops/FeatureServer/0",
     },

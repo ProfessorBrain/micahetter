@@ -61,8 +61,10 @@ unchanged at `https://<account>.github.io/<repository>/`.
 
 - Real Google Maps JavaScript basemap with a vector Map ID.
 - Low-zoom nationwide state clusters and high-zoom facility points.
-- BTS transit-stop loading for the active viewport at zoom level 10 or closer;
-  dense 2,000-record responses ask the user to zoom further.
+- BTS transit-stop loading for the active viewport at zoom level 10 or closer.
+  The map retains up to the three closest eligible stops per visible facility,
+  displays shared stops once, and asks the user to zoom further when a dense
+  response reaches the 2,000-candidate limit.
 - Facility and transit layer toggles.
 - State selection, current viewport analysis, national reset, zoom controls,
   current-location navigation, and city/ZIP/address search.
@@ -134,9 +136,11 @@ docs/              Design, methods, operations, and data dictionary
 ```
 
 That scaffold remains the path for scheduled ingestion, PostGIS materialized
-metrics, and bounded national APIs. The GitHub Pages edition performs
-facility-to-stop calculations only against the BTS stops loaded for the current
-street-level viewport.
+metrics, and bounded national APIs. The GitHub Pages edition selects each
+visible facility's three closest eligible stops from the BTS candidates loaded
+for the current street-level viewport. A stop selected for multiple facilities
+is displayed once, while each facility's metrics use only its own selected
+three.
 
 ## Interpretation
 

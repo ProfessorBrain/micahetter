@@ -28,6 +28,9 @@ Before publishing:
    URL restoration, and CSV export.
 4. Confirm the manifest counts match the site footer and BTS stops load only at
    zoom level 10 or closer.
+5. Confirm each visible facility contributes no more than three closest stops,
+   shared stops render once, and capped 2,000-candidate responses show the
+   zoom-in warning.
 
 ## Local startup
 

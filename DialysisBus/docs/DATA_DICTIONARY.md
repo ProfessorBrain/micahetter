@@ -8,10 +8,13 @@
   listing attributes plus Census geocode status, matched address, latitude,
   longitude, benchmark, and source snapshot date.
 
-The `stops` array is populated at runtime from National Transit Map fields for
-the visible zoom-10-or-closer viewport. Nearest-stop distance and active-radius
-counts are derived in the browser and are never represented as official source
-measurements. Exported records include `data_mode=public_snapshot`.
+The browser loads a runtime candidate pool from National Transit Map fields for
+the visible zoom-10-or-closer viewport. The public `stops` array contains the
+deduplicated union of up to three closest eligible stops selected for each
+visible facility. Nearest-stop distance and `closest_3_stops_within_threshold`
+counts are derived in the browser from each facility's own selection and are
+never represented as official source measurements. Exported records include
+`data_mode=public_snapshot`.
 
 `sample-data.js` retains fictional deterministic facilities and stops for
 fallback testing only.

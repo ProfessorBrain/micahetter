@@ -28,7 +28,8 @@ test("root entry point contains the complete explorer surfaces", async () => {
   assert.match(html, /list="facility-location-suggestions"/);
   assert.match(html, /id="facility-location-suggestions"/);
   assert.match(html, /Public-source snapshot/);
-  assert.match(html, /BTS National Transit Map · zoom 10\+/);
+  assert.match(html, /Three closest per visible facility · zoom 10\+/);
+  assert.match(html, /Closest 3 in radius/);
   assert.doesNotMatch(html, /available after data load/i);
   assert.doesNotMatch(html, /filters are staged/i);
   assert.doesNotMatch(html, /analytics need a validated snapshot/i);
@@ -95,6 +96,7 @@ test("published dataset supplies nationwide CMS facility coverage", async () => 
     data.facilities.length,
   );
   assert.equal(manifest.cms.records, data.facilities.length);
+  assert.match(manifest.transit.selection, /three closest eligible stops/i);
   assert.equal(
     manifest.censusGeocoder.matchedRecords,
     data.metadata.geocodedFacilityCount,
@@ -132,6 +134,9 @@ test("client script implements every anticipated local workflow", async () => {
     "updateSelectionOverlays",
     "AdvancedMarkerElement",
     "loadTransitStopsForViewport",
+    "selectClosestStopsForFacilities",
+    "CLOSEST_STOPS_PER_FACILITY",
+    "closestStopIdsByFacility",
     "NTAD_National_Transit_Map_Stops",
     "TRANSIT_RECORD_LIMIT",
     'importLibrary("maps")',
@@ -163,6 +168,51 @@ test("client script implements every anticipated local workflow", async () => {
   assert.match(script, /DATA\.metadata\.mode/);
   assert.match(script, /parameters\.has\("lat"\)/);
   assert.match(script, /googlePlacesAutocomplete/);
+  assert.match(script, /\.slice\(0, limit\)/);
+  assert.match(script, /closest_3_stops_within_threshold/);
+});
+
+test("closest-stop selection keeps three per facility and deduplicates shared stops", async () => {
+  const source = await readFile(new URL("app.js", root), "utf8");
+  const context = vm.createContext({
+    AbortController,
+    Blob,
+    URL,
+    URLSearchParams,
+    document: {
+      querySelector: () => null,
+      querySelectorAll: () => [],
+    },
+    navigator: {},
+    window: {
+      DIALYSIS_TRANSIT_DISABLE_AUTO_INIT: true,
+      DIALYSIS_TRANSIT_SAMPLE_DATA: {
+        facilities: [],
+        metadata: { mode: "demonstration" },
+        stops: [],
+      },
+    },
+  });
+  vm.runInContext(source, context);
+  const selectClosestStops =
+    context.window.DialysisTransitExplorer.selectClosestStopsForFacilities;
+  const facilities = [
+    { ccn: "A", lat: 0, lng: 0 },
+    { ccn: "B", lat: 0, lng: 0.0045 },
+  ];
+  const candidateStops = [0.001, 0.002, 0.003, 0.004, 0.005].map(
+    (lng, index) => ({ id: `stop-${index + 1}`, lat: 0, lng }),
+  );
+
+  const selection = selectClosestStops(facilities, candidateStops);
+
+  assert.equal(selection.stopIdsByFacility.get("A").length, 3);
+  assert.equal(selection.stopIdsByFacility.get("B").length, 3);
+  assert.equal(selection.stops.length, 5);
+  assert.equal(
+    selection.stops.find((stop) => stop.id === "stop-3").relatedFacilityCount,
+    2,
+  );
 });
 
 test("public map configuration exposes the explicit demo integration switch", async () => {

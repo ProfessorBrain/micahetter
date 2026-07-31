@@ -13,13 +13,17 @@ Provider Data Catalog dataset `23ew-n7w9` and the U.S. Census Geocoder
 `Public_AR_Current` benchmark. The current manifest contains 7,490 CMS records,
 of which 6,672 received mappable Census coordinates. Transit stops are queried
 from the USDOT/BTS National Transit Map ArcGIS feature service for the active
-viewport at zoom level 10 or closer. Dense responses are capped at 2,000 stops
-and explicitly ask the user to zoom further.
+viewport at zoom level 10 or closer. After applying active transit filters, the
+site selects up to the three closest stops for every visible, filtered facility.
+The displayed transit layer is the deduplicated union of those selections, so
+a stop selected for multiple facilities appears once. Dense responses are
+capped at 2,000 candidates and explicitly ask the user to zoom further.
 
 Facility-to-stop distances are calculated in the browser with the haversine
-formula on a spherical Earth radius of 6,371,008.8 meters and only use transit
-stops loaded for the current viewport. Scheduled production results should
-instead use PostGIS geography operations as specified below.
+formula on a spherical Earth radius of 6,371,008.8 meters. Each facility's
+nearest-stop distance and active-radius count use only that facility's selected
+three stops from the current viewport candidate pool. Scheduled production
+results should instead use PostGIS geography operations as specified below.
 
 ## Public sources
 
