@@ -2746,13 +2746,9 @@
       const preparedDate = DATA.metadata.preparedAt || "current build";
       $("#methods-prepared-date").textContent =
         `${preparedDate} · ${DATA.metadata.facilityCount.toLocaleString()} CMS facilities`;
-      $("#snapshot-readout").textContent =
-        `${DATA.metadata.geocodedFacilityCount.toLocaleString()} geocoded of ${DATA.metadata.facilityCount.toLocaleString()} CMS facilities`;
     } else {
       $("#methods-prepared-date").textContent =
         DATA.metadata.preparedAt || "Fallback fixture";
-      $("#snapshot-readout").textContent =
-        `${DATA.facilities.length} fallback test facilities`;
     }
 
     const hostedConfiguration = window.DIALYSIS_TRANSIT_CONFIG || {};

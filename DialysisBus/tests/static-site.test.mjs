@@ -25,6 +25,8 @@ test("root entry point contains the complete explorer surfaces", async () => {
   assert.match(html, /id="methods-dialog-close"/);
   assert.match(html, /aria-haspopup="dialog"/);
   assert.doesNotMatch(html, /class="demo-status"/);
+  assert.doesNotMatch(html, /Public data snapshot/);
+  assert.doesNotMatch(html, /id="snapshot-readout"/);
   assert.doesNotMatch(html, /id="panel-methods"/);
   assert.doesNotMatch(html, /data-tab="methods"/);
   assert.match(html, /id="custom-radius"/);
@@ -208,6 +210,7 @@ test("client script implements every anticipated local workflow", async () => {
     script,
     /The Google basemap and nationwide CMS facility snapshot are ready/,
   );
+  assert.doesNotMatch(script, /#snapshot-readout/);
 });
 
 test("spatial calculations keep closest stops and center distances correct", async () => {
