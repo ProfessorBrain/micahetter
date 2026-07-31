@@ -46,6 +46,7 @@ test("root entry point contains the complete explorer surfaces", async () => {
   assert.match(html, /id="stop-detail"/);
   assert.match(html, /id="export-csv"/);
   assert.match(html, /id="current-location"/);
+  assert.match(html, /id="methods-shortcut"[\s\S]*?>\s*About\s*<\/button>/);
   assert.doesNotMatch(html, /id="location-form"/);
   assert.doesNotMatch(html, /id="location-search"/);
   assert.doesNotMatch(html, /Public-source snapshot/);
