@@ -72,6 +72,8 @@ test("root entry point contains the complete explorer surfaces", async () => {
   assert.doesNotMatch(layersPanel, /id="heatmap-meter-range-form"/);
   assert.match(settingsDialog, /heatmap-scale-settings/);
   assert.match(settingsDialog, /id="heatmap-meter-range-form"/);
+  assert.match(settingsDialog, /id="heatmap-reset-meter-ranges"/);
+  assert.match(settingsDialog, /Reset defaults/);
   assert.doesNotMatch(settingsDialog, /name="heatmap-scale-mode"/);
   assert.match(html, /id="filter-stop-query"/);
   assert.match(html, /id="filter-within-radius"/);
@@ -195,6 +197,7 @@ test("client script implements every anticipated local workflow", async () => {
     "applyHeatmapScale",
     "heatmapBandIndexForDistance",
     "validateHeatmapMeterBreaks",
+    "resetHeatmapMeterRanges",
     "heatmapColor",
     "createCenterDistanceHeatmapOverlay",
     "centerDistanceHeatmap",

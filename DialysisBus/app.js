@@ -538,6 +538,14 @@
     );
   }
 
+  function resetHeatmapMeterRanges() {
+    state.heatmapScale.meterBreaks = [...DEFAULT_HEATMAP_METER_BREAKS];
+    updateHeatmapScaleControls();
+    updateLayerState();
+    updateUrl();
+    showNotice("Heatmap meter ranges reset to defaults.");
+  }
+
   function pointInBounds(point, bounds) {
     if (!point || !bounds) return true;
     const longitudeInBounds =
@@ -2659,6 +2667,10 @@
       updateUrl();
       showNotice("Heatmap meter ranges updated.");
     });
+    $("#heatmap-reset-meter-ranges").addEventListener(
+      "click",
+      resetHeatmapMeterRanges,
+    );
 
     $$("[data-selection-layer]").forEach((toggle) => {
       toggle.addEventListener("change", () => {
