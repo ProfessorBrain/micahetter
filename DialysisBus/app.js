@@ -194,7 +194,7 @@
       wheelchair: "",
     },
     layers: {
-      centerDistanceHeatmap: false,
+      centerDistanceHeatmap: true,
       facility: true,
       transit: true,
     },
@@ -2311,7 +2311,7 @@
     if (state.radius !== 400) parameters.set("radius", String(state.radius));
     if (!state.layers.facility) parameters.set("facilities", "off");
     if (!state.layers.transit) parameters.set("stops", "off");
-    if (state.layers.centerDistanceHeatmap) parameters.set("heatmap", "on");
+    if (!state.layers.centerDistanceHeatmap) parameters.set("heatmap", "off");
     if (state.heatmapScale.mode === "meters") {
       parameters.set("heatmapScale", "meters");
       parameters.set(
@@ -2358,7 +2358,7 @@
     }
     state.layers.facility = parameters.get("facilities") !== "off";
     state.layers.transit = parameters.get("stops") !== "off";
-    state.layers.centerDistanceHeatmap = parameters.get("heatmap") === "on";
+    state.layers.centerDistanceHeatmap = parameters.get("heatmap") !== "off";
     if (parameters.get("heatmapScale") === "meters") {
       state.heatmapScale.mode = "meters";
       const meterBreaks = validateHeatmapMeterBreaks(

@@ -71,6 +71,11 @@ test("root entry point contains the complete explorer surfaces", async () => {
   assert.ok(layersPanel);
   assert.ok(settingsDialog);
   assert.ok(methodsDialog);
+  const heatmapToggle = layersPanel.match(
+    /<input[^>]+data-layer-toggle="centerDistanceHeatmap"[^>]*>/,
+  )?.[0];
+  assert.ok(heatmapToggle);
+  assert.match(heatmapToggle, /checked/);
   assert.match(layersPanel, /heatmap-scale-settings--sidebar/);
   assert.match(layersPanel, /name="heatmap-scale-mode"/);
   assert.doesNotMatch(layersPanel, /id="heatmap-meter-range-form"/);
@@ -252,7 +257,18 @@ test("client script implements every anticipated local workflow", async () => {
   assert.match(script, /googlePlacesAutocomplete/);
   assert.match(script, /\.slice\(0, limit\)/);
   assert.match(script, /closest_3_stops_within_threshold/);
-  assert.match(script, /parameters\.set\("heatmap", "on"\)/);
+  assert.match(
+    script,
+    /centerDistanceHeatmap: true/,
+  );
+  assert.match(
+    script,
+    /parameters\.set\("heatmap", "off"\)/,
+  );
+  assert.match(
+    script,
+    /parameters\.get\("heatmap"\) !== "off"/,
+  );
   assert.match(script, /parameters\.set\("heatmapScale", "meters"\)/);
   assert.match(script, /"heatmapBreaks"/);
   assert.match(script, /parameters\.set\("withinRadius", "yes"\)/);
