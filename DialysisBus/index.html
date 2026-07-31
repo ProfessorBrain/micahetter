@@ -730,21 +730,144 @@
                   eligibility, or trip feasibility.
                 </div>
 
-                <h3>Accessibility and privacy</h3>
-                <p>
-                  Facility and transit results are available in a table
-                  alternative. The optional heatmap is supplementary; its text
-                  legend reports the active relative scale or meter ranges, and
-                  visible facility marker descriptions report individual
-                  distances.
-                  Search text remains in the active browser interaction and is
-                  not logged or stored by this static site.
-                </p>
-                <nav class="policy-links" aria-label="Site policies">
-                  <a href="./accessibility.html">Accessibility</a>
-                  <a href="./privacy.html">Privacy</a>
-                  <a href="./terms.html">Terms of use</a>
-                </nav>
+                <section
+                  aria-labelledby="methods-accessibility-title"
+                  class="methods-policy-section"
+                >
+                  <h3 id="methods-accessibility-title">Accessibility</h3>
+                  <p>
+                    The project targets WCAG 2.2 AA for the non-map interface.
+                    Controls are keyboard accessible, focus is visible, layer
+                    changes are announced, reduced-motion preferences are
+                    respected, and analytics have text and table equivalents.
+                  </p>
+                  <p>
+                    Settings and Data &amp; methods open as modal dialogs with
+                    labeled close buttons, contained keyboard focus, Escape-key
+                    dismissal, backdrop dismissal, and focus restoration to the
+                    button that opened each one.
+                  </p>
+                  <h4>Alternatives to map exploration</h4>
+                  <p>
+                    The Analytics tab provides a sortable table on larger
+                    screens and cards on smaller screens. Broad national results
+                    are capped in the visible table for performance; state
+                    selection, map navigation, and filters narrow the
+                    population, while CSV export contains the complete current
+                    filtered result with provenance fields.
+                  </p>
+                  <p>
+                    The center-distance heatmap is optional and supplementary.
+                    Its legend provides text labels for all five distance bands
+                    and either the relative endpoints or fixed meter ranges.
+                    Visible facility marker descriptions also state the
+                    nearest-other-center distance, so color is not the only cue.
+                  </p>
+                  <p>
+                    Transit filter availability, active-filter totals,
+                    candidate matches, and displayed-stop totals are exposed as
+                    text. Every transit control has a programmatic label and is
+                    disabled while viewport candidates are unavailable.
+                  </p>
+                  <h4>Known limitation</h4>
+                  <p>
+                    Third-party map tiles and controls have accessibility
+                    characteristics governed by Google Maps Platform. The map
+                    is supplementary; it is not the only way to reach facility
+                    results.
+                  </p>
+                  <h4>Feedback</h4>
+                  <p>
+                    Accessibility feedback may be submitted through the
+                    repository’s GitHub issue tracker. Include the page,
+                    control, browser, and assistive technology involved, but do
+                    not include patient information.
+                  </p>
+                </section>
+
+                <section
+                  aria-labelledby="methods-privacy-title"
+                  class="methods-policy-section"
+                >
+                  <h3 id="methods-privacy-title">Privacy</h3>
+                  <p>
+                    This Phase 1 explorer is a static, read-only site. It has no
+                    user accounts, patient information, analytics tracker,
+                    advertising tracker, or application database.
+                  </p>
+                  <h4>Location and search</h4>
+                  <p>
+                    Location access occurs only after you select “Use current
+                    location” and approve the browser prompt. The site uses the
+                    result to move the map and does not save or transmit it to
+                    an application server. Searches that match a published
+                    facility city, ZIP code, address, or name remain in the
+                    browser. Other searches are sent directly from your browser
+                    to Google Maps services for the active interaction.
+                  </p>
+                  <h4>Browser storage</h4>
+                  <p>
+                    Shared analysis state is stored in the page URL. If a local
+                    user enters a Google Maps browser key, the key may be
+                    retained in that browser’s local storage for future visits
+                    and can be removed by clearing the site’s browser data. The
+                    hosted site uses its published browser key instead.
+                  </p>
+                  <h4>Third-party services</h4>
+                  <p>
+                    The basemap and arbitrary location search use Google Maps
+                    Platform. Street-level map views request transit stops for
+                    the visible geographic bounds from the USDOT/BTS ArcGIS
+                    service. Those services are subject to their respective
+                    privacy terms. CMS facility and Census-geocode records are
+                    served from the published site snapshot.
+                  </p>
+                  <h4>Feedback contact</h4>
+                  <p>
+                    Privacy feedback may be submitted through the repository’s
+                    GitHub issue tracker. Do not include patient or other
+                    sensitive information.
+                  </p>
+                </section>
+
+                <section
+                  aria-labelledby="methods-terms-title"
+                  class="methods-policy-section"
+                >
+                  <h3 id="methods-terms-title">Terms of use</h3>
+                  <p>
+                    The Dialysis &amp; Transit Explorer is an educational research
+                    tool. It uses public CMS facility records, U.S. Census
+                    address-range geocodes, and USDOT/BTS National Transit Map
+                    stop records.
+                  </p>
+                  <h4>No care or transportation advice</h4>
+                  <p>
+                    Straight-line proximity does not establish that a transit
+                    trip is available, accessible, safe, timely, or feasible.
+                    Do not use this explorer for patient care, emergency
+                    decisions, trip planning, provider selection, or service
+                    eligibility.
+                  </p>
+                  <h4>Data and service availability</h4>
+                  <p>
+                    The site is provided as-is without a warranty of accuracy,
+                    completeness, fitness, or uninterrupted availability.
+                    Google Maps content remains subject to Google Maps Platform
+                    terms. Source data can contain omissions, stale records,
+                    approximate coordinates, and incomplete transit coverage.
+                    CMS, Census Bureau, USDOT/BTS, and Google attribution must
+                    be preserved.
+                  </p>
+                  <h4>Permitted use</h4>
+                  <p>
+                    You may inspect and adapt the open project subject to the
+                    repository’s license and third-party terms. Do not
+                    represent the site’s calculated proximity results as
+                    official government statistics, confirmed transit access,
+                    or real-time service findings.
+                  </p>
+                </section>
                 </div>
               </div>
             </dialog>

@@ -65,8 +65,12 @@ test("root entry point contains the complete explorer surfaces", async () => {
   const settingsDialog = html.match(
     /<dialog[^>]+id="settings-dialog"[\s\S]*?<\/dialog>/,
   )?.[0];
+  const methodsDialog = html.match(
+    /<dialog[^>]+id="methods-dialog"[\s\S]*?<\/dialog>/,
+  )?.[0];
   assert.ok(layersPanel);
   assert.ok(settingsDialog);
+  assert.ok(methodsDialog);
   assert.match(layersPanel, /heatmap-scale-settings--sidebar/);
   assert.match(layersPanel, /name="heatmap-scale-mode"/);
   assert.doesNotMatch(layersPanel, /id="heatmap-meter-range-form"/);
@@ -75,6 +79,14 @@ test("root entry point contains the complete explorer surfaces", async () => {
   assert.match(settingsDialog, /id="heatmap-reset-meter-ranges"/);
   assert.match(settingsDialog, /Reset defaults/);
   assert.doesNotMatch(settingsDialog, /name="heatmap-scale-mode"/);
+  assert.match(methodsDialog, /id="methods-accessibility-title"/);
+  assert.match(methodsDialog, /id="methods-privacy-title"/);
+  assert.match(methodsDialog, /id="methods-terms-title"/);
+  assert.match(methodsDialog, /No care or transportation advice/);
+  assert.doesNotMatch(methodsDialog, /class="policy-links"/);
+  assert.doesNotMatch(html, /href="\.\/accessibility\.html"/);
+  assert.doesNotMatch(html, /href="\.\/privacy\.html"/);
+  assert.doesNotMatch(html, /href="\.\/terms\.html"/);
   assert.match(html, /id="filter-stop-query"/);
   assert.match(html, /id="filter-within-radius"/);
   assert.match(html, /id="reset-transit-filters"/);
