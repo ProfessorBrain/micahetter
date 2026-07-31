@@ -200,7 +200,7 @@
                   ></span>
                   <span class="toggle-copy">
                     <strong>Center-distance heatmap</strong>
-                    <small>Five bands from nearby green to isolated red</small>
+                    <small>Relative or fixed meter bands from green to red</small>
                   </span>
                   <span class="switch">
                     <input
@@ -211,6 +211,87 @@
                     <span aria-hidden="true"></span>
                   </span>
                 </label>
+
+                <fieldset class="heatmap-scale-settings">
+                  <legend>Heatmap distance scale</legend>
+                  <div class="heatmap-mode-options">
+                    <label>
+                      <input
+                        checked
+                        name="heatmap-scale-mode"
+                        type="radio"
+                        value="relative"
+                      />
+                      <span>Relative distances</span>
+                    </label>
+                    <label>
+                      <input
+                        name="heatmap-scale-mode"
+                        type="radio"
+                        value="meters"
+                      />
+                      <span>Meter ranges</span>
+                    </label>
+                  </div>
+                  <form hidden id="heatmap-meter-range-form">
+                    <div class="heatmap-meter-grid">
+                      <label>
+                        <span>Very short max (m)</span>
+                        <input
+                          data-heatmap-break="0"
+                          inputmode="numeric"
+                          max="1000000"
+                          min="1"
+                          step="50"
+                          type="number"
+                          value="500"
+                        />
+                      </label>
+                      <label>
+                        <span>Short max (m)</span>
+                        <input
+                          data-heatmap-break="1"
+                          inputmode="numeric"
+                          max="1000000"
+                          min="1"
+                          step="50"
+                          type="number"
+                          value="1000"
+                        />
+                      </label>
+                      <label>
+                        <span>Medium max (m)</span>
+                        <input
+                          data-heatmap-break="2"
+                          inputmode="numeric"
+                          max="1000000"
+                          min="1"
+                          step="50"
+                          type="number"
+                          value="2500"
+                        />
+                      </label>
+                      <label>
+                        <span>Long max (m)</span>
+                        <input
+                          data-heatmap-break="3"
+                          inputmode="numeric"
+                          max="1000000"
+                          min="1"
+                          step="50"
+                          type="number"
+                          value="5000"
+                        />
+                      </label>
+                    </div>
+                    <button class="secondary-action--compact" type="submit">
+                      Apply meter ranges
+                    </button>
+                    <p id="heatmap-meter-range-help" role="status">
+                      Very long begins above 5,000 m.
+                    </p>
+                  </form>
+                </fieldset>
 
                 <label class="toggle-row toggle-row--conditional">
                   <span class="line-symbol" aria-hidden="true"></span>
@@ -645,9 +726,10 @@
                 <p>
                   The optional center-distance heatmap compares every visible,
                   filtered dialysis facility with its nearest other visible
-                  facility. Five equal-width color bands run from green for the
-                  shortest distances through green-yellow, yellow, and
-                  yellow-red to red for the longest distances.
+                  facility. Relative mode divides the visible distance scale
+                  into five bands. Meter-range mode applies four user-defined
+                  cutoffs. Both run from green through green-yellow, yellow,
+                  and yellow-red to red.
                 </p>
                 <dl>
                   <div>
@@ -698,8 +780,9 @@
                 <p>
                   Facility and transit results are available in a table
                   alternative. The optional heatmap is supplementary; its text
-                  legend reports the active distance endpoints, and visible
-                  facility marker descriptions report individual distances.
+                  legend reports the active relative scale or meter ranges, and
+                  visible facility marker descriptions report individual
+                  distances.
                   Search text remains in the active browser interaction and is
                   not logged or stored by this static site.
                 </p>
@@ -827,11 +910,26 @@
               </span>
               <div class="heatmap-gradient" aria-hidden="true"></div>
               <div class="heatmap-labels">
-                <span>Very short</span>
-                <span>Short</span>
-                <span>Medium</span>
-                <span>Long</span>
-                <span>Very long</span>
+                <span>
+                  <strong>Very short</strong>
+                  <small data-heatmap-range-label="0"></small>
+                </span>
+                <span>
+                  <strong>Short</strong>
+                  <small data-heatmap-range-label="1"></small>
+                </span>
+                <span>
+                  <strong>Medium</strong>
+                  <small data-heatmap-range-label="2"></small>
+                </span>
+                <span>
+                  <strong>Long</strong>
+                  <small data-heatmap-range-label="3"></small>
+                </span>
+                <span>
+                  <strong>Very long</strong>
+                  <small data-heatmap-range-label="4"></small>
+                </span>
               </div>
               <small id="center-distance-heatmap-scale"></small>
             </div>

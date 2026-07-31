@@ -51,12 +51,17 @@ test("root entry point contains the complete explorer surfaces", async () => {
   assert.match(html, /Closest 3 in radius/);
   assert.match(html, /data-layer-toggle="centerDistanceHeatmap"/);
   assert.match(html, /id="center-distance-heatmap-legend"/);
+  assert.match(html, /name="heatmap-scale-mode"/);
+  assert.match(html, /value="relative"/);
+  assert.match(html, /value="meters"/);
+  assert.match(html, /id="heatmap-meter-range-form"/);
+  assert.match(html, /data-heatmap-break="3"/);
   assert.match(html, /id="filter-stop-query"/);
   assert.match(html, /id="filter-within-radius"/);
   assert.match(html, /id="reset-transit-filters"/);
   assert.match(html, /id="transit-filter-count" role="status"/);
   assert.match(html, /Agency \/ NTD ID/);
-  assert.match(html, /Five bands from nearby green to isolated red/);
+  assert.match(html, /Relative or fixed meter bands from green to red/);
   assert.match(html, /Very short/);
   assert.match(html, /Very long/);
   assert.match(styles, /#86a850 20% 40%/);
@@ -168,6 +173,9 @@ test("client script implements every anticipated local workflow", async () => {
     "AdvancedMarkerElement",
     "loadTransitStopsForViewport",
     "calculateNearestFacilityDistances",
+    "applyHeatmapScale",
+    "heatmapBandIndexForDistance",
+    "validateHeatmapMeterBreaks",
     "heatmapColor",
     "createCenterDistanceHeatmapOverlay",
     "centerDistanceHeatmap",
@@ -211,6 +219,8 @@ test("client script implements every anticipated local workflow", async () => {
   assert.match(script, /\.slice\(0, limit\)/);
   assert.match(script, /closest_3_stops_within_threshold/);
   assert.match(script, /parameters\.set\("heatmap", "on"\)/);
+  assert.match(script, /parameters\.set\("heatmapScale", "meters"\)/);
+  assert.match(script, /"heatmapBreaks"/);
   assert.match(script, /parameters\.set\("withinRadius", "yes"\)/);
   assert.match(script, /transit_stop_name_or_id_filter/);
   assert.match(script, /methodsDialog\.showModal\(\)/);
@@ -328,6 +338,35 @@ test("spatial calculations keep closest stops and center distances correct", asy
   assert.deepEqual(Array.from(explorer.heatmapColor(0.5)), [242, 201, 76]);
   assert.deepEqual(Array.from(explorer.heatmapColor(0.7)), [221, 131, 68]);
   assert.deepEqual(Array.from(explorer.heatmapColor(0.9)), [200, 60, 60]);
+  assert.deepEqual(
+    Array.from(explorer.validateHeatmapMeterBreaks([1000, 2000, 3000, 4000])),
+    [1000, 2000, 3000, 4000],
+  );
+  assert.equal(
+    explorer.validateHeatmapMeterBreaks([1000, 900, 3000, 4000]),
+    null,
+  );
+  assert.equal(
+    explorer.heatmapBandIndexForDistance(2000, [1000, 2000, 3000, 4000]),
+    1,
+  );
+  assert.equal(
+    explorer.heatmapBandIndexForDistance(4001, [1000, 2000, 3000, 4000]),
+    4,
+  );
+  const meterSummary = explorer.applyHeatmapScale(
+    heatmapSummary,
+    "meters",
+    [1000, 2000, 3000, 4000],
+  );
+  assert.equal(
+    meterSummary.points.find((point) => point.ccn === "A").normalizedDistance,
+    0.3,
+  );
+  assert.equal(
+    meterSummary.points.find((point) => point.ccn === "C").normalizedDistance,
+    0.9,
+  );
 });
 
 test("public map configuration obfuscates the demo key without breaking startup", async () => {

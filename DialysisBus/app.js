@@ -12,6 +12,7 @@
   const EARTH_RADIUS_METERS = 6371008.8;
   const TRANSIT_MIN_ZOOM = 10;
   const TRANSIT_RECORD_LIMIT = 2000;
+  const DEFAULT_HEATMAP_METER_BREAKS = [500, 1000, 2500, 5000];
   const TRANSIT_SERVICE_URL =
     "https://services.arcgis.com/xOi1kZaI0eWDREZv/arcgis/rest/services/NTAD_National_Transit_Map_Stops/FeatureServer/0/query";
 
@@ -197,6 +198,10 @@
       facility: true,
       transit: true,
     },
+    heatmapScale: {
+      meterBreaks: [...DEFAULT_HEATMAP_METER_BREAKS],
+      mode: "relative",
+    },
     radius: 400,
     selectedFacility: null,
     selectedState: "",
@@ -256,6 +261,10 @@
     facilityTableBody: $("#facility-table-body"),
     layerAnnouncement: $("#layer-announcement"),
     layerCount: $("#layer-count"),
+    heatmapMeterRangeForm: $("#heatmap-meter-range-form"),
+    heatmapMeterRangeHelp: $("#heatmap-meter-range-help"),
+    heatmapRangeInputs: $$('[data-heatmap-break]'),
+    heatmapRangeLabels: $$('[data-heatmap-range-label]'),
     mapApiKey: $("#map-api-key"),
     mapConnect: $("#map-connect"),
     mapId: $("#map-id"),
@@ -453,6 +462,79 @@
       Math.floor(Math.max(0, normalizedDistance) * colors.length),
     );
     return colors[bandIndex];
+  }
+
+  function validateHeatmapMeterBreaks(values) {
+    const meterBreaks = values.map(Number);
+    const valid =
+      meterBreaks.length === 4 &&
+      meterBreaks.every(
+        (value) =>
+          Number.isInteger(value) && value >= 1 && value <= 1000000,
+      ) &&
+      meterBreaks.every(
+        (value, index) => index === 0 || value > meterBreaks[index - 1],
+      );
+    return valid ? meterBreaks : null;
+  }
+
+  function heatmapBandIndexForDistance(distance, meterBreaks) {
+    const bandIndex = meterBreaks.findIndex((limit) => distance <= limit);
+    return bandIndex === -1 ? meterBreaks.length : bandIndex;
+  }
+
+  function applyHeatmapScale(summary, mode, meterBreaks) {
+    if (!summary || mode !== "meters") return summary;
+    return {
+      ...summary,
+      points: summary.points.map((point) => {
+        const bandIndex = heatmapBandIndexForDistance(
+          point.nearestDistance,
+          meterBreaks,
+        );
+        return {
+          ...point,
+          normalizedDistance: (bandIndex + 0.5) / 5,
+        };
+      }),
+    };
+  }
+
+  function formatHeatmapMeterRanges(meterBreaks) {
+    const formatMeters = (value) => `${value.toLocaleString()} m`;
+    return [
+      `≤ ${formatMeters(meterBreaks[0])}`,
+      `${(meterBreaks[0] + 1).toLocaleString()}–${formatMeters(meterBreaks[1])}`,
+      `${(meterBreaks[1] + 1).toLocaleString()}–${formatMeters(meterBreaks[2])}`,
+      `${(meterBreaks[2] + 1).toLocaleString()}–${formatMeters(meterBreaks[3])}`,
+      `> ${formatMeters(meterBreaks[3])}`,
+    ];
+  }
+
+  function setHeatmapMeterRangeHelp(message, isError = false) {
+    elements.heatmapMeterRangeHelp.textContent = message;
+    elements.heatmapMeterRangeHelp.classList.toggle("is-error", isError);
+  }
+
+  function updateHeatmapScaleControls() {
+    $$('[name="heatmap-scale-mode"]').forEach((input) => {
+      input.checked = input.value === state.heatmapScale.mode;
+    });
+    elements.heatmapMeterRangeForm.hidden =
+      state.heatmapScale.mode !== "meters";
+    elements.heatmapRangeInputs.forEach((input, index) => {
+      input.value = state.heatmapScale.meterBreaks[index];
+    });
+    const ranges = formatHeatmapMeterRanges(
+      state.heatmapScale.meterBreaks,
+    );
+    elements.heatmapRangeLabels.forEach((label, index) => {
+      label.textContent = ranges[index];
+      label.hidden = state.heatmapScale.mode !== "meters";
+    });
+    setHeatmapMeterRangeHelp(
+      `Very long begins above ${state.heatmapScale.meterBreaks[3].toLocaleString()} m.`,
+    );
   }
 
   function pointInBounds(point, bounds) {
@@ -801,6 +883,7 @@
       `Dialysis layer ${state.layers.facility ? "on" : "off"}. ` +
       `Transit layer ${state.layers.transit ? "on" : "off"}. ` +
       `Center-distance heatmap ${state.layers.centerDistanceHeatmap ? "on" : "off"}. ` +
+      `Heatmap scale ${state.heatmapScale.mode === "meters" ? "fixed meter ranges" : "relative distances"}. ` +
       `Threshold ${state.radius} meters.`;
     renderMapOverlays();
   }
@@ -1729,22 +1812,32 @@
       heatmapFacilitiesCache = facilities;
       heatmapSummaryCache = calculateNearestFacilityDistances(facilities);
     }
-    if (!heatmapSummaryCache?.points.length) {
+    const scaledSummary = applyHeatmapScale(
+      heatmapSummaryCache,
+      state.heatmapScale.mode,
+      state.heatmapScale.meterBreaks,
+    );
+    if (!scaledSummary?.points.length) {
       elements.centerDistanceHeatmapScale.textContent =
         "At least two visible, geocoded facilities are required.";
       centerDistanceHeatmapOverlay?.setPoints([]);
-      return heatmapSummaryCache;
+      return scaledSummary;
     }
 
-    elements.centerDistanceHeatmapScale.textContent =
-      `Green ≤ ${formatDistance(heatmapSummaryCache.lowerDistance)} · ` +
-      `red ≥ ${formatDistance(heatmapSummaryCache.upperDistance)}`;
+    if (state.heatmapScale.mode === "meters") {
+      elements.centerDistanceHeatmapScale.textContent =
+        `Fixed meter ranges · red above ${state.heatmapScale.meterBreaks[3].toLocaleString()} m`;
+    } else {
+      elements.centerDistanceHeatmapScale.textContent =
+        `Relative scale: green ≤ ${formatDistance(scaledSummary.lowerDistance)} · ` +
+        `red ≥ ${formatDistance(scaledSummary.upperDistance)}`;
+    }
     if (!centerDistanceHeatmapOverlay) {
       centerDistanceHeatmapOverlay = createCenterDistanceHeatmapOverlay();
       centerDistanceHeatmapOverlay.setMap(googleMap);
     }
-    centerDistanceHeatmapOverlay.setPoints(heatmapSummaryCache.points);
-    return heatmapSummaryCache;
+    centerDistanceHeatmapOverlay.setPoints(scaledSummary.points);
+    return scaledSummary;
   }
 
   function renderMapOverlays() {
@@ -2199,6 +2292,13 @@
     if (!state.layers.facility) parameters.set("facilities", "off");
     if (!state.layers.transit) parameters.set("stops", "off");
     if (state.layers.centerDistanceHeatmap) parameters.set("heatmap", "on");
+    if (state.heatmapScale.mode === "meters") {
+      parameters.set("heatmapScale", "meters");
+      parameters.set(
+        "heatmapBreaks",
+        state.heatmapScale.meterBreaks.join(","),
+      );
+    }
     Object.entries(state.filters).forEach(([key, value]) => {
       if (key === "inCenter") {
         if (value) parameters.set("inCenter", "yes");
@@ -2239,6 +2339,15 @@
     state.layers.facility = parameters.get("facilities") !== "off";
     state.layers.transit = parameters.get("stops") !== "off";
     state.layers.centerDistanceHeatmap = parameters.get("heatmap") === "on";
+    if (parameters.get("heatmapScale") === "meters") {
+      state.heatmapScale.mode = "meters";
+      const meterBreaks = validateHeatmapMeterBreaks(
+        (parameters.get("heatmapBreaks") || "")
+          .split(",")
+          .map(Number),
+      );
+      if (meterBreaks) state.heatmapScale.meterBreaks = meterBreaks;
+    }
 
     const filterKeys = [
       "agency",
@@ -2295,6 +2404,7 @@
     $$("[data-layer-toggle]").forEach((toggle) => {
       toggle.checked = state.layers[toggle.dataset.layerToggle];
     });
+    updateHeatmapScaleControls();
     $("#filter-agency").value = state.filters.agency;
     $("#filter-chain").value = state.filters.chain;
     $("#filter-chain-owned").value = state.filters.chainOwned;
@@ -2508,6 +2618,36 @@
       });
     });
 
+    $$('[name="heatmap-scale-mode"]').forEach((input) => {
+      input.addEventListener("change", () => {
+        if (!input.checked) return;
+        state.heatmapScale.mode = input.value;
+        updateHeatmapScaleControls();
+        updateLayerState();
+        updateUrl();
+      });
+    });
+
+    elements.heatmapMeterRangeForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const meterBreaks = validateHeatmapMeterBreaks(
+        elements.heatmapRangeInputs.map((input) => input.value),
+      );
+      if (!meterBreaks) {
+        setHeatmapMeterRangeHelp(
+          "Enter four whole-meter limits in strictly increasing order.",
+          true,
+        );
+        elements.heatmapRangeInputs[0].focus();
+        return;
+      }
+      state.heatmapScale.meterBreaks = meterBreaks;
+      updateHeatmapScaleControls();
+      updateLayerState();
+      updateUrl();
+      showNotice("Heatmap meter ranges updated.");
+    });
+
     $$("[data-selection-layer]").forEach((toggle) => {
       toggle.addEventListener("change", () => {
         const layer = toggle.dataset.selectionLayer;
@@ -2696,17 +2836,20 @@
   }
 
   window.DialysisTransitExplorer = {
+    applyHeatmapScale,
     calculateResults,
     calculateNearestFacilityDistances,
     distanceMeters,
     exportCsv,
     formatDistance,
     getState: () => JSON.parse(JSON.stringify(state)),
+    heatmapBandIndexForDistance,
     percentile,
     heatmapColor,
     selectClosestStopsForFacilities,
     stopMatchesTransitFilters,
     updateRadius,
+    validateHeatmapMeterBreaks,
   };
 
   if (!window.DIALYSIS_TRANSIT_DISABLE_AUTO_INIT) {
