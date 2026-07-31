@@ -254,13 +254,10 @@
     facilityDetailTitle: $("#facility-detail-title"),
     facilityFilterCount: $("#facility-filter-count"),
     facilityTableBody: $("#facility-table-body"),
-    forgetMapKey: $("#forget-map-key"),
     layerAnnouncement: $("#layer-announcement"),
     layerCount: $("#layer-count"),
     mapApiKey: $("#map-api-key"),
     mapConnect: $("#map-connect"),
-    mapConnectionStatus: $("#map-connection-status"),
-    mapConnectionText: $("#map-connection-text"),
     mapId: $("#map-id"),
     mapLoading: $("#map-loading"),
     mapSetupBackdrop: $("#map-setup-backdrop"),
@@ -1871,14 +1868,6 @@
     elements.mapSetupStatus.classList.toggle("is-error", isError);
   }
 
-  function setConnectionStatus(message, connected = false) {
-    elements.mapConnectionText.textContent = message;
-    elements.mapConnectionStatus.classList.toggle(
-      "is-connected",
-      connected,
-    );
-  }
-
   function handleMapLoadFailure(message) {
     centerDistanceHeatmapOverlay?.setMap(null);
     centerDistanceHeatmapOverlay = null;
@@ -1888,7 +1877,6 @@
     elements.mapConnect.disabled = false;
     elements.mapConnect.textContent = "Try again";
     setSetupStatus(message, true);
-    setConnectionStatus("Map connection failed");
     if (!window.DIALYSIS_TRANSIT_CONFIG?.googleMapsApiKey) {
       clearCredentials();
     }
@@ -2048,10 +2036,6 @@
       elements.mapSetupBackdrop.hidden = true;
       elements.mapConnect.disabled = false;
       elements.mapConnect.textContent = "Load Google map";
-      elements.forgetMapKey.hidden =
-        Boolean(readStoredCredentials()) &&
-        !window.DIALYSIS_TRANSIT_CONFIG?.googleMapsApiKey;
-      setConnectionStatus("Google Maps connected", true);
       await initializeSearchServices();
       renderAll();
       if (!IS_PUBLIC_DATA) {
@@ -2075,7 +2059,6 @@
     elements.mapConnect.disabled = true;
     elements.mapConnect.textContent = "Connecting…";
     setSetupStatus("Requesting the Google Maps JavaScript API…");
-    setConnectionStatus("Connecting Google Maps");
 
     if (window.google?.maps?.importLibrary) {
       initializeGoogleMap();
@@ -2672,11 +2655,6 @@
       elements.mapApiKey.type = showKey ? "text" : "password";
       $("#toggle-api-key").textContent = showKey ? "Hide" : "Show";
     });
-    elements.forgetMapKey.addEventListener("click", () => {
-      clearCredentials();
-      window.location.reload();
-    });
-
     $("#export-csv").addEventListener("click", exportCsv);
     $("#facility-detail-close").addEventListener("click", closeFacilityDetail);
     $("#stop-detail-close").addEventListener("click", () => {

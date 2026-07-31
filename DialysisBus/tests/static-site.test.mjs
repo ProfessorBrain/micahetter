@@ -27,6 +27,8 @@ test("root entry point contains the complete explorer surfaces", async () => {
   assert.doesNotMatch(html, /class="demo-status"/);
   assert.doesNotMatch(html, /Public data snapshot/);
   assert.doesNotMatch(html, /id="snapshot-readout"/);
+  assert.doesNotMatch(html, /id="map-connection-status"/);
+  assert.doesNotMatch(html, /Google Maps connected/);
   assert.doesNotMatch(html, /Threshold circle/i);
   assert.doesNotMatch(html, /data-selection-layer="circle"/);
   assert.doesNotMatch(html, /id="panel-methods"/);
@@ -217,6 +219,8 @@ test("client script implements every anticipated local workflow", async () => {
   assert.doesNotMatch(script, /#snapshot-readout/);
   assert.doesNotMatch(script, /google\.maps\.Circle/);
   assert.doesNotMatch(script, /selectionLayers\.circle/);
+  assert.doesNotMatch(script, /setConnectionStatus/);
+  assert.doesNotMatch(script, /Google Maps connected/);
 });
 
 test("spatial calculations keep closest stops and center distances correct", async () => {
