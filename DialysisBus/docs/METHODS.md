@@ -25,6 +25,14 @@ nearest-stop distance and active-radius count use only that facility's selected
 three stops from the current viewport candidate pool. Scheduled production
 results should instead use PostGIS geography operations as specified below.
 
+Transit filters operate on the loaded candidate pool before the three closest
+stops are selected for each facility. The browser supports case-insensitive
+stop name or ID search plus exact stop-type, wheelchair-indication, and
+agency/NTD-ID filters. The optional active-radius constraint then excludes a
+facility's selected stops when their geodesic distance exceeds the current
+threshold. Candidate counts refer to source records; displayed counts refer to
+the deduplicated union of the per-facility selections.
+
 ## Public sources
 
 - Dialysis facilities: CMS Provider Data Catalog dataset `23ew-n7w9`

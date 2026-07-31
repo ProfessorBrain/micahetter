@@ -22,6 +22,13 @@ nearest facility name, and a normalized color value based on the visible 10th
 and 90th percentile distances. The normalized value is assigned to one of five
 equal-width color bands for display.
 
+Transit-filter state is represented by `stopQuery`, `stopType`, `wheelchair`,
+`agency`, and `withinRadius`. CSV exports record these values as
+`transit_stop_name_or_id_filter`, `transit_stop_type_filter`,
+`transit_wheelchair_filter`, `transit_agency_filter`, and
+`transit_limited_to_active_threshold` so filtered results retain their analysis
+context.
+
 `sample-data.js` retains fictional deterministic facilities and stops for
 fallback testing only.
 

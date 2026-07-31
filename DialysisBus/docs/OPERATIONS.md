@@ -35,6 +35,9 @@ Before publishing:
    and labels appear, the endpoint distances update after panning, zooming, and
    applying facility filters, and the layer can be disabled without hiding
    facility or transit markers.
+7. At zoom level 10 or closer, verify transit name/ID search, counted select
+   options, wheelchair and agency filters, the active-radius constraint, live
+   candidate/display totals, URL restoration, and the transit-only reset.
 
 ## Local startup
 

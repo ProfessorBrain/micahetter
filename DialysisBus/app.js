@@ -562,9 +562,7 @@
     return true;
   }
 
-  function matchesStopFilters(stop) {
-    const filters = state.filters;
-    if (!matchesExtent(stop)) return false;
+  function stopMatchesTransitFilters(stop, filters) {
     if (filters.stopQuery) {
       const query = filters.stopQuery.trim().toLocaleLowerCase();
       const searchableText = [
@@ -585,6 +583,12 @@
     }
     if (filters.agency && stop.agency !== filters.agency) return false;
     return true;
+  }
+
+  function matchesStopFilters(stop) {
+    return (
+      matchesExtent(stop) && stopMatchesTransitFilters(stop, state.filters)
+    );
   }
 
   function selectClosestStopsForFacilities(
@@ -2444,6 +2448,11 @@
       "nearest_stop_latitude",
       "nearest_stop_longitude",
       "active_threshold_m",
+      "transit_stop_name_or_id_filter",
+      "transit_stop_type_filter",
+      "transit_wheelchair_filter",
+      "transit_agency_filter",
+      "transit_limited_to_active_threshold",
       "active_extent",
       "cms_snapshot_date",
       "ntm_snapshot_date",
@@ -2472,6 +2481,11 @@
       facility.nearestStop?.lat ?? "",
       facility.nearestStop?.lng ?? "",
       state.radius,
+      state.filters.stopQuery,
+      state.filters.stopType,
+      state.filters.wheelchair,
+      state.filters.agency,
+      state.filters.withinRadius ? "yes" : "no",
       currentExtentLabel(),
       facility.snapshotDate,
       facility.nearestStop?.snapshotDate ??
@@ -2746,6 +2760,7 @@
     percentile,
     heatmapColor,
     selectClosestStopsForFacilities,
+    stopMatchesTransitFilters,
     updateRadius,
   };
 

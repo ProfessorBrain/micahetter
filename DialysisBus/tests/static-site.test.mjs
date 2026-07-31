@@ -35,6 +35,11 @@ test("root entry point contains the complete explorer surfaces", async () => {
   assert.match(html, /Closest 3 in radius/);
   assert.match(html, /data-layer-toggle="centerDistanceHeatmap"/);
   assert.match(html, /id="center-distance-heatmap-legend"/);
+  assert.match(html, /id="filter-stop-query"/);
+  assert.match(html, /id="filter-within-radius"/);
+  assert.match(html, /id="reset-transit-filters"/);
+  assert.match(html, /id="transit-filter-count" role="status"/);
+  assert.match(html, /Agency \/ NTD ID/);
   assert.match(html, /Five bands from nearby green to isolated red/);
   assert.match(html, /Very short/);
   assert.match(html, /Very long/);
@@ -150,6 +155,7 @@ test("client script implements every anticipated local workflow", async () => {
     "centerDistanceHeatmap",
     "fromLatLngToDivPixel",
     "selectClosestStopsForFacilities",
+    "stopMatchesTransitFilters",
     "CLOSEST_STOPS_PER_FACILITY",
     "closestStopIdsByFacility",
     "NTAD_National_Transit_Map_Stops",
@@ -186,6 +192,8 @@ test("client script implements every anticipated local workflow", async () => {
   assert.match(script, /\.slice\(0, limit\)/);
   assert.match(script, /closest_3_stops_within_threshold/);
   assert.match(script, /parameters\.set\("heatmap", "on"\)/);
+  assert.match(script, /parameters\.set\("withinRadius", "yes"\)/);
+  assert.match(script, /transit_stop_name_or_id_filter/);
 });
 
 test("spatial calculations keep closest stops and center distances correct", async () => {
@@ -228,6 +236,42 @@ test("spatial calculations keep closest stops and center distances correct", asy
   assert.equal(
     selection.stops.find((stop) => stop.id === "stop-3").relatedFacilityCount,
     2,
+  );
+  const radiusLimitedSelection = selectClosestStops(
+    [facilities[0]],
+    candidateStops,
+    3,
+    150,
+  );
+  assert.deepEqual(
+    Array.from(radiusLimitedSelection.stopIdsByFacility.get("A")),
+    ["stop-1"],
+  );
+  const candidateStop = {
+    agency: "NTD 123",
+    name: "Central Station",
+    ntdId: "123",
+    objectId: "77",
+    stopId: "CENTRAL-1",
+    type: "Rail station",
+    wheelchair: "Indicated accessible",
+  };
+  const transitFilters = {
+    agency: "NTD 123",
+    stopQuery: "central-1",
+    stopType: "Rail station",
+    wheelchair: "Indicated accessible",
+  };
+  assert.equal(
+    explorer.stopMatchesTransitFilters(candidateStop, transitFilters),
+    true,
+  );
+  assert.equal(
+    explorer.stopMatchesTransitFilters(candidateStop, {
+      ...transitFilters,
+      stopQuery: "missing stop",
+    }),
+    false,
   );
 
   const heatmapSummary = explorer.calculateNearestFacilityDistances([

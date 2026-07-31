@@ -77,7 +77,9 @@ unchanged at `https://<account>.github.io/<repository>/`.
 - Custom thresholds from 100 through 5,000 meters.
 - Facility filters for service, ownership, chain, late shift, station count,
   and geocoding status.
-- Transit filters for stop type, wheelchair indication, and agency.
+- Transit filters for stop name or ID, stop type, wheelchair indication, and
+  agency/NTD ID, with counted choices, live candidate/display totals, an
+  active-radius constraint, and a transit-only reset.
 - Summary metrics, quartiles, distance distribution, sortable table, and
   responsive facility cards.
 - Facility detail drawer and transit-stop detail card.
