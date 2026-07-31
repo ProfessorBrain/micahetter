@@ -49,9 +49,12 @@ geocoded facility, a three-dimensional spatial tree identifies the nearest
 other visible facility; spherical chord distance is then converted to geodesic
 meters. The map uses the 10th and 90th percentiles of the visible nearest-center
 distances as the green and red endpoints, with a green-to-yellow-to-red
-gradient between them. Values outside those endpoints are clamped. The legend
-reports the current endpoint distances, and facility marker descriptions expose
-the individual nearest-center distance while the layer is active.
+range between them. That normalized range is divided into five equal-width
+bands: green, a color halfway between green and yellow, yellow, a color halfway
+between yellow and red, and red. Values outside the endpoints are clamped. The
+legend reports the current endpoint distances and labels all five bands, and
+facility marker descriptions expose the individual nearest-center distance
+while the layer is active.
 
 This is a relative viewport comparison, so colors can change when the map
 extent or facility filters change. It does not measure travel time, road

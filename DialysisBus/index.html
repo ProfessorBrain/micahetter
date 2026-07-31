@@ -216,7 +216,7 @@
                   ></span>
                   <span class="toggle-copy">
                     <strong>Center-distance heatmap</strong>
-                    <small>Green: nearby centers · red: isolated centers</small>
+                    <small>Five bands from nearby green to isolated red</small>
                   </span>
                   <span class="switch">
                     <input
@@ -611,9 +611,9 @@
                 <p>
                   The optional center-distance heatmap compares every visible,
                   filtered dialysis facility with its nearest other visible
-                  facility. Green represents the shortest tenth of those
-                  distances, red represents the longest tenth, and yellow
-                  represents the range between them.
+                  facility. Five equal-width color bands run from green for the
+                  shortest distances through green-yellow, yellow, and
+                  yellow-red to red for the longest distances.
                 </p>
                 <dl>
                   <div>
@@ -802,9 +802,12 @@
                 Nearest other dialysis center
               </span>
               <div class="heatmap-gradient" aria-hidden="true"></div>
-              <div class="heatmap-labels" aria-hidden="true">
-                <span>Short distance</span>
-                <span>Long distance</span>
+              <div class="heatmap-labels">
+                <span>Very short</span>
+                <span>Short</span>
+                <span>Medium</span>
+                <span>Long</span>
+                <span>Very long</span>
               </div>
               <small id="center-distance-heatmap-scale"></small>
             </div>

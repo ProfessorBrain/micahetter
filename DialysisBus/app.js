@@ -427,15 +427,22 @@
     const green = [25, 135, 84];
     const yellow = [242, 201, 76];
     const red = [200, 60, 60];
-    const start = normalizedDistance <= 0.5 ? green : yellow;
-    const end = normalizedDistance <= 0.5 ? yellow : red;
-    const progress =
-      normalizedDistance <= 0.5
-        ? normalizedDistance * 2
-        : (normalizedDistance - 0.5) * 2;
-    return start.map((channel, index) =>
-      Math.round(channel + (end[index] - channel) * progress),
+    const halfwayColor = (first, second) =>
+      first.map((channel, index) =>
+        Math.round((channel + second[index]) / 2),
+      );
+    const colors = [
+      green,
+      halfwayColor(green, yellow),
+      yellow,
+      halfwayColor(yellow, red),
+      red,
+    ];
+    const bandIndex = Math.min(
+      colors.length - 1,
+      Math.floor(Math.max(0, normalizedDistance) * colors.length),
     );
+    return colors[bandIndex];
   }
 
   function pointInBounds(point, bounds) {
@@ -2603,6 +2610,7 @@
     formatDistance,
     getState: () => JSON.parse(JSON.stringify(state)),
     percentile,
+    heatmapColor,
     selectClosestStopsForFacilities,
     updateRadius,
   };

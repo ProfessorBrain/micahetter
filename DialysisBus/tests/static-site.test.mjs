@@ -6,7 +6,10 @@ import vm from "node:vm";
 const root = new URL("../", import.meta.url);
 
 test("root entry point contains the complete explorer surfaces", async () => {
-  const html = await readFile(new URL("index.html", root), "utf8");
+  const [html, styles] = await Promise.all([
+    readFile(new URL("index.html", root), "utf8"),
+    readFile(new URL("styles.css", root), "utf8"),
+  ]);
 
   assert.match(html, /<title>Dialysis &amp; Transit Explorer<\/title>/);
   assert.match(html, /href="\.\/styles\.css"/);
@@ -32,7 +35,11 @@ test("root entry point contains the complete explorer surfaces", async () => {
   assert.match(html, /Closest 3 in radius/);
   assert.match(html, /data-layer-toggle="centerDistanceHeatmap"/);
   assert.match(html, /id="center-distance-heatmap-legend"/);
-  assert.match(html, /Green: nearby centers · red: isolated centers/);
+  assert.match(html, /Five bands from nearby green to isolated red/);
+  assert.match(html, /Very short/);
+  assert.match(html, /Very long/);
+  assert.match(styles, /#86a850 20% 40%/);
+  assert.match(styles, /#dd8344 60% 80%/);
   assert.doesNotMatch(html, /available after data load/i);
   assert.doesNotMatch(html, /filters are staged/i);
   assert.doesNotMatch(html, /analytics need a validated snapshot/i);
@@ -138,6 +145,7 @@ test("client script implements every anticipated local workflow", async () => {
     "AdvancedMarkerElement",
     "loadTransitStopsForViewport",
     "calculateNearestFacilityDistances",
+    "heatmapColor",
     "createCenterDistanceHeatmapOverlay",
     "centerDistanceHeatmap",
     "fromLatLngToDivPixel",
@@ -237,6 +245,11 @@ test("spatial calculations keep closest stops and center distances correct", asy
   assert.ok(isolatedPoint.nearestDistance > firstPoint.nearestDistance * 3);
   assert.equal(firstPoint.normalizedDistance, 0);
   assert.equal(isolatedPoint.normalizedDistance, 1);
+  assert.deepEqual(Array.from(explorer.heatmapColor(0.1)), [25, 135, 84]);
+  assert.deepEqual(Array.from(explorer.heatmapColor(0.3)), [134, 168, 80]);
+  assert.deepEqual(Array.from(explorer.heatmapColor(0.5)), [242, 201, 76]);
+  assert.deepEqual(Array.from(explorer.heatmapColor(0.7)), [221, 131, 68]);
+  assert.deepEqual(Array.from(explorer.heatmapColor(0.9)), [200, 60, 60]);
 });
 
 test("public map configuration exposes the explicit demo integration switch", async () => {

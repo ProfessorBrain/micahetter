@@ -66,8 +66,9 @@ unchanged at `https://<account>.github.io/<repository>/`.
   displays shared stops once, and asks the user to zoom further when a dense
   response reaches the 2,000-candidate limit.
 - Facility, transit, and center-distance heatmap layer toggles. The heatmap
-  colors each visible facility by its nearest other visible facility: green for
-  short distances, yellow for the middle range, and red for long distances.
+  colors each visible facility by its nearest other visible facility using five
+  bands: green, green-yellow, yellow, yellow-red, and red from shortest to
+  longest distance.
 - State selection, current viewport analysis, national reset, zoom controls,
   current-location navigation, and city/ZIP/address search.
 - URL restoration for map center, zoom, state, radius, layers, and filters.

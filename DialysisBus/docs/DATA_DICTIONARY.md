@@ -19,7 +19,8 @@ never represented as official source measurements. Exported records include
 The center-distance heatmap does not add a stored source field. Its runtime
 points contain the facility CCN, coordinates, nearest-other-facility distance,
 nearest facility name, and a normalized color value based on the visible 10th
-and 90th percentile distances.
+and 90th percentile distances. The normalized value is assigned to one of five
+equal-width color bands for display.
 
 `sample-data.js` retains fictional deterministic facilities and stops for
 fallback testing only.
