@@ -442,12 +442,37 @@
 
                 <div class="control-section">
                   <div class="section-title">
-                    <span>Transit filters</span>
+                    <div>
+                      <span>Transit filters</span>
+                      <small id="transit-filter-count" role="status">
+                        Zoom to level 10+ to load transit filter options.
+                      </small>
+                    </div>
+                    <span class="count-badge" id="transit-filter-active">
+                      0 active
+                    </span>
                   </div>
+
+                  <label class="field-label" for="filter-stop-query">
+                    Stop name or ID
+                  </label>
+                  <input
+                    aria-describedby="transit-filter-count"
+                    autocomplete="off"
+                    class="filter-text-input"
+                    data-transit-filter="true"
+                    id="filter-stop-query"
+                    placeholder="Search loaded stops"
+                    type="search"
+                  />
 
                   <label class="field-label" for="filter-stop-type">Stop type</label>
                   <div class="select-wrap">
-                    <select id="filter-stop-type">
+                    <select
+                      aria-describedby="transit-filter-count"
+                      data-transit-filter="true"
+                      id="filter-stop-type"
+                    >
                       <option value="">All stop types</option>
                     </select>
                   </div>
@@ -456,7 +481,11 @@
                     Wheelchair indication
                   </label>
                   <div class="select-wrap">
-                    <select id="filter-wheelchair">
+                    <select
+                      aria-describedby="transit-filter-count"
+                      data-transit-filter="true"
+                      id="filter-wheelchair"
+                    >
                       <option value="">All statuses</option>
                       <option value="Indicated accessible">
                         Indicated accessible
@@ -468,12 +497,42 @@
                     </select>
                   </div>
 
-                  <label class="field-label" for="filter-agency">Agency</label>
+                  <label class="field-label" for="filter-agency">
+                    Agency / NTD ID
+                  </label>
                   <div class="select-wrap">
-                    <select id="filter-agency">
+                    <select
+                      aria-describedby="transit-filter-count"
+                      data-transit-filter="true"
+                      id="filter-agency"
+                    >
                       <option value="">All agencies</option>
                     </select>
                   </div>
+
+                  <label class="checkbox-row checkbox-row--filter">
+                    <input
+                      data-transit-filter="true"
+                      id="filter-within-radius"
+                      type="checkbox"
+                    />
+                    <span>
+                      <strong>Limit stops to the active radius</strong>
+                      <small id="transit-radius-filter-help">
+                        Keep only each facility's closest stops that are within
+                        400 m.
+                      </small>
+                    </span>
+                  </label>
+
+                  <button
+                    class="secondary-action secondary-action--compact"
+                    disabled
+                    id="reset-transit-filters"
+                    type="button"
+                  >
+                    Clear transit filters
+                  </button>
                 </div>
 
                 <button class="primary-action" id="reset-filters" type="button">

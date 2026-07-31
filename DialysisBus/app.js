@@ -166,6 +166,13 @@
       test: (distance) => distance > 1600,
     },
   ];
+  const TRANSIT_FILTER_KEYS = [
+    "agency",
+    "stopQuery",
+    "stopType",
+    "wheelchair",
+    "withinRadius",
+  ];
 
   const state = {
     center: { ...NATIONAL_VIEW.center },
@@ -180,7 +187,9 @@
       ownership: "",
       stationsMax: "",
       stationsMin: "",
+      stopQuery: "",
       stopType: "",
+      withinRadius: false,
       wheelchair: "",
     },
     layers: {
@@ -220,6 +229,7 @@
     stops: [],
   };
   let mapIdleTimer = null;
+  let filterInputTimer = null;
   let lastTransitQueryKey = "";
   let transitFetchController = null;
   let transitLoadState = IS_PUBLIC_DATA ? "zoom" : "bundled";
@@ -269,6 +279,9 @@
     stopDetail: $("#stop-detail"),
     stopDetailContent: $("#stop-detail-content"),
     stopDetailTitle: $("#stop-detail-title"),
+    transitFilterActive: $("#transit-filter-active"),
+    transitFilterCount: $("#transit-filter-count"),
+    transitRadiusFilterHelp: $("#transit-radius-filter-help"),
     workspace: $("#workspace"),
   };
 
@@ -552,6 +565,20 @@
   function matchesStopFilters(stop) {
     const filters = state.filters;
     if (!matchesExtent(stop)) return false;
+    if (filters.stopQuery) {
+      const query = filters.stopQuery.trim().toLocaleLowerCase();
+      const searchableText = [
+        stop.name,
+        stop.stopId,
+        stop.objectId,
+        stop.sourceObjectId,
+        stop.ntdId,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLocaleLowerCase();
+      if (query && !searchableText.includes(query)) return false;
+    }
     if (filters.stopType && stop.type !== filters.stopType) return false;
     if (filters.wheelchair && stop.wheelchair !== filters.wheelchair) {
       return false;
@@ -564,6 +591,7 @@
     facilities,
     candidateStops,
     limit = CLOSEST_STOPS_PER_FACILITY,
+    maximumDistance = Number.POSITIVE_INFINITY,
   ) {
     const selectedStops = new Map();
     const stopIdsByFacility = new Map();
@@ -579,6 +607,7 @@
           distance: distanceMeters(facility, stop),
           stop,
         }))
+        .filter((candidate) => candidate.distance <= maximumDistance)
         .sort((first, second) => first.distance - second.distance)
         .slice(0, limit);
 
@@ -617,6 +646,10 @@
     const selection = selectClosestStopsForFacilities(
       facilities,
       transitCandidateStops.filter(matchesStopFilters),
+      CLOSEST_STOPS_PER_FACILITY,
+      state.filters.withinRadius
+        ? state.radius
+        : Number.POSITIVE_INFINITY,
     );
     closestStopIdsByFacility = selection.stopIdsByFacility;
     DATA.stops = selection.stops;
@@ -844,7 +877,9 @@
       ownership: $("#filter-ownership").value,
       stationsMax: $("#filter-stations-max").value,
       stationsMin: $("#filter-stations-min").value,
+      stopQuery: $("#filter-stop-query").value.trim(),
       stopType: $("#filter-stop-type").value,
+      withinRadius: $("#filter-within-radius").checked,
       wheelchair: $("#filter-wheelchair").value,
     };
     renderAll();
@@ -868,20 +903,86 @@
   }
 
   function populateTransitFilterOptions() {
-    const optionStops = transitCandidateStops;
+    const optionStops = transitCandidateStops.filter(matchesExtent);
+    const countsFor = (key) => {
+      const counts = new Map();
+      optionStops.forEach((stop) => {
+        const value = stop[key];
+        if (value) counts.set(value, (counts.get(value) || 0) + 1);
+      });
+      return counts;
+    };
+    const stopTypeCounts = countsFor("type");
+    const agencyCounts = countsFor("agency");
     replaceSelectOptions(
       $("#filter-stop-type"),
       [
         state.filters.stopType,
         ...optionStops.map((stop) => stop.type),
       ],
+      (value) => `${value} (${stopTypeCounts.get(value) || 0})`,
     );
     replaceSelectOptions(
       $("#filter-agency"),
       [state.filters.agency, ...optionStops.map((stop) => stop.agency)],
+      (value) => `${value} (${agencyCounts.get(value) || 0})`,
     );
+    $("#filter-stop-type").options[0].textContent =
+      `All stop types (${optionStops.length.toLocaleString()})`;
+    $("#filter-agency").options[0].textContent =
+      `All agencies (${optionStops.length.toLocaleString()})`;
+    const wheelchairCounts = countsFor("wheelchair");
+    [...$("#filter-wheelchair").options].forEach((option) => {
+      option.textContent = option.value
+        ? `${option.value} (${wheelchairCounts.get(option.value) || 0})`
+        : `All statuses (${optionStops.length.toLocaleString()})`;
+    });
     $("#filter-stop-type").value = state.filters.stopType;
     $("#filter-agency").value = state.filters.agency;
+    $("#filter-wheelchair").value = state.filters.wheelchair;
+    updateTransitFilterAvailability();
+  }
+
+  function activeTransitFilterCount() {
+    return TRANSIT_FILTER_KEYS.filter((key) => Boolean(state.filters[key]))
+      .length;
+  }
+
+  function updateTransitFilterAvailability() {
+    const filtersAvailable =
+      !IS_PUBLIC_DATA ||
+      (["limited", "loaded"].includes(transitLoadState) &&
+        transitCandidateStops.length > 0);
+    $$('[data-transit-filter="true"]').forEach((control) => {
+      control.disabled = !filtersAvailable;
+    });
+    $("#reset-transit-filters").disabled =
+      activeTransitFilterCount() === 0;
+  }
+
+  function renderTransitFilterStatus(results) {
+    const candidateStops = transitCandidateStops.filter(matchesExtent);
+    const filteredCandidates = candidateStops.filter(matchesStopFilters);
+    const activeCount = activeTransitFilterCount();
+    elements.transitFilterActive.textContent = `${activeCount} active`;
+    elements.transitRadiusFilterHelp.textContent =
+      `Keep only each facility's closest stops that are within ${formatDistance(state.radius)}.`;
+
+    if (IS_PUBLIC_DATA && transitLoadState === "zoom") {
+      elements.transitFilterCount.textContent =
+        `Zoom to level ${TRANSIT_MIN_ZOOM}+ to load transit filter options.`;
+    } else if (IS_PUBLIC_DATA && transitLoadState === "loading") {
+      elements.transitFilterCount.textContent =
+        "Loading transit candidates for this viewport…";
+    } else if (IS_PUBLIC_DATA && transitLoadState === "error") {
+      elements.transitFilterCount.textContent =
+        "Transit candidates are unavailable for this viewport.";
+    } else {
+      elements.transitFilterCount.textContent =
+        `${filteredCandidates.length.toLocaleString()} of ${candidateStops.length.toLocaleString()} candidates match · ` +
+        `${results.stops.length.toLocaleString()} displayed`;
+    }
+    updateTransitFilterAvailability();
   }
 
   function populateFilterOptions() {
@@ -1085,6 +1186,7 @@
       `${results.metrics.length > 300 ? " · first 300 displayed" : ""}`;
     elements.facilityFilterCount.textContent =
       `${results.metrics.length.toLocaleString()} of ${DATA.facilities.length.toLocaleString()} records shown`;
+    renderTransitFilterStatus(results);
     renderDistribution(results.metrics);
     renderTable(results.metrics);
   }
@@ -2126,6 +2228,8 @@
     Object.entries(state.filters).forEach(([key, value]) => {
       if (key === "inCenter") {
         if (value) parameters.set("inCenter", "yes");
+      } else if (key === "withinRadius") {
+        if (value) parameters.set("withinRadius", "yes");
       } else if (
         value !== "" &&
         !(key === "geocode" && value === "matched")
@@ -2171,6 +2275,7 @@
       "ownership",
       "stationsMax",
       "stationsMin",
+      "stopQuery",
       "stopType",
       "wheelchair",
     ];
@@ -2178,6 +2283,7 @@
       if (parameters.has(key)) state.filters[key] = parameters.get(key);
     });
     state.filters.inCenter = parameters.get("inCenter") === "yes";
+    state.filters.withinRadius = parameters.get("withinRadius") === "yes";
 
     const latitude = Number(parameters.get("lat"));
     const longitude = Number(parameters.get("lng"));
@@ -2224,7 +2330,9 @@
     $("#filter-ownership").value = state.filters.ownership;
     $("#filter-stations-max").value = state.filters.stationsMax;
     $("#filter-stations-min").value = state.filters.stationsMin;
+    $("#filter-stop-query").value = state.filters.stopQuery;
     $("#filter-stop-type").value = state.filters.stopType;
+    $("#filter-within-radius").checked = state.filters.withinRadius;
     $("#filter-wheelchair").value = state.filters.wheelchair;
     updateMapReadout();
   }
@@ -2287,13 +2395,27 @@
       ownership: "",
       stationsMax: "",
       stationsMin: "",
+      stopQuery: "",
       stopType: "",
+      withinRadius: false,
       wheelchair: "",
     };
     syncControlsFromState();
     renderAll();
     updateUrl();
     showNotice("All filters were reset to Phase 1 defaults.");
+  }
+
+  function resetTransitFilters() {
+    state.filters.agency = "";
+    state.filters.stopQuery = "";
+    state.filters.stopType = "";
+    state.filters.wheelchair = "";
+    state.filters.withinRadius = false;
+    syncControlsFromState();
+    renderAll();
+    updateUrl();
+    showNotice("Transit filters were cleared.");
   }
 
   function csvCell(value) {
@@ -2439,11 +2561,23 @@
       applySelectedState(elements.stateSelect.value);
     });
 
-    $("#filters-form").addEventListener("change", updateFilterState);
+    $("#filters-form").addEventListener("change", () => {
+      window.clearTimeout(filterInputTimer);
+      updateFilterState();
+    });
     $("#filters-form").addEventListener("input", (event) => {
-      if (event.target.type === "number") updateFilterState();
+      if (event.target.type === "number") {
+        updateFilterState();
+      } else if (event.target.id === "filter-stop-query") {
+        window.clearTimeout(filterInputTimer);
+        filterInputTimer = window.setTimeout(updateFilterState, 180);
+      }
     });
     $("#reset-filters").addEventListener("click", resetFilters);
+    $("#reset-transit-filters").addEventListener(
+      "click",
+      resetTransitFilters,
+    );
 
     $$("[data-sort]").forEach((button) => {
       button.addEventListener("click", () => {
