@@ -443,6 +443,57 @@
     };
   }
 
+  function calculateSingleFacilityHeatmapSummary(
+    facility,
+    comparisonFacilities,
+  ) {
+    if (
+      !facility ||
+      !Number.isFinite(facility.lat) ||
+      !Number.isFinite(facility.lng)
+    ) {
+      return { lowerDistance: null, points: [], upperDistance: null };
+    }
+
+    let nearestDistance = Number.POSITIVE_INFINITY;
+    let nearestFacility = null;
+    comparisonFacilities.forEach((candidate) => {
+      const sameFacility =
+        candidate === facility ||
+        (candidate.ccn && facility.ccn && candidate.ccn === facility.ccn);
+      if (
+        sameFacility ||
+        !Number.isFinite(candidate.lat) ||
+        !Number.isFinite(candidate.lng)
+      ) {
+        return;
+      }
+      const candidateDistance = distanceMeters(facility, candidate);
+      if (candidateDistance < nearestDistance) {
+        nearestDistance = candidateDistance;
+        nearestFacility = candidate;
+      }
+    });
+
+    const comparisonUnavailable = !nearestFacility;
+    const distance = comparisonUnavailable ? null : nearestDistance;
+    return {
+      lowerDistance: distance,
+      points: [
+        {
+          ccn: facility.ccn,
+          comparisonUnavailable,
+          lat: facility.lat,
+          lng: facility.lng,
+          nearestDistance: distance,
+          nearestFacilityName: nearestFacility?.name || "",
+          normalizedDistance: comparisonUnavailable ? 1 : 0,
+        },
+      ],
+      upperDistance: distance,
+    };
+  }
+
   function heatmapColor(normalizedDistance) {
     const green = [25, 135, 84];
     const yellow = [242, 201, 76];
@@ -489,10 +540,9 @@
     return {
       ...summary,
       points: summary.points.map((point) => {
-        const bandIndex = heatmapBandIndexForDistance(
-          point.nearestDistance,
-          meterBreaks,
-        );
+        const bandIndex = Number.isFinite(point.nearestDistance)
+          ? heatmapBandIndexForDistance(point.nearestDistance, meterBreaks)
+          : 4;
         return {
           ...point,
           normalizedDistance: (bandIndex + 0.5) / 5,
@@ -1830,8 +1880,21 @@
       heatmapFacilitiesCache = facilities;
       heatmapSummaryCache = calculateNearestFacilityDistances(facilities);
     }
+    const mappableFacilities = facilities.filter(
+      (facility) =>
+        Number.isFinite(facility.lat) && Number.isFinite(facility.lng),
+    );
+    const heatmapSummary =
+      state.heatmapScale.mode === "meters" &&
+      !heatmapSummaryCache?.points.length &&
+      mappableFacilities.length === 1
+        ? calculateSingleFacilityHeatmapSummary(
+            mappableFacilities[0],
+            DATA.facilities,
+          )
+        : heatmapSummaryCache;
     const scaledSummary = applyHeatmapScale(
-      heatmapSummaryCache,
+      heatmapSummary,
       state.heatmapScale.mode,
       state.heatmapScale.meterBreaks,
     );
@@ -1843,8 +1906,11 @@
     }
 
     if (state.heatmapScale.mode === "meters") {
-      elements.centerDistanceHeatmapScale.textContent =
-        `Fixed meter ranges · red above ${state.heatmapScale.meterBreaks[3].toLocaleString()} m`;
+      elements.centerDistanceHeatmapScale.textContent = scaledSummary.points.some(
+        (point) => point.comparisonUnavailable,
+      )
+        ? "Fixed meter ranges · no comparison center available; shown as very long"
+        : `Fixed meter ranges · red above ${state.heatmapScale.meterBreaks[3].toLocaleString()} m`;
     } else {
       elements.centerDistanceHeatmapScale.textContent =
         `Relative scale: green ≤ ${formatDistance(scaledSummary.lowerDistance)} · ` +
@@ -1902,7 +1968,9 @@
             position: { lat: facility.lat, lng: facility.lng },
             selected: state.selectedFacility?.ccn === facility.ccn,
             title: heatmapPoint
-              ? `${facility.name}. Nearest other dialysis center: ${formatDistance(heatmapPoint.nearestDistance)}.`
+              ? heatmapPoint.comparisonUnavailable
+                ? `${facility.name}. No other dialysis center is available for comparison.`
+                : `${facility.name}. Nearest other dialysis center: ${formatDistance(heatmapPoint.nearestDistance)}.`
               : facility.name,
           });
         });
@@ -2687,6 +2755,7 @@
     applyHeatmapScale,
     calculateResults,
     calculateNearestFacilityDistances,
+    calculateSingleFacilityHeatmapSummary,
     distanceMeters,
     exportCsv,
     formatDistance,

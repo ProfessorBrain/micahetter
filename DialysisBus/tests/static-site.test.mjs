@@ -224,6 +224,7 @@ test("client script implements every anticipated local workflow", async () => {
     "AdvancedMarkerElement",
     "loadTransitStopsForViewport",
     "calculateNearestFacilityDistances",
+    "calculateSingleFacilityHeatmapSummary",
     "applyHeatmapScale",
     "heatmapBandIndexForDistance",
     "validateHeatmapMeterBreaks",
@@ -429,6 +430,39 @@ test("spatial calculations keep closest stops and center distances correct", asy
   );
   assert.equal(
     meterSummary.points.find((point) => point.ccn === "C").normalizedDistance,
+    0.9,
+  );
+  const singletonFacility = { ccn: "ONLY", lat: 0, lng: 0, name: "Only" };
+  const singletonSummary = explorer.calculateSingleFacilityHeatmapSummary(
+    singletonFacility,
+    [
+      singletonFacility,
+      { ccn: "NEAR", lat: 0, lng: 0.01, name: "Nearby" },
+    ],
+  );
+  assert.equal(singletonSummary.points.length, 1);
+  assert.equal(singletonSummary.points[0].nearestFacilityName, "Nearby");
+  assert.ok(singletonSummary.points[0].nearestDistance > 1100);
+  assert.equal(
+    explorer.applyHeatmapScale(
+      singletonSummary,
+      "meters",
+      [1000, 2000, 3000, 4000],
+    ).points[0].normalizedDistance,
+    0.3,
+  );
+  const unavailableSingleton = explorer.calculateSingleFacilityHeatmapSummary(
+    singletonFacility,
+    [singletonFacility],
+  );
+  assert.equal(unavailableSingleton.points.length, 1);
+  assert.equal(unavailableSingleton.points[0].comparisonUnavailable, true);
+  assert.equal(
+    explorer.applyHeatmapScale(
+      unavailableSingleton,
+      "meters",
+      [1000, 2000, 3000, 4000],
+    ).points[0].normalizedDistance,
     0.9,
   );
 });

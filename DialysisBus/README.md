@@ -65,7 +65,9 @@ unchanged at `https://<account>.github.io/<repository>/`.
   colors each visible facility by its nearest other visible facility using five
   bands: green, green-yellow, yellow, yellow-red, and red from shortest to
   longest distance. Users choose the relative or meter scale in Layers and edit
-  the four fixed meter cutoffs from the top-bar Settings popup.
+  the four fixed meter cutoffs from the top-bar Settings popup. In meter mode,
+  a lone visible facility uses its nearest other published, geocoded facility
+  so the heatmap remains visible.
 - State selection, current viewport analysis, national reset, zoom controls,
   and current-location navigation.
 - URL restoration for map center, zoom, state, radius, layers, heatmap scale,
