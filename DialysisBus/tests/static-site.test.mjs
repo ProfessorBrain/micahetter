@@ -90,6 +90,7 @@ test("root entry point contains the complete explorer surfaces", async () => {
   assert.match(methodsDialog, /No care or transportation advice/);
   assert.doesNotMatch(methodsDialog, /Browser storage/);
   assert.doesNotMatch(methodsDialog, /Permitted use/);
+  assert.doesNotMatch(methodsDialog, /Feedback contact/);
   assert.doesNotMatch(methodsDialog, /class="policy-links"/);
   assert.doesNotMatch(html, /href="\.\/accessibility\.html"/);
   assert.doesNotMatch(html, /href="\.\/privacy\.html"/);
