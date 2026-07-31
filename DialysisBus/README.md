@@ -20,9 +20,10 @@ python -m http.server 8080
 
 Then open `http://localhost:8080`.
 
-The committed `config.js` contains the public demonstration Google Maps browser
-key. A separate production key is not required for this site. Browser keys are
-visible to visitors by design, so restrict the key in Google Cloud to:
+The committed `config.js` reconstructs the public demonstration Google Maps
+browser key from encoded fragments so it is not exposed as plain text in the
+repository. This is obfuscation, not secrecy: browser keys remain visible in
+network requests by design, so restrict the key in Google Cloud to:
 
 - Maps JavaScript API
 - Geocoding API, when arbitrary address searches are required

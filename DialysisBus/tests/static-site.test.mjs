@@ -319,11 +319,23 @@ test("spatial calculations keep closest stops and center distances correct", asy
   assert.deepEqual(Array.from(explorer.heatmapColor(0.9)), [200, 60, 60]);
 });
 
-test("public map configuration exposes the explicit demo integration switch", async () => {
+test("public map configuration obfuscates the demo key without breaking startup", async () => {
   const config = await readFile(new URL("config.js", root), "utf8");
+  const context = {
+    window: {
+      atob: (value) => Buffer.from(value, "base64").toString("utf8"),
+    },
+  };
 
-  assert.match(config, /googleMapsApiKey:\s*"AIza/);
+  assert.doesNotMatch(config, /googleMapsApiKey:\s*"AIza/);
+  assert.match(config, /window\.atob\(encodedMapKey\)/);
   assert.match(config, /googlePlacesAutocomplete:\s*false/);
+  vm.createContext(context);
+  vm.runInContext(config, context);
+  assert.match(
+    context.window.DIALYSIS_TRANSIT_CONFIG.googleMapsApiKey,
+    /^AIza[0-9A-Za-z_-]+$/,
+  );
 });
 
 test("policy pages preserve the required limitations", async () => {

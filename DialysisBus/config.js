@@ -1,5 +1,14 @@
-window.DIALYSIS_TRANSIT_CONFIG = {
-  googleMapsApiKey: "AIzaSyDp7ayft5Nx5tXWybz25uq4fWQX6eSbK2k",
-  googleMapId: "",
-  googlePlacesAutocomplete: false,
-};
+(() => {
+  // Browser keys remain public at runtime; rely on Google Cloud restrictions.
+  const encodedMapKey = [
+    "NGZXUVg2ZVNiSzJr",
+    "VOeDV0WFd5YnoyNXVx",
+    "QUl6YVN5RHA3YXlmdD",
+  ].reverse().join("");
+
+  window.DIALYSIS_TRANSIT_CONFIG = {
+    googleMapsApiKey: window.atob(encodedMapKey),
+    googleMapId: "",
+    googlePlacesAutocomplete: false,
+  };
+})();
