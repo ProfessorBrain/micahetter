@@ -100,6 +100,7 @@ data/source-manifest.json  Snapshot provenance and record counts
 scripts/build-public-data.mjs  Reproducible CMS/Census refresh
 config.js              Published Google Maps browser configuration
 config.example.js      Configuration template
+favicon.png            Site favicon
 accessibility.html     Accessibility statement
 privacy.html           Privacy notice
 terms.html             Terms and research-use limitations

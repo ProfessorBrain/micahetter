@@ -6,12 +6,17 @@ import vm from "node:vm";
 const root = new URL("../", import.meta.url);
 
 test("root entry point contains the complete explorer surfaces", async () => {
-  const [html, styles] = await Promise.all([
+  const [html, styles, favicon] = await Promise.all([
     readFile(new URL("index.html", root), "utf8"),
     readFile(new URL("styles.css", root), "utf8"),
+    readFile(new URL("favicon.png", root)),
   ]);
 
   assert.match(html, /<title>Dialysis &amp; Transit Explorer<\/title>/);
+  assert.match(html, /rel="icon" href="\.\/favicon\.png" type="image\/png"/);
+  assert.deepEqual(Array.from(favicon.subarray(0, 8)), [
+    137, 80, 78, 71, 13, 10, 26, 10,
+  ]);
   assert.match(html, /href="\.\/styles\.css"/);
   assert.match(html, /src="\.\/config\.js"/);
   assert.match(html, /src="\.\/public-data\.js"/);
@@ -455,9 +460,12 @@ test("policy pages preserve the required limitations", async () => {
   ]);
 
   assert.match(accessibility, /table equivalents/i);
+  assert.match(accessibility, /href="\.\/favicon\.png"/);
   assert.match(accessibility, /Settings and Data &amp; Methods open as modal dialogs/i);
   assert.match(accessibility, /heatmap is optional and supplementary/i);
   assert.match(privacy, /does not save or transmit/i);
+  assert.match(privacy, /href="\.\/favicon\.png"/);
   assert.match(terms, /Straight-line proximity does not establish/i);
   assert.match(terms, /public CMS facility records/i);
+  assert.match(terms, /href="\.\/favicon\.png"/);
 });
