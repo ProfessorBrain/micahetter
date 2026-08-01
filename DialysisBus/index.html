@@ -29,9 +29,9 @@
         <div class="brand">
           <span class="brand-mark" aria-hidden="true"><span></span></span>
           <div>
-            <p class="brand-title">
-              Dialysis Bus: A <strong>Nationwide</strong>
-              <strong>Dialysis &amp; Transit Public Data Explorer</strong>
+            <h1 class="brand-title">Dialysis Bus</h1>
+            <p class="brand-subtitle">
+              A Nationwide Dialysis &amp; Transit Public Data Explorer
             </p>
           </div>
         </div>
@@ -72,6 +72,48 @@
           aria-label="Explorer controls"
         >
           <div class="panel-heading">
+            <nav
+              aria-label="Explorer sections"
+              class="panel-tabs"
+              id="panel-tabs"
+              role="tablist"
+            >
+              <button
+                aria-controls="panel-layers"
+                aria-selected="true"
+                class="is-active"
+                data-tab="layers"
+                id="tab-layers"
+                role="tab"
+                tabindex="0"
+                type="button"
+              >
+                Layers
+              </button>
+              <button
+                aria-controls="panel-filters"
+                aria-selected="false"
+                data-tab="filters"
+                id="tab-filters"
+                role="tab"
+                tabindex="-1"
+                type="button"
+              >
+                Filters
+              </button>
+              <button
+                aria-controls="panel-analytics"
+                aria-selected="false"
+                data-tab="analytics"
+                id="tab-analytics"
+                role="tab"
+                tabindex="-1"
+                type="button"
+              >
+                Analytics
+              </button>
+            </nav>
+
             <button
               aria-label="Collapse explorer controls"
               class="panel-close"
@@ -81,48 +123,6 @@
               ‹
             </button>
           </div>
-
-          <nav
-            aria-label="Explorer sections"
-            class="panel-tabs"
-            id="panel-tabs"
-            role="tablist"
-          >
-            <button
-              aria-controls="panel-layers"
-              aria-selected="true"
-              class="is-active"
-              data-tab="layers"
-              id="tab-layers"
-              role="tab"
-              tabindex="0"
-              type="button"
-            >
-              Layers
-            </button>
-            <button
-              aria-controls="panel-filters"
-              aria-selected="false"
-              data-tab="filters"
-              id="tab-filters"
-              role="tab"
-              tabindex="-1"
-              type="button"
-            >
-              Filters
-            </button>
-            <button
-              aria-controls="panel-analytics"
-              aria-selected="false"
-              data-tab="analytics"
-              id="tab-analytics"
-              role="tab"
-              tabindex="-1"
-              type="button"
-            >
-              Analytics
-            </button>
-          </nav>
 
           <div class="panel-content">
             <section
@@ -881,14 +881,6 @@
             <span aria-hidden="true">›</span>
             Explore
           </button>
-
-          <div class="map-context">
-            <span class="context-dot" aria-hidden="true"></span>
-            <span>
-              <strong id="region-readout">Current map viewport</strong>
-              <small id="map-state-readout">400 m threshold · zoom 3</small>
-            </span>
-          </div>
 
           <div class="map-controls" aria-label="Map controls">
             <button aria-label="Zoom in" id="zoom-in" type="button">+</button>

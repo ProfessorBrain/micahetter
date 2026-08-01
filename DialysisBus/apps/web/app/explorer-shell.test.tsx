@@ -14,8 +14,17 @@ describe("ExplorerShell", () => {
   it("starts with both map layers enabled and no threshold controls", () => {
     render(<ExplorerShell />);
 
-    expect(document.querySelector(".brand-title")).toHaveTextContent(
-      "Dialysis Bus: A Nationwide Dialysis & Transit Public Data Explorer",
+    expect(document.querySelector(".brand-title")).toHaveTextContent("Dialysis Bus");
+    expect(document.querySelector(".brand-subtitle")).toHaveTextContent(
+      "A Nationwide Dialysis & Transit Public Data Explorer",
+    );
+    expect(document.querySelector(".map-context")).not.toBeInTheDocument();
+    const sectionNavigation = screen.getByRole("navigation", {
+      name: "Explorer sections",
+    });
+    expect(sectionNavigation.parentElement).toHaveClass("panel-heading");
+    expect(sectionNavigation.parentElement).toContainElement(
+      screen.getByRole("button", { name: "Collapse explorer controls" }),
     );
     expect(screen.getByLabelText("Dialysis facilities")).toBeChecked();
     expect(screen.getByLabelText("Public transit stops")).toBeChecked();

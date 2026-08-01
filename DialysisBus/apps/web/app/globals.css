@@ -88,14 +88,19 @@ select:focus-visible {
 .brand-title {
   font-family: Georgia, "Times New Roman", serif;
   font-size: 18px;
-  font-weight: 400;
+  font-weight: 700;
   letter-spacing: -0.02em;
-  line-height: 1.1;
+  line-height: 1;
   margin: 0;
 }
 
-.brand-title strong {
-  font-weight: 800;
+.brand-subtitle {
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.025em;
+  line-height: 1.2;
+  margin: 4px 0 0;
 }
 
 .brand-mark {
@@ -300,11 +305,11 @@ select:focus-visible {
 }
 
 .panel-heading {
-  align-items: flex-start;
+  align-items: stretch;
+  border-bottom: 1px solid var(--line);
   display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-  padding: 5px 8px 0;
+  gap: 4px;
+  padding: 0 8px 0 10px;
 }
 
 .eyebrow {
@@ -318,6 +323,7 @@ select:focus-visible {
 }
 
 .panel-close {
+  align-self: center;
   align-items: center;
   background: #edf1ee;
   border: 0;
@@ -333,10 +339,11 @@ select:focus-visible {
 }
 
 .panel-tabs {
-  border-bottom: 1px solid var(--line);
   display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
   overflow-x: auto;
-  padding: 0 15px;
+  padding: 0;
   scrollbar-width: none;
 }
 
@@ -345,11 +352,12 @@ select:focus-visible {
   border: 0;
   border-bottom: 2px solid transparent;
   color: #708083;
-  flex: 0 0 auto;
-  font-size: 10px;
+  flex: 1 1 0;
+  font-size: 9px;
   font-weight: 800;
   letter-spacing: 0.035em;
-  padding: 11px 8px 10px;
+  min-width: 0;
+  padding: 11px 4px 10px;
   white-space: nowrap;
 }
 
@@ -778,45 +786,12 @@ select:focus-visible {
   top: 33%;
 }
 
-.map-context,
 .preview-label,
 .map-legend,
 .map-controls,
 .panel-open {
   position: absolute;
   z-index: 5;
-}
-
-.map-context {
-  align-items: center;
-  background: rgba(252, 251, 247, 0.95);
-  border: 1px solid rgba(185, 199, 194, 0.9);
-  border-radius: 8px;
-  box-shadow: 0 6px 22px rgba(16, 45, 49, 0.12);
-  display: flex;
-  gap: 9px;
-  left: 18px;
-  padding: 9px 12px;
-  top: 18px;
-}
-
-.context-dot {
-  background: var(--teal);
-  border: 3px solid var(--teal-pale);
-  border-radius: 50%;
-  height: 12px;
-  width: 12px;
-}
-
-.map-context strong {
-  display: block;
-  font-size: 11px;
-}
-
-.map-context span {
-  color: var(--muted);
-  font-size: 9px;
-  line-height: 1.35;
 }
 
 .preview-label {
@@ -986,7 +961,11 @@ select:focus-visible {
   }
 
   .brand-title {
-    font-size: 14px;
+    font-size: 16px;
+  }
+
+  .brand-subtitle {
+    font-size: 7.5px;
   }
 
   .brand-mark {
@@ -998,6 +977,7 @@ select:focus-visible {
   .location-search {
     grid-column: 1 / -1;
     grid-row: 2;
+    height: 44px;
     max-width: none;
   }
 
@@ -1022,7 +1002,7 @@ select:focus-visible {
     border-right: 0;
     border-top: 1px solid var(--line);
     box-shadow: 0 -16px 40px rgba(16, 45, 49, 0.16);
-    flex: 0 0 45%;
+    flex: 0 1 45%;
     opacity: 1;
     overflow: hidden;
     pointer-events: auto;
@@ -1036,11 +1016,16 @@ select:focus-visible {
   }
 
   .panel-heading {
-    padding: 2px 8px 0;
+    padding: 0 8px;
   }
 
   .panel-content {
     padding: 2px 17px 17px;
+  }
+
+  .select-wrap select,
+  .primary-action {
+    min-height: 44px;
   }
 
   .panel-footer {
@@ -1050,11 +1035,6 @@ select:focus-visible {
   .map-stage {
     flex: 1 1 auto;
     min-height: 270px;
-  }
-
-  .map-context {
-    left: 10px;
-    top: 10px;
   }
 
   .preview-label {
@@ -1072,8 +1052,8 @@ select:focus-visible {
   }
 
   .panel-open {
-    bottom: 20px;
-    top: auto;
+    bottom: auto;
+    top: 10px;
   }
 }
 

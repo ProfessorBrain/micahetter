@@ -270,14 +270,12 @@
     heatmapRangeInputs: $$('[data-heatmap-break]'),
     heatmapRangeLabels: $$('[data-heatmap-range-label]'),
     mapLoading: $("#map-loading"),
-    mapStateReadout: $("#map-state-readout"),
     methodsDialog: $("#methods-dialog"),
     methodsDialogClose: $("#methods-dialog-close"),
     noticeBar: $("#notice-bar"),
     noticeText: $("#notice-text"),
     panelClose: $("#panel-close"),
     panelOpen: $("#panel-open"),
-    regionReadout: $("#region-readout"),
     resultCount: $("#result-count"),
     settingsDialog: $("#settings-dialog"),
     settingsDialogClose: $("#settings-dialog-close"),
@@ -884,11 +882,6 @@
     renderMapOverlays();
   }
 
-  function updateMapReadout() {
-    elements.mapStateReadout.textContent =
-      `${formatDistance(state.radius)} threshold · zoom ${Math.round(state.zoom)}`;
-  }
-
   function updateRadius(nextRadius) {
     if (!Number.isFinite(nextRadius) || nextRadius < 100 || nextRadius > 5000) {
       showNotice("Custom radius must be between 100 and 5,000 meters.");
@@ -896,7 +889,6 @@
     }
 
     state.radius = Math.round(nextRadius);
-    updateMapReadout();
     renderAll();
     updateSelectionOverlays();
     updateUrl();
@@ -907,7 +899,6 @@
     state.selectedState = stateCode;
     elements.stateSelect.value = stateCode;
     const view = STATE_VIEWS[stateCode] || NATIONAL_VIEW;
-    elements.regionReadout.textContent = view.name;
 
     if (IS_PUBLIC_DATA && stateCode) {
       const stateFacilities = DATA.facilities.filter(
@@ -937,7 +928,6 @@
         googleMap.setZoom(view.zoom);
       }
     }
-    updateMapReadout();
     renderAll();
     updateUrl();
   }
@@ -1977,7 +1967,6 @@
           ) {
             state.selectedState = "";
             elements.stateSelect.value = "";
-            elements.regionReadout.textContent = "Current map viewport";
           }
           if (
             IS_PUBLIC_DATA &&
@@ -1986,7 +1975,6 @@
           ) {
             clearRuntimeTransitStops("zoom");
           }
-          updateMapReadout();
           if (IS_PUBLIC_DATA || !state.selectedState) renderAll();
           else renderMapOverlays();
           updateUrl();
@@ -2152,9 +2140,6 @@
 
   function syncControlsFromState() {
     elements.stateSelect.value = state.selectedState;
-    elements.regionReadout.textContent = state.selectedState
-      ? STATE_VIEWS[state.selectedState].name
-      : NATIONAL_VIEW.name;
     $$("[data-layer-toggle]").forEach((toggle) => {
       toggle.checked = state.layers[toggle.dataset.layerToggle];
     });
@@ -2172,7 +2157,6 @@
     $("#filter-stop-type").value = state.filters.stopType;
     $("#filter-within-radius").checked = state.filters.withinRadius;
     $("#filter-wheelchair").value = state.filters.wheelchair;
-    updateMapReadout();
   }
 
   function useCurrentLocation() {
@@ -2196,7 +2180,6 @@
           googleMap.setCenter(center);
           googleMap.setZoom(13);
         }
-        elements.regionReadout.textContent = "Current location viewport";
         showNotice("Map moved to your current location.");
         updateUrl();
       },
@@ -2498,14 +2481,12 @@
     $("#zoom-in").addEventListener("click", () => {
       state.zoom = Math.min(22, state.zoom + 1);
       if (googleMap) googleMap.setZoom(state.zoom);
-      updateMapReadout();
       renderMapOverlays();
       updateUrl();
     });
     $("#zoom-out").addEventListener("click", () => {
       state.zoom = Math.max(0, state.zoom - 1);
       if (googleMap) googleMap.setZoom(state.zoom);
-      updateMapReadout();
       renderMapOverlays();
       updateUrl();
     });

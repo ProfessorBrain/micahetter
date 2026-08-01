@@ -15,7 +15,11 @@ test("root entry point contains the complete explorer surfaces", async () => {
   assert.match(html, /<title>Dialysis &amp; Transit Explorer<\/title>/);
   assert.match(
     html,
-    /<p class="brand-title">\s*Dialysis Bus: A <strong>Nationwide<\/strong>\s*<strong>Dialysis &amp; Transit Public Data Explorer<\/strong>\s*<\/p>/,
+    /<h1 class="brand-title">Dialysis Bus<\/h1>/,
+  );
+  assert.match(
+    html,
+    /<p class="brand-subtitle">\s*A Nationwide Dialysis &amp; Transit Public Data Explorer\s*<\/p>/,
   );
   assert.match(html, /rel="icon" href="\.\/favicon\.png" type="image\/png"/);
   assert.deepEqual(Array.from(favicon.subarray(0, 8)), [
@@ -30,6 +34,10 @@ test("root entry point contains the complete explorer surfaces", async () => {
   assert.match(html, /id="panel-layers"/);
   assert.match(html, /id="panel-filters"/);
   assert.match(html, /id="panel-analytics"/);
+  assert.match(
+    html,
+    /<div class="panel-heading">[\s\S]*?id="panel-tabs"[\s\S]*?id="panel-close"[\s\S]*?<\/div>/,
+  );
   assert.match(html, /<dialog[^>]+id="methods-dialog"/s);
   assert.match(html, /id="methods-dialog-close"/);
   assert.match(html, /id="settings-shortcut"/);
@@ -40,6 +48,9 @@ test("root entry point contains the complete explorer surfaces", async () => {
   assert.doesNotMatch(html, /Public data snapshot/);
   assert.doesNotMatch(html, /id="snapshot-readout"/);
   assert.doesNotMatch(html, /id="map-connection-status"/);
+  assert.doesNotMatch(html, /class="map-context"/);
+  assert.doesNotMatch(html, /id="region-readout"/);
+  assert.doesNotMatch(html, /id="map-state-readout"/);
   assert.doesNotMatch(html, /Google Maps connected/);
   assert.doesNotMatch(html, /id="map-setup"/);
   assert.doesNotMatch(html, /id="map-setup-backdrop"/);
@@ -84,6 +95,19 @@ test("root entry point contains the complete explorer surfaces", async () => {
   assert.match(html, /data-layer-toggle="transitDistanceHeatmap"/);
   assert.match(html, /id="transit-distance-heatmap-legend"/);
   assert.match(html, /Distance to nearest eligible transit stop/);
+  assert.match(
+    styles,
+    /\.heatmap-gradient\s*\{[\s\S]*?#198754 0% 16%,[\s\S]*?#86a850 24% 36%,[\s\S]*?#f2c94c 44% 56%,[\s\S]*?#dd8344 64% 76%,[\s\S]*?#c83c3c 84% 100%/,
+  );
+  assert.match(styles, /@media \(max-width: 760px\)[\s\S]*?flex: 0 1 52%;/);
+  assert.match(
+    styles,
+    /@media \(max-width: 760px\)[\s\S]*?\.text-button[\s\S]*?min-height: 44px;/,
+  );
+  assert.match(
+    styles,
+    /@media \(max-width: 360px\)[\s\S]*?\.map-legend\s*\{[\s\S]*?bottom: 58px;/,
+  );
   assert.match(html, /name="heatmap-scale-mode"/);
   assert.match(html, /value="relative"/);
   assert.match(html, /value="meters"/);

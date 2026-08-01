@@ -228,9 +228,9 @@ export function ExplorerShell() {
             <span />
           </span>
           <div>
-            <p className="brand-title">
-              Dialysis Bus: A <strong>Nationwide</strong>{" "}
-              <strong>Dialysis & Transit Public Data Explorer</strong>
+            <h1 className="brand-title">Dialysis Bus</h1>
+            <p className="brand-subtitle">
+              A Nationwide Dialysis & Transit Public Data Explorer
             </p>
           </div>
         </div>
@@ -295,6 +295,21 @@ export function ExplorerShell() {
       <div className={`workspace ${panelOpen ? "" : "workspace--panel-closed"}`}>
         <aside className="side-panel" aria-label="Explorer controls">
           <div className="panel-heading">
+            <nav aria-label="Explorer sections" className="panel-tabs">
+              {TABS.map((tab) => (
+                <button
+                  aria-selected={activeTab === tab.id}
+                  className={activeTab === tab.id ? "is-active" : ""}
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  role="tab"
+                  type="button"
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </nav>
+
             <button
               aria-label="Collapse explorer controls"
               className="panel-close"
@@ -304,21 +319,6 @@ export function ExplorerShell() {
               ‹
             </button>
           </div>
-
-          <nav aria-label="Explorer sections" className="panel-tabs">
-            {TABS.map((tab) => (
-              <button
-                aria-selected={activeTab === tab.id}
-                className={activeTab === tab.id ? "is-active" : ""}
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                role="tab"
-                type="button"
-              >
-                {tab.label}
-              </button>
-            ))}
-          </nav>
 
           <div className="panel-content">
             {activeTab === "layers" ? (
@@ -498,14 +498,6 @@ export function ExplorerShell() {
               Explore
             </button>
           ) : null}
-
-          <div className="map-context">
-            <span className="context-dot" aria-hidden="true" />
-            <span>
-              <strong>{selectedState || "United States"}</strong>
-              {PROXIMITY_RADIUS_METERS.toLocaleString()} m threshold · zoom {zoom}
-            </span>
-          </div>
 
           <div className="preview-label">
             <span>{mapStatus === "ready" ? "Basemap ready" : "Interface preview"}</span>

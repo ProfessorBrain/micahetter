@@ -121,14 +121,19 @@ a:focus-visible,
 .brand-title {
   font-family: Georgia, "Times New Roman", serif;
   font-size: 18px;
-  font-weight: 400;
+  font-weight: 700;
   letter-spacing: -0.02em;
-  line-height: 1.1;
+  line-height: 1;
   margin: 0;
 }
 
-.brand-title strong {
-  font-weight: 800;
+.brand-subtitle {
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.025em;
+  line-height: 1.2;
+  margin: 4px 0 0;
 }
 
 .brand-mark {
@@ -239,11 +244,12 @@ a:focus-visible,
 }
 
 .panel-heading {
-  align-items: flex-start;
+  align-items: stretch;
+  border-bottom: 1px solid var(--line);
   display: flex;
   flex: 0 0 auto;
-  justify-content: flex-end;
-  padding: 5px 8px 0;
+  gap: 4px;
+  padding: 0 8px 0 12px;
 }
 
 .eyebrow {
@@ -255,9 +261,11 @@ a:focus-visible,
 }
 
 .panel-close {
+  align-self: center;
   background: transparent;
   border: 0;
   color: var(--muted);
+  flex: 0 0 44px;
   font-size: 27px;
   height: 44px;
   line-height: 1;
@@ -265,11 +273,10 @@ a:focus-visible,
 }
 
 .panel-tabs {
-  border-bottom: 1px solid var(--line);
   display: grid;
-  flex: 0 0 auto;
+  flex: 1 1 auto;
   grid-template-columns: repeat(3, 1fr);
-  padding: 0 12px;
+  min-width: 0;
 }
 
 .panel-tabs button {
@@ -1068,7 +1075,6 @@ td small {
   position: absolute;
 }
 
-.map-context,
 .map-legend,
 .map-controls,
 .map-attribution,
@@ -1076,44 +1082,6 @@ td small {
 .map-loading {
   position: absolute;
   z-index: 5;
-}
-
-.map-context {
-  align-items: center;
-  background: rgba(252, 251, 247, 0.96);
-  border: 1px solid rgba(185, 199, 194, 0.9);
-  border-radius: 8px;
-  box-shadow: 0 6px 22px rgba(16, 45, 49, 0.12);
-  display: flex;
-  gap: 9px;
-  left: 18px;
-  max-width: 245px;
-  padding: 9px 12px;
-  top: 18px;
-}
-
-.context-dot {
-  background: var(--teal);
-  border: 3px solid var(--teal-pale);
-  border-radius: 50%;
-  flex: 0 0 auto;
-  height: 12px;
-  width: 12px;
-}
-
-.map-context strong,
-.map-context small {
-  display: block;
-}
-
-.map-context strong {
-  font-size: 10px;
-}
-
-.map-context small {
-  color: var(--muted);
-  font-size: 8px;
-  line-height: 1.35;
 }
 
 .map-controls {
@@ -1202,11 +1170,11 @@ td small {
 .heatmap-gradient {
   background: linear-gradient(
     90deg,
-    #198754 0 20%,
-    #86a850 20% 40%,
-    #f2c94c 40% 60%,
-    #dd8344 60% 80%,
-    #c83c3c 80% 100%
+    #198754 0% 16%,
+    #86a850 24% 36%,
+    #f2c94c 44% 56%,
+    #dd8344 64% 76%,
+    #c83c3c 84% 100%
   );
   border: 1px solid rgba(17, 45, 49, 0.22);
   border-radius: 99px;
@@ -1513,7 +1481,11 @@ td small {
   }
 
   .brand-title {
-    font-size: 14px;
+    font-size: 16px;
+  }
+
+  .brand-subtitle {
+    font-size: 7.5px;
   }
 
   .brand-mark {
@@ -1530,7 +1502,7 @@ td small {
 
   .text-button {
     font-size: 8px;
-    min-height: 36px;
+    min-height: 44px;
     padding: 4px 2px;
   }
 
@@ -1544,7 +1516,7 @@ td small {
     border-right: 0;
     border-top: 1px solid var(--line);
     box-shadow: 0 -16px 40px rgba(16, 45, 49, 0.16);
-    flex: 0 0 52%;
+    flex: 0 1 52%;
     opacity: 1;
     pointer-events: auto;
     z-index: 9;
@@ -1557,22 +1529,35 @@ td small {
   }
 
   .panel-heading {
-    padding: 2px 8px 0;
+    padding: 0 8px 0 10px;
   }
 
   .panel-content {
     padding: 2px 16px 17px;
   }
 
+  .select-wrap select,
+  .filter-text-input,
+  .number-pair input,
+  .heatmap-meter-grid input {
+    height: 44px;
+  }
+
+  .select-wrap::after {
+    top: 16px;
+  }
+
+  .heatmap-mode-options label,
+  .primary-action,
+  .secondary-action,
+  .secondary-action--compact,
+  .export-button {
+    min-height: 44px;
+  }
+
   .map-stage {
     flex: 1 1 auto;
     min-height: 270px;
-  }
-
-  .map-context {
-    left: 9px;
-    max-width: 190px;
-    top: 9px;
   }
 
   .map-controls {
@@ -1596,8 +1581,8 @@ td small {
   }
 
   .panel-open {
-    bottom: 18px;
-    top: auto;
+    bottom: auto;
+    top: 9px;
   }
 
   .methods-dialog {
@@ -1618,8 +1603,10 @@ td small {
   }
 
   .methods-dialog__close {
+    height: 44px;
     right: 10px;
     top: 10px;
+    width: 44px;
   }
 
   .detail-drawer {
@@ -1705,6 +1692,12 @@ td small {
 
   .policy-shell article {
     padding: 25px 20px;
+  }
+}
+
+@media (max-width: 360px) {
+  .map-legend {
+    bottom: 58px;
   }
 }
 
