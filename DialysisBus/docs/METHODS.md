@@ -13,8 +13,11 @@ Provider Data Catalog dataset `23ew-n7w9` and the U.S. Census Geocoder
 `Public_AR_Current` benchmark. The current manifest contains 7,490 CMS records,
 of which 6,672 received mappable Census coordinates. Transit stops are queried
 from the USDOT/BTS National Transit Map ArcGIS feature service for the active
-viewport at zoom level 10 or closer. After applying active transit filters, the
-site selects up to the three closest stops for every visible, filtered facility.
+viewport at zoom level 10 or closer. The published file also stores the
+unfiltered nearest BTS stop and geodesic distance for each mappable facility so
+the heatmap remains available at state and national zoom levels. After applying
+active transit filters at street-level zoom, the site selects up to the three
+closest stops for every visible, filtered facility.
 The displayed transit layer is the deduplicated union of those selections, so
 a stop selected for multiple facilities appears once. Dense responses are
 capped at 2,000 candidates and explicitly ask the user to zoom further.
@@ -51,22 +54,24 @@ operations will calculate nearest-stop distance and counts within 250, 400,
 
 ## Transit-distance heatmap
 
-The optional transit-distance heatmap is calculated entirely in the browser
-from each visible, filtered facility's nearest eligible transit stop. It uses
-the same per-facility closest-stop selection as the Analytics table and detail
-panel, so stop-name/ID, type, wheelchair, agency, and optional active-radius
-filters affect the heatmap consistently. A facility is colored whenever its
-nearest-stop distance is available, including when it is the only visible
-facility.
+The optional transit-distance heatmap is calculated in the browser from each
+visible, filtered facility's nearest eligible transit stop. Below zoom level 10
+and with no transit filter active, it uses the published nationwide unfiltered
+nearest-stop snapshot. At zoom level 10 or closer, runtime viewport selection
+replaces the fallback, so stop-name/ID, type, wheelchair, agency, and optional
+active-radius filters affect the heatmap consistently. A facility is colored
+whenever its nearest-stop distance is available, including at national zoom or
+when it is the only visible facility.
 
 Relative mode uses the 10th and 90th percentiles of the visible nearest-stop
 distances as the green and red endpoints. Meter-range mode applies the four
-configured cutoffs directly to each nearest-stop distance. Both modes use five
-bands: green, a color halfway between green and yellow, yellow, a color halfway
-between yellow and red, and red. Values outside the endpoints are clamped. The
-legend reports the active distances, and facility marker descriptions expose
-the individual nearest eligible transit-stop distance while the layer is
-active.
+configured cutoffs directly to each nearest-stop distance. Its default cutoffs
+are 50, 125, 300, and 3,000 meters, rounded from the nationwide snapshot's
+20th, 40th, 60th, and 80th percentiles. Both modes use five bands: green, a
+color halfway between green and yellow, yellow, a color halfway between yellow
+and red, and red. Values outside the endpoints are clamped. The legend reports
+the active distances, and facility marker descriptions expose the individual
+nearest eligible transit-stop distance while the layer is active.
 
 Relative colors can change when the map extent or filters change. The heatmap
 does not measure travel time, road distance, route availability, schedule

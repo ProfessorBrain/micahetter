@@ -665,7 +665,9 @@
                 <p>
                   The optional transit-distance heatmap colors every visible,
                   filtered dialysis facility by its distance to the nearest
-                  eligible transit stop selected from the active viewport.
+                  eligible transit stop. At low zoom it uses the published
+                  nationwide nearest-stop snapshot; at zoom 10 or closer it
+                  switches to eligible stops selected from the active viewport.
                   Relative mode divides the visible nearest-stop distance scale
                   into five bands. Meter-range mode applies four user-defined
                   cutoffs directly to the nearest-stop distance. Both modes run
@@ -850,9 +852,9 @@
                             inputmode="numeric"
                             max="1000000"
                             min="1"
-                            step="50"
+                            step="1"
                             type="number"
-                            value="500"
+                            value="50"
                           />
                         </label>
                         <label>
@@ -862,9 +864,9 @@
                             inputmode="numeric"
                             max="1000000"
                             min="1"
-                            step="50"
+                            step="1"
                             type="number"
-                            value="1000"
+                            value="125"
                           />
                         </label>
                         <label>
@@ -874,9 +876,9 @@
                             inputmode="numeric"
                             max="1000000"
                             min="1"
-                            step="50"
+                            step="1"
                             type="number"
-                            value="2500"
+                            value="300"
                           />
                         </label>
                         <label>
@@ -886,9 +888,9 @@
                             inputmode="numeric"
                             max="1000000"
                             min="1"
-                            step="50"
+                            step="1"
                             type="number"
-                            value="5000"
+                            value="3000"
                           />
                         </label>
                       </div>
@@ -908,7 +910,7 @@
                         </button>
                       </div>
                       <p id="heatmap-meter-range-help" role="status">
-                        Very long begins above 5,000 m.
+                        Very long begins above 3,000 m.
                       </p>
                     </form>
                   </fieldset>
@@ -928,57 +930,6 @@
             id="google-map"
             aria-label="Interactive Google map of the United States"
           ></div>
-
-          <div class="map-setup-backdrop" id="map-setup-backdrop">
-            <form class="map-setup" id="map-setup">
-              <span class="eyebrow">Map configuration</span>
-              <h2>Connect the Google basemap</h2>
-              <p>
-                The hosted site loads its key from GitHub configuration. For
-                local use, enter a referrer-restricted browser key here.
-              </p>
-
-              <label for="map-api-key">Maps JavaScript API key</label>
-              <div class="credential-field">
-                <input
-                  autocomplete="off"
-                  id="map-api-key"
-                  name="apiKey"
-                  placeholder="AIza…"
-                  required
-                  spellcheck="false"
-                  type="password"
-                />
-                <button
-                  aria-label="Show API key"
-                  id="toggle-api-key"
-                  type="button"
-                >
-                  Show
-                </button>
-              </div>
-
-              <label for="map-id">
-                Vector Map ID <span>(optional locally)</span>
-              </label>
-              <input
-                autocomplete="off"
-                id="map-id"
-                name="mapId"
-                placeholder="Uses Google’s demo vector map when blank"
-                spellcheck="false"
-                type="text"
-              />
-
-              <button class="map-connect-button" id="map-connect" type="submit">
-                Load Google map
-              </button>
-              <p class="map-setup-status" id="map-setup-status" role="status">
-                The interface, filters, analytics, details, and CSV export work
-                even before the basemap is connected.
-              </p>
-            </form>
-          </div>
 
           <div class="map-loading" hidden id="map-loading" role="status">
             Updating map layers…
@@ -1032,24 +983,19 @@
               <div class="heatmap-gradient" aria-hidden="true"></div>
               <div class="heatmap-labels">
                 <span>
-                  <strong>Very short</strong>
-                  <small data-heatmap-range-label="0"></small>
+                  <strong data-heatmap-range-label="0">Very short</strong>
                 </span>
                 <span>
-                  <strong>Short</strong>
-                  <small data-heatmap-range-label="1"></small>
+                  <strong data-heatmap-range-label="1">Short</strong>
                 </span>
                 <span>
-                  <strong>Medium</strong>
-                  <small data-heatmap-range-label="2"></small>
+                  <strong data-heatmap-range-label="2">Medium</strong>
                 </span>
                 <span>
-                  <strong>Long</strong>
-                  <small data-heatmap-range-label="3"></small>
+                  <strong data-heatmap-range-label="3">Long</strong>
                 </span>
                 <span>
-                  <strong>Very long</strong>
-                  <small data-heatmap-range-label="4"></small>
+                  <strong data-heatmap-range-label="4">Very long</strong>
                 </span>
               </div>
               <small id="transit-distance-heatmap-scale"></small>

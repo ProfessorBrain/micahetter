@@ -1142,119 +1142,6 @@ td small {
   position: absolute;
 }
 
-.map-setup-backdrop {
-  align-items: center;
-  background:
-    radial-gradient(circle at 75% 20%, rgba(255, 255, 255, 0.62), transparent 32%),
-    linear-gradient(145deg, rgba(219, 232, 228, 0.96), rgba(191, 211, 205, 0.94));
-  display: flex;
-  inset: 0;
-  justify-content: center;
-  padding: 76px 20px 96px;
-  position: absolute;
-  z-index: 4;
-}
-
-.map-setup {
-  background: rgba(252, 251, 247, 0.98);
-  border: 1px solid rgba(164, 186, 180, 0.92);
-  border-radius: 14px;
-  box-shadow: 0 24px 70px rgba(16, 45, 49, 0.22);
-  max-width: 440px;
-  padding: 26px;
-  width: 100%;
-}
-
-.map-setup h2 {
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 25px;
-  font-weight: 500;
-  letter-spacing: -0.025em;
-  margin: 7px 0 9px;
-}
-
-.map-setup > p {
-  color: var(--muted);
-  font-size: 11px;
-  line-height: 1.55;
-  margin: 0 0 17px;
-}
-
-.map-setup label {
-  display: block;
-  font-size: 9px;
-  font-weight: 850;
-  letter-spacing: 0.04em;
-  margin: 13px 0 6px;
-  text-transform: uppercase;
-}
-
-.map-setup label span {
-  color: var(--muted);
-  font-weight: 600;
-  text-transform: none;
-}
-
-.map-setup input {
-  background: #fff;
-  border: 1px solid #c6d2ce;
-  border-radius: 7px;
-  font-size: 12px;
-  height: 42px;
-  outline: 0;
-  padding: 0 11px;
-  width: 100%;
-}
-
-.credential-field {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-}
-
-.credential-field input {
-  border-radius: 7px 0 0 7px;
-}
-
-.credential-field button {
-  background: #eef3f0;
-  border: 1px solid #c6d2ce;
-  border-left: 0;
-  border-radius: 0 7px 7px 0;
-  color: var(--teal-dark);
-  font-size: 9px;
-  font-weight: 850;
-  padding: 0 12px;
-}
-
-.map-connect-button {
-  background: var(--teal);
-  border: 0;
-  border-radius: 8px;
-  color: #fff;
-  font-size: 11px;
-  font-weight: 850;
-  margin-top: 18px;
-  min-height: 42px;
-  padding: 0 17px;
-  width: 100%;
-}
-
-.map-connect-button:disabled {
-  cursor: wait;
-  opacity: 0.68;
-}
-
-.map-setup .map-setup-status {
-  color: var(--muted);
-  font-size: 8px;
-  margin: 10px 0 0;
-  text-align: center;
-}
-
-.map-setup-status.is-error {
-  color: #a84228;
-}
-
 .map-context,
 .map-legend,
 .map-controls,
@@ -1413,23 +1300,18 @@ td small {
   text-align: center;
 }
 
-.heatmap-labels strong,
-.heatmap-labels small {
+.heatmap-labels strong {
   display: block;
 }
 
 .heatmap-labels strong {
   font-size: 6px;
-}
-
-.heatmap-labels small {
-  font-size: 5px;
   line-height: 1.15;
-  margin-top: 1px;
 }
 
-.heatmap-labels small[hidden] {
-  display: none;
+.heatmap-labels[data-scale-mode="meters"] strong {
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .heatmap-labels span:first-child {
@@ -1509,6 +1391,30 @@ td small {
 .map-marker--facility {
   background: var(--orange);
   border-radius: 6px;
+}
+
+.map-marker--facility:not(.is-cluster) {
+  border: 2px solid #fff;
+  border-radius: 0;
+  box-shadow:
+    0 0 0 1px var(--orange),
+    0 4px 10px rgba(16, 45, 49, 0.24);
+  font-size: 0;
+  height: 18px;
+  transform: rotate(45deg);
+  width: 18px;
+}
+
+.map-marker--facility:not(.is-cluster):hover,
+.map-marker--facility:not(.is-cluster).is-selected {
+  transform: rotate(45deg) scale(1.15);
+}
+
+.map-marker--facility:not(.is-cluster).is-selected {
+  box-shadow:
+    0 0 0 1px var(--orange),
+    0 0 0 5px rgba(255, 255, 255, 0.8),
+    0 4px 12px rgba(16, 45, 49, 0.32);
 }
 
 .map-marker--transit {
@@ -1778,20 +1684,6 @@ td small {
   .panel-open {
     bottom: 18px;
     top: auto;
-  }
-
-  .map-setup-backdrop {
-    align-items: flex-start;
-    overflow-y: auto;
-    padding: 12px 10px 28px;
-  }
-
-  .map-setup {
-    padding: 18px;
-  }
-
-  .map-setup h2 {
-    font-size: 20px;
   }
 
   .methods-dialog {

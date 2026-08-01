@@ -13,14 +13,16 @@ rollback uses a revert commit so repository history remains intact.
 
 Refresh the facility snapshot with `node scripts/build-public-data.mjs`. The
 script retrieves the current CMS listing, submits the addresses to the Census
-batch geocoder, writes `public-data.js`, and updates
-`data/source-manifest.json`.
+batch geocoder, rebuilds the nationwide BTS nearest-stop snapshot, writes
+`public-data.js`, and updates `data/source-manifest.json`. Run
+`node scripts/build-transit-heatmap.mjs` to refresh only the transit fallback.
 
 Before publishing:
 
 1. Run `node --check app.js`, `node --check public-data.js`, and
    `node --check scripts/build-public-data.mjs`.
-2. Run `node --test tests/static-site.test.mjs`.
+2. Also run `node --check scripts/build-transit-heatmap.mjs`, then run
+   `node --test tests/static-site.test.mjs`.
 3. Serve the directory locally and verify map, filters, analytics, details,
    URL restoration, and CSV export.
 4. Confirm the manifest counts match the site footer and BTS stops load only at
@@ -30,8 +32,9 @@ Before publishing:
    zoom-in warning.
 6. Turn on the transit-distance heatmap and confirm all five discrete color
    bands and labels appear, each facility's color matches its nearest eligible
-   transit-stop distance, a single visible facility remains colored, and the
-   layer can be disabled without hiding facility or transit markers.
+   transit-stop distance, the nationwide fallback remains visible at the
+   national zoom, a single visible facility remains colored, and the layer can
+   be disabled without hiding facility or transit markers.
 7. At zoom level 10 or closer, verify transit name/ID search, counted select
    options, wheelchair and agency filters, the active-radius constraint, live
    candidate/display totals, URL restoration, and the transit-only reset.

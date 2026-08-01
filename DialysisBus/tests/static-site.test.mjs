@@ -37,6 +37,11 @@ test("root entry point contains the complete explorer surfaces", async () => {
   assert.doesNotMatch(html, /id="snapshot-readout"/);
   assert.doesNotMatch(html, /id="map-connection-status"/);
   assert.doesNotMatch(html, /Google Maps connected/);
+  assert.doesNotMatch(html, /id="map-setup"/);
+  assert.doesNotMatch(html, /id="map-setup-backdrop"/);
+  assert.doesNotMatch(html, /id="map-api-key"/);
+  assert.doesNotMatch(html, /id="map-connect"/);
+  assert.doesNotMatch(html, /Connect the Google basemap/);
   assert.doesNotMatch(html, /id="analyze-viewport"/);
   assert.doesNotMatch(html, /Analyze current map/);
   assert.doesNotMatch(html, /id="copy-view-link"/);
@@ -66,6 +71,11 @@ test("root entry point contains the complete explorer surfaces", async () => {
   assert.match(html, /value="meters"/);
   assert.match(html, /id="heatmap-meter-range-form"/);
   assert.match(html, /data-heatmap-break="3"/);
+  assert.match(
+    html,
+    /<strong data-heatmap-range-label="0">Very short<\/strong>/,
+  );
+  assert.doesNotMatch(html, /<small data-heatmap-range-label=/);
   const layersPanel = html.match(
     /<section[^>]+id="panel-layers"[\s\S]*?<\/section>/,
   )?.[0];
@@ -90,6 +100,23 @@ test("root entry point contains the complete explorer surfaces", async () => {
   assert.match(settingsDialog, /id="heatmap-meter-range-form"/);
   assert.match(settingsDialog, /id="heatmap-reset-meter-ranges"/);
   assert.match(settingsDialog, /Reset defaults/);
+  assert.match(
+    settingsDialog,
+    /data-heatmap-break="0"[\s\S]*?value="50"/,
+  );
+  assert.match(
+    settingsDialog,
+    /data-heatmap-break="1"[\s\S]*?value="125"/,
+  );
+  assert.match(
+    settingsDialog,
+    /data-heatmap-break="2"[\s\S]*?value="300"/,
+  );
+  assert.match(
+    settingsDialog,
+    /data-heatmap-break="3"[\s\S]*?value="3000"/,
+  );
+  assert.match(settingsDialog, /Very long begins above 3,000 m/);
   assert.doesNotMatch(settingsDialog, /name="heatmap-scale-mode"/);
   assert.match(methodsDialog, /id="methods-accessibility-title"/);
   assert.match(methodsDialog, /id="methods-privacy-title"/);
@@ -116,6 +143,10 @@ test("root entry point contains the complete explorer surfaces", async () => {
   assert.match(html, /Very long/);
   assert.match(styles, /#86a850 20% 40%/);
   assert.match(styles, /#dd8344 60% 80%/);
+  assert.match(
+    styles,
+    /\.map-marker--facility:not\(\.is-cluster\)[\s\S]*?height: 18px;[\s\S]*?transform: rotate\(45deg\);[\s\S]*?width: 18px;/,
+  );
   assert.doesNotMatch(html, /available after data load/i);
   assert.doesNotMatch(html, /filters are staged/i);
   assert.doesNotMatch(html, /analytics need a validated snapshot/i);
@@ -131,6 +162,7 @@ test("root entry point contains the complete explorer surfaces", async () => {
       "public-data.js",
       "sample-data.js",
       "scripts/build-public-data.mjs",
+      "scripts/build-transit-heatmap.mjs",
       "styles.css",
       "terms.html",
     ].map((path) => access(new URL(path, root))),
@@ -187,6 +219,36 @@ test("published dataset supplies nationwide CMS facility coverage", async () => 
     manifest.censusGeocoder.matchedRecords,
     data.metadata.geocodedFacilityCount,
   );
+  assert.equal(
+    data.metadata.transitHeatmapFacilityCount,
+    data.metadata.geocodedFacilityCount,
+  );
+  assert.equal(
+    manifest.transit.nearestStopFacilityRecords,
+    data.metadata.transitHeatmapFacilityCount,
+  );
+  assert.ok(data.metadata.transitHeatmapStopCount >= 600000);
+  assert.ok(
+    data.facilities
+      .filter((facility) => Number.isFinite(facility.lat))
+      .every(
+        (facility) =>
+          Number.isFinite(facility.nearestTransit?.distanceMeters) &&
+          facility.nearestTransit.distanceMeters >= 0,
+      ),
+  );
+  const defaultBreaks = [50, 125, 300, 3000];
+  const bandCounts = [0, 0, 0, 0, 0];
+  data.facilities.forEach((facility) => {
+    const distance = facility.nearestTransit?.distanceMeters;
+    if (!Number.isFinite(distance)) return;
+    const index = defaultBreaks.findIndex((limit) => distance <= limit);
+    bandCounts[index === -1 ? 4 : index] += 1;
+  });
+  bandCounts.forEach((count) => {
+    const share = count / data.metadata.transitHeatmapFacilityCount;
+    assert.ok(share >= 0.18 && share <= 0.22);
+  });
   assert.ok(
     new Set(data.facilities.map((facility) => facility.state)).size >=
       50,
@@ -211,6 +273,7 @@ test("client script implements every anticipated local workflow", async () => {
 
   for (const expected of [
     "distanceMeters",
+    "defaultHeatmapMeterBreaks",
     "percentile",
     "calculateResults",
     "openMethodsDialog",
@@ -242,9 +305,11 @@ test("client script implements every anticipated local workflow", async () => {
     'importLibrary("maps")',
     'importLibrary("marker")',
     "navigator.geolocation.getCurrentPosition",
+    "nationwideTransitMetric",
     "serializeState",
     "restoreStateFromUrl",
     "exportCsv",
+    "formatHeatmapMeterRanges",
     "Blob",
     "formula",
   ]) {
@@ -303,12 +368,26 @@ test("client script implements every anticipated local workflow", async () => {
   assert.doesNotMatch(script, /selectionLayers\.circle/);
   assert.doesNotMatch(script, /setConnectionStatus/);
   assert.doesNotMatch(script, /Google Maps connected/);
+  assert.doesNotMatch(script, /readStoredCredentials/);
+  assert.doesNotMatch(script, /saveCredentials/);
+  assert.doesNotMatch(script, /MAP_STORAGE_KEY/);
+  assert.doesNotMatch(script, /#map-setup/);
+  assert.doesNotMatch(script, /mapSetupBackdrop/);
+  assert.doesNotMatch(script, /mapConnect/);
   assert.doesNotMatch(script, /#analyze-viewport/);
   assert.doesNotMatch(script, /Analytics now use the current map viewport/);
   assert.doesNotMatch(script, /copyViewLink/);
   assert.doesNotMatch(script, /navigator\.clipboard/);
   assert.doesNotMatch(script, /calculateNearestFacilityDistances/);
   assert.doesNotMatch(script, /Nearest other dialysis center/);
+  assert.match(script, /transitMetricSource: "nationwide_snapshot"/);
+  assert.match(script, /activeTransitFilterCount\(\) > 0/);
+  assert.match(
+    script,
+    /state\.zoom < TRANSIT_MIN_ZOOM &&\s+transitLoadState !== "zoom"/,
+  );
+  assert.match(script, /kind: "facility",\s+label: "",/);
+  assert.doesNotMatch(script, /kind: "facility",\s+label: "\+",/);
 });
 
 test("spatial calculations keep closest stops and transit heatmap distances correct", async () => {
@@ -334,6 +413,14 @@ test("spatial calculations keep closest stops and transit heatmap distances corr
   });
   vm.runInContext(source, context);
   const explorer = context.window.DialysisTransitExplorer;
+  assert.deepEqual(
+    Array.from(explorer.defaultHeatmapMeterBreaks),
+    [50, 125, 300, 3000],
+  );
+  assert.deepEqual(
+    Array.from(explorer.formatHeatmapMeterRanges([50, 125, 300, 3000])),
+    ["≤ 50 m", "51–125 m", "126–300 m", "301–3,000 m", "> 3,000 m"],
+  );
   const selectClosestStops = explorer.selectClosestStopsForFacilities;
   const facilities = [
     { ccn: "A", lat: 0, lng: 0 },
@@ -444,8 +531,8 @@ test("spatial calculations keep closest stops and transit heatmap distances corr
     4,
   );
   assert.equal(
-    explorer.heatmapBandIndexForDistance(197, [500, 1000, 2500, 5000]),
-    0,
+    explorer.heatmapBandIndexForDistance(197, [50, 125, 300, 3000]),
+    2,
   );
   const meterSummary = explorer.applyHeatmapScale(
     heatmapSummary,
@@ -475,19 +562,66 @@ test("spatial calculations keep closest stops and transit heatmap distances corr
   const scaledSingleton = explorer.applyHeatmapScale(
     singletonSummary,
     "meters",
-    [500, 1000, 2500, 5000],
+    [50, 125, 300, 3000],
   );
-  assert.equal(scaledSingleton.points[0].normalizedDistance, 0.1);
+  assert.equal(scaledSingleton.points[0].normalizedDistance, 0.5);
   assert.deepEqual(
     Array.from(
       explorer.heatmapColor(scaledSingleton.points[0].normalizedDistance),
     ),
-    [25, 135, 84],
+    [242, 201, 76],
   );
   const unavailableSummary = explorer.calculateTransitDistanceHeatmapSummary([
     { ccn: "NO-STOP", lat: 0, lng: 0, nearestDistance: null },
   ]);
   assert.equal(unavailableSummary.points.length, 0);
+});
+
+test("nationwide snapshot supplies a low-zoom nearest-stop metric", async () => {
+  const source = await readFile(new URL("app.js", root), "utf8");
+  const context = vm.createContext({
+    AbortController,
+    Blob,
+    URL,
+    URLSearchParams,
+    document: {
+      querySelector: () => null,
+      querySelectorAll: () => [],
+    },
+    navigator: {},
+    window: {
+      DIALYSIS_TRANSIT_DISABLE_AUTO_INIT: true,
+      DIALYSIS_TRANSIT_PUBLIC_DATA: {
+        facilities: [],
+        metadata: {
+          mode: "public_snapshot",
+          transitSnapshotDate: "2026-03-09",
+        },
+        stops: [],
+      },
+    },
+  });
+  vm.runInContext(source, context);
+  const metric = context.window.DialysisTransitExplorer.nationwideTransitMetric({
+    nearestTransit: {
+      distanceMeters: 197,
+      lat: 40.81,
+      lng: -91.16,
+      name: "Great River Wellness Plaza",
+      ntdId: "70111",
+      objectId: "42",
+      snapshotDate: "2026-03-09",
+      stopId: "great-river",
+      type: "Bus",
+      wheelchair: "0",
+    },
+    state: "IA",
+  });
+
+  assert.equal(metric.nearestDistance, 197);
+  assert.equal(metric.nearestStop.name, "Great River Wellness Plaza");
+  assert.equal(metric.transitMetricSource, "nationwide_snapshot");
+  assert.equal(metric.stopCount, null);
 });
 
 test("public map configuration obfuscates the demo key without breaking startup", async () => {

@@ -12,11 +12,17 @@
   const EARTH_RADIUS_METERS = 6371008.8;
   const TRANSIT_MIN_ZOOM = 10;
   const TRANSIT_RECORD_LIMIT = 2000;
-  const DEFAULT_HEATMAP_METER_BREAKS = [500, 1000, 2500, 5000];
+  const DEFAULT_HEATMAP_METER_BREAKS = [50, 125, 300, 3000];
+  const RELATIVE_HEATMAP_RANGE_LABELS = [
+    "Very short",
+    "Short",
+    "Medium",
+    "Long",
+    "Very long",
+  ];
   const TRANSIT_SERVICE_URL =
     "https://services.arcgis.com/xOi1kZaI0eWDREZv/arcgis/rest/services/NTAD_National_Transit_Map_Stops/FeatureServer/0/query";
 
-  const MAP_STORAGE_KEY = "dialysisTransitGoogleMaps";
   const MAP_CALLBACK = "__dialysisTransitGoogleMapsReady";
   const NATIONAL_VIEW = {
     center: { lat: 37.5, lng: -112 },
@@ -223,7 +229,7 @@
   let transitDistanceHeatmapOverlay = null;
   let heatmapMetricsCache = null;
   let heatmapSummaryCache = null;
-  let pendingCredentials = null;
+  let mapConfiguration = null;
   let lastResults = {
     facilities: [],
     metrics: [],
@@ -262,14 +268,10 @@
     layerCount: $("#layer-count"),
     heatmapMeterRangeForm: $("#heatmap-meter-range-form"),
     heatmapMeterRangeHelp: $("#heatmap-meter-range-help"),
+    heatmapLabels: $(".heatmap-labels"),
     heatmapRangeInputs: $$('[data-heatmap-break]'),
     heatmapRangeLabels: $$('[data-heatmap-range-label]'),
-    mapApiKey: $("#map-api-key"),
-    mapConnect: $("#map-connect"),
-    mapId: $("#map-id"),
     mapLoading: $("#map-loading"),
-    mapSetupBackdrop: $("#map-setup-backdrop"),
-    mapSetupStatus: $("#map-setup-status"),
     mapStateReadout: $("#map-state-readout"),
     methodsDialog: $("#methods-dialog"),
     methodsDialogClose: $("#methods-dialog-close"),
@@ -457,9 +459,13 @@
     const ranges = formatHeatmapMeterRanges(
       state.heatmapScale.meterBreaks,
     );
+    const labels =
+      state.heatmapScale.mode === "meters"
+        ? ranges
+        : RELATIVE_HEATMAP_RANGE_LABELS;
+    elements.heatmapLabels.dataset.scaleMode = state.heatmapScale.mode;
     elements.heatmapRangeLabels.forEach((label, index) => {
-      label.textContent = ranges[index];
-      label.hidden = state.heatmapScale.mode !== "meters";
+      label.textContent = labels[index];
     });
     setHeatmapMeterRangeHelp(
       `Very long begins above ${state.heatmapScale.meterBreaks[3].toLocaleString()} m.`,
@@ -675,6 +681,39 @@
     DATA.stops = selection.stops;
   }
 
+  function nationwideTransitMetric(facility) {
+    const snapshot = facility.nearestTransit;
+    if (
+      !IS_PUBLIC_DATA ||
+      activeTransitFilterCount() > 0 ||
+      !Number.isFinite(snapshot?.distanceMeters)
+    ) {
+      return null;
+    }
+    return {
+      nearestDistance: snapshot.distanceMeters,
+      nearestStop: {
+        agency: snapshot.ntdId
+          ? `NTD ${snapshot.ntdId}`
+          : "Agency not listed",
+        id: `bts-${snapshot.objectId}`,
+        lat: snapshot.lat,
+        lng: snapshot.lng,
+        name: snapshot.name || "Unnamed transit stop",
+        ntdId: snapshot.ntdId || "",
+        objectId: snapshot.objectId || "",
+        snapshotDate:
+          snapshot.snapshotDate || DATA.metadata.transitSnapshotDate,
+        state: facility.state,
+        stopId: snapshot.stopId || "",
+        type: transitStopType({ stop_type_text: snapshot.type }),
+        wheelchair: wheelchairStatus(snapshot.wheelchair),
+      },
+      stopCount: null,
+      transitMetricSource: "nationwide_snapshot",
+    };
+  }
+
   function enrichFacilities(facilities, stops) {
     return facilities.map((facility) => {
       if (!Number.isFinite(facility.lat) || !Number.isFinite(facility.lng)) {
@@ -689,11 +728,13 @@
         IS_PUBLIC_DATA &&
         !["limited", "loaded"].includes(transitLoadState)
       ) {
+        const snapshotMetric = nationwideTransitMetric(facility);
         return {
           ...facility,
-          nearestDistance: null,
-          nearestStop: null,
-          stopCount: null,
+          nearestDistance: snapshotMetric?.nearestDistance ?? null,
+          nearestStop: snapshotMetric?.nearestStop ?? null,
+          stopCount: snapshotMetric?.stopCount ?? null,
+          transitMetricSource: snapshotMetric?.transitMetricSource ?? null,
         };
       }
 
@@ -709,14 +750,24 @@
           stop,
         }))
         .sort((first, second) => first.distance - second.distance);
+      const snapshotMetric = orderedStops.length
+        ? null
+        : nationwideTransitMetric(facility);
 
       return {
         ...facility,
-        nearestDistance: orderedStops[0]?.distance ?? null,
-        nearestStop: orderedStops[0]?.stop ?? null,
-        stopCount: orderedStops.filter(
-          (candidate) => candidate.distance <= state.radius,
-        ).length,
+        nearestDistance:
+          orderedStops[0]?.distance ?? snapshotMetric?.nearestDistance ?? null,
+        nearestStop:
+          orderedStops[0]?.stop ?? snapshotMetric?.nearestStop ?? null,
+        stopCount: snapshotMetric
+          ? null
+          : orderedStops.filter(
+              (candidate) => candidate.distance <= state.radius,
+            ).length,
+        transitMetricSource: orderedStops.length
+          ? "runtime_viewport"
+          : snapshotMetric?.transitMetricSource ?? null,
       };
     });
   }
@@ -1215,7 +1266,7 @@
     const transitMessage = !IS_PUBLIC_DATA
       ? ""
       : transitLoadState === "zoom"
-        ? ` Zoom to level ${TRANSIT_MIN_ZOOM} or closer to identify each facility's three closest BTS stops.`
+        ? ` Nationwide nearest-stop distances remain available; zoom to level ${TRANSIT_MIN_ZOOM} or closer to display each facility's three closest BTS stops and apply transit filters.`
         : transitLoadState === "loading"
           ? " Loading BTS candidates and selecting the three closest stops per facility…"
           : transitLoadState === "limited"
@@ -1838,7 +1889,7 @@
           const heatmapPoint = heatmapPointByFacility.get(facility.ccn);
           addMapMarker({
             kind: "facility",
-            label: "+",
+            label: "",
             onClick: () => selectFacility(facility.ccn, false),
             position: { lat: facility.lat, lng: facility.lng },
             selected: state.selectedFacility?.ccn === facility.ccn,
@@ -1878,59 +1929,11 @@
     updateSelectionOverlays();
   }
 
-  function readStoredCredentials() {
-    try {
-      const stored = window.localStorage.getItem(MAP_STORAGE_KEY);
-      if (!stored) return null;
-      const parsed = JSON.parse(stored);
-      return typeof parsed.apiKey === "string" && parsed.apiKey
-        ? {
-            apiKey: parsed.apiKey,
-            mapId: typeof parsed.mapId === "string" ? parsed.mapId : "",
-          }
-        : null;
-    } catch {
-      return null;
-    }
-  }
-
-  function saveCredentials(credentials) {
-    try {
-      window.localStorage.setItem(
-        MAP_STORAGE_KEY,
-        JSON.stringify(credentials),
-      );
-    } catch {
-      showNotice(
-        "The map is connected, but this browser could not remember the key.",
-      );
-    }
-  }
-
-  function clearCredentials() {
-    try {
-      window.localStorage.removeItem(MAP_STORAGE_KEY);
-    } catch {
-      // The browser can still reload if storage is unavailable.
-    }
-  }
-
-  function setSetupStatus(message, isError = false) {
-    elements.mapSetupStatus.textContent = message;
-    elements.mapSetupStatus.classList.toggle("is-error", isError);
-  }
-
   function handleMapLoadFailure(message) {
     transitDistanceHeatmapOverlay?.setMap(null);
     transitDistanceHeatmapOverlay = null;
     googleMap = null;
-    elements.mapSetupBackdrop.hidden = false;
-    elements.mapConnect.disabled = false;
-    elements.mapConnect.textContent = "Try again";
-    setSetupStatus(message, true);
-    if (!window.DIALYSIS_TRANSIT_CONFIG?.googleMapsApiKey) {
-      clearCredentials();
-    }
+    showNotice(message);
   }
 
   async function initializeGoogleMap() {
@@ -1945,7 +1948,7 @@
         clickableIcons: false,
         fullscreenControl: false,
         gestureHandling: "greedy",
-        mapId: pendingCredentials.mapId || "DEMO_MAP_ID",
+        mapId: mapConfiguration.mapId || "DEMO_MAP_ID",
         mapTypeControl: false,
         streetViewControl: false,
         zoom: state.zoom,
@@ -1996,6 +1999,13 @@
             elements.extentDescription.textContent =
               "Current map viewport—not an administrative-area statistic";
           }
+          if (
+            IS_PUBLIC_DATA &&
+            state.zoom < TRANSIT_MIN_ZOOM &&
+            transitLoadState !== "zoom"
+          ) {
+            clearRuntimeTransitStops("zoom");
+          }
           updateMapReadout();
           if (IS_PUBLIC_DATA || !state.selectedState) renderAll();
           else renderMapOverlays();
@@ -2004,10 +2014,6 @@
         }, 300);
       });
 
-      saveCredentials(pendingCredentials);
-      elements.mapSetupBackdrop.hidden = true;
-      elements.mapConnect.disabled = false;
-      elements.mapConnect.textContent = "Load Google map";
       renderAll();
       if (!IS_PUBLIC_DATA) {
         showNotice("The live Google basemap and demonstration layers are ready.");
@@ -2021,15 +2027,13 @@
 
   function loadGoogleMaps(credentials) {
     if (!credentials.apiKey) {
-      setSetupStatus("Enter a Google Maps Platform browser key.", true);
-      elements.mapApiKey.focus();
+      handleMapLoadFailure(
+        "The Google basemap is unavailable because its browser key is not configured.",
+      );
       return;
     }
 
-    pendingCredentials = credentials;
-    elements.mapConnect.disabled = true;
-    elements.mapConnect.textContent = "Connecting…";
-    setSetupStatus("Requesting the Google Maps JavaScript API…");
+    mapConfiguration = credentials;
 
     if (window.google?.maps?.importLibrary) {
       initializeGoogleMap();
@@ -2550,18 +2554,6 @@
       applySelectedState("");
     });
     $("#current-location").addEventListener("click", useCurrentLocation);
-    $("#map-setup").addEventListener("submit", (event) => {
-      event.preventDefault();
-      loadGoogleMaps({
-        apiKey: elements.mapApiKey.value.trim(),
-        mapId: elements.mapId.value.trim(),
-      });
-    });
-    $("#toggle-api-key").addEventListener("click", () => {
-      const showKey = elements.mapApiKey.type === "password";
-      elements.mapApiKey.type = showKey ? "text" : "password";
-      $("#toggle-api-key").textContent = showKey ? "Hide" : "Show";
-    });
     $("#export-csv").addEventListener("click", exportCsv);
     $("#facility-detail-close").addEventListener("click", closeFacilityDetail);
     $("#stop-detail-close").addEventListener("click", () => {
@@ -2608,31 +2600,21 @@
     }
 
     const hostedConfiguration = window.DIALYSIS_TRANSIT_CONFIG || {};
-    const storedCredentials = readStoredCredentials();
-    const credentials = hostedConfiguration.googleMapsApiKey
-      ? {
-          apiKey: hostedConfiguration.googleMapsApiKey,
-          mapId: hostedConfiguration.googleMapId || "",
-        }
-      : storedCredentials;
-
-    if (credentials) {
-      elements.mapId.value = credentials.mapId;
-      loadGoogleMaps(credentials);
-    } else if (window.location.protocol === "file:") {
-      setSetupStatus(
-        "For a restricted key, serve this folder over localhost or GitHub Pages instead of opening the file directly.",
-      );
-    }
+    loadGoogleMaps({
+      apiKey: hostedConfiguration.googleMapsApiKey || "",
+      mapId: hostedConfiguration.googleMapId || "",
+    });
   }
 
   window.DialysisTransitExplorer = {
     applyHeatmapScale,
     calculateResults,
     calculateTransitDistanceHeatmapSummary,
+    defaultHeatmapMeterBreaks: [...DEFAULT_HEATMAP_METER_BREAKS],
     distanceMeters,
     exportCsv,
     formatDistance,
+    formatHeatmapMeterRanges,
     getState: () => JSON.parse(JSON.stringify(state)),
     heatmapBandIndexForDistance,
     percentile,
@@ -2641,6 +2623,7 @@
     stopMatchesTransitFilters,
     updateRadius,
     validateHeatmapMeterBreaks,
+    nationwideTransitMetric,
   };
 
   if (!window.DIALYSIS_TRANSIT_DISABLE_AUTO_INIT) {

@@ -1,6 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { buildNationwideTransitSnapshot } from "./build-transit-heatmap.mjs";
 
 const CMS_DATASET_ID = "23ew-n7w9";
 const CMS_PAGE_SIZE = 1500;
@@ -208,24 +209,31 @@ async function main() {
   const snapshotDate =
     String(cmsMetadata.modified || cmsMetadata.accrualPeriodicity || preparedAt)
       .slice(0, 10);
-  const facilities = cmsRecords.map((record) =>
+  const geocodedFacilities = cmsRecords.map((record) =>
     compactFacility(
       record,
       geocodes.get(String(record.cms_certification_number_ccn)),
       snapshotDate,
     ),
   );
-  const matched = facilities.filter(
+  const matched = geocodedFacilities.filter(
     (facility) =>
       Number.isFinite(facility.lat) && Number.isFinite(facility.lng),
   ).length;
+  const transit = await buildNationwideTransitSnapshot(
+    geocodedFacilities,
+    console.log,
+  );
+  const facilities = transit.facilities;
   const dataset = {
     metadata: {
       mode: "public_snapshot",
       fixtureVersion: null,
       preparedAt,
       facilitySnapshotDate: snapshotDate,
-      transitSnapshotDate: "live BTS NTM viewport query",
+      transitSnapshotDate: transit.snapshotDate,
+      transitHeatmapFacilityCount: transit.facilityCount,
+      transitHeatmapStopCount: transit.stopCount,
       facilitySource:
         "CMS Provider Data Catalog: Dialysis Facility - Listing by Facility",
       transitSource:
@@ -254,7 +262,10 @@ async function main() {
       unresolvedRecords: facilities.length - matched,
     },
     transit: {
-      mode: "runtime viewport query",
+      mode: "nationwide nearest-stop snapshot plus runtime viewport query",
+      nearestStopFacilityRecords: transit.facilityCount,
+      snapshotDate: transit.snapshotDate,
+      stopRecordsEvaluated: transit.stopCount,
       selection:
         "three closest eligible stops per visible facility; shared stops deduplicated",
       source:

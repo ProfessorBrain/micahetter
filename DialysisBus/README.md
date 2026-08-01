@@ -30,8 +30,8 @@ network requests by design, so restrict the key in Google Cloud to:
   `https://professorbrain.github.io/*`
 - local referrers only when local map testing is required
 
-A locally entered key is stored only in that browser and is never used when the
-committed configuration already supplies a key.
+The site loads this configuration automatically; it does not display a key-entry
+or basemap-connection dialog.
 
 ## GitHub Pages
 
@@ -66,8 +66,12 @@ unchanged at `https://<account>.github.io/<repository>/`.
   using five bands: green, green-yellow, yellow, yellow-red, and red from
   shortest to longest distance. Users choose the relative or meter scale in
   Layers and edit the four fixed meter cutoffs from the top-bar Settings popup.
-  A single visible facility remains colored whenever it has a calculated
-  nearest-stop distance.
+  Default meter cutoffs of 50, 125, 300, and 3,000 meters approximate the
+  nationwide nearest-stop distance quintiles so the five colors are balanced.
+  A bundled nationwide nearest-stop snapshot keeps the heatmap visible at low
+  zoom, while zoom level 10 or closer replaces those values with live,
+  filter-aware viewport calculations. A single visible facility remains
+  colored whenever it has a calculated nearest-stop distance.
 - State selection, current viewport analysis, national reset, zoom controls,
   and current-location navigation.
 - URL restoration for map center, zoom, state, radius, layers, heatmap scale,
@@ -100,6 +104,7 @@ sample-data.js         Synthetic deterministic Phase 1 fixtures
 public-data.js         Generated nationwide CMS/Census facility snapshot
 data/source-manifest.json  Snapshot provenance and record counts
 scripts/build-public-data.mjs  Reproducible CMS/Census refresh
+scripts/build-transit-heatmap.mjs  Rebuild nationwide nearest-stop metrics
 config.js              Published Google Maps browser configuration
 config.example.js      Configuration template
 favicon.png            Site favicon
@@ -118,6 +123,7 @@ node --check app.js
 node --check sample-data.js
 node --check public-data.js
 node --check scripts/build-public-data.mjs
+node --check scripts/build-transit-heatmap.mjs
 node --test tests/static-site.test.mjs
 ```
 
@@ -126,6 +132,10 @@ Refresh the published facility snapshot from the official CMS and Census APIs:
 ```text
 node scripts/build-public-data.mjs
 ```
+
+The main refresh also rebuilds the nationwide BTS nearest-stop snapshot. To
+refresh only those transit metrics against the current facility file, run
+`node scripts/build-transit-heatmap.mjs`.
 
 The synthetic `sample-data.js` file remains only as a deterministic fallback
 and test fixture; it is not selected when `public-data.js` loads normally.

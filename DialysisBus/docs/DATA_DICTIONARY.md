@@ -6,7 +6,10 @@
 
 - `facilities`, keyed by CMS Certification Number and containing normalized CMS
   listing attributes plus Census geocode status, matched address, latitude,
-  longitude, benchmark, and source snapshot date.
+  longitude, benchmark, source snapshot date, and a `nearestTransit` object for
+  the nationwide unfiltered nearest-stop fallback. `nearestTransit` contains
+  the geodesic distance, stop identifiers, coordinates, name, type,
+  wheelchair-indication value, and BTS snapshot date.
 
 The browser loads a runtime candidate pool from National Transit Map fields for
 the visible zoom-10-or-closer viewport. The public `stops` array contains the
@@ -16,12 +19,15 @@ counts are derived in the browser from each facility's own selection and are
 never represented as official source measurements. Exported records include
 `data_mode=public_snapshot`.
 
-The transit-distance heatmap does not add a stored source field. Its runtime
-points contain the facility CCN, coordinates, nearest eligible transit-stop
-distance, nearest stop name, and a normalized color value. Relative mode uses
-the visible 10th and 90th percentile nearest-stop distances; meter mode uses
-the configured fixed cutoffs. The normalized value is assigned to one of five
-color bands for display.
+The transit-distance heatmap uses `nearestTransit` at low zoom when no transit
+filter is active. At zoom level 10 or closer, runtime viewport selection
+replaces the fallback with filter-aware nearest-stop values. Heatmap points
+contain the facility CCN, coordinates, nearest eligible transit-stop distance,
+nearest stop name, and a normalized color value. Relative mode uses the visible
+10th and 90th percentile nearest-stop distances; meter mode uses the configured
+fixed cutoffs. The normalized value is assigned to one of five color bands for
+display. Default fixed cutoffs are 50, 125, 300, and 3,000 meters, rounded from
+the nationwide snapshot's 20th, 40th, 60th, and 80th percentiles.
 
 Transit-filter state is represented by `stopQuery`, `stopType`, `wheelchair`,
 `agency`, and `withinRadius`. CSV exports record these values as
