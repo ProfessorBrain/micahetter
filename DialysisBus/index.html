@@ -29,8 +29,10 @@
         <div class="brand">
           <span class="brand-mark" aria-hidden="true"><span></span></span>
           <div>
-            <strong>Dialysis &amp; Transit Explorer</strong>
-            <small>Nationwide public-data explorer</small>
+            <p class="brand-title">
+              Dialysis Bus: A <strong>Nationwide</strong>
+              <strong>Dialysis &amp; Transit Public Data Explorer</strong>
+            </p>
           </div>
         </div>
 
@@ -70,10 +72,6 @@
           aria-label="Explorer controls"
         >
           <div class="panel-heading">
-            <div>
-              <span class="eyebrow">Geographic proximity</span>
-              <h1>Explore the space between care and transit.</h1>
-            </div>
             <button
               aria-label="Collapse explorer controls"
               class="panel-close"
@@ -83,11 +81,6 @@
               ‹
             </button>
           </div>
-
-          <p class="methods-notice">
-            Straight-line distance is context—not proof of a usable trip,
-            accessible path, or available service.
-          </p>
 
           <nav
             aria-label="Explorer sections"
@@ -252,7 +245,7 @@
 
               <div class="control-section">
                 <label class="field-label" for="state-select">
-                  Analysis extent
+                  Area selector
                 </label>
                 <div class="select-wrap">
                   <select id="state-select">
@@ -266,57 +259,6 @@
                     <option value="TX">Texas</option>
                   </select>
                 </div>
-                <p class="field-help" id="extent-description">
-                  Current map viewport—not an administrative-area statistic
-                </p>
-              </div>
-
-              <div class="control-section">
-                <div class="section-title">
-                  <span>Proximity threshold</span>
-                  <strong id="radius-readout">400 m</strong>
-                </div>
-                <div
-                  aria-label="Proximity threshold"
-                  class="radius-options"
-                  id="radius-options"
-                  role="group"
-                >
-                  <button aria-pressed="false" data-radius="250" type="button">
-                    250
-                  </button>
-                  <button
-                    aria-pressed="true"
-                    class="is-active"
-                    data-radius="400"
-                    type="button"
-                  >
-                    400
-                  </button>
-                  <button aria-pressed="false" data-radius="800" type="button">
-                    800
-                  </button>
-                  <button aria-pressed="false" data-radius="1600" type="button">
-                    1,600
-                  </button>
-                </div>
-                <form class="custom-radius" id="custom-radius-form">
-                  <label for="custom-radius">Custom meters</label>
-                  <input
-                    id="custom-radius"
-                    inputmode="numeric"
-                    max="5000"
-                    min="100"
-                    name="radius"
-                    placeholder="100–5,000"
-                    type="number"
-                  />
-                  <button type="submit">Apply</button>
-                </form>
-                <p class="field-help">
-                  Geodesic straight-line distance. Values 1,000 m and above are
-                  also shown in miles.
-                </p>
               </div>
 
               <button class="secondary-action" id="current-location" type="button">

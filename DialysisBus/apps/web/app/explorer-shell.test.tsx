@@ -11,30 +11,25 @@ describe("ExplorerShell", () => {
     );
   });
 
-  it("starts with both map layers and the 400 meter threshold enabled", () => {
+  it("starts with both map layers enabled and no threshold controls", () => {
     render(<ExplorerShell />);
 
+    expect(document.querySelector(".brand-title")).toHaveTextContent(
+      "Dialysis Bus: A Nationwide Dialysis & Transit Public Data Explorer",
+    );
     expect(screen.getByLabelText("Dialysis facilities")).toBeChecked();
     expect(screen.getByLabelText("Public transit stops")).toBeChecked();
-    expect(screen.getByRole("button", { name: "400" })).toHaveAttribute(
-      "aria-pressed",
-      "true",
-    );
+    expect(screen.queryByText("Proximity threshold")).not.toBeInTheDocument();
   });
 
-  it("updates the selected threshold and state extent", () => {
+  it("updates the selected area", () => {
     render(<ExplorerShell />);
 
-    fireEvent.click(screen.getByRole("button", { name: "800" }));
-    expect(screen.getByRole("button", { name: "800" })).toHaveAttribute(
-      "aria-pressed",
-      "true",
-    );
-
-    fireEvent.change(screen.getByLabelText("Analysis extent"), {
+    const areaSelector = screen.getByLabelText("Area selector");
+    fireEvent.change(areaSelector, {
       target: { value: "AZ" },
     });
-    expect(screen.getByText("AZ selected-state extent")).toBeInTheDocument();
+    expect(areaSelector).toHaveValue("AZ");
   });
 
   it("surfaces the methods limitation in a keyboard-accessible tab", () => {

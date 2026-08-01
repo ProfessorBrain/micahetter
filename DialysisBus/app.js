@@ -253,10 +253,8 @@
     analyticsExtentTitle: $("#analytics-extent-title"),
     transitDistanceHeatmapLegend: $("#transit-distance-heatmap-legend"),
     transitDistanceHeatmapScale: $("#transit-distance-heatmap-scale"),
-    customRadius: $("#custom-radius"),
     detailLineButton: $("#detail-toggle-line"),
     distanceDistribution: $("#distance-distribution"),
-    extentDescription: $("#extent-description"),
     facilityCards: $("#facility-cards"),
     facilityDetail: $("#facility-detail"),
     facilityDetailAddress: $("#facility-detail-address"),
@@ -279,7 +277,6 @@
     noticeText: $("#notice-text"),
     panelClose: $("#panel-close"),
     panelOpen: $("#panel-open"),
-    radiusReadout: $("#radius-readout"),
     regionReadout: $("#region-readout"),
     resultCount: $("#result-count"),
     settingsDialog: $("#settings-dialog"),
@@ -895,22 +892,10 @@
   function updateRadius(nextRadius) {
     if (!Number.isFinite(nextRadius) || nextRadius < 100 || nextRadius > 5000) {
       showNotice("Custom radius must be between 100 and 5,000 meters.");
-      elements.customRadius.focus();
       return false;
     }
 
     state.radius = Math.round(nextRadius);
-    elements.radiusReadout.textContent = formatDistance(state.radius);
-    $$("[data-radius]").forEach((button) => {
-      const selected = Number(button.dataset.radius) === state.radius;
-      button.classList.toggle("is-active", selected);
-      button.setAttribute("aria-pressed", String(selected));
-    });
-    elements.customRadius.value = $$("[data-radius]").some(
-      (button) => Number(button.dataset.radius) === state.radius,
-    )
-      ? ""
-      : String(state.radius);
     updateMapReadout();
     renderAll();
     updateSelectionOverlays();
@@ -923,9 +908,6 @@
     elements.stateSelect.value = stateCode;
     const view = STATE_VIEWS[stateCode] || NATIONAL_VIEW;
     elements.regionReadout.textContent = view.name;
-    elements.extentDescription.textContent = stateCode
-      ? `${view.name} selected-state extent`
-      : "Current map viewport—not an administrative-area statistic";
 
     if (IS_PUBLIC_DATA && stateCode) {
       const stateFacilities = DATA.facilities.filter(
@@ -1996,8 +1978,6 @@
             state.selectedState = "";
             elements.stateSelect.value = "";
             elements.regionReadout.textContent = "Current map viewport";
-            elements.extentDescription.textContent =
-              "Current map viewport—not an administrative-area statistic";
           }
           if (
             IS_PUBLIC_DATA &&
@@ -2175,15 +2155,6 @@
     elements.regionReadout.textContent = state.selectedState
       ? STATE_VIEWS[state.selectedState].name
       : NATIONAL_VIEW.name;
-    elements.extentDescription.textContent = state.selectedState
-      ? `${STATE_VIEWS[state.selectedState].name} selected-state extent`
-      : "Current map viewport—not an administrative-area statistic";
-    elements.radiusReadout.textContent = formatDistance(state.radius);
-    $$("[data-radius]").forEach((button) => {
-      const selected = Number(button.dataset.radius) === state.radius;
-      button.classList.toggle("is-active", selected);
-      button.setAttribute("aria-pressed", String(selected));
-    });
     $$("[data-layer-toggle]").forEach((toggle) => {
       toggle.checked = state.layers[toggle.dataset.layerToggle];
     });
@@ -2444,17 +2415,6 @@
         updateSelectionButtons();
         updateSelectionOverlays();
       });
-    });
-
-    $$("[data-radius]").forEach((button) => {
-      button.addEventListener("click", () =>
-        updateRadius(Number(button.dataset.radius)),
-      );
-    });
-
-    $("#custom-radius-form").addEventListener("submit", (event) => {
-      event.preventDefault();
-      updateRadius(Number(elements.customRadius.value));
     });
 
     elements.stateSelect.addEventListener("change", () => {

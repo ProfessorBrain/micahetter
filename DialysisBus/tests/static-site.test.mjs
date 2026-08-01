@@ -13,6 +13,10 @@ test("root entry point contains the complete explorer surfaces", async () => {
   ]);
 
   assert.match(html, /<title>Dialysis &amp; Transit Explorer<\/title>/);
+  assert.match(
+    html,
+    /<p class="brand-title">\s*Dialysis Bus: A <strong>Nationwide<\/strong>\s*<strong>Dialysis &amp; Transit Public Data Explorer<\/strong>\s*<\/p>/,
+  );
   assert.match(html, /rel="icon" href="\.\/favicon\.png" type="image\/png"/);
   assert.deepEqual(Array.from(favicon.subarray(0, 8)), [
     137, 80, 78, 71, 13, 10, 26, 10,
@@ -50,7 +54,12 @@ test("root entry point contains the complete explorer surfaces", async () => {
   assert.doesNotMatch(html, /data-selection-layer="circle"/);
   assert.doesNotMatch(html, /id="panel-methods"/);
   assert.doesNotMatch(html, /data-tab="methods"/);
-  assert.match(html, /id="custom-radius"/);
+  assert.doesNotMatch(html, /Proximity threshold/);
+  assert.doesNotMatch(html, /Custom meters/);
+  assert.doesNotMatch(html, /id="radius-readout"/);
+  assert.doesNotMatch(html, /id="custom-radius"/);
+  assert.doesNotMatch(html, /id="custom-radius-form"/);
+  assert.doesNotMatch(html, /data-radius=/);
   assert.match(html, /id="facility-table"/);
   assert.match(html, /id="facility-detail"/);
   assert.match(html, /id="stop-detail"/);
@@ -61,6 +70,15 @@ test("root entry point contains the complete explorer surfaces", async () => {
   assert.doesNotMatch(html, /id="location-search"/);
   assert.doesNotMatch(html, /Public-source snapshot/);
   assert.doesNotMatch(html, /Facilities come from CMS and the Census Geocoder/);
+  assert.doesNotMatch(
+    html,
+    /Straight-line distance is context—not proof of a usable trip/,
+  );
+  assert.doesNotMatch(html, /Geographic proximity/);
+  assert.doesNotMatch(html, /Explore the space between care and transit/);
+  assert.match(html, /<label class="field-label" for="state-select">\s*Area selector\s*<\/label>/);
+  assert.doesNotMatch(html, /Current map viewport—not an administrative-area statistic/);
+  assert.doesNotMatch(html, /id="extent-description"/);
   assert.match(html, /Three closest per visible facility · zoom 10\+/);
   assert.match(html, /Closest 3 in radius/);
   assert.match(html, /data-layer-toggle="transitDistanceHeatmap"/);

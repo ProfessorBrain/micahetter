@@ -76,8 +76,6 @@ unchanged at `https://<account>.github.io/<repository>/`.
   and current-location navigation.
 - URL restoration for map center, zoom, state, radius, layers, heatmap scale,
   and filters.
-- Preset thresholds at 250, 400, 800, and 1,600 meters.
-- Custom thresholds from 100 through 5,000 meters.
 - Facility filters for service, ownership, chain, late shift, station count,
   and geocoding status.
 - Transit filters for stop name or ID, stop type, wheelchair indication, and

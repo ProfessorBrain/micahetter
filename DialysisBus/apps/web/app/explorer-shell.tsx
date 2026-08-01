@@ -30,6 +30,7 @@ declare global {
 }
 
 const NATIONAL_VIEW = { center: { lat: 39.5, lng: -98.35 }, zoom: 4 };
+const PROXIMITY_RADIUS_METERS = 400;
 
 const STATE_VIEWS: Record<string, { center: Coordinates; zoom: number }> = {
   AZ: { center: { lat: 34.25, lng: -111.75 }, zoom: 6 },
@@ -96,7 +97,6 @@ export function ExplorerShell() {
   const [activeTab, setActiveTab] = useState<TabId>("layers");
   const [panelOpen, setPanelOpen] = useState(true);
   const [selectedState, setSelectedState] = useState("");
-  const [radius, setRadius] = useState(400);
   const [zoom, setZoom] = useState(NATIONAL_VIEW.zoom);
   const [facilitiesVisible, setFacilitiesVisible] = useState(true);
   const [stopsVisible, setStopsVisible] = useState(true);
@@ -220,10 +220,6 @@ export function ExplorerShell() {
     );
   }
 
-  const extentLabel = selectedState
-    ? `${selectedState} selected-state extent`
-    : "Current national viewport";
-
   return (
     <main className="app-shell">
       <header className="topbar">
@@ -232,8 +228,10 @@ export function ExplorerShell() {
             <span />
           </span>
           <div>
-            <strong>Dialysis & Transit Explorer</strong>
-            <small>Phase 1 research platform</small>
+            <p className="brand-title">
+              Dialysis Bus: A <strong>Nationwide</strong>{" "}
+              <strong>Dialysis & Transit Public Data Explorer</strong>
+            </p>
           </div>
         </div>
 
@@ -297,10 +295,6 @@ export function ExplorerShell() {
       <div className={`workspace ${panelOpen ? "" : "workspace--panel-closed"}`}>
         <aside className="side-panel" aria-label="Explorer controls">
           <div className="panel-heading">
-            <div>
-              <span className="eyebrow">Geographic proximity</span>
-              <h1>Explore the space between care and transit.</h1>
-            </div>
             <button
               aria-label="Collapse explorer controls"
               className="panel-close"
@@ -310,11 +304,6 @@ export function ExplorerShell() {
               ‹
             </button>
           </div>
-
-          <p className="methods-notice">
-            Straight-line distance is context—not proof of a usable trip,
-            accessible path, or available service.
-          </p>
 
           <nav aria-label="Explorer sections" className="panel-tabs">
             {TABS.map((tab) => (
@@ -362,7 +351,7 @@ export function ExplorerShell() {
 
                 <section className="control-section">
                   <label className="field-label" htmlFor="state-select">
-                    Analysis extent
+                    Area selector
                   </label>
                   <div className="select-wrap">
                     <select
@@ -380,35 +369,6 @@ export function ExplorerShell() {
                       <option value="TX">Texas</option>
                     </select>
                   </div>
-                  <p className="field-help">{extentLabel}</p>
-                </section>
-
-                <section className="control-section">
-                  <div className="section-title">
-                    <label htmlFor="radius-group">Proximity threshold</label>
-                    <strong>{radius.toLocaleString()} m</strong>
-                  </div>
-                  <div
-                    aria-label="Proximity threshold"
-                    className="radius-options"
-                    id="radius-group"
-                    role="group"
-                  >
-                    {[250, 400, 800, 1600].map((value) => (
-                      <button
-                        aria-pressed={radius === value}
-                        className={radius === value ? "is-active" : ""}
-                        key={value}
-                        onClick={() => setRadius(value)}
-                        type="button"
-                      >
-                        {value === 1600 ? "1,600" : value}
-                      </button>
-                    ))}
-                  </div>
-                  <p className="field-help">
-                    Geodesic straight-line distance; calculated in meters.
-                  </p>
                 </section>
 
                 <button className="primary-action" disabled type="button">
@@ -543,7 +503,7 @@ export function ExplorerShell() {
             <span className="context-dot" aria-hidden="true" />
             <span>
               <strong>{selectedState || "United States"}</strong>
-              {radius.toLocaleString()} m threshold · zoom {zoom}
+              {PROXIMITY_RADIUS_METERS.toLocaleString()} m threshold · zoom {zoom}
             </span>
           </div>
 
@@ -604,7 +564,7 @@ export function ExplorerShell() {
           <p className="sr-only" aria-live="polite">
             {facilitiesVisible ? "Dialysis layer on." : "Dialysis layer off."}
             {stopsVisible ? " Transit layer on." : " Transit layer off."}
-            {` Threshold ${radius} meters.`}
+            {` Threshold ${PROXIMITY_RADIUS_METERS} meters.`}
           </p>
         </section>
       </div>

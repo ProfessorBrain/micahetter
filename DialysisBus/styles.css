@@ -118,25 +118,17 @@ a:focus-visible,
   min-width: 0;
 }
 
-.brand strong,
-.brand small {
-  display: block;
-}
-
-.brand strong {
+.brand-title {
   font-family: Georgia, "Times New Roman", serif;
   font-size: 18px;
+  font-weight: 400;
   letter-spacing: -0.02em;
   line-height: 1.1;
+  margin: 0;
 }
 
-.brand small {
-  color: var(--muted);
-  font-size: 9px;
+.brand-title strong {
   font-weight: 800;
-  letter-spacing: 0.13em;
-  margin-top: 3px;
-  text-transform: uppercase;
 }
 
 .brand-mark {
@@ -250,18 +242,8 @@ a:focus-visible,
   align-items: flex-start;
   display: flex;
   flex: 0 0 auto;
-  justify-content: space-between;
-  padding: 20px 20px 9px 22px;
-}
-
-.panel-heading h1 {
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 22px;
-  font-weight: 500;
-  letter-spacing: -0.025em;
-  line-height: 1.12;
-  margin: 5px 0 0;
-  max-width: 270px;
+  justify-content: flex-end;
+  padding: 5px 8px 0;
 }
 
 .eyebrow {
@@ -280,17 +262,6 @@ a:focus-visible,
   height: 44px;
   line-height: 1;
   width: 44px;
-}
-
-.methods-notice {
-  background: #eff5f2;
-  border-left: 3px solid var(--teal);
-  color: #415c5c;
-  flex: 0 0 auto;
-  font-size: 10px;
-  line-height: 1.48;
-  margin: 7px 22px 13px;
-  padding: 9px 10px;
 }
 
 .panel-tabs {
@@ -636,8 +607,7 @@ a:focus-visible,
 
 .select-wrap select,
 .filter-text-input,
-.number-pair input,
-.custom-radius input {
+.number-pair input {
   appearance: none;
   background: #fff;
   border: 1px solid #cbd5d1;
@@ -659,50 +629,6 @@ a:focus-visible,
   margin: 6px 0 0;
 }
 
-.radius-options {
-  display: grid;
-  gap: 5px;
-  grid-template-columns: repeat(4, 1fr);
-}
-
-.radius-options button {
-  background: #fff;
-  border: 1px solid #cbd5d1;
-  border-radius: 6px;
-  font-size: 10px;
-  min-height: 38px;
-  padding: 0;
-}
-
-.radius-options button.is-active {
-  background: var(--teal);
-  border-color: var(--teal);
-  color: #fff;
-  font-weight: 800;
-}
-
-.custom-radius {
-  align-items: end;
-  display: grid;
-  gap: 6px;
-  grid-template-columns: minmax(0, 1fr) auto;
-  margin-top: 9px;
-}
-
-.custom-radius label {
-  display: grid;
-  font-size: 8px;
-  font-weight: 800;
-  gap: 4px;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.custom-radius input {
-  padding-right: 10px;
-}
-
-.custom-radius button,
 .export-button {
   background: #eaf2ef;
   border: 1px solid #b8cbc5;
@@ -1586,12 +1512,8 @@ td small {
     grid-row: 1;
   }
 
-  .brand strong {
-    font-size: 16px;
-  }
-
-  .brand small {
-    font-size: 7px;
+  .brand-title {
+    font-size: 14px;
   }
 
   .brand-mark {
@@ -1635,15 +1557,7 @@ td small {
   }
 
   .panel-heading {
-    padding: 12px 16px 6px;
-  }
-
-  .panel-heading h1 {
-    font-size: 17px;
-  }
-
-  .methods-notice {
-    display: none;
+    padding: 2px 8px 0;
   }
 
   .panel-content {
