@@ -1,0 +1,2244 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#102c2e">
+  <title>PsychiatryChat - A longitudinal communication game</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #fff8ec;
+      --muted: #c9c5b9;
+      --dim: #8fa6a2;
+      --night: #071b1e;
+      --night-2: #102c2e;
+      --panel: rgba(10, 30, 31, .92);
+      --panel-solid: #102a2b;
+      --line: rgba(242, 208, 151, .22);
+      --gold: #efc47e;
+      --gold-2: #b77b45;
+      --sage: #8eb7a7;
+      --rose: #d99b91;
+      --focus: #ffe5a8;
+      --shadow: 0 24px 80px rgba(0, 0, 0, .36);
+      --radius: 24px;
+      --text-scale: 1;
+      font-family: "Segoe UI", Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { background: var(--night); font-size: calc(16px * var(--text-scale)); }
+    body {
+      margin: 0;
+      min-width: 320px;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 15% 10%, rgba(85, 137, 123, .24), transparent 34rem),
+        radial-gradient(circle at 86% 24%, rgba(190, 122, 74, .16), transparent 28rem),
+        linear-gradient(145deg, #06171a 0%, #0c292a 56%, #173739 100%);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .17;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.78' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
+      mix-blend-mode: soft-light;
+      z-index: 10;
+    }
+
+    button, input, select { font: inherit; }
+    button { -webkit-tap-highlight-color: transparent; }
+    button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 3px;
+    }
+    .skip-link {
+      position: fixed;
+      left: 1rem;
+      top: -4rem;
+      z-index: 100;
+      padding: .7rem 1rem;
+      color: #0a2021;
+      background: var(--focus);
+      border-radius: 0 0 .6rem .6rem;
+    }
+    .skip-link:focus { top: 0; }
+    .sr-only {
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      padding: 0 !important;
+      margin: -1px !important;
+      overflow: hidden !important;
+      clip: rect(0, 0, 0, 0) !important;
+      white-space: nowrap !important;
+      border: 0 !important;
+    }
+    [hidden] { display: none !important; }
+
+    .topbar {
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 20;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 1rem;
+      min-height: 68px;
+      padding: .7rem clamp(1rem, 4vw, 3.5rem);
+      border-bottom: 1px solid rgba(255, 255, 255, .08);
+      background: rgba(6, 23, 25, .8);
+      backdrop-filter: blur(18px);
+    }
+    .brand-button, .icon-button {
+      border: 0;
+      color: var(--ink);
+      background: transparent;
+      cursor: pointer;
+    }
+    .brand-button {
+      justify-self: start;
+      display: flex;
+      align-items: center;
+      gap: .65rem;
+      padding: .5rem;
+      font-weight: 760;
+      letter-spacing: -.02em;
+    }
+    .brand-mark {
+      display: grid;
+      width: 30px;
+      height: 30px;
+      place-items: center;
+      color: #163233;
+      background: var(--gold);
+      border-radius: 50% 50% 50% 16%;
+      transform: rotate(-8deg);
+    }
+    .chapter-label {
+      color: var(--muted);
+      text-align: center;
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+    .icon-button {
+      justify-self: end;
+      min-width: 48px;
+      min-height: 44px;
+      padding: .6rem .85rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+    }
+    .icon-button:hover { background: rgba(255, 255, 255, .07); }
+
+    #app { min-height: 100vh; }
+    .screen {
+      position: relative;
+      min-height: 100vh;
+      padding: clamp(1.2rem, 5vw, 4rem);
+      isolation: isolate;
+    }
+    .eyebrow {
+      margin: 0 0 .75rem;
+      color: var(--gold);
+      font-size: .72rem;
+      font-weight: 800;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+    }
+    h1, h2, h3, p { margin-top: 0; }
+    h1, h2, .display {
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 500;
+      letter-spacing: -.035em;
+    }
+    h1 { font-size: clamp(3.4rem, 9vw, 8.5rem); line-height: .88; }
+    h2 { font-size: clamp(2.25rem, 5vw, 4.6rem); line-height: 1; }
+    h3 { font-size: 1rem; }
+    .lede {
+      max-width: 43rem;
+      color: var(--muted);
+      font-size: clamp(1.05rem, 2vw, 1.28rem);
+      line-height: 1.65;
+    }
+    .micro { color: var(--dim); font-size: .78rem; line-height: 1.5; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      padding: .42rem .72rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .pill::before {
+      content: "";
+      width: .45rem;
+      height: .45rem;
+      background: var(--sage);
+      border-radius: 50%;
+      box-shadow: 0 0 0 4px rgba(142, 183, 167, .12);
+    }
+    .button-row { display: flex; flex-wrap: wrap; gap: .8rem; align-items: center; }
+    .primary, .secondary, .quiet-button {
+      min-height: 50px;
+      padding: .85rem 1.15rem;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: transform .18s ease, background .18s ease, border-color .18s ease;
+    }
+    .primary {
+      color: #112928;
+      background: var(--gold);
+      box-shadow: 0 10px 30px rgba(239, 196, 126, .16);
+      font-weight: 800;
+    }
+    .primary:hover { transform: translateY(-2px); background: #ffda9b; }
+    .secondary {
+      color: var(--ink);
+      background: rgba(255, 255, 255, .06);
+      border-color: var(--line);
+      font-weight: 700;
+    }
+    .secondary:hover { transform: translateY(-2px); background: rgba(255, 255, 255, .1); }
+    .quiet-button {
+      min-height: 40px;
+      padding: .55rem .8rem;
+      color: var(--muted);
+      background: transparent;
+      border-color: rgba(255, 255, 255, .12);
+      font-size: .82rem;
+    }
+    .quiet-button:hover { color: var(--ink); border-color: var(--gold); }
+
+    /* Opening */
+    .title-screen {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(320px, .9fr);
+      align-items: center;
+      gap: clamp(2rem, 7vw, 8rem);
+      overflow: hidden;
+    }
+    .title-copy { z-index: 2; max-width: 54rem; }
+    .title-copy h1 span { display: block; color: var(--gold); font-style: italic; }
+    .title-actions { margin: 2rem 0 1.25rem; }
+    .title-visual {
+      position: relative;
+      align-self: stretch;
+      min-height: 580px;
+    }
+    .window {
+      position: absolute;
+      inset: 8% 0 5% 0;
+      overflow: hidden;
+      border: 1px solid rgba(255, 233, 194, .2);
+      border-radius: 45% 45% 12px 12px;
+      background:
+        linear-gradient(90deg, transparent 49.5%, rgba(12, 34, 35, .72) 49.5%, rgba(12, 34, 35, .72) 50.5%, transparent 50.5%),
+        linear-gradient(180deg, transparent 60%, rgba(12, 34, 35, .72) 60%, rgba(12, 34, 35, .72) 61%, transparent 61%),
+        radial-gradient(circle at 65% 26%, #f1c785 0 2.4rem, rgba(241, 199, 133, .13) 2.5rem 7rem, transparent 7.1rem),
+        linear-gradient(#143d40 0 62%, #274848 62% 100%);
+      box-shadow: inset 0 0 90px rgba(0, 0, 0, .33), var(--shadow);
+    }
+    .window::before, .window::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0 0;
+      height: 42%;
+      clip-path: polygon(0 70%, 9% 55%, 16% 64%, 23% 33%, 32% 61%, 44% 45%, 54% 66%, 66% 35%, 78% 64%, 88% 46%, 100% 65%, 100% 100%, 0 100%);
+      background: #0d282a;
+    }
+    .window::after {
+      height: 34%;
+      clip-path: polygon(0 62%, 15% 40%, 28% 70%, 43% 35%, 55% 68%, 72% 43%, 86% 64%, 100% 45%, 100% 100%, 0 100%);
+      background: #071a1c;
+    }
+    .lamp {
+      position: absolute;
+      right: 5%;
+      bottom: 6%;
+      width: 46%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(239, 196, 126, .24), transparent 68%);
+      filter: blur(8px);
+    }
+    .title-note {
+      position: absolute;
+      right: -1rem;
+      bottom: 10%;
+      width: min(330px, 75%);
+      padding: 1.4rem;
+      color: #342719;
+      background: #e8d4ad;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .35);
+      transform: rotate(-2deg);
+    }
+    .title-note p { margin: 0; font-family: Georgia, serif; font-size: 1.05rem; line-height: 1.55; }
+    .title-note small { display: block; margin-top: 1rem; font: 700 .68rem/1 "Segoe UI", sans-serif; letter-spacing: .13em; text-transform: uppercase; }
+
+    /* Selection */
+    .selection-screen { padding-top: clamp(3rem, 8vw, 6rem); }
+    .selection-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 2rem;
+      align-items: end;
+      max-width: 1280px;
+      margin: 0 auto 2rem;
+    }
+    .selection-head h1 { margin-bottom: .7rem; font-size: clamp(3rem, 7vw, 6.5rem); }
+    .patient-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+    .patient-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-height: 520px;
+      overflow: hidden;
+      padding: 0;
+      color: var(--ink);
+      text-align: left;
+      background: rgba(11, 37, 38, .72);
+      border: 1px solid rgba(255, 255, 255, .11);
+      border-radius: var(--radius);
+      cursor: pointer;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, .14);
+      transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+    }
+    .patient-card:hover { transform: translateY(-6px); border-color: rgba(239, 196, 126, .58); box-shadow: var(--shadow); }
+    .card-art {
+      position: relative;
+      display: grid;
+      height: 230px;
+      place-items: end center;
+      overflow: hidden;
+      background: var(--card-gradient);
+    }
+    .card-art::before {
+      content: "";
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      top: 20px;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 50%;
+    }
+    .mini-portrait {
+      position: relative;
+      width: 145px;
+      height: 170px;
+    }
+    .mini-portrait::before {
+      content: "";
+      position: absolute;
+      left: 39px;
+      top: 12px;
+      width: 70px;
+      height: 88px;
+      border-radius: 46% 46% 42% 42%;
+      background: var(--skin);
+      box-shadow: inset 0 7px 0 7px var(--hair);
+    }
+    .mini-portrait::after {
+      content: "";
+      position: absolute;
+      inset: 91px 4px -20px;
+      border-radius: 48% 48% 0 0;
+      background: var(--shirt);
+    }
+    .card-copy { display: flex; flex: 1; flex-direction: column; padding: 1.4rem; }
+    .card-number { color: var(--gold); font-size: .7rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+    .card-copy h2 { margin: .5rem 0 .35rem; font-size: 2.2rem; }
+    .card-meta { color: var(--muted); font-size: .88rem; }
+    .card-concern { margin: 1.25rem 0 .8rem; font-size: 1.08rem; line-height: 1.5; }
+    .themes { display: flex; flex-wrap: wrap; gap: .42rem; margin-top: auto; padding-top: 1rem; }
+    .theme {
+      padding: .35rem .58rem;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: .7rem;
+    }
+    .availability { margin-top: 1.1rem; color: var(--gold); font-size: .76rem; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; }
+
+    /* Case intro */
+    .intro-screen {
+      display: grid;
+      grid-template-columns: minmax(280px, .8fr) minmax(0, 1.2fr);
+      gap: clamp(2rem, 7vw, 7rem);
+      align-items: center;
+      max-width: 1180px;
+      margin: auto;
+    }
+    .intro-portrait {
+      display: grid;
+      min-height: 580px;
+      place-items: end center;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 45% 45% var(--radius) var(--radius);
+      background: radial-gradient(circle at 50% 22%, rgba(239,196,126,.22), transparent 18rem), linear-gradient(#244849, #102a2b);
+      box-shadow: var(--shadow);
+    }
+    .intro-portrait .portrait-svg { width: min(90%, 440px); }
+    .intro-copy { max-width: 620px; }
+    .intro-copy h1 { margin-bottom: .5rem; font-size: clamp(3rem, 7vw, 6rem); }
+    .profile-line { color: var(--gold); font-weight: 700; }
+    .case-opening {
+      margin: 1.35rem 0;
+      padding: 1.2rem 1.3rem;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 16px;
+      background: rgba(255,255,255,.035);
+    }
+    .case-opening h2 {
+      margin-bottom: .8rem;
+      font: 1.45rem/1.2 Georgia, serif;
+      letter-spacing: -.02em;
+    }
+    .case-opening p { color: var(--muted); line-height: 1.58; }
+    .case-opening p:last-child { margin-bottom: 0; }
+    .opening-quote {
+      margin: 1rem 0 0;
+      padding-left: 1rem;
+      border-left: 2px solid var(--gold);
+      color: var(--ink) !important;
+      font: 1.05rem/1.55 Georgia, serif;
+    }
+    .notice {
+      margin: 1.5rem 0;
+      padding: 1.1rem 1.2rem;
+      border-left: 3px solid var(--rose);
+      border-radius: 0 12px 12px 0;
+      color: var(--muted);
+      background: rgba(217, 155, 145, .08);
+      line-height: 1.55;
+    }
+
+    /* Encounter */
+    .encounter-screen { padding: 68px 0 0; overflow: hidden; }
+    .room {
+      position: relative;
+      min-height: calc(100vh - 68px);
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(3,16,18,.05), rgba(3,16,18,.35)),
+        radial-gradient(circle at 68% 21%, rgba(239, 196, 126, .2), transparent 19rem),
+        linear-gradient(118deg, #143b3c 0 62%, #102f31 62% 100%);
+    }
+    .room::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 32%;
+      background: linear-gradient(95deg, #132d2e, #0c2224);
+      clip-path: polygon(0 24%, 52% 8%, 100% 35%, 100% 100%, 0 100%);
+    }
+    .room-window {
+      position: absolute;
+      top: 8%;
+      right: 5%;
+      width: min(30vw, 390px);
+      height: min(39vh, 360px);
+      border: 12px solid #0e292a;
+      background:
+        linear-gradient(90deg, transparent 49%, rgba(14,41,42,.9) 49% 52%, transparent 52%),
+        linear-gradient(180deg, transparent 52%, rgba(14,41,42,.9) 52% 55%, transparent 55%),
+        radial-gradient(circle at 75% 23%, #f0c27b 0 1.4rem, transparent 1.5rem),
+        linear-gradient(#1d5052, #315a59);
+      box-shadow: 0 18px 60px rgba(0,0,0,.25);
+      opacity: .78;
+    }
+    .plant {
+      position: absolute;
+      right: 3%;
+      bottom: 22%;
+      width: 120px;
+      height: 180px;
+      opacity: .45;
+    }
+    .plant::before {
+      content: "";
+      position: absolute;
+      left: 55px;
+      top: 15px;
+      width: 5px;
+      height: 150px;
+      background: #6f8e78;
+      transform: rotate(4deg);
+    }
+    .plant::after {
+      content: "";
+      position: absolute;
+      inset: 5px 12px 60px;
+      background: #587b68;
+      clip-path: polygon(50% 100%, 42% 70%, 5% 52%, 41% 53%, 10% 17%, 48% 40%, 54% 0, 60% 42%, 94% 18%, 67% 56%, 100% 54%, 62% 72%);
+    }
+    .relationship-meters {
+      position: absolute;
+      z-index: 5;
+      top: 1.2rem;
+      right: clamp(1rem, 2vw, 2rem);
+      width: 150px;
+      padding: .75rem;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 18px;
+      background: rgba(6, 23, 25, .78);
+      box-shadow: 0 16px 42px rgba(0,0,0,.22);
+      backdrop-filter: blur(14px);
+    }
+    .relationship-title {
+      margin: 0 0 .65rem;
+      color: var(--muted);
+      font-size: .58rem;
+      font-weight: 850;
+      letter-spacing: .14em;
+      text-align: center;
+      text-transform: uppercase;
+    }
+    .meter-list { display: grid; gap: .5rem; }
+    .meter-item {
+      position: relative;
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr);
+      gap: .55rem;
+      align-items: center;
+      min-height: 57px;
+      padding: .3rem;
+      border-radius: 10px;
+    }
+    .meter-item:hover, .meter-item:focus { background: rgba(255,255,255,.055); }
+    .meter-glass {
+      position: relative;
+      width: 32px;
+      height: 50px;
+      overflow: hidden;
+      border: 2px solid rgba(235,248,245,.72);
+      border-top-width: 3px;
+      border-radius: 3px 3px 9px 9px;
+      background: rgba(218,244,239,.05);
+      box-shadow: inset 5px 0 8px rgba(255,255,255,.05);
+    }
+    .meter-glass::before {
+      content: "";
+      position: absolute;
+      z-index: 2;
+      top: -2px;
+      left: -3px;
+      width: 34px;
+      height: 4px;
+      border: 1px solid rgba(235,248,245,.7);
+      border-radius: 50%;
+    }
+    .meter-water {
+      position: absolute;
+      right: 2px;
+      bottom: 2px;
+      left: 2px;
+      height: var(--level);
+      max-height: calc(100% - 4px);
+      border-radius: 1px 1px 6px 6px;
+      background: var(--meter-color);
+      background: linear-gradient(180deg, color-mix(in srgb, var(--meter-color) 76%, white), var(--meter-color));
+      opacity: .9;
+      transition: height .65s cubic-bezier(.22,.9,.3,1);
+    }
+    .meter-water::before {
+      content: "";
+      position: absolute;
+      top: -3px;
+      left: -4px;
+      width: calc(100% + 8px);
+      height: 7px;
+      border-radius: 50%;
+      background: var(--meter-color);
+      background: color-mix(in srgb, var(--meter-color) 70%, white);
+      opacity: .92;
+    }
+    .meter-copy { min-width: 0; }
+    .meter-name {
+      display: block;
+      color: var(--ink);
+      font-size: .67rem;
+      font-weight: 800;
+      line-height: 1.15;
+    }
+    .meter-status {
+      display: block;
+      margin-top: .2rem;
+      color: var(--dim);
+      font-size: .57rem;
+      line-height: 1.1;
+    }
+    .meter-change { font-weight: 900; }
+    .meter-change.up { color: var(--sage); }
+    .meter-change.down { color: var(--rose); }
+    .meter-tooltip {
+      position: absolute;
+      right: calc(100% + .7rem);
+      top: 50%;
+      width: 230px;
+      padding: .7rem .8rem;
+      color: var(--muted);
+      background: #0b2426;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      font-size: .72rem;
+      line-height: 1.45;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-50%) translateX(6px);
+      transition: opacity .15s ease, transform .15s ease;
+    }
+    .meter-item:hover .meter-tooltip, .meter-item:focus .meter-tooltip {
+      opacity: 1;
+      transform: translateY(-50%) translateX(0);
+    }
+    .portrait-wrap {
+      position: absolute;
+      left: clamp(2%, 9vw, 11%);
+      bottom: 160px;
+      display: grid;
+      width: min(34vw, 360px);
+      height: min(64vh, 590px);
+      place-items: end center;
+      filter: drop-shadow(0 25px 30px rgba(0,0,0,.3));
+    }
+    .portrait-svg { display: block; width: min(100%, 490px); height: auto; }
+    .expression-tag {
+      position: absolute;
+      left: 0;
+      bottom: 1rem;
+      padding: .45rem .7rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: rgba(6,23,25,.76);
+      font-size: .7rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      backdrop-filter: blur(10px);
+    }
+    .dialogue-panel {
+      position: absolute;
+      z-index: 3;
+      left: clamp(1rem, 4vw, 4rem);
+      right: clamp(1rem, 4vw, 4rem);
+      bottom: clamp(1rem, 3vw, 2.4rem);
+      display: grid;
+      grid-template-columns: minmax(0, .92fr) minmax(340px, 1.08fr);
+      min-height: 235px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(20px);
+    }
+    .line-area { position: relative; padding: clamp(1.4rem, 3vw, 2.2rem); border-right: 1px solid var(--line); }
+    .speaker {
+      display: flex;
+      align-items: center;
+      gap: .7rem;
+      margin-bottom: .85rem;
+      color: var(--gold);
+      font-size: .72rem;
+      font-weight: 850;
+      letter-spacing: .17em;
+      text-transform: uppercase;
+    }
+    .speaker::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+    .dialogue-text { max-width: 45rem; margin: 0; font: 1.16rem/1.62 Georgia, serif; }
+    .selected-line { margin-bottom: .75rem; color: var(--dim); font-size: .78rem; }
+    .typing-control { position: absolute; left: 2rem; bottom: 1.1rem; }
+    .choices { display: grid; align-content: center; gap: .55rem; padding: 1rem; }
+    .choice {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: .65rem;
+      align-items: start;
+      width: 100%;
+      min-height: 48px;
+      padding: .75rem .9rem;
+      color: var(--ink);
+      text-align: left;
+      background: rgba(255,255,255,.035);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 12px;
+      cursor: pointer;
+      line-height: 1.35;
+      transition: background .16s ease, border-color .16s ease, transform .16s ease;
+    }
+    .choice:hover:not(:disabled) { transform: translateX(-4px); border-color: var(--gold); background: rgba(239,196,126,.08); }
+    .choice:disabled { opacity: .48; cursor: wait; }
+    .choice-number {
+      display: grid;
+      width: 24px;
+      height: 24px;
+      place-items: center;
+      color: var(--gold);
+      background: rgba(239,196,126,.1);
+      border-radius: 50%;
+      font-size: .7rem;
+      font-weight: 800;
+    }
+    .reaction-actions { display: flex; align-items: center; justify-content: flex-end; padding: 1rem; }
+
+    /* Reflection, events, ending */
+    .story-screen {
+      display: grid;
+      align-items: center;
+      padding-top: 95px;
+    }
+    .story-card {
+      width: min(100%, 1050px);
+      margin: auto;
+      padding: clamp(1.5rem, 5vw, 4.2rem);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(9, 29, 30, .86);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(20px);
+    }
+    .story-card h1 { margin-bottom: 1rem; font-size: clamp(2.8rem, 6vw, 5.5rem); }
+    .reflection-grid, .debrief-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: .8rem;
+      margin: 1.5rem 0 2rem;
+    }
+    .insight {
+      padding: 1.2rem;
+      border-top: 2px solid var(--accent, var(--sage));
+      border-radius: 2px 2px 14px 14px;
+      background: rgba(255,255,255,.035);
+    }
+    .insight h3 { margin-bottom: .6rem; color: var(--accent, var(--sage)); font-size: .72rem; letter-spacing: .13em; text-transform: uppercase; }
+    .insight p, .insight li { color: var(--muted); line-height: 1.55; }
+    .insight p:last-child { margin-bottom: 0; }
+    .quote { color: var(--ink) !important; font: 1rem/1.5 Georgia, serif; }
+    .ending-title { color: var(--gold); }
+    .ethics-note { margin: 1.5rem 0; padding: 1rem 1.2rem; border-left: 3px solid var(--sage); color: var(--muted); background: rgba(142,183,167,.07); line-height: 1.55; }
+
+    /* Vertical decision tree */
+    .decision-tree, .decision-tree ol { margin: 0; padding: 0; list-style: none; }
+    .decision-tree { margin: 2rem 0; }
+    .decision-tree ol {
+      position: relative;
+      display: flex;
+      padding-top: 2rem;
+    }
+    .decision-tree li {
+      position: relative;
+      flex: 1;
+      min-width: 0;
+      padding: 2rem .35rem 0;
+      text-align: center;
+    }
+    .decision-tree > li { padding: 0; }
+    .decision-tree li::before, .decision-tree li::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 50%;
+      width: 50%;
+      height: 2rem;
+      border-top: 1px solid rgba(239,196,126,.42);
+    }
+    .decision-tree li::after {
+      right: auto;
+      left: 50%;
+      border-left: 1px solid rgba(239,196,126,.42);
+    }
+    .decision-tree li:only-child::before, .decision-tree li:only-child::after { display: none; }
+    .decision-tree li:first-child::before, .decision-tree li:last-child::after { border: 0; }
+    .decision-tree li:last-child::before { border-right: 1px solid rgba(239,196,126,.42); border-radius: 0 8px 0 0; }
+    .decision-tree li:first-child::after { border-radius: 8px 0 0 0; }
+    .decision-tree > li::before, .decision-tree > li::after { display: none; }
+    .tree-node {
+      display: grid;
+      place-content: center;
+      min-height: 84px;
+      padding: .8rem;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 14px;
+      color: var(--muted);
+      background: rgba(255,255,255,.035);
+      line-height: 1.4;
+    }
+    .tree-root { width: min(100%, 340px); min-height: 76px; margin: 0 auto; border-color: var(--sage); background: rgba(142,183,167,.08); }
+    .tree-step { display: block; margin-bottom: .3rem; color: var(--dim); font-size: .64rem; font-weight: 800; letter-spacing: .11em; text-transform: uppercase; }
+    .tree-node strong { display: block; color: var(--ink); }
+    .tree-node.on-current-path { border-color: var(--gold); background: rgba(239,196,126,.08); box-shadow: inset 0 0 0 1px rgba(239,196,126,.12); }
+    .tree-stem { display: block; width: 1px; height: 2rem; margin: 0 auto; background: rgba(239,196,126,.42); }
+    .tree-ending { min-height: 112px; }
+    .tree-ending .availability, .tree-ending .micro { justify-self: center; margin-top: .55rem; }
+    .locked { color: var(--dim); filter: blur(2px); user-select: none; }
+    .educator-panel { margin-top: 1rem; padding: 1rem; border: 1px dashed var(--gold-2); border-radius: 12px; color: var(--muted); }
+
+    /* Dialogs */
+    dialog {
+      width: min(92vw, 650px);
+      max-height: 86vh;
+      overflow: auto;
+      padding: 0;
+      color: var(--ink);
+      background: #0d2829;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+    }
+    dialog.graph-dialog { width: min(94vw, 880px); }
+    dialog::backdrop { background: rgba(2, 11, 12, .72); backdrop-filter: blur(7px); }
+    .dialog-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.2rem 1.4rem; border-bottom: 1px solid var(--line); }
+    .dialog-head h2 { margin: 0; font: 1.2rem/1 "Segoe UI", sans-serif; font-weight: 750; letter-spacing: 0; }
+    .dialog-close { width: 42px; height: 42px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 50%; cursor: pointer; }
+    .dialog-body { padding: 1.4rem; }
+    .menu-list { display: grid; gap: .55rem; }
+    .menu-list button { width: 100%; text-align: left; }
+    .setting { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid rgba(255,255,255,.08); }
+    .setting:last-child { border-bottom: 0; }
+    .setting label { font-weight: 700; }
+    .setting small { display: block; margin-top: .3rem; color: var(--dim); font-weight: 400; }
+    .toggle { width: 22px; height: 22px; accent-color: var(--gold-2); }
+    select { min-height: 42px; padding: .4rem .7rem; color: var(--ink); background: #173536; border: 1px solid var(--line); border-radius: 8px; }
+    .history-list { display: grid; gap: .8rem; }
+    .history-line { padding-left: 1rem; border-left: 2px solid var(--line); color: var(--muted); line-height: 1.5; }
+    .history-line strong { display: block; margin-bottom: .2rem; color: var(--gold); font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; }
+
+    /* Relationship graph */
+    .relationship-graph { display: grid; gap: 1rem; }
+    .graph-intro { margin: 0; color: var(--muted); line-height: 1.55; }
+    .graph-legend { display: flex; flex-wrap: wrap; gap: .7rem 1rem; margin: 0; padding: 0; list-style: none; }
+    .graph-legend-item { display: inline-flex; align-items: center; gap: .45rem; color: var(--muted); font-size: .78rem; font-weight: 700; }
+    .graph-legend-mark { width: 26px; height: 12px; overflow: visible; }
+    .graph-wrap { position: relative; min-width: 0; }
+    .relationship-chart { display: block; width: 100%; height: auto; overflow: visible; }
+    .relationship-chart .graph-grid { stroke: rgba(255,255,255,.13); stroke-width: 1; vector-effect: non-scaling-stroke; }
+    .relationship-chart .graph-axis { fill: var(--dim); font: 12px/1 "Segoe UI", sans-serif; }
+    .relationship-chart .graph-axis-title { fill: var(--muted); font: 700 12px/1 "Segoe UI", sans-serif; letter-spacing: .04em; }
+    .relationship-chart .graph-line { fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+    .relationship-chart .graph-hit { fill: transparent; stroke: transparent; stroke-width: 18; }
+    .relationship-chart .graph-marker { stroke: #0d2829; stroke-width: 2; vector-effect: non-scaling-stroke; }
+    .relationship-chart .graph-point { cursor: pointer; }
+    .relationship-chart .graph-point:focus { outline: none; }
+    .relationship-chart .graph-point:focus .graph-focus-ring { opacity: 1; }
+    .relationship-chart .graph-focus-ring { fill: none; stroke: var(--focus); stroke-width: 3; opacity: 0; vector-effect: non-scaling-stroke; }
+    .graph-tooltip {
+      position: absolute;
+      z-index: 4;
+      width: min(260px, calc(100% - 16px));
+      padding: .7rem .8rem;
+      color: var(--ink);
+      background: #071b1e;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      box-shadow: 0 12px 34px rgba(0,0,0,.4);
+      font-size: .78rem;
+      line-height: 1.4;
+      pointer-events: none;
+      transform: translate(-50%, calc(-100% - 10px));
+    }
+    .graph-tooltip[hidden] { display: none; }
+    .graph-tooltip.below { transform: translate(-50%, 10px); }
+    .graph-detail { min-height: 3.25rem; margin: 0; padding: .8rem 1rem; color: var(--muted); background: rgba(255,255,255,.04); border-left: 3px solid var(--gold); line-height: 1.45; }
+    .graph-detail strong { color: var(--ink); }
+
+    body.high-contrast {
+      --ink: #ffffff;
+      --muted: #f2f2f2;
+      --dim: #dedede;
+      --night: #000;
+      --night-2: #071b1c;
+      --panel: rgba(0, 0, 0, .97);
+      --line: rgba(255, 255, 255, .58);
+      --gold: #ffde82;
+      --focus: #fff36b;
+    }
+    body.high-contrast .room, body.high-contrast .story-card { background-color: #000; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .001ms !important; transition-duration: .001ms !important; }
+    }
+    body.reduced-motion *, body.reduced-motion *::before, body.reduced-motion *::after { animation: none !important; transition: none !important; }
+
+    @media (max-width: 900px) {
+      .title-screen { grid-template-columns: 1fr; padding-top: 5rem; }
+      .title-visual { min-height: 410px; }
+      .patient-grid { grid-template-columns: 1fr; }
+      .patient-card { min-height: 0; }
+      .selection-head { align-items: start; flex-direction: column; }
+      .intro-screen { grid-template-columns: 1fr; padding-top: 4rem; }
+      .intro-portrait { min-height: 430px; order: 2; }
+      .dialogue-panel { grid-template-columns: 1fr; max-height: 49vh; overflow: auto; }
+      .line-area { min-height: 150px; border-right: 0; border-bottom: 1px solid var(--line); }
+      .portrait-wrap { left: 50%; bottom: 40%; width: min(68vw, 320px); height: 52vh; transform: translateX(-50%); }
+      .room-window { width: 55vw; }
+      .relationship-meters { top: .65rem; right: .65rem; left: .65rem; width: auto; padding: .45rem; }
+      .relationship-title { display: none; }
+      .meter-list { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .25rem; }
+      .meter-item { grid-template-columns: 24px minmax(0,1fr); gap: .3rem; min-height: 46px; padding: .2rem; }
+      .meter-glass { width: 22px; height: 38px; }
+      .meter-glass::before { width: 24px; }
+      .meter-name { font-size: .58rem; overflow-wrap: anywhere; }
+      .meter-status { font-size: .52rem; }
+      .meter-tooltip { top: calc(100% + .35rem); right: auto; left: 0; width: min(230px, 78vw); transform: translateY(5px); }
+      .meter-item:hover .meter-tooltip, .meter-item:focus .meter-tooltip { transform: translateY(0); }
+    }
+
+    @media (max-width: 620px) {
+      .screen { padding: 1rem; }
+      .title-screen { padding: 4.5rem 1.1rem 1.1rem; }
+      .title-copy h1 { font-size: clamp(3.1rem, 18vw, 5rem); }
+      .title-note { right: 0; }
+      .topbar { grid-template-columns: auto 1fr auto; padding: .55rem .7rem; }
+      .brand-button .brand-name { display: none; }
+      .chapter-label { font-size: .65rem; letter-spacing: .09em; }
+      .encounter-screen { padding-top: 62px; }
+      .room { min-height: calc(100dvh - 62px); }
+      .portrait-wrap { bottom: 44%; width: min(68vw, 300px); height: 46vh; }
+      .expression-tag { left: .5rem; bottom: .2rem; }
+      .dialogue-panel { left: .55rem; right: .55rem; bottom: .55rem; max-height: 53vh; border-radius: 17px; }
+      .line-area { padding: 1rem; }
+      .dialogue-text { font-size: 1.03rem; }
+      .typing-control { position: static; margin-top: .8rem; }
+      .choices { padding: .65rem; }
+      .choice { min-height: 52px; }
+      .reaction-actions { padding: .75rem; }
+      .reflection-grid, .debrief-grid { grid-template-columns: 1fr; }
+      .story-card { padding: 1.25rem; }
+      .story-card h1 { font-size: 2.7rem; }
+      dialog.graph-dialog { width: calc(100vw - 1rem); }
+      dialog.graph-dialog .dialog-body { padding: 1rem .65rem; }
+      .graph-legend { gap: .5rem .75rem; }
+      .graph-legend-item { font-size: .68rem; }
+      .graph-tooltip { display: none !important; }
+      .decision-tree ol { display: grid; gap: 1rem; padding: 1.5rem 0 0 1rem; margin-left: .65rem; border-left: 1px solid rgba(239,196,126,.42); }
+      .decision-tree li { padding: 0 0 0 1rem; text-align: left; }
+      .decision-tree > li { padding: 0; }
+      .decision-tree li::before { display: block; top: 2rem; right: auto; left: -1rem; width: 1rem; height: 0; border: 0; border-top: 1px solid rgba(239,196,126,.42); }
+      .decision-tree li::after, .decision-tree li:only-child::before, .decision-tree li:only-child::after { display: none; }
+      .decision-tree > li::before { display: none; }
+      .tree-root { width: 100%; margin: 0; }
+      .tree-node { place-content: start; min-height: 0; text-align: left; }
+      .tree-stem { height: 1.25rem; margin: 0 0 0 1.25rem; }
+      .tree-ending { min-height: 0; }
+      .tree-ending .availability, .tree-ending .micro { justify-self: start; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#app">Skip to story</a>
+  <header class="topbar" id="topbar" hidden>
+    <button class="brand-button" id="home-button" aria-label="PsychiatryChat home">
+      <span class="brand-mark" aria-hidden="true">P</span>
+      <span class="brand-name">PsychiatryChat</span>
+    </button>
+    <div class="chapter-label" id="chapter-label">Week 1 · Encounter 1</div>
+    <button class="icon-button" id="menu-button" aria-haspopup="dialog">Menu</button>
+  </header>
+
+  <main id="app" tabindex="-1"></main>
+  <div class="sr-only" id="live-region" aria-live="polite" aria-atomic="true"></div>
+
+  <dialog id="modal" aria-labelledby="modal-title">
+    <div class="dialog-head">
+      <h2 id="modal-title">Menu</h2>
+      <button class="dialog-close" id="modal-close" aria-label="Close dialog">×</button>
+    </div>
+    <div class="dialog-body" id="modal-body"></div>
+  </dialog>
+
+  <script>
+  (() => {
+    "use strict";
+
+    const SAVE_KEY = "psychiatryChat.prototype.v1";
+    const SETTINGS_KEY = "psychiatryChat.settings.v1";
+    const ENDINGS_KEY = "psychiatryChat.endings.v1";
+    const app = document.getElementById("app");
+    const topbar = document.getElementById("topbar");
+    const chapterLabel = document.getElementById("chapter-label");
+    const modal = document.getElementById("modal");
+    const modalTitle = document.getElementById("modal-title");
+    const modalBody = document.getElementById("modal-body");
+    const liveRegion = document.getElementById("live-region");
+    let typingTimer = null;
+    let typingPaused = false;
+
+    // ---------------------------
+    // Replaceable case content
+    // ---------------------------
+    const patientCatalog = [
+      {
+        id: "amara",
+        number: "Case 01",
+        name: "Amara Reed",
+        age: 29,
+        pronouns: "she/her",
+        setting: "Outpatient psychiatry",
+        concern: "Low mood, missed laboratory shifts, and feeling like a burden.",
+        context: "A doctoral student who finds steadiness in ceramics and weekly calls with her older sister.",
+        introTitle: "Before the first appointment",
+        introduction: [
+          "You are a psychiatry trainee meeting Amara for the first time. Her laboratory supervisor encouraged her to seek care after several missed shifts, but Amara chose to make the appointment herself.",
+          "She wants enough energy to return to her research and pottery studio. She is also afraid that needing help will confirm what she already suspects about herself: that other people must carry what she cannot."
+        ],
+        openingQuote: "I do not know whether I need treatment or just need to stop being bad at my own life.",
+        contentNotice: "This fictional case includes depression, work impairment, medication concerns, passive death wishes, and direct, non-graphic questions about suicide.",
+        duration: "25-35 min",
+        themes: ["shame", "disclosure", "safety", "shared planning"],
+        available: true,
+        colors: { gradient: "linear-gradient(145deg, #527a70, #203e40)", skin: "#9d694f", skinDark: "#80503f", hair: "#201d22", shirt: "#d19c72", shirtDark: "#8c5d4e" }
+      },
+      {
+        id: "theo",
+        number: "Case 02",
+        name: "Theo Alvarez",
+        age: 34,
+        pronouns: "they/he",
+        setting: "Urgent outpatient visit",
+        concern: "Little sleep, racing ideas, and growing conflict at home.",
+        context: "A community radio producer who values independence and worries about losing creative momentum.",
+        introTitle: "Before the urgent visit",
+        introduction: [
+          "You are the psychiatry trainee covering an urgent outpatient appointment. Theo requested the visit after their partner became worried about several nights of little sleep, rapid new projects, and arguments about spending.",
+          "Theo is proud of a new late-night radio concept and does not want concern to become coercion. They want to be taken seriously as a creative professional, not reduced to a symptom or a problem for the family to manage."
+        ],
+        openingQuote: "Everyone keeps calling this a crisis. What if I am finally doing the work I was meant to do?",
+        contentNotice: "This planned case includes severe sleep loss, possible mania or psychosis, medication concerns, family conflict, autonomy, and discussion of higher levels of care.",
+        duration: "Outline",
+        themes: ["autonomy", "de-escalation", "medication concerns"],
+        available: false,
+        colors: { gradient: "linear-gradient(145deg, #69516e, #2d3349)", skin: "#ba7957", skinDark: "#8d563f", hair: "#31211c", shirt: "#8f7aac", shirtDark: "#65577f" }
+      },
+      {
+        id: "elise",
+        number: "Case 03",
+        name: "Elise Walker",
+        age: 41,
+        pronouns: "she/her",
+        setting: "Integrated primary care",
+        concern: "Panic episodes and repeated urgent-care visits.",
+        context: "A restaurant manager raising a teenager while rebuilding routines after a frightening accident.",
+        introTitle: "Before the consultation",
+        introduction: [
+          "You are a psychiatry trainee joining an integrated-care consultation. Elise asked for help after a second urgent-care visit for chest tightness and panic, months after a serious car accident.",
+          "She has kept managing a busy restaurant and parenting her teenager, but driving at night and being alone with physical sensations have become harder. She wants practical help and worries that psychiatry will tell her the symptoms are imaginary."
+        ],
+        openingQuote: "I know the tests say my heart is fine. My body still acts like I am about to die.",
+        contentNotice: "This planned case includes panic symptoms, trauma after a motor-vehicle accident, avoidance, repeated crisis care, boundary setting, and non-graphic safety planning.",
+        duration: "Outline",
+        themes: ["trauma-informed care", "boundaries", "agency"],
+        available: false,
+        colors: { gradient: "linear-gradient(145deg, #8a5d52, #3b3e43)", skin: "#d29a74", skinDark: "#aa7558", hair: "#56372f", shirt: "#73939b", shirtDark: "#4f7078" }
+      }
+    ];
+
+    const RELATIONSHIP_VARIABLES = [
+      {
+        id: "trust",
+        label: "Trust",
+        color: "#69b8ad",
+        description: "The patient's confidence that the clinician will be reliable, honest, and responsive without judgment."
+      },
+      {
+        id: "safety",
+        label: "Safety",
+        color: "#78a9d2",
+        description: "How clearly the conversation identifies risk, supports disclosure, and avoids unnecessary harm."
+      },
+      {
+        id: "empathy",
+        label: "Empathy",
+        color: "#d99b91",
+        description: "Genuine understanding, validation, and respect for the patient's experience and perspective."
+      },
+      {
+        id: "collaboration",
+        label: "Collaboration",
+        color: "#efc47e",
+        description: "How well patient and clinician share decisions, responsibility, and authorship of the treatment plan."
+      }
+    ];
+
+    const E1_SCENES = [
+      {
+        id: "e1_arrival", expression: "guarded",
+        text: "I almost canceled today. My supervisor said I should take time off, and I keep hearing that as a polite way of saying I cannot handle the work anymore.",
+        choices: [
+          c("e1_reflect", "The leave is meant as support, but it feels more like proof that you have failed.", "“Yes—exactly.” She looks up for the first time. “Everyone else seems able to keep going.”", "thoughtful", {trust:1, feltValidation:2, disclosure:1}, ["shame_reflected"], ["reflection", "validation"], 2, "You noticed the shame underneath the work problem.", "Stay with the meaning before moving to solutions."),
+          c("e1_normalize", "A lot of graduate students feel overwhelmed. You are not alone in this.", "“I know. Somehow that makes me feel like I have even less of an excuse.”", "guarded", {feltValidation:0, shame:1, disclosure:-1}, ["generic_normalization"], ["normalization", "missed emotion"], -1, "My specific fear became a general problem.", "Reflect the personal meaning of the leave before normalizing."),
+          c("e1_plan_fast", "Let us focus on a concrete plan for getting you back into the lab.", "“Okay. A plan.” She smooths the edge of her sleeve and waits for you to continue.", "withdrawn", {hope:1, agency:-1, disclosure:-1}, ["premature_plan"], ["advice", "timing"], -1, "Getting me productive mattered more than understanding what stopped me.", "Ask what returning would mean to her before planning."),
+          c("e1_clarify", "What has made the lab hardest to walk into lately?", "“The questions,” she says. “People asking where I have been. I do not know how to answer without sounding pathetic.”", "anxious", {trust:1, disclosure:1}, ["work_context_explored"], ["open question", "context"], 1, "You were interested in the situation, not only the symptom list.", "Pair curiosity with a reflection of the shame she describes.")
+        ]
+      },
+      {
+        id: "e1_burden", expression: "anxious",
+        text: previousChoiceId => ({
+          e1_reflect: "That is what the leave feels like. And the lab is not the only thing I am avoiding. My sister keeps calling, and I let it ring. She has two kids and a real life. She should not have to manage me too.",
+          e1_normalize: "Maybe I am not alone. I still keep shutting people out. My sister keeps calling, and I let it ring. She has two kids and a real life. She should not have to manage me too.",
+          e1_plan_fast: "Before we make a plan, there is something else. My sister keeps calling, and I let it ring. She has two kids and a real life. She should not have to manage me too.",
+          e1_clarify: "The questions at the lab are hard, but I am avoiding people outside it too. My sister keeps calling, and I let it ring. She has two kids and a real life. She should not have to manage me too."
+        })[previousChoiceId] || "The lab is not the only thing I am avoiding. My sister keeps calling, and I let it ring. She has two kids and a real life. She should not have to manage me too.",
+        choices: [
+          c("e1_validate_burden", "You are trying to protect her. At the same time, you are carrying all of this alone.", "“It is lonely.” She exhales. “I miss her. I just hate who I become when I need something.”", "tearful", {trust:1, feltValidation:2, disclosure:1}, ["burden_reflected"], ["validation", "both-and"], 2, "You understood both my care for my sister and the cost of hiding.", "Continue holding both truths without deciding for her."),
+          c("e1_reassure_sister", "I doubt your sister sees you as a burden.", "“Maybe. But you do not know her—or what I am like when things get bad.” Her shoulders draw inward.", "withdrawn", {feltValidation:-1, disclosure:-1}, ["premature_reassurance"], ["reassurance", "invalidation"], -1, "My fear was argued with before it was understood.", "Ask what has led her to expect that response."),
+          c("e1_call_sister", "Could you call her back tonight and tell her what is happening?", "“I could,” she says carefully, “but I do not think I would.”", "guarded", {hope:1, agency:-1}, ["directive_support_plan"], ["advice", "agency"], 0, "You offered a practical idea before asking whether I wanted it.", "Explore what makes contact feel risky and ask permission before planning."),
+          c("e1_silence", "Pause and give Amara room to continue.", "The quiet lasts several seconds. “Sometimes I draft a text to her,” she says, “and then erase it.”", "thoughtful", {trust:1, disclosure:1}, ["used_silence"], ["silence", "disclosure"], 1, "You did not rush to fill the space.", "After the pause, reflect the ambivalence she revealed.")
+        ]
+      },
+      {
+        id: "e1_symptoms", expression: "tired",
+        text: previousChoiceId => ({
+          e1_validate_burden: "Being alone with it is exhausting. Most days I barely have enough energy to answer anyone. I wake up at four and stare at the ceiling, and by morning I feel made of sand.",
+          e1_reassure_sister: "Maybe she would not see it that way. I still barely have enough energy to answer anyone. I wake up at four and stare at the ceiling, and by morning I feel made of sand.",
+          e1_call_sister: "Even deciding whether to call her feels like too much some days. I wake up at four and stare at the ceiling, and by morning I feel made of sand.",
+          e1_silence: "I usually erase the text because by then I barely have enough energy to explain anything. I wake up at four and stare at the ceiling, and by morning I feel made of sand."
+        })[previousChoiceId] || "Most days I barely have enough energy to answer anyone. I wake up at four and stare at the ceiling, and by morning I feel made of sand.",
+        choices: [
+          c("e1_open_day", "Walk me through one of the days when the heaviness is at its worst.", "“The food stays where I left it. I open my laptop, stare at it, and somehow end up sitting on the floor beside my bed for hours.”", "tired", {disclosure:2, trust:1}, ["function_explored"], ["open question", "function"], 2, "You wanted to understand how the symptoms shape my actual day.", "Use the details she offers to ask about risk directly."),
+          c("e1_checklist", "How many hours are you sleeping? What about appetite, concentration, and energy?", "“Four hours, maybe five. I forget to eat. I reread the same paragraph, and everything takes too much effort.” Her answers become clipped and efficient.", "guarded", {disclosure:1, feltValidation:-1}, ["stacked_questions"], ["closed questions", "checklist"], 0, "I became a list of symptoms for a moment.", "Ask one focused question, then reflect what the answer means."),
+          c("e1_sleep_hygiene", "Have you tried avoiding screens and keeping a consistent bedtime?", "“Yes,” she says quickly. “I have read the same articles.”", "irritated", {defensiveness:1, trust:-1}, ["premature_sleep_advice"], ["advice", "timing"], -1, "You assumed I had not tried the obvious things.", "Understand the early waking and depression before offering strategies."),
+          c("e1_diagnose", "Early waking can be a biological symptom of major depression.", "“Okay.” Amara glances toward the clock. “So it is official, then.”", "guarded", {safetyClarity:1, agency:-1, shame:1}, ["medicalized_early"], ["medical language", "timing"], -1, "A label arrived before we had made sense of the experience together.", "Ask how she understands the change before offering diagnostic framing.")
+        ]
+      },
+      {
+        id: "e1_death_wish", expression: "withdrawn",
+        text: previousChoiceId => ({
+          e1_open_day: "On those days, the hours before morning are the worst. Sometimes I think everyone would get a few quiet days if I simply did not wake up. I am not saying I would do anything.",
+          e1_checklist: "It is the hours before morning that worry me most. Sometimes I think everyone would get a few quiet days if I simply did not wake up. I am not saying I would do anything.",
+          e1_sleep_hygiene: "I have tried all of that. The part I do not usually say is that sometimes, while I am awake, I think everyone would get a few quiet days if I simply did not wake up. I am not saying I would do anything.",
+          e1_diagnose: "Maybe that is what this is. What scares me is that sometimes I think everyone would get a few quiet days if I simply did not wake up. I am not saying I would do anything."
+        })[previousChoiceId] || "Those hours before morning are the worst. Sometimes I think everyone would get a few quiet days if I simply did not wake up. I am not saying I would do anything.",
+        choices: [
+          c("e1_direct_safety", "Thank you for telling me. Are you having thoughts of killing yourself, and have you thought about how you might do it?", "Amara is still. Then she nods. “The thought comes, but I do not have a plan or intent. I was scared you would overreact.”", "tearful", {trust:2, disclosure:2, safetyClarity:3}, ["direct_safety_completed", "passive_wish_clarified"], ["direct safety assessment", "gratitude"], 3, "You could hear something frightening without becoming frightened of me.", "Continue by clarifying intent, access, protective factors, and what would change the risk."),
+          c("e1_soft_safety", "You would tell someone before doing anything dangerous, right?", "“Right,” she says. The answer comes too fast. Nothing else follows.", "withdrawn", {safetyClarity:-1, disclosure:-2, shame:1}, ["leading_safety_question"], ["safety", "leading question"], -3, "There was a preferred answer, so I gave it.", "Use direct, neutral language about thoughts, plan, intent, and behavior."),
+          c("e1_reassure_future", "This feeling will pass, even if it does not seem that way tonight.", "Amara rubs her thumb across her palm. “I hope so.” The thought remains unexamined.", "anxious", {hope:1, safetyClarity:-2, disclosure:-1}, ["safety_reassured"], ["reassurance", "missed safety"], -2, "The conversation moved away from the risk before I could explain it.", "Acknowledge the pain, then ask directly about suicidal thoughts, plan, intent, and behavior."),
+          c("e1_change_topic", "Let us come back to the leave. How long did your supervisor recommend?", "“Two weeks.” Amara's voice is quiet. She does not mention the thought again.", "withdrawn", {rupture:2, disclosure:-2, safetyClarity:-3}, ["safety_avoided"], ["deflection", "missed safety"], -3, "The hardest thing I said seemed too uncomfortable to discuss.", "Name what you heard and complete a direct safety assessment.")
+        ]
+      },
+      {
+        id: "e1_protection", expression: "thoughtful",
+        text: previousChoiceId => ({
+          e1_direct_safety: "I do not think I would act on it. I would not want my niece to remember me that way, and my sister has a key. Those are the things I reach for on bad nights.",
+          e1_soft_safety: "I heard myself say I would tell someone, but honestly, I do not know. I do know I would not want my niece to remember me that way, and my sister has a key. Those are the things I reach for on bad nights.",
+          e1_reassure_future: "I hope it passes too. On bad nights I think about my niece, and the fact that my sister has a key. Those are the things I reach for when I am trying to wait it out.",
+          e1_change_topic: "Two weeks. But I do not want to leave the other thing hanging. I do not think I would act on it. I think about my niece, and my sister has a key. Those are the things I reach for on bad nights."
+        })[previousChoiceId] || "I do not think I would act on it. I would not want my niece to remember me that way, and my sister has a key. Those are the things I reach for on bad nights.",
+        choices: [
+          c("e1_protective_explore", "Your niece and sister matter deeply. What else has helped you get through one of those nights?", "“Clay, sometimes. Just wedging it over and over. And I have the crisis number saved, though I have never used it.”", "thoughtful", {safetyClarity:2, agency:2, hope:1}, ["protective_factors_explored"], ["protective factors", "coping"], 2, "You treated my reasons for living as real supports, not a box to check.", "Build a plan around supports she already trusts."),
+          c("e1_family_guarantee", "Your family needs you. Hold on to that when it gets bad.", "Amara flinches slightly. “I know. That is part of why I feel so guilty.”", "tearful", {shame:2, agency:-1}, ["family_pressure"], ["guilt", "reassurance"], -2, "My relationships became another obligation I could fail.", "Explore connection as support without using loved ones as leverage."),
+          c("e1_emergency_only", "If those thoughts return, you need to go straight to the emergency department.", "“Even if it is just the same thought?” She looks uncertain. “I probably would not go.”", "guarded", {safetyClarity:1, treatmentBuyIn:-1, agency:-1}, ["emergency_only_plan"], ["directive safety planning", "threshold"], -1, "The only option sounded so large that I might wait instead.", "Create stepped options for different levels of risk, including urgent and emergency care."),
+          c("e1_acknowledge_strength", "You have already noticed what anchors you. Would it be okay if we build from those?", "“Yes,” she says. “If it can be specific enough that I do not have to think from scratch.”", "relieved", {agency:2, treatmentBuyIn:1, trust:1}, ["permission_to_plan"], ["strengths", "permission"], 2, "The plan began with what I already know about myself.", "Translate those strengths into specific, usable steps.")
+        ]
+      },
+      {
+        id: "e1_medication", expression: "guarded",
+        text: previousChoiceId => ({
+          e1_protective_explore: "Clay helps because it still feels like me. That is part of why I need to tell you this: I filled the prescription from urgent care, but I have not started it. My mother took medication and became... absent. I cannot afford to lose more of myself.",
+          e1_family_guarantee: "That guilt is part of why I am scared to get any of this wrong. I filled the prescription from urgent care, but I have not started it. My mother took medication and became... absent. I cannot afford to lose more of myself.",
+          e1_emergency_only: "The emergency department feels like one more thing I could get wrong. I do want help, but I am scared by some of the options. I filled the prescription from urgent care, but I have not started it. My mother took medication and became... absent.",
+          e1_acknowledge_strength: "If we are building from what already anchors me, I need to tell you what I am afraid of losing. I filled the prescription from urgent care, but I have not started it. My mother took medication and became... absent."
+        })[previousChoiceId] || "I do want help. I just get scared by some of the options. I filled the prescription from urgent care, but I have not started it. My mother took medication and became... absent. I cannot afford to lose more of myself.",
+        choices: [
+          c("e1_med_explore", "What did you notice happen to your mother, and what matters most for you to preserve in any treatment plan?", "“She stopped laughing. I need to be able to think and make things with my hands.”", "thoughtful", {trust:2, agency:2, treatmentBuyIn:1}, ["med_concerns_explored"], ["curiosity", "values"], 2, "My concern was information about my values, not resistance to overcome.", "Use her priorities to compare options and monitoring plans."),
+          c("e1_med_persuade", "Modern antidepressants are well tolerated, and the dose is low.", "“That may be true,” she says, “but it does not answer what I am afraid of.”", "irritated", {defensiveness:1, treatmentBuyIn:-1, trust:-1}, ["med_concern_minimized"], ["persuasion", "missed concern"], -1, "Evidence was used to close the concern rather than understand it.", "Elicit the feared outcome before discussing probabilities and monitoring."),
+          c("e1_med_defer", "Medication is optional. We can avoid it for now.", "Her brow tightens. “I did not say never. I wanted to know how we would tell if it was changing me.”", "guarded", {agency:1, treatmentBuyIn:-1, disclosure:-1}, ["med_discussion_avoided"], ["autonomy", "avoidance"], 0, "My autonomy was respected, but the question I asked was left unanswered.", "Explore concerns and offer a collaborative trial only if she wants it."),
+          c("e1_med_collab", "We could review benefits, risks, and other options, then decide together whether a monitored trial fits. How does that sound?", "“Better,” she says. “I would want to know what we are watching for and how to stop safely if it feels wrong.”", "relieved", {agency:2, treatmentBuyIn:2, trust:1}, ["shared_med_plan"], ["shared decision-making", "medication"], 2, "There was room to be cautious without being dismissed.", "Make monitoring and follow-up concrete before deciding together.")
+        ]
+      },
+      {
+        id: "e1_close", expression: "tired",
+        text: previousChoiceId => ({
+          e1_med_explore: "Being able to protect those parts of myself matters. This all makes sense while we are talking, but I can already feel it turning into a list of things I am supposed to do. I am worried I will agree now and disappear when I get home.",
+          e1_med_persuade: "I hear the information. I can also feel this turning into another list of things I am supposed to do. I am worried I will agree now and disappear when I get home.",
+          e1_med_defer: "I do not want us to avoid the question. At the same time, this is starting to feel like a list of things I am supposed to do. I am worried I will agree now and disappear when I get home.",
+          e1_med_collab: "That sounds better. And this all makes sense while we are talking, but I can already feel it turning into a list of things I am supposed to do. I am worried I will agree now and disappear when I get home."
+        })[previousChoiceId] || "This all makes sense while we are talking, but I can already feel it turning into a list of things I am supposed to do. I am worried I will agree now and disappear when I get home.",
+        choices: [
+          c("e1_menu_plan", "Let us make the plan smaller. Which one step feels possible today, and what should we do if that step becomes hard?", "“I can text my sister: ‘Can you come by?’ Just that. And I can answer your call tomorrow.”", "relieved", {agency:2, treatmentBuyIn:2, hope:1}, ["collaborative_next_step"], ["collaborative planning", "specificity"], 2, "You made room for a plan I could actually own.", "Confirm the step, backup plan, and urgent options in her own words."),
+          c("e1_full_plan", "I will write out the medication schedule, therapy referral, sleep routine, and return-to-work plan.", "Amara looks at the list. “That is thorough.” She folds it without reading further.", "overwhelmed", {treatmentBuyIn:1, agency:-2, avoidance:1}, ["overloaded_plan"], ["directive planning", "cognitive load"], -1, "The plan was complete on paper and impossible in my evening.", "Prioritize one or two steps with the patient and name a backup."),
+          c("e1_motivate", "Recovery will require you to follow through even when motivation is low.", "“I know.” Shame settles back across her face. “That is the problem with me.”", "withdrawn", {shame:2, trust:-1, hope:-1}, ["adherence_moralized"], ["motivation", "shame"], -2, "Difficulty following through sounded like a character flaw.", "Anticipate barriers without moralizing them and make the plan easier to use."),
+          c("e1_clinic_leads", "If you do not answer tomorrow, may we send a message and try your sister only with your permission?", "“Yes. Message first. If you cannot reach me and you are worried about immediate danger, call her.”", "thoughtful", {safetyClarity:2, agency:2, trust:1}, ["followup_preferences_set"], ["boundaries", "safety planning"], 2, "You asked how support should reach me instead of assuming access.", "Document the limits of confidentiality and exact escalation steps clearly.")
+        ]
+      }
+    ];
+
+    function e2Scenes(firstBranch) {
+      const opening = firstBranch === "A"
+        ? "I went to the meeting with my supervisor. She offered a temporary reduced schedule. I kept hearing what you said about making the next step small, but I still nearly turned around at the door."
+        : "I did not go to the meeting with my supervisor. I read the first line of the invitation, closed my laptop, and watched the clinic call the next day without answering. I almost canceled today too. I did not want to come back and have to explain that I had done none of it.";
+      return [
+        {
+          id: "e2_return", expression: firstBranch === "A" ? "thoughtful" : "guarded", text: opening,
+          choices: firstBranch === "A" ? [
+            c("e2_a_open", "What helped you enter the room, and what was happening in the moment you almost left?", "“I texted my sister from the hallway. The panic did not disappear, but I did not have to pretend it was not there.”", "thoughtful", {trust:1, disclosure:2, agency:1}, ["return_explored"], ["process", "curiosity"], 2, "You were interested in both what worked and what remained hard.", "Use the details to reinforce her own effective actions."),
+            c("e2_a_praise", "That is excellent. I knew you could do it.", "“Thanks.” She smiles briefly, then looks away. “It did not feel excellent.”", "guarded", {hope:1, feltValidation:-1, disclosure:-1}, ["outcome_praised"], ["praise", "missed complexity"], 0, "The successful outcome covered over how difficult it was.", "Ask about the effort and fear, not only the result."),
+            c("e2_a_assume", "Good. Then the work problem is beginning to resolve.", "“Maybe.” Amara's expression closes. “There is more to it.”", "withdrawn", {rupture:1, disclosure:-1}, ["success_assumed"], ["assumption", "premature closure"], -1, "My visible action was mistaken for recovery.", "Invite what remains unresolved."),
+            c("e2_a_pause", "Pause and let her decide what to say next.", "“My supervisor was kind,” she says. “That somehow made me cry harder afterward.”", "tearful", {trust:1, disclosure:1}, ["e2_silence"], ["silence", "disclosure"], 1, "You left space for the part that did not fit a success story.", "Reflect the emotional complexity that follows.")
+          ] : [
+            c("e2_b_repair", "I am glad you told me. I moved too quickly into a plan last time and did not make enough room for what you were carrying. What was that like for you?", "Amara studies your face. “I thought you were disappointed in me before I had even left.” Her voice steadies as she continues.", "tearful", {trust:3, feltValidation:2, disclosure:2, repair:3, rupture:-2}, ["rupture_repaired"], ["repair", "accountability"], 3, "You recognized your part without asking me to reassure you.", "After acknowledging impact, listen before proposing a new plan."),
+            c("e2_b_explain", "I was concerned about your safety, so I needed to be direct and make a plan.", "“I understand the reason,” she says. “It still felt like you had stopped hearing me.”", "guarded", {safetyClarity:1, repair:-1, rupture:1}, ["rupture_defended"], ["explanation", "missed repair"], -2, "Your intention mattered more than the impact on me.", "Acknowledge impact first; explanations can follow if they help the patient."),
+            c("e2_b_reassure", "You did not answer anything wrong. I think the visit went better than you remember.", "“Okay.” Amara settles back into the chair, less present than before.", "withdrawn", {feltValidation:-2, disclosure:-2, rupture:2}, ["rupture_minimized"], ["reassurance", "invalidation"], -2, "My experience of the visit was corrected instead of explored.", "Ask what communicated disappointment to her."),
+            c("e2_b_restart", "Where would it feel most useful to begin today?", "“With why I did not answer the clinic.” She takes a breath. “But I need you not to give me five instructions afterward.”", "guarded", {agency:2, disclosure:1, repair:1}, ["patient_led_restart"], ["agency", "repair"], 2, "You let me set the starting point, though the earlier impact still needed naming.", "Pair the invitation with explicit accountability for the prior rupture.")
+          ]
+        },
+        {
+          id: "e2_feedback", expression: "anxious",
+          text: firstBranch === "A"
+            ? "What stayed with me afterward was the word ‘reduced.’ I heard it and thought, there it is—proof that they have finally measured how little I can do."
+            : "What finally made me open her second message was the offer of a reduced schedule. Then I read the word ‘reduced’ and thought, there it is—proof that they have finally measured how little I can do.",
+          choices: [
+            c("e2_meaning", "The accommodation offered support, but shame translated it into a verdict about your worth.", "“Yes. I can see that those are not the same thing, but they feel identical in my body.”", "thoughtful", {feltValidation:2, disclosure:1, trust:1}, ["meaning_reflected"], ["reflection", "validation"], 2, "You separated the event from the painful meaning without telling me the meaning was foolish.", "Invite her to test alternative meanings while honoring the emotional response."),
+            c("e2_reframe", "A reduced schedule means they value you enough to make accommodations.", "“Maybe.” She gives a small shrug. “Or they are documenting the problem.”", "guarded", {hope:1, feltValidation:-1, defensiveness:1}, ["positive_reframe"], ["reframing", "timing"], 0, "A positive interpretation arrived before my fear was fully heard.", "Reflect the fear, then collaboratively examine more than one interpretation."),
+            c("e2_rights", "We should get documentation to protect your rights immediately.", "“Do I have to decide that today?” Amara asks. “I am still trying to understand what they offered.”", "overwhelmed", {hope:1, agency:-1, disclosure:-1}, ["legal_plan_fast"], ["advice", "timing"], -1, "The conversation jumped ahead of my readiness.", "Ask permission before moving into practical advocacy."),
+            c("e2_challenge", "What evidence is there that they think you are incapable?", "“None that they said aloud.” Her jaw tightens. “I know it may not be rational.”", "irritated", {defensiveness:2, shame:1}, ["premature_challenge"], ["challenge", "shame"], -1, "I felt pushed to defend a fear I already knew might be distorted.", "Validate the emotional logic before examining evidence together.")
+          ]
+        },
+        {
+          id: "e2_risk", expression: "tired",
+          text: firstBranch === "A"
+            ? "And after the meeting, I sat in my car and thought about not going home. Not driving anywhere dangerous—just vanishing from everyone for a while."
+            : "And after I opened that message, I sat in my car outside the lab and thought about not going home. Not driving anywhere dangerous—just vanishing from everyone for a while.",
+          choices: [
+            c("e2_direct_risk", "I want to understand precisely. Since we last met, have you had thoughts of killing yourself, a plan, intent, or any steps toward acting?", "“The thought came twice. No plan, no intent, no steps. I did put my sister's call on speaker while I drove home.”", "tearful", {safetyClarity:3, trust:2, disclosure:2}, ["e2_direct_safety_completed"], ["direct safety assessment", "specificity"], 3, "You asked clearly enough that I did not have to guess which kind of thought counted.", "Continue with changes in risk, access to means, protective factors, and a collaborative response."),
+            c("e2_safe_now", "But you are safe now?", "“I am here,” she says. The distinction between being present and being safe remains unclear.", "guarded", {safetyClarity:-1, disclosure:-1}, ["current_safety_vague"], ["safety", "vagueness"], -2, "The question was broad enough that ‘here’ could become the answer.", "Ask separately about thoughts, plan, intent, behavior, and current access to means."),
+            c("e2_focus_coping", "Calling your sister was a strong coping choice. Let us build on that.", "“It helped,” Amara says, “but are we going to talk about the part where I wanted to vanish?”", "irritated", {agency:1, safetyClarity:-2, rupture:1}, ["coping_before_assessment"], ["strengths", "missed safety"], -2, "My coping action was praised while the risk signal was passed over.", "Acknowledge the coping and complete the assessment before planning."),
+            c("e2_ed", "That sounds serious enough that I need you evaluated in the emergency department.", "Amara goes still. “This is what I was afraid would happen if I told you.”", "withdrawn", {safetyClarity:1, trust:-2, disclosure:-2, rupture:2}, ["escalated_without_assessment"], ["coercion", "safety"], -3, "Disclosure led immediately to a decision about me before the risk was clarified.", "Assess the risk and explain the least restrictive appropriate options collaboratively."),
+          ]
+        },
+        {
+          id: "e2_medication", expression: "thoughtful",
+          text: "There is something else I did not call about. I took the medication for six days, then skipped two doses. I felt foggy in the mornings and panicked that I was becoming my mother.",
+          choices: [
+            c("e2_med_curiosity", "The fogginess connected directly to what you feared. What did you notice, and how did you decide to skip the doses?", "“I could still work with clay, but reading was harder. I wanted to call, then assumed you would tell me to continue no matter what.”", "thoughtful", {trust:2, disclosure:2, treatmentBuyIn:1}, ["nonadherence_explored"], ["medication", "curiosity"], 2, "You treated the missed doses as information, not disobedience.", "Clarify timing, risks, and options, then invite a shared decision."),
+            c("e2_med_adherence", "Stopping and starting can make side effects worse. It is important to take it consistently.", "“I know that now.” Her reply is clipped. “I still did not know what to do that morning.”", "irritated", {treatmentBuyIn:-1, shame:1, defensiveness:1}, ["adherence_lecture"], ["medication", "adherence"], -1, "The rule was clear, but the decision I faced was not understood.", "Explore the concern and give clear contact instructions for future side effects."),
+            c("e2_stop_med", "Then let us stop it. There are plenty of other options.", "“Maybe,” she says, “but part of me wanted to see whether the fog passed.”", "guarded", {agency:-1, treatmentBuyIn:-1}, ["stopped_without_discussion"], ["medication", "avoidance"], 0, "You removed the feared option before learning whether I wanted to reconsider it.", "Compare options, including adjustment or discontinuation, according to clinical context and her preference."),
+            c("e2_med_collab", "Would you like to compare continuing, adjusting, or stopping, including what we would monitor with each?", "“Yes. And I need a number to call before I decide alone next time.”", "relieved", {agency:2, treatmentBuyIn:2, safetyClarity:1}, ["e2_shared_med_plan"], ["shared decision-making", "medication"], 2, "There were real options and a way to ask for help between visits.", "Document the decision and a specific route for side-effect questions."),
+          ]
+        },
+        {
+          id: "e2_support", expression: "guarded",
+          text: "My sister knows I have been struggling with the plan, and now she wants to join the next appointment. Part of me would be relieved. Part of me would feel watched.",
+          choices: [
+            c("e2_support_values", "What would you want her help with, and what would you want to keep between us?", "“I want her to know the plan for bad nights. I do not want to discuss every detail of medication or work.”", "thoughtful", {agency:2, trust:1, safetyClarity:1}, ["support_boundaries_defined"], ["family involvement", "boundaries"], 2, "You treated family involvement as something I could shape.", "Confirm consent, topics, and how she can change her mind."),
+            c("e2_support_yes", "Having family involved improves safety. I think she should come.", "“Then I guess she should.” The word ‘should’ lands heavily.", "withdrawn", {safetyClarity:1, agency:-2, rupture:1}, ["family_directed"], ["family involvement", "autonomy"], -1, "Safety was used to decide for me before we discussed boundaries.", "Offer the option, explore benefits and concerns, and obtain consent."),
+            c("e2_support_no", "You are an adult. It may be important to handle treatment independently.", "“I am independent,” Amara says. “That does not mean I have to do all of it alone.”", "irritated", {agency:-1, shame:1}, ["independence_moralized"], ["autonomy", "isolation"], -1, "Needing support was framed as less adult.", "Distinguish autonomy from isolation and let her define useful support."),
+            c("e2_support_trial", "We could invite her for only the final ten minutes, with topics you choose. Would you want to try that?", "“That feels manageable,” she says. “And I could ask her to step out if I change my mind.”", "relieved", {agency:2, treatmentBuyIn:1, trust:1}, ["family_trial_consented"], ["consent", "family involvement"], 2, "Support could be tested without giving up control of the visit.", "Make withdrawal of consent explicit and easy."),
+          ]
+        },
+        {
+          id: "e2_plan", expression: "thoughtful",
+          text: "That is part of why I am thinking about who should be with me when the fellowship email comes. It could arrive any day. I know it sounds dramatic, but I am afraid of what my mind will do with a no.",
+          choices: [
+            c("e2_plan_scenarios", "Let us plan for both the email and the meaning your mind may attach to it. What would help in the first hour after you open it?", "“Open it while my sister is with me. No decisions about school that night. Clay, food, then text the clinic if the death thoughts get louder.”", "relieved", {agency:3, safetyClarity:2, hope:1}, ["anticipatory_plan"], ["coping ahead", "agency"], 3, "You helped me plan for the emotional interpretation, not just the event.", "Rehearse the plan and clarify when to use urgent or emergency support."),
+            c("e2_plan_optimism", "Try not to assume rejection. You may get good news.", "“I may,” she says. “But then we still have not talked about what I am afraid of.”", "guarded", {hope:1, feltValidation:-1, safetyClarity:-1}, ["optimism_avoided_plan"], ["reassurance", "avoidance"], -1, "Possibility was used to avoid preparing for the feared outcome.", "Hold hope and prepare for a difficult result at the same time."),
+            c("e2_plan_clinician", "If it is a no, call the clinic, take your medication, and stay with your sister.", "“Okay.” Amara repeats the list but adds none of her own ideas.", "guarded", {safetyClarity:1, agency:-2, treatmentBuyIn:1}, ["directive_event_plan"], ["directive planning", "agency"], -1, "The plan belonged to the clinic more than to me.", "Start with her anticipated barriers, choices, and existing coping."),
+            c("e2_plan_delay", "Let us wait until the result. Planning now could increase your anxiety.", "“Waiting is what I have been doing,” she says. “That is why I brought it up.”", "irritated", {safetyClarity:-2, hope:-1, rupture:1}, ["planning_deferred"], ["avoidance", "missed opportunity"], -2, "My attempt to prepare was treated as a symptom to reduce.", "Use anticipatory planning without rehearsing catastrophe."),
+          ]
+        },
+        {
+          id: "e2_close", expression: "tired",
+          text: "I want a plan. I am just not promising I will follow it perfectly. I need to know what happens if I miss another dose or ignore a call.",
+          choices: [
+            c("e2_nonpunitive", "Then we get curious about what got in the way and revise the plan. Missing a step is information, not a reason to disappear from care.", "Amara's shoulders loosen. “That makes it easier to imagine calling before everything gets bad.”", "relieved", {trust:2, agency:2, treatmentBuyIn:2, repair:1}, ["nonpunitive_followup"], ["nonjudgment", "repair"], 3, "There was a path back even if I struggled.", "Be equally clear about urgent thresholds and how the clinic will respond."),
+            c("e2_accountability", "I need you to take responsibility for the plan we agree on.", "“Of course.” The familiar shame returns. “I will try not to waste the appointment.”", "withdrawn", {shame:2, disclosure:-1, treatmentBuyIn:-1}, ["responsibility_moralized"], ["adherence", "shame"], -2, "Difficulty following a plan sounded like misuse of care.", "Pair accountability with curiosity, barrier reduction, and a clear return path."),
+            c("e2_consequence", "If outpatient steps fail, we may need a higher level of care.", "“Fail,” she repeats softly. “That is what I am afraid of being.”", "tearful", {safetyClarity:1, shame:2, rupture:1}, ["care_level_as_consequence"], ["level of care", "framing"], -2, "More support sounded like a consequence for failing.", "Explain levels of care as matching current need, not rewarding adherence."),
+            c("e2_followup_choice", "How should we reach out, and what response from us would make it easier to answer honestly?", "“One message that says I am not in trouble. Then a call. If you are worried about immediate danger, use the emergency contact plan we wrote.”", "thoughtful", {agency:2, safetyClarity:2, trust:1}, ["followup_collaborative"], ["follow-up", "agency"], 2, "You asked how care could remain reachable when shame was loud.", "Confirm that emergency action may still be necessary when risk is imminent."),
+          ]
+        }
+      ];
+    }
+
+    const ENDINGS = {
+      AA: {
+        title: "Room for the Next Step",
+        patientOutcome: "Amara remains depressed, but she is using support earlier, testing a modified work plan, and discussing medication effects instead of deciding alone.",
+        relationship: "The alliance supports direct disclosure and shared revision of the plan.",
+        consequence: "The fellowship rejection is painful without becoming a private verdict that ends help-seeking.",
+        pearl: "Collaboration does not remove distress. It can make distress more discussable and plans more usable.",
+        opening: "The fellowship email said no. I opened it at my sister's kitchen table, like we planned. My first thought was, ‘They finally saw I do not belong,’ but I said it aloud instead of treating it like a fact. The next morning I asked my supervisor about another funding route.",
+        expression: "relieved"
+      },
+      AB: {
+        title: "A Plan That Became a Test",
+        patientOutcome: "Amara had early momentum, then withdrew when later care felt directive and difficult to complete.",
+        relationship: "Initial trust was real, but it was not maintained when new complexity emerged.",
+        consequence: "She stops medication and misses follow-up, though prior safety work leaves a partial bridge back to care.",
+        pearl: "An alliance is not earned once. New disclosures require the clinician to keep adapting.",
+        opening: "The fellowship email said no. I opened it alone after telling my sister not to come. I stopped the medication and missed your calls. The first visit helped, but later every plan felt like another way to measure whether I was trying hard enough.",
+        expression: "guarded"
+      },
+      BA: {
+        title: "The Door Reopened",
+        patientOutcome: "After an isolating start, Amara re-engages, uses her sister's support, and calls before the crisis becomes unmanageable.",
+        relationship: "A clear acknowledgment of impact turns rupture into a workable, though still fragile, alliance.",
+        consequence: "She experiences the same rejection but responds with support and delay rather than disappearance.",
+        pearl: "Repair is not a consolation prize. Naming impact and changing course are central clinical skills.",
+        opening: "The fellowship email said no. I almost deleted it, then forwarded it to my sister with four words: ‘Can you sit with me?’ I answered the clinic's call too. I did not expect to come back after the first visit, but the second one left room to come back imperfectly.",
+        expression: "thoughtful"
+      },
+      BB: {
+        title: "Unopened Messages",
+        patientOutcome: "Amara withdraws, her symptoms worsen, and her sister helps her reach urgent care after several days of isolation.",
+        relationship: "Communication problems compound; Amara asks to continue with a different clinician.",
+        consequence: "Help arrives later and at a higher level of care. The outcome remains shaped by illness severity, work stress, access, relationships, and many factors beyond any single conversation.",
+        pearl: "When shame predicts judgment, vague safety language and directive plans can make care harder to approach.",
+        opening: "The fellowship email said no. I read it in the lab parking garage, turned off my phone, and missed medication, meals, and two shifts. My sister found me and took me to urgent care. I came today to say this directly: I need another clinician.",
+        expression: "withdrawn"
+      }
+    };
+
+    function e3Scenes(endingId) {
+      const ending = ENDINGS[endingId];
+      return [
+        {
+          id: "e3_open", expression: ending.expression, text: ending.opening,
+          choices: [
+            c("e3_listen", "Thank you for saying that. What feels most important for me to understand about these six weeks?", "Amara takes her time. She describes not only the outcome, but which moments made it easier or harder to speak.", "thoughtful", {trust:1, feltValidation:2, agency:1}, ["closing_listened"], ["reflection", "patient perspective"], 2, "You let me define what the course meant.", "Keep the final encounter centered on the patient's account."),
+            c("e3_explain", "I can explain why I made the choices I did during your care.", "“I know there were reasons,” she says. “I need to know whether you understand the effect.”", "guarded", {feltValidation:-1, rupture:1}, ["closing_explained"], ["explanation", "impact"], -1, "The closing began with your reasons rather than my experience.", "Acknowledge impact before offering explanation."),
+            c("e3_summary", "Let me summarize the clinical progress I have seen.", "Amara listens. “That is accurate,” she says, “but it leaves out what it was like to get here.”", "guarded", {disclosure:-1}, ["closing_clinical_summary"], ["summary", "patient perspective"], 0, "The record was accurate but not complete.", "Invite the patient's meaning before offering a clinical summary.")
+          ]
+        },
+        {
+          id: "e3_meaning", expression: "thoughtful",
+          text: "Looking back on all of it, I keep wondering how much was the depression, how much was work, and how much was what we said in this room.",
+          choices: [
+            c("e3_multifactorial", "There is no honest way to reduce it to one cause. Our conversations were one influence among your illness, circumstances, supports, choices, and chance.", "“That feels true,” Amara says. “The words mattered. They were not magic, and they were not nothing.”", "relieved", {trust:1, feltValidation:1, agency:2}, ["multifactorial_named"], ["ethics", "agency"], 3, "You recognized influence without claiming control.", "Keep uncertainty and patient agency visible in the formulation."),
+            c("e3_clinician_credit", "Our work here gave you the tools to change the outcome.", "Amara tilts her head. “Some tools helped. My sister did too. And I did a lot of it.”", "guarded", {agency:-2, rupture:1}, ["clinician_credit"], ["control", "agency"], -2, "My recovery was made into evidence of the clinician's effect.", "Name the many contributors and the patient's own work."),
+            c("e3_illness_only", "Depression changes perception. The illness explains why these events felt so final.", "“It explains some of it,” she says. “But the fellowship and the way people spoke to me were real too.”", "irritated", {feltValidation:-1, defensiveness:1}, ["context_minimized"], ["diagnostic framing", "context"], -1, "A diagnostic explanation flattened the real circumstances around me.", "Integrate symptoms with social context and meaning."),
+          ]
+        },
+        {
+          id: "e3_close", expression: endingId === "BB" ? "guarded" : "relieved",
+          text: endingId === "BB" ? "What I know now is that I do not want this ending to mean I failed treatment. I want the next place to understand why I stopped answering." : "I think what I am taking from this is that the hard mornings are still real. I just do not think they have to decide every next step.",
+          choices: [
+            c("e3_honor", endingId === "BB" ? "Asking for a different clinician is a form of agency. I will document what you want the next team to understand and help make the transition safe." : "The hard mornings are real, and so is the wider set of choices you can reach now. What should the next plan protect?", endingId === "BB" ? "Amara nods. “Please write that I was trying to protect myself, not refusing help.”" : "“Time with my sister, clay, and the ability to say when a plan is too much.”", "thoughtful", {trust:1, agency:2, treatmentBuyIn:1}, ["closing_agency"], ["agency", "continuity"], 3, "The ending left me with authorship of what came next.", "Close with continuity, autonomy, and clear safety arrangements."),
+            c("e3_reassure", "I am confident things will keep getting better from here.", "“I hope so,” she says. “I would rather know I can come back if they do not.”", "guarded", {safetyClarity:-1, feltValidation:-1}, ["closing_reassured"], ["reassurance", "uncertainty"], -1, "Hope replaced a needed plan for uncertainty.", "Offer realistic hope alongside a route back to care."),
+            c("e3_advice", "Keep following the plan, and remember everything you have learned.", "Amara gives a polite smile. The final words sound more like instructions than a conversation.", "withdrawn", {agency:-1, treatmentBuyIn:-1}, ["closing_directive"], ["advice", "closure"], -1, "The relationship ended with compliance as the main task.", "Ask what she is taking forward and what support remains needed."),
+          ]
+        }
+      ];
+    }
+
+    function c(id, text, response, expression, effects, flags, tags, rating, heard, alternative) {
+      return { id, text, response, expression, effects, flags, tags, rating, heard, alternative };
+    }
+
+    // ---------------------------
+    // State and deterministic engine
+    // ---------------------------
+    function freshState() {
+      return {
+        version: 1,
+        selectedPatientId: null,
+        view: "title",
+        resumeView: null,
+        currentWeek: 1,
+        currentEncounter: 0,
+        currentSceneId: null,
+        sceneIndex: 0,
+        mode: "choice",
+        pendingResponse: null,
+        history: [],
+        choiceHistory: [],
+        flags: {},
+        dimensions: { trust:0, disclosure:0, agency:0, feltValidation:0, shame:0, defensiveness:0, treatmentBuyIn:0, safetyClarity:0, hope:0, avoidance:0, rupture:0, repair:0 },
+        encounterDelta: {},
+        firstBranch: null,
+        secondBranch: null,
+        endingId: null,
+        reflectionAfter: null,
+        lastMeterChanges: {},
+        completed: false
+      };
+    }
+
+    const defaultSettings = { textSize: "normal", highContrast: false, reducedMotion: false, typing: true, plainLanguage: false };
+    let settings = { ...defaultSettings, ...readJson(SETTINGS_KEY, {}) };
+    let endingsSeen = readJson(ENDINGS_KEY, []);
+    let loaded = readJson(SAVE_KEY, null);
+    let state = normalizeLoadedState(loaded);
+    if (loaded && state.selectedPatientId && state.view !== "title") {
+      state.resumeView = state.view;
+      state.view = "title";
+    }
+
+    function readJson(key, fallback) {
+      try { const value = localStorage.getItem(key); return value ? JSON.parse(value) : fallback; }
+      catch (_) { return fallback; }
+    }
+    function normalizeLoadedState(value) {
+      if (!value || typeof value !== "object" || value.version !== 1) return freshState();
+      const next = { ...freshState(), ...value };
+      if (next.view === "lifeEvent1") {
+        if (!["A", "B"].includes(next.firstBranch)) return freshState();
+        next.view = "encounter";
+        next.currentWeek = 3;
+        next.currentEncounter = 2;
+        next.currentSceneId = "e2_return";
+        next.sceneIndex = 0;
+        next.mode = "choice";
+        next.pendingResponse = null;
+        next.encounterDelta = {};
+      } else if (next.view === "lifeEvent2") {
+        if (!ENDINGS[next.endingId]) return freshState();
+        next.view = "encounter";
+        next.currentWeek = 6;
+        next.currentEncounter = 3;
+        next.currentSceneId = "e3_open";
+        next.sceneIndex = 0;
+        next.mode = "choice";
+        next.pendingResponse = null;
+        next.encounterDelta = {};
+      }
+      const validViews = new Set(["title", "select", "caseIntro", "encounter", "reflection", "debrief", "branchMap"]);
+      const validPatient = next.selectedPatientId === null || patientCatalog.some(patient => patient.id === next.selectedPatientId);
+      const validEncounter = Number.isInteger(next.currentEncounter) && next.currentEncounter >= 0 && next.currentEncounter <= 3;
+      const validScene = Number.isInteger(next.sceneIndex) && next.sceneIndex >= 0;
+      if (!validViews.has(next.view) || !validPatient || !validEncounter || !validScene) return freshState();
+      if (next.view === "encounter" && ![1, 2, 3].includes(next.currentEncounter)) return freshState();
+      if (next.view === "reflection" && ![1, 2, 3].includes(next.reflectionAfter)) return freshState();
+      next.history = Array.isArray(next.history) ? next.history : [];
+      next.choiceHistory = Array.isArray(next.choiceHistory) ? next.choiceHistory : [];
+      next.flags = next.flags && typeof next.flags === "object" ? next.flags : {};
+      next.dimensions = next.dimensions && typeof next.dimensions === "object" ? { ...freshState().dimensions, ...next.dimensions } : freshState().dimensions;
+      next.encounterDelta = next.encounterDelta && typeof next.encounterDelta === "object" ? next.encounterDelta : {};
+      next.lastMeterChanges = next.lastMeterChanges && typeof next.lastMeterChanges === "object" ? next.lastMeterChanges : {};
+      return next;
+    }
+    function saveState() {
+      try { localStorage.setItem(SAVE_KEY, JSON.stringify(state)); }
+      catch (_) { announce("Progress could not be saved in this browser."); }
+    }
+    function saveSettings() {
+      try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); } catch (_) {}
+    }
+    function saveEndings() {
+      try { localStorage.setItem(ENDINGS_KEY, JSON.stringify(endingsSeen)); } catch (_) {}
+    }
+    function applySettings() {
+      const scales = { small: .9, normal: 1, large: 1.14, largest: 1.28 };
+      document.documentElement.style.setProperty("--text-scale", scales[settings.textSize] || 1);
+      document.body.classList.toggle("high-contrast", !!settings.highContrast);
+      document.body.classList.toggle("reduced-motion", !!settings.reducedMotion);
+    }
+    function announce(message) {
+      liveRegion.textContent = "";
+      window.setTimeout(() => { liveRegion.textContent = message; }, 20);
+    }
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"]/g, char => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" })[char]);
+    }
+    function currentPatient() { return patientCatalog.find(p => p.id === state.selectedPatientId) || patientCatalog[0]; }
+    function meaningfulMeterDelta(raw) {
+      if (Math.abs(raw) < 2) return 0;
+      return Math.sign(raw) * Math.min(12, Math.max(4, Math.round(Math.abs(raw))));
+    }
+    function relationshipMeterEffects(effects = {}) {
+      const e = effects || {};
+      return {
+        trust: meaningfulMeterDelta((e.trust || 0) * 6 + (e.disclosure || 0) + (e.repair || 0) * 4 - (e.rupture || 0) * 6 - (e.defensiveness || 0) * 2),
+        safety: meaningfulMeterDelta((e.safetyClarity || 0) * 5 + (e.disclosure || 0) * .5 - (e.rupture || 0) * 3 - (e.avoidance || 0) * 2),
+        empathy: meaningfulMeterDelta((e.feltValidation || 0) * 5 + (e.trust || 0) - (e.shame || 0) * 3 - (e.defensiveness || 0) * 3 - (e.rupture || 0) * 2),
+        collaboration: meaningfulMeterDelta((e.agency || 0) * 4 + (e.treatmentBuyIn || 0) * 4 + (e.repair || 0) * 4 + (e.trust || 0) * .5 - (e.rupture || 0) * 4 - (e.avoidance || 0) * 3)
+      };
+    }
+    function applyRelationshipMeterEffects(levels, changes) {
+      const next = { ...levels };
+      RELATIONSHIP_VARIABLES.forEach(variable => {
+        const current = Number(next[variable.id] ?? 50);
+        const change = Number(changes?.[variable.id] || 0);
+        if (!change) return;
+        const availableSpace = change > 0 ? (100 - current) / 50 : current / 50;
+        const boundaryFactor = Math.min(1, Math.max(.35, availableSpace));
+        next[variable.id] = Math.max(5, Math.min(100, current + change * boundaryFactor));
+      });
+      return next;
+    }
+    function meterEffectsForRecord(record) {
+      if (record?.meterEffects && typeof record.meterEffects === "object") return record.meterEffects;
+      const storedEffects = record?.effects && typeof record.effects === "object" ? record.effects : null;
+      return relationshipMeterEffects(storedEffects || choiceForHistoryRecord(record)?.effects || {});
+    }
+    function replayRelationshipMeterState(records = []) {
+      return records.reduce((levels, record) => applyRelationshipMeterEffects(levels, meterEffectsForRecord(record)), {
+        trust: 50,
+        safety: 50,
+        empathy: 50,
+        collaboration: 50
+      });
+    }
+    function roundedRelationshipLevels(levels) {
+      return Object.fromEntries(RELATIONSHIP_VARIABLES.map(variable => [variable.id, Math.round(levels[variable.id] ?? 50)]));
+    }
+    function relationshipLevels(records = state.choiceHistory) {
+      return roundedRelationshipLevels(replayRelationshipMeterState(records));
+    }
+    function renderRelationshipMeters() {
+      const levels = relationshipLevels();
+      return `<aside class="relationship-meters" aria-label="Patient-provider relationship variables">
+        <p class="relationship-title">Relationship variables</p>
+        <div class="meter-list">
+          ${RELATIONSHIP_VARIABLES.map(variable => {
+            const value = levels[variable.id];
+            const change = state.lastMeterChanges?.[variable.id] || 0;
+            const changeText = change > 0 ? `Rising by ${change}` : change < 0 ? `Falling by ${Math.abs(change)}` : "Steady";
+            const visualChange = change > 0 ? `+${change}` : `${change}`;
+            const arrow = change > 0 ? "↑" : change < 0 ? "↓" : "";
+            return `<div class="meter-item" tabindex="0" aria-label="${variable.label}: ${value} percent full. ${changeText}. ${escapeHtml(variable.description)}">
+              <div class="meter-glass" role="meter" aria-label="${variable.label}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${value}" style="--meter-color:${variable.color}">
+                <span class="meter-water" style="--level:${value}%" aria-hidden="true"></span>
+              </div>
+              <span class="meter-copy"><span class="meter-name">${variable.label}</span><span class="meter-status">${change ? (change > 0 ? "Rising" : "Falling") : "Steady"}${arrow ? ` <span class="meter-change ${change > 0 ? "up" : "down"}" aria-hidden="true">${arrow} ${visualChange}</span>` : ""}</span></span>
+              <span class="meter-tooltip" role="tooltip">${escapeHtml(variable.description)}</span>
+            </div>`;
+          }).join("")}
+        </div>
+      </aside>`;
+    }
+    function getScenes() {
+      if (state.currentEncounter === 1) return E1_SCENES;
+      if (state.currentEncounter === 2) return e2Scenes(state.firstBranch);
+      return e3Scenes(state.endingId);
+    }
+    function resolveSceneText(scene) {
+      if (typeof scene.text !== "function") return scene.text;
+      const previousRecord = [...state.choiceHistory].reverse().find(record => record.encounter === state.currentEncounter);
+      return scene.text(previousRecord?.choiceId);
+    }
+    function resolveEncounterOne() {
+      const d = state.encounterDelta;
+      const alliance = (d.trust||0) + (d.feltValidation||0) + (d.disclosure||0) + (d.agency||0) - (d.shame||0) - (d.rupture||0);
+      return alliance >= 8 && !!state.flags.direct_safety_completed ? "A" : "B";
+    }
+    function resolveEncounterTwo() {
+      const d = state.encounterDelta;
+      const collaboration = (d.trust||0) + (d.feltValidation||0) + (d.disclosure||0) + (d.agency||0) + (d.treatmentBuyIn||0) + (d.repair||0) - (d.shame||0) - (d.rupture||0) - (d.defensiveness||0);
+      const safetyComplete = !!state.flags.e2_direct_safety_completed;
+      const repairComplete = state.firstBranch === "A" || !!state.flags.rupture_repaired || ((d.repair||0) >= 2 && (d.trust||0) >= 3);
+      return collaboration >= 9 && safetyComplete && repairComplete ? "A" : "B";
+    }
+    function applyChoice(choice, scene) {
+      const sceneText = resolveSceneText(scene);
+      const levelsBefore = relationshipLevels();
+      const meterEffects = relationshipMeterEffects(choice.effects || {});
+      Object.entries(choice.effects || {}).forEach(([key, value]) => {
+        state.dimensions[key] = (state.dimensions[key] || 0) + value;
+        state.encounterDelta[key] = (state.encounterDelta[key] || 0) + value;
+      });
+      (choice.flags || []).forEach(flag => { state.flags[flag] = true; });
+      const record = {
+        encounter: state.currentEncounter,
+        sceneId: scene.id,
+        choiceId: choice.id,
+        text: choice.text,
+        response: choice.response,
+        effects: { ...(choice.effects || {}) },
+        meterEffects,
+        tags: choice.tags,
+        rating: choice.rating,
+        heard: choice.heard,
+        alternative: choice.alternative
+      };
+      state.choiceHistory.push(record);
+      const levelsAfter = relationshipLevels();
+      state.lastMeterChanges = Object.fromEntries(RELATIONSHIP_VARIABLES.map(variable => {
+        const difference = levelsAfter[variable.id] - levelsBefore[variable.id];
+        return [variable.id, difference];
+      }));
+      state.history.push({ speaker: "Amara", text: sceneText }, { speaker: "You", text: choice.text }, { speaker: "Amara", text: choice.response });
+      state.pendingResponse = { text: choice.response, expression: choice.expression, selectedText: choice.text };
+      state.mode = "reaction";
+      saveState();
+      render();
+    }
+    function advanceScene() {
+      state.mode = "choice";
+      state.pendingResponse = null;
+      state.lastMeterChanges = {};
+      state.sceneIndex += 1;
+      const scenes = getScenes();
+      if (state.sceneIndex >= scenes.length) finishEncounter();
+      else {
+        state.currentSceneId = scenes[state.sceneIndex].id;
+        saveState();
+        render();
+      }
+    }
+    function finishEncounter() {
+      if (state.currentEncounter === 1) state.firstBranch = resolveEncounterOne();
+      if (state.currentEncounter === 2) {
+        state.secondBranch = resolveEncounterTwo();
+        state.endingId = state.firstBranch + state.secondBranch;
+      }
+      state.reflectionAfter = state.currentEncounter;
+      state.view = "reflection";
+      saveState();
+      render();
+    }
+    function startEncounter(number) {
+      state.currentEncounter = number;
+      state.currentWeek = number === 1 ? 1 : number === 2 ? 3 : 6;
+      state.sceneIndex = 0;
+      state.mode = "choice";
+      state.pendingResponse = null;
+      state.lastMeterChanges = {};
+      state.encounterDelta = {};
+      state.view = "encounter";
+      state.currentSceneId = getScenes()[0].id;
+      saveState();
+      render();
+    }
+
+    // ---------------------------
+    // Views
+    // ---------------------------
+    function render() {
+      stopTyping();
+      applySettings();
+      const headerViews = ["encounter", "reflection", "debrief", "branchMap"];
+      topbar.hidden = !headerViews.includes(state.view);
+      updateChapter();
+      if (state.view === "title") renderTitle();
+      else if (state.view === "select") renderSelection();
+      else if (state.view === "caseIntro") renderCaseIntro();
+      else if (state.view === "encounter") renderEncounter();
+      else if (state.view === "reflection") renderReflection();
+      else if (state.view === "debrief") renderDebrief();
+      else if (state.view === "branchMap") renderBranchMap();
+      else { state = freshState(); renderTitle(); }
+      window.scrollTo(0, 0);
+    }
+    function updateChapter() {
+      const labels = {
+        encounter: `Week ${state.currentWeek} · Encounter ${state.currentEncounter}`,
+        reflection: `Encounter ${state.reflectionAfter} · Reflection`,
+        debrief: "Week 6 · Case debrief",
+        branchMap: "Completed path · Branch map"
+      };
+      chapterLabel.textContent = labels[state.view] || "PsychiatryChat";
+    }
+    function renderTitle() {
+      const canContinue = !!state.selectedPatientId && !!state.resumeView;
+      const lastEnding = state.completed && state.endingId ? ENDINGS[state.endingId].title : null;
+      app.innerHTML = `
+        <section class="screen title-screen" aria-labelledby="title-heading">
+          <div class="title-copy">
+            <span class="pill">Local educational prototype</span>
+            <p class="eyebrow" style="margin-top:2rem">Six weeks. Three conversations. Words that travel.</p>
+            <h1 id="title-heading">Psychiatry<span>Chat</span></h1>
+            <p class="lede">Follow one patient across six fictional weeks and notice how clinical language can shape disclosure, trust, and the next attempt to seek help.</p>
+            <div class="button-row title-actions">
+              <button class="primary" id="new-game">Choose a patient</button>
+              ${canContinue ? `<button class="secondary" id="continue-game">Continue ${lastEnding ? "debrief" : "saved story"}</button>` : ""}
+              <button class="quiet-button" id="title-settings">Accessibility</button>
+            </div>
+            <p class="micro">For medical education only. This simulation is not clinical guidance, diagnosis, or a substitute for supervised training. Content includes depression and non-graphic discussion of suicidal thoughts.</p>
+          </div>
+          <div class="title-visual" aria-hidden="true">
+            <div class="window"></div><div class="lamp"></div>
+            <div class="title-note"><p>“The words mattered. They were not magic, and they were not nothing.”</p><small>From the demonstration case</small></div>
+          </div>
+        </section>`;
+      document.getElementById("new-game").addEventListener("click", () => { state.view = "select"; saveState(); render(); });
+      document.getElementById("continue-game")?.addEventListener("click", () => { state.view = state.resumeView; state.resumeView = null; saveState(); render(); });
+      document.getElementById("title-settings").addEventListener("click", openSettings);
+      announce("PsychiatryChat title screen");
+    }
+    function renderSelection() {
+      app.innerHTML = `
+        <section class="screen selection-screen" aria-labelledby="select-heading">
+          <div class="selection-head">
+            <div><p class="eyebrow">Patient selection</p><h1 id="select-heading">Whose story will you follow?</h1><p class="lede">Each case centers a different communication challenge. The first case is complete; two case frameworks preview future modules.</p></div>
+            <button class="secondary" id="selection-back">Back</button>
+          </div>
+          <div class="patient-grid">
+            ${patientCatalog.map((patient, index) => `
+              <button class="patient-card" data-patient="${patient.id}" aria-label="${escapeHtml(patient.name)}, ${patient.available ? "playable case" : "case outline"}">
+                <div class="card-art" style="--card-gradient:${patient.colors.gradient};--skin:${patient.colors.skin};--hair:${patient.colors.hair};--shirt:${patient.colors.shirt}">
+                  <span class="mini-portrait" aria-hidden="true"></span>
+                </div>
+                <span class="card-copy">
+                  <span class="card-number">${patient.number}</span>
+                  <h2>${escapeHtml(patient.name)}</h2>
+                  <span class="card-meta">${patient.age} · ${patient.pronouns} · ${patient.setting}</span>
+                  <span class="card-concern">${escapeHtml(patient.concern)}</span>
+                  <span class="themes">${patient.themes.map(t => `<span class="theme">${escapeHtml(t)}</span>`).join("")}</span>
+                  <span class="availability">${patient.available ? "Playable now · " + patient.duration : "Case framework · Preview"}</span>
+                </span>
+              </button>`).join("")}
+          </div>
+        </section>`;
+      document.querySelectorAll("[data-patient]").forEach(button => button.addEventListener("click", () => selectPatient(button.dataset.patient)));
+      document.getElementById("selection-back").addEventListener("click", () => { state.view = "title"; saveState(); render(); });
+      announce("Patient selection. Three cases are shown.");
+    }
+    function selectPatient(id) {
+      const patient = patientCatalog.find(p => p.id === id);
+      if (!patient) return;
+      if (state.selectedPatientId && !state.completed && (state.choiceHistory?.length || 0) > 0 && state.selectedPatientId !== id) {
+        if (!window.confirm("Start this case and replace the current in-progress story? Completed endings will remain saved.")) return;
+      }
+      state = freshState();
+      state.selectedPatientId = id;
+      state.view = "caseIntro";
+      saveState();
+      render();
+    }
+    function renderCaseIntro() {
+      const p = currentPatient();
+      app.innerHTML = `
+        <section class="screen intro-screen" aria-labelledby="case-heading">
+          <div class="intro-portrait">${portraitSvg("neutral", p.name, p.id)}</div>
+          <div class="intro-copy">
+            <p class="eyebrow">${p.number} · ${p.available ? p.duration : "Case framework"}</p>
+            <h1 id="case-heading">${escapeHtml(p.name)}</h1>
+            <p class="profile-line">${p.age} · ${p.pronouns} · ${p.setting}</p>
+            <p class="lede">${escapeHtml(p.context)}</p>
+            <p><strong>Presenting concern:</strong> ${escapeHtml(p.concern)}</p>
+            <div class="themes">${p.themes.map(t => `<span class="theme">${escapeHtml(t)}</span>`).join("")}</div>
+            <section class="case-opening" aria-labelledby="case-introduction-heading">
+              <p class="eyebrow">Case introduction</p>
+              <h2 id="case-introduction-heading">${escapeHtml(p.introTitle)}</h2>
+              ${p.introduction.map(paragraph => `<p>${escapeHtml(paragraph)}</p>`).join("")}
+              <blockquote class="opening-quote">“${escapeHtml(p.openingQuote)}”</blockquote>
+            </section>
+            <div class="notice"><strong>Content notice</strong><br>${escapeHtml(p.contentNotice)} No outcome is caused by a single phrase. If this content is not right for you now, return to patient selection.</div>
+            ${p.available
+              ? `<div class="button-row"><button class="primary" id="start-case">Begin week one</button><button class="secondary" id="intro-back">Choose another patient</button></div>`
+              : `<p class="micro">This introduction and case architecture are included in the prototype. The full six-week dialogue module has not yet been authored.</p><div class="button-row"><button class="primary" id="intro-back">Return to patient selection</button></div>`}
+          </div>
+        </section>`;
+      document.getElementById("start-case")?.addEventListener("click", () => startEncounter(1));
+      document.getElementById("intro-back").addEventListener("click", () => { state.view = "select"; saveState(); render(); });
+      announce(`Case introduction for ${p.name}`);
+    }
+    function renderEncounter() {
+      const scenes = getScenes();
+      if (state.sceneIndex >= scenes.length) { finishEncounter(); return; }
+      const scene = scenes[state.sceneIndex];
+      const sceneText = resolveSceneText(scene);
+      state.currentSceneId = scene.id;
+      const reaction = state.mode === "reaction" && state.pendingResponse;
+      const expression = reaction ? state.pendingResponse.expression : scene.expression;
+      app.innerHTML = `
+        <section class="screen encounter-screen" aria-label="Week ${state.currentWeek}, encounter ${state.currentEncounter}">
+          <div class="room">
+            <div class="room-window" aria-hidden="true"></div><div class="plant" aria-hidden="true"></div>
+            ${renderRelationshipMeters()}
+            <div class="portrait-wrap">${portraitSvg(expression, "Amara Reed")}<span class="expression-tag">${escapeHtml(expression)}</span></div>
+            <div class="dialogue-panel">
+              <div class="line-area">
+                ${reaction ? `<p class="selected-line"><strong>You:</strong> ${escapeHtml(state.pendingResponse.selectedText)}</p>` : ""}
+                <div class="speaker">Amara</div>
+                <p class="dialogue-text" id="dialogue-text"></p>
+                <button class="quiet-button typing-control" id="typing-control" hidden>Pause text animation</button>
+              </div>
+              ${reaction ? `<div class="reaction-actions"><button class="primary" id="advance-scene">Continue</button></div>` : `
+                <div class="choices" aria-label="Response choices">
+                  ${scene.choices.map((choice, index) => `<button class="choice" data-choice="${index}" disabled><span class="choice-number">${index + 1}</span><span>${escapeHtml(choice.text)}</span></button>`).join("")}
+                </div>`}
+            </div>
+          </div>
+        </section>`;
+      if (reaction) {
+        typeLine(state.pendingResponse.text, () => { document.getElementById("advance-scene")?.focus(); });
+        document.getElementById("advance-scene").addEventListener("click", advanceScene);
+      } else {
+        typeLine(sceneText, () => {
+          document.querySelectorAll("[data-choice]").forEach(button => button.disabled = false);
+          announce(`${sceneText} ${scene.choices.length} response choices available.`);
+        });
+        document.querySelectorAll("[data-choice]").forEach(button => button.addEventListener("click", () => applyChoice(scene.choices[Number(button.dataset.choice)], scene)));
+      }
+    }
+    function typeLine(text, complete) {
+      const el = document.getElementById("dialogue-text");
+      const control = document.getElementById("typing-control");
+      if (!el) return;
+      const animate = settings.typing && !settings.reducedMotion && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (!animate) { el.textContent = text; complete?.(); return; }
+      let index = 0;
+      typingPaused = false;
+      el.textContent = "";
+      control.hidden = false;
+      const tick = () => {
+        if (!typingPaused) {
+          index += 1;
+          el.textContent = text.slice(0, index);
+        }
+        if (index < text.length) typingTimer = window.setTimeout(tick, 16);
+        else { control.hidden = true; complete?.(); }
+      };
+      control.addEventListener("click", () => {
+        typingPaused = !typingPaused;
+        control.textContent = typingPaused ? "Resume text animation" : "Pause text animation";
+        if (!typingPaused && !typingTimer) tick();
+      });
+      control.addEventListener("dblclick", () => {
+        stopTyping(); el.textContent = text; control.hidden = true; complete?.();
+      });
+      tick();
+    }
+    function stopTyping() {
+      if (typingTimer) window.clearTimeout(typingTimer);
+      typingTimer = null;
+      typingPaused = false;
+    }
+    function renderReflection() {
+      const n = state.reflectionAfter;
+      const records = state.choiceHistory.filter(item => item.encounter === n);
+      const helpful = [...records].sort((a,b) => b.rating - a.rating)[0];
+      const limiting = [...records].sort((a,b) => a.rating - b.rating).find(item => item.rating < 1);
+      const branch = n === 1 ? state.firstBranch : n === 2 ? state.secondBranch : null;
+      const heard = n === 1
+        ? (branch === "A" ? "There was room to say the frightening part plainly, and the plan could be shaped around my life." : "I needed to protect the clinician from the hardest details, or prove that I could follow the plan.")
+        : n === 2
+          ? (branch === "A" ? "Even after difficulty, honesty could lead to curiosity, repair, and a plan I could use." : "New information became another set of instructions, and returning imperfectly felt risky.")
+          : "Closure can recognize what changed while leaving uncertainty, agency, and continuity intact.";
+      const principle = settings.plainLanguage
+        ? (n === 1
+          ? "Ask about suicide clearly and calmly. A vague or leading question can make it harder for a patient to answer honestly."
+          : n === 2
+            ? "If a conversation caused harm, name the impact and change course. A care plan should be updated when life changes."
+            : "Many things shape an outcome. The clinician's words matter, but the clinician does not control what happens.")
+        : (n === 1
+          ? "Direct safety questions can coexist with warmth. Leading or euphemistic questions may make the preferred answer obvious and reduce clarity."
+          : n === 2
+            ? "Repair requires acknowledging impact, not only explaining intent. Shared plans remain revisable when symptoms or circumstances change."
+            : "A final conversation should not claim causal control. Name the many factors involved and center what the patient carries forward.");
+      app.innerHTML = `
+        <section class="screen story-screen" aria-label="Encounter ${n} reflection">
+          <article class="story-card">
+            <p class="eyebrow">Encounter ${n} reflection</p>
+            <div class="reflection-grid">
+              <section class="insight" style="--accent:var(--gold)"><h3>What Amara may have heard</h3><p class="quote">“${escapeHtml(heard)}”</p></section>
+              <section class="insight"><h3>Communication principle</h3><p>${escapeHtml(principle)}</p></section>
+              ${helpful ? `<section class="insight"><h3>A phrase that opened space</h3><p class="quote">“${escapeHtml(helpful.text)}”</p><p>${escapeHtml(helpful.heard)}</p></section>` : ""}
+              ${limiting ? `<section class="insight" style="--accent:var(--rose)"><h3>A phrase to reconsider</h3><p class="quote">“${escapeHtml(limiting.text)}”</p><p><strong>Alternative:</strong> ${escapeHtml(limiting.alternative)}</p></section>` : `<section class="insight"><h3>Keep refining</h3><p>No strongly limiting phrase appeared in this encounter. Replay can still reveal how other plausible wording changes Amara's response.</p></section>`}
+            </div>
+            <div class="button-row"><button class="primary" id="reflection-next">${n < 3 ? `Continue to encounter ${n + 1}` : "Open case debrief"}</button><button class="secondary" id="reflection-graph">View relationship graph</button><button class="quiet-button" id="reflection-history">Dialogue history</button></div>
+          </article>
+        </section>`;
+      document.getElementById("reflection-next").addEventListener("click", () => {
+        if (n < 3) {
+          startEncounter(n + 1);
+          return;
+        }
+        completeCase();
+        render();
+      });
+      document.getElementById("reflection-graph").addEventListener("click", () => openRelationshipGraph(n));
+      document.getElementById("reflection-history").addEventListener("click", openHistory);
+      announce(`Encounter ${n} reflection`);
+    }
+
+    function choiceForHistoryRecord(record) {
+      const scenes = record.encounter === 1
+        ? E1_SCENES
+        : record.encounter === 2
+          ? e2Scenes(state.firstBranch)
+          : record.encounter === 3
+            ? e3Scenes(state.endingId)
+            : [];
+      return scenes.flatMap(scene => scene.choices || []).find(choice => choice.id === record.choiceId) || null;
+    }
+
+    function encounterRelationshipTimeline(encounter) {
+      let meterState = { trust: 50, safety: 50, empathy: 50, collaboration: 50 };
+      const points = [];
+      let started = false;
+      let step = 0;
+      let previousLevels = null;
+
+      state.choiceHistory.forEach(record => {
+        if (record.encounter > encounter) return;
+        if (record.encounter === encounter && !started) {
+          started = true;
+          previousLevels = roundedRelationshipLevels(meterState);
+          points.push({ step: 0, response: "Encounter start", levels: previousLevels, deltas: {} });
+        }
+
+        meterState = applyRelationshipMeterEffects(meterState, meterEffectsForRecord(record));
+
+        if (record.encounter === encounter) {
+          step += 1;
+          const levels = roundedRelationshipLevels(meterState);
+          const deltas = Object.fromEntries(RELATIONSHIP_VARIABLES.map(variable => [variable.id, levels[variable.id] - previousLevels[variable.id]]));
+          points.push({ step, response: record.text, levels, deltas });
+          previousLevels = levels;
+        }
+      });
+
+      return { encounter, points };
+    }
+
+    function graphMarkerMarkup(variableId, x, y, color, size = 6) {
+      if (variableId === "safety") return `<rect class="graph-marker" x="${x - size}" y="${y - size}" width="${size * 2}" height="${size * 2}" rx="1.5" fill="${color}"/>`;
+      if (variableId === "empathy") return `<polygon class="graph-marker" points="${x},${y - size - 1} ${x + size + 1},${y} ${x},${y + size + 1} ${x - size - 1},${y}" fill="${color}"/>`;
+      if (variableId === "collaboration") return `<polygon class="graph-marker" points="${x},${y - size - 1} ${x + size + 1},${y + size} ${x - size - 1},${y + size}" fill="${color}"/>`;
+      return `<circle class="graph-marker" cx="${x}" cy="${y}" r="${size}" fill="${color}"/>`;
+    }
+
+    function openRelationshipGraph(encounter) {
+      const timeline = encounterRelationshipTimeline(encounter);
+      const compactGraph = window.matchMedia("(max-width: 620px)").matches;
+      const width = compactGraph ? 320 : 800;
+      const height = compactGraph ? 300 : 370;
+      const margin = compactGraph
+        ? { top: 16, right: 8, bottom: 42, left: 42 }
+        : { top: 24, right: 22, bottom: 54, left: 62 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+      const finalStep = Math.max(1, timeline.points.length - 1);
+      const xFor = step => margin.left + (step / finalStep) * plotWidth;
+      const yFor = level => margin.top + ((100 - level) / 100) * plotHeight;
+      const yTicks = [100, 75, 50, 25, 0];
+
+      const legend = RELATIONSHIP_VARIABLES.map(variable => `<li class="graph-legend-item">
+        <svg class="graph-legend-mark" viewBox="0 0 26 12" aria-hidden="true"><line x1="1" y1="6" x2="25" y2="6" stroke="${variable.color}" stroke-width="3" stroke-linecap="round"/>${graphMarkerMarkup(variable.id, 13, 6, variable.color, 3.5)}</svg>
+        <span>${variable.label}</span>
+      </li>`).join("");
+
+      const grid = yTicks.map(level => {
+        const y = yFor(level);
+        return `<line class="graph-grid" x1="${margin.left}" y1="${y}" x2="${width - margin.right}" y2="${y}"/><text class="graph-axis" x="${margin.left - 12}" y="${y + 4}" text-anchor="end">${level}%</text>`;
+      }).join("");
+
+      const xLabels = timeline.points.map(point => `<text class="graph-axis" x="${xFor(point.step)}" y="${height - 22}" text-anchor="middle">${point.step === 0 ? "Start" : point.step}</text>`).join("");
+
+      const series = RELATIONSHIP_VARIABLES.map(variable => {
+        const coordinates = timeline.points.map(point => `${xFor(point.step)},${yFor(point.levels[variable.id])}`).join(" ");
+        const changePoints = timeline.points.filter(point => point.step > 0 && point.deltas[variable.id] !== 0).map(point => {
+          const x = xFor(point.step);
+          const y = yFor(point.levels[variable.id]);
+          const direction = point.deltas[variable.id] > 0 ? "rose" : "fell";
+          const label = `${variable.label} ${direction} to ${point.levels[variable.id]} percent after response ${point.step}: ${point.response}`;
+          return `<g class="graph-point" tabindex="0" role="button" data-series="${variable.id}" data-step="${point.step}" aria-label="${escapeHtml(label)}">
+            <circle class="graph-hit" cx="${x}" cy="${y}" r="11"/>
+            <circle class="graph-focus-ring" cx="${x}" cy="${y}" r="11"/>
+            ${graphMarkerMarkup(variable.id, x, y, variable.color)}
+          </g>`;
+        }).join("");
+        return `<g aria-label="${variable.label} series"><polyline class="graph-line" points="${coordinates}" stroke="${variable.color}"/>${changePoints}</g>`;
+      }).join("");
+
+      modal.classList.add("graph-dialog");
+      modalTitle.textContent = `Encounter ${encounter} relationship graph`;
+      modalBody.innerHTML = `<section class="relationship-graph">
+        <p class="graph-intro">Each line follows one relationship variable through your phrase choices. Hover, focus, or tap a dot to see the exact response that changed it.</p>
+        <ul class="graph-legend" aria-label="Graph legend">${legend}</ul>
+        <div class="graph-wrap">
+          <svg class="relationship-chart" viewBox="0 0 ${width} ${height}" role="img" aria-labelledby="graph-title graph-description">
+            <title id="graph-title">Relationship variables during encounter ${encounter}</title>
+            <desc id="graph-description">A line graph showing trust, safety, empathy, and collaboration after each response. Interactive markers identify the response associated with each change.</desc>
+            ${grid}
+            <line class="graph-grid" x1="${margin.left}" y1="${margin.top}" x2="${margin.left}" y2="${height - margin.bottom}"/>
+            ${xLabels}
+            <text class="graph-axis-title" x="${margin.left + plotWidth / 2}" y="${height - 4}" text-anchor="middle">Response choice</text>
+            <text class="graph-axis-title" transform="translate(16 ${margin.top + plotHeight / 2}) rotate(-90)" text-anchor="middle">Meter level</text>
+            ${series}
+          </svg>
+          <div class="graph-tooltip" id="graph-tooltip" role="tooltip" hidden></div>
+        </div>
+        <p class="graph-detail" id="graph-detail" aria-live="polite">Hover, focus, or tap a dot to review the phrase connected to that change.</p>
+      </section>`;
+
+      const tooltip = document.getElementById("graph-tooltip");
+      const detail = document.getElementById("graph-detail");
+      const wrap = modalBody.querySelector(".graph-wrap");
+      const variablesById = Object.fromEntries(RELATIONSHIP_VARIABLES.map(variable => [variable.id, variable]));
+
+      function showGraphPoint(element) {
+        const variable = variablesById[element.dataset.series];
+        const point = timeline.points[Number(element.dataset.step)];
+        const delta = point.deltas[variable.id];
+        const direction = delta > 0 ? "rose" : "fell";
+        const copy = `<strong>${variable.label} ${direction} to ${point.levels[variable.id]}%.</strong> Response ${point.step}: “${escapeHtml(point.response)}”`;
+        detail.innerHTML = copy;
+        tooltip.innerHTML = copy;
+        tooltip.hidden = false;
+
+        const markerRect = element.getBoundingClientRect();
+        const wrapRect = wrap.getBoundingClientRect();
+        const tooltipHalfWidth = Math.min(130, Math.max(70, (wrapRect.width - 16) / 2));
+        const markerCenter = markerRect.left + markerRect.width / 2 - wrapRect.left;
+        tooltip.style.left = `${Math.max(tooltipHalfWidth, Math.min(wrapRect.width - tooltipHalfWidth, markerCenter))}px`;
+        tooltip.style.top = `${markerRect.top - wrapRect.top}px`;
+        tooltip.classList.toggle("below", markerRect.top - wrapRect.top < 90);
+      }
+
+      function hideGraphTooltip() {
+        tooltip.hidden = true;
+        tooltip.classList.remove("below");
+      }
+
+      modalBody.querySelectorAll(".graph-point").forEach(point => {
+        point.addEventListener("mouseenter", () => showGraphPoint(point));
+        point.addEventListener("mouseleave", () => { if (document.activeElement !== point) hideGraphTooltip(); });
+        point.addEventListener("focus", () => showGraphPoint(point));
+        point.addEventListener("blur", hideGraphTooltip);
+        point.addEventListener("click", () => showGraphPoint(point));
+      });
+
+      modal.showModal();
+    }
+
+    function completeCase() {
+      state.completed = true;
+      state.view = "debrief";
+      state.resumeView = null;
+      if (!endingsSeen.includes(state.endingId)) {
+        endingsSeen.push(state.endingId);
+        saveEndings();
+      }
+      saveState();
+    }
+    function renderDebrief() {
+      const ending = ENDINGS[state.endingId];
+      const sorted = [...state.choiceHistory].sort((a,b) => b.rating - a.rating);
+      const helped = sorted.filter(x => x.rating > 0).slice(0,2);
+      const limited = [...state.choiceHistory].sort((a,b) => a.rating - b.rating).filter(x => x.rating < 1).slice(0,2);
+      const missed = [];
+      if (!state.flags.direct_safety_completed) missed.push("Encounter 1 did not include a clear assessment of suicidal thoughts, plan, and intent.");
+      if (!state.flags.e2_direct_safety_completed) missed.push("Encounter 2 did not clearly reassess suicidal thoughts, plan, intent, and behavior after a new risk signal.");
+      if (state.firstBranch === "B" && !state.flags.rupture_repaired) missed.push("The early rupture was not explicitly acknowledged and repaired.");
+      if (!state.flags.support_boundaries_defined && !state.flags.family_trial_consented) missed.push("Family involvement could have been explored with clearer consent and boundaries.");
+      app.innerHTML = `
+        <section class="screen story-screen" aria-labelledby="debrief-heading">
+          <article class="story-card">
+            <p class="eyebrow">Case complete · Ending ${state.endingId}</p>
+            <h1 id="debrief-heading" class="ending-title">${escapeHtml(ending.title)}</h1>
+            <div class="debrief-grid">
+              <section class="insight"><h3>Patient outcome</h3><p>${escapeHtml(ending.patientOutcome)}</p></section>
+              <section class="insight"><h3>Therapeutic relationship</h3><p>${escapeHtml(ending.relationship)}</p></section>
+              <section class="insight"><h3>Major consequence</h3><p>${escapeHtml(ending.consequence)}</p></section>
+              <section class="insight" style="--accent:var(--gold)"><h3>Teaching pearl</h3><p>${escapeHtml(ending.pearl)}</p></section>
+              <section class="insight"><h3>Statements that helped</h3>${quoteList(helped, "No strongly opening statements were recorded on this path.")}</section>
+              <section class="insight" style="--accent:var(--rose)"><h3>Statements that limited the encounter</h3>${quoteList(limited, "This path contained no strongly limiting statements; review the alternatives for further refinement.")}</section>
+              <section class="insight" style="grid-column:1/-1"><h3>Missed or incomplete opportunities</h3>${missed.length ? `<ul>${missed.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>` : `<p>Direct safety assessment, collaborative support planning, and major repair opportunities were addressed. Clinical completeness would still require a full assessment beyond this compressed simulation.</p>`}</section>
+            </div>
+            <div class="ethics-note"><strong>Outcome framing:</strong> Psychiatric outcomes are influenced by many factors. This simulation compresses a complex clinical course to examine one modifiable factor: clinician communication. No single phrase independently causes recovery, relapse, self-harm, hospitalization, or treatment discontinuation.</div>
+            <div class="button-row"><button class="primary" id="view-map">View branch map</button><button class="secondary" id="replay-case">Replay case</button><button class="quiet-button" id="debrief-cases">Patient selection</button></div>
+          </article>
+        </section>`;
+      document.getElementById("view-map").addEventListener("click", () => { state.view = "branchMap"; saveState(); render(); });
+      document.getElementById("replay-case").addEventListener("click", restartCase);
+      document.getElementById("debrief-cases").addEventListener("click", () => { state.view = "select"; state.resumeView = null; saveState(); render(); });
+      announce(`Case complete. Ending: ${ending.title}`);
+    }
+    function quoteList(records, fallback) {
+      return records.length ? `<ul>${records.map(item => `<li class="quote">“${escapeHtml(item.text)}”</li>`).join("")}</ul>` : `<p>${escapeHtml(fallback)}</p>`;
+    }
+    function renderBranchMap() {
+      const labels = {
+        AA: ["Felt able to disclose", "Collaboration sustained", ENDINGS.AA.title],
+        AB: ["Felt able to disclose", "Later rupture", ENDINGS.AB.title],
+        BA: ["Withheld concerns", "Repair and re-engagement", ENDINGS.BA.title],
+        BB: ["Withheld concerns", "Disengagement compounded", ENDINGS.BB.title]
+      };
+      const pathIsVisible = id => endingsSeen.includes(id) || state.endingId === id;
+      const branchIsVisible = prefix => Object.keys(labels).some(id => id.startsWith(prefix) && pathIsVisible(id));
+      const renderEndingBranch = id => {
+        const parts = labels[id];
+        const visible = pathIsVisible(id);
+        const current = state.endingId === id;
+        const status = current ? "Your current path" : visible ? "Previously discovered" : "Replay to reveal";
+        return `<li aria-label="Ending ${id}, ${visible ? "discovered" : "not yet discovered"}">
+          <div class="tree-node ${current ? "on-current-path" : ""}">
+            <span class="tree-step">Encounter 2 outcome</span>
+            <strong>${visible ? escapeHtml(parts[1]) : "Unseen trajectory"}</strong>
+          </div>
+          <span class="tree-stem" aria-hidden="true"></span>
+          <div class="tree-node tree-ending ${current ? "on-current-path" : ""}">
+            <span class="tree-step">Ending ${id}</span>
+            <strong>${visible ? escapeHtml(parts[2]) : "Undiscovered ending"}</strong>
+            ${current ? `<span class="availability">${status}</span>` : `<span class="micro">${status}</span>`}
+          </div>
+        </li>`;
+      };
+      const renderEncounterOneBranch = (prefix, endingIds) => {
+        const visible = branchIsVisible(prefix);
+        const current = state.endingId?.startsWith(prefix);
+        return `<li>
+          <div class="tree-node ${current ? "on-current-path" : ""}">
+            <span class="tree-step">Encounter 1 outcome</span>
+            <strong>${visible ? escapeHtml(labels[endingIds[0]][0]) : "Unseen trajectory"}</strong>
+          </div>
+          <ol>${endingIds.map(renderEndingBranch).join("")}</ol>
+        </li>`;
+      };
+      app.innerHTML = `
+        <section class="screen story-screen" aria-labelledby="map-heading">
+          <article class="story-card">
+            <p class="eyebrow">Replay map · ${endingsSeen.length} of 4 endings discovered</p>
+            <h1 id="map-heading">Words create paths, not scores</h1>
+            <p class="lede">Your completed route is shown. Unseen endings remain concealed; each can be reached by a different cumulative pattern across the first two encounters.</p>
+            <ol class="decision-tree" aria-label="Vertical decision tree showing the four possible endings">
+              <li>
+                <div class="tree-node tree-root on-current-path"><span class="tree-step">Case beginning</span><strong>Amara enters care</strong></div>
+                <ol>
+                  ${renderEncounterOneBranch("A", ["AA", "AB"])}
+                  ${renderEncounterOneBranch("B", ["BA", "BB"])}
+                </ol>
+              </li>
+            </ol>
+            <div id="educator-details"></div>
+            <div class="button-row"><button class="primary" id="map-replay">Replay from week one</button><button class="secondary" id="map-debrief">Return to debrief</button><button class="quiet-button" id="educator-toggle">Show educator lens</button></div>
+          </article>
+        </section>`;
+      document.getElementById("map-replay").addEventListener("click", restartCase);
+      document.getElementById("map-debrief").addEventListener("click", () => { state.view = "debrief"; saveState(); render(); });
+      document.getElementById("educator-toggle").addEventListener("click", toggleEducator);
+      announce(`Branch map. ${endingsSeen.length} of four endings discovered.`);
+    }
+    function toggleEducator(event) {
+      const panel = document.getElementById("educator-details");
+      const showing = !!panel.innerHTML;
+      if (showing) { panel.innerHTML = ""; event.currentTarget.textContent = "Show educator lens"; return; }
+      const dims = Object.entries(state.dimensions).map(([key,value]) => `${key}: ${value}`).join(" · ");
+      panel.innerHTML = `<div class="educator-panel"><p class="eyebrow">Educator lens</p><p><strong>Resolver:</strong> Each major branch used the cumulative encounter pattern plus a required direct safety-assessment flag. Encounter 2 also required explicit repair after an early rupture.</p><p><strong>Final hidden dimensions:</strong> ${escapeHtml(dims)}</p><p><strong>Teaching tags selected:</strong> ${escapeHtml([...new Set(state.choiceHistory.flatMap(x => x.tags || []))].join(", "))}</p></div>`;
+      event.currentTarget.textContent = "Hide educator lens";
+    }
+    function restartCase() {
+      const keepId = state.selectedPatientId || "amara";
+      state = freshState();
+      state.selectedPatientId = keepId;
+      state.view = "caseIntro";
+      saveState();
+      render();
+    }
+
+    // ---------------------------
+    // Menus, settings, and history
+    // ---------------------------
+    function openMenu() {
+      modal.classList.remove("graph-dialog");
+      modalTitle.textContent = "Game menu";
+      modalBody.innerHTML = `<div class="menu-list">
+        <button class="secondary" data-menu="close">Continue story</button>
+        <button class="secondary" data-menu="history">Dialogue history</button>
+        <button class="secondary" data-menu="settings">Accessibility settings</button>
+        ${state.completed ? `<button class="secondary" data-menu="map">Completed endings and branch map</button>` : ""}
+        <button class="secondary" data-menu="exit">Save and exit to title</button>
+        <button class="quiet-button" data-menu="restart">Restart current patient</button>
+        <button class="quiet-button" data-menu="select">Return to patient selection</button>
+      </div>`;
+      modalBody.querySelectorAll("[data-menu]").forEach(button => button.addEventListener("click", () => handleMenu(button.dataset.menu)));
+      modal.showModal();
+    }
+    function handleMenu(action) {
+      if (action === "close") modal.close();
+      if (action === "history") { modal.close(); openHistory(); }
+      if (action === "settings") { modal.close(); openSettings(); }
+      if (action === "map") { modal.close(); state.view = "branchMap"; saveState(); render(); }
+      if (action === "exit") {
+        modal.close(); state.resumeView = state.view; state.view = "title"; saveState(); render();
+      }
+      if (action === "restart") {
+        if (window.confirm("Restart this patient from week one? Your completed-ending library will remain saved.")) { modal.close(); restartCase(); }
+      }
+      if (action === "select") { modal.close(); state.view = "select"; state.resumeView = null; saveState(); render(); }
+    }
+    function openSettings() {
+      modal.classList.remove("graph-dialog");
+      modalTitle.textContent = "Accessibility settings";
+      modalBody.innerHTML = `
+        <div class="setting"><label for="text-size">Text size<small>Adjust all interface and dialogue text.</small></label><select id="text-size"><option value="small">Small</option><option value="normal">Normal</option><option value="large">Large</option><option value="largest">Largest</option></select></div>
+        <div class="setting"><label for="high-contrast">High contrast<small>Increase text and boundary contrast.</small></label><input class="toggle" id="high-contrast" type="checkbox"></div>
+        <div class="setting"><label for="reduced-motion">Reduced motion<small>Disable movement and text animation.</small></label><input class="toggle" id="reduced-motion" type="checkbox"></div>
+        <div class="setting"><label for="typing">Animated dialogue text<small>Turn off to show each line immediately.</small></label><input class="toggle" id="typing" type="checkbox"></div>
+        <div class="setting"><label for="plain-language">Plain-language teaching notes<small>Use simpler wording in encounter reflections.</small></label><input class="toggle" id="plain-language" type="checkbox"></div>
+        <div class="button-row" style="margin-top:1.2rem"><button class="primary" id="save-settings">Apply settings</button></div>`;
+      const textSize = document.getElementById("text-size");
+      textSize.value = settings.textSize;
+      document.getElementById("high-contrast").checked = settings.highContrast;
+      document.getElementById("reduced-motion").checked = settings.reducedMotion;
+      document.getElementById("typing").checked = settings.typing;
+      document.getElementById("plain-language").checked = settings.plainLanguage;
+      document.getElementById("save-settings").addEventListener("click", () => {
+        settings = {
+          textSize: textSize.value,
+          highContrast: document.getElementById("high-contrast").checked,
+          reducedMotion: document.getElementById("reduced-motion").checked,
+          typing: document.getElementById("typing").checked,
+          plainLanguage: document.getElementById("plain-language").checked
+        };
+        saveSettings(); applySettings(); modal.close(); render(); announce("Accessibility settings applied.");
+      });
+      modal.showModal();
+    }
+    function openHistory() {
+      modal.classList.remove("graph-dialog");
+      modalTitle.textContent = "Dialogue history";
+      modalBody.innerHTML = state.history.length ? `<div class="history-list">${state.history.map(item => `<div class="history-line"><strong>${escapeHtml(item.speaker)}</strong>${escapeHtml(item.text)}</div>`).join("")}</div>` : `<p>No dialogue has been recorded yet.</p>`;
+      modal.showModal();
+    }
+
+    function portraitSvg(expression, name, patientId = "amara") {
+      const palette = patientCatalog.find(patient => patient.id === patientId)?.colors || patientCatalog[0].colors;
+      const mouth = expression === "relieved" ? "M220 202 Q250 222 280 202" : expression === "tearful" || expression === "withdrawn" || expression === "tired" ? "M224 214 Q250 202 276 214" : expression === "irritated" ? "M225 207 L276 204" : "M228 207 Q250 214 272 207";
+      const brows = expression === "anxious" || expression === "tearful" ? `<path d="M202 158 Q220 145 238 157 M262 157 Q280 145 298 158"/>` : expression === "irritated" ? `<path d="M201 151 L238 160 M262 160 L299 151"/>` : `<path d="M202 154 Q220 149 238 155 M262 155 Q280 149 298 154"/>`;
+      const eyes = expression === "tired" || expression === "withdrawn" ? `<path d="M207 173 Q221 178 235 173 M265 173 Q279 178 293 173"/>` : `<ellipse cx="221" cy="173" rx="5" ry="7" fill="#251a18" stroke="none"/><ellipse cx="279" cy="173" rx="5" ry="7" fill="#251a18" stroke="none"/>`;
+      const tear = expression === "tearful" ? `<path d="M296 179 Q306 194 296 204 Q286 194 296 179" fill="#9dc9d1" stroke="none" opacity=".8"/>` : "";
+      return `<svg class="portrait-svg" viewBox="0 0 500 650" role="img" aria-label="Illustrated portrait of ${escapeHtml(name)}, expression ${escapeHtml(expression)}" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="shirt" x1="0" y1="0" x2="1" y2="1"><stop stop-color="${palette.shirt}"/><stop offset="1" stop-color="${palette.shirtDark}"/></linearGradient><linearGradient id="skin" x1="0" y1="0" x2="1" y2="1"><stop stop-color="${palette.skin}"/><stop offset="1" stop-color="${palette.skinDark}"/></linearGradient></defs>
+        <path d="M70 650 Q78 425 174 386 Q211 366 216 325 L284 325 Q289 366 326 386 Q422 425 430 650Z" fill="url(#shirt)"/>
+        <path d="M216 305 L284 305 L291 382 Q250 414 209 382Z" fill="url(#skin)"/>
+        <ellipse cx="250" cy="214" rx="112" ry="140" fill="${palette.hair}"/>
+        <path d="M164 189 Q166 83 250 76 Q338 86 336 190 L321 272 Q301 333 250 346 Q199 333 179 272Z" fill="url(#skin)"/>
+        <path d="M153 203 Q133 101 209 63 Q301 15 354 102 Q375 137 339 238 L324 173 Q305 137 288 104 Q246 148 174 155 L178 246Z" fill="${palette.hair}"/>
+        <path d="M179 145 Q213 148 248 125" fill="none" stroke="#3c2b31" stroke-width="11" stroke-linecap="round" opacity=".7"/>
+        <g fill="none" stroke="#3d2721" stroke-width="6" stroke-linecap="round">${brows}</g>
+        <g fill="none" stroke="#3d2721" stroke-width="4" stroke-linecap="round">${eyes}<path d="M250 171 Q241 196 249 199"/><path d="${mouth}"/></g>${tear}
+        <path d="M190 400 Q250 445 310 400" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="4"/>
+        <path d="M118 650 Q135 474 213 411 M382 650 Q365 474 287 411" fill="none" stroke="#754b43" stroke-width="4" opacity=".45"/>
+      </svg>`;
+    }
+
+    document.getElementById("menu-button").addEventListener("click", openMenu);
+    document.getElementById("home-button").addEventListener("click", () => {
+      if (state.view !== "title") { state.resumeView = state.view; state.view = "title"; saveState(); render(); }
+    });
+    document.getElementById("modal-close").addEventListener("click", () => modal.close());
+    modal.addEventListener("click", event => { if (event.target === modal) modal.close(); });
+    document.addEventListener("keydown", event => {
+      if (state.view !== "encounter" || state.mode !== "choice" || modal.open) return;
+      if (["INPUT", "SELECT", "TEXTAREA"].includes(document.activeElement?.tagName)) return;
+      const index = Number(event.key) - 1;
+      if (index >= 0 && index <= 3) {
+        const button = document.querySelector(`[data-choice="${index}"]`);
+        if (button && !button.disabled) { event.preventDefault(); button.click(); }
+      }
+    });
+
+    applySettings();
+    render();
+  })();
+  </script>
+</body>
+</html>
