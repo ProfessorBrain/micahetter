@@ -742,19 +742,39 @@
     .ending-title { color: var(--gold); }
     .ethics-note { margin: 1.5rem 0; padding: 1rem 1.2rem; border-left: 3px solid var(--sage); color: var(--muted); background: rgba(142,183,167,.07); line-height: 1.55; }
 
-    /* Vertical decision tree */
+    /* Top-to-bottom decision tree */
     .decision-tree, .decision-tree ol { margin: 0; padding: 0; list-style: none; }
-    .decision-tree { margin: 2rem 0; }
+    .branch-map-card { width: min(100%, 1280px); min-width: 0; }
+    .decision-tree-wrap {
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      overflow-x: auto;
+      margin: 2rem 0;
+      padding: .25rem 0 1rem;
+      scrollbar-color: rgba(239,196,126,.55) rgba(255,255,255,.06);
+    }
+    .tree-pan-hint { display: none; }
+    .decision-tree { width: 100%; min-width: 1000px; margin: 0 auto; }
     .decision-tree ol {
       position: relative;
       display: flex;
       padding-top: 2rem;
     }
+    .decision-tree ol::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 0;
+      height: 2rem;
+      border-left: 1px solid rgba(239,196,126,.42);
+    }
     .decision-tree li {
       position: relative;
       flex: 1;
       min-width: 0;
-      padding: 2rem .35rem 0;
+      padding: 2rem .22rem 0;
       text-align: center;
     }
     .decision-tree > li { padding: 0; }
@@ -773,28 +793,32 @@
       border-left: 1px solid rgba(239,196,126,.42);
     }
     .decision-tree li:only-child::before, .decision-tree li:only-child::after { display: none; }
-    .decision-tree li:first-child::before, .decision-tree li:last-child::after { border: 0; }
+    .decision-tree li:first-child::before, .decision-tree li:last-child::after { border-top: 0; }
     .decision-tree li:last-child::before { border-right: 1px solid rgba(239,196,126,.42); border-radius: 0 8px 0 0; }
     .decision-tree li:first-child::after { border-radius: 8px 0 0 0; }
     .decision-tree > li::before, .decision-tree > li::after { display: none; }
     .tree-node {
       display: grid;
       place-content: center;
-      min-height: 84px;
-      padding: .8rem;
+      min-height: 86px;
+      margin: 0 .18rem;
+      padding: .7rem .55rem;
       border: 1px solid rgba(255,255,255,.12);
       border-radius: 14px;
       color: var(--muted);
       background: rgba(255,255,255,.035);
       line-height: 1.4;
+      text-align: center;
     }
-    .tree-root { width: min(100%, 340px); min-height: 76px; margin: 0 auto; border-color: var(--sage); background: rgba(142,183,167,.08); }
+    .tree-root { width: min(100%, 360px); min-height: 68px; margin: 0 auto; border-color: var(--sage); background: rgba(142,183,167,.08); }
     .tree-step { display: block; margin-bottom: .3rem; color: var(--dim); font-size: .64rem; font-weight: 800; letter-spacing: .11em; text-transform: uppercase; }
     .tree-node strong { display: block; color: var(--ink); }
+    .tree-encounter { height: 86px; }
     .tree-node.on-current-path { border-color: var(--gold); background: rgba(239,196,126,.08); box-shadow: inset 0 0 0 1px rgba(239,196,126,.12); }
-    .tree-stem { display: block; width: 1px; height: 2rem; margin: 0 auto; background: rgba(239,196,126,.42); }
-    .tree-ending { min-height: 112px; }
-    .tree-ending .availability, .tree-ending .micro { justify-self: center; margin-top: .55rem; }
+    .tree-ending { min-height: 142px; }
+    .tree-ending .tree-step { font-size: .58rem; letter-spacing: .08em; }
+    .tree-ending strong { font-size: .82rem; }
+    .tree-ending .availability, .tree-ending .micro { justify-self: center; margin-top: .45rem; font-size: .66rem; }
     .locked { color: var(--dim); filter: blur(2px); user-select: none; }
     .educator-panel { margin-top: 1rem; padding: 1rem; border: 1px dashed var(--gold-2); border-radius: 12px; color: var(--muted); }
 
@@ -910,6 +934,7 @@
 
     @media (max-width: 620px) {
       .screen { padding: 1rem; }
+      .story-screen { padding-top: 5.25rem; }
       .title-screen { padding: 4.5rem 1.1rem 1.1rem; }
       .title-copy h1 { font-size: clamp(3.1rem, 18vw, 5rem); }
       .title-note { right: 0; }
@@ -935,17 +960,14 @@
       .graph-legend { gap: .5rem .75rem; }
       .graph-legend-item { font-size: .68rem; }
       .graph-tooltip { display: none !important; }
-      .decision-tree ol { display: grid; gap: 1rem; padding: 1.5rem 0 0 1rem; margin-left: .65rem; border-left: 1px solid rgba(239,196,126,.42); }
-      .decision-tree li { padding: 0 0 0 1rem; text-align: left; }
-      .decision-tree > li { padding: 0; }
-      .decision-tree li::before { display: block; top: 2rem; right: auto; left: -1rem; width: 1rem; height: 0; border: 0; border-top: 1px solid rgba(239,196,126,.42); }
-      .decision-tree li::after, .decision-tree li:only-child::before, .decision-tree li:only-child::after { display: none; }
-      .decision-tree > li::before { display: none; }
-      .tree-root { width: 100%; margin: 0; }
-      .tree-node { place-content: start; min-height: 0; text-align: left; }
-      .tree-stem { height: 1.25rem; margin: 0 0 0 1.25rem; }
-      .tree-ending { min-height: 0; }
-      .tree-ending .availability, .tree-ending .micro { justify-self: start; }
+      .decision-tree-wrap { margin-right: -.25rem; padding-bottom: .7rem; }
+      .decision-tree { min-width: 940px; }
+      .tree-root { width: min(280px, calc(100vw - 5rem)); }
+      .tree-pan-hint { display: block; margin: .9rem 0 0; color: var(--dim); font-size: .72rem; }
+    }
+
+    @media (max-width: 360px) {
+      .story-card h1 { font-size: 2.35rem; }
     }
   </style>
 </head>
@@ -1086,6 +1108,15 @@
 
     const E1_SCENES = [
       {
+        id: "e1_greeting", expression: "guarded",
+        text: "“Hi. I’m Amara.” She settles into the chair and gives a small, uncertain smile. “I have never done this before, so I am not sure what I am supposed to say first.”",
+        choices: [
+          c("e1_greet_settle", "Hi, Amara. I’m glad you made it in. We can take a moment to get settled—how is it feeling to be here?", "“A little awkward,” she says, then exhales. “And honestly, I almost did not come.”", "thoughtful", {trust:1, agency:1}, ["greeting_patient_led"], ["greeting", "agency"], 1, "You greeted me and gave me room to arrive before asking for the whole story.", "A calm opening can lower the pressure to perform immediately."),
+          c("e1_greet_structure", "It’s nice to meet you, Amara. There is no right way to begin. Would it help if I asked an opening question?", "“Yes, that would help.” Her shoulders drop slightly. “I was worried I would start in the wrong place.”", "relieved", {trust:1, safetyClarity:1}, ["greeting_structure_offered"], ["greeting", "orientation"], 1, "You made the first visit feel less like a test.", "Offer structure without taking away the patient’s choice about where to begin."),
+          c("e1_greet_pause", "Hi, Amara. Before we start, would you like some water or a minute to settle in?", "“I’m okay, but thank you.” She sets her bag beside the chair. “I think I just need to start talking before I change my mind.”", "guarded", {feltValidation:1, trust:1}, ["greeting_settling_offered"], ["greeting", "pace"], 1, "You noticed that arriving in the room can take a moment.", "After offering comfort, follow the patient’s cue about whether to pause or begin.")
+        ]
+      },
+      {
         id: "e1_arrival", expression: "guarded",
         text: "I almost canceled today. My supervisor said I should take time off, and I keep hearing that as a polite way of saying I cannot handle the work anymore.",
         choices: [
@@ -1188,10 +1219,21 @@
     ];
 
     function e2Scenes(firstBranch) {
+      const greeting = firstBranch === "A"
+        ? "“Hi. It’s good to see you again.” Amara sits down and rests both hands around a paper cup. “I was not sure whether you would want the full story or just whether the plan worked.”"
+        : "“Hi.” Amara pauses beside the chair before sitting. “I nearly canceled again. I was not sure what it would be like to come back after not doing what we planned.”";
       const opening = firstBranch === "A"
         ? "I went to the meeting with my supervisor. She offered a temporary reduced schedule. I kept hearing what you said about making the next step small, but I still nearly turned around at the door."
         : "I did not go to the meeting with my supervisor. I read the first line of the invitation, closed my laptop, and watched the clinic call the next day without answering. I almost canceled today too. I did not want to come back and have to explain that I had done none of it.";
       return [
+        {
+          id: "e2_greeting", expression: firstBranch === "A" ? "thoughtful" : "guarded", text: greeting,
+          choices: [
+            c("e2_greet_story", "Hi, Amara. I’m glad you came back. We have time for the full story—where would you like to begin?", firstBranch === "A" ? "“The full story,” she says. “I did go, but it was more complicated than checking a box and calling it a success.”" : "“With why I did not go,” she says. “I have been rehearsing how to explain it without sounding like I did not try.”", "thoughtful", {trust:1, agency:1}, ["return_greeting_patient_led"], ["greeting", "agency"], 1, "You welcomed me back before evaluating what I did.", "A return visit can begin with reconnection and the patient’s priorities."),
+            c("e2_greet_return", "It’s good to see you. Before we get into the plan, how has it felt to come back today?", firstBranch === "A" ? "“Relieving and embarrassing at the same time,” she says. “Some things went better, and I still almost stayed outside.”" : "“Like walking in with an incomplete assignment,” she says. “I kept expecting you to be disappointed.”", "guarded", {trust:1, feltValidation:1}, ["return_feeling_named"], ["greeting", "emotional check-in"], 1, "You asked what returning felt like, not only whether the plan was completed.", "Briefly checking the emotional temperature can make later review more honest."),
+            c("e2_greet_settle", "Welcome back. Would a minute to settle in help, or would you rather start talking?", firstBranch === "A" ? "“I would rather start,” she says. “If I wait, I will make the meeting sound simpler than it was.”" : "“Start talking,” she says after a breath. “Otherwise I may spend the whole visit trying to look fine.”", "thoughtful", {agency:1, disclosure:1}, ["return_pace_offered"], ["greeting", "pace"], 1, "You let me choose how to re-enter the conversation.", "A small choice about pace can support agency without delaying important assessment.")
+          ]
+        },
         {
           id: "e2_return", expression: firstBranch === "A" ? "thoughtful" : "guarded", text: opening,
           choices: firstBranch === "A" ? [
@@ -1273,50 +1315,103 @@
       ];
     }
 
-    const ENDINGS = {
+    const ENCOUNTER_THREE_ROUTES = {
       AA: {
-        title: "Room for the Next Step",
-        patientOutcome: "Amara remains depressed, but she is using support earlier, testing a modified work plan, and discussing medication effects instead of deciding alone.",
-        relationship: "The alliance supports direct disclosure and shared revision of the plan.",
-        consequence: "The fellowship rejection is painful without becoming a private verdict that ends help-seeking.",
-        pearl: "Collaboration does not remove distress. It can make distress more discussable and plans more usable.",
         opening: "The fellowship email said no. I opened it at my sister's kitchen table, like we planned. My first thought was, ‘They finally saw I do not belong,’ but I said it aloud instead of treating it like a fact. The next morning I asked my supervisor about another funding route.",
         expression: "relieved"
       },
       AB: {
-        title: "A Plan That Became a Test",
-        patientOutcome: "Amara had early momentum, then withdrew when later care felt directive and difficult to complete.",
-        relationship: "Initial trust was real, but it was not maintained when new complexity emerged.",
-        consequence: "She stops medication and misses follow-up, though prior safety work leaves a partial bridge back to care.",
-        pearl: "An alliance is not earned once. New disclosures require the clinician to keep adapting.",
         opening: "The fellowship email said no. I opened it alone after telling my sister not to come. I stopped the medication and missed your calls. The first visit helped, but later every plan felt like another way to measure whether I was trying hard enough.",
         expression: "guarded"
       },
       BA: {
-        title: "The Door Reopened",
-        patientOutcome: "After an isolating start, Amara re-engages, uses her sister's support, and calls before the crisis becomes unmanageable.",
-        relationship: "A clear acknowledgment of impact turns rupture into a workable, though still fragile, alliance.",
-        consequence: "She experiences the same rejection but responds with support and delay rather than disappearance.",
-        pearl: "Repair is not a consolation prize. Naming impact and changing course are central clinical skills.",
         opening: "The fellowship email said no. I almost deleted it, then forwarded it to my sister with four words: ‘Can you sit with me?’ I answered the clinic's call too. I did not expect to come back after the first visit, but the second one left room to come back imperfectly.",
         expression: "thoughtful"
       },
       BB: {
-        title: "Unopened Messages",
-        patientOutcome: "Amara withdraws, her symptoms worsen, and her sister helps her reach urgent care after several days of isolation.",
-        relationship: "Communication problems compound; Amara asks to continue with a different clinician.",
-        consequence: "Help arrives later and at a higher level of care. The outcome remains shaped by illness severity, work stress, access, relationships, and many factors beyond any single conversation.",
-        pearl: "When shame predicts judgment, vague safety language and directive plans can make care harder to approach.",
         opening: "The fellowship email said no. I read it in the lab parking garage, turned off my phone, and missed medication, meals, and two shifts. My sister found me and took me to urgent care. I came today to say this directly: I need another clinician.",
         expression: "withdrawn"
       }
     };
 
-    function e3Scenes(endingId) {
-      const ending = ENDINGS[endingId];
+    const ENDINGS = {
+      AAA: {
+        title: "Room for the Next Step",
+        patientOutcome: "Amara remains depressed, but she is using support earlier, testing a modified work plan, and discussing medication effects instead of deciding alone.",
+        relationship: "The closing conversation strengthens an alliance built on direct disclosure, shared revision, and Amara's authorship of the next plan.",
+        consequence: "The fellowship rejection is painful without becoming a private verdict that ends help-seeking.",
+        pearl: "Collaboration does not remove distress. It can make distress more discussable and plans more usable."
+      },
+      AAB: {
+        title: "Progress, Then a Narrow Goodbye",
+        patientOutcome: "Amara continues using support and the modified work plan, but leaves the final visit without a clearly shared plan for setbacks or changing needs.",
+        relationship: "Substantial trust remains, though the clinician-centered closing slightly narrows the agency developed earlier.",
+        consequence: "The gains of the first two encounters remain real, while future difficulty may be harder to bring back into the room.",
+        pearl: "A strong course of care still benefits from a closing conversation that leaves uncertainty and return routes explicit."
+      },
+      ABA: {
+        title: "A Bridge Back to the Plan",
+        patientOutcome: "After stopping medication and missing calls, Amara names what made the plan feel like a test and agrees on one concrete way to re-enter care.",
+        relationship: "The final encounter does not erase the later rupture, but listening and shared authorship create a credible bridge back.",
+        consequence: "Prior safety work and a clear return route reduce the chance that imperfect follow-through becomes permanent disengagement.",
+        pearl: "Repair can begin late. The goal is not to rewrite the rupture, but to make the next contact safer and more usable."
+      },
+      ABB: {
+        title: "A Plan That Became a Test",
+        patientOutcome: "Amara had early momentum, then withdrew when later care felt directive and difficult to complete.",
+        relationship: "Initial trust was real, but neither the later rupture nor the final conversation restored enough shared authorship.",
+        consequence: "She stops medication and misses follow-up, though prior safety work leaves a partial bridge back to care.",
+        pearl: "An alliance is not earned once. New disclosures and transitions require the clinician to keep adapting."
+      },
+      BAA: {
+        title: "The Door Reopened",
+        patientOutcome: "After an isolating start, Amara re-engages, uses her sister's support, and leaves with a plan she can revise without disappearing.",
+        relationship: "A clear acknowledgment of impact and an agency-centered closing turn rupture into a workable, though still fragile, alliance.",
+        consequence: "She experiences the same rejection but responds with support, delay, and an explicit route back to care.",
+        pearl: "Repair is not a consolation prize. Naming impact, changing course, and protecting future agency are central clinical skills."
+      },
+      BAB: {
+        title: "Repair Left Unfinished",
+        patientOutcome: "Amara re-engages and uses support, but the final conversation leaves her less certain that future disagreement can be brought into care.",
+        relationship: "Encounter 2 reopened the relationship; a directive closing stops short of consolidating that repair.",
+        consequence: "She has a partial bridge forward, but its strength depends more heavily on her sister and other supports outside the clinic.",
+        pearl: "Acknowledging a rupture opens the door. Later choices determine whether that repair becomes a durable way of working together."
+      },
+      BBA: {
+        title: "A Safer Handoff",
+        patientOutcome: "After urgent care, Amara asks for another clinician and helps define what the receiving team needs to understand about her withdrawal.",
+        relationship: "The original alliance is not restored, but the closing encounter respects her request and supports continuity without framing transfer as failure.",
+        consequence: "Help arrived later and at a higher level of care; a collaborative handoff now makes the next relationship more approachable.",
+        pearl: "Sometimes the most therapeutic repair is a safe, respectful transfer that preserves the patient's account and choices."
+      },
+      BBB: {
+        title: "Unopened Messages",
+        patientOutcome: "Amara withdraws, her symptoms worsen, and her sister helps her reach urgent care after several days of isolation.",
+        relationship: "Communication problems compound, and the final exchange does not make Amara's requested transition feel fully understood.",
+        consequence: "Help arrives later and at a higher level of care. The outcome remains shaped by illness severity, work stress, access, relationships, and many factors beyond any single conversation.",
+        pearl: "When shame predicts judgment, vague safety language, directive plans, and a clinician-centered closing can make care harder to approach."
+      }
+    };
+
+    const LEGACY_ENDING_MAP = { AA: "AAA", AB: "ABB", BA: "BAA", BB: "BBB" };
+
+    function e3Scenes(routeId) {
+      const route = ENCOUNTER_THREE_ROUTES[routeId] || ENCOUNTER_THREE_ROUTES.BB;
+      const transferRoute = routeId === "BB";
       return [
         {
-          id: "e3_open", expression: ending.expression, text: ending.opening,
+          id: "e3_greeting", expression: transferRoute ? "guarded" : "thoughtful",
+          text: transferRoute
+            ? "“Hi.” Amara remains near the door for a moment before sitting. “Thank you for meeting with me. I need to say something difficult before we go any further.”"
+            : "“Hi. It’s good to see you.” Amara settles into the chair. “I was not sure how to begin today. A lot has happened since we last met.”",
+          choices: [
+            c("e3_greet_space", "Hi, Amara. It’s good to see you. We can begin wherever you need—how are you arriving today?", transferRoute ? "“Tired, and clear about one thing,” she says. “I want to tell you what happened, and then I need to talk about seeing someone else.”" : "“Relieved to be here, and tired,” she says. “I think I need to tell you what happened before I can make sense of it.”", "thoughtful", {trust:1, agency:1}, ["closing_greeting_patient_led"], ["greeting", "agency"], 1, "You made room for my agenda before deciding what the final visit should accomplish.", "At a closing visit, a normal greeting can still protect the patient’s authorship."),
+            c("e3_greet_needs", "Welcome back. Before we look at what happened, is there anything you need to feel settled for this conversation?", transferRoute ? "“I need to know you will let me finish,” she says. “And that asking for someone else will not turn into an argument.”" : "“Just time,” she says. “I do not want to rush into calling it either a success or a failure.”", "guarded", {feltValidation:1, agency:1}, ["closing_needs_invited"], ["greeting", "pace"], 1, "You checked what would help me speak before asking for a summary.", "Invite practical or relational needs without making the patient responsible for managing the visit."),
+            c("e3_greet_choice", "Hi, Amara. We have time. Would you rather begin with what happened or with what this ending feels like?", transferRoute ? "“What happened first,” she says. “Then I want to explain what I need next.”" : "“What happened,” she says. “The meaning keeps changing depending on which part I start with.”", "thoughtful", {agency:1, disclosure:1}, ["closing_start_choice"], ["greeting", "choice"], 1, "You gave me a manageable choice about how to start.", "A bounded choice can offer structure while keeping the opening collaborative.")
+          ]
+        },
+        {
+          id: "e3_open", expression: route.expression, text: route.opening,
           choices: [
             c("e3_listen", "Thank you for saying that. What feels most important for me to understand about these six weeks?", "Amara takes her time. She describes not only the outcome, but which moments made it easier or harder to speak.", "thoughtful", {trust:1, feltValidation:2, agency:1}, ["closing_listened"], ["reflection", "patient perspective"], 2, "You let me define what the course meant.", "Keep the final encounter centered on the patient's account."),
             c("e3_explain", "I can explain why I made the choices I did during your care.", "“I know there were reasons,” she says. “I need to know whether you understand the effect.”", "guarded", {feltValidation:-1, rupture:1}, ["closing_explained"], ["explanation", "impact"], -1, "The closing began with your reasons rather than my experience.", "Acknowledge impact before offering explanation."),
@@ -1333,10 +1428,10 @@
           ]
         },
         {
-          id: "e3_close", expression: endingId === "BB" ? "guarded" : "relieved",
-          text: endingId === "BB" ? "What I know now is that I do not want this ending to mean I failed treatment. I want the next place to understand why I stopped answering." : "I think what I am taking from this is that the hard mornings are still real. I just do not think they have to decide every next step.",
+          id: "e3_close", expression: routeId === "BB" ? "guarded" : "relieved",
+          text: routeId === "BB" ? "What I know now is that I do not want this ending to mean I failed treatment. I want the next place to understand why I stopped answering." : "I think what I am taking from this is that the hard mornings are still real. I just do not think they have to decide every next step.",
           choices: [
-            c("e3_honor", endingId === "BB" ? "Asking for a different clinician is a form of agency. I will document what you want the next team to understand and help make the transition safe." : "The hard mornings are real, and so is the wider set of choices you can reach now. What should the next plan protect?", endingId === "BB" ? "Amara nods. “Please write that I was trying to protect myself, not refusing help.”" : "“Time with my sister, clay, and the ability to say when a plan is too much.”", "thoughtful", {trust:1, agency:2, treatmentBuyIn:1}, ["closing_agency"], ["agency", "continuity"], 3, "The ending left me with authorship of what came next.", "Close with continuity, autonomy, and clear safety arrangements."),
+            c("e3_honor", routeId === "BB" ? "Asking for a different clinician is a form of agency. I will document what you want the next team to understand and help make the transition safe." : "The hard mornings are real, and so is the wider set of choices you can reach now. What should the next plan protect?", routeId === "BB" ? "Amara nods. “Please write that I was trying to protect myself, not refusing help.”" : "“Time with my sister, clay, and the ability to say when a plan is too much.”", "thoughtful", {trust:1, agency:2, treatmentBuyIn:1}, ["closing_agency"], ["agency", "continuity"], 3, "The ending left me with authorship of what came next.", "Close with continuity, autonomy, and clear safety arrangements."),
             c("e3_reassure", "I am confident things will keep getting better from here.", "“I hope so,” she says. “I would rather know I can come back if they do not.”", "guarded", {safetyClarity:-1, feltValidation:-1}, ["closing_reassured"], ["reassurance", "uncertainty"], -1, "Hope replaced a needed plan for uncertainty.", "Offer realistic hope alongside a route back to care."),
             c("e3_advice", "Keep following the plan, and remember everything you have learned.", "Amara gives a polite smile. The final words sound more like instructions than a conversation.", "withdrawn", {agency:-1, treatmentBuyIn:-1}, ["closing_directive"], ["advice", "closure"], -1, "The relationship ended with compliance as the main task.", "Ask what she is taking forward and what support remains needed."),
           ]
@@ -1363,6 +1458,7 @@
         sceneIndex: 0,
         mode: "choice",
         pendingResponse: null,
+        responseOrders: {},
         history: [],
         choiceHistory: [],
         flags: {},
@@ -1370,6 +1466,7 @@
         encounterDelta: {},
         firstBranch: null,
         secondBranch: null,
+        thirdBranch: null,
         endingId: null,
         reflectionAfter: null,
         lastMeterChanges: {},
@@ -1380,6 +1477,9 @@
     const defaultSettings = { textSize: "normal", highContrast: false, reducedMotion: false, typing: true, plainLanguage: false };
     let settings = { ...defaultSettings, ...readJson(SETTINGS_KEY, {}) };
     let endingsSeen = readJson(ENDINGS_KEY, []);
+    endingsSeen = Array.isArray(endingsSeen)
+      ? [...new Set(endingsSeen.map(id => LEGACY_ENDING_MAP[id] || id).filter(id => !!ENDINGS[id]))]
+      : [];
     let loaded = readJson(SAVE_KEY, null);
     let state = normalizeLoadedState(loaded);
     if (loaded && state.selectedPatientId && state.view !== "title") {
@@ -1394,26 +1494,53 @@
     function normalizeLoadedState(value) {
       if (!value || typeof value !== "object" || value.version !== 1) return freshState();
       const next = { ...freshState(), ...value };
+      const legacyRoute = typeof next.endingId === "string" && LEGACY_ENDING_MAP[next.endingId] ? next.endingId : null;
+      if (legacyRoute) {
+        next.firstBranch = legacyRoute[0];
+        next.secondBranch = legacyRoute[1];
+        const legacyCourseWasComplete = !!next.completed || ["debrief", "branchMap"].includes(next.view) || (next.view === "reflection" && next.reflectionAfter === 3);
+        if (legacyCourseWasComplete) {
+          next.endingId = LEGACY_ENDING_MAP[legacyRoute];
+          next.thirdBranch = next.endingId[2];
+        } else {
+          next.endingId = null;
+          next.thirdBranch = null;
+        }
+      }
+      if (ENDINGS[next.endingId]) {
+        next.firstBranch = next.endingId[0];
+        next.secondBranch = next.endingId[1];
+        next.thirdBranch = next.endingId[2];
+      }
       if (next.view === "lifeEvent1") {
         if (!["A", "B"].includes(next.firstBranch)) return freshState();
         next.view = "encounter";
         next.currentWeek = 3;
         next.currentEncounter = 2;
-        next.currentSceneId = "e2_return";
+        next.currentSceneId = "e2_greeting";
         next.sceneIndex = 0;
         next.mode = "choice";
         next.pendingResponse = null;
         next.encounterDelta = {};
       } else if (next.view === "lifeEvent2") {
-        if (!ENDINGS[next.endingId]) return freshState();
+        if (!ENCOUNTER_THREE_ROUTES[`${next.firstBranch || ""}${next.secondBranch || ""}`]) return freshState();
         next.view = "encounter";
         next.currentWeek = 6;
         next.currentEncounter = 3;
-        next.currentSceneId = "e3_open";
+        next.currentSceneId = "e3_greeting";
         next.sceneIndex = 0;
         next.mode = "choice";
         next.pendingResponse = null;
         next.encounterDelta = {};
+      }
+      if (next.view === "encounter" && typeof next.currentSceneId === "string") {
+        const scenesForResume = next.currentEncounter === 1
+          ? E1_SCENES
+          : next.currentEncounter === 2
+            ? e2Scenes(next.firstBranch)
+            : e3Scenes(`${next.firstBranch || ""}${next.secondBranch || ""}`);
+        const resumedSceneIndex = scenesForResume.findIndex(scene => scene.id === next.currentSceneId);
+        if (resumedSceneIndex >= 0) next.sceneIndex = resumedSceneIndex;
       }
       const validViews = new Set(["title", "select", "caseIntro", "encounter", "reflection", "debrief", "branchMap"]);
       const validPatient = next.selectedPatientId === null || patientCatalog.some(patient => patient.id === next.selectedPatientId);
@@ -1422,8 +1549,15 @@
       if (!validViews.has(next.view) || !validPatient || !validEncounter || !validScene) return freshState();
       if (next.view === "encounter" && ![1, 2, 3].includes(next.currentEncounter)) return freshState();
       if (next.view === "reflection" && ![1, 2, 3].includes(next.reflectionAfter)) return freshState();
+      if (next.firstBranch !== null && !["A", "B"].includes(next.firstBranch)) return freshState();
+      if (next.secondBranch !== null && !["A", "B"].includes(next.secondBranch)) return freshState();
+      if (next.thirdBranch !== null && !["A", "B"].includes(next.thirdBranch)) return freshState();
+      if (next.endingId !== null && !ENDINGS[next.endingId]) return freshState();
+      if ((next.currentEncounter === 3 || next.reflectionAfter === 3) && !ENCOUNTER_THREE_ROUTES[`${next.firstBranch || ""}${next.secondBranch || ""}`]) return freshState();
+      if ((next.completed || ["debrief", "branchMap"].includes(next.view) || next.reflectionAfter === 3) && !ENDINGS[next.endingId]) return freshState();
       next.history = Array.isArray(next.history) ? next.history : [];
       next.choiceHistory = Array.isArray(next.choiceHistory) ? next.choiceHistory : [];
+      next.responseOrders = next.responseOrders && typeof next.responseOrders === "object" && !Array.isArray(next.responseOrders) ? next.responseOrders : {};
       next.flags = next.flags && typeof next.flags === "object" ? next.flags : {};
       next.dimensions = next.dimensions && typeof next.dimensions === "object" ? { ...freshState().dimensions, ...next.dimensions } : freshState().dimensions;
       next.encounterDelta = next.encounterDelta && typeof next.encounterDelta === "object" ? next.encounterDelta : {};
@@ -1523,7 +1657,28 @@
     function getScenes() {
       if (state.currentEncounter === 1) return E1_SCENES;
       if (state.currentEncounter === 2) return e2Scenes(state.firstBranch);
-      return e3Scenes(state.endingId);
+      return e3Scenes(`${state.firstBranch || ""}${state.secondBranch || ""}`);
+    }
+    function choicesInDisplayOrder(scene) {
+      const choices = [...(scene.choices || [])];
+      const orderKey = `${state.currentEncounter}:${scene.id}`;
+      const choicesById = new Map(choices.map(choice => [choice.id, choice]));
+      const savedOrder = state.responseOrders?.[orderKey];
+      if (Array.isArray(savedOrder) && savedOrder.length === choices.length && new Set(savedOrder).size === choices.length && savedOrder.every(id => choicesById.has(id))) {
+        return savedOrder.map(id => choicesById.get(id));
+      }
+
+      for (let index = choices.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [choices[index], choices[swapIndex]] = [choices[swapIndex], choices[index]];
+      }
+      if (choices.length > 1 && choices.every((choice, index) => choice.id === scene.choices[index].id)) {
+        const offset = 1 + Math.floor(Math.random() * (choices.length - 1));
+        choices.push(...choices.splice(0, offset));
+      }
+      state.responseOrders[orderKey] = choices.map(choice => choice.id);
+      saveState();
+      return choices;
     }
     function resolveSceneText(scene) {
       if (typeof scene.text !== "function") return scene.text;
@@ -1541,6 +1696,13 @@
       const safetyComplete = !!state.flags.e2_direct_safety_completed;
       const repairComplete = state.firstBranch === "A" || !!state.flags.rupture_repaired || ((d.repair||0) >= 2 && (d.trust||0) >= 3);
       return collaboration >= 9 && safetyComplete && repairComplete ? "A" : "B";
+    }
+    function resolveEncounterThree() {
+      const d = state.encounterDelta;
+      const sharedClosure = (d.trust||0) + (d.feltValidation||0) + (d.disclosure||0) + (d.agency||0) + (d.treatmentBuyIn||0) + (d.safetyClarity||0) + (d.repair||0) - (d.shame||0) - (d.rupture||0) - (d.defensiveness||0) - (d.avoidance||0);
+      const contextHeld = !!state.flags.multifactorial_named;
+      const agencyHeld = !!state.flags.closing_agency;
+      return sharedClosure >= 6 && contextHeld && agencyHeld ? "A" : "B";
     }
     function applyChoice(choice, scene) {
       const sceneText = resolveSceneText(scene);
@@ -1593,7 +1755,11 @@
       if (state.currentEncounter === 1) state.firstBranch = resolveEncounterOne();
       if (state.currentEncounter === 2) {
         state.secondBranch = resolveEncounterTwo();
-        state.endingId = state.firstBranch + state.secondBranch;
+        state.endingId = null;
+      }
+      if (state.currentEncounter === 3) {
+        state.thirdBranch = resolveEncounterThree();
+        state.endingId = state.firstBranch + state.secondBranch + state.thirdBranch;
       }
       state.reflectionAfter = state.currentEncounter;
       state.view = "reflection";
@@ -1644,7 +1810,7 @@
     }
     function renderTitle() {
       const canContinue = !!state.selectedPatientId && !!state.resumeView;
-      const lastEnding = state.completed && state.endingId ? ENDINGS[state.endingId].title : null;
+      const lastEnding = state.completed && ENDINGS[state.endingId] ? ENDINGS[state.endingId].title : null;
       app.innerHTML = `
         <section class="screen title-screen" aria-labelledby="title-heading">
           <div class="title-copy">
@@ -1744,6 +1910,7 @@
       const sceneText = resolveSceneText(scene);
       state.currentSceneId = scene.id;
       const reaction = state.mode === "reaction" && state.pendingResponse;
+      const orderedChoices = reaction ? [] : choicesInDisplayOrder(scene);
       const expression = reaction ? state.pendingResponse.expression : scene.expression;
       app.innerHTML = `
         <section class="screen encounter-screen" aria-label="Week ${state.currentWeek}, encounter ${state.currentEncounter}">
@@ -1760,7 +1927,7 @@
               </div>
               ${reaction ? `<div class="reaction-actions"><button class="primary" id="advance-scene">Continue</button></div>` : `
                 <div class="choices" aria-label="Response choices">
-                  ${scene.choices.map((choice, index) => `<button class="choice" data-choice="${index}" disabled><span class="choice-number">${index + 1}</span><span>${escapeHtml(choice.text)}</span></button>`).join("")}
+                  ${orderedChoices.map((choice, index) => `<button class="choice" data-choice="${index}" disabled><span class="choice-number">${index + 1}</span><span>${escapeHtml(choice.text)}</span></button>`).join("")}
                 </div>`}
             </div>
           </div>
@@ -1771,9 +1938,9 @@
       } else {
         typeLine(sceneText, () => {
           document.querySelectorAll("[data-choice]").forEach(button => button.disabled = false);
-          announce(`${sceneText} ${scene.choices.length} response choices available.`);
+          announce(`${sceneText} ${orderedChoices.length} response choices available.`);
         });
-        document.querySelectorAll("[data-choice]").forEach(button => button.addEventListener("click", () => applyChoice(scene.choices[Number(button.dataset.choice)], scene)));
+        document.querySelectorAll("[data-choice]").forEach(button => button.addEventListener("click", () => applyChoice(orderedChoices[Number(button.dataset.choice)], scene)));
       }
     }
     function typeLine(text, complete) {
@@ -1814,12 +1981,14 @@
       const records = state.choiceHistory.filter(item => item.encounter === n);
       const helpful = [...records].sort((a,b) => b.rating - a.rating)[0];
       const limiting = [...records].sort((a,b) => a.rating - b.rating).find(item => item.rating < 1);
-      const branch = n === 1 ? state.firstBranch : n === 2 ? state.secondBranch : null;
+      const branch = n === 1 ? state.firstBranch : n === 2 ? state.secondBranch : state.thirdBranch;
       const heard = n === 1
         ? (branch === "A" ? "There was room to say the frightening part plainly, and the plan could be shaped around my life." : "I needed to protect the clinician from the hardest details, or prove that I could follow the plan.")
         : n === 2
           ? (branch === "A" ? "Even after difficulty, honesty could lead to curiosity, repair, and a plan I could use." : "New information became another set of instructions, and returning imperfectly felt risky.")
-          : "Closure can recognize what changed while leaving uncertainty, agency, and continuity intact.";
+          : (branch === "A"
+            ? "The ending recognized many influences without taking ownership away from me, and it left a route forward that I helped define."
+            : "The final words returned to explanation, reassurance, or instruction before my perspective and next choices were fully protected.");
       const principle = settings.plainLanguage
         ? (n === 1
           ? "Ask about suicide clearly and calmly. A vague or leading question can make it harder for a patient to answer honestly."
@@ -1863,7 +2032,7 @@
         : record.encounter === 2
           ? e2Scenes(state.firstBranch)
           : record.encounter === 3
-            ? e3Scenes(state.endingId)
+            ? e3Scenes(`${state.firstBranch || ""}${state.secondBranch || ""}`)
             : [];
       return scenes.flatMap(scene => scene.choices || []).find(choice => choice.id === record.choiceId) || null;
     }
@@ -2009,6 +2178,7 @@
     }
 
     function completeCase() {
+      if (!ENDINGS[state.endingId]) return;
       state.completed = true;
       state.view = "debrief";
       state.resumeView = null;
@@ -2028,6 +2198,8 @@
       if (!state.flags.e2_direct_safety_completed) missed.push("Encounter 2 did not clearly reassess suicidal thoughts, plan, intent, and behavior after a new risk signal.");
       if (state.firstBranch === "B" && !state.flags.rupture_repaired) missed.push("The early rupture was not explicitly acknowledged and repaired.");
       if (!state.flags.support_boundaries_defined && !state.flags.family_trial_consented) missed.push("Family involvement could have been explored with clearer consent and boundaries.");
+      if (!state.flags.multifactorial_named) missed.push("The closing formulation did not explicitly hold illness, circumstances, supports, choices, chance, and clinical communication together.");
+      if (!state.flags.closing_agency) missed.push("The final exchange did not leave Amara's agency, continuity needs, and route back to care fully explicit.");
       app.innerHTML = `
         <section class="screen story-screen" aria-labelledby="debrief-heading">
           <article class="story-card">
@@ -2055,73 +2227,95 @@
       return records.length ? `<ul>${records.map(item => `<li class="quote">“${escapeHtml(item.text)}”</li>`).join("")}</ul>` : `<p>${escapeHtml(fallback)}</p>`;
     }
     function renderBranchMap() {
-      const labels = {
-        AA: ["Felt able to disclose", "Collaboration sustained", ENDINGS.AA.title],
-        AB: ["Felt able to disclose", "Later rupture", ENDINGS.AB.title],
-        BA: ["Withheld concerns", "Repair and re-engagement", ENDINGS.BA.title],
-        BB: ["Withheld concerns", "Disengagement compounded", ENDINGS.BB.title]
+      const encounterOneLabels = { A: "Felt able to disclose", B: "Withheld concerns" };
+      const encounterTwoLabels = {
+        AA: "Collaboration sustained",
+        AB: "Later rupture",
+        BA: "Repair and re-engagement",
+        BB: "Disengagement compounded"
+      };
+      const encounterThreeLabels = {
+        AAA: "Agency and continuity centered",
+        AAB: "Closure narrowed shared authorship",
+        ABA: "A bridge back was made explicit",
+        ABB: "The return route remained fragile",
+        BAA: "Repair carried into closure",
+        BAB: "Repair was not consolidated",
+        BBA: "Transfer honored as agency",
+        BBB: "Transition remained difficult to approach"
       };
       const pathIsVisible = id => endingsSeen.includes(id) || state.endingId === id;
-      const branchIsVisible = prefix => Object.keys(labels).some(id => id.startsWith(prefix) && pathIsVisible(id));
-      const renderEndingBranch = id => {
-        const parts = labels[id];
+      const branchIsVisible = prefix => Object.keys(ENDINGS).some(id => id.startsWith(prefix) && pathIsVisible(id));
+      const renderEncounterThreeBranch = id => {
         const visible = pathIsVisible(id);
         const current = state.endingId === id;
         const status = current ? "Your current path" : visible ? "Previously discovered" : "Replay to reveal";
         return `<li aria-label="Ending ${id}, ${visible ? "discovered" : "not yet discovered"}">
-          <div class="tree-node ${current ? "on-current-path" : ""}">
-            <span class="tree-step">Encounter 2 outcome</span>
-            <strong>${visible ? escapeHtml(parts[1]) : "Unseen trajectory"}</strong>
-          </div>
-          <span class="tree-stem" aria-hidden="true"></span>
           <div class="tree-node tree-ending ${current ? "on-current-path" : ""}">
-            <span class="tree-step">Ending ${id}</span>
-            <strong>${visible ? escapeHtml(parts[2]) : "Undiscovered ending"}</strong>
-            ${current ? `<span class="availability">${status}</span>` : `<span class="micro">${status}</span>`}
+            <span class="tree-step">Encounter 3 outcome · Ending ${id}</span>
+            <strong>${visible ? escapeHtml(encounterThreeLabels[id]) : "Unseen trajectory"}</strong>
+            ${visible ? `<span class="availability">${escapeHtml(ENDINGS[id].title)}</span>` : ""}
+            <span class="micro">${status}</span>
           </div>
         </li>`;
       };
-      const renderEncounterOneBranch = (prefix, endingIds) => {
+      const renderEncounterTwoBranch = routeId => {
+        const visible = branchIsVisible(routeId);
+        const current = state.endingId?.startsWith(routeId);
+        return `<li>
+          <div class="tree-node tree-encounter ${current ? "on-current-path" : ""}">
+            <span class="tree-step">Encounter 2 outcome</span>
+            <strong>${visible ? escapeHtml(encounterTwoLabels[routeId]) : "Unseen trajectory"}</strong>
+          </div>
+          <ol>${[`${routeId}A`, `${routeId}B`].map(renderEncounterThreeBranch).join("")}</ol>
+        </li>`;
+      };
+      const renderEncounterOneBranch = (prefix, routeIds) => {
         const visible = branchIsVisible(prefix);
         const current = state.endingId?.startsWith(prefix);
         return `<li>
-          <div class="tree-node ${current ? "on-current-path" : ""}">
+          <div class="tree-node tree-encounter ${current ? "on-current-path" : ""}">
             <span class="tree-step">Encounter 1 outcome</span>
-            <strong>${visible ? escapeHtml(labels[endingIds[0]][0]) : "Unseen trajectory"}</strong>
+            <strong>${visible ? escapeHtml(encounterOneLabels[prefix]) : "Unseen trajectory"}</strong>
           </div>
-          <ol>${endingIds.map(renderEndingBranch).join("")}</ol>
+          <ol>${routeIds.map(renderEncounterTwoBranch).join("")}</ol>
         </li>`;
       };
       app.innerHTML = `
         <section class="screen story-screen" aria-labelledby="map-heading">
-          <article class="story-card">
-            <p class="eyebrow">Replay map · ${endingsSeen.length} of 4 endings discovered</p>
+          <article class="story-card branch-map-card">
+            <p class="eyebrow">Replay map · ${endingsSeen.length} of 8 endings discovered</p>
             <h1 id="map-heading">Words create paths, not scores</h1>
-            <p class="lede">Your completed route is shown. Unseen endings remain concealed; each can be reached by a different cumulative pattern across the first two encounters.</p>
-            <ol class="decision-tree" aria-label="Vertical decision tree showing the four possible endings">
-              <li>
-                <div class="tree-node tree-root on-current-path"><span class="tree-step">Case beginning</span><strong>Amara enters care</strong></div>
-                <ol>
-                  ${renderEncounterOneBranch("A", ["AA", "AB"])}
-                  ${renderEncounterOneBranch("B", ["BA", "BB"])}
-                </ol>
-              </li>
-            </ol>
+            <p class="lede">Read from top to bottom: the case beginning divides into two Encounter 1 outcomes, four Encounter 2 outcomes, and eight possible Encounter 3 endings.</p>
+            <p class="tree-pan-hint">Swipe or scroll sideways to follow the branches on smaller screens.</p>
+            <div class="decision-tree-wrap" role="region" aria-label="Scrollable top-to-bottom branch map" tabindex="0">
+              <ol class="decision-tree" aria-label="Top-to-bottom decision tree showing the eight possible endings across three encounters">
+                <li>
+                  <div class="tree-node tree-root on-current-path"><span class="tree-step">Case beginning</span><strong>Amara enters care</strong></div>
+                  <ol>
+                    ${renderEncounterOneBranch("A", ["AA", "AB"])}
+                    ${renderEncounterOneBranch("B", ["BA", "BB"])}
+                  </ol>
+                </li>
+              </ol>
+            </div>
             <div id="educator-details"></div>
             <div class="button-row"><button class="primary" id="map-replay">Replay from week one</button><button class="secondary" id="map-debrief">Return to debrief</button><button class="quiet-button" id="educator-toggle">Show educator lens</button></div>
           </article>
         </section>`;
+      const branchMapScroller = document.querySelector(".decision-tree-wrap");
+      if (branchMapScroller) branchMapScroller.scrollLeft = Math.max(0, (branchMapScroller.scrollWidth - branchMapScroller.clientWidth) / 2);
       document.getElementById("map-replay").addEventListener("click", restartCase);
       document.getElementById("map-debrief").addEventListener("click", () => { state.view = "debrief"; saveState(); render(); });
       document.getElementById("educator-toggle").addEventListener("click", toggleEducator);
-      announce(`Branch map. ${endingsSeen.length} of four endings discovered.`);
+      announce(`Branch map. ${endingsSeen.length} of eight endings discovered.`);
     }
     function toggleEducator(event) {
       const panel = document.getElementById("educator-details");
       const showing = !!panel.innerHTML;
       if (showing) { panel.innerHTML = ""; event.currentTarget.textContent = "Show educator lens"; return; }
       const dims = Object.entries(state.dimensions).map(([key,value]) => `${key}: ${value}`).join(" · ");
-      panel.innerHTML = `<div class="educator-panel"><p class="eyebrow">Educator lens</p><p><strong>Resolver:</strong> Each major branch used the cumulative encounter pattern plus a required direct safety-assessment flag. Encounter 2 also required explicit repair after an early rupture.</p><p><strong>Final hidden dimensions:</strong> ${escapeHtml(dims)}</p><p><strong>Teaching tags selected:</strong> ${escapeHtml([...new Set(state.choiceHistory.flatMap(x => x.tags || []))].join(", "))}</p></div>`;
+      panel.innerHTML = `<div class="educator-panel"><p class="eyebrow">Educator lens</p><p><strong>Resolver:</strong> Encounter 1 uses the cumulative alliance pattern plus direct safety assessment. Encounter 2 uses collaboration, repeat safety assessment, and repair when needed. Encounter 3 uses the cumulative closing pattern plus explicit attention to multiple causes and patient agency.</p><p><strong>Final hidden dimensions:</strong> ${escapeHtml(dims)}</p><p><strong>Teaching tags selected:</strong> ${escapeHtml([...new Set(state.choiceHistory.flatMap(x => x.tags || []))].join(", "))}</p></div>`;
       event.currentTarget.textContent = "Hide educator lens";
     }
     function restartCase() {
