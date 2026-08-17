@@ -330,10 +330,24 @@
 
     .player-input-row {
       display: grid;
-      grid-template-columns: 28px 1fr auto;
+      grid-template-columns: 28px minmax(0, 1fr);
       align-items: center;
       gap: .45rem;
-      margin-bottom: .45rem;
+      margin-bottom: .7rem;
+    }
+
+    .setup-role-badge {
+      grid-column: 2;
+      justify-self: start;
+      padding: .42rem .55rem;
+      border: 1px solid #c5d1d4;
+      border-radius: 999px;
+      color: var(--navy);
+      background: #edf4f5;
+      font-size: .68rem;
+      font-weight: 850;
+      text-align: center;
+      white-space: nowrap;
     }
 
     .player-swatch {
@@ -612,7 +626,7 @@
     }
 
     .domain-group-cranial .domain-group-buttons {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
     .domain-group-title {
@@ -1518,9 +1532,9 @@
       </div>
     </div>
     <div class="header-status">
-      <label class="auto-advance-control" title="Automatically reveal requested clues and score submitted wands">
+      <label class="auto-advance-control" title="Automatically perform the Quizmaster's clue reveals and scoring">
         <input id="autoAdvanceFacilitator" type="checkbox">
-        <span>Auto-advance Facilitator</span>
+        <span>Auto-advance Quizmaster</span>
       </label>
       <span class="sync-pill"><span class="sync-dot" aria-hidden="true"></span><span id="syncStatus">Local session</span></span>
       <span class="role-pill" id="roleLabel">Prototype mode</span>
@@ -1530,12 +1544,12 @@
   </header>
 
   <div class="app-layout">
-    <aside class="facilitator-pane" id="facilitatorPane" aria-label="Private facilitator console">
+    <aside class="facilitator-pane" id="facilitatorPane" aria-label="Private Quizmaster console">
       <div class="console-heading">
         <div>
           <p class="eyebrow">Private controls</p>
-          <h2>Facilitator Console</h2>
-          <p class="muted small">Keep this panel off the projected display.</p>
+          <h2>Quizmaster Console</h2>
+          <p class="muted small">Keep this answer panel private from the Localizer.</p>
         </div>
         <span class="private-badge">Private</span>
       </div>
@@ -1624,25 +1638,25 @@
     <div class="mode-dialog">
       <p class="eyebrow">Prototype launcher</p>
       <h1 id="modeHeading">How will you use this screen?</h1>
-      <p class="muted">Use two windows for a private console and projected player board, or keep both together while testing.</p>
+      <p class="muted">Two players alternate roles after every case: one Quizmaster controls the examination while one Localizer solves the lesion.</p>
       <div class="mode-options">
         <button class="mode-option" type="button" data-mode="facilitator">
-          <span class="mode-icon" aria-hidden="true">F</span>
-          <strong>Facilitator Console</strong>
-          <span>Private case setup, answer, clue release, scoring, and debrief controls.</span>
+          <span class="mode-icon" aria-hidden="true">Q</span>
+          <strong>Quizmaster Console</strong>
+          <span>Private answer, clue-release, scoring, and round controls for the current Quizmaster.</span>
         </button>
         <button class="mode-option" type="button" data-mode="player">
-          <span class="mode-icon" aria-hidden="true">P</span>
-          <strong>Player Display</strong>
-          <span>Public projected board with clues, wands, feedback, and guess history.</span>
+          <span class="mode-icon" aria-hidden="true">L</span>
+          <strong>Localizer Display</strong>
+          <span>The current Localizer's clue requests, brainstem board, feedback, and guess history.</span>
         </button>
         <button class="mode-option" type="button" data-mode="single">
-          <span class="mode-icon" aria-hidden="true">1</span>
+          <span class="mode-icon" aria-hidden="true">2</span>
           <strong>Prototype Mode</strong>
-          <span>Facilitator controls and player board together for prototyping or small groups.</span>
+          <span>Quizmaster controls and Localizer board together for testing the complete two-player flow.</span>
         </button>
       </div>
-      <button class="mode-quickstart" id="singlePlayerQuickstart" type="button">Single-player quickstart</button>
+      <button class="mode-quickstart" id="twoPlayerQuickstart" type="button">Two-player prototype quickstart</button>
     </div>
   </div>
 
@@ -1665,8 +1679,8 @@
   <script>
     "use strict";
 
-    const STORAGE_KEY = "brainstem-mastermind-state-v7";
-    const CHANNEL_NAME = "brainstem-mastermind-sync-v7";
+    const STORAGE_KEY = "brainstem-mastermind-state-v9";
+    const CHANNEL_NAME = "brainstem-mastermind-sync-v9";
     const AUTO_ADVANCE_KEY = "brainstem-mastermind-auto-advance-v1";
     const LEVELS = ["midbrain", "pons", "medulla"];
     const BOARD_FACES = [
@@ -1704,7 +1718,7 @@
       }
     ];
     const PLAYER_COLORS = ["#277da1", "#d8752d", "#7a55a3", "#2f8f67", "#c04d67"];
-    const CRANIAL_DOMAIN_IDS = ["autonomic", "oculomotion", "facial", "bulbar"];
+    const CRANIAL_DOMAIN_IDS = ["autonomic", "oculomotion", "facial", "bulbar", "tongue"];
     const DOMAIN_CATALOG = {
       motor: { label: "Motor", short: "Strength and movement" },
       touchVibration: { label: "Light touch / vibration", short: "Body light touch, vibration, discriminative touch, and joint position" },
@@ -1713,7 +1727,8 @@
       facial: { label: "Facial Sensorimotor", short: "Facial sensation and movement" },
       coordination: { label: "Coordination and Gait", short: "Coordination, stance, gait, and tendency to fall" },
       autonomic: { label: "Pupils", short: "Pupil size, symmetry, reactivity, and light-dependent anisocoria" },
-      bulbar: { label: "Bulbar Function", short: "Palate, voice, swallowing, gag, and tongue" }
+      bulbar: { label: "Bulbar Function", short: "Palate, voice, swallowing, and gag" },
+      tongue: { label: "Tongue Deviation", short: "Tongue position, protrusion, strength, and deviation" }
     };
 
     const FAMILY_DEFINITIONS = [
@@ -1731,7 +1746,8 @@
           coordination: [0, "There is no appendicular ataxia out of proportion to weakness; gait is hemiparetic toward the weak {contra} side.", "The gait pattern follows corticospinal weakness rather than primary ataxia, supporting ventral peduncular involvement."],
           oculomotion: [0, "The {ipsi} eyelid is ptotic, and the eye rests abducted and depressed with impaired adduction, elevation, and depression.", "An ipsilateral fascicular CN III palsy establishes the side and midbrain level."],
           facial: [0, "There is {contra} lower facial weakness with preserved forehead movement and eye closure. Facial sensation is normal.", "Corticobulbar involvement causes a contralateral upper-motor-neuron facial pattern while trigeminal sensory and facial nuclear pathways are spared."],
-          bulbar: [0, "Palate elevation, voice, swallowing, and tongue movement are normal.", "Nucleus ambiguus and hypoglossal systems are spared."],
+          bulbar: [0, "Palate elevation, voice, and swallowing are normal.", "Nucleus ambiguus pathways are spared."],
+          tongue: [0, "The tongue protrudes in the midline without weakness.", "Hypoglossal motor function is preserved."],
           autonomic: [0, "The {ipsi} pupil is dilated and poorly reactive; the anisocoria is greater in bright light.", "Parasympathetic CN III fibers are involved while the descending sympathetic pathway is spared."]
         },
         debrief: [
@@ -1758,7 +1774,8 @@
           painTemperature: [0, "Pinprick and temperature are preserved over the body.", "The spinothalamic tract is spared in this confined tegmental pattern."],
           oculomotion: [0, "There is a {ipsi} oculomotor palsy with ptosis and impaired adduction, elevation, and depression.", "CN III establishes the {ipsi} midbrain."],
           facial: [0, "Facial strength and facial sensation are normal.", "Trigeminal sensory and facial-motor pathways are spared."],
-          bulbar: [0, "Palate elevation, voice, swallowing, and tongue movement are normal.", "Lower brainstem bulbar structures are spared."],
+          bulbar: [0, "Palate elevation, voice, and swallowing are normal.", "Lower brainstem bulbar structures are spared."],
+          tongue: [0, "The tongue protrudes in the midline without weakness.", "Hypoglossal motor function is preserved."],
           autonomic: [0, "The {ipsi} pupil is dilated and poorly reactive; the anisocoria is greater in bright light.", "Parasympathetic CN III fibers are involved while descending sympathetic fibers are spared."]
         },
         debrief: [
@@ -1780,7 +1797,8 @@
         spared: ["Dorsal tegmental ocular systems", "Medial lemniscus", "Spinothalamic tract", "Trigeminal sensory pathways", "Lower cranial-nerve nuclei"],
         domains: {
           motor: [0, "There is mild {contra} hand-predominant pyramidal weakness.", "A corticospinal motor pattern fits the contralateral medial pontine base."],
-          bulbar: [0, "Dysarthria is prominent; palate elevation, voice, swallowing, and tongue movement are normal.", "The dysarthria reflects corticobulbar and adjacent pontocerebellar involvement rather than nucleus ambiguus dysfunction."],
+          bulbar: [0, "Dysarthria is prominent; palate elevation, voice, and swallowing are normal.", "The dysarthria reflects corticobulbar and adjacent pontocerebellar involvement rather than nucleus ambiguus dysfunction."],
+          tongue: [0, "The tongue protrudes in the midline without weakness.", "Hypoglossal motor function is preserved."],
           touchVibration: [0, "Routine light touch, discriminative touch, vibration, and joint position are preserved over the body.", "A small rostral basis-pontis lesion spares the more dorsal medial lemniscus."],
           painTemperature: [0, "Pinprick and temperature are preserved over the body.", "A small rostral basis-pontis lesion spares the tegmental spinothalamic pathway."],
           oculomotion: [0, "Eye movements are full, with no gaze palsy, INO, or nystagmus.", "Dorsal pontine ocular-motor systems are spared."],
@@ -1813,7 +1831,8 @@
           coordination: [0, "Gait combines mild {contra} weakness with disproportionate clumsiness, and the {contra} limbs are mildly ataxic beyond the degree explained by weakness.", "Mixed pyramidal, corticopontine, and pontocerebellar dysfunction supports a lateralized ventral pontine footprint."],
           oculomotion: [0, "Eye movements are full, with no horizontal gaze palsy, INO, or nystagmus.", "Dorsal pontine ocular-motor structures are spared."],
           facial: [0, "Facial strength and facial sensation are normal.", "Trigeminal sensory and facial-motor structures are spared."],
-          bulbar: [0, "Palate elevation, voice, swallowing, and tongue movement are normal.", "Lower brainstem bulbar systems are spared."],
+          bulbar: [0, "Palate elevation, voice, and swallowing are normal.", "Lower brainstem bulbar systems are spared."],
+          tongue: [0, "The tongue protrudes in the midline without weakness.", "Hypoglossal motor function is preserved."],
           autonomic: [0, "Pupils are equal and briskly reactive to light, with no anisocoria in bright or dim illumination.", "The dorsal-lateral sympathetic pathway is spared."]
         },
         debrief: [
@@ -1841,7 +1860,8 @@
           touchVibration: [0, "Routine light touch, discriminative touch, vibration, and joint position are preserved over the body.", "The medial lemniscus is spared."],
           painTemperature: [0, "Pinprick and temperature are preserved over the body.", "The spinothalamic tract is spared."],
           coordination: [0, "There is no limb dysmetria, and gait is steady when visual symptoms are controlled.", "Major cerebellar pathways are spared, so there is no primary gait ataxia."],
-          bulbar: [0, "Palate movement, voice, swallowing, and tongue movement are normal.", "Lower brainstem bulbar systems are spared."],
+          bulbar: [0, "Palate movement, voice, and swallowing are normal.", "Lower brainstem bulbar systems are spared."],
+          tongue: [0, "The tongue protrudes in the midline without weakness.", "Hypoglossal motor function is preserved."],
           autonomic: [0, "Pupils are equal and briskly reactive to light, with no anisocoria in bright or dim illumination.", "The descending sympathetic pathway is spared."]
         },
         debrief: [
@@ -1868,7 +1888,8 @@
           motor: [0, "There is no meaningful limb weakness.", "The ventral corticospinal tract is spared."],
           touchVibration: [0, "Routine light touch, discriminative touch, vibration, and joint position are preserved over the body.", "The medial lemniscus is spared."],
           painTemperature: [0, "Pinprick and temperature are reduced over the {contra} body.", "Spinothalamic involvement produces contralateral body pain-temperature loss."],
-          bulbar: [0, "Palate elevation, voice, swallowing, and tongue movement are normal.", "Nucleus ambiguus and hypoglossal systems are spared."],
+          bulbar: [0, "Palate elevation, voice, and swallowing are normal.", "Nucleus ambiguus pathways are spared."],
+          tongue: [0, "The tongue protrudes in the midline without weakness.", "Hypoglossal motor function is preserved."],
           autonomic: [0, "The {ipsi} pupil is constricted, with mild {ipsi} upper-eyelid ptosis; the anisocoria is greater in dim light.", "Descending sympathetic fibers run laterally."]
         },
         debrief: [
@@ -1894,7 +1915,8 @@
           touchVibration: [0, "Vibration, joint position, fine discriminative touch, and routine light-touch detection are reduced over the {contra} body.", "The medial lemniscus is involved. Discriminative touch is more reliably impaired than simple touch detection because nonpainful touch has parallel ascending representation."],
           painTemperature: [0, "Pinprick and temperature are preserved over the body.", "The spinothalamic tract is spared."],
           coordination: [0, "There is no dysmetria beyond that caused by weakness and proprioceptive loss; gait is hemiparetic and sensory-ataxic on the {contra} side.", "Cerebellar pathways are spared; pyramid and medial-lemniscus involvement account for the gait pattern."],
-          bulbar: [0, "The tongue deviates toward the {ipsi} side with {ipsi} weakness. Palate elevation, voice, and swallowing are preserved.", "A fascicular CN XII palsy fixes the side and medullary level."],
+          bulbar: [0, "Palate elevation, voice, and swallowing are preserved.", "Nucleus ambiguus pathways are spared."],
+          tongue: [0, "On protrusion, the tongue deviates toward the {ipsi} side and is weak on that side.", "A fascicular CN XII palsy fixes the side and medullary level."],
           oculomotion: [0, "Eye movements are full, with no nystagmus, gaze palsy, or INO.", "Pontine and midbrain ocular-motor anchors are absent."],
           facial: [0, "Facial strength and facial sensation are normal.", "Trigeminal sensory and facial-motor pathways are spared."],
           autonomic: [0, "Pupils are equal and briskly reactive to light, with no anisocoria in bright or dim illumination.", "The lateral sympathetic pathway is spared."]
@@ -1904,7 +1926,7 @@
           "Contralateral weakness places the lesion in the pyramid.",
           "Contralateral loss of vibration, position sense, and discriminative touch identifies the medial lemniscus."
         ],
-        discriminating: "bulbar",
+        discriminating: "tongue",
         distractor: "Ventromedial pons lacks an ipsilateral hypoglossal fascicular sign.",
         reviewNote: "This selected patient has reduced vibration, position, discriminative touch, and routine light-touch detection. In clinical practice, parallel pathways can partly preserve simple touch detection.",
         references: ["Medial medullary infarction, 86-patient study (PMID 19628797)", "Medial medullary infarction series (Neurology 1996;47:1141–1147)"]
@@ -1917,7 +1939,8 @@
         affected: ["{Ipsi} nucleus ambiguus", "{Ipsi} vestibular nuclei", "{Ipsi} spinal trigeminal system", "{Ipsi} sympathetic fibers", "{Ipsi} inferior cerebellar peduncle", "Spinothalamic tract"],
         spared: ["Pyramid", "Medial lemniscus", "Facial nucleus"],
         domains: {
-          bulbar: [0, "There is dysphagia and hoarseness, and the uvula deviates toward the {contra} side. Tongue movement is normal.", "Nucleus ambiguus involvement is a powerful lateral medullary anchor while the hypoglossal system is spared."],
+          bulbar: [0, "There is dysphagia and hoarseness, and the uvula deviates toward the {contra} side.", "Nucleus ambiguus involvement is a powerful lateral medullary anchor."],
+          tongue: [0, "The tongue protrudes in the midline without weakness.", "The medial hypoglossal nucleus and fascicles are spared."],
           touchVibration: [0, "Routine light touch, discriminative touch, vibration, and joint position are preserved over the body in this classic confined pattern.", "The medial lemniscus is spared."],
           painTemperature: [0, "Pinprick and temperature are reduced over the {contra} body.", "Spinothalamic involvement produces contralateral body pain-temperature loss."],
           autonomic: [0, "The {ipsi} pupil is constricted, with mild {ipsi} upper-eyelid ptosis; the anisocoria is greater in dim light.", "Descending sympathetic fibers run dorsolaterally."],
@@ -1954,7 +1977,8 @@
           facial: [0, "There is {contra} lower facial weakness with preserved forehead movement and eye closure. Facial sensation is normal.", "Corticobulbar involvement causes a contralateral upper-motor-neuron facial pattern while trigeminal sensory and facial nuclear pathways are spared."],
           coordination: [0, "There is no intention tremor or dysmetria after accounting for weakness; gait is mildly hemiparetic toward the {contra} side.", "Preserved cerebellar coordination argues against a dorsal tegmental lesion."],
           autonomic: [0, "Pupils are equal and briskly reactive to light, with no anisocoria in bright or dim illumination.", "This patient has a pupil-sparing partial fascicular CN III pattern; descending sympathetic fibers are spared."],
-          bulbar: [0, "Palate elevation, voice, swallowing, and tongue movement are normal.", "Nucleus ambiguus and hypoglossal systems are spared."]
+          bulbar: [0, "Palate elevation, voice, and swallowing are normal.", "Nucleus ambiguus pathways are spared."],
+          tongue: [0, "The tongue protrudes in the midline without weakness.", "Hypoglossal motor function is preserved."]
         },
         debrief: [
           "Even a partial fascicular CN III deficit is a positive midbrain anchor.",
@@ -1983,7 +2007,8 @@
           facial: [0, "There is {contra} lower facial weakness with preserved forehead movement and eye closure. Facial sensation is normal.", "Corticobulbar involvement causes a contralateral upper-motor-neuron facial pattern while trigeminal sensory and facial nuclear pathways are spared."],
           coordination: [0, "There is no dysmetria out of proportion to weakness; gait is hemiparetic toward the {contra} side.", "Cerebellar outflow pathways are spared."],
           autonomic: [0, "Pupils are equal and briskly reactive to light, with no anisocoria in bright or dim illumination.", "The involved CN III fascicular sector is pupil-sparing, and the lateral sympathetic pathway is spared."],
-          bulbar: [0, "Palate elevation, voice, swallowing, and tongue movement are normal.", "Lower cranial-nerve motor systems are spared."]
+          bulbar: [0, "Palate elevation, voice, and swallowing are normal.", "Lower bulbar motor systems are spared."],
+          tongue: [0, "The tongue protrudes in the midline without weakness.", "Hypoglossal motor function is preserved."]
         },
         debrief: [
           "The motor syndrome alone is not level-specific.",
@@ -2012,7 +2037,8 @@
           painTemperature: [0, "Pinprick and temperature are preserved over the body.", "The spinothalamic tract is spared."],
           coordination: [0, "There is no appendicular dysmetria; gait is mildly unsteady without a cerebellar pattern.", "Superior cerebellar peduncle outflow is not meaningfully involved."],
           autonomic: [0, "Pupils are equal and briskly reactive to light, with no anisocoria in bright or dim illumination.", "The pretectal pupillary and descending sympathetic pathways are spared in this confined template."],
-          bulbar: [0, "Palate elevation, voice, swallowing, and tongue movement are normal.", "Pontine and medullary bulbar systems are spared."]
+          bulbar: [0, "Palate elevation, voice, and swallowing are normal.", "Pontine and medullary bulbar systems are spared."],
+          tongue: [0, "The tongue protrudes in the midline without weakness.", "Hypoglossal motor function is preserved."]
         },
         debrief: [
           "An INO alone can arise in the pons or midbrain.",
@@ -2041,7 +2067,8 @@
           touchVibration: [0, "Routine light touch, discriminative touch, vibration, and joint position are preserved over the body.", "The medial lemniscus is spared."],
           painTemperature: [0, "Pinprick and temperature are preserved over the body.", "The spinothalamic tract is spared."],
           autonomic: [0, "Pupils are equal and briskly reactive to light, with no anisocoria in bright or dim illumination.", "The partial CN III deficit is pupil-sparing in this template."],
-          bulbar: [0, "Palate elevation, voice, swallowing, and tongue movement are normal.", "Lower cranial-nerve motor systems are spared."]
+          bulbar: [0, "Palate elevation, voice, and swallowing are normal.", "Lower bulbar motor systems are spared."],
+          tongue: [0, "The tongue protrudes in the midline without weakness.", "Hypoglossal motor function is preserved."]
         },
         debrief: [
           "The partial CN III deficit anchors the ipsilateral midbrain.",
@@ -2070,7 +2097,8 @@
           painTemperature: [0, "Pinprick and temperature are preserved over the body.", "The lesion is confined away from the spinothalamic tract."],
           coordination: [0, "There is no limb dysmetria; gait is steady when visual symptoms are controlled.", "Major cerebellar and vestibular pathways are spared."],
           autonomic: [0, "Pupils are equal and briskly reactive to light, with no anisocoria in bright or dim illumination.", "The descending sympathetic pathway is spared."],
-          bulbar: [0, "Palate elevation, voice, swallowing, and tongue movement are normal.", "Lower medullary bulbar structures are spared."]
+          bulbar: [0, "Palate elevation, voice, and swallowing are normal.", "Lower medullary bulbar structures are spared."],
+          tongue: [0, "The tongue protrudes in the midline without weakness.", "Hypoglossal motor function is preserved."]
         },
         debrief: [
           "An abducens nuclear or PPRF lesion causes a conjugate gaze palsy, not merely isolated abduction weakness.",
@@ -2099,7 +2127,8 @@
           motor: [0, "Strength, tone, and reflexes are symmetric.", "The ventral corticospinal tract is spared."],
           coordination: [0, "The {contra} limbs become unsteady when visual feedback is removed; there is no true dysmetria with the eyes open.", "The imbalance is sensory ataxia from proprioceptive loss rather than cerebellar dysfunction."],
           autonomic: [0, "Pupils are equal and briskly reactive to light, with no anisocoria in bright or dim illumination.", "The lateral descending sympathetic pathway is spared."],
-          bulbar: [0, "Palate elevation, voice, swallowing, and tongue movement are normal.", "Lower brainstem bulbar structures are spared."]
+          bulbar: [0, "Palate elevation, voice, and swallowing are normal.", "Lower brainstem bulbar structures are spared."],
+          tongue: [0, "The tongue protrudes in the midline without weakness.", "Hypoglossal motor function is preserved."]
         },
         debrief: [
           "The ipsilateral INO identifies the medial longitudinal fasciculus.",
@@ -2128,7 +2157,8 @@
           coordination: [0, "Vertigo and a tendency to fall toward the {ipsi} side are present, without major limb dysmetria.", "Vestibular involvement supports a dorsolateral brainstem footprint."],
           motor: [0, "Limb strength, tone, and reflexes are normal.", "The ventral corticospinal tract is spared."],
           autonomic: [0, "Pupils are equal and briskly reactive to light, with no anisocoria in bright or dim illumination.", "The descending sympathetic pathway is spared in this confined pattern."],
-          bulbar: [0, "Palate elevation, voice, swallowing, and tongue movement are normal.", "Nucleus ambiguus and hypoglossal systems are spared."]
+          bulbar: [0, "Palate elevation, voice, and swallowing are normal.", "Nucleus ambiguus pathways are spared."],
+          tongue: [0, "The tongue protrudes in the midline without weakness.", "Hypoglossal motor function is preserved."]
         },
         debrief: [
           "Crossed facial and body pain-temperature loss establishes a lateral brainstem lesion.",
@@ -2157,7 +2187,8 @@
           oculomotion: [0, "Eye movements are full, with no nystagmus, skew deviation, or abnormal head-impulse response.", "Ocular-motor and vestibulo-ocular pathways are spared."],
           facial: [0, "Facial strength and facial sensation are normal.", "Trigeminal sensory and facial-motor pathways are spared."],
           autonomic: [0, "Pupils are equal and briskly reactive to light, with no anisocoria in bright or dim illumination.", "The lateral sympathetic pathway is spared."],
-          bulbar: [0, "Palate elevation, voice, swallowing, and tongue movement are normal.", "Hypoglossal fascicles and nucleus ambiguus are spared."]
+          bulbar: [0, "Palate elevation, voice, and swallowing are normal.", "Nucleus ambiguus pathways are spared."],
+          tongue: [0, "The tongue protrudes in the midline without weakness.", "Hypoglossal fascicles are spared."]
         },
         debrief: [
           "Within a confirmed brainstem process, ipsilateral dorsal-column modality loss means the pathway has not yet crossed.",
@@ -2179,7 +2210,8 @@
         affected: ["{Ipsi} nucleus ambiguus", "Nearby {ipsi} vestibular nuclei and inferior cerebellar peduncle"],
         spared: ["Pyramid", "Medial lemniscus", "Most of the spinothalamic and spinal trigeminal systems", "Facial nucleus"],
         domains: {
-          bulbar: [0, "There is severe dysphagia and hoarseness, the uvula deviates toward the {contra} side, and the gag response is weak on the {ipsi} side. Tongue movement is normal.", "A focal nucleus ambiguus syndrome is a strong lateral medullary level and side anchor while the hypoglossal system is spared."],
+          bulbar: [0, "There is severe dysphagia and hoarseness, the uvula deviates toward the {contra} side, and the gag response is weak on the {ipsi} side.", "A focal nucleus ambiguus syndrome is a strong lateral medullary level and side anchor."],
+          tongue: [0, "The tongue protrudes in the midline without weakness.", "The medial hypoglossal nucleus and fascicles are spared."],
           coordination: [0, "There is vertigo and a marked tendency to fall toward the {ipsi} side, with mild {ipsi} limb dysmetria.", "Vestibular and inferior cerebellar peduncle involvement establishes the dorsal lateral footprint."],
           touchVibration: [0, "Routine light touch, discriminative touch, vibration, and joint position are preserved over the body.", "The medial lemniscus is spared in this bulbar-predominant variant."],
           painTemperature: [0, "Pinprick and temperature are preserved over the body.", "The spinothalamic tract is spared in this bulbar-predominant variant."],
@@ -2252,19 +2284,21 @@
 
     function defaultState() {
       return {
-        version: 7,
+        version: 9,
         sessionId: `session-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
         phase: "setup",
         caseId: null,
         players: [],
-        activePlayerIndex: 0,
+        quizmasterPlayerIndex: 0,
+        activePlayerIndex: 1,
+        roundNumber: 1,
         guesses: [],
         revealedDomainIds: [],
         requestedDomainId: null,
         overrideUnlocked: [],
         pendingGuess: null,
         winnerPlayerId: null,
-        statusMessage: "Set up players and choose a case.",
+        statusMessage: "Name both players and choose a case.",
         updatedAt: Date.now()
       };
     }
@@ -2275,10 +2309,11 @@
     }
 
     let gameState = loadState() || defaultState();
-    let setupPlayers = gameState.players.length >= 1
+    let setupPlayers = gameState.players.length === 2
       ? gameState.players.map(player => ({ ...player }))
       : [
-          { id: "player-1", name: "Player 1", color: PLAYER_COLORS[0], initials: "P1" }
+          { id: "player-1", name: "Player 1", color: PLAYER_COLORS[0], initials: "P1" },
+          { id: "player-2", name: "Player 2", color: PLAYER_COLORS[1], initials: "P2" }
         ];
     let setupCaseId = randomCaseId();
     let selectedCellId = null;
@@ -2351,7 +2386,7 @@
           elements.modeGate.hidden = true;
         });
       });
-      document.getElementById("singlePlayerQuickstart").addEventListener("click", startSinglePlayerQuickstart);
+      document.getElementById("twoPlayerQuickstart").addEventListener("click", startTwoPlayerQuickstart);
       document.getElementById("changeViewButton").addEventListener("click", () => {
         elements.modeGate.hidden = false;
         elements.modeGate.querySelector("[data-mode]").focus();
@@ -2376,26 +2411,27 @@
       document.body.dataset.view = mode;
       elements.roleLabel.textContent = {
         single: "Prototype mode",
-        facilitator: "Facilitator console",
-        player: "Player display"
+        facilitator: "Quizmaster console",
+        player: "Localizer display"
       }[mode];
       if (announce) showToast(`${elements.roleLabel.textContent} selected.`);
       render();
     }
 
-    function startSinglePlayerQuickstart() {
+    function startTwoPlayerQuickstart() {
       gameState = defaultState();
       setupPlayers = [
-        { id: "player-1", name: "Player 1", color: PLAYER_COLORS[0], initials: "P1" }
+        { id: "player-1", name: "Player 1", color: PLAYER_COLORS[0], initials: "P1" },
+        { id: "player-2", name: "Player 2", color: PLAYER_COLORS[1], initials: "P2" }
       ];
       setupCaseId = randomCaseId();
       selectedCellId = null;
-      viewMode = "player";
-      document.body.dataset.view = "player";
-      elements.roleLabel.textContent = "Player display";
-      autoAdvanceFacilitator = true;
-      elements.autoAdvanceToggle.checked = true;
-      try { localStorage.setItem(AUTO_ADVANCE_KEY, "true"); } catch (error) {}
+      viewMode = "single";
+      document.body.dataset.view = "single";
+      elements.roleLabel.textContent = "Prototype mode";
+      autoAdvanceFacilitator = false;
+      elements.autoAdvanceToggle.checked = false;
+      try { localStorage.setItem(AUTO_ADVANCE_KEY, "false"); } catch (error) {}
       elements.modeGate.hidden = true;
       startCase(setupCaseId);
     }
@@ -2461,8 +2497,8 @@
       elements.autoAdvanceToggle.checked = autoAdvanceFacilitator;
       try { localStorage.setItem(AUTO_ADVANCE_KEY, String(autoAdvanceFacilitator)); } catch (error) {}
       showToast(autoAdvanceFacilitator
-        ? "Auto-advance Facilitator enabled."
-        : "Auto-advance Facilitator disabled.");
+        ? "Auto-advance Quizmaster enabled."
+        : "Auto-advance Quizmaster disabled.");
       const advanced = autoAdvanceFacilitator && autoAdvancePendingFacilitatorAction();
       if (!advanced) render();
     }
@@ -2496,11 +2532,11 @@
     }
 
     function adoptState(nextState) {
-      if (!nextState || nextState.version !== 7) return;
+      if (!nextState || nextState.version !== 9) return;
       if (nextState.updatedAt < gameState.updatedAt && nextState.sessionId === gameState.sessionId) return;
       const wasComplete = gameState.phase === "debrief";
       gameState = nextState;
-      if (gameState.players?.length >= 1) setupPlayers = gameState.players.map(player => ({ ...player }));
+      if (gameState.players?.length === 2) setupPlayers = gameState.players.map(player => ({ ...player }));
       selectedCellId = null;
       if (gameState.phase !== "debrief") dismissWinCelebration(false);
       const advanced = autoAdvancePendingFacilitatorAction();
@@ -2514,6 +2550,10 @@
 
     function getActivePlayer() {
       return gameState.players[gameState.activePlayerIndex] || null;
+    }
+
+    function getQuizmaster() {
+      return gameState.players[gameState.quizmasterPlayerIndex] || null;
     }
 
     function getWinner() {
@@ -2730,7 +2770,7 @@
         coordinate: parseCellId(selectedCellId)
       };
       gameState.phase = "facilitator-confirmation";
-      gameState.statusMessage = `${getActivePlayer().name} placed a wand. Awaiting facilitator confirmation.`;
+      gameState.statusMessage = `${getActivePlayer().name} placed a wand. Awaiting ${getQuizmaster()?.name || "the Quizmaster"} for scoring.`;
       selectedCellId = null;
       if (shouldAutoAdvanceFacilitator()) {
         scorePendingGuess();
@@ -2857,7 +2897,6 @@
         gameState.winnerPlayerId = pending.playerId;
         gameState.statusMessage = `${playerById(pending.playerId).name} localized all four coordinates.`;
       } else {
-        gameState.activePlayerIndex = (gameState.activePlayerIndex + 1) % gameState.players.length;
         if (allCluesRevealed(currentCase)) {
           gameState.phase = "place-wand";
           gameState.statusMessage = `${score} of 4 coordinates correct. All clues are revealed; ${getActivePlayer().name} places another wand.`;
@@ -2899,7 +2938,7 @@
         return;
       }
       persistState();
-      announce(`${domain.label} requested. Awaiting facilitator reveal.`);
+      announce(`${domain.label} requested. Awaiting ${getQuizmaster()?.name || "the Quizmaster"} to reveal it.`);
     }
 
     function revealDomain(domainId) {
@@ -2924,24 +2963,33 @@
       return domain.unlockAfterGuess <= gameState.guesses.length || gameState.overrideUnlocked.includes(domain.id);
     }
 
-    function startCase(caseId) {
-      const names = setupPlayers.map((player, index) => player.name.trim() || `Player ${index + 1}`);
-      setupPlayers = setupPlayers.slice(0, 5).map((player, index) => ({
+    function startCase(caseId, roleAssignment = {}) {
+      const names = setupPlayers.slice(0, 2).map((player, index) => player.name.trim() || `Player ${index + 1}`);
+      setupPlayers = setupPlayers.slice(0, 2).map((player, index) => ({
         ...player,
         name: names[index],
         initials: initialsFor(names[index]),
         color: PLAYER_COLORS[index]
       }));
+      if (setupPlayers.length !== 2) return;
+      const quizmasterPlayerIndex = roleAssignment.quizmasterPlayerIndex ?? 0;
+      const localizerPlayerIndex = roleAssignment.localizerPlayerIndex ?? 1;
+      const roundNumber = roleAssignment.roundNumber ?? 1;
+      const quizmaster = setupPlayers[quizmasterPlayerIndex];
+      const localizer = setupPlayers[localizerPlayerIndex];
       gameState = {
         ...defaultState(),
         sessionId: gameState.sessionId,
         phase: "choose-domain",
         caseId,
         players: setupPlayers.map(player => ({ ...player })),
-        statusMessage: `${setupPlayers[0].name} chooses the first examination domain.`
+        quizmasterPlayerIndex,
+        activePlayerIndex: localizerPlayerIndex,
+        roundNumber,
+        statusMessage: `${quizmaster.name} quizzes ${localizer.name}. ${localizer.name} chooses the first examination domain.`
       };
       persistState();
-      announce("Case started. " + gameState.statusMessage);
+      announce(`Round ${roundNumber} started. ${gameState.statusMessage}`);
     }
 
     function resetToSetup() {
@@ -2949,55 +2997,42 @@
       gameState = defaultState();
       setupCaseId = randomCaseId();
       setupPlayers = [
-        { id: "player-1", name: "Player 1", color: PLAYER_COLORS[0], initials: "P1" }
+        { id: "player-1", name: "Player 1", color: PLAYER_COLORS[0], initials: "P1" },
+        { id: "player-2", name: "Player 2", color: PLAYER_COLORS[1], initials: "P2" }
       ];
       persistState();
     }
 
     function startNewCase() {
       const caseId = randomCaseId(gameState.caseId);
-      if (!caseId || !confirm("Start a new random case and clear the current case history?")) return;
+      const nextQuizmasterIndex = gameState.activePlayerIndex;
+      const nextLocalizerIndex = gameState.quizmasterPlayerIndex;
+      const nextRound = (gameState.roundNumber || 1) + 1;
+      const nextQuizmaster = gameState.players[nextQuizmasterIndex];
+      const nextLocalizer = gameState.players[nextLocalizerIndex];
+      if (!caseId || !nextQuizmaster || !nextLocalizer || !confirm(
+        `Start round ${nextRound}? ${nextQuizmaster.name} becomes Quizmaster and ${nextLocalizer.name} becomes Localizer.`
+      )) return;
       setupPlayers = gameState.players.map(player => ({ ...player }));
       setupCaseId = caseId;
       selectedCellId = null;
       dismissWinCelebration(false);
-      startCase(caseId);
+      startCase(caseId, {
+        quizmasterPlayerIndex: nextQuizmasterIndex,
+        localizerPlayerIndex: nextLocalizerIndex,
+        roundNumber: nextRound
+      });
     }
 
     function openPlayerDisplay() {
       const cleanUrl = location.href.split("?")[0].split("#")[0];
       playerWindow = window.open(`${cleanUrl}?view=player`, "brainstem-mastermind-player");
       if (!playerWindow) {
-        showToast("The browser blocked the player window. Allow pop-ups, then try again.");
+        showToast("The browser blocked the Localizer window. Allow pop-ups, then try again.");
         return;
       }
       setTimeout(() => sendEnvelope({ type: "STATE", state: gameState }), 500);
-      showToast("Player display opened.");
-    }
-
-    function addSetupPlayer() {
-      if (setupPlayers.length >= 5) return;
-      const index = setupPlayers.length;
-      setupPlayers.push({
-        id: `player-${index + 1}`,
-        name: `Player ${index + 1}`,
-        color: PLAYER_COLORS[index],
-        initials: `P${index + 1}`
-      });
-      renderFacilitator();
-    }
-
-    function removeSetupPlayer(index) {
-      if (setupPlayers.length <= 1) return;
-      setupPlayers.splice(index, 1);
-      setupPlayers = setupPlayers.map((player, playerIndex) => ({
-        ...player,
-        id: `player-${playerIndex + 1}`,
-        name: /^Player \d+$/.test(player.name) ? `Player ${playerIndex + 1}` : player.name,
-        initials: /^Player \d+$/.test(player.name) ? `P${playerIndex + 1}` : player.initials,
-        color: PLAYER_COLORS[playerIndex]
-      }));
-      renderFacilitator();
+      showToast("Localizer display opened.");
     }
 
     function initialsFor(name) {
@@ -3023,6 +3058,7 @@
       }
 
       const active = getActivePlayer();
+      const quizmaster = getQuizmaster();
       const requested = currentCase.domains.find(domain => domain.id === gameState.requestedDomainId);
       const pending = gameState.pendingGuess;
       container.innerHTML = `
@@ -3040,8 +3076,9 @@
             </div>
           </div>
           <div class="notice-card" style="margin-top:.7rem">
-            <h3>Active turn</h3>
-            <p class="small"><strong>${escapeHtml(active?.name || "—")}</strong> · ${phaseLabel(gameState.phase)}</p>
+            <h3>Round ${gameState.roundNumber || 1}</h3>
+            <p class="small"><strong>Quizmaster:</strong> ${escapeHtml(quizmaster?.name || "—")}</p>
+            <p class="small"><strong>Localizer:</strong> ${escapeHtml(active?.name || "—")} · ${phaseLabel(gameState.phase)}</p>
             <p class="small muted">${escapeHtml(gameState.statusMessage)}</p>
           </div>
         </section>
@@ -3053,7 +3090,7 @@
               <p class="small"><strong>${escapeHtml(requested.label)}</strong></p>
               <p class="small">${escapeHtml(requested.finding)}</p>
               <p class="small muted">${escapeHtml(requested.facilitatorExplanation)}</p>
-              <button class="button primary full" type="button" data-action="reveal" data-domain="${requested.id}">Reveal to players</button>
+              <button class="button primary full" type="button" data-action="reveal" data-domain="${requested.id}">Reveal to Localizer</button>
             </div>
           </section>` : ""}
 
@@ -3079,7 +3116,7 @@
         </section>
 
         <section class="console-section">
-          <div class="section-heading"><h3>Facilitator notes</h3></div>
+          <div class="section-heading"><h3>Quizmaster notes</h3></div>
           <p class="small"><strong>Library tier:</strong> ${escapeHtml(currentCase.evidence)} evidence · ${escapeHtml(currentCase.difficulty)}</p>
           <p class="small"><strong>Affected:</strong> ${escapeHtml(currentCase.affectedStructures.join("; "))}</p>
           <p class="small"><strong>Spared:</strong> ${escapeHtml(currentCase.sparedStructures.join("; "))}</p>
@@ -3091,8 +3128,8 @@
         <section class="console-section">
           <div class="section-heading"><h3>Display and session</h3></div>
           <div class="button-row">
-            <button class="button secondary" type="button" data-action="open-player">Open player display</button>
-            <button class="button ghost" type="button" data-action="new-case">New Case</button>
+            <button class="button secondary" type="button" data-action="open-player">Open Localizer display</button>
+            <button class="button ghost" type="button" data-action="new-case">Swap roles + New Case</button>
             <button class="button danger" type="button" data-action="new-setup">End case</button>
           </div>
         </section>
@@ -3111,16 +3148,16 @@
       }).join("");
       return `
         <section class="console-section">
-          <div class="section-heading"><h3>1. Players</h3><span class="small muted">1–5 · custom names optional</span></div>
+          <div class="section-heading"><h3>1. Two players</h3><span class="small muted">Roles swap after each case</span></div>
           <div id="setupPlayerList">
             ${setupPlayers.map((player, index) => `
               <div class="player-input-row">
                 <span class="player-swatch" style="--player:${player.color}" aria-hidden="true"></span>
                 <input type="text" maxlength="28" value="${escapeAttribute(player.name)}" data-player-index="${index}" aria-label="Player ${index + 1} name">
-                <button class="icon-button" type="button" data-remove-player="${index}" aria-label="Remove Player ${index + 1}" ${setupPlayers.length <= 1 ? "disabled" : ""}>×</button>
+                <span class="setup-role-badge">${index === 0 ? "Starts as Quizmaster" : "Starts as Localizer"}</span>
               </div>`).join("")}
           </div>
-          <button class="button ghost full" type="button" id="addPlayerButton" ${setupPlayers.length >= 5 ? "disabled" : ""}>Add player</button>
+          <p class="small muted">The Quizmaster privately reveals requested findings and scores each wand. The Localizer requests examinations and keeps guessing for the full case.</p>
         </section>
         <section class="console-section">
           <div class="section-heading"><h3>2. Curated case</h3><span class="small muted">${caseLibrary.length} cases · ${FAMILY_DEFINITIONS.length} mirrored patterns</span></div>
@@ -3128,11 +3165,11 @@
             <span>Case library selection</span>
             <select id="caseSelect">${caseOptions}</select>
           </label>
-          <p class="small muted">A random case is selected by default. Cases begin without a free presenting-symptom clue; every clinical finding is acquired through a player-selected examination domain.</p>
+          <p class="small muted">A random case is selected by default. Cases begin without a free presenting-symptom clue; every clinical finding is acquired through a Localizer-selected examination domain.</p>
         </section>
         <section class="console-section">
           <button class="button primary full" type="button" id="startCaseButton">Start case</button>
-          <button class="button secondary full" style="margin-top:.5rem" type="button" id="setupOpenPlayerButton">Open player display</button>
+          <button class="button secondary full" style="margin-top:.5rem" type="button" id="setupOpenPlayerButton">Open Localizer display</button>
         </section>
       `;
     }
@@ -3160,10 +3197,6 @@
           setupPlayers[Number(input.dataset.playerIndex)].name = input.value;
         });
       });
-      document.querySelectorAll("[data-remove-player]").forEach(button => {
-        button.addEventListener("click", () => removeSetupPlayer(Number(button.dataset.removePlayer)));
-      });
-      document.getElementById("addPlayerButton")?.addEventListener("click", addSetupPlayer);
       const caseSelect = document.getElementById("caseSelect");
       caseSelect?.addEventListener("change", () => {
         setupCaseId = caseSelect.value;
@@ -3192,15 +3225,18 @@
     function renderPlayer() {
       const currentCase = getCase();
       const active = getActivePlayer();
+      const quizmaster = getQuizmaster();
       const inSetup = !currentCase || gameState.phase === "setup";
       elements.caseEyebrow.textContent = inSetup ? "Awaiting setup" : "Case in progress";
       elements.caseHeading.textContent = inSetup ? "Ready the Brainstem Tower" : "Localize the lesion";
       elements.phaseBadge.textContent = phaseLabel(gameState.phase);
       elements.turnStrip.innerHTML = inSetup ? `
-        <span class="turn-chip">1–5 players</span>
+        <span class="turn-chip">2 players · alternating roles</span>
         <span class="turn-chip">24 locations</span>
       ` : `
-        <span class="turn-chip">Player: <strong>${escapeHtml(active?.name || "Player 1")}</strong></span>
+        <span class="turn-chip">Quizmaster: <strong>${escapeHtml(quizmaster?.name || "Player 1")}</strong></span>
+        <span class="turn-chip">Localizer: <strong>${escapeHtml(active?.name || "Player 2")}</strong></span>
+        <span class="turn-chip">Round ${gameState.roundNumber || 1}</span>
         <span class="turn-chip">Guess ${gameState.guesses.length + 1}</span>
       `;
       renderDomains(currentCase);
@@ -3237,7 +3273,7 @@
               ? "Clue request sent"
               : "Examination clues";
       elements.clueInstruction.textContent = gameState.phase === "choose-domain" && gameState.requestedDomainId
-        ? "Awaiting facilitator approval and reveal."
+        ? `Awaiting ${getQuizmaster()?.name || "the Quizmaster"} to reveal the finding.`
         : instructionForPhase(gameState.phase);
       const revealed = [...gameState.revealedDomainIds]
         .reverse()
@@ -3265,7 +3301,7 @@
           : isRevealed
             ? "Finding revealed"
             : isRequested
-              ? "Awaiting facilitator"
+              ? "Awaiting Quizmaster"
               : unlocked
                 ? "Available to request"
                 : `Unlocks after ${domain.unlockAfterGuess} guess${domain.unlockAfterGuess === 1 ? "" : "es"}`;
@@ -3410,7 +3446,7 @@
         setup: "Setup",
         "choose-domain": "Choose domain",
         "place-wand": "Place wand",
-        "facilitator-confirmation": "Confirm wand",
+        "facilitator-confirmation": "Quizmaster check",
         debrief: "Debrief"
       }[phase] || capitalize(phase.replaceAll("-", " "));
     }
@@ -3420,13 +3456,13 @@
         setup: "Available domains appear when the case begins.",
         "choose-domain": shouldAutoAdvanceFacilitator()
           ? "Choose one available domain. Its finding will be revealed automatically."
-          : "Request one available domain. The facilitator controls the reveal.",
+          : `${getActivePlayer()?.name || "The Localizer"} requests one available domain; ${getQuizmaster()?.name || "the Quizmaster"} controls the reveal.`,
         "place-wand": allCluesRevealed()
-          ? "All findings are revealed. Continue placing one wand per turn until all four coordinates are correct."
+          ? "All findings are revealed. The Localizer continues placing wands until all four coordinates are correct."
           : "Use the revealed evidence, then place exactly one wand.",
         "facilitator-confirmation": shouldAutoAdvanceFacilitator()
           ? "The submitted wand is being scored automatically."
-          : "The facilitator may score, request reconsideration, or cancel the pending wand.",
+          : `${getQuizmaster()?.name || "The Quizmaster"} may score, request reconsideration, or cancel the pending wand.`,
         debrief: "Review the pertinent finding on every examination clue, then compare the localization logic."
       }[phase] || "";
     }
