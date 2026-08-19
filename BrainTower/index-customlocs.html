@@ -265,6 +265,19 @@
     .finding-card { padding: .65rem; border-left: 4px solid var(--teal); border-radius: 8px; background: var(--teal-light); }
     .finding-card strong { display: block; font-size: .74rem; }
     .finding-card p { margin: .2rem 0 0; font-size: .72rem; line-height: 1.42; }
+    .revealed-group-label { margin: .2rem 0 -.08rem; color: var(--muted); font-size: .62rem; font-weight: 950; letter-spacing: .07em; text-transform: uppercase; }
+    .guess-feed-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem; align-items: start; }
+    .guess-feed-columns.single-player { grid-template-columns: minmax(0, 1fr); }
+    .guess-feed-column { min-width: 0; padding: .5rem; border: 1px solid #d6e0e1; border-top: 3px solid var(--player-color); border-radius: 10px; background: #fbfcfc; }
+    .guess-feed-column-heading { display: flex; align-items: center; gap: .38rem; margin-bottom: .42rem; }
+    .guess-feed-column-heading strong { min-width: 0; overflow: hidden; font-size: .7rem; text-overflow: ellipsis; white-space: nowrap; }
+    .guess-feed-column-list { display: grid; gap: .4rem; }
+    .guess-feed-empty { padding: .65rem .35rem; color: var(--muted); font-size: .66rem; text-align: center; }
+    .guess-feed-card { border-left-color: var(--player-color); background: #f5f8f8; }
+    .guess-feed-heading { display: flex; align-items: center; justify-content: space-between; gap: .55rem; }
+    .guess-feed-heading strong { display: flex; align-items: center; gap: .38rem; min-width: 0; }
+    .guess-feed-player { display: inline-grid; flex: 0 0 auto; place-items: center; width: 22px; height: 18px; border-radius: 999px; color: white; background: var(--player-color); font-size: .52rem; font-style: normal; font-weight: 950; }
+    .guess-feed-card .guess-feed-context { display: block; margin-top: .2rem; color: var(--muted); font-size: .63rem; line-height: 1.35; }
     .empty-state { padding: .85rem; border: 1px dashed #b8c7ca; border-radius: 11px; color: var(--muted); font-size: .75rem; text-align: center; }
 
     .navigator { padding: .9rem 1rem 1rem; }
@@ -588,8 +601,8 @@
           <div class="domain-area" id="domainArea"></div>
           <section class="revealed-section" aria-labelledby="revealedHeading">
             <div class="revealed-heading">
-              <h3 id="revealedHeading">Revealed findings</h3>
-              <span>Newest first</span>
+              <h3 id="revealedHeading">Revealed findings &amp; guesses</h3>
+              <span>Shared round record</span>
             </div>
             <div class="revealed-list" id="revealedList"></div>
           </section>
@@ -2473,11 +2486,14 @@
 
     function sharedGuessHistory() {
       if (!Array.isArray(state.progressByPlayer)) return [];
-      return state.progressByPlayer.flatMap((progress, playerIndex) => {
+      const history = state.progressByPlayer.flatMap((progress, playerIndex) => {
         const player = state.players?.[playerIndex];
         const opponent = state.players?.[playerIndex === 0 ? 1 : 0];
         return (progress?.guesses || []).map(guess => ({guess, playerIndex, player, opponent}));
       }).sort((first, second) => (first.guess.timestamp || 0) - (second.guess.timestamp || 0));
+      return state.cpuPlayer2 && state.phase === "debrief"
+        ? history.filter(item => item.playerIndex === 0)
+        : history;
     }
 
     function regionGuessMarkers(side, level, regionId) {
@@ -2501,7 +2517,10 @@
 
     function modelPlayerKeyMarkup() {
       if (!state.players?.length) return "";
-      return `<div class="model-player-key" aria-label="Player guess colors">${state.players.map((player, index) => `
+      const displayedPlayers = state.cpuPlayer2 && state.phase === "debrief"
+        ? state.players.slice(0, 1)
+        : state.players;
+      return `<div class="model-player-key" aria-label="Player guess colors">${displayedPlayers.map((player, index) => `
         <span><i class="player-key-dot" style="--player-color:${escapeAttribute(player.color || PLAYER_COLORS[index])}">P${index + 1}</i>${escapeHtml(player.name)}</span>`).join("")}
       </div>`;
     }
@@ -2617,6 +2636,15 @@
       const target = getTarget(caseItem);
       const discriminating = caseItem.domains.find(domain => domain.id === caseItem.discriminatingDomain);
       const matchComplete = isMatchComplete();
+      const playerReview = Boolean(state.cpuPlayer2);
+      const reviewedPlayer = playerReview ? state.players[0] : getWinner();
+      const reviewedProgress = playerReview ? state.progressByPlayer[0] : getActiveProgress();
+      const finalGuess = reviewedProgress?.guesses?.at(-1) || null;
+      const playerProgressMarkup = playerReview ? `
+          <article class="debrief-block"><h3>${escapeHtml(reviewedPlayer?.name || "Player")}’s round</h3><ul>
+            <li>Examinations revealed: ${reviewedProgress.revealedDomainIds.length} of ${caseItem.domains.length}</li>
+            <li>Localizations submitted: ${reviewedProgress.guesses.length}</li>
+          </ul><p><strong>Final localization:</strong> ${finalGuess ? escapeHtml(finalGuess.label) : "No localization submitted"}</p>${finalGuess ? `<p class="small muted">${finalGuess.correct ? "Correct syndrome region." : "This was not the lesion."}</p>` : ""}</article>` : "";
       const nextActionLabel = matchComplete ? "Start a new match" : `Start round ${state.roundNumber + 1}`;
       elements.debrief.hidden = false;
       elements.debrief.tabIndex = -1;
@@ -2631,6 +2659,7 @@
           <div><span>Syndrome region</span><strong>${escapeHtml(target.region.label)} · ${escapeHtml(target.region.zone)}</strong></div>
         </div>
         <div class="debrief-grid">
+          ${playerProgressMarkup}
           <article class="debrief-block"><h3>Regional landmarks</h3><p>${escapeHtml(target.region.structures)}</p></article>
           <article class="debrief-block"><h3>Best discriminator</h3><p><strong>${escapeHtml(discriminating?.label || "")}:</strong> ${escapeHtml(discriminating?.finding || "")}</p></article>
           <article class="debrief-block"><h3>Affected structures</h3><ul>${caseItem.affectedStructures.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul></article>
@@ -3309,7 +3338,7 @@
       const player = getActivePlayer();
       const opponent = getOpponent();
       const progress = getActiveProgress();
-      const caseItem = getCase();
+      const caseItem = state.phase === "debrief" && state.cpuPlayer2 ? getCaseForOwner(1) : getCase();
       elements.caseEyebrow.textContent = state.phase === "debrief"
         ? isMatchComplete() ? "Match complete" : `Round ${state.roundNumber} complete`
         : `Round ${state.roundNumber} · ${player.name}'s turn · diagnosing ${opponent.name}`;
@@ -3327,8 +3356,10 @@
 
     function renderDomains(caseItem) {
       if (!caseItem) return;
-      const progress = getActiveProgress();
       const isDebrief = state.phase === "debrief";
+      const reviewedPlayerIndex = isDebrief && state.cpuPlayer2 ? 0 : state.activePlayerIndex;
+      const reviewedPlayer = state.players[reviewedPlayerIndex] || getActivePlayer();
+      const progress = state.progressByPlayer[reviewedPlayerIndex] || blankPlayerProgress();
       const cpuTurn = isCpuTurn();
       const canRequest = state.phase === "choose-domain" && !cpuTurn;
       elements.clueHeading.textContent = isDebrief ? "Complete examination" : allCluesRevealed(caseItem, progress) ? "All findings revealed" : cpuTurn ? `${getActivePlayer().name} is choosing an examination` : canRequest ? `${getActivePlayer().name}, choose an examination` : "Clinical examination";
@@ -3356,21 +3387,43 @@
         </div>`;
       elements.domainArea.querySelectorAll("[data-domain]").forEach(button => button.addEventListener("click", () => requestDomain(button.dataset.domain)));
       const revealedDomains = isDebrief ? caseItem.domains : [...progress.revealedDomainIds].reverse().map(id => domainById[id]).filter(Boolean);
-      elements.revealedList.innerHTML = revealedDomains.length
-        ? revealedDomains.map(domain => `<article class="finding-card"><strong>${escapeHtml(domain.label)}</strong><p>${escapeHtml(domain.finding)}</p></article>`).join("")
-        : `<div class="empty-state">No findings revealed yet. Choose one examination.</div>`;
+      const sharedGuesses = [...sharedGuessHistory()].reverse();
+      const visibleGuessPlayers = isDebrief && state.cpuPlayer2 ? [0] : [0, 1];
+      const guessColumnsMarkup = `<div class="guess-feed-columns ${visibleGuessPlayers.length === 1 ? "single-player" : ""}">${visibleGuessPlayers.map(playerIndex => {
+        const player = state.players[playerIndex];
+        const playerName = player?.name || `Player ${playerIndex + 1}`;
+        const playerColor = player?.color || PLAYER_COLORS[playerIndex] || PLAYER_COLORS[0];
+        const playerGuesses = sharedGuesses.filter(item => item.playerIndex === playerIndex);
+        const cards = playerGuesses.map(({guess, opponent}) => `<article class="finding-card guess-feed-card" style="--player-color:${escapeAttribute(playerColor)}">
+          <div class="guess-feed-heading">
+            <strong>Guess ${guess.number}</strong>
+            <span class="result-badge ${guess.correct ? "correct" : "wrong"}">${guess.correct ? "Correct" : "Not the lesion"}</span>
+          </div>
+          <p>${escapeHtml(guess.label)}</p>
+          <span class="guess-feed-context">Localization of ${escapeHtml(opponent?.name || "opponent")}'s lesion</span>
+        </article>`).join("");
+        return `<section class="guess-feed-column" style="--player-color:${escapeAttribute(playerColor)}" aria-label="${escapeAttribute(playerName)} guesses">
+          <div class="guess-feed-column-heading"><i class="guess-feed-player">P${playerIndex + 1}</i><strong>${escapeHtml(playerName)}</strong></div>
+          <div class="guess-feed-column-list">${cards || `<div class="guess-feed-empty">No guesses yet</div>`}</div>
+        </section>`;
+      }).join("")}</div>`;
+      const findingMarkup = revealedDomains.map(domain => `<article class="finding-card"><strong>${escapeHtml(domain.label)}</strong><p>${escapeHtml(domain.finding)}</p></article>`).join("");
+      const guessGroupLabel = isDebrief && state.cpuPlayer2 ? `${escapeHtml(reviewedPlayer.name)}'s guesses` : "Player guesses";
+      const feedMarkup = `<p class="revealed-group-label">${guessGroupLabel}</p>${guessColumnsMarkup}${findingMarkup ? `<p class="revealed-group-label">${isDebrief ? "Complete examination" : `${escapeHtml(reviewedPlayer.name)}'s revealed findings`}</p>${findingMarkup}` : ""}`;
+      elements.revealedList.innerHTML = feedMarkup || `<div class="empty-state">No findings or guesses yet. Choose one examination.</div>`;
     }
 
     function renderHistory() {
       const guesses = state.phase === "setup" ? [] : sharedGuessHistory();
       const count = guesses.length;
-      elements.guessCount.textContent = `${count} shared guess${count === 1 ? "" : "es"}`;
+      const playerOnly = state.cpuPlayer2 && state.phase === "debrief";
+      elements.guessCount.textContent = `${count} ${playerOnly ? "player" : "shared"} guess${count === 1 ? "" : "es"}`;
       elements.historyList.innerHTML = count ? [...guesses].reverse().map(({guess, player, opponent}) => `
         <article class="history-item">
           <span class="history-number" style="--player:${escapeAttribute(player?.color || PLAYER_COLORS[0])}">${guess.number}</span>
           <div><strong>${escapeHtml(guess.label)}</strong><span>${escapeHtml(player?.name || "Player")} · against ${escapeHtml(opponent?.name || "opponent")}'s lesion</span></div>
           <span class="result-badge ${guess.correct ? "correct" : "wrong"}">${guess.correct ? "Correct syndrome region" : "Not the lesion"}</span>
-        </article>`).join("") : `<div class="empty-state">Both players' submitted localizations will appear here and remain marked on the shared model.</div>`;
+        </article>`).join("") : `<div class="empty-state">${playerOnly ? "You did not submit a localization this round." : "Both players' submitted localizations will appear here and remain marked on the shared model."}</div>`;
     }
 
     function phaseLabel(phase) {
