@@ -1,8 +1,8 @@
 const LEVELS = [
-  "Neurology Foundations",
-  "Clinical Essentials",
+  "Neurology Readiness",
+  "General Neurology Essentials",
   "Core Neurology Practice",
-  "Advanced & Subspecialty"
+  "Advanced & Subspecialty Practice"
 ];
 
 const SPECIALTIES = [
@@ -67,7 +67,7 @@ const RESOURCES = [
     title: "NDEC Technology Toolkit",
     creator: "Neurology Digital Education Collaborative",
     description: "A curated guide to digital tools for education, clinical care, research, advocacy, productivity, graphics, AI, and digital scholarship.",
-    level: "Neurology Foundations",
+    level: "Neurology Readiness",
     specialties: ["Digital Education"],
     population: "both",
     format: "toolkit",
@@ -84,7 +84,7 @@ const RESOURCES = [
     title: "Digital Education and Game Development: Neurdle",
     creator: "Ali Christy and NDEC",
     description: "A practical reflection on using games to make neurology learning approachable, memorable, and easy to share in digital communities.",
-    level: "Clinical Essentials",
+    level: "General Neurology Essentials",
     specialties: ["Digital Education", "General Neurology", "Pediatric Neurology"],
     population: "both",
     format: "article",
@@ -101,7 +101,7 @@ const RESOURCES = [
     title: "Putting Social Media on Your CV",
     creator: "Ali Christy and NDEC",
     description: "Suggestions for documenting digital education, podcasts, social media portfolios, and online scholarly impact for promotion and career development.",
-    level: "Clinical Essentials",
+    level: "General Neurology Essentials",
     specialties: ["Digital Education"],
     population: "both",
     format: "article",
@@ -118,7 +118,7 @@ const RESOURCES = [
     title: "Neurdle: A Daily Neurology Word Game",
     creator: "Zachary London and Ali Christy",
     description: "A free daily word puzzle built around neurologic terms, names, and abbreviations, with a short learning point after each game.",
-    level: "Neurology Foundations",
+    level: "Neurology Readiness",
     specialties: ["Digital Education", "General Neurology", "Neurogenetics"],
     population: "both",
     format: "game",
@@ -135,7 +135,7 @@ const RESOURCES = [
     title: "NeuroBytes® Free Educational Videos",
     creator: "American Academy of Neurology",
     description: "A growing catalog of three-to-six-minute videos covering hot topics and emerging trends across neurology subspecialties.",
-    level: "Clinical Essentials",
+    level: "General Neurology Essentials",
     specialties: ["General Neurology", "Vascular Neurology & Stroke", "Epilepsy & Clinical Neurophysiology", "Movement Disorders", "Headache Medicine", "Multiple Sclerosis & Neuroimmunology", "Neuromuscular Medicine", "Neuro-oncology", "Sleep Neurology"],
     population: "both",
     format: "video",
@@ -152,7 +152,7 @@ const RESOURCES = [
     title: "NeuroBytes® Medical Student Series",
     creator: "American Academy of Neurology",
     description: "Short neurology videos designed by medical students for medical students, spanning foundational concepts and common clinical topics.",
-    level: "Neurology Foundations",
+    level: "Neurology Readiness",
     specialties: ["General Neurology", "Vascular Neurology & Stroke", "Epilepsy & Clinical Neurophysiology", "Movement Disorders", "Headache Medicine", "Pediatric Neurology"],
     population: "both",
     format: "video",
@@ -169,7 +169,7 @@ const RESOURCES = [
     title: "Medical Student Neurology Educational Resources",
     creator: "American Academy of Neurology",
     description: "An AAN starting point for clerkship resources, subspecialty introductions, NeuroBytes, webinars, and career exploration.",
-    level: "Neurology Foundations",
+    level: "Neurology Readiness",
     specialties: ["General Neurology", "Behavioral Neurology & Neuropsychiatry", "Epilepsy & Clinical Neurophysiology", "Movement Disorders", "Neuro-oncology", "Pediatric Neurology", "Vascular Neurology & Stroke"],
     population: "both",
     format: "toolkit",
@@ -203,7 +203,7 @@ const RESOURCES = [
     title: "Neurology Education",
     creator: "American Academy of Neurology / Neurology Journals",
     description: "An open-access, peer-reviewed journal devoted to neurologic and neuroscience education, with research, curriculum innovations, and teaching aids.",
-    level: "Advanced & Subspecialty",
+    level: "Advanced & Subspecialty Practice",
     specialties: ["Digital Education", "General Neurology"],
     population: "both",
     format: "article",
@@ -254,7 +254,7 @@ const RESOURCES = [
     title: "NeuDrawLogy: Original Neurology Infographics",
     creator: "Gabriela Figueiredo Pucci, MD",
     description: "A searchable visual collection that simplifies neurologic syndromes, clinical reasoning, vascular neurology, neuro-ophthalmology, headache, and neuromuscular topics.",
-    level: "Clinical Essentials",
+    level: "General Neurology Essentials",
     specialties: ["General Neurology", "Neuro-ophthalmology", "Vascular Neurology & Stroke", "Neuromuscular Medicine", "Headache Medicine", "Neurocritical Care", "Neurohospitalist & Acute Neurology"],
     population: "adult",
     format: "infographic",
@@ -271,7 +271,7 @@ const RESOURCES = [
     title: "Parinaud’s Syndrome",
     creator: "Gabriela Figueiredo Pucci, MD / NeuDrawLogy",
     description: "A visual overview of the signs, dorsal midbrain localization, and major causes of Parinaud’s syndrome.",
-    level: "Clinical Essentials",
+    level: "General Neurology Essentials",
     specialties: ["Neuro-ophthalmology", "Neuro-oncology", "Multiple Sclerosis & Neuroimmunology", "Vascular Neurology & Stroke"],
     population: "both",
     format: "infographic",
@@ -288,7 +288,7 @@ const RESOURCES = [
     title: "Basic Neurology Videos and Questions",
     creator: "Yale School of Medicine",
     description: "Introductory mini-lectures with case-based questions and immediate feedback for medical students and new neurology residents.",
-    level: "Neurology Foundations",
+    level: "Neurology Readiness",
     specialties: ["General Neurology", "Behavioral Neurology & Neuropsychiatry", "Vascular Neurology & Stroke", "Epilepsy & Clinical Neurophysiology", "Headache Medicine", "Movement Disorders", "Multiple Sclerosis & Neuroimmunology", "Neuro-oncology", "Neuromuscular Medicine"],
     population: "adult",
     format: "module",
@@ -339,7 +339,7 @@ const RESOURCES = [
     title: "Spot the Brain Cell",
     creator: "University of Calgary Department of Clinical Neurosciences",
     description: "Resident-created presentations on high-yield topics for medical students and off-service rotators, including stroke, seizure, headache, dementia, MS, vertigo, and movement disorders.",
-    level: "Clinical Essentials",
+    level: "General Neurology Essentials",
     specialties: ["General Neurology", "Vascular Neurology & Stroke", "Epilepsy & Clinical Neurophysiology", "Headache Medicine", "Movement Disorders", "Multiple Sclerosis & Neuroimmunology", "Behavioral Neurology & Neuropsychiatry", "Neuro-otology", "Neuromuscular Medicine", "Neurohospitalist & Acute Neurology"],
     population: "adult",
     format: "video",
@@ -356,7 +356,7 @@ const RESOURCES = [
     title: "Stanford Medicine 25: Neurology Examinations",
     creator: "Stanford Medicine",
     description: "Step-by-step guides and video demonstrations for bedside examination, including reflexes, cerebellar testing, gait, tremor, and Parkinson disease.",
-    level: "Neurology Foundations",
+    level: "Neurology Readiness",
     specialties: ["General Neurology", "Movement Disorders", "Neuromuscular Medicine", "Pediatric Neurology"],
     population: "both",
     format: "video",
@@ -373,7 +373,7 @@ const RESOURCES = [
     title: "ILAE Education and Epileptology Curriculum",
     creator: "International League Against Epilepsy",
     description: "A competency-based learning pathway with entry, proficiency, and advanced content in seizure diagnosis, EEG, neuroimaging, treatment, and emergencies.",
-    level: "Advanced & Subspecialty",
+    level: "Advanced & Subspecialty Practice",
     specialties: ["Epilepsy & Clinical Neurophysiology", "Pediatric Neurology", "Neurogenetics", "Sleep Neurology"],
     population: "both",
     format: "module",
@@ -407,7 +407,7 @@ const RESOURCES = [
     title: "International Classification of Headache Disorders, 3rd Edition",
     creator: "International Headache Society",
     description: "The official ICHD-3 diagnostic classification and criteria for migraine, tension-type headache, trigeminal autonomic cephalalgias, and secondary headaches.",
-    level: "Core Neurology Practice",
+    level: "General Neurology Essentials",
     specialties: ["Headache Medicine", "Pediatric Neurology", "Neurohospitalist & Acute Neurology"],
     population: "both",
     format: "reference",
@@ -424,7 +424,7 @@ const RESOURCES = [
     title: "Movement Disorders Fundamentals E-Learning Series",
     creator: "International Parkinson and Movement Disorder Society",
     description: "Expert video presentations covering the classification, evaluation, and management of common movement disorders from phenomenology through treatment.",
-    level: "Clinical Essentials",
+    level: "General Neurology Essentials",
     specialties: ["Movement Disorders", "Pediatric Neurology", "Neurogenetics", "Autonomic Disorders", "Palliative Neurology"],
     population: "both",
     format: "module",
@@ -441,7 +441,7 @@ const RESOURCES = [
     title: "Emergency Neurological Life Support® (ENLS)",
     creator: "Neurocritical Care Society",
     description: "A structured course for the critical first hours of neurologic emergencies, organized around practical protocols and high-stakes decision making.",
-    level: "Advanced & Subspecialty",
+    level: "Neurology Readiness",
     specialties: ["Neurocritical Care", "Neurohospitalist & Acute Neurology", "Vascular Neurology & Stroke", "Epilepsy & Clinical Neurophysiology"],
     population: "both",
     format: "module",
@@ -458,7 +458,7 @@ const RESOURCES = [
     title: "UBC Neurology Learner Resources",
     creator: "University of British Columbia Neurology",
     description: "A practical hub for residents and medical students with rotation resources, a handbook, lectures, stroke tools, neuroanatomy, examination videos, and specialty links.",
-    level: "Clinical Essentials",
+    level: "General Neurology Essentials",
     specialties: ["General Neurology", "Vascular Neurology & Stroke", "Epilepsy & Clinical Neurophysiology", "Movement Disorders", "Neuro-ophthalmology", "Neuro-otology", "Neuromuscular Medicine"],
     population: "adult",
     format: "toolkit",
@@ -475,7 +475,7 @@ const RESOURCES = [
     title: "Guided Worksheets for Core Neurology Teaching",
     creator: "Clare McGarvey Lambert, MD and Jeffrey Dewey, MD",
     description: "Open-access guided worksheets for ischemic stroke basics, intracranial hemorrhage, reading brain MRI, and seizures, developed for efficient bedside teaching.",
-    level: "Clinical Essentials",
+    level: "General Neurology Essentials",
     specialties: ["Digital Education", "Vascular Neurology & Stroke", "Epilepsy & Clinical Neurophysiology", "Neurohospitalist & Acute Neurology", "Pediatric Neurology"],
     population: "both",
     format: "article",
@@ -492,7 +492,7 @@ const RESOURCES = [
     title: "Project Neurology Workshop Series",
     creator: "Medics.Academy and Healthcare Leadership Academy",
     description: "A free, open-access workshop series using practical, case-based sessions for medical students, neurology trainees, and early-career clinicians.",
-    level: "Clinical Essentials",
+    level: "General Neurology Essentials",
     specialties: ["General Neurology", "Neurohospitalist & Acute Neurology", "Vascular Neurology & Stroke", "Epilepsy & Clinical Neurophysiology", "Headache Medicine"],
     population: "adult",
     format: "module",
@@ -509,7 +509,7 @@ const RESOURCES = [
     title: "Understanding Multiple Sclerosis",
     creator: "Menzies Institute, MS Plus, and MS Australia",
     description: "A free online course introducing multiple sclerosis and its management for learners, health professionals, and people seeking a structured overview.",
-    level: "Clinical Essentials",
+    level: "General Neurology Essentials",
     specialties: ["Multiple Sclerosis & Neuroimmunology", "Neuro-ophthalmology", "Pediatric Neurology"],
     population: "both",
     format: "module",
@@ -526,7 +526,7 @@ const RESOURCES = [
     title: "Neurology Nuts and Bolts",
     creator: "Yale School of Medicine",
     description: "A podcast about constructing a career in neurology, with conversations on clerkship success, training, mentorship, and professional development.",
-    level: "Neurology Foundations",
+    level: "Neurology Readiness",
     specialties: ["Digital Education", "General Neurology"],
     population: "both",
     format: "podcast",
@@ -592,7 +592,14 @@ const elements = {
   filterClose: document.querySelector("#filter-close"),
   filterBackdrop: document.querySelector("#filter-backdrop"),
   mobileFilterButton: document.querySelector("#mobile-filter-button"),
-  mobileFilterCount: document.querySelector("#mobile-filter-count")
+  mobileFilterCount: document.querySelector("#mobile-filter-count"),
+  submissionDialog: document.querySelector("#submission-dialog"),
+  submissionDialogButton: document.querySelector("#submit-resource-button"),
+  submissionDialogClose: document.querySelector("#submission-dialog-close"),
+  submissionForm: document.querySelector("#resource-submission-form"),
+  submissionFile: document.querySelector("#submission-file"),
+  submissionFileStatus: document.querySelector("#submission-file-status"),
+  submissionSubmit: document.querySelector("#submission-submit")
 };
 
 function escapeHtml(value) {
@@ -656,7 +663,6 @@ function initializeFilters() {
 
 function audienceMatches(resource) {
   if (state.audience === "all") return true;
-  if (state.audience === "both") return resource.population === "both";
   return resource.population === state.audience || resource.population === "both";
 }
 
@@ -909,6 +915,64 @@ elements.mobileFilterButton.addEventListener("click", openFilters);
 elements.filterClose.addEventListener("click", closeFilters);
 elements.filterBackdrop.addEventListener("click", closeFilters);
 
+elements.submissionDialogButton.addEventListener("click", () => {
+  if (typeof elements.submissionDialog.showModal === "function") {
+    elements.submissionDialog.showModal();
+  } else {
+    elements.submissionDialog.setAttribute("open", "");
+  }
+});
+
+elements.submissionDialogClose.addEventListener("click", () => {
+  if (typeof elements.submissionDialog.close === "function") elements.submissionDialog.close();
+  else elements.submissionDialog.removeAttribute("open");
+});
+
+elements.submissionDialog.addEventListener("click", (event) => {
+  if (event.target !== elements.submissionDialog) return;
+
+  if (typeof elements.submissionDialog.close === "function") {
+    elements.submissionDialog.close();
+  } else {
+    elements.submissionDialog.removeAttribute("open");
+  }
+});
+
+const maximumSubmissionFileSize = 10 * 1024 * 1024;
+
+function validateSubmissionFile() {
+  const [file] = elements.submissionFile.files;
+  elements.submissionFile.setCustomValidity("");
+
+  if (!file) {
+    elements.submissionFileStatus.textContent = "";
+    return true;
+  }
+
+  if (file.size > maximumSubmissionFileSize) {
+    elements.submissionFile.setCustomValidity("Choose a file that is 10 MB or smaller.");
+    elements.submissionFileStatus.textContent = "This file is larger than 10 MB. Choose a smaller file.";
+    return false;
+  }
+
+  const sizeInMegabytes = Math.max(0.01, file.size / (1024 * 1024)).toFixed(2);
+  elements.submissionFileStatus.textContent = `${file.name} · ${sizeInMegabytes} MB selected`;
+  return true;
+}
+
+elements.submissionFile.addEventListener("change", validateSubmissionFile);
+
+elements.submissionForm.addEventListener("submit", (event) => {
+  if (!validateSubmissionFile() || !elements.submissionForm.checkValidity()) {
+    event.preventDefault();
+    elements.submissionForm.reportValidity();
+    return;
+  }
+
+  elements.submissionSubmit.disabled = true;
+  elements.submissionSubmit.textContent = "Uploading submission…";
+});
+
 elements.aboutButton.addEventListener("click", () => {
   if (typeof elements.aboutDialog.showModal === "function") {
     elements.aboutDialog.showModal();
@@ -930,6 +994,11 @@ document.addEventListener("keydown", (event) => {
 
 window.addEventListener("resize", () => {
   if (window.innerWidth > 820) closeFilters();
+});
+
+window.addEventListener("pageshow", () => {
+  elements.submissionSubmit.disabled = false;
+  elements.submissionSubmit.textContent = "Submit resource for review";
 });
 
 initializeFilters();

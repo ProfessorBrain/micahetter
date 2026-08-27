@@ -59,7 +59,6 @@
             <button class="is-active" type="button" data-audience="all" aria-pressed="true">All resources</button>
             <button type="button" data-audience="adult" aria-pressed="false">Adult</button>
             <button type="button" data-audience="pediatric" aria-pressed="false">Pediatric</button>
-            <button type="button" data-audience="both" aria-pressed="false">Adult &amp; pediatric</button>
           </div>
         </details>
 
@@ -151,9 +150,12 @@
         <section class="browse" id="browse" aria-labelledby="browse-title">
           <div class="browse-header">
             <h2 id="browse-title">The Repository</h2>
-            <button class="mobile-filter-button" id="mobile-filter-button" type="button" aria-controls="filter-panel" aria-expanded="false">
-              Filters <span id="mobile-filter-count">0</span>
-            </button>
+            <div class="repository-heading-actions">
+              <button class="submit-resource-trigger" id="submit-resource-button" type="button" aria-haspopup="dialog" aria-controls="submission-dialog">Submit a resource</button>
+              <button class="mobile-filter-button" id="mobile-filter-button" type="button" aria-controls="filter-panel" aria-expanded="false">
+                Filters <span id="mobile-filter-count">0</span>
+              </button>
+            </div>
           </div>
 
           <div class="results-toolbar">
@@ -181,6 +183,123 @@
             <button type="button" id="empty-reset">Reset the repository</button>
           </div>
         </section>
+
+        <dialog class="submission-dialog" id="submission-dialog" aria-labelledby="submit-title">
+          <div class="submission-dialog-inner">
+            <button class="submission-dialog-close" id="submission-dialog-close" type="button" aria-label="Close submission form">×</button>
+            <div class="submission-section-heading">
+            <span class="section-kicker">Contribute</span>
+            <h2 id="submit-title">Submit a learning resource</h2>
+            <p>Propose digital neurology education material for NDEC peer review and possible publication in the repository.</p>
+            </div>
+
+          <form class="resource-submission-form" id="resource-submission-form" action="https://formsubmit.co/micahetter@gmail.com" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="_subject" value="New NDEC Repository Submission">
+            <input type="hidden" name="_template" value="table">
+            <input class="submission-honeypot" type="text" name="_honey" tabindex="-1" autocomplete="off">
+
+            <div class="submission-form-grid">
+              <label class="submission-field">
+                <span>Your name <b aria-hidden="true">*</b></span>
+                <input type="text" name="Submitter name" autocomplete="name" required>
+              </label>
+
+              <label class="submission-field">
+                <span>Email address <b aria-hidden="true">*</b></span>
+                <input type="email" name="email" autocomplete="email" required>
+              </label>
+
+              <label class="submission-field">
+                <span>Creator or organization</span>
+                <input type="text" name="Creator or organization" autocomplete="organization">
+              </label>
+
+              <label class="submission-field">
+                <span>Resource title <b aria-hidden="true">*</b></span>
+                <input type="text" name="Resource title" required>
+              </label>
+
+              <label class="submission-field submission-field-wide">
+                <span>Resource URL</span>
+                <input type="url" name="Resource URL" inputmode="url" placeholder="https://">
+              </label>
+
+              <label class="submission-field">
+                <span>Format <b aria-hidden="true">*</b></span>
+                <select name="Format" required>
+                  <option value="">Select a format</option>
+                  <option>Video</option>
+                  <option>Infographic</option>
+                  <option>Online module</option>
+                  <option>Article</option>
+                  <option>Toolkit</option>
+                  <option>Game</option>
+                  <option>Reference</option>
+                  <option>Podcast</option>
+                  <option>Other</option>
+                </select>
+              </label>
+
+              <label class="submission-field">
+                <span>Patient population <b aria-hidden="true">*</b></span>
+                <select name="Patient population" required>
+                  <option value="">Select a population</option>
+                  <option>Adult</option>
+                  <option>Pediatric</option>
+                  <option>Not population-specific</option>
+                </select>
+              </label>
+
+              <label class="submission-field">
+                <span>Learning level <b aria-hidden="true">*</b></span>
+                <select name="Learning level" required>
+                  <option value="">Select a level</option>
+                  <option>Neurology Readiness</option>
+                  <option>General Neurology Essentials</option>
+                  <option>Core Neurology Practice</option>
+                  <option>Advanced &amp; Subspecialty Practice</option>
+                </select>
+              </label>
+
+              <label class="submission-field">
+                <span>Subspecialty or topic <b aria-hidden="true">*</b></span>
+                <input type="text" name="Subspecialty or topic" required>
+              </label>
+
+              <label class="submission-field submission-field-wide">
+                <span>Review request <b aria-hidden="true">*</b></span>
+                <select name="Review request" required>
+                  <option value="">Select a review pathway</option>
+                  <option>NDEC peer review and repository publication</option>
+                  <option>Repository publication only</option>
+                </select>
+              </label>
+
+              <label class="submission-field submission-field-wide">
+                <span>Resource description <b aria-hidden="true">*</b></span>
+                <textarea name="Resource description" rows="5" placeholder="Describe the content, intended learners, and educational objectives." required></textarea>
+              </label>
+
+              <label class="submission-field submission-field-wide submission-file-field">
+                <span>Attach the resource <b aria-hidden="true">*</b></span>
+                <input id="submission-file" type="file" name="attachment" accept=".pdf,.doc,.docx,.ppt,.pptx,.png,.jpg,.jpeg,.gif,.zip" required aria-describedby="submission-file-help submission-file-status">
+                <small id="submission-file-help">PDF, Word, PowerPoint, image, or ZIP; maximum 10 MB. For larger video or module files, provide a Resource URL and attach a supporting document.</small>
+                <small class="submission-file-status" id="submission-file-status" aria-live="polite"></small>
+              </label>
+            </div>
+
+            <label class="submission-consent">
+              <input type="checkbox" name="Submission confirmation" value="Confirmed" required>
+              <span>I created this material or have permission to submit it, have disclosed relevant access requirements or conflicts, and confirm that the submission contains no protected health information or other confidential patient information.</span>
+            </label>
+
+            <div class="submission-form-footer">
+              <p>Do not upload patient-identifying or confidential information.</p>
+              <button id="submission-submit" type="submit">Submit resource for review</button>
+            </div>
+            </form>
+          </div>
+        </dialog>
       </div>
     </div>
 
@@ -195,6 +314,17 @@
       <h2 id="about-dialog-title">About the NDEC Learning Resource Index</h2>
       <p>The Neurology Digital Education Collaborative (NDEC) maintains this directory of digital resources for neurology education and clinical practice.</p>
       <p>It is intended for medical students, residents, fellows, faculty, and practicing neurologists. Resources can be filtered by patient population, creator, learning level, subspecialty, format, review status, and access. Each listing opens the original resource from its publisher or creator.</p>
+      <section class="dialog-level-key" aria-labelledby="dialog-level-title">
+        <h3 id="dialog-level-title">Learning levels</h3>
+        <p>Levels describe what a resource enables someone to do—not a learner’s training rank.</p>
+        <ol>
+          <li><strong><span>01</span> Neurology Readiness</strong><small>Recognize neurologic emergencies, perform an initial assessment, begin stabilization, and know when to escalate.</small></li>
+          <li><strong><span>02</span> General Neurology Essentials</strong><small>Evaluate common complaints and conditions using diagnostic criteria, introductory testing, and first-line treatment.</small></li>
+          <li><strong><span>03</span> Core Neurology Practice</strong><small>Apply full clinical reasoning and management, including treatment selection and interpretation of neuroimaging and neurophysiology.</small></li>
+          <li><strong><span>04</span> Advanced &amp; Subspecialty Practice</strong><small>Address complex, uncommon, or nuanced material requiring substantial prior knowledge.</small></li>
+        </ol>
+        <p class="dialog-level-note">Classification is based on the learning objective and assumed prior knowledge—not the topic alone.</p>
+      </section>
       <div class="dialog-review-key" aria-label="NDEC peer review definition">
         <div><span class="key-dot key-green"></span><strong>NDEC Peer Reviewed</strong><small>This label is used only for resources that have completed NDEC’s formal review process.</small></div>
       </div>
