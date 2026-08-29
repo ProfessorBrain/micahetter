@@ -5,27 +5,7 @@ const LEVELS = [
   "Advanced & Subspecialty Practice"
 ];
 
-const SPECIALTIES = [
-  "Digital Education",
-  "General Neurology",
-  "Behavioral Neurology & Neuropsychiatry",
-  "Epilepsy & Clinical Neurophysiology",
-  "Headache Medicine",
-  "Movement Disorders",
-  "Multiple Sclerosis & Neuroimmunology",
-  "Neuromuscular Medicine",
-  "Neurocritical Care",
-  "Neurohospitalist & Acute Neurology",
-  "Neuro-oncology",
-  "Neuro-ophthalmology",
-  "Neuro-otology",
-  "Sleep Neurology",
-  "Vascular Neurology & Stroke",
-  "Pediatric Neurology",
-  "Neurogenetics",
-  "Autonomic Disorders",
-  "Palliative Neurology"
-];
+let SPECIALTIES = [];
 
 const FORMAT_LABELS = {
   video: "Video",
@@ -61,501 +41,30 @@ const ACCESS_LABELS = {
   mixed: "Mixed access"
 };
 
-const RESOURCES = [
-  {
-    id: 1,
-    title: "NDEC Technology Toolkit",
-    creator: "Neurology Digital Education Collaborative",
-    description: "A curated guide to digital tools for education, clinical care, research, advocacy, productivity, graphics, AI, and digital scholarship.",
-    level: "Neurology Readiness",
-    specialties: ["Digital Education"],
-    population: "both",
-    format: "toolkit",
-    review: null,
-    access: "free",
-    duration: "Self-paced",
-    year: 2026,
-    featured: 100,
-    url: "https://ndec.institute/ndec-toolkit",
-    tags: ["technology", "teaching tools", "AI", "graphics", "productivity", "digital scholarship"]
-  },
-  {
-    id: 2,
-    title: "Digital Education and Game Development: Neurdle",
-    creator: "Ali Christy and NDEC",
-    description: "A practical reflection on using games to make neurology learning approachable, memorable, and easy to share in digital communities.",
-    level: "General Neurology Essentials",
-    specialties: ["Digital Education", "General Neurology", "Pediatric Neurology"],
-    population: "both",
-    format: "article",
-    review: null,
-    access: "free",
-    duration: "6 min read",
-    year: 2023,
-    featured: 78,
-    url: "https://ndec.institute/blog/wvh9i28g63k54nx5djiskkvkomnuxy",
-    tags: ["gamification", "game design", "teaching", "digital scholarship"]
-  },
-  {
-    id: 3,
-    title: "Putting Social Media on Your CV",
-    creator: "Ali Christy and NDEC",
-    description: "Suggestions for documenting digital education, podcasts, social media portfolios, and online scholarly impact for promotion and career development.",
-    level: "General Neurology Essentials",
-    specialties: ["Digital Education"],
-    population: "both",
-    format: "article",
-    review: null,
-    access: "free",
-    duration: "7 min read",
-    year: 2023,
-    featured: 64,
-    url: "https://ndec.institute/blog/godtxmk3o34ue52kskygz06wkwgjrx",
-    tags: ["career", "social media", "portfolio", "promotion", "digital scholarship"]
-  },
-  {
-    id: 4,
-    title: "Neurdle: A Daily Neurology Word Game",
-    creator: "Zachary London and Ali Christy",
-    description: "A free daily word puzzle built around neurologic terms, names, and abbreviations, with a short learning point after each game.",
-    level: "Neurology Readiness",
-    specialties: ["Digital Education", "General Neurology", "Neurogenetics"],
-    population: "both",
-    format: "game",
-    review: null,
-    access: "free",
-    duration: "3–5 min",
-    year: 2026,
-    featured: 82,
-    url: "https://neurdle.com/",
-    tags: ["gamification", "vocabulary", "daily learning", "microlearning"]
-  },
-  {
-    id: 5,
-    title: "NeuroBytes® Free Educational Videos",
-    creator: "American Academy of Neurology",
-    description: "A growing catalog of three-to-six-minute videos covering hot topics and emerging trends across neurology subspecialties.",
-    level: "General Neurology Essentials",
-    specialties: ["General Neurology", "Vascular Neurology & Stroke", "Epilepsy & Clinical Neurophysiology", "Movement Disorders", "Headache Medicine", "Multiple Sclerosis & Neuroimmunology", "Neuromuscular Medicine", "Neuro-oncology", "Sleep Neurology"],
-    population: "both",
-    format: "video",
-    review: null,
-    access: "member",
-    duration: "3–6 min each",
-    year: 2026,
-    featured: 98,
-    url: "https://www.aan.com/education/neurobytes",
-    tags: ["microlearning", "bite-sized", "AAN", "clinical update", "subspecialty"]
-  },
-  {
-    id: 6,
-    title: "NeuroBytes® Medical Student Series",
-    creator: "American Academy of Neurology",
-    description: "Short neurology videos designed by medical students for medical students, spanning foundational concepts and common clinical topics.",
-    level: "Neurology Readiness",
-    specialties: ["General Neurology", "Vascular Neurology & Stroke", "Epilepsy & Clinical Neurophysiology", "Movement Disorders", "Headache Medicine", "Pediatric Neurology"],
-    population: "both",
-    format: "video",
-    review: null,
-    access: "member",
-    duration: "3–6 min each",
-    year: 2026,
-    featured: 94,
-    url: "https://www.aan.com/education/neurobytes",
-    tags: ["medical students", "clerkship", "microlearning", "AAN"]
-  },
-  {
-    id: 7,
-    title: "Medical Student Neurology Educational Resources",
-    creator: "American Academy of Neurology",
-    description: "An AAN starting point for clerkship resources, subspecialty introductions, NeuroBytes, webinars, and career exploration.",
-    level: "Neurology Readiness",
-    specialties: ["General Neurology", "Behavioral Neurology & Neuropsychiatry", "Epilepsy & Clinical Neurophysiology", "Movement Disorders", "Neuro-oncology", "Pediatric Neurology", "Vascular Neurology & Stroke"],
-    population: "both",
-    format: "toolkit",
-    review: null,
-    access: "mixed",
-    duration: "Self-paced",
-    year: 2026,
-    featured: 89,
-    url: "https://www.aan.com/tools-resources/medical-student-educational-resources",
-    tags: ["medical students", "clerkship", "career", "AAN", "webinars"]
-  },
-  {
-    id: 8,
-    title: "Neurology Residency Education Offerings",
-    creator: "American Academy of Neurology",
-    description: "A central guide to AAN residency resources including the RITE exam, Residents & Fellows Section, teaching cases, images, and career materials.",
-    level: "Core Neurology Practice",
-    specialties: ["General Neurology", "Digital Education", "Vascular Neurology & Stroke", "Epilepsy & Clinical Neurophysiology", "Movement Disorders", "Neuromuscular Medicine"],
-    population: "both",
-    format: "toolkit",
-    review: null,
-    access: "mixed",
-    duration: "Self-paced",
-    year: 2026,
-    featured: 87,
-    url: "https://www.aan.com/education/resident-education-offerings",
-    tags: ["residents", "RITE", "board review", "AAN", "career"]
-  },
-  {
-    id: 9,
-    title: "Neurology Education",
-    creator: "American Academy of Neurology / Neurology Journals",
-    description: "An open-access, peer-reviewed journal devoted to neurologic and neuroscience education, with research, curriculum innovations, and teaching aids.",
-    level: "Advanced & Subspecialty Practice",
-    specialties: ["Digital Education", "General Neurology"],
-    population: "both",
-    format: "article",
-    review: null,
-    access: "free",
-    duration: "Collection",
-    year: 2026,
-    featured: 96,
-    url: "https://www.neurology.org/journal/ne9",
-    tags: ["medical education", "peer reviewed", "curriculum", "education research", "open access"]
-  },
-  {
-    id: 10,
-    title: "Teaching NeuroVisuals",
-    creator: "Neurology Education",
-    description: "A peer-reviewed collection of infographics and teaching aids on EEG, brain death, stroke localization, vestibular examination, and other clinical topics.",
-    level: "Core Neurology Practice",
-    specialties: ["Digital Education", "Epilepsy & Clinical Neurophysiology", "Neurocritical Care", "Vascular Neurology & Stroke", "Neuro-otology", "Movement Disorders", "Neuromuscular Medicine"],
-    population: "adult",
-    format: "infographic",
-    review: null,
-    access: "free",
-    duration: "Collection",
-    year: 2026,
-    featured: 99,
-    url: "https://www.neurology.org/ne9/teaching-neurovisuals",
-    tags: ["teaching aid", "EEG", "brain death", "HINTS", "stroke localization", "visual learning"]
-  },
-  {
-    id: 11,
-    title: "Resident & Fellow Teaching Video Collection",
-    creator: "Neurology Journals",
-    description: "A topic-based collection of peer-reviewed teaching videos featuring clinical signs, imaging findings, movement disorders, seizures, and pediatric cases.",
-    level: "Core Neurology Practice",
-    specialties: ["General Neurology", "Vascular Neurology & Stroke", "Epilepsy & Clinical Neurophysiology", "Movement Disorders", "Neuromuscular Medicine", "Neuro-ophthalmology", "Pediatric Neurology"],
-    population: "both",
-    format: "video",
-    review: null,
-    access: "free",
-    duration: "Collection",
-    year: 2026,
-    featured: 97,
-    url: "https://www.neurology.org/resident-fellow/collection/teaching-videos",
-    tags: ["clinical signs", "teaching video", "resident", "fellow", "video neuroimage", "peer reviewed"]
-  },
-  {
-    id: 12,
-    title: "NeuDrawLogy: Original Neurology Infographics",
-    creator: "Gabriela Figueiredo Pucci, MD",
-    description: "A searchable visual collection that simplifies neurologic syndromes, clinical reasoning, vascular neurology, neuro-ophthalmology, headache, and neuromuscular topics.",
-    level: "General Neurology Essentials",
-    specialties: ["General Neurology", "Neuro-ophthalmology", "Vascular Neurology & Stroke", "Neuromuscular Medicine", "Headache Medicine", "Neurocritical Care", "Neurohospitalist & Acute Neurology"],
-    population: "adult",
-    format: "infographic",
-    review: null,
-    access: "free",
-    duration: "Collection",
-    year: 2026,
-    featured: 95,
-    url: "https://www.neudrawlogy.com/",
-    tags: ["visual learning", "clinical reasoning", "localization", "syndromes", "infographics"]
-  },
-  {
-    id: 13,
-    title: "Parinaud’s Syndrome",
-    creator: "Gabriela Figueiredo Pucci, MD / NeuDrawLogy",
-    description: "A visual overview of the signs, dorsal midbrain localization, and major causes of Parinaud’s syndrome.",
-    level: "General Neurology Essentials",
-    specialties: ["Neuro-ophthalmology", "Neuro-oncology", "Multiple Sclerosis & Neuroimmunology", "Vascular Neurology & Stroke"],
-    population: "both",
-    format: "infographic",
-    review: null,
-    access: "free",
-    duration: "5 min",
-    year: 2026,
-    featured: 83,
-    url: "https://www.neudrawlogy.com/parinauds-syndrome",
-    tags: ["Parinaud syndrome", "dorsal midbrain", "vertical gaze", "localization", "pupils"]
-  },
-  {
-    id: 14,
-    title: "Basic Neurology Videos and Questions",
-    creator: "Yale School of Medicine",
-    description: "Introductory mini-lectures with case-based questions and immediate feedback for medical students and new neurology residents.",
-    level: "Neurology Readiness",
-    specialties: ["General Neurology", "Behavioral Neurology & Neuropsychiatry", "Vascular Neurology & Stroke", "Epilepsy & Clinical Neurophysiology", "Headache Medicine", "Movement Disorders", "Multiple Sclerosis & Neuroimmunology", "Neuro-oncology", "Neuromuscular Medicine"],
-    population: "adult",
-    format: "module",
-    review: null,
-    access: "free",
-    duration: "≤10 min each",
-    year: 2024,
-    featured: 93,
-    url: "https://campuspress.yale.edu/eegmodules/basic-neurology-videos-and-questions/",
-    tags: ["medical student", "new resident", "case questions", "mini lecture", "fundamentals"]
-  },
-  {
-    id: 15,
-    title: "EEG Modules for Residents, Fellows, and Technologists",
-    creator: "Yale School of Medicine",
-    description: "An eleven-part video curriculum covering the fundamentals of EEG interpretation, supported by introductory neurology content and questions.",
-    level: "Core Neurology Practice",
-    specialties: ["Epilepsy & Clinical Neurophysiology", "Neurocritical Care", "Sleep Neurology", "Pediatric Neurology"],
-    population: "both",
-    format: "module",
-    review: null,
-    access: "free",
-    duration: "11-part series",
-    year: 2024,
-    featured: 91,
-    url: "https://campuspress.yale.edu/eegmodules/",
-    tags: ["EEG", "electroencephalography", "seizure", "clinical neurophysiology"]
-  },
-  {
-    id: 16,
-    title: "Interactive Movement Disorders Curriculum",
-    creator: "Yale School of Medicine",
-    description: "An interactive, patient-video-based curriculum in movement disorders designed for neurology residents at any postgraduate year.",
-    level: "Core Neurology Practice",
-    specialties: ["Movement Disorders", "Neurogenetics", "Behavioral Neurology & Neuropsychiatry"],
-    population: "adult",
-    format: "module",
-    review: null,
-    access: "free",
-    duration: "Self-paced",
-    year: 2024,
-    featured: 86,
-    url: "https://movementmodules.yale.edu/",
-    tags: ["patient video", "movement phenomenology", "resident curriculum", "Parkinson disease"]
-  },
-  {
-    id: 17,
-    title: "Spot the Brain Cell",
-    creator: "University of Calgary Department of Clinical Neurosciences",
-    description: "Resident-created presentations on high-yield topics for medical students and off-service rotators, including stroke, seizure, headache, dementia, MS, vertigo, and movement disorders.",
-    level: "General Neurology Essentials",
-    specialties: ["General Neurology", "Vascular Neurology & Stroke", "Epilepsy & Clinical Neurophysiology", "Headache Medicine", "Movement Disorders", "Multiple Sclerosis & Neuroimmunology", "Behavioral Neurology & Neuropsychiatry", "Neuro-otology", "Neuromuscular Medicine", "Neurohospitalist & Acute Neurology"],
-    population: "adult",
-    format: "video",
-    review: null,
-    access: "free",
-    duration: "Topic series",
-    year: 2026,
-    featured: 92,
-    url: "https://cumming.ucalgary.ca/departments/dcns/education/residency/neurology/spotthebraincell",
-    tags: ["rotation", "high yield", "first seizure", "acute stroke", "vertigo", "MS basics"]
-  },
-  {
-    id: 18,
-    title: "Stanford Medicine 25: Neurology Examinations",
-    creator: "Stanford Medicine",
-    description: "Step-by-step guides and video demonstrations for bedside examination, including reflexes, cerebellar testing, gait, tremor, and Parkinson disease.",
-    level: "Neurology Readiness",
-    specialties: ["General Neurology", "Movement Disorders", "Neuromuscular Medicine", "Pediatric Neurology"],
-    population: "both",
-    format: "video",
-    review: null,
-    access: "free",
-    duration: "Topic series",
-    year: 2026,
-    featured: 90,
-    url: "https://med.stanford.edu/stanfordmedicine25/exam-guides-.html",
-    tags: ["neurologic exam", "bedside", "reflexes", "gait", "cerebellar", "Parkinson examination"]
-  },
-  {
-    id: 19,
-    title: "ILAE Education and Epileptology Curriculum",
-    creator: "International League Against Epilepsy",
-    description: "A competency-based learning pathway with entry, proficiency, and advanced content in seizure diagnosis, EEG, neuroimaging, treatment, and emergencies.",
-    level: "Advanced & Subspecialty Practice",
-    specialties: ["Epilepsy & Clinical Neurophysiology", "Pediatric Neurology", "Neurogenetics", "Sleep Neurology"],
-    population: "both",
-    format: "module",
-    review: null,
-    access: "mixed",
-    duration: "Curriculum",
-    year: 2026,
-    featured: 88,
-    url: "https://www.ilae.org/education",
-    tags: ["epileptology", "seizure", "EEG", "MRI", "ILAE curriculum", "competency"]
-  },
-  {
-    id: 20,
-    title: "Neuro-Ophthalmology Virtual Education Library (NOVEL)",
-    creator: "University of Utah and North American Neuro-Ophthalmology Society",
-    description: "A large open-access repository of neuro-ophthalmology lectures, examinations, cases, images, and tiered learning materials.",
-    level: "Core Neurology Practice",
-    specialties: ["Neuro-ophthalmology", "Neuro-oncology", "Multiple Sclerosis & Neuroimmunology", "Vascular Neurology & Stroke"],
-    population: "both",
-    format: "toolkit",
-    review: null,
-    access: "free",
-    duration: "Collection",
-    year: 2024,
-    featured: 84,
-    url: "https://novel.utah.edu/",
-    tags: ["neuro-ophthalmology", "eye movements", "pupils", "visual fields", "cases"]
-  },
-  {
-    id: 21,
-    title: "International Classification of Headache Disorders, 3rd Edition",
-    creator: "International Headache Society",
-    description: "The official ICHD-3 diagnostic classification and criteria for migraine, tension-type headache, trigeminal autonomic cephalalgias, and secondary headaches.",
-    level: "General Neurology Essentials",
-    specialties: ["Headache Medicine", "Pediatric Neurology", "Neurohospitalist & Acute Neurology"],
-    population: "both",
-    format: "reference",
-    review: null,
-    access: "free",
-    duration: "Reference",
-    year: 2018,
-    featured: 85,
-    url: "https://ichd-3.org/",
-    tags: ["ICHD-3", "migraine", "headache criteria", "secondary headache", "classification"]
-  },
-  {
-    id: 22,
-    title: "Movement Disorders Fundamentals E-Learning Series",
-    creator: "International Parkinson and Movement Disorder Society",
-    description: "Expert video presentations covering the classification, evaluation, and management of common movement disorders from phenomenology through treatment.",
-    level: "General Neurology Essentials",
-    specialties: ["Movement Disorders", "Pediatric Neurology", "Neurogenetics", "Autonomic Disorders", "Palliative Neurology"],
-    population: "both",
-    format: "module",
-    review: null,
-    access: "login",
-    duration: "Multi-module series",
-    year: 2026,
-    featured: 88,
-    url: "https://www.movementdisorders.org/MDS/WFN-MDS.htm",
-    tags: ["movement phenomenology", "Parkinson disease", "tremor", "dystonia", "chorea", "ataxia"]
-  },
-  {
-    id: 23,
-    title: "Emergency Neurological Life Support® (ENLS)",
-    creator: "Neurocritical Care Society",
-    description: "A structured course for the critical first hours of neurologic emergencies, organized around practical protocols and high-stakes decision making.",
-    level: "Neurology Readiness",
-    specialties: ["Neurocritical Care", "Neurohospitalist & Acute Neurology", "Vascular Neurology & Stroke", "Epilepsy & Clinical Neurophysiology"],
-    population: "both",
-    format: "module",
-    review: null,
-    access: "paid",
-    duration: "Course",
-    year: 2026,
-    featured: 79,
-    url: "https://www.neurocriticalcare.org/NCS-Learning-Center/ENLS/home",
-    tags: ["neurologic emergency", "neurocritical care", "protocol", "acute neurology", "certification"]
-  },
-  {
-    id: 24,
-    title: "UBC Neurology Learner Resources",
-    creator: "University of British Columbia Neurology",
-    description: "A practical hub for residents and medical students with rotation resources, a handbook, lectures, stroke tools, neuroanatomy, examination videos, and specialty links.",
-    level: "General Neurology Essentials",
-    specialties: ["General Neurology", "Vascular Neurology & Stroke", "Epilepsy & Clinical Neurophysiology", "Movement Disorders", "Neuro-ophthalmology", "Neuro-otology", "Neuromuscular Medicine"],
-    population: "adult",
-    format: "toolkit",
-    review: null,
-    access: "mixed",
-    duration: "Collection",
-    year: 2026,
-    featured: 81,
-    url: "https://www.ubcneuro.com/resources",
-    tags: ["rotation", "handbook", "ward resources", "NIHSS", "neuroanatomy", "examination"]
-  },
-  {
-    id: 25,
-    title: "Guided Worksheets for Core Neurology Teaching",
-    creator: "Clare McGarvey Lambert, MD and Jeffrey Dewey, MD",
-    description: "Open-access guided worksheets for ischemic stroke basics, intracranial hemorrhage, reading brain MRI, and seizures, developed for efficient bedside teaching.",
-    level: "General Neurology Essentials",
-    specialties: ["Digital Education", "Vascular Neurology & Stroke", "Epilepsy & Clinical Neurophysiology", "Neurohospitalist & Acute Neurology", "Pediatric Neurology"],
-    population: "both",
-    format: "article",
-    review: null,
-    access: "free",
-    duration: "4 worksheets",
-    year: 2026,
-    featured: 86,
-    url: "https://www.neurology.org/doi/10.1212/NE9.0000000000200311",
-    tags: ["worksheet", "bedside teaching", "MRI", "stroke", "intracranial hemorrhage", "seizure"]
-  },
-  {
-    id: 26,
-    title: "Project Neurology Workshop Series",
-    creator: "Medics.Academy and Healthcare Leadership Academy",
-    description: "A free, open-access workshop series using practical, case-based sessions for medical students, neurology trainees, and early-career clinicians.",
-    level: "General Neurology Essentials",
-    specialties: ["General Neurology", "Neurohospitalist & Acute Neurology", "Vascular Neurology & Stroke", "Epilepsy & Clinical Neurophysiology", "Headache Medicine"],
-    population: "adult",
-    format: "module",
-    review: null,
-    access: "free",
-    duration: "Workshop series",
-    year: 2026,
-    featured: 76,
-    url: "https://www.medics.academy/courses/project-neurology-workshop-series",
-    tags: ["case based", "workshop", "medical students", "trainees", "clinical reasoning"]
-  },
-  {
-    id: 27,
-    title: "Understanding Multiple Sclerosis",
-    creator: "Menzies Institute, MS Plus, and MS Australia",
-    description: "A free online course introducing multiple sclerosis and its management for learners, health professionals, and people seeking a structured overview.",
-    level: "General Neurology Essentials",
-    specialties: ["Multiple Sclerosis & Neuroimmunology", "Neuro-ophthalmology", "Pediatric Neurology"],
-    population: "both",
-    format: "module",
-    review: null,
-    access: "free",
-    duration: "Online course",
-    year: 2025,
-    featured: 72,
-    url: "https://www.msif.org/news/2025/08/14/a-free-course-to-learn-all-about-ms-and-how-to-manage-it/",
-    tags: ["multiple sclerosis", "MS", "management", "neuroimmunology", "free course"]
-  },
-  {
-    id: 28,
-    title: "Neurology Nuts and Bolts",
-    creator: "Yale School of Medicine",
-    description: "A podcast about constructing a career in neurology, with conversations on clerkship success, training, mentorship, and professional development.",
-    level: "Neurology Readiness",
-    specialties: ["Digital Education", "General Neurology"],
-    population: "both",
-    format: "podcast",
-    review: null,
-    access: "free",
-    duration: "Episode series",
-    year: 2026,
-    featured: 68,
-    url: "https://neurologynutsandbolts.buzzsprout.com/",
-    tags: ["career", "clerkship", "mentorship", "residency", "podcast"]
-  },
-  {
-    id: 29,
-    title: "AccessNeurology",
-    creator: "McGraw Hill Medical",
-    description: "A comprehensive subscription collection of neurology textbooks, cases, videos, review questions, and an interactive neuroanatomy atlas.",
-    level: "Core Neurology Practice",
-    specialties: ["General Neurology", "Behavioral Neurology & Neuropsychiatry", "Vascular Neurology & Stroke", "Epilepsy & Clinical Neurophysiology", "Movement Disorders", "Headache Medicine", "Multiple Sclerosis & Neuroimmunology", "Neuromuscular Medicine", "Neurocritical Care", "Neuro-oncology", "Neuro-ophthalmology", "Sleep Neurology", "Pediatric Neurology", "Neurogenetics", "Autonomic Disorders", "Palliative Neurology"],
-    population: "both",
-    format: "reference",
-    review: null,
-    access: "paid",
-    duration: "Collection",
-    year: 2026,
-    featured: 70,
-    url: "https://neurology.mhmedical.com/Index.aspx",
-    tags: ["textbook", "case", "video", "self assessment", "neuroanatomy atlas", "board review"]
-  }
-];
+let RESOURCES = [];
+
+const GOOGLE_SHEET_ID = "1bNngRc_cMD_PDyAokAlSDlluWp655bkszKY83HJ0Spg";
+const GOOGLE_SHEET_TAB = "Sheet1";
+const GOOGLE_SHEET_TIMEOUT_MS = 15000;
+
+const SHEET_COLUMNS = {
+  title: ["title"],
+  creator: ["creator"],
+  description: ["description"],
+  level: ["level"],
+  population: ["population"],
+  format: ["format"],
+  review: ["reviewed", "review"],
+  access: ["access"],
+  duration: ["duration"],
+  year: ["year"],
+  featured: ["featured"],
+  url: ["url"],
+  specialties: ["specialties"],
+  tags: ["tags"]
+};
+
+let libraryState = "loading";
 
 const state = {
   query: "",
@@ -586,6 +95,10 @@ const elements = {
   activeFilters: document.querySelector("#active-filters"),
   sortSelect: document.querySelector("#sort-select"),
   resourceList: document.querySelector("#resource-list"),
+  libraryStatus: document.querySelector("#library-status"),
+  libraryStatusTitle: document.querySelector("#library-status-title"),
+  libraryStatusMessage: document.querySelector("#library-status-message"),
+  libraryRetry: document.querySelector("#library-retry"),
   emptyState: document.querySelector("#empty-state"),
   emptyReset: document.querySelector("#empty-reset"),
   filterPanel: document.querySelector("#filter-panel"),
@@ -617,6 +130,191 @@ function normalize(value) {
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
     .trim();
+}
+
+function normalizeHeader(value) {
+  return normalize(value).replace(/[^a-z0-9]+/g, "");
+}
+
+function googleSheetTableRequest() {
+  return new Promise((resolve, reject) => {
+    const callbackName = `__ndecSheetCallback_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    const script = document.createElement("script");
+    const timeout = window.setTimeout(() => {
+      cleanup();
+      reject(new Error("The Google Sheet did not respond within 15 seconds."));
+    }, GOOGLE_SHEET_TIMEOUT_MS);
+
+    function cleanup() {
+      window.clearTimeout(timeout);
+      script.remove();
+      delete window[callbackName];
+    }
+
+    window[callbackName] = (response) => {
+      cleanup();
+      if (!response || response.status !== "ok" || !response.table) {
+        const message = response?.errors?.[0]?.detailed_message || "Google Sheets returned an invalid response.";
+        reject(new Error(message));
+        return;
+      }
+      resolve(response.table);
+    };
+
+    script.onerror = () => {
+      cleanup();
+      reject(new Error("The Google Sheet could not be reached."));
+    };
+
+    const queryOptions = encodeURIComponent(`out:json;responseHandler:${callbackName}`);
+    const tab = encodeURIComponent(GOOGLE_SHEET_TAB);
+    script.src = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/gviz/tq?sheet=${tab}&headers=1&tqx=${queryOptions}&cacheBust=${Date.now()}`;
+    script.async = true;
+    document.head.append(script);
+  });
+}
+
+function sheetCellValue(row, columnIndex) {
+  const cell = row.c?.[columnIndex];
+  return cell?.v ?? "";
+}
+
+function splitSheetList(value) {
+  return [...new Set(String(value).split("|").map((item) => item.trim()).filter(Boolean))];
+}
+
+function parseReviewValue(value, rowNumber) {
+  if (value === "" || value === null || value === false) return null;
+  if (value === true) return "ndec";
+  const review = normalize(value);
+  if (review === "ndec" || review === "ndec peer reviewed") return "ndec";
+  throw new Error(`Sheet row ${rowNumber}: Reviewed must be blank or NDEC Peer Reviewed.`);
+}
+
+function validateSheetChoice(value, allowedValues, fieldName, rowNumber) {
+  if (allowedValues.includes(value)) return value;
+  throw new Error(`Sheet row ${rowNumber}: ${fieldName} has an unsupported value.`);
+}
+
+function parseGoogleSheetResources(table) {
+  const headerIndexes = new Map();
+  table.cols.forEach((column, index) => {
+    const header = normalizeHeader(column.label || column.id || "");
+    if (header) headerIndexes.set(header, index);
+  });
+
+  const columns = Object.fromEntries(Object.entries(SHEET_COLUMNS).map(([field, aliases]) => {
+    const index = aliases
+      .map(normalizeHeader)
+      .map((alias) => headerIndexes.get(alias))
+      .find((value) => value !== undefined);
+    if (index === undefined) throw new Error(`The Google Sheet is missing the required ${aliases[0]} column.`);
+    return [field, index];
+  }));
+
+  const resources = [];
+  (table.rows || []).forEach((row, index) => {
+    const rowNumber = index + 2;
+    const raw = Object.fromEntries(
+      Object.entries(columns).map(([field, columnIndex]) => [field, sheetCellValue(row, columnIndex)])
+    );
+    if (Object.values(raw).every((value) => value === "" || value === null)) return;
+
+    const textFields = [
+      "title", "creator", "description", "level", "population", "format", "access",
+      "duration", "url", "specialties", "tags"
+    ];
+    const missingField = textFields.find((field) => !String(raw[field]).trim());
+    if (missingField) throw new Error(`Sheet row ${rowNumber}: ${missingField} is required.`);
+
+    const level = validateSheetChoice(String(raw.level).trim(), LEVELS, "Level", rowNumber);
+    const population = validateSheetChoice(normalize(raw.population), ["adult", "pediatric", "both"], "Population", rowNumber);
+    const format = validateSheetChoice(normalize(raw.format), Object.keys(FORMAT_LABELS), "Format", rowNumber);
+    const access = validateSheetChoice(normalize(raw.access), Object.keys(ACCESS_LABELS), "Access", rowNumber);
+    const year = Number(raw.year);
+    const featured = Number(raw.featured);
+    const specialties = splitSheetList(raw.specialties);
+    const tags = splitSheetList(raw.tags);
+
+    if (!Number.isInteger(year) || year < 1900 || year > 2100) {
+      throw new Error(`Sheet row ${rowNumber}: Year must be a four-digit year.`);
+    }
+    if (!Number.isFinite(featured) || featured < 0 || featured > 100) {
+      throw new Error(`Sheet row ${rowNumber}: Featured must be a number from 0 to 100.`);
+    }
+    if (!specialties.length || !tags.length) {
+      throw new Error(`Sheet row ${rowNumber}: Specialties and Tags must each include at least one value.`);
+    }
+
+    let url;
+    try {
+      url = new URL(String(raw.url).trim());
+    } catch {
+      throw new Error(`Sheet row ${rowNumber}: URL is not valid.`);
+    }
+    if (!["http:", "https:"].includes(url.protocol)) {
+      throw new Error(`Sheet row ${rowNumber}: URL must begin with http:// or https://.`);
+    }
+
+    resources.push({
+      id: rowNumber - 1,
+      title: String(raw.title).trim(),
+      creator: String(raw.creator).trim(),
+      description: String(raw.description).trim(),
+      level,
+      specialties,
+      population,
+      format,
+      review: parseReviewValue(raw.review, rowNumber),
+      access,
+      duration: String(raw.duration).trim(),
+      year,
+      featured,
+      url: url.href,
+      tags
+    });
+  });
+
+  if (!resources.length) throw new Error("The Google Sheet contains no resource rows.");
+  return resources;
+}
+
+function setLibraryStatus(status, message = "") {
+  libraryState = status;
+  const ready = status === "ready";
+  const failed = status === "error";
+  elements.libraryStatus.hidden = ready;
+  elements.libraryStatus.classList.toggle("is-error", failed);
+  elements.libraryStatus.setAttribute("role", failed ? "alert" : "status");
+  elements.libraryStatusTitle.textContent = failed ? "Repository unavailable" : "Loading the repository";
+  elements.libraryStatusMessage.textContent = failed
+    ? message
+    : "Reading the current resource library from Google Sheets…";
+  elements.libraryRetry.hidden = !failed;
+}
+
+async function loadLibrary() {
+  RESOURCES = [];
+  SPECIALTIES = [];
+  setLibraryStatus("loading");
+  initializeFilters();
+  render();
+
+  try {
+    const table = await googleSheetTableRequest();
+    RESOURCES = parseGoogleSheetResources(table);
+    SPECIALTIES = [...new Set(RESOURCES.flatMap((resource) => resource.specialties))]
+      .sort((a, b) => a.localeCompare(b));
+    initializeFilters();
+    setLibraryStatus("ready");
+    render();
+  } catch (error) {
+    RESOURCES = [];
+    SPECIALTIES = [];
+    initializeFilters();
+    setLibraryStatus("error", error instanceof Error ? error.message : "The Google Sheet could not be loaded.");
+    render();
+  }
 }
 
 function makeCountMap(values, getter) {
@@ -652,7 +350,9 @@ function renderCheckboxGroup(container, values, groupName, selectedSet, labels =
 
 function initializeFilters() {
   const creators = [...new Set(RESOURCES.map((resource) => resource.creator))].sort((a, b) => a.localeCompare(b));
-  elements.creatorFilter.insertAdjacentHTML("beforeend", creators.map((creator) => `<option value="${escapeHtml(creator)}">${escapeHtml(creator)}</option>`).join(""));
+  elements.creatorFilter.innerHTML = `
+    <option value="">All creators</option>
+    ${creators.map((creator) => `<option value="${escapeHtml(creator)}">${escapeHtml(creator)}</option>`).join("")}`;
 
   renderCheckboxGroup(elements.levelOptions, LEVELS, "levels", state.levels);
   renderCheckboxGroup(elements.specialtyOptions, SPECIALTIES, "specialties", state.specialties);
@@ -802,6 +502,15 @@ function syncControls() {
 }
 
 function render() {
+  if (libraryState !== "ready") {
+    elements.resourceList.innerHTML = "";
+    elements.resourceList.hidden = true;
+    elements.emptyState.hidden = true;
+    renderActiveFilters();
+    syncControls();
+    return;
+  }
+
   const resources = getFilteredResources();
   elements.resourceList.innerHTML = resources.map(renderResourceCard).join("");
   elements.resourceList.classList.toggle("grid-view", state.view === "grid");
@@ -911,6 +620,7 @@ elements.activeFilters.addEventListener("click", (event) => {
 
 elements.clearFilters.addEventListener("click", clearAllFilters);
 elements.emptyReset.addEventListener("click", clearAllFilters);
+elements.libraryRetry.addEventListener("click", loadLibrary);
 elements.mobileFilterButton.addEventListener("click", openFilters);
 elements.filterClose.addEventListener("click", closeFilters);
 elements.filterBackdrop.addEventListener("click", closeFilters);
@@ -1001,5 +711,4 @@ window.addEventListener("pageshow", () => {
   elements.submissionSubmit.textContent = "Submit resource for review";
 });
 
-initializeFilters();
-render();
+loadLibrary();

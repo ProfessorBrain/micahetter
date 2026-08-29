@@ -1585,6 +1585,83 @@ div.filter-group label,
   gap: 10px;
 }
 
+.library-status {
+  min-height: 150px;
+  padding: 28px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 17px;
+  align-items: center;
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.library-status[hidden] {
+  display: none;
+}
+
+.library-status-mark {
+  width: 30px;
+  height: 30px;
+  border: 3px solid var(--lavender);
+  border-top-color: var(--purple);
+  border-radius: 50%;
+  animation: library-status-spin 850ms linear infinite;
+}
+
+.library-status h3 {
+  margin: 0 0 5px;
+  color: var(--indigo);
+  font-family: var(--serif);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.library-status p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.library-status button {
+  min-height: 40px;
+  padding: 0 17px;
+  color: #fff;
+  font: inherit;
+  font-weight: 800;
+  background: var(--purple);
+  border: 1px solid var(--purple);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.library-status.is-error {
+  background: #fffafb;
+  border-color: #dfbdc5;
+}
+
+.library-status.is-error .library-status-mark {
+  display: grid;
+  place-items: center;
+  color: #9b3049;
+  font-weight: 900;
+  background: #fbe8ec;
+  border: 0;
+  animation: none;
+}
+
+.library-status.is-error .library-status-mark::before {
+  content: "!";
+}
+
+@keyframes library-status-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .resource-card {
   min-width: 0;
   padding: 19px;
@@ -2366,6 +2443,16 @@ div.filter-group label,
 @media (max-width: 560px) {
   .header-inner {
     width: calc(100% - 20px);
+  }
+
+  .library-status {
+    grid-template-columns: auto minmax(0, 1fr);
+    padding: 22px 18px;
+  }
+
+  .library-status button {
+    grid-column: 1 / -1;
+    width: 100%;
   }
 
   .brand {
