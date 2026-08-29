@@ -46,6 +46,7 @@ let RESOURCES = [];
 const GOOGLE_SHEET_ID = "1bNngRc_cMD_PDyAokAlSDlluWp655bkszKY83HJ0Spg";
 const GOOGLE_SHEET_TAB = "Sheet1";
 const GOOGLE_SHEET_TIMEOUT_MS = 15000;
+const DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
 
 const SHEET_COLUMNS = {
   title: ["title"],
@@ -58,13 +59,13 @@ const SHEET_COLUMNS = {
   access: ["access"],
   duration: ["duration"],
   year: ["year"],
-  featured: ["featured"],
   url: ["url"],
   specialties: ["specialties"],
   tags: ["tags"]
 };
 
 let libraryState = "loading";
+let dailyFeatureTimer;
 
 const state = {
   query: "",
@@ -75,7 +76,7 @@ const state = {
   formats: new Set(),
   reviews: new Set(),
   access: new Set(),
-  sort: "featured",
+  sort: "newest",
   view: "list"
 };
 
@@ -84,6 +85,7 @@ const elements = {
   searchInput: document.querySelector("#search-input"),
   aboutButton: document.querySelector("#about-button"),
   aboutDialog: document.querySelector("#about-dialog"),
+  dailyFeatures: document.querySelector("#daily-features"),
   audienceFilter: document.querySelector("#audience-filter"),
   creatorFilter: document.querySelector("#creator-filter"),
   levelOptions: document.querySelector("#level-options"),
@@ -232,15 +234,11 @@ function parseGoogleSheetResources(table) {
     const format = validateSheetChoice(normalize(raw.format), Object.keys(FORMAT_LABELS), "Format", rowNumber);
     const access = validateSheetChoice(normalize(raw.access), Object.keys(ACCESS_LABELS), "Access", rowNumber);
     const year = Number(raw.year);
-    const featured = Number(raw.featured);
     const specialties = splitSheetList(raw.specialties);
     const tags = splitSheetList(raw.tags);
 
     if (!Number.isInteger(year) || year < 1900 || year > 2100) {
       throw new Error(`Sheet row ${rowNumber}: Year must be a four-digit year.`);
-    }
-    if (!Number.isFinite(featured) || featured < 0 || featured > 100) {
-      throw new Error(`Sheet row ${rowNumber}: Featured must be a number from 0 to 100.`);
     }
     if (!specialties.length || !tags.length) {
       throw new Error(`Sheet row ${rowNumber}: Specialties and Tags must each include at least one value.`);
@@ -269,7 +267,6 @@ function parseGoogleSheetResources(table) {
       access,
       duration: String(raw.duration).trim(),
       year,
-      featured,
       url: url.href,
       tags
     });
@@ -291,6 +288,14 @@ function setLibraryStatus(status, message = "") {
     ? message
     : "Reading the current resource library from Google Sheets…";
   elements.libraryRetry.hidden = !failed;
+
+  window.clearTimeout(dailyFeatureTimer);
+  if (ready) {
+    renderDailyFeatures();
+    scheduleDailyFeatureRefresh();
+  } else {
+    renderDailyFeatureStatus(failed ? "Daily selections are unavailable while the repository cannot be loaded." : "Loading today’s selections…");
+  }
 }
 
 async function loadLibrary() {
@@ -397,8 +402,7 @@ function getFilteredResources() {
   return filtered.sort((a, b) => {
     if (state.sort === "title") return a.title.localeCompare(b.title);
     if (state.sort === "level") return LEVELS.indexOf(a.level) - LEVELS.indexOf(b.level) || a.title.localeCompare(b.title);
-    if (state.sort === "newest") return b.year - a.year || b.featured - a.featured;
-    return b.featured - a.featured || a.title.localeCompare(b.title);
+    return b.year - a.year || a.title.localeCompare(b.title);
   });
 }
 
@@ -416,6 +420,91 @@ function specialtyLabel(resource) {
   const primary = resource.specialties[0];
   const additional = resource.specialties.length - 1;
   return additional > 0 ? `${primary} +${additional}` : primary;
+}
+
+function utcDayNumber(timestamp = Date.now()) {
+  return Math.floor(timestamp / DAY_IN_MILLISECONDS);
+}
+
+function dailyResource(pool, offset = 0, dayNumber = utcDayNumber()) {
+  if (!pool.length) return null;
+  return pool[(dayNumber + offset) % pool.length];
+}
+
+function selectDailyFeatures(dayNumber = utcDayNumber()) {
+  const visualResources = RESOURCES.filter((resource) => resource.format === "infographic");
+  const visualPool = visualResources.length ? visualResources : RESOURCES;
+  let teaching = dailyResource(RESOURCES, 0, dayNumber);
+  const visual = dailyResource(visualPool, 1, dayNumber);
+
+  if (teaching?.id === visual?.id && RESOURCES.length > 1) {
+    teaching = dailyResource(RESOURCES, 1, dayNumber);
+  }
+
+  return { teaching, visual };
+}
+
+function renderDailyFeatureStatus(message) {
+  elements.dailyFeatures.innerHTML = `<p class="daily-feature-status">${escapeHtml(message)}</p>`;
+}
+
+function renderDailyFeatures() {
+  const { teaching, visual } = selectDailyFeatures();
+  if (!teaching || !visual) {
+    renderDailyFeatureStatus("No daily selections are available.");
+    return;
+  }
+
+  elements.dailyFeatures.innerHTML = `
+    <article class="feature-card feature-article">
+      <div class="feature-card-heading">
+        <span class="feature-label"><i aria-hidden="true"></i> Teaching aid of the day</span>
+        <span class="feature-number">01</span>
+      </div>
+      <div class="feature-content">
+        <div class="format-tile format-${escapeHtml(teaching.format)}" aria-hidden="true">
+          <span>01</span><span>02</span><span>03</span>
+          <b>${escapeHtml(FORMAT_ICONS[teaching.format])}</b>
+        </div>
+        <div>
+          <div class="badges">
+            ${reviewBadge(teaching)}
+            <span class="badge">${escapeHtml(FORMAT_LABELS[teaching.format])}</span>
+          </div>
+          <h3><a href="${escapeHtml(teaching.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(teaching.title)}</a></h3>
+          <p>${escapeHtml(teaching.description)}</p>
+          <div class="feature-meta">${escapeHtml(teaching.creator)} · ${escapeHtml(teaching.level)}</div>
+        </div>
+      </div>
+      <a class="feature-link" href="${escapeHtml(teaching.url)}" target="_blank" rel="noopener noreferrer">Open today’s teaching aid <span aria-hidden="true">↗</span></a>
+    </article>
+
+    <article class="feature-card feature-visual">
+      <div class="feature-card-heading">
+        <span class="feature-label"><i aria-hidden="true"></i> Visual of the day</span>
+        <span class="feature-number">02</span>
+      </div>
+      <a class="visual-frame visual-resource-art format-${escapeHtml(visual.format)}" href="${escapeHtml(visual.url)}" target="_blank" rel="noopener noreferrer" aria-label="Open ${escapeHtml(visual.title)} in a new tab">
+        <b class="visual-resource-symbol" aria-hidden="true">${escapeHtml(FORMAT_ICONS[visual.format])}</b>
+        <span>${escapeHtml(FORMAT_LABELS[visual.format])}</span>
+      </a>
+      <div class="visual-caption">
+        <div>
+          <h3><a href="${escapeHtml(visual.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(visual.title)}</a></h3>
+          <p>${escapeHtml(visual.creator)}</p>
+        </div>
+        <span>${escapeHtml(FORMAT_LABELS[visual.format])} ↗</span>
+      </div>
+    </article>`;
+}
+
+function scheduleDailyFeatureRefresh() {
+  const nextUtcDay = (utcDayNumber() + 1) * DAY_IN_MILLISECONDS;
+  const delay = Math.max(1000, nextUtcDay - Date.now() + 1000);
+  dailyFeatureTimer = window.setTimeout(() => {
+    if (libraryState === "ready") renderDailyFeatures();
+    scheduleDailyFeatureRefresh();
+  }, delay);
 }
 
 function renderResourceCard(resource) {
