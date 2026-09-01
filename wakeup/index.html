@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Wake-Up Stroke Calculator</title>
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <style>
+    :root{
+      --bg:#0b1220;
+      --card:#111a2c;
+      --card2:#0f1728;
+      --text:#eef4ff;
+      --muted:#a9b5c9;
+      --line:#26334b;
+      --accent:#69a9ff;
+      --good:#59d18f;
+      --warn:#f6c75a;
+      --bad:#ff7575;
+      --shadow:0 18px 50px rgba(0,0,0,.28);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    html{
+      -webkit-text-size-adjust:100%;
+      text-size-adjust:100%;
+      color-scheme:dark;
+    }
+    body{
+      margin:0;
+      min-height:100vh;
+      min-height:100dvh;
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:linear-gradient(180deg,#08111f 0%,#0c1422 100%);
+      color:var(--text);
+      padding:max(24px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left));
+      overflow-x:hidden;
+    }
+    .wrap{width:100%;max-width:780px;margin:0 auto;min-width:0}
+    .header{margin:8px 0 20px}
+    h1{font-size:clamp(28px,5vw,42px);line-height:1.05;margin:0 0 8px;letter-spacing:-.03em}
+    .subtitle{color:var(--muted);font-size:15px;line-height:1.5}
+    .card{
+      background:rgba(17,26,44,.94);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:22px;
+      margin-bottom:18px;
+    }
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .grid > *{min-width:0}
+    label{display:block;font-weight:700;margin-bottom:8px;font-size:14px}
+    .hint{display:block;color:var(--muted);font-weight:400;font-size:12px;margin-top:4px}
+    input[type="time"]{
+      width:min(100%, 220px);
+      background:#0b1322;
+      border:1px solid #33415e;
+      color:var(--text);
+      border-radius:12px;
+      padding:13px 12px;
+      font-size:16px;
+      min-height:48px;
+      outline:none;
+      color-scheme:dark;
+    }
+    input[type="time"]:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(105,169,255,.15)}
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px}
+    button{
+      border:0;
+      border-radius:11px;
+      padding:11px 14px;
+      font-size:14px;
+      font-weight:800;
+      cursor:pointer;
+      min-height:44px;
+      touch-action:manipulation;
+      background:var(--accent);
+      color:#07101d;
+    }
+    button.secondary{background:#1a263d;color:var(--text);border:1px solid #33415e}
+    .error{color:#ff9c9c;font-size:13px;margin-top:10px;display:none}
+    .results{display:none}
+    .status{
+      border-radius:16px;
+      padding:18px;
+      border:1px solid var(--line);
+      background:var(--card2);
+      margin-bottom:16px;
+    }
+    .status.good{border-color:rgba(89,209,143,.45);background:rgba(89,209,143,.08)}
+    .status.bad{border-color:rgba(255,117,117,.45);background:rgba(255,117,117,.08)}
+    .status-title{font-size:13px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px}
+    .status.good .status-title{color:var(--good)}
+    .status.bad .status-title{color:var(--bad)}
+    .status-main{font-size:clamp(26px,6vw,40px);font-weight:900;letter-spacing:-.03em;line-height:1.08;overflow-wrap:anywhere}
+    .status-sub{color:var(--muted);margin-top:6px;font-size:14px}
+    .metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    .metric{background:#0b1322;border:1px solid var(--line);border-radius:14px;padding:15px}
+    .metric-label{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:800}
+    .metric-value{font-size:23px;font-weight:900;margin-top:5px}
+    .metric-date{font-size:12px;color:var(--muted);margin-top:3px}
+    .timeline{margin-top:20px;padding-top:18px;border-top:1px solid var(--line);overflow:visible;min-width:0}
+    .bar-wrap{position:relative;height:78px;margin:10px 4px 0}
+    .bar{position:absolute;left:0;right:0;top:30px;height:8px;background:#26334b;border-radius:999px;overflow:hidden}
+    .bar-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--good))}
+
+    /* Markers are positioned by their exact time point. The label is positioned
+       independently so endpoint labels stay inside the visualization. */
+    .marker{position:absolute;top:0;width:0;height:62px;color:var(--accent)}
+    .marker span{position:absolute;top:0;font-size:11px;font-weight:900;white-space:nowrap;line-height:1}
+    .marker::after{content:"";position:absolute;left:-1.5px;top:18px;width:3px;height:31px;background:currentColor;border-radius:99px}
+
+    .marker.mid{color:var(--accent)}
+    .marker.mid span{left:0;transform:none;text-align:left}
+
+    .marker.deadline{color:var(--warn)}
+    .marker.deadline span{right:0;transform:none;text-align:right}
+
+    /* Keep NOW on a separate row so it cannot collide with endpoint labels. */
+    .marker.now{color:var(--good)}
+    .marker.now span{top:54px;left:0;transform:translateX(-50%);text-align:center}
+    .marker.now::after{top:30px;height:20px}
+    .marker.now.out{color:var(--bad)}
+    .marker.now.edge-left span{transform:none}
+    .marker.now.edge-right span{transform:translateX(-100%)}
+
+    .timeline-labels{display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:12px;margin:0 4px}
+    .timeline-labels span{min-width:0}
+    .timeline-labels span:last-child{text-align:right}
+    .note{font-size:13px;color:var(--muted);line-height:1.5;margin-top:16px}
+    details{margin-top:14px;border-top:1px solid var(--line);padding-top:13px}
+    summary{cursor:pointer;font-weight:800}
+    .copyline{margin-top:12px;background:#0b1322;border:1px solid var(--line);border-radius:12px;padding:12px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;line-height:1.45;color:#dbe7fb;overflow-wrap:anywhere;word-break:break-word}
+    @media(max-width:640px){
+      body{
+        padding:max(14px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
+      }
+      .header{margin:4px 0 14px}
+      h1{font-size:clamp(28px,9vw,34px);line-height:1.08}
+      .card{padding:16px;border-radius:16px;margin-bottom:14px}
+      .grid{grid-template-columns:1fr;gap:14px}
+      .row{gap:8px;margin-top:12px}
+      .row button{flex:1 1 0;min-width:0;padding:11px 10px}
+      .metrics{grid-template-columns:1fr;gap:10px}
+      .metric{padding:13px}
+      .metric-value{font-size:22px}
+      .status{padding:16px;margin-bottom:14px}
+      .status-main{font-size:clamp(24px,8vw,34px)}
+      .timeline{margin-top:16px;padding-top:15px}
+      .bar-wrap{height:76px;margin:10px 2px 0}
+      .marker span{font-size:10px}
+      .timeline-labels{font-size:11px;margin:0 2px}
+      details{margin-top:12px;padding-top:12px}
+      .copyline{font-size:12px;padding:11px}
+    }
+    @media(max-width:360px){
+      body{padding-left:max(10px, env(safe-area-inset-left));padding-right:max(10px, env(safe-area-inset-right))}
+      .card{padding:14px}
+      .status{padding:14px}
+      .marker.deadline span{font-size:9px}
+      .row button{font-size:13px}
+    }
+    .footer{color:#7f8da4;font-size:12px;line-height:1.5;margin:18px 2px 6px}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <h1>Wake-Up Stroke Calculator</h1>
+    <div class="subtitle"></div>
+  </div>
+
+  <div class="card">
+    <div class="grid">
+      <div>
+        <label for="sleep">Last known well / went to sleep
+          <span class="hint">Enter the time the patient was last known normal before sleep.</span>
+        </label>
+        <input id="sleep" type="time" value="22:00" />
+      </div>
+      <div>
+        <label for="wake">Awoke with symptoms
+          <span class="hint">Enter the time symptoms were first recognized on waking.</span>
+        </label>
+        <input id="wake" type="time" value="06:00" />
+      </div>
+    </div>
+
+    <div class="row">
+      <button id="calc">Calculate</button>
+      <button id="clear" class="secondary">Clear</button>
+    </div>
+    <div id="error" class="error"></div>
+  </div>
+
+  <div id="results" class="card results">
+    <div id="status" class="status">
+      <div id="statusTitle" class="status-title"></div>
+      <div id="statusMain" class="status-main"></div>
+      <div id="statusSub" class="status-sub"></div>
+    </div>
+
+    <div class="metrics">
+      <div class="metric">
+        <div class="metric-label">Midpoint of sleep</div>
+        <div id="midValue" class="metric-value">—</div>
+        <div class="metric-date">Calculated sleep midpoint</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">9-hour deadline</div>
+        <div id="deadlineValue" class="metric-value">—</div>
+        <div class="metric-date">Midpoint + 9 hours</div>
+      </div>
+    </div>
+
+    <div class="timeline">
+      <strong>Timing visualization</strong>
+      <div class="bar-wrap">
+        <div class="bar"><div id="barFill" class="bar-fill"></div></div>
+        <div id="midMarker" class="marker mid"><span>Midpoint</span></div>
+        <div id="deadlineMarker" class="marker deadline"><span>9 h cutoff</span></div>
+        <div id="nowMarker" class="marker now"><span>Now</span></div>
+      </div>
+      <div class="timeline-labels"><span id="tlStart"></span><span id="tlEnd"></span></div>
+    </div>
+
+    <details>
+      <summary>Copyable chart-style statement</summary>
+      <div id="copyline" class="copyline"></div>
+      <div class="row"><button id="copyBtn" class="secondary">Copy text</button></div>
+    </details>
+
+  </div>
+
+  <div class="footer"></div>
+</div>
+
+<script>
+  const $ = id => document.getElementById(id);
+
+  function pad(n){ return String(n).padStart(2,'0'); }
+  function dateAtTime(baseDate, timeValue){
+    const [hours, minutes] = timeValue.split(':').map(Number);
+    const d = new Date(baseDate);
+    d.setHours(hours, minutes, 0, 0);
+    return d;
+  }
+  function formatTime(d){
+    return new Intl.DateTimeFormat(undefined,{hour:'numeric',minute:'2-digit'}).format(d);
+  }
+  function formatDuration(ms){
+    const sign = ms < 0 ? -1 : 1;
+    ms = Math.abs(ms);
+    const totalMinutes = Math.floor(ms/60000);
+    const h = Math.floor(totalMinutes/60);
+    const m = totalMinutes%60;
+    const text = h ? `${h} hr${h===1?'':'s'} ${m} min` : `${m} min`;
+    return { sign, text };
+  }
+
+  function calculate(){
+    $('error').style.display='none';
+    const sleepValue = $('sleep').value;
+    const wakeValue = $('wake').value;
+    if(!sleepValue || !wakeValue){
+      return showError('Please enter both sleep/LKW and wake times.');
+    }
+
+    // Treat wake as the most recent occurrence of the entered clock time.
+    // If that clock time is later than the current time, it is assumed to have occurred yesterday.
+    const now = new Date();
+    let wake = dateAtTime(now, wakeValue);
+    if(wake > now){
+      wake.setDate(wake.getDate() - 1);
+    }
+
+    // Place sleep/LKW before wake. If its clock time is the same as or later than wake,
+    // infer that sleep occurred on the previous calendar day.
+    let sleep = dateAtTime(wake, sleepValue);
+    if(sleep >= wake){
+      sleep.setDate(sleep.getDate() - 1);
+    }
+
+    const sleepMs = wake - sleep;
+    if(sleepMs <= 0 || sleepMs >= 24*60*60*1000){
+      return showError('Sleep/LKW and wake times must be less than 24 hours apart.');
+    }
+    const midpoint = new Date(sleep.getTime() + sleepMs/2);
+    const deadline = new Date(midpoint.getTime() + 9*60*60*1000);
+    const remaining = deadline - now;
+
+    $('results').style.display='block';
+    $('midValue').textContent = formatTime(midpoint);
+    $('deadlineValue').textContent = formatTime(deadline);
+
+    const status = $('status');
+    status.classList.remove('good','bad');
+    const rem = formatDuration(remaining);
+    if(remaining >= 0){
+      status.classList.add('good');
+      $('statusTitle').textContent='Within calculated 9-hour window';
+      $('statusMain').textContent=`${rem.text} remaining`;
+      $('statusSub').textContent=`Calculated cutoff: ${formatTime(deadline)}`;
+    } else {
+      status.classList.add('bad');
+      $('statusTitle').textContent='Outside calculated 9-hour window';
+      $('statusMain').textContent=`Exceeded by ${rem.text}`;
+      $('statusSub').textContent=`Calculated cutoff was ${formatTime(deadline)}`;
+    }
+
+    // Timeline spans midpoint → deadline. Keep NOW visible at edges if outside range.
+    const span = deadline - midpoint;
+    let nowPct = ((now - midpoint) / span) * 100;
+    const clampedNow = Math.max(0, Math.min(100, nowPct));
+    $('midMarker').style.left='0%';
+    $('deadlineMarker').style.left='100%';
+    $('nowMarker').style.left=`${clampedNow}%`;
+    $('nowMarker').classList.toggle('out', remaining < 0 || now < midpoint);
+    $('nowMarker').classList.toggle('edge-left', clampedNow < 7);
+    $('nowMarker').classList.toggle('edge-right', clampedNow > 93);
+    $('barFill').style.width=`${clampedNow}%`;
+    $('tlStart').textContent=formatTime(midpoint);
+    $('tlEnd').textContent=formatTime(deadline);
+
+    const relation = remaining >= 0
+      ? `${rem.text} before the calculated extended-window cutoff`
+      : `${rem.text} beyond the calculated extended-window cutoff`;
+    $('copyline').textContent = `Sleep/LKW ${formatTime(sleep)}; wake with symptoms ${formatTime(wake)}; midpoint of sleep ${formatTime(midpoint)}; 9-hour midpoint window ends ${formatTime(deadline)}. At ${formatTime(now)}, patient is ${relation}.`;
+  }
+
+  function showError(msg){
+    $('error').textContent=msg;
+    $('error').style.display='block';
+    $('results').style.display='none';
+  }
+
+  $('calc').addEventListener('click', calculate);
+  $('clear').addEventListener('click', ()=>{
+    $('sleep').value=''; $('wake').value=''; $('results').style.display='none'; $('error').style.display='none';
+  });
+  $('copyBtn').addEventListener('click', async ()=>{
+    try{
+      await navigator.clipboard.writeText($('copyline').textContent);
+      $('copyBtn').textContent='Copied';
+      setTimeout(()=>$('copyBtn').textContent='Copy text',1200);
+    }catch(e){
+      alert('Copy failed. Select the text manually.');
+    }
+  });
+
+  // Recalculate periodically so countdown remains current.
+  setInterval(()=>{
+    if($('results').style.display==='block') calculate();
+  },30000);
+</script>
+</body>
+</html>
