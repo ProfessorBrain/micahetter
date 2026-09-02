@@ -48,10 +48,10 @@
       padding:22px;
       margin-bottom:18px;
     }
-    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-    .grid > *{min-width:0;display:flex;flex-direction:column;align-items:center}
-    label{display:block;font-weight:700;margin-bottom:8px;font-size:14px;text-align:center;line-height:1.25}
-    .grid > * > label{min-height:40px;width:min(100%, 220px);margin-bottom:8px;display:flex;align-items:flex-end;justify-content:center}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .grid > *{min-width:0}
+    label{display:block;font-weight:700;margin-bottom:8px;font-size:14px}
+    .hint{display:block;color:var(--muted);font-weight:400;font-size:12px;margin-top:4px}
     input[type="time"]{
       width:min(100%, 220px);
       background:#0b1322;
@@ -66,8 +66,6 @@
     }
     input[type="time"]:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(105,169,255,.15)}
     .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px}
-    .action-row{justify-content:center;margin-top:18px}
-    .action-row button{width:150px;flex:0 0 150px}
     button{
       border:0;
       border-radius:11px;
@@ -142,11 +140,8 @@
       h1{font-size:clamp(28px,9vw,34px);line-height:1.08}
       .card{padding:16px;border-radius:16px;margin-bottom:14px}
       .grid{grid-template-columns:1fr;gap:14px}
-      .grid > * > label{min-height:0;width:min(100%, 220px);align-items:center}
       .row{gap:8px;margin-top:12px}
       .row button{flex:1 1 0;min-width:0;padding:11px 10px}
-      .action-row{justify-content:center;gap:10px;margin-top:16px}
-      .action-row button{flex:0 1 150px;width:150px}
       .metrics{grid-template-columns:1fr;gap:10px}
       .metric{padding:13px}
       .metric-value{font-size:22px}
@@ -165,7 +160,6 @@
       .status{padding:14px}
       .marker.deadline span{font-size:9px}
       .row button{font-size:13px}
-      .action-row button{flex:1 1 120px;width:auto}
     }
     .footer{color:#7f8da4;font-size:12px;line-height:1.5;margin:18px 2px 6px}
   </style>
@@ -180,20 +174,20 @@
   <div class="card">
     <div class="grid">
       <div>
-        <label for="sleep">Last known well / went to sleep</label>
+        <label for="sleep">Last known well / went to sleep
+          <span class="hint">Enter the time the patient was last known normal before sleep.</span>
+        </label>
         <input id="sleep" type="time" value="22:00" />
       </div>
       <div>
-        <label for="wake">Awoke with symptoms</label>
+        <label for="wake">Awoke with symptoms
+          <span class="hint">Enter the time symptoms were first recognized on waking.</span>
+        </label>
         <input id="wake" type="time" value="06:00" />
-      </div>
-      <div>
-        <label for="current">Current time</label>
-        <input id="current" type="time" />
       </div>
     </div>
 
-    <div class="row action-row">
+    <div class="row">
       <button id="calc">Calculate</button>
       <button id="clear" class="secondary">Clear</button>
     </div>
@@ -226,7 +220,7 @@
         <div class="bar"><div id="barFill" class="bar-fill"></div></div>
         <div id="midMarker" class="marker mid"><span>Midpoint</span></div>
         <div id="deadlineMarker" class="marker deadline"><span>9 h cutoff</span></div>
-        <div id="nowMarker" class="marker now"><span>Current</span></div>
+        <div id="nowMarker" class="marker now"><span>Now</span></div>
       </div>
       <div class="timeline-labels"><span id="tlStart"></span><span id="tlEnd"></span></div>
     </div>
@@ -269,17 +263,15 @@
     $('error').style.display='none';
     const sleepValue = $('sleep').value;
     const wakeValue = $('wake').value;
-    const currentValue = $('current').value;
-    if(!sleepValue || !wakeValue || !currentValue){
-      return showError('Please enter sleep/LKW, wake, and current times.');
+    if(!sleepValue || !wakeValue){
+      return showError('Please enter both sleep/LKW and wake times.');
     }
 
-    // Anchor the entered current clock time to today, then treat wake as the most
-    // recent occurrence of its entered clock time at or before that current time.
-    // This preserves overnight rollover without requiring any date inputs.
-    const current = dateAtTime(new Date(), currentValue);
-    let wake = dateAtTime(current, wakeValue);
-    if(wake > current){
+    // Treat wake as the most recent occurrence of the entered clock time.
+    // If that clock time is later than the current time, it is assumed to have occurred yesterday.
+    const now = new Date();
+    let wake = dateAtTime(now, wakeValue);
+    if(wake > now){
       wake.setDate(wake.getDate() - 1);
     }
 
@@ -296,7 +288,7 @@
     }
     const midpoint = new Date(sleep.getTime() + sleepMs/2);
     const deadline = new Date(midpoint.getTime() + 9*60*60*1000);
-    const remaining = deadline - current;
+    const remaining = deadline - now;
 
     $('results').style.display='block';
     $('midValue').textContent = formatTime(midpoint);
@@ -319,12 +311,12 @@
 
     // Timeline spans midpoint → deadline. Keep NOW visible at edges if outside range.
     const span = deadline - midpoint;
-    let nowPct = ((current - midpoint) / span) * 100;
+    let nowPct = ((now - midpoint) / span) * 100;
     const clampedNow = Math.max(0, Math.min(100, nowPct));
     $('midMarker').style.left='0%';
     $('deadlineMarker').style.left='100%';
     $('nowMarker').style.left=`${clampedNow}%`;
-    $('nowMarker').classList.toggle('out', remaining < 0 || current < midpoint);
+    $('nowMarker').classList.toggle('out', remaining < 0 || now < midpoint);
     $('nowMarker').classList.toggle('edge-left', clampedNow < 7);
     $('nowMarker').classList.toggle('edge-right', clampedNow > 93);
     $('barFill').style.width=`${clampedNow}%`;
@@ -334,7 +326,7 @@
     const relation = remaining >= 0
       ? `${rem.text} before the calculated extended-window cutoff`
       : `${rem.text} beyond the calculated extended-window cutoff`;
-    $('copyline').textContent = `Sleep/LKW ${formatTime(sleep)}; wake with symptoms ${formatTime(wake)}; midpoint of sleep ${formatTime(midpoint)}; 9-hour midpoint window ends ${formatTime(deadline)}. At ${formatTime(current)}, patient is ${relation}.`;
+    $('copyline').textContent = `Sleep/LKW ${formatTime(sleep)}; wake with symptoms ${formatTime(wake)}; midpoint of sleep ${formatTime(midpoint)}; 9-hour midpoint window ends ${formatTime(deadline)}. At ${formatTime(now)}, patient is ${relation}.`;
   }
 
   function showError(msg){
@@ -345,7 +337,7 @@
 
   $('calc').addEventListener('click', calculate);
   $('clear').addEventListener('click', ()=>{
-    $('sleep').value=''; $('wake').value=''; currentOverridden=false; setCurrentFromDevice(); $('results').style.display='none'; $('error').style.display='none';
+    $('sleep').value=''; $('wake').value=''; $('results').style.display='none'; $('error').style.display='none';
   });
   $('copyBtn').addEventListener('click', async ()=>{
     try{
@@ -357,22 +349,8 @@
     }
   });
 
-  let currentOverridden = false;
-
-  function setCurrentFromDevice(){
-    const d = new Date();
-    $('current').value = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
-  }
-
-  // Populate current time on load. If the user edits it, preserve that manual
-  // value rather than replacing it with the device clock.
-  setCurrentFromDevice();
-  $('current').addEventListener('input', ()=>{ currentOverridden = true; });
-
-  // While the current-time field has not been manually overridden, keep it
-  // synchronized with the device clock and refresh visible results.
+  // Recalculate periodically so countdown remains current.
   setInterval(()=>{
-    if(!currentOverridden) setCurrentFromDevice();
     if($('results').style.display==='block') calculate();
   },30000);
 </script>
