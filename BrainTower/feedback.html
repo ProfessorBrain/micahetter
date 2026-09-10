@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Player feedback | BRAINSTEM: Ultimate Tower of Power</title>
+  <style>
+    :root { color-scheme: light; --navy: #123746; --teal: #247f7c; --ink: #17252e; --muted: #52646d; --line: #ccd8da; }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--ink); background: #f4f3ed; font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+    [hidden] { display: none !important; }
+    header { color: white; background: var(--navy); padding: 23px 24px; }
+    .brand { max-width: 720px; margin: auto; }
+    .brand strong { display: block; font-size: 21px; letter-spacing: .07em; }
+    .brand span { color: #d9e8e9; font-size: 14px; }
+    main { max-width: 768px; margin: 30px auto 42px; padding: 0 24px; }
+    .intro { margin-bottom: 24px; }
+    h1 { margin: 8px 0; font-size: clamp(27px, 5vw, 35px); line-height: 1.2; letter-spacing: -.025em; }
+    .intro p { margin: 10px 0 0; color: var(--muted); }
+    form { padding: 26px; background: #fff; border: 1px solid var(--line); border-radius: 16px; }
+    label, legend { font-weight: 650; }
+    .optional { font-size: 13px; font-weight: 400; color: var(--muted); }
+    textarea { display: block; width: 100%; margin-top: 7px; padding: 11px 12px; border: 1px solid #9cafb5; border-radius: 8px; color: var(--ink); background: #fff; font: inherit; }
+    textarea { min-height: 100px; resize: vertical; }
+    input:focus-visible, textarea:focus-visible, button:focus-visible, a:focus-visible { outline: 3px solid #c59224; outline-offset: 3px; }
+    .hint { margin: 6px 0 0; color: var(--muted); font-size: 13px; }
+    .progress-row { display: flex; align-items: center; gap: 15px; margin: 0 0 22px; color: var(--muted); font-size: 13px; }
+    progress { flex: 1; min-width: 0; height: 7px; accent-color: var(--teal); }
+    fieldset { min-width: 0; margin: 0 0 23px; padding: 0 0 24px; border: 0; border-bottom: 1px solid #e3e9e9; }
+    legend { padding: 0; font-size: 16px; }
+    .question { margin: 5px 0 13px; color: var(--muted); font-size: 14px; }
+    .choices { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+    .choice { position: relative; cursor: pointer; font-weight: 400; }
+    .choice input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+    .choice-face { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 73px; padding: 8px 3px; border: 1px solid #bdcdd1; border-radius: 8px; background: #fbfcfc; text-align: center; }
+    .number { font-size: 20px; font-weight: 750; line-height: 1.2; }
+    .meaning { margin-top: 4px; font-size: 11px; line-height: 1.25; color: var(--muted); }
+    .choice:hover .choice-face { border-color: var(--teal); background: #edf7f6; }
+    .choice input:checked + .choice-face { color: white; background: var(--navy); border-color: var(--navy); }
+    .choice input:checked + .choice-face .meaning { color: #e1efef; }
+    .choice input:focus-visible + .choice-face { outline: 3px solid #c59224; outline-offset: 3px; }
+    .choice input:disabled + .choice-face { cursor: wait; opacity: .65; }
+    .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 22px; }
+    button { padding: 12px 22px; min-height: 46px; border: 0; border-radius: 8px; color: white; background: var(--navy); font: inherit; font-weight: 650; cursor: pointer; }
+    button:hover { background: #205465; }
+    button:disabled { opacity: .6; cursor: not-allowed; }
+    .status { margin-top: 17px; padding: 12px 14px; border: 1px solid #b9d7d5; border-radius: 8px; background: #edf7f6; font-size: 14px; }
+    .status.error { border-color: #d7a9a5; color: #80362f; background: #fff2f0; }
+    .status:empty { display: none; }
+    .success { padding: 30px; border: 1px solid #b9d7d5; border-radius: 16px; background: white; }
+    .success h2 { margin: 0 0 8px; font-size: 25px; }
+    .success p { margin: 0 0 22px; color: var(--muted); }
+    .honeypot { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+    footer { margin-top: 24px; text-align: center; font-size: 12px; color: var(--muted); }
+    @media (max-width: 480px) {
+      header { padding: 18px; }
+      main { margin-top: 23px; padding: 0 14px; }
+      form { padding: 19px 15px; }
+      .choices { gap: 5px; }
+      .meaning { font-size: 10px; }
+      .choice-face { min-height: 77px; }
+      .actions button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header><div class="brand"><strong>BRAINSTEM</strong><span>Ultimate Tower of Power</span></div></header>
+  <main>
+    <div class="intro">
+      <h1>How was your game?</h1>
+      <p>Tell us what worked and what we can improve. Please answer all six ratings; there are no right or wrong answers.</p>
+    </div>
+    <noscript><p class="status error">Please enable JavaScript to complete this feedback form.</p></noscript>
+    <form id="feedback-form" method="post" target="_top">
+      <input type="hidden" id="submission-id" name="submissionId">
+      <div class="honeypot" aria-hidden="true"><label>Leave this blank<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+      <div class="progress-row"><span id="progress-label" aria-live="polite">0 of 6 answered</span><progress id="progress" max="6" value="0" aria-label="Questions answered"></progress></div>
+      <div id="questions"></div>
+      <label for="comments">Additional comments <span class="optional">(optional)</span></label>
+      <textarea id="comments" name="comments" maxlength="2000" placeholder="What helped your understanding? What was confusing or should change?" aria-describedby="comments-hint"></textarea>
+      <p id="comments-hint" class="hint">Please avoid personal or sensitive information. Maximum 2,000 characters.</p>
+      <div class="actions"><button id="submit-button" type="submit" disabled>Submit feedback</button><span class="hint">Your honest feedback helps improve the game.</span></div>
+      <div id="status" class="status" role="status" aria-live="polite"></div>
+    </form>
+    <section id="success" class="success" tabindex="-1" hidden>
+      <h2>Thank you for playing.</h2>
+      <p>Your feedback has been saved. It will help improve the next version of the game.</p>
+      <button id="another-response" type="button">Next player</button>
+    </section>
+    <footer>BRAINSTEM: Ultimate Tower of Power · Player feedback</footer>
+  </main>
+  <script>
+    // Only needed when hosting this HTML outside Apps Script.
+    // Paste the deployed Apps Script web app URL ending in /exec here.
+    const WEB_APP_URL = "";
+
+    const QUESTIONS = [
+      { name: "enjoyment", title: "Enjoyment", text: "I enjoyed playing this game." },
+      { name: "usability", title: "Usability", text: "I understood what to do during my turn." },
+      { name: "spatialLearning", title: "Perceived spatial learning", text: "The physical model helped me understand the spatial relationships between brainstem regions." },
+      { name: "clinicalRelevance", title: "Perceived clinical relevance", text: "The game helped me connect examination findings with lesion locations." },
+      { name: "replayInterest", title: "Replay interest", text: "I would choose to play this game again." },
+      { name: "difficulty", title: "Difficulty", text: "How difficult was the game for you?", difficulty: true }
+    ];
+    const AGREEMENT = ["Strongly disagree", "Disagree", "Neutral", "Agree", "Strongly agree"];
+    const DIFFICULTY = ["Much too easy", "Somewhat too easy", "About right", "Somewhat too difficult", "Much too difficult"];
+    const form = document.getElementById("feedback-form");
+    const submitButton = document.getElementById("submit-button");
+    const status = document.getElementById("status");
+    const success = document.getElementById("success");
+    const isAppsScript = Boolean(window.google && window.google.script && window.google.script.run);
+    const hasEndpoint = /^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(WEB_APP_URL);
+    let submitting = false;
+    let pendingPayload = null;
+    let activeAttempt = 0;
+
+    document.getElementById("questions").innerHTML = QUESTIONS.map((question, index) => {
+      const scale = question.difficulty ? DIFFICULTY : AGREEMENT;
+      return `<fieldset aria-describedby="${question.name}-question"><legend>${index + 1}. ${question.title}</legend>
+        <p class="question" id="${question.name}-question">${question.text}</p><div class="choices">
+        ${scale.map((meaning, i) => `<label class="choice"><input type="radio" name="${question.name}" value="${i + 1}" required aria-label="${i + 1} — ${meaning}"><span class="choice-face"><span class="number" aria-hidden="true">${i + 1}</span><span class="meaning" aria-hidden="true">${meaning}</span></span></label>`).join("")}
+        </div></fieldset>`;
+    }).join("");
+
+    function newSubmissionId() {
+      if (window.crypto && window.crypto.randomUUID) return window.crypto.randomUUID();
+      const bytes = new Uint8Array(16);
+      window.crypto.getRandomValues(bytes);
+      bytes[6] = (bytes[6] & 15) | 64;
+      bytes[8] = (bytes[8] & 63) | 128;
+      const hex = Array.from(bytes, byte => byte.toString(16).padStart(2, "0")).join("");
+      return `${hex.slice(0,8)}-${hex.slice(8,12)}-${hex.slice(12,16)}-${hex.slice(16,20)}-${hex.slice(20)}`;
+    }
+
+    function updateProgress() {
+      const answered = QUESTIONS.filter(q => form.querySelector(`input[name="${q.name}"]:checked`)).length;
+      document.getElementById("progress").value = answered;
+      document.getElementById("progress-label").textContent = `${answered} of 6 answered`;
+    }
+
+    function showStatus(message, error = false) {
+      status.textContent = message;
+      status.classList.toggle("error", error);
+    }
+
+    function setBusy(busy) {
+      submitting = busy;
+      form.setAttribute("aria-busy", String(busy));
+      submitButton.disabled = busy || (!isAppsScript && !hasEndpoint);
+      submitButton.textContent = busy ? "Saving feedback…" : "Submit feedback";
+      form.querySelectorAll("input:not([type=hidden]), textarea").forEach(input => { input.disabled = busy; });
+    }
+
+    function recordSaved(result) {
+      if (!result || result.ok !== true) return recordFailed();
+      form.reset();
+      pendingPayload = null;
+      setBusy(false);
+      updateProgress();
+      form.hidden = true;
+      success.hidden = false;
+      success.focus();
+    }
+
+    function recordFailed() {
+      setBusy(false);
+      form.querySelectorAll("input:not([type=hidden]), textarea").forEach(input => { input.disabled = true; });
+      submitButton.textContent = "Retry submission";
+      showStatus("We couldn't confirm your submission. Your original answers are kept for retry. Retrying will not create a second response.", true);
+    }
+
+    form.addEventListener("change", updateProgress);
+    form.addEventListener("submit", event => {
+      event.preventDefault();
+      if (submitting || !form.reportValidity()) return;
+      if (!isAppsScript && !hasEndpoint) {
+        showStatus("The feedback connection has not been activated. Please ask the organizer for the live link.", true);
+        return;
+      }
+      // Keep the same payload and ID after an uncertain network failure.
+      const payload = pendingPayload || Object.fromEntries(new FormData(form).entries());
+      pendingPayload = payload;
+      showStatus("Saving your feedback…");
+      if (isAppsScript) {
+        setBusy(true);
+        const attempt = ++activeAttempt;
+        const timeout = window.setTimeout(() => {
+          if (attempt === activeAttempt) recordFailed();
+        }, 30000);
+        const finish = callback => result => {
+          if (attempt !== activeAttempt) return;
+          window.clearTimeout(timeout);
+          callback(result);
+        };
+        try {
+          google.script.run.withSuccessHandler(finish(recordSaved)).withFailureHandler(finish(recordFailed)).saveFeedback(payload);
+        } catch (_) { finish(recordFailed)(); }
+      } else {
+        // A normal cross-origin POST gives a real server confirmation without
+        // relying on an opaque no-cors fetch response.
+        form.action = WEB_APP_URL;
+        submitButton.disabled = true;
+        submitButton.textContent = "Sending feedback…";
+        submitting = true;
+        HTMLFormElement.prototype.submit.call(form);
+      }
+    });
+
+    document.getElementById("another-response").addEventListener("click", () => {
+      ++activeAttempt;
+      form.reset();
+      pendingPayload = null;
+      document.getElementById("submission-id").value = newSubmissionId();
+      showStatus("");
+      updateProgress();
+      success.hidden = true;
+      form.hidden = false;
+      form.querySelector('input[type="radio"]').focus();
+    });
+    window.addEventListener("pageshow", () => { if (!isAppsScript) setBusy(false); });
+    document.getElementById("submission-id").value = newSubmissionId();
+    submitButton.disabled = !isAppsScript && !hasEndpoint;
+  </script>
+</body>
+</html>
