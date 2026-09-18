@@ -64,6 +64,8 @@ const SHEET_COLUMNS = {
   tags: ["tags"]
 };
 
+const SHEET_PREVIEW_COLUMNS = ["preview url", "preview", "thumbnail url", "thumbnail"];
+
 let libraryState = "loading";
 let dailyFeatureTimer;
 
@@ -213,6 +215,10 @@ function parseGoogleSheetResources(table) {
     if (index === undefined) throw new Error(`The Google Sheet is missing the required ${aliases[0]} column.`);
     return [field, index];
   }));
+  const previewColumn = SHEET_PREVIEW_COLUMNS
+    .map(normalizeHeader)
+    .map((alias) => headerIndexes.get(alias))
+    .find((value) => value !== undefined);
 
   const resources = [];
   (table.rows || []).forEach((row, index) => {
@@ -220,6 +226,7 @@ function parseGoogleSheetResources(table) {
     const raw = Object.fromEntries(
       Object.entries(columns).map(([field, columnIndex]) => [field, sheetCellValue(row, columnIndex)])
     );
+    raw.previewUrl = previewColumn === undefined ? "" : sheetCellValue(row, previewColumn);
     if (Object.values(raw).every((value) => value === "" || value === null)) return;
 
     const textFields = [
@@ -254,6 +261,18 @@ function parseGoogleSheetResources(table) {
       throw new Error(`Sheet row ${rowNumber}: URL must begin with http:// or https://.`);
     }
 
+    let previewUrl = "";
+    if (String(raw.previewUrl).trim()) {
+      try {
+        previewUrl = new URL(String(raw.previewUrl).trim());
+      } catch {
+        throw new Error(`Sheet row ${rowNumber}: Preview URL is not valid.`);
+      }
+      if (!["http:", "https:"].includes(previewUrl.protocol)) {
+        throw new Error(`Sheet row ${rowNumber}: Preview URL must begin with http:// or https://.`);
+      }
+    }
+
     resources.push({
       id: rowNumber - 1,
       title: String(raw.title).trim(),
@@ -268,6 +287,7 @@ function parseGoogleSheetResources(table) {
       duration: String(raw.duration).trim(),
       year,
       url: url.href,
+      previewUrl: previewUrl ? previewUrl.href : "",
       tags
     });
   });
@@ -431,14 +451,50 @@ function dailyResource(pool, offset = 0, dayNumber = utcDayNumber()) {
   return pool[(dayNumber + offset) % pool.length];
 }
 
-function selectDailyFeatures(dayNumber = utcDayNumber()) {
-  const visualResources = RESOURCES.filter((resource) => resource.format === "infographic");
-  const visualPool = visualResources.length ? visualResources : RESOURCES;
-  let teaching = dailyResource(RESOURCES, 0, dayNumber);
-  const visual = dailyResource(visualPool, 1, dayNumber);
+function resourcePreviewUrl(resource) {
+  if (resource.previewUrl) return resource.previewUrl;
 
-  if (teaching?.id === visual?.id && RESOURCES.length > 1) {
-    teaching = dailyResource(RESOURCES, 1, dayNumber);
+  const sourceUrl = new URL(resource.url);
+  const hostname = sourceUrl.hostname.replace(/^www\./, "");
+  let youtubeId = "";
+
+  if (hostname === "youtu.be") {
+    youtubeId = sourceUrl.pathname.split("/").filter(Boolean)[0] || "";
+  } else if (hostname === "youtube.com" || hostname.endsWith(".youtube.com")) {
+    youtubeId = sourceUrl.searchParams.get("v") || sourceUrl.pathname.match(/^\/(?:embed|shorts|live)\/([^/]+)/)?.[1] || "";
+  }
+
+  if (resource.format === "video" && /^[A-Za-z0-9_-]{6,}$/.test(youtubeId)) {
+    return `https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`;
+  }
+
+  const previewRequest = new URLSearchParams({
+    url: resource.url,
+    embed: "image.url"
+  });
+
+  if (resource.format === "infographic") {
+    previewRequest.set("data.image.selector", 'a[href$=".png"], a[href$=".jpg"], a[href$=".jpeg"], a[href$=".webp"]');
+    previewRequest.set("data.image.attr", "href");
+    previewRequest.set("data.image.type", "image");
+  }
+
+  return `https://api.microlink.io/?${previewRequest.toString()}`;
+}
+
+function isSpecificDailyResource(resource) {
+  const broadResourceTerms = /\b(collection|catalog|series|curriculum|library|offerings|resources|each)\b/i;
+  return !broadResourceTerms.test(`${resource.title} ${resource.duration}`);
+}
+
+function selectDailyFeatures(dayNumber = utcDayNumber()) {
+  const specificResources = RESOURCES.filter(isSpecificDailyResource);
+  const visualResources = specificResources.filter((resource) => ["infographic", "video"].includes(resource.format));
+  let teaching = dailyResource(specificResources, 0, dayNumber);
+  const visual = dailyResource(visualResources, 1, dayNumber);
+
+  if (teaching?.id === visual?.id && specificResources.length > 1) {
+    teaching = dailyResource(specificResources, 1, dayNumber);
   }
 
   return { teaching, visual };
@@ -462,10 +518,13 @@ function renderDailyFeatures() {
         <span class="feature-number">01</span>
       </div>
       <div class="feature-content">
-        <div class="format-tile format-${escapeHtml(teaching.format)}" aria-hidden="true">
-          <span>01</span><span>02</span><span>03</span>
-          <b>${escapeHtml(FORMAT_ICONS[teaching.format])}</b>
-        </div>
+        <a class="daily-preview feature-preview" href="${escapeHtml(teaching.url)}" target="_blank" rel="noopener noreferrer" aria-label="Preview and open ${escapeHtml(teaching.title)} in a new tab">
+          <span class="daily-preview-fallback" aria-hidden="true">
+            <b>${escapeHtml(FORMAT_ICONS[teaching.format])}</b>
+            <small>${escapeHtml(FORMAT_LABELS[teaching.format])}</small>
+          </span>
+          <img src="${escapeHtml(resourcePreviewUrl(teaching))}" alt="Preview image for ${escapeHtml(teaching.title)}" loading="eager" referrerpolicy="no-referrer">
+        </a>
         <div>
           <div class="badges">
             ${reviewBadge(teaching)}
@@ -484,9 +543,12 @@ function renderDailyFeatures() {
         <span class="feature-label"><i aria-hidden="true"></i> Visual of the day</span>
         <span class="feature-number">02</span>
       </div>
-      <a class="visual-frame visual-resource-art format-${escapeHtml(visual.format)}" href="${escapeHtml(visual.url)}" target="_blank" rel="noopener noreferrer" aria-label="Open ${escapeHtml(visual.title)} in a new tab">
-        <b class="visual-resource-symbol" aria-hidden="true">${escapeHtml(FORMAT_ICONS[visual.format])}</b>
-        <span>${escapeHtml(FORMAT_LABELS[visual.format])}</span>
+      <a class="visual-frame daily-preview" href="${escapeHtml(visual.url)}" target="_blank" rel="noopener noreferrer" aria-label="Preview and open ${escapeHtml(visual.title)} in a new tab">
+        <span class="daily-preview-fallback" aria-hidden="true">
+          <b>${escapeHtml(FORMAT_ICONS[visual.format])}</b>
+          <small>${escapeHtml(FORMAT_LABELS[visual.format])}</small>
+        </span>
+        <img src="${escapeHtml(resourcePreviewUrl(visual))}" alt="Preview image for ${escapeHtml(visual.title)}" loading="eager" referrerpolicy="no-referrer">
       </a>
       <div class="visual-caption">
         <div>
@@ -496,6 +558,10 @@ function renderDailyFeatures() {
         <span>${escapeHtml(FORMAT_LABELS[visual.format])} ↗</span>
       </div>
     </article>`;
+
+  elements.dailyFeatures.querySelectorAll(".daily-preview img").forEach((image) => {
+    image.addEventListener("error", () => image.remove(), { once: true });
+  });
 }
 
 function scheduleDailyFeatureRefresh() {
