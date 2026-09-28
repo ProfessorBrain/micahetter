@@ -41,6 +41,21 @@ const ACCESS_LABELS = {
   mixed: "Mixed access"
 };
 
+const SOCIAL_MEDIA_SITES = [
+  { label: "Bluesky", domains: ["bsky.app", "bluesky.app"] },
+  { label: "Facebook", domains: ["facebook.com", "fb.watch"] },
+  { label: "Instagram", domains: ["instagram.com"] },
+  { label: "LinkedIn", domains: ["linkedin.com"] },
+  { label: "Pinterest", domains: ["pinterest.com", "pin.it"] },
+  { label: "Reddit", domains: ["reddit.com"] },
+  { label: "Threads", domains: ["threads.net"] },
+  { label: "TikTok", domains: ["tiktok.com"] },
+  { label: "Twitch", domains: ["twitch.tv"] },
+  { label: "Vimeo", domains: ["vimeo.com"] },
+  { label: "X / Twitter", domains: ["x.com", "twitter.com"] },
+  { label: "YouTube", domains: ["youtube.com", "youtu.be"] }
+];
+
 let RESOURCES = [];
 
 const GOOGLE_SHEET_ID = "1bNngRc_cMD_PDyAokAlSDlluWp655bkszKY83HJ0Spg";
@@ -396,6 +411,13 @@ function setMatches(set, values) {
   return values.some((value) => set.has(value));
 }
 
+function socialMediaSite(resource) {
+  const hostname = new URL(resource.url).hostname.toLowerCase().replace(/^www\./, "");
+  return SOCIAL_MEDIA_SITES.find((site) => site.domains.some((domain) => (
+    hostname === domain || hostname.endsWith(`.${domain}`)
+  )))?.label || "";
+}
+
 function getFilteredResources() {
   const query = normalize(state.query);
   const filtered = RESOURCES.filter((resource) => {
@@ -422,6 +444,13 @@ function getFilteredResources() {
   return filtered.sort((a, b) => {
     if (state.sort === "title") return a.title.localeCompare(b.title);
     if (state.sort === "level") return LEVELS.indexOf(a.level) - LEVELS.indexOf(b.level) || a.title.localeCompare(b.title);
+    if (state.sort === "social") {
+      const aSite = socialMediaSite(a);
+      const bSite = socialMediaSite(b);
+      if (aSite && !bSite) return -1;
+      if (!aSite && bSite) return 1;
+      return aSite.localeCompare(bSite) || a.title.localeCompare(b.title);
+    }
     return b.year - a.year || a.title.localeCompare(b.title);
   });
 }
@@ -574,6 +603,7 @@ function scheduleDailyFeatureRefresh() {
 }
 
 function renderResourceCard(resource) {
+  const socialSite = socialMediaSite(resource);
   return `
     <article class="resource-card format-${escapeHtml(resource.format)}">
       <div class="resource-format-icon" aria-hidden="true">
@@ -584,6 +614,7 @@ function renderResourceCard(resource) {
         <div class="resource-topline">
           ${reviewBadge(resource)}
           <span class="badge">${escapeHtml(FORMAT_LABELS[resource.format])}</span>
+          ${socialSite ? `<span class="badge">${escapeHtml(socialSite)}</span>` : ""}
         </div>
         <h3><a href="${escapeHtml(resource.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(resource.title)}</a></h3>
         <p class="resource-description">${escapeHtml(resource.description)}</p>
