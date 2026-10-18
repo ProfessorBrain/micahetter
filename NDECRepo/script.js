@@ -270,7 +270,9 @@ function parseGoogleSheetResources(table) {
     const year = Number(raw.year);
     const specialties = splitSheetList(raw.specialties);
     const tags = splitSheetList(raw.tags);
-    const languages = splitSheetList(raw.language);
+    const languages = [...new Set(splitSheetList(raw.language).map((language) => (
+      normalize(language).replace(/\s+/g, " ") === "not specified" ? DEFAULT_LANGUAGE : language
+    )))];
 
     if (!Number.isInteger(year) || year < 1900 || year > 2100) {
       throw new Error(`Sheet row ${rowNumber}: Year must be a four-digit year.`);
