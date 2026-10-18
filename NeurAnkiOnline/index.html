@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#132d3b">
+  <meta name="description" content="Study the NeurAnki neurology deck with daily reviews, spaced repetition, and progress saved on your device.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>NeurAnki · Neurology, a little every day</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="app.bundle.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#today" aria-label="NeurAnki home"><span class="brand-mark">N<span>+</span></span><span>NeurAnki<small>NEUROLOGY RESIDENT EDUCATION</small></span></a>
+      <nav aria-label="Main navigation">
+        <a href="#today" data-nav="today"><span aria-hidden="true">◫</span> Today</a>
+        <a href="#browse" data-nav="browse"><span aria-hidden="true">▤</span> Browse cards</a>
+        <a href="#settings" data-nav="settings"><span aria-hidden="true">⚙</span><span class="nav-label">Study settings<small>Back up your progress</small></span></a>
+      </nav>
+    </aside>
+    <div class="workspace">
+      <header class="topbar"><span>NEUROLOGY / BOARD PREPARATION</span><span id="save-status" role="status">Loading deck…</span></header>
+      <main id="main" tabindex="-1"><div class="loading"><span class="spinner"></span><h1>Opening NeurAnki</h1><p>Preparing your study space…</p></div></main>
+    </div>
+  </div>
+  <div id="toast" role="status" aria-live="polite" hidden></div>
+  <dialog id="image-dialog" class="image-dialog"><div class="dialog-bar"><span>Image detail</span><button data-action="close-image" autofocus>Close <kbd>Esc</kbd></button></div><div id="image-content"></div></dialog>
+  <dialog id="confirm-dialog"><form method="dialog"><h2 id="confirm-title"></h2><p id="confirm-text"></p><div class="button-row"><button value="cancel">Cancel</button><button value="confirm" class="primary" id="confirm-submit">Confirm</button></div></form></dialog>
+  <noscript><p class="noscript">Enable JavaScript to study this deck. Progress is saved locally in your browser.</p></noscript>
+</body>
+</html>

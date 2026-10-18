@@ -8,7 +8,7 @@
   <title>NDEC Neurology Learning Repository</title>
   <link rel="icon" href="assets/ndec-logo.png" type="image/png">
   <link rel="stylesheet" href="styles.css?v=20260918-2">
-  <script src="script.js?v=20260928-2" defer></script>
+  <script src="script.js?v=20261016-2" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to main content</a>
@@ -76,13 +76,18 @@
         </details>
 
         <details class="filter-group" open>
-          <summary>Subspecialty <span aria-hidden="true">+</span></summary>
+          <summary>Subspecialty or topic <span aria-hidden="true">+</span></summary>
           <div class="filter-options" id="specialty-options"></div>
         </details>
 
         <details class="filter-group" open>
           <summary>Format <span aria-hidden="true">+</span></summary>
           <div class="filter-options" id="format-options"></div>
+        </details>
+
+        <details class="filter-group" open>
+          <summary>Language <span aria-hidden="true">+</span></summary>
+          <div class="filter-options" id="language-options"></div>
         </details>
 
         <details class="filter-group" open>
@@ -212,6 +217,11 @@
               </label>
 
               <label class="submission-field">
+                <span>Language(s)</span>
+                <input type="text" name="Languages" placeholder="English | Spanish">
+              </label>
+
+              <label class="submission-field">
                 <span>Patient population <b aria-hidden="true">*</b></span>
                 <select name="Patient population" required>
                   <option value="">Select a population</option>
@@ -234,7 +244,8 @@
 
               <label class="submission-field">
                 <span>Subspecialty or topic <b aria-hidden="true">*</b></span>
-                <input type="text" name="Subspecialty or topic" required>
+                <input type="text" name="Subspecialty or topic" list="submission-topics" required>
+                <datalist id="submission-topics"></datalist>
               </label>
 
               <label class="submission-field submission-field-wide">
@@ -284,7 +295,7 @@
       <span class="section-kicker">About</span>
       <h2 id="about-dialog-title">About the NDEC Learning Resource Index</h2>
       <p>The Neurology Digital Education Collaborative (NDEC) maintains this directory of digital resources for neurology education and clinical practice.</p>
-      <p>It is intended for medical students, residents, fellows, faculty, and practicing neurologists. Resources can be filtered by patient population, creator, learning level, subspecialty, format, review status, and access. Each listing opens the original resource from its publisher or creator.</p>
+      <p>It is intended for medical students, residents, fellows, faculty, and practicing neurologists. Resources can be filtered by patient population, creator, learning level, subspecialty, format, language, review status, and access. Each listing opens the original resource from its publisher or creator.</p>
       <section class="dialog-level-key" aria-labelledby="dialog-level-title">
         <h3 id="dialog-level-title">Learning levels</h3>
         <p>Levels describe what a resource enables someone to do—not a learner’s training rank.</p>

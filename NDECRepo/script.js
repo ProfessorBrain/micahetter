@@ -5,7 +5,9 @@ const LEVELS = [
   "Advanced & Subspecialty Practice"
 ];
 
+const ADDITIONAL_TOPICS = ["3D Printing"];
 let SPECIALTIES = [];
+let LANGUAGE_LABELS = {};
 
 const FORMAT_LABELS = {
   video: "Video",
@@ -80,6 +82,7 @@ const SHEET_COLUMNS = {
 };
 
 const SHEET_PREVIEW_COLUMNS = ["preview url", "preview", "thumbnail url", "thumbnail"];
+const SHEET_LANGUAGE_COLUMNS = ["language", "languages"];
 
 let libraryState = "loading";
 let dailyFeatureTimer;
@@ -91,6 +94,7 @@ const state = {
   levels: new Set(),
   specialties: new Set(),
   formats: new Set(),
+  languages: new Set(),
   reviews: new Set(),
   access: new Set(),
   sort: "newest",
@@ -108,6 +112,7 @@ const elements = {
   levelOptions: document.querySelector("#level-options"),
   specialtyOptions: document.querySelector("#specialty-options"),
   formatOptions: document.querySelector("#format-options"),
+  languageOptions: document.querySelector("#language-options"),
   reviewOptions: document.querySelector("#review-options"),
   accessOptions: document.querySelector("#access-options"),
   clearFilters: document.querySelector("#clear-filters"),
@@ -129,6 +134,7 @@ const elements = {
   submissionDialogButton: document.querySelector("#submit-resource-button"),
   submissionDialogClose: document.querySelector("#submission-dialog-close"),
   submissionForm: document.querySelector("#resource-submission-form"),
+  submissionTopics: document.querySelector("#submission-topics"),
   submissionFile: document.querySelector("#submission-file"),
   submissionFileStatus: document.querySelector("#submission-file-status"),
   submissionSubmit: document.querySelector("#submission-submit")
@@ -234,6 +240,10 @@ function parseGoogleSheetResources(table) {
     .map(normalizeHeader)
     .map((alias) => headerIndexes.get(alias))
     .find((value) => value !== undefined);
+  const languageColumn = SHEET_LANGUAGE_COLUMNS
+    .map(normalizeHeader)
+    .map((alias) => headerIndexes.get(alias))
+    .find((value) => value !== undefined);
 
   const resources = [];
   (table.rows || []).forEach((row, index) => {
@@ -242,6 +252,7 @@ function parseGoogleSheetResources(table) {
       Object.entries(columns).map(([field, columnIndex]) => [field, sheetCellValue(row, columnIndex)])
     );
     raw.previewUrl = previewColumn === undefined ? "" : sheetCellValue(row, previewColumn);
+    raw.language = languageColumn === undefined ? "" : sheetCellValue(row, languageColumn);
     if (Object.values(raw).every((value) => value === "" || value === null)) return;
 
     const textFields = [
@@ -297,6 +308,7 @@ function parseGoogleSheetResources(table) {
       specialties,
       population,
       format,
+      languages: splitSheetList(raw.language),
       review: parseReviewValue(raw.review, rowNumber),
       access,
       duration: String(raw.duration).trim(),
@@ -373,6 +385,7 @@ function renderCheckboxGroup(container, values, groupName, selectedSet, labels =
   };
   const counts = makeCountMap(values, (resource) => {
     if (groupName === "specialties") return resource.specialties;
+    if (groupName === "languages") return resourceLanguageValues(resource);
     return [resource[fieldNames[groupName]]];
   });
 
@@ -390,13 +403,26 @@ function renderCheckboxGroup(container, values, groupName, selectedSet, labels =
 
 function initializeFilters() {
   const creators = [...new Set(RESOURCES.map((resource) => resource.creator))].sort((a, b) => a.localeCompare(b));
+  const topics = [...new Set([...SPECIALTIES, ...ADDITIONAL_TOPICS])]
+    .sort((a, b) => a.localeCompare(b));
+  LANGUAGE_LABELS = Object.fromEntries(RESOURCES.flatMap((resource) => (
+    (resource.languages.length ? resource.languages : ["Not specified"])
+      .map((language) => [normalize(language), language])
+  )));
+  const languages = Object.keys(LANGUAGE_LABELS).sort((a, b) => {
+    if (a === "not specified" && b !== "not specified") return 1;
+    if (b === "not specified" && a !== "not specified") return -1;
+    return LANGUAGE_LABELS[a].localeCompare(LANGUAGE_LABELS[b]);
+  });
   elements.creatorFilter.innerHTML = `
     <option value="">All creators</option>
     ${creators.map((creator) => `<option value="${escapeHtml(creator)}">${escapeHtml(creator)}</option>`).join("")}`;
 
   renderCheckboxGroup(elements.levelOptions, LEVELS, "levels", state.levels);
-  renderCheckboxGroup(elements.specialtyOptions, SPECIALTIES, "specialties", state.specialties);
+  renderCheckboxGroup(elements.specialtyOptions, topics, "specialties", state.specialties);
+  elements.submissionTopics.innerHTML = topics.map((topic) => `<option value="${escapeHtml(topic)}"></option>`).join("");
   renderCheckboxGroup(elements.formatOptions, Object.keys(FORMAT_LABELS), "formats", state.formats, FORMAT_LABELS);
+  renderCheckboxGroup(elements.languageOptions, languages, "languages", state.languages, LANGUAGE_LABELS);
   renderCheckboxGroup(elements.reviewOptions, Object.keys(REVIEW_LABELS), "reviews", state.reviews, REVIEW_LABELS);
   renderCheckboxGroup(elements.accessOptions, Object.keys(ACCESS_LABELS), "access", state.access, ACCESS_LABELS);
 }
@@ -409,6 +435,10 @@ function audienceMatches(resource) {
 function setMatches(set, values) {
   if (!set.size) return true;
   return values.some((value) => set.has(value));
+}
+
+function resourceLanguageValues(resource) {
+  return (resource.languages.length ? resource.languages : ["Not specified"]).map(normalize);
 }
 
 function socialMediaSite(resource) {
@@ -428,6 +458,7 @@ function getFilteredResources() {
       resource.level,
       resource.specialties.join(" "),
       FORMAT_LABELS[resource.format],
+      resource.languages.join(" "),
       resource.tags.join(" ")
     ].join(" "));
 
@@ -437,6 +468,7 @@ function getFilteredResources() {
       && setMatches(state.levels, [resource.level])
       && setMatches(state.specialties, resource.specialties)
       && setMatches(state.formats, [resource.format])
+      && setMatches(state.languages, resourceLanguageValues(resource))
       && setMatches(state.reviews, [resource.review])
       && setMatches(state.access, [resource.access]);
   });
@@ -624,6 +656,7 @@ function renderResourceCard(resource) {
           <span title="${escapeHtml(resource.specialties.join(", "))}">${escapeHtml(specialtyLabel(resource))}</span>
           <span>${escapeHtml(populationLabel(resource.population))}</span>
           <span>${escapeHtml(ACCESS_LABELS[resource.access])}</span>
+          ${resource.languages.length ? `<span>${escapeHtml(resource.languages.join(", "))}</span>` : ""}
           <span>${escapeHtml(resource.duration)}</span>
         </div>
       </div>
@@ -637,6 +670,7 @@ function activeFilterCount() {
     + state.levels.size
     + state.specialties.size
     + state.formats.size
+    + state.languages.size
     + state.reviews.size
     + state.access.size;
 }
@@ -657,6 +691,7 @@ function renderActiveFilters() {
   state.levels.forEach((value) => chips.push(chip(value, "levels", value)));
   state.specialties.forEach((value) => chips.push(chip(value, "specialties", value)));
   state.formats.forEach((value) => chips.push(chip(FORMAT_LABELS[value], "formats", value)));
+  state.languages.forEach((value) => chips.push(chip(`Language: ${LANGUAGE_LABELS[value] || value}`, "languages", value)));
   state.reviews.forEach((value) => chips.push(chip(REVIEW_LABELS[value], "reviews", value)));
   state.access.forEach((value) => chips.push(chip(ACCESS_LABELS[value], "access", value)));
   elements.activeFilters.innerHTML = chips.length ? chips.join("") : '<span class="filter-placeholder">No filters applied</span>';
@@ -714,6 +749,7 @@ function clearAllFilters() {
   state.levels.clear();
   state.specialties.clear();
   state.formats.clear();
+  state.languages.clear();
   state.reviews.clear();
   state.access.clear();
   render();
