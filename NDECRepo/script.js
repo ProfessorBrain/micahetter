@@ -83,6 +83,7 @@ const SHEET_COLUMNS = {
 
 const SHEET_PREVIEW_COLUMNS = ["preview url", "preview", "thumbnail url", "thumbnail"];
 const SHEET_LANGUAGE_COLUMNS = ["language", "languages"];
+const DEFAULT_LANGUAGE = "English";
 
 let libraryState = "loading";
 let dailyFeatureTimer;
@@ -269,6 +270,7 @@ function parseGoogleSheetResources(table) {
     const year = Number(raw.year);
     const specialties = splitSheetList(raw.specialties);
     const tags = splitSheetList(raw.tags);
+    const languages = splitSheetList(raw.language);
 
     if (!Number.isInteger(year) || year < 1900 || year > 2100) {
       throw new Error(`Sheet row ${rowNumber}: Year must be a four-digit year.`);
@@ -308,7 +310,7 @@ function parseGoogleSheetResources(table) {
       specialties,
       population,
       format,
-      languages: splitSheetList(raw.language),
+      languages: languages.length ? languages : [DEFAULT_LANGUAGE],
       review: parseReviewValue(raw.review, rowNumber),
       access,
       duration: String(raw.duration).trim(),
@@ -406,14 +408,10 @@ function initializeFilters() {
   const topics = [...new Set([...SPECIALTIES, ...ADDITIONAL_TOPICS])]
     .sort((a, b) => a.localeCompare(b));
   LANGUAGE_LABELS = Object.fromEntries(RESOURCES.flatMap((resource) => (
-    (resource.languages.length ? resource.languages : ["Not specified"])
-      .map((language) => [normalize(language), language])
+    resource.languages.map((language) => [normalize(language), language])
   )));
-  const languages = Object.keys(LANGUAGE_LABELS).sort((a, b) => {
-    if (a === "not specified" && b !== "not specified") return 1;
-    if (b === "not specified" && a !== "not specified") return -1;
-    return LANGUAGE_LABELS[a].localeCompare(LANGUAGE_LABELS[b]);
-  });
+  const languages = Object.keys(LANGUAGE_LABELS)
+    .sort((a, b) => LANGUAGE_LABELS[a].localeCompare(LANGUAGE_LABELS[b]));
   elements.creatorFilter.innerHTML = `
     <option value="">All creators</option>
     ${creators.map((creator) => `<option value="${escapeHtml(creator)}">${escapeHtml(creator)}</option>`).join("")}`;
@@ -438,7 +436,7 @@ function setMatches(set, values) {
 }
 
 function resourceLanguageValues(resource) {
-  return (resource.languages.length ? resource.languages : ["Not specified"]).map(normalize);
+  return resource.languages.map(normalize);
 }
 
 function socialMediaSite(resource) {
@@ -656,7 +654,7 @@ function renderResourceCard(resource) {
           <span title="${escapeHtml(resource.specialties.join(", "))}">${escapeHtml(specialtyLabel(resource))}</span>
           <span>${escapeHtml(populationLabel(resource.population))}</span>
           <span>${escapeHtml(ACCESS_LABELS[resource.access])}</span>
-          ${resource.languages.length ? `<span>${escapeHtml(resource.languages.join(", "))}</span>` : ""}
+          <span>${escapeHtml(resource.languages.join(", "))}</span>
           <span>${escapeHtml(resource.duration)}</span>
         </div>
       </div>
