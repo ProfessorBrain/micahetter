@@ -1,138 +1,122 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Submit a Question</title>
-  <meta name="ask-form-version" content="2.1">
+  <meta name="ask-form-version" content="2.2">
+  <title>Ask a Question</title>
   <link rel="icon" href="data:,">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 520px;
-      margin: 80px auto;
-      padding: 0 20px;
-    }
+    body { font: 16px Arial, sans-serif; max-width: 520px; margin: 80px auto; padding: 0 20px; }
     form { display: flex; gap: 8px; }
-    input {
-      flex: 1;
-      min-width: 0;
-      padding: 12px;
-      font: inherit;
-      border: 1px solid #aaa;
-      border-radius: 6px;
-    }
-    button {
-      padding: 12px 18px;
-      font: inherit;
-      cursor: pointer;
-      border: 0;
-      border-radius: 6px;
-      background: #222;
-      color: white;
-    }
+    input { flex: 1; min-width: 0; padding: 12px; font: inherit; border: 1px solid #aaa; border-radius: 6px; }
+    button { padding: 12px 18px; font: inherit; background: #222; color: #fff; border: 0; border-radius: 6px; cursor: pointer; }
     button:disabled { opacity: .55; cursor: default; }
-    #status { min-height: 1.5em; margin-top: 14px; }
+    #status { min-height: 1.5em; margin-top: 14px; line-height: 1.4; }
   </style>
 </head>
 <body>
   <form id="submissionForm">
-    <input id="text" type="text" maxlength="3000" required
-           aria-label="Text to submit" placeholder="Enter text..." autocomplete="off">
+    <input id="question" type="text" maxlength="3000" required autocomplete="off"
+           aria-label="Question or comment" placeholder="Enter text...">
     <button id="submitButton" type="submit">Submit</button>
   </form>
   <p id="status" role="status" aria-live="polite"></p>
 
   <script>
-    // Ask form v2.1: external Google Apps Script endpoint.
-    // Upload this over the original Google-hosted-only form.
-    console.info("Ask form v2.1 loaded (external Apps Script backend)");
+    'use strict';
+    // Ask form v2.2: hosted on micahetter.me, posts to Google Apps Script.
+    // The receipt endpoint is optional; it must not block or duplicate a POST.
+    console.info('Ask form v2.2 loaded');
     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzEuilBkbNp_JFDOI7bmoyU7Co8EgV_xVlAn_VhMVdkajLk9vngisPZYsJQStYUBmTn/exec';
-
     const form = document.getElementById('submissionForm');
-    const input = document.getElementById('text');
+    const input = document.getElementById('question');
     const button = document.getElementById('submitButton');
     const status = document.getElementById('status');
-
     const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-    // Read-only receipt check using JSONP. Google Apps Script doesn't enable
-    // cross-origin fetch responses for normal web apps, so this is how the
-    // website confirms that a submission was actually written to the Sheet.
-    function checkReceipt(submissionId) {
-      return new Promise((resolve, reject) => {
-        const callbackName = '_askReceipt_' + submissionId.replace(/-/g, '');
+    // TRUE: confirmed in the Sheet's receipt cache.
+    // FALSE: status endpoint worked, but it did not find the receipt yet.
+    // NULL: receipt endpoint could not be reached; nothing can be concluded.
+    function checkReceipt(id) {
+      return new Promise(resolve => {
+        const callback = '_askReceipt_' + id.replace(/-/g, '');
         const script = document.createElement('script');
-        let completed = false;
-
-        const finish = (err, result) => {
-          if (completed) return;
-          completed = true;
-          clearTimeout(timer);
+        let finished = false;
+        const finish = value => {
+          if (finished) return;
+          finished = true;
+          clearTimeout(timeout);
           script.remove();
-          delete window[callbackName];
-          if (err) reject(err);
-          else resolve(result);
+          delete window[callback];
+          resolve(value);
         };
-
-        window[callbackName] = data => finish(null, data && data.saved === true);
-        script.onerror = () => finish(new Error('Receipt check unavailable'));
-        const timer = setTimeout(() => finish(new Error('Receipt check timed out')), 6000);
-
+        window[callback] = result => finish(result && result.saved === true);
+        script.onerror = () => finish(null);
+        script.onload = () => finish(null); // Script loaded but didn't call callback.
+        const timeout = setTimeout(() => finish(null), 4000);
         const url = new URL(WEB_APP_URL);
         url.searchParams.set('action', 'status');
-        url.searchParams.set('submissionId', submissionId);
-        url.searchParams.set('callback', callbackName);
-        url.searchParams.set('_', String(Date.now()));
-        script.src = url.href;
+        url.searchParams.set('submissionId', id);
+        url.searchParams.set('callback', callback);
+        url.searchParams.set('_', Date.now().toString());
+        script.src = url.toString();
         document.head.appendChild(script);
       });
     }
 
     form.addEventListener('submit', async event => {
       event.preventDefault();
-      const text = input.value.trim();
-      if (!text) return;
-
-      if (!WEB_APP_URL.startsWith('https://script.google.com/macros/s/') ||
-          !WEB_APP_URL.endsWith('/exec')) {
-        status.textContent = 'Setup required: add your Apps Script URL to Index.html.';
-        return;
-      }
-
+      const value = input.value.trim();
+      if (!value) return;
       button.disabled = true;
       input.disabled = true;
       status.textContent = 'Submitting...';
+      const id = crypto.randomUUID();
 
-      const submissionId = crypto.randomUUID();
       try {
-        // Form-encoded POST is a simple cross-origin request. no-cors means
-        // its response is opaque; success is checked separately below.
-        await fetch(WEB_APP_URL, {
+        // Apps Script ContentService replies using a redirect. With a cross-site
+        // POST, redirect:'manual' allows us to distinguish that redirect
+        // (opaqueredirect) from a direct HTTP denial (opaque), without CORS.
+        // A redirect is useful evidence of processing, not proof of a saved row.
+        const response = await fetch(WEB_APP_URL, {
           method: 'POST',
           mode: 'no-cors',
-          body: new URLSearchParams({ text, submissionId })
+          redirect: 'manual',
+          body: new URLSearchParams({ text: value, submissionId: id })
         });
+        console.info('Ask form POST response type:', response.type);
 
-        let confirmed = false;
-        for (let attempt = 0; attempt < 6; attempt++) {
-          if (await checkReceipt(submissionId)) {
-            confirmed = true;
-            break;
-          }
-          await sleep(700);
+        if (response.type !== 'opaqueredirect') {
+          // A no-cors response hides the HTTP status (including 403). Do not
+          // incorrectly display a successful submission in this case.
+          status.textContent = 'Google did not confirm the request. Your text was kept. Please check the spreadsheet before trying again.';
+          return;
         }
 
-        if (!confirmed) throw new Error('Receipt not confirmed');
-        input.value = '';
-        status.textContent = 'Submitted successfully.';
+        status.textContent = 'Request sent. Checking receipt...';
+        let receipt = false;
+        for (let attempt = 0; attempt < 3; attempt++) {
+          receipt = await checkReceipt(id);
+          if (receipt === true || receipt === null) break;
+          await sleep(650);
+        }
+
+        if (receipt === true) {
+          input.value = '';
+          status.textContent = 'Submitted successfully.';
+        } else {
+          // The POST may have saved the row. Avoid prompting resubmission,
+          // which could create a duplicate with a new submission ID.
+          status.textContent = 'Request sent, but automatic confirmation is unavailable. Please check the spreadsheet before resubmitting.';
+          console.warn('Ask form: receipt not verified (result:', receipt, '). The submission may already be saved.');
+        }
       } catch (error) {
-        console.error('Submission or receipt verification failed:', error);
-        status.textContent =
-          'Could not confirm your submission. Please check before retrying.';
+        console.error('Ask form request failed:', error);
+        status.textContent = 'Unable to send your question. Your text was kept; please try again later.';
       } finally {
-        input.disabled = false;
         button.disabled = false;
+        input.disabled = false;
         input.focus();
       }
     });
