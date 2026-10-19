@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Submit Text</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 520px;
+      margin: 80px auto;
+      padding: 0 20px;
+    }
+    form { display: flex; gap: 8px; }
+    input {
+      flex: 1;
+      min-width: 0;
+      padding: 12px;
+      font: inherit;
+      border: 1px solid #aaa;
+      border-radius: 6px;
+    }
+    button {
+      padding: 12px 18px;
+      font: inherit;
+      cursor: pointer;
+      border: 0;
+      border-radius: 6px;
+      background: #222;
+      color: white;
+    }
+    button:disabled { opacity: .55; cursor: default; }
+    #status { min-height: 1.5em; margin-top: 14px; }
+  </style>
+</head>
+<body>
+  <form id="submissionForm">
+    <input id="text" type="text" maxlength="3000" required
+           aria-label="Text to submit" placeholder="Enter text..." autocomplete="off">
+    <button id="submitButton" type="submit">Submit</button>
+  </form>
+  <p id="status" role="status" aria-live="polite"></p>
+
+  <script>
+    const form = document.getElementById('submissionForm');
+    const input = document.getElementById('text');
+    const button = document.getElementById('submitButton');
+    const status = document.getElementById('status');
+
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+      if (!input.value.trim()) return;
+
+      button.disabled = true;
+      status.textContent = 'Submitting...';
+
+      google.script.run
+        .withSuccessHandler(function () {
+          input.value = '';
+          status.textContent = 'Submitted successfully.';
+          button.disabled = false;
+          input.focus();
+        })
+        .withFailureHandler(function (error) {
+          status.textContent = 'Submission failed: ' + error.message;
+          button.disabled = false;
+        })
+        .submitText(input.value);
+    });
+  </script>
+</body>
+</html>
