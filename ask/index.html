@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Submit a Question</title>
+  <meta name="ask-form-version" content="2.1">
+  <link rel="icon" href="data:,">
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -42,7 +44,9 @@
   <p id="status" role="status" aria-live="polite"></p>
 
   <script>
-    // Google Apps Script Web App endpoint (already configured).
+    // Ask form v2.1: external Google Apps Script endpoint.
+    // Upload this over the original Google-hosted-only form.
+    console.info("Ask form v2.1 loaded (external Apps Script backend)");
     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzEuilBkbNp_JFDOI7bmoyU7Co8EgV_xVlAn_VhMVdkajLk9vngisPZYsJQStYUBmTn/exec';
 
     const form = document.getElementById('submissionForm');
