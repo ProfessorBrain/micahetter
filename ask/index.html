@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Submit Text</title>
+  <title>Submit a Question</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -42,30 +42,95 @@
   <p id="status" role="status" aria-live="polite"></p>
 
   <script>
+    // Google Apps Script Web App endpoint (already configured).
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzEuilBkbNp_JFDOI7bmoyU7Co8EgV_xVlAn_VhMVdkajLk9vngisPZYsJQStYUBmTn/exec';
+
     const form = document.getElementById('submissionForm');
     const input = document.getElementById('text');
     const button = document.getElementById('submitButton');
     const status = document.getElementById('status');
 
-    form.addEventListener('submit', function (event) {
+    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+    // Read-only receipt check using JSONP. Google Apps Script doesn't enable
+    // cross-origin fetch responses for normal web apps, so this is how the
+    // website confirms that a submission was actually written to the Sheet.
+    function checkReceipt(submissionId) {
+      return new Promise((resolve, reject) => {
+        const callbackName = '_askReceipt_' + submissionId.replace(/-/g, '');
+        const script = document.createElement('script');
+        let completed = false;
+
+        const finish = (err, result) => {
+          if (completed) return;
+          completed = true;
+          clearTimeout(timer);
+          script.remove();
+          delete window[callbackName];
+          if (err) reject(err);
+          else resolve(result);
+        };
+
+        window[callbackName] = data => finish(null, data && data.saved === true);
+        script.onerror = () => finish(new Error('Receipt check unavailable'));
+        const timer = setTimeout(() => finish(new Error('Receipt check timed out')), 6000);
+
+        const url = new URL(WEB_APP_URL);
+        url.searchParams.set('action', 'status');
+        url.searchParams.set('submissionId', submissionId);
+        url.searchParams.set('callback', callbackName);
+        url.searchParams.set('_', String(Date.now()));
+        script.src = url.href;
+        document.head.appendChild(script);
+      });
+    }
+
+    form.addEventListener('submit', async event => {
       event.preventDefault();
-      if (!input.value.trim()) return;
+      const text = input.value.trim();
+      if (!text) return;
+
+      if (!WEB_APP_URL.startsWith('https://script.google.com/macros/s/') ||
+          !WEB_APP_URL.endsWith('/exec')) {
+        status.textContent = 'Setup required: add your Apps Script URL to Index.html.';
+        return;
+      }
 
       button.disabled = true;
+      input.disabled = true;
       status.textContent = 'Submitting...';
 
-      google.script.run
-        .withSuccessHandler(function () {
-          input.value = '';
-          status.textContent = 'Submitted successfully.';
-          button.disabled = false;
-          input.focus();
-        })
-        .withFailureHandler(function (error) {
-          status.textContent = 'Submission failed: ' + error.message;
-          button.disabled = false;
-        })
-        .submitText(input.value);
+      const submissionId = crypto.randomUUID();
+      try {
+        // Form-encoded POST is a simple cross-origin request. no-cors means
+        // its response is opaque; success is checked separately below.
+        await fetch(WEB_APP_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          body: new URLSearchParams({ text, submissionId })
+        });
+
+        let confirmed = false;
+        for (let attempt = 0; attempt < 6; attempt++) {
+          if (await checkReceipt(submissionId)) {
+            confirmed = true;
+            break;
+          }
+          await sleep(700);
+        }
+
+        if (!confirmed) throw new Error('Receipt not confirmed');
+        input.value = '';
+        status.textContent = 'Submitted successfully.';
+      } catch (error) {
+        console.error('Submission or receipt verification failed:', error);
+        status.textContent =
+          'Could not confirm your submission. Please check before retrying.';
+      } finally {
+        input.disabled = false;
+        button.disabled = false;
+        input.focus();
+      }
     });
   </script>
 </body>
