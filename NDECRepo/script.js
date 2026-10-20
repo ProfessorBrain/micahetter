@@ -87,6 +87,7 @@ const DEFAULT_LANGUAGE = "English";
 
 let libraryState = "loading";
 let dailyFeatureTimer;
+let dailyFeatureDay = null;
 
 const state = {
   query: "",
@@ -509,7 +510,8 @@ function utcDayNumber(timestamp = Date.now()) {
 
 function dailyResource(pool, offset = 0, dayNumber = utcDayNumber()) {
   if (!pool.length) return null;
-  return pool[(dayNumber + offset) % pool.length];
+  const index = ((dayNumber + offset) % pool.length + pool.length) % pool.length;
+  return pool[index];
 }
 
 function resourcePreviewUrl(resource) {
@@ -548,31 +550,56 @@ function isSpecificDailyResource(resource) {
   return !broadResourceTerms.test(`${resource.title} ${resource.duration}`);
 }
 
-function selectDailyFeatures(dayNumber = utcDayNumber()) {
-  const specificResources = RESOURCES.filter(isSpecificDailyResource);
+function dailyResourcePools(resources = RESOURCES) {
+  const uniqueResources = new Map();
+  resources.filter(isSpecificDailyResource).forEach((resource) => {
+    const url = new URL(resource.url);
+    url.hash = "";
+    const key = url.href.replace(/\/$/, "");
+    if (!uniqueResources.has(key)) uniqueResources.set(key, resource);
+  });
+  const specificResources = [...uniqueResources.entries()]
+    .sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0)
+    .map(([, resource]) => resource);
   const visualResources = specificResources.filter((resource) => ["infographic", "video"].includes(resource.format));
-  let teaching = dailyResource(specificResources, 0, dayNumber);
-  const visual = dailyResource(visualResources, 1, dayNumber);
+  const teachingResources = specificResources.filter((resource) => !["infographic", "video"].includes(resource.format));
+  return {
+    teaching: teachingResources.length ? teachingResources : specificResources,
+    visual: visualResources
+  };
+}
 
-  if (teaching?.id === visual?.id && specificResources.length > 1) {
-    teaching = dailyResource(specificResources, 1, dayNumber);
-  }
-
-  return { teaching, visual };
+function selectDailyFeatures(dayNumber = utcDayNumber()) {
+  const pools = dailyResourcePools();
+  return {
+    teaching: dailyResource(pools.teaching, 0, dayNumber),
+    visual: dailyResource(pools.visual, 1, dayNumber)
+  };
 }
 
 function renderDailyFeatureStatus(message) {
   elements.dailyFeatures.innerHTML = `<p class="daily-feature-status">${escapeHtml(message)}</p>`;
 }
 
-function renderDailyFeatures() {
-  const { teaching, visual } = selectDailyFeatures();
-  if (!teaching || !visual) {
+function renderEmptyDailyFeature(label, number, message) {
+  return `<article class="feature-card">
+    <div class="feature-card-heading">
+      <span class="feature-label"><i aria-hidden="true"></i> ${escapeHtml(label)}</span>
+      <span class="feature-number">${number}</span>
+    </div>
+    <p class="daily-feature-status">${escapeHtml(message)}</p>
+  </article>`;
+}
+
+function renderDailyFeatures(dayNumber = utcDayNumber()) {
+  dailyFeatureDay = dayNumber;
+  const { teaching, visual } = selectDailyFeatures(dayNumber);
+  if (!teaching && !visual) {
     renderDailyFeatureStatus("No daily selections are available.");
     return;
   }
 
-  elements.dailyFeatures.innerHTML = `
+  elements.dailyFeatures.innerHTML = `${teaching ? `
     <article class="feature-card feature-article">
       <div class="feature-card-heading">
         <span class="feature-label"><i aria-hidden="true"></i> Teaching aid of the day</span>
@@ -597,8 +624,9 @@ function renderDailyFeatures() {
         </div>
       </div>
       <a class="feature-link" href="${escapeHtml(teaching.url)}" target="_blank" rel="noopener noreferrer">Open today’s teaching aid <span aria-hidden="true">↗</span></a>
-    </article>
+    </article>` : renderEmptyDailyFeature("Teaching aid of the day", "01", "No individual teaching aid is currently available.")}
 
+    ${visual ? `
     <article class="feature-card feature-visual">
       <div class="feature-card-heading">
         <span class="feature-label"><i aria-hidden="true"></i> Visual of the day</span>
@@ -618,7 +646,7 @@ function renderDailyFeatures() {
         </div>
         <span>${escapeHtml(FORMAT_LABELS[visual.format])} ↗</span>
       </div>
-    </article>`;
+    </article>` : renderEmptyDailyFeature("Visual of the day", "02", "No individual infographic or video is currently available.")}`;
 
   elements.dailyFeatures.querySelectorAll(".daily-preview img").forEach((image) => {
     image.addEventListener("error", () => image.remove(), { once: true });
@@ -626,12 +654,17 @@ function renderDailyFeatures() {
 }
 
 function scheduleDailyFeatureRefresh() {
+  window.clearTimeout(dailyFeatureTimer);
+  if (libraryState !== "ready") return;
   const nextUtcDay = (utcDayNumber() + 1) * DAY_IN_MILLISECONDS;
   const delay = Math.max(1000, nextUtcDay - Date.now() + 1000);
-  dailyFeatureTimer = window.setTimeout(() => {
-    if (libraryState === "ready") renderDailyFeatures();
-    scheduleDailyFeatureRefresh();
-  }, delay);
+  dailyFeatureTimer = window.setTimeout(refreshDailyFeaturesIfNeeded, delay);
+}
+
+function refreshDailyFeaturesIfNeeded() {
+  if (libraryState !== "ready") return;
+  if (dailyFeatureDay !== utcDayNumber()) return loadLibrary();
+  scheduleDailyFeatureRefresh();
 }
 
 function renderResourceCard(resource) {
@@ -931,6 +964,12 @@ window.addEventListener("resize", () => {
 window.addEventListener("pageshow", () => {
   elements.submissionSubmit.disabled = false;
   elements.submissionSubmit.textContent = "Submit resource for review";
+  return refreshDailyFeaturesIfNeeded();
+});
+
+window.addEventListener("focus", refreshDailyFeaturesIfNeeded);
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") return refreshDailyFeaturesIfNeeded();
 });
 
 loadLibrary();
