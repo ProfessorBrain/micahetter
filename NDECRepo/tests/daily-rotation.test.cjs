@@ -94,6 +94,17 @@ function app(resources = mixedResources, timestamp = Date.UTC(2026, 9, 20, 12)) 
   };
 }
 
+test("daily card headings have no numeric labels, including empty states", () => {
+  for (const resources of [mixedResources, [resource(1)], [resource(2, "video")]]) {
+    const site = app(resources);
+    site.run("renderDailyFeatures()");
+    const html = site.node("#daily-features").innerHTML;
+    assert.ok(html.includes("Teaching aid of the day"));
+    assert.ok(html.includes("Visual of the day"));
+    assert.doesNotMatch(html, /feature-number|>0[12]<\/span>/);
+  }
+});
+
 test("both cards advance daily, cover their pools before repeating, and avoid overlap", () => {
   const site = app();
   const selections = site.json("Array.from({ length: 30 }, (_, day) => selectDailyFeatures(20000 + day))");

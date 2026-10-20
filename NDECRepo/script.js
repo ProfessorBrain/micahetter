@@ -581,11 +581,10 @@ function renderDailyFeatureStatus(message) {
   elements.dailyFeatures.innerHTML = `<p class="daily-feature-status">${escapeHtml(message)}</p>`;
 }
 
-function renderEmptyDailyFeature(label, number, message) {
+function renderEmptyDailyFeature(label, message) {
   return `<article class="feature-card">
     <div class="feature-card-heading">
       <span class="feature-label"><i aria-hidden="true"></i> ${escapeHtml(label)}</span>
-      <span class="feature-number">${number}</span>
     </div>
     <p class="daily-feature-status">${escapeHtml(message)}</p>
   </article>`;
@@ -603,7 +602,6 @@ function renderDailyFeatures(dayNumber = utcDayNumber()) {
     <article class="feature-card feature-article">
       <div class="feature-card-heading">
         <span class="feature-label"><i aria-hidden="true"></i> Teaching aid of the day</span>
-        <span class="feature-number">01</span>
       </div>
       <div class="feature-content">
         <a class="daily-preview feature-preview" href="${escapeHtml(teaching.url)}" target="_blank" rel="noopener noreferrer" aria-label="Preview and open ${escapeHtml(teaching.title)} in a new tab">
@@ -624,13 +622,12 @@ function renderDailyFeatures(dayNumber = utcDayNumber()) {
         </div>
       </div>
       <a class="feature-link" href="${escapeHtml(teaching.url)}" target="_blank" rel="noopener noreferrer">Open today’s teaching aid <span aria-hidden="true">↗</span></a>
-    </article>` : renderEmptyDailyFeature("Teaching aid of the day", "01", "No individual teaching aid is currently available.")}
+    </article>` : renderEmptyDailyFeature("Teaching aid of the day", "No individual teaching aid is currently available.")}
 
     ${visual ? `
     <article class="feature-card feature-visual">
       <div class="feature-card-heading">
         <span class="feature-label"><i aria-hidden="true"></i> Visual of the day</span>
-        <span class="feature-number">02</span>
       </div>
       <a class="visual-frame daily-preview" href="${escapeHtml(visual.url)}" target="_blank" rel="noopener noreferrer" aria-label="Preview and open ${escapeHtml(visual.title)} in a new tab">
         <span class="daily-preview-fallback" aria-hidden="true">
@@ -646,7 +643,7 @@ function renderDailyFeatures(dayNumber = utcDayNumber()) {
         </div>
         <span>${escapeHtml(FORMAT_LABELS[visual.format])} ↗</span>
       </div>
-    </article>` : renderEmptyDailyFeature("Visual of the day", "02", "No individual infographic or video is currently available.")}`;
+    </article>` : renderEmptyDailyFeature("Visual of the day", "No individual infographic or video is currently available.")}`;
 
   elements.dailyFeatures.querySelectorAll(".daily-preview img").forEach((image) => {
     image.addEventListener("error", () => image.remove(), { once: true });
