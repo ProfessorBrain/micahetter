@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111d2d">
+  <title>Pager</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --dark: #111d2d;
+      --cream: #f0e8dd;
+      --lcd-ink: #263d31;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    *,*::before,*::after { box-sizing: border-box; }
+    html { min-height: 100%; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      min-height: 100dvh;
+      background: radial-gradient(ellipse at 50% -24%, #40566b 0%, #1c2c40 41%, #101927 87%);
+      color: #eef2f5;
+      -webkit-font-smoothing: antialiased;
+    }
+    button { font: inherit; cursor: pointer; }
+    button:focus-visible { outline: 4px solid #a4e4bd; outline-offset: 6px; }
+    .stage {
+      width: min(1120px, 96vw);
+      min-height: 100vh;
+      min-height: 100dvh;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(16px, 3vh, 32px);
+      padding: clamp(14px, 3vh, 34px) 0;
+    }
+    .pager {
+      width: 100%;
+      padding: clamp(18px, 3vw, 34px);
+      border: 2px solid #677589;
+      border-radius: 40px 40px 52px 52px;
+      background: linear-gradient(155deg, #3d495a 0%, #1f2a37 34%, #0e1720 100%);
+      box-shadow: 0 34px 72px #02071080, inset 0 2px 0 #ffffff38, inset 0 -6px 0 #0000005c;
+      transform: rotate(-.2deg);
+    }
+    .device-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      min-height: 36px;
+      padding: 0 6px clamp(15px, 2.6vh, 25px);
+    }
+    .brand { font-weight: 900; font-size: clamp(.95rem,1.7vw,1.36rem); color: #d0dce6; letter-spacing: .22em; }
+    .model { font-size: .73rem; color: #9fb0c0; font-weight: 800; letter-spacing: .19em; }
+    .speaker { display: flex; gap: 5px; margin-left: auto; margin-right: 12px; transform: skew(-9deg); }
+    .speaker i { display: block; height: 18px; width: 5px; background: #101922; border: 1px solid #4b5a6b; border-radius: 2px; }
+    .bezel {
+      padding: clamp(10px, 1.7vw, 20px);
+      background: #0c1218;
+      border: 1px solid #657381;
+      border-radius: 20px;
+      box-shadow: inset 0 6px 14px #000a, 0 2px 0 #737c86;
+    }
+    .lcd {
+      position: relative;
+      isolation: isolate;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: clamp(285px, 46vh, 480px);
+      overflow: hidden;
+      padding: clamp(18px, 2.5vw, 32px);
+      border-radius: 8px;
+      background: linear-gradient(153deg,#d9e9c0 0%,#b8d1a5 60%,#a5c590 100%);
+      box-shadow: inset 0 3px 11px #789c74, inset 0 -4px 7px #718f6d;
+      color: var(--lcd-ink);
+      font-family: 'Courier New', monospace;
+    }
+    .lcd::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      opacity: .12;
+      background: repeating-linear-gradient(0deg,transparent 0px,transparent 3px,#4d6650 4px,transparent 5px);
+      pointer-events: none;
+    }
+    .lcd-status {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: clamp(.9rem,1.5vw,1.15rem);
+      font-weight: 800;
+      letter-spacing: .12em;
+    }
+    .lcd-status-right { display: inline-flex; align-items: center; gap: 12px; }
+    .signal { display: inline-flex; align-items: flex-end; gap: 4px; height: 18px; }
+    .signal i { width: 4px; border: 1.5px solid var(--lcd-ink); }
+    .signal i:nth-child(1) { height: 7px; } .signal i:nth-child(2) { height: 11px; }
+    .signal i:nth-child(3) { height: 14px; } .signal i:nth-child(4) { height: 18px; }
+    .lcd-main { text-align: center; padding: 10px 0 4px; }
+    .heading { font-size: clamp(1rem, 1.8vw, 1.5rem); font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
+    .readout { display: flex; justify-content: center; align-items: baseline; gap: clamp(10px,2vw,30px); min-height: clamp(125px,17vh,190px); padding-top: 13px; line-height: 1; }
+    .table-word { font-size: clamp(2.3rem,5.4vw,5.5rem); letter-spacing: -.08em; font-weight: 900; }
+    .table-num { font-size: clamp(7.5rem,13vw,12.6rem); letter-spacing: -.10em; font-weight: 900; font-variant-numeric: tabular-nums; line-height: .94; }
+    .readout.waiting .table-word { opacity: .50; }
+    .readout.waiting .table-num { opacity: .24; }
+    .readout.routing .table-num { opacity: .30; }
+    .message { border-top: 2px dashed #263d3144; padding-top: clamp(14px,2.5vh,25px); text-align: center; font-size: clamp(1.15rem,2.1vw,1.75rem); font-weight: 900; letter-spacing: .09em; text-transform: uppercase; }
+    .device-bottom { display: flex; align-items: center; justify-content: center; height: 28px; padding-top: 22px; }
+    .indicator { width: 14px; height: 14px; border-radius: 50%; background: #547965; border: 2px solid #23382b; box-shadow: 0 0 0 3px #34433c; }
+    .indicator.on { background: #b9f2be; box-shadow: 0 0 17px #90d69b, 0 0 0 3px #34433c; }
+    .page-button {
+      width: min(520px,90%);
+      min-height: clamp(76px, 10vh, 105px);
+      padding: 18px 35px;
+      border: none;
+      border-radius: 20px;
+      background: var(--cream);
+      color: #142435;
+      font-size: clamp(1.75rem,3vw,2.75rem);
+      font-weight: 900;
+      letter-spacing: .07em;
+      box-shadow: 0 8px 0 #918f8a, 0 16px 32px #0005;
+      transition: background .15s, transform .15s, box-shadow .15s;
+      touch-action: manipulation;
+    }
+    .page-button:hover:not(:disabled) { background: #fffaf4; }
+    .page-button:active:not(:disabled) { transform: translateY(6px); box-shadow: 0 2px 0 #918f8a,0 7px 18px #0005; }
+    .page-button:disabled { opacity: .72; cursor: wait; }
+    @media (max-height: 720px) and (min-width: 681px) {
+      .lcd { min-height: 290px; }
+      .readout { min-height: 136px; }
+      .table-num { font-size: clamp(6.8rem, 11vw, 10rem); }
+      .stage { gap: 14px; padding: 12px 0; }
+      .page-button { min-height: 66px; font-size: 1.7rem; }
+    }
+    @media (max-width: 680px) {
+      .stage { width: 96vw; gap: 23px; }
+      .pager { border-radius: 23px 23px 31px 31px; padding: 13px; }
+      .device-top { padding-bottom: 10px; }
+      .brand { font-size: .85rem; letter-spacing: .13em; }
+      .model { display: none; }
+      .bezel { padding: 9px; border-radius: 13px; }
+      .lcd { min-height: 315px; padding: 14px; }
+      .lcd-status { font-size: .73rem; }
+      .lcd-status-right { gap: 7px; }
+      .heading { font-size: .92rem; }
+      .table-word { font-size: clamp(1.55rem,7vw,2.5rem); }
+      .table-num { font-size: clamp(5.8rem,21vw,8.2rem); }
+      .readout { min-height: 130px; gap: 7px; }
+      .message { font-size: 1.02rem; }
+      .page-button { width: 90%; font-size: 1.5rem; min-height: 72px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *,*::before,*::after { animation:none!important; transition:none!important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="stage" aria-label="Table pager">
+    <section class="pager" aria-label="Pager display">
+      <div class="device-top">
+        <span class="brand">NEURO·PAGER</span>
+        <div class="speaker" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+        <span class="model">N-20 / SERVICE UNIT</span>
+      </div>
+      <div class="bezel">
+        <div class="lcd">
+          <div class="lcd-status">
+            <span id="status">STANDBY</span>
+            <span class="lcd-status-right"><span class="signal" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span id="clock">--:--</span></span>
+          </div>
+          <div class="lcd-main">
+            <div class="heading" id="heading">AWAITING PAGE</div>
+            <div class="readout waiting" id="readout"><span class="table-word">TABLE</span><span class="table-num" id="tableNumber">--</span></div>
+          </div>
+          <div class="message" id="message" role="status" aria-live="polite">STANDING BY</div>
+        </div>
+      </div>
+      <div class="device-bottom"><span class="indicator" id="indicator" aria-hidden="true"></span></div>
+    </section>
+    <button class="page-button" id="pageButton" type="button" aria-keyshortcuts="P Space">PAGE OUT</button>
+  </main>
+  <script>
+    (() => {
+      'use strict';
+      const TABLE_COUNT = 20;
+      const STORAGE_KEY = 'neuro-pager-simple-v2';
+      const $ = id => document.getElementById(id);
+      const two = n => String(n).padStart(2, '0');
+      let state = {used: [], last: null};
+      let busy = false;
+      let audioContext;
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        if (saved && Array.isArray(saved.used)) {
+          state.used = [...new Set(saved.used.filter(n => Number.isInteger(n) && n >= 1 && n <= TABLE_COUNT))];
+          if (Number.isInteger(saved.last) && saved.last >= 1 && saved.last <= TABLE_COUNT) state.last = saved.last;
+        }
+      } catch (_) { /* Operates without local storage. */ }
+      function persist() {
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (_) {}
+      }
+      function randomIndex(length) {
+        if (length < 2) return 0;
+        if (window.crypto?.getRandomValues) {
+          const n = new Uint32Array(1);
+          const bound = Math.floor(4294967296 / length) * length;
+          do { window.crypto.getRandomValues(n); } while (n[0] >= bound);
+          return n[0] % length;
+        }
+        return Math.floor(Math.random() * length);
+      }
+      function selectTable() {
+        let available = Array.from({length:TABLE_COUNT}, (_,i)=>i+1).filter(n => !state.used.includes(n));
+        if (!available.length) {
+          state.used = [];
+          available = Array.from({length:TABLE_COUNT},(_,i)=>i+1);
+          // A completed rotation should not immediately page the same table twice.
+          if (state.last !== null && available.length > 1) available = available.filter(n => n !== state.last);
+        }
+        const selected = available[randomIndex(available.length)];
+        state.used.push(selected);
+        state.last = selected;
+        persist();
+        return selected;
+      }
+      function setMode(mode, number=null) {
+        $('readout').className = 'readout';
+        $('indicator').classList.toggle('on', mode === 'delivered');
+        if (mode === 'standby') {
+          $('status').textContent = 'STANDBY';
+          $('heading').textContent = 'AWAITING PAGE';
+          $('tableNumber').textContent = '--';
+          $('message').textContent = 'STANDING BY';
+          $('readout').classList.add('waiting');
+        } else if (mode === 'routing') {
+          $('status').textContent = 'TRANSMITTING';
+          $('heading').textContent = 'PAGING…';
+          $('tableNumber').textContent = '--';
+          $('message').textContent = 'STAND BY';
+          $('readout').classList.add('routing');
+        } else {
+          $('status').textContent = 'PAGE DELIVERED';
+          $('heading').textContent = 'INCOMING CONSULT';
+          $('tableNumber').textContent = two(number);
+          $('message').textContent = "YOU'RE ON CALL";
+        }
+      }
+      function playPager() {
+        try {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (!AudioCtx) return;
+          audioContext ||= new AudioCtx();
+          if (audioContext.state === 'suspended') audioContext.resume().catch(()=>{});
+          const t = audioContext.currentTime + .02;
+          [[0,.10,830],[.15,.10,830],[.30,.19,1040]].forEach(([offset,duration,freq]) => {
+            const tone = audioContext.createOscillator();
+            const volume = audioContext.createGain();
+            tone.type='sine'; tone.frequency.setValueAtTime(freq,t+offset);
+            volume.gain.setValueAtTime(.0001,t+offset);
+            volume.gain.exponentialRampToValueAtTime(.10,t+offset+.015);
+            volume.gain.setValueAtTime(.10,t+offset+duration-.025);
+            volume.gain.exponentialRampToValueAtTime(.0001,t+offset+duration);
+            tone.connect(volume); volume.connect(audioContext.destination);
+            tone.start(t+offset); tone.stop(t+offset+duration+.01);
+          });
+        } catch (_) { /* Visual paging always works, even if audio is blocked. */ }
+      }
+      function pageOut() {
+        if (busy) return;
+        busy = true;
+        $('pageButton').disabled = true;
+        $('pageButton').textContent = 'PAGING…';
+        setMode('routing');
+        playPager();
+        const selection = selectTable();
+        window.setTimeout(() => {
+          setMode('delivered', selection);
+          $('pageButton').disabled = false;
+          $('pageButton').textContent = 'PAGE OUT';
+          busy = false;
+        }, 1100);
+      }
+      function updateClock() { $('clock').textContent = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}); }
+      $('pageButton').addEventListener('click', pageOut);
+      document.addEventListener('keydown', e => {
+        if (e.repeat || e.altKey || e.ctrlKey || e.metaKey || ['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)) return;
+        if (e.code === 'Space' || e.key.toLowerCase() === 'p') { e.preventDefault(); pageOut(); }
+      });
+      updateClock(); window.setInterval(updateClock, 10000);
+      setMode('standby');
+    })();
+  </script>
+</body>
+</html>
