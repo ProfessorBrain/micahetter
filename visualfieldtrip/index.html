@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#09111e" />
+<title>🚌 Visual Field Trip</title>
+<style>
+:root{color-scheme:dark;--bg:#09111c;--panel:#101a29;--ink:#eaf0f7;--muted:#95a4b7;--line:#263448;--teal:#67dbca;--purple:#b09bfa;--coral:#fb8d82;--gold:#e9c77d}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--ink);font:13px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}button,select,input{font:inherit}button{cursor:pointer}button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--teal);outline-offset:2px}body{display:flex;flex-direction:column}
+header{height:54px;flex:none;display:flex;align-items:center;gap:12px;padding:0 18px;border-bottom:1px solid var(--line);background:var(--panel)}header h1{font-weight:680;font-size:15px;letter-spacing:.01em;margin:0}.subtitle{display:inline;color:var(--muted);font-size:12px;font-weight:400;margin-left:12px}.mark{display:grid;place-items:center;width:24px;height:24px;border:1.7px solid var(--teal);border-radius:50%;position:relative}.mark:after{content:'';width:8px;height:8px;border-radius:50%;background:var(--teal)}.helpBtn{margin-left:0;border:1px solid #35475a;color:#b4c5d7;border-radius:8px;background:transparent;padding:6px 10px}.helpBtn:hover{background:#223247;color:white}.aboutBtn{margin-left:auto}.quizBtn{border-color:#39766e;color:#b6f2e5}.quizBtn.active{background:#24544e;border-color:#4fb9a6;color:#fff}
+.shell{display:grid;grid-template-columns:226px minmax(0,1fr) 8px minmax(0,var(--right-panel-width,290px));min-height:0;flex:1}.shell.is-resizing,.shell.is-resizing *{user-select:none!important;cursor:col-resize!important}.panel-resizer{position:relative;min-width:8px;min-height:0;cursor:col-resize;touch-action:none;background:var(--panel);border-left:1px solid #263448;border-right:1px solid #263448;display:flex;align-items:center;justify-content:center;z-index:5}.panel-resizer::after{content:"";width:3px;height:36px;border-radius:5px;background:#5b718a;opacity:.62;transition:background .12s,opacity .12s}.panel-resizer:hover::after,.panel-resizer:focus-visible::after,.shell.is-resizing .panel-resizer::after{background:var(--teal);opacity:1}.panel-resizer:focus-visible{outline:2px solid var(--teal);outline-offset:-2px}.side{background:var(--panel);min-height:0;overflow:auto;scrollbar-width:thin;scrollbar-color:#45556c transparent}.left{border-right:1px solid var(--line)}.right{border-left:1px solid var(--line)}.section{padding:18px 16px;border-bottom:1px solid var(--line)}.control-label,.section-title{display:block;font-size:11px;font-weight:675;color:#becbdb;letter-spacing:.02em;margin:0 0 9px}.group{margin-bottom:19px}.group:last-child{margin-bottom:0}
+select{width:100%;min-height:39px;background:#19283a;color:var(--ink);border:1px solid #39506a;border-radius:8px;padding:8px 30px 8px 10px;font-size:12px}.segmented{display:flex;background:#0a1421;border:1px solid #32445b;border-radius:8px;padding:3px;gap:3px}.segmented button{min-width:0;flex:1;background:transparent;border:0;border-radius:5px;color:#a3b2c6;font-size:11px;padding:8px 4px}.segmented button.active{color:#fff;background:#305159}.segmented.trace button.active{background:#655334;color:#fff1d3}
+.options{border-bottom:1px solid var(--line);padding:18px 16px 14px}.options .opts{padding:0}.toggle[hidden]{display:none!important}.toggle{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 0;color:#c2cfdb;font-size:12px;cursor:pointer}.toggle input{appearance:none;width:31px;height:18px;background:#334154;border:1px solid #51627a;border-radius:16px;position:relative;flex:none;cursor:pointer}.toggle input::after{content:'';position:absolute;width:12px;height:12px;left:2px;top:2px;border-radius:50%;background:#91a4b7;transition:left .14s}.toggle input:checked{background:#25685f;border-color:#46a293}.toggle input:checked::after{left:15px;background:#b2ffeb}.legend{padding:15px 16px;display:grid;gap:8px}.legend span{display:flex;align-items:center;gap:8px;color:#a6b7c8;font-size:11px}.legend i{width:8px;height:8px;display:inline-block;border-radius:50%}.small-note{font-size:10px;line-height:1.4;color:#8397ae;margin:12px 0 0}
+.viewport{position:relative;min-width:0;overflow:hidden;background:radial-gradient(ellipse at 50% 35%,#15283a 0%,#0b1b2d 47%,#08121f 100%)}#gl{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}#gl:active{cursor:grabbing}.view-top{position:absolute;top:15px;left:16px;right:16px;z-index:4;pointer-events:none}.vchip{display:inline-flex;align-items:center;gap:8px;border:1px solid #3a5063;border-radius:20px;background:#102137c9;padding:6px 10px;color:#e3eff8;font-size:11px}.vchip .live{width:6px;height:6px;border-radius:50%;background:var(--teal)}.vchip.warn .live{background:var(--coral)}.view-bottom{position:absolute;bottom:14px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:flex-end;gap:12px;pointer-events:none;z-index:4}.hudhelp{font-size:11px;color:#a1b4c8}.preset{display:flex;gap:2px;background:#0f1d30e8;border:1px solid #35495d;border-radius:8px;padding:3px;pointer-events:auto}.preset button{border:0;border-radius:5px;background:transparent;color:#a5b6c8;padding:7px 8px;font-size:11px}.preset button.active,.preset button:hover{color:#fff;background:#2a485e}.labels{position:absolute;inset:0;pointer-events:none;z-index:3}.scene-label{position:absolute;transform:translate(-50%,-50%);border:1px solid #456077;border-radius:5px;padding:4px 7px;background:#0d1a2bd9;color:#e1ebf4;font-size:10px;line-height:1.15;white-space:nowrap;pointer-events:auto;cursor:pointer}.scene-label:hover{border-color:#9abbd0}.scene-label.selected{background:#49313b;color:#ffded8;border-color:var(--coral)}.scene-leader{position:absolute;height:1px;background:#7894ad77;transform-origin:0 50%;pointer-events:none;z-index:2}
+.right .section{padding:18px 15px}.result-title{font-size:16px;font-weight:680;line-height:1.3;margin:0 0 8px}.result-desc{font-size:12px;line-height:1.5;color:#a9b9ca}.map-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.map-wrap{min-width:0;border:1px solid #2e4158;background:#0c1726;border-radius:8px;padding:8px 4px 2px}.map-title{text-align:center;color:#d2deeb;font-size:11px;font-weight:620}.map-wrap canvas{width:100%;height:auto;display:block}.swatch{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}.map-foot{display:flex;justify-content:center;gap:12px;color:#9eafc1;font-size:10px;margin-top:10px}.map-foot b{font-weight:650;color:#e2e9f1}.route-line{font-size:12px;line-height:1.55;color:#b9c9d9}.view-prompt{color:#849bb2;font-size:10px;margin:10px 0 0}.scene-row{display:flex;align-items:center;gap:8px}.scene-row button{border:1px solid #3c5269;border-radius:7px;background:#1d3044;color:#e2eef8;padding:8px 10px;font-size:12px}.scene-row button:hover{background:#304c63}.scene-row button:disabled{opacity:.48;cursor:default}.scene-status{color:#899cb1;font-size:10px;line-height:1.4}.scene-caption{color:#899eb1;font-size:10px;margin:10px 0 0}.scene-caption a{color:#9ecfe3;text-decoration:none}.scene-caption a:hover{text-decoration:underline}.about-sources{margin:4px 0 12px;padding-left:18px;color:#b7c7d9;font-size:11px;line-height:1.6}.about-sources a{color:#a7d9f2}
+[hidden]{display:none!important}
+
+.quiz-section{background:#112331}
+.quiz-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.quiz-head .section-title{margin:0}.quiz-score{font-size:11px;color:#9db9c9;white-space:nowrap}
+.quiz-track{height:3px;background:#263f50;border-radius:8px;overflow:hidden;margin:0 0 15px}
+.quiz-track-fill{display:block;height:100%;background:#6cd4c2;width:0;transition:width .2s ease}
+.quiz-prompt{font-size:17px;line-height:1.3;font-weight:660;margin:0 0 7px}
+.quiz-sub{font-size:12px;color:#a8bacb;margin:0 0 12px}
+.quiz-feedback{margin:14px 0 8px;border:1px solid #43586b;border-left:3px solid #8397a8;border-radius:8px;padding:12px;color:#d9e5ee;background:#172b3c}
+.quiz-feedback.right{border-color:#36766c;border-left-color:#63d9ac;background:#14312e}
+.quiz-feedback.wrong{border-color:#80544a;border-left-color:#e7a17f;background:#312724}
+.quiz-feedback.partial{border-color:#806b3e;border-left-color:#e8c77c;background:#302d23}
+.quiz-feedback.reveal{border-color:#4d6983;border-left-color:#a5c7e2;background:#1c3144}
+.quiz-feedback-heading{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:700;line-height:1.25;margin-bottom:9px}
+.quiz-feedback-icon{display:grid;place-items:center;flex:none;width:23px;height:23px;border-radius:50%;background:#33495a;color:#dfeefa;font-weight:850;font-size:15px}
+.quiz-feedback.right .quiz-feedback-icon{background:#286852;color:#bdffe6}
+.quiz-feedback.wrong .quiz-feedback-icon{background:#773f34;color:#ffd5c1}
+.quiz-feedback.partial .quiz-feedback-icon{background:#715e32;color:#ffefbf}
+.quiz-feedback.reveal .quiz-feedback-icon{background:#36566c;color:#e0f3ff}
+.quiz-feedback-site{font-size:12px;font-weight:650;color:#fff;line-height:1.35;margin-bottom:4px}
+.quiz-feedback-detail{font-size:12px;line-height:1.5;color:#c1d0db;margin:0}
+.quiz-answer-sites{margin-top:10px;border-top:1px solid #ffffff21;padding-top:9px;display:flex;flex-wrap:wrap;gap:5px}
+.quiz-answer-sites span{font-size:10px;font-weight:620;padding:4px 7px;border:1px solid #5a8f82;border-radius:5px;color:#d8f7e8;background:#24544666}
+.quiz-actions{display:flex;gap:8px;margin-top:12px}
+.quiz-actions button{min-height:34px;padding:6px 10px;border:1px solid #40566d;border-radius:7px;background:#1c3449;color:#e3edf4}
+.quiz-actions button.primary{background:#2b655a;border-color:#409b89}
+.quiz-actions button:disabled{opacity:.35;cursor:default}
+.quiz-active #gl{cursor:crosshair}.quiz-active .scene-label,.quiz-active .scene-leader{display:none!important}
+.quiz-targets{position:absolute;inset:0;pointer-events:none;z-index:5}
+.quiz-target{position:absolute;transform:translate(-50%,-50%);width:18px;height:18px;padding:0;border:1px solid #d9e9ebc9;border-radius:50%;background:#24394cb9;box-shadow:0 0 0 2px #0a1824a8,0 1px 6px #0009;pointer-events:auto;cursor:crosshair;z-index:1}
+.quiz-target::after{content:'';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:5px;height:5px;border-radius:50%;background:#d9e9eb}
+.quiz-target:hover,.quiz-target:focus-visible{background:#477a7e;box-shadow:0 0 0 4px #77d2cb30;outline:none}
+.quiz-target.feedback-wrong,.quiz-target.feedback-correct,.quiz-target.feedback-solution,.quiz-target.feedback-partial{width:24px;height:24px;border-width:2px;z-index:4}
+.quiz-target.feedback-wrong{border-color:#ffb290;background:#6c3c32;box-shadow:0 0 0 3px #311610a6,0 0 10px #d98c6b80}
+.quiz-target.feedback-correct,.quiz-target.feedback-solution{border-color:#92f1c4;background:#267560;box-shadow:0 0 0 3px #102d24e0,0 0 12px #70e3b56e}
+.quiz-target.feedback-partial{border-color:#ffe3a2;background:#7a6233;box-shadow:0 0 0 3px #2d2617d9}
+.quiz-target.feedback-wrong::after,.quiz-target.feedback-correct::after,.quiz-target.feedback-solution::after,.quiz-target.feedback-partial::after{width:auto;height:auto;background:none;font-size:15px;font-weight:800;line-height:1;color:white}
+.quiz-target.feedback-wrong::after{content:'×'}
+.quiz-target.feedback-correct::after,.quiz-target.feedback-solution::after{content:'✓'}
+.quiz-target.feedback-partial::after{content:'1'}
+.quiz-target-caption{position:absolute;top:50%;left:calc(100% + 8px);transform:translateY(-50%);display:block;white-space:nowrap;max-width:250px;overflow:hidden;text-overflow:ellipsis;border:1px solid #547184;padding:6px 9px;border-radius:5px;background:#101d2bea;color:#f1f6fa;font-size:11px;font-weight:650;text-align:left;box-shadow:0 5px 20px #0009;pointer-events:none}
+.quiz-target.caption-left .quiz-target-caption{left:auto;right:calc(100% + 8px)}
+.quiz-target.feedback-wrong .quiz-target-caption{border-color:#c47e65;color:#ffe1d3}
+.quiz-target.feedback-correct .quiz-target-caption,.quiz-target.feedback-solution .quiz-target-caption{border-color:#69ba9a;color:#ccffdf}
+.quiz-target.feedback-partial .quiz-target-caption{border-color:#c9a86a;color:#ffebc4}
+.quiz-target[disabled]{cursor:default}
+.vchip.quiz-ok .live{background:#68dbaf}.vchip.quiz-no .live{background:#f6ac8c}.vchip.quiz-partial .live{background:#e9ca79}
+.quiz-active .hudhelp{color:#bdd0dc}
+#fallback{display:none;position:absolute;inset:0;z-index:6;padding:30px;background:#102033;color:white;align-items:center;justify-content:center;text-align:center}#fallback.show{display:flex}#help,#about{position:fixed;z-index:20;inset:0;background:#030910bb;display:none;align-items:center;justify-content:center;padding:16px}#help.open,#about.open{display:flex}.helpmodal{background:#122136;border:1px solid #425670;border-radius:12px;padding:22px;max-width:410px;box-shadow:0 20px 90px #0008}.helpmodal h2{font-size:17px;margin:0 0 10px}.helpmodal p{font-size:12px;line-height:1.65;color:#b7c7d9}.helpmodal a{color:#a7d9f2}.helpmodal .byline{font-weight:650;color:#e8f1f9;font-size:13px}.helpmodal .close{margin-top:8px;border-radius:7px;border:1px solid #51677e;padding:8px 16px;background:#283e53;color:white}
+@media(max-width:1120px){.shell{grid-template-columns:205px minmax(0,1fr) 8px minmax(0,var(--right-panel-width,256px))}.section{padding:15px 12px}.right .section{padding:15px 12px}.legend{padding:15px 12px}.options{padding:15px 12px 13px}}@media(max-width:760px){html,body{height:auto;min-height:100%;overflow:auto}.shell{display:flex;flex-direction:column}.panel-resizer{display:none}.viewport{height:58vh;min-height:390px;order:0}.left,.right{width:100%;order:1;border:0;border-top:1px solid var(--line);overflow:visible}.left{display:grid;grid-template-columns:1fr 1fr}.left .section{border-right:1px solid var(--line)}.options,.legend{grid-column:1/-1}.right{display:grid;grid-template-columns:1fr 1fr}.right .section{border-right:1px solid var(--line)}.right .lesion-section{grid-column:1/-1}.quiz-active .right{order:1}.quiz-active .left{order:2}.view-bottom{bottom:10px;left:10px;right:10px}.view-top{left:10px;top:10px}.hudhelp{display:none}.subtitle{display:none}}@media(max-width:520px){header{gap:8px;padding:0 10px}header h1{font-size:13px;white-space:nowrap}header .mark{width:20px;height:20px;flex:none}header .helpBtn{padding:6px 7px;font-size:11px;white-space:nowrap}.left,.right{display:block}.viewport{height:55vh;min-height:360px}.view-bottom{justify-content:flex-end}.preset button{padding:8px 7px}}
+</style>
+</head>
+<body>
+<header><span class="mark" aria-hidden="true"></span><h1>🚌 Visual Field Trip</h1><button id="aboutTop" class="helpBtn aboutBtn" title="About Visual Field Trip">About</button><button id="helpTop" class="helpBtn" title="Help" aria-label="Help">?</button><button id="quizToggle" class="helpBtn quizBtn" aria-pressed="false">Quiz mode</button></header>
+<main class="shell">
+<aside class="side left" aria-label="Scene controls">
+ <section class="section"><div class="group"><div class="control-label">Show fields</div><div class="segmented" id="eyeMode" role="group" aria-label="Eye visibility"><button data-value="both" class="active">Both</button><button data-value="left">Left</button><button data-value="right">Right</button></div></div><div class="group"><div class="control-label">Trace visual hemifield</div><div class="segmented trace" id="traceMode" role="group" aria-label="Trace neural pathway"><button data-value="none" class="active">Off</button><button data-value="left">Left</button><button data-value="right">Right</button></div></div></section>
+ <section class="options" aria-label="Display options"><div class="control-label">Display options</div><div class="opts"><label class="toggle">Visual field surfaces<input id="showFields" type="checkbox" checked></label><label class="toggle">Photo projection<input id="showPhoto" type="checkbox" checked></label><label class="toggle">Visual pathways<input id="showPaths" type="checkbox" checked></label><label class="toggle" id="brainControl" hidden>Brain (anatomical)<input id="showBrain" type="checkbox" checked></label><label class="toggle">Field loss overlay<input id="showDefect" type="checkbox" checked></label><label class="toggle">Field grid<input id="showGrid" type="checkbox" checked></label><label class="toggle">Anatomy labels<input id="showLabels" type="checkbox"></label></div></section>
+ <div class="legend" aria-label="Color key"><span><i style="background:var(--teal)"></i>Left eye</span><span><i style="background:var(--purple)"></i>Right eye</span><span><i style="background:var(--gold)"></i>Traced fibers</span><span><i style="background:var(--coral)"></i>Field loss</span></div>
+</aside>
+<section class="viewport" id="viewport" aria-label="Interactive 3D model"><canvas id="gl" aria-label="Rotatable visual fields and visual pathways"></canvas><div id="fallback" role="status"><div>3D rendering unavailable in this browser.</div></div><div class="labels" id="labels"></div><div class="quiz-targets" id="quizTargets" hidden></div><div class="view-top"><div id="stateChip" class="vchip"><span class="live"></span><b>Normal</b></div></div><div class="view-bottom"><div class="hudhelp">Drag to rotate · Scroll to zoom · Shift-drag to pan</div><div class="preset" id="presetBar" aria-label="Camera views"><button data-preset="front">Front</button><button class="active" data-preset="top">Top</button><button data-preset="rear">Rear</button><button id="resetCamera" title="Reset camera">↺</button></div></div></section>
+<div id="panelResizer" class="panel-resizer" role="separator" aria-label="Resize visual field previews" aria-orientation="vertical" tabindex="0" title="Drag to resize previews · Double-click to reset"></div>
+<aside class="side right" aria-label="Visual field findings">
+ <section class="section lesion-section" id="lesionSection"><label class="control-label" for="lesion">Lesion</label><select id="lesion"><option value="normal">Normal</option><optgroup label="Optic nerves"><option value="leftNerve">Left optic nerve</option><option value="rightNerve">Right optic nerve</option></optgroup><optgroup label="Optic chiasm"><option value="chiasm">Midline chiasm</option></optgroup><optgroup label="Optic tracts"><option value="leftTract">Left optic tract / LGN</option><option value="rightTract">Right optic tract / LGN</option></optgroup><optgroup label="Optic radiations"><option value="leftTemporal">Left temporal (Meyer's loop)</option><option value="rightTemporal">Right temporal (Meyer's loop)</option><option value="leftParietal">Left parietal radiations</option><option value="rightParietal">Right parietal radiations</option></optgroup><optgroup label="Visual cortex"><option value="leftV1">Left V1</option><option value="rightV1">Right V1</option><option value="bothV1">Bilateral V1</option></optgroup></select></section>
+ <section class="section quiz-section" id="quizPanel" hidden aria-live="off">
+  <div class="quiz-head"><span class="section-title" id="quizProgress">Question 1 of 10</span><span class="quiz-score" id="quizScore">0 correct</span></div>
+  <div class="quiz-track" aria-hidden="true"><span class="quiz-track-fill" id="quizProgressFill"></span></div>
+  <div class="quiz-prompt" id="quizPrompt">Where could the lesion be?</div>
+  <p class="quiz-sub" id="quizSub">Click a location on the visual pathway model.</p>
+  <div class="quiz-feedback" id="quizFeedback" role="status" aria-live="polite" hidden>
+   <div class="quiz-feedback-heading"><span class="quiz-feedback-icon" id="quizFeedbackIcon" aria-hidden="true"></span><strong id="quizFeedbackTitle"></strong></div>
+   <div class="quiz-feedback-site" id="quizFeedbackSite"></div>
+   <p class="quiz-feedback-detail" id="quizFeedbackDetail"></p>
+   <div class="quiz-answer-sites" id="quizAnswerSites" hidden></div>
+  </div>
+  <div class="quiz-actions"><button id="quizReveal">Show answer</button><button class="primary" id="quizNext" disabled>Next</button></div>
+ </section>
+ <section class="section" id="resultSection"><div class="section-title">Expected field loss</div><div class="result-title" id="resultName">No visual field deficit</div><div class="result-desc" id="resultDesc"></div></section>
+ <section class="section"><div class="section-title">Monocular fields</div><div class="map-row"><div class="map-wrap"><div class="map-title"><span class="swatch" style="background:var(--teal)"></span>Left</div><canvas id="mapLeft" width="340" height="300" aria-label="Left-eye visual field"></canvas></div><div class="map-wrap"><div class="map-title"><span class="swatch" style="background:var(--purple)"></span>Right</div><canvas id="mapRight" width="340" height="300" aria-label="Right-eye visual field"></canvas></div></div><div class="map-foot"><span><b>+</b> Fixation</span><span><b>●</b> Blind spot</span><span><b style="color:var(--coral)">■</b> Loss</span></div></section>
+</aside>
+</main>
+<div id="help"><div class="helpmodal" role="dialog" aria-label="Controls" aria-modal="true"><h2>Controls</h2><p>Drag to rotate · Scroll or pinch to zoom · Shift-drag or right-drag to pan · Double-click to reset.</p><p>In Explore mode, select a lesion or click an anatomy label to display its field defect. In Quiz mode, use the field maps to find a plausible lesion location by clicking the 3D pathways or their markers.</p><p>Front view faces the patient, so patient left appears on screen right. Field maps use visual-space coordinates.</p><button class="close" id="helpClose">Close</button></div></div>
+<div id="about"><div class="helpmodal" role="dialog" aria-label="About Visual Field Trip" aria-modal="true"><h2>🚌 Visual Field Trip</h2><p class="byline">By Micah Etter</p><p>Cerebral cortex and thalamus: FreeSurfer fsaverage atlas (Fischl et al., 1999/2002).</p><p><a href="https://github.com/takuhironishimura/Brain_Model" target="_blank" rel="noopener noreferrer">Anatomical model source</a></p><p>Photographs: public-domain / CC0 images from Wikimedia Commons.</p><p id="currentPhotoCredit"></p><ul id="photoCredits" class="about-sources"></ul><button class="close" id="aboutClose">Close</button></div></div>
+<script>
+'use strict';
+(() => {
+ const $=id=>document.getElementById(id), rad=Math.PI/180;
+ const C={teal:[.38,.89,.81], purple:[.68,.61,1], coral:[1,.49,.44], gold:[1,.80,.43], navy:[.38,.58,.7], white:[.9,.96,1]};
+ const lesions={
+ normal:{name:'No visual field deficit',kind:'Intact visual pathways',desc:'Intact binocular overlap with monocular temporal crescents.'},
+ leftNerve:{name:'Left monocular vision loss',kind:'Left prechiasmal lesion',desc:'Complete left optic nerve lesion; right eye spared.'},
+ rightNerve:{name:'Right monocular vision loss',kind:'Right prechiasmal lesion',desc:'Complete right optic nerve lesion; left eye spared.'},
+ chiasm:{name:'Bitemporal hemianopia',kind:'Midline chiasmal lesion',desc:'Damage to crossing nasal fibers produces bilateral temporal field loss.'},
+ leftTract:{name:'Right homonymous hemianopia',kind:'Left optic tract / LGN',desc:'Loss of right visual hemifield in both eyes; optic tract defects may be incongruous.'},
+ rightTract:{name:'Left homonymous hemianopia',kind:'Right optic tract / LGN',desc:'Loss of left visual hemifield in both eyes; optic tract defects may be incongruous.'},
+ leftTemporal:{name:'Right superior quadrantanopia',kind:'Left temporal lobe · Meyer’s loop',desc:'Left Meyer’s loop lesion affects the right upper quadrant.'},
+ rightTemporal:{name:'Left superior quadrantanopia',kind:'Right temporal lobe · Meyer’s loop',desc:'Right Meyer’s loop lesion affects the left upper quadrant.'},
+ leftParietal:{name:'Right inferior quadrantanopia',kind:'Left parietal optic radiations',desc:'Left parietal radiation lesion affects the right lower quadrant.'},
+ rightParietal:{name:'Left inferior quadrantanopia',kind:'Right parietal optic radiations',desc:'Right parietal radiation lesion affects the left lower quadrant.'},
+ leftV1:{name:'Right homonymous hemianopia with macular sparing',kind:'Left primary visual cortex',desc:'Left occipital cortical lesion with preservation of approximately 7° of central vision. Macular sparing suggests occipital cortical involvement but is not universal.'},
+ rightV1:{name:'Left homonymous hemianopia with macular sparing',kind:'Right primary visual cortex',desc:'Right occipital cortical lesion with preservation of approximately 7° of central vision. Macular sparing suggests occipital cortical involvement but is not universal.'},
+ bothV1:{name:'Bilateral cortical field loss with central sparing',kind:'Bilateral occipital lesions',desc:'Bilateral occipital lesions sparing the macular representations, leaving a small central island of vision in both eyes. This is an illustrative pattern, not an obligatory feature of bilateral cortical injury.'}
+ };
+ let state={lesion:'normal',eye:'both',trace:'none',showFields:true,showPaths:true,showBrain:true,showPhoto:true,showDefect:true,showGrid:true,showLabels:false,preset:'top'};
+ // The question bank covers every modeled lesion location: five left/right
+ // pairs, the midline chiasm and bilateral V1 (12 location-specific cases).
+ // The cortical cases model macular sparing to distinguish them from the
+ // modeled complete tract defects. In patients, this is suggestive, not absolute.
+ const QUIZ_CASES=[
+  {lesion:'leftNerve',valid:['leftNerve']},
+  {lesion:'rightNerve',valid:['rightNerve']},
+  {lesion:'chiasm',valid:['chiasm']},
+  {lesion:'leftTract',valid:['leftTract']},
+  {lesion:'rightTract',valid:['rightTract']},
+  {lesion:'leftTemporal',valid:['leftTemporal']},
+  {lesion:'rightTemporal',valid:['rightTemporal']},
+  {lesion:'leftParietal',valid:['leftParietal']},
+  {lesion:'rightParietal',valid:['rightParietal']},
+  {lesion:'leftV1',valid:['leftV1']},
+  {lesion:'rightV1',valid:['rightV1']},
+  {lesion:'bothV1',valid:['leftV1','rightV1'],bilateral:true}
+ ];
+ const QUIZ_ROUND_LENGTH=10;
+ const quiz={enabled:false,deck:[],index:0,correct:0,answered:0,misses:0,revealed:false,done:false,lastChoice:null,attempts:[],feedbackType:'',firstBilateral:null,highlightSite:null,previous:null};
+ const quizCase=()=>quiz.deck[quiz.index];
+ const visibleLesion=()=>quiz.enabled?(quiz.revealed?quiz.highlightSite||'normal':'normal'):state.lesion;
+
+ const PHOTOS=[
+  {title:'Garden, Italy',author:'Daderot',page:'https://commons.wikimedia.org/wiki/File:Garden_scene_-_Giardino_di_Ninfa,_Italy_-_DSC03093.jpg',src:'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fa/Garden_scene_-_Giardino_di_Ninfa%2C_Italy_-_DSC03093.jpg/960px-Garden_scene_-_Giardino_di_Ninfa%2C_Italy_-_DSC03093.jpg'},
+  {title:'San Francisco street',author:'Runner1928',page:'https://commons.wikimedia.org/wiki/File:San_Francisco_street_scene.jpg',src:'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ef/San_Francisco_street_scene.jpg/960px-San_Francisco_street_scene.jpg'},
+  {title:'New York street',author:'Alanthebox',page:'https://commons.wikimedia.org/wiki/File:New_York_City_street.JPG',src:'https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4c/New_York_City_street.JPG/960px-New_York_City_street.JPG'},
+  {title:'Mirror Lake',author:'Archbob',page:'https://commons.wikimedia.org/wiki/File:Landscapereflection.jpg',src:'https://thumb.wikimedia.org/wikipedia/commons/thumb/3/31/Landscapereflection.jpg/960px-Landscapereflection.jpg'},
+  {title:'London street',author:'Daderot',page:'https://commons.wikimedia.org/wiki/File:Street_scene_-_London,_England_-_DSC01018.jpg',src:'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7b/Street_scene_-_London%2C_England_-_DSC01018.jpg/960px-Street_scene_-_London%2C_England_-_DSC01018.jpg'}
+ ];
+ const PHOTO_RANGE_H=110, PHOTO_RANGE_V=80;
+ const photoCanvas=document.createElement('canvas');photoCanvas.width=1100;photoCanvas.height=800;
+ let photoReady=false,photoTex=null,photoIndex=-1,loadToken=0;
+ const photoOn=()=>state.showPhoto&&photoReady;
+ function photoCoords(h,e){return[(h+PHOTO_RANGE_H)/(2*PHOTO_RANGE_H),(e+PHOTO_RANGE_V)/(2*PHOTO_RANGE_V)]}
+ function cropPhoto(img){
+  // Reset bitmap before each attempt, including after any rejected cross-origin image.
+  photoCanvas.width=1100;photoCanvas.height=800;
+  const c=photoCanvas.getContext('2d'),w=photoCanvas.width,h=photoCanvas.height,ratio=w/h,srcRatio=img.width/img.height;
+  let sx=0,sy=0,sw=img.width,sh=img.height;
+  if(srcRatio>ratio){sw=img.height*ratio;sx=(img.width-sw)/2}else{sh=img.width/ratio;sy=(img.height-sh)/2}
+  c.clearRect(0,0,w,h);c.drawImage(img,sx,sy,sw,sh,0,0,w,h);
+  // Read one pixel to verify CORS permission before attempting the GPU upload.
+  c.getImageData(0,0,1,1);
+  if(gl){if(!photoTex)photoTex=gl.createTexture();gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,photoTex);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,photoCanvas);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,false)}
+ }
+ function updateSceneUI(){
+  const entry=PHOTOS[photoIndex],credit=$('currentPhotoCredit');
+  credit.replaceChildren();
+  if(photoReady&&entry){
+   credit.append(document.createTextNode('Current photo: '));
+   const a=document.createElement('a');a.textContent=entry.title+' · '+entry.author+' · CC0';a.href=entry.page;a.target='_blank';a.rel='noopener noreferrer';credit.append(a);
+  }
+  refreshMaps();
+ }
+ function requestPhoto(idx,remaining=PHOTOS.length){
+  const token=++loadToken;
+  photoReady=false;
+  const target=PHOTOS[idx];
+  // Commons thumbnails sometimes omit CORS headers; the proxy is used only if needed.
+  const sources=[target.src,'https://wsrv.nl/?url='+encodeURIComponent(target.src)+'&w=960&output=jpg'];
+  function attempt(sourceIndex){
+   if(token!==loadToken)return;
+   if(sourceIndex>=sources.length){if(remaining>1)requestPhoto((idx+1)%PHOTOS.length,remaining-1);else{$('showPhoto').checked=false;state.showPhoto=false;$('showPhoto').disabled=true;updateSceneUI()}return}
+   const img=new Image();img.crossOrigin='anonymous';img.decoding='async';
+   img.onload=()=>{if(token!==loadToken)return;try{cropPhoto(img);photoReady=true;photoIndex=idx;$('showPhoto').disabled=false;updateSceneUI()}catch(error){console.warn('Photo texture unavailable',error);attempt(sourceIndex+1)}};
+   img.onerror=()=>attempt(sourceIndex+1);
+   img.src=sources[sourceIndex];
+  }
+  attempt(0);
+ }
+ PHOTOS.forEach(photo=>{const li=document.createElement('li'),a=document.createElement('a');a.href=photo.page;a.target='_blank';a.rel='noopener noreferrer';a.textContent=photo.title;li.append(a,document.createTextNode(' · '+photo.author+' · CC0'));$('photoCredits').append(li)});
+ const presetViews={front:{yaw:0,pitch:.05,dist:10.3,target:[0,0,-.65]},top:{yaw:Math.PI,pitch:1.52,dist:10.6,target:[0,0,-.60]},rear:{yaw:3.10,pitch:.16,dist:10.8,target:[0,0,-.68]}};
+ let cam={...presetViews.top,target:[...presetViews.top.target]}, camDest=null, lastFrame=0;
+ const shell=document.querySelector('.shell'),rightPanel=document.querySelector('.side.right'),panelResizer=$('panelResizer');
+ const panelKey='visualFieldTrip.rightPanelWidth';
+ const mobilePanels=window.matchMedia('(max-width:760px)');
+ const defaultPanelWidth=()=>window.matchMedia('(max-width:1120px)').matches?256:290;
+ let preferredPanelWidth=null;
+ try{const stored=Number(localStorage.getItem(panelKey));if(Number.isFinite(stored)&&stored>=220&&stored<=1200)preferredPanelWidth=stored}catch(e){}
+ function panelBounds(){
+  const area=shell.getBoundingClientRect().width;
+  const left=document.querySelector('.side.left').getBoundingClientRect().width;
+  const divider=panelResizer.getBoundingClientRect().width||8;
+  const min=235,max=Math.max(min,Math.min(900,area-left-divider-300));
+  return {min,max};
+ }
+ function applyPanelWidth(value=preferredPanelWidth??defaultPanelWidth()){
+  if(mobilePanels.matches)return;
+  const {min,max}=panelBounds(),w=Math.round(Math.min(max,Math.max(min,value)));
+  shell.style.setProperty('--right-panel-width',w+'px');
+  panelResizer.setAttribute('aria-valuemin',String(min));
+  panelResizer.setAttribute('aria-valuemax',String(Math.round(max)));
+  panelResizer.setAttribute('aria-valuenow',String(w));
+  panelResizer.setAttribute('aria-valuetext',w+' pixels');
+  return w;
+ }
+ function savePanelWidth(){try{if(preferredPanelWidth!==null)localStorage.setItem(panelKey,String(Math.round(preferredPanelWidth)))}catch(e){}}
+ function resetPanelWidth(){preferredPanelWidth=defaultPanelWidth();applyPanelWidth();savePanelWidth()}
+ let resizingPanel=null;
+ panelResizer.addEventListener('pointerdown',e=>{
+  if(mobilePanels.matches||e.button!==0)return;
+  e.preventDefault();
+  resizingPanel={id:e.pointerId,startX:e.clientX,startWidth:rightPanel.getBoundingClientRect().width};
+  panelResizer.setPointerCapture(e.pointerId);shell.classList.add('is-resizing');
+ });
+ panelResizer.addEventListener('pointermove',e=>{
+  if(!resizingPanel||e.pointerId!==resizingPanel.id)return;
+  const requested=resizingPanel.startWidth+resizingPanel.startX-e.clientX;
+  preferredPanelWidth=applyPanelWidth(requested);
+ });
+ function finishPanelResize(e){if(!resizingPanel||e.pointerId!==resizingPanel.id)return;resizingPanel=null;shell.classList.remove('is-resizing');savePanelWidth()}
+ panelResizer.addEventListener('pointerup',finishPanelResize);
+ panelResizer.addEventListener('pointercancel',finishPanelResize);
+ panelResizer.addEventListener('lostpointercapture',finishPanelResize);
+ panelResizer.addEventListener('dblclick',resetPanelWidth);
+ panelResizer.addEventListener('keydown',e=>{
+  if(!['ArrowLeft','ArrowRight','Home'].includes(e.key))return;
+  e.preventDefault();
+  if(e.key==='Home'){resetPanelWidth();return}
+  const step=e.shiftKey?40:16;
+  preferredPanelWidth=applyPanelWidth((preferredPanelWidth??rightPanel.getBoundingClientRect().width)+(e.key==='ArrowLeft'?step:-step));
+  savePanelWidth();
+ });
+ window.addEventListener('resize',()=>applyPanelWidth());
+ applyPanelWidth();
+ const canvas=$('gl'),vp=$('viewport'); let gl=null;
+ try{gl=canvas.getContext('webgl',{alpha:true,antialias:true,premultipliedAlpha:false,depth:true,stencil:false, preserveDrawingBuffer:false})||canvas.getContext('experimental-webgl');}catch(e){}
+ let ctx2d=null;if(!gl){ctx2d=canvas.getContext('2d');if(!ctx2d)$('fallback').classList.add('show');}
+ const add=(a,b)=>a.map((v,i)=>v+b[i]),sub=(a,b)=>a.map((v,i)=>v-b[i]),mul=(a,s)=>a.map(v=>v*s),dot=(a,b)=>a.reduce((s,v,i)=>s+v*b[i],0),cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]],norm=a=>{let l=Math.hypot(...a);return l>0?mul(a,1/l):[0,0,1]};
+ function perspective(fov,aspect,near,far){let f=1/Math.tan(fov/2),nf=1/(near-far);return [f/aspect,0,0,0,0,f,0,0,0,0,(far+near)*nf,-1,0,0,2*far*near*nf,0]}
+ function lookAt(eye,target,up){let z=norm(sub(eye,target)),x=norm(cross(up,z)),y=cross(z,x);return [x[0],y[0],z[0],0,x[1],y[1],z[1],0,x[2],y[2],z[2],0,-dot(x,eye),-dot(y,eye),-dot(z,eye),1]}
+ function matMul(a,b){let o=new Array(16).fill(0);for(let col=0;col<4;col++)for(let row=0;row<4;row++)for(let k=0;k<4;k++)o[col*4+row]+=a[k*4+row]*b[col*4+k];return o}
+ function project(p,m,w,h){let x=p[0],y=p[1],z=p[2],q=[m[0]*x+m[4]*y+m[8]*z+m[12],m[1]*x+m[5]*y+m[9]*z+m[13],m[2]*x+m[6]*y+m[10]*z+m[14],m[3]*x+m[7]*y+m[11]*z+m[15]];if(q[3]<=0)return null;return {x:(q[0]/q[3]*.5+.5)*w,y:(.5-q[1]/q[3]*.5)*h,z:q[2]/q[3]}}
+ function smooth(a,b,t){return a+(b-a)*t}
+ let program=null,loc={},meshes={},lines=[],opaque=[],translucent=[],paths=[],atlasPaths=[],atlasLandmarks={},brainParts=[],labels=[];
+ const hasAnatomicalBrain=()=>!!(gl&&state.showBrain&&brainParts.length);
+ function compile(gl,type,src){let sh=gl.createShader(type);gl.shaderSource(sh,src);gl.compileShader(sh);if(!gl.getShaderParameter(sh,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(sh));return sh}
+ if(gl){
+  try{
+   const vs='attribute vec3 aPosition;attribute vec3 aNormal;attribute vec2 aUV;uniform mat4 uMVP;varying vec3 vNormal;varying vec3 vLocalPosition;varying vec2 vUV;void main(){gl_Position=uMVP*vec4(aPosition,1.0);vNormal=aNormal;vLocalPosition=aPosition;vUV=aUV;}';
+   const fs='precision mediump float;uniform vec4 uColor;uniform float uUnlit;uniform float uPathRim;uniform vec3 uCameraLocal;uniform sampler2D uScenePhoto;uniform float uUsePhoto;varying vec3 vNormal;varying vec3 vLocalPosition;varying vec2 vUV;void main(){vec3 n=normalize(vNormal);float light=0.68+0.30*max(dot(n,normalize(vec3(-0.4,0.85,0.9))),0.0);vec3 base=uColor.rgb*mix(light,1.0,uUnlit);float facing=abs(dot(n,normalize(uCameraLocal-vLocalPosition)));float rim=(1.0-smoothstep(0.04,0.21,facing))*uPathRim;base=mix(base,vec3(0.045,0.055,0.075),rim*0.38);if(uUsePhoto>0.5)base=texture2D(uScenePhoto,vUV).rgb;gl_FragColor=vec4(base,uColor.a);}';
+   program=gl.createProgram();gl.attachShader(program,compile(gl,gl.VERTEX_SHADER,vs));gl.attachShader(program,compile(gl,gl.FRAGMENT_SHADER,fs));gl.linkProgram(program);if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw Error('Shader link failed');
+   loc={position:gl.getAttribLocation(program,'aPosition'),normal:gl.getAttribLocation(program,'aNormal'),uv:gl.getAttribLocation(program,'aUV'),mvp:gl.getUniformLocation(program,'uMVP'),color:gl.getUniformLocation(program,'uColor'),unlit:gl.getUniformLocation(program,'uUnlit'),pathRim:gl.getUniformLocation(program,'uPathRim'),cameraLocal:gl.getUniformLocation(program,'uCameraLocal'),usePhoto:gl.getUniformLocation(program,'uUsePhoto'),scenePhoto:gl.getUniformLocation(program,'uScenePhoto')};
+   gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.clearColor(0,0,0,0);
+  }catch(e){console.error(e);gl=null;$('fallback').classList.add('show')}
+ }
+ function createMesh(pos,inds,normal,typ='triangles',uv=null){
+  if(!gl)return null;let vbo=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,vbo);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(pos),gl.STATIC_DRAW);
+  let nbo=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,nbo);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(normal||pos.map((_,i)=>i%3===2?1:0)),gl.STATIC_DRAW);
+  let ibo=null;if(inds){ibo=gl.createBuffer();gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ibo);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(inds),gl.STATIC_DRAW)}
+  let uvbo=null;if(uv){uvbo=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,uvbo);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(uv),gl.STATIC_DRAW)}
+  return{vbo,nbo,ibo,uvbo,num:inds?inds.length:pos.length/3,type:typ}
+ }
+ function sphere(center,rx,ry,rz,rings=16,sides=24){let p=[],n=[],ii=[];for(let i=0;i<=rings;i++){let phi=Math.PI*i/rings;for(let j=0;j<=sides;j++){let a=j*2*Math.PI/sides,v=[Math.sin(phi)*Math.cos(a),Math.cos(phi),Math.sin(phi)*Math.sin(a)];p.push(center[0]+v[0]*rx,center[1]+v[1]*ry,center[2]+v[2]*rz);n.push(...norm([v[0]/rx,v[1]/ry,v[2]/rz]));if(i<rings&&j<sides){let b=i*(sides+1)+j;ii.push(b,b+sides+1,b+1,b+1,b+sides+1,b+sides+2)}}}return createMesh(p,ii,n)}
+ function tubular(points,radius=0.03,sides=9){let p=[],n=[],ii=[];for(let i=0;i<points.length;i++){let t=norm(sub(points[Math.min(points.length-1,i+1)],points[Math.max(0,i-1)])),seed=Math.abs(t[1])>.91?[1,0,0]:[0,1,0],u=norm(cross(t,seed)),v=cross(t,u);for(let j=0;j<sides;j++){let a=j*2*Math.PI/sides,vec=add(mul(u,Math.cos(a)),mul(v,Math.sin(a)));p.push(...add(points[i],mul(vec,radius)));n.push(...vec);if(i<points.length-1){let a0=i*sides+j,a1=i*sides+(j+1)%sides,b0=(i+1)*sides+j,b1=(i+1)*sides+(j+1)%sides;ii.push(a0,b0,a1,a1,b0,b1)}}}return createMesh(p,ii,n)}
+ function interpolate(points,n=6){let out=[];for(let i=0;i<points.length-1;i++){let a=points[Math.max(0,i-1)],b=points[i],c=points[i+1],d=points[Math.min(points.length-1,i+2)];for(let j=0;j<n;j++){let t=j/n,t2=t*t,t3=t2*t;out.push([0,1,2].map(k=>.5*((2*b[k])+(-a[k]+c[k])*t+(2*a[k]-5*b[k]+4*c[k]-d[k])*t2+(-a[k]+3*b[k]-3*c[k]+d[k])*t3)))}}out.push(points[points.length-1]);return out}
+ function lineMesh(points){return createMesh(points.flat(),null,null,'line')}
+ function color(rgb,a=1){return [...rgb,a]}
+ function pushMesh(arr,mesh,c,extra={}){if(mesh)arr.push({mesh,c,...extra})}
+ const eyePosition=side=>[side==='left'?-.46:.46,0,0.15];
+ // Approximate each monocular field as a spherical angular cap. Left eye has left temporal reach; right eye has right temporal reach.
+ function rimExtent(side,t){let co=Math.cos(t),si=Math.sin(t),horizontal=(co<0?(side==='left'?101:59):(side==='left'?59:101)),vertical=si>0?59:74;return 1/Math.sqrt((co/horizontal)**2+(si/vertical)**2)}
+ function anglesAt(side,t,f){let r=rimExtent(side,t)*f;return [r*Math.cos(t),r*Math.sin(t)]}
+ function fieldPoint(side,t,f,R=3.22){const a=anglesAt(side,t,f);let h=a[0]*rad,v=a[1]*rad;return add(eyePosition(side),[Math.sin(h)*Math.cos(v)*R,Math.sin(v)*R,Math.cos(h)*Math.cos(v)*R])}
+ // Model macular sparing when an occipital cortical lesion spares the occipital pole.
+ // This is illustrative: not all occipital lesions have macular sparing.
+ const MACULAR_SPARING_DEGREES=7;
+ const isCorticalLesion=lesion=>lesion==='leftV1'||lesion==='rightV1'||lesion==='bothV1';
+ function lost(side,h,e,lesion=state.lesion){
+  const maculaSpared=isCorticalLesion(lesion)&&Math.hypot(h,e)<=MACULAR_SPARING_DEGREES;
+  switch(lesion){
+   case 'leftNerve':return side==='left';
+   case 'rightNerve':return side==='right';
+   case 'chiasm':return side==='left'?h<-.4:h>.4;
+   case 'leftTract':return h>.4;
+   case 'rightTract':return h<-.4;
+   case 'leftV1':return h>.4&&!maculaSpared;
+   case 'rightV1':return h<-.4&&!maculaSpared;
+   case 'leftTemporal':return h>.4&&e>.4;
+   case 'rightTemporal':return h<-.4&&e>.4;
+   case 'leftParietal':return h>.4&&e<-.4;
+   case 'rightParietal':return h<-.4&&e<-.4;
+   case 'bothV1':return !maculaSpared;
+   default:return false;
+  }
+ }
+ function surface(side,predicate=null,R=3.22,detail=96,steps=22,withUV=false){let p=[],n=[],inds=[],uv=[];let useCell=!!predicate;for(let i=0;i<=detail;i++){let theta=i*2*Math.PI/detail;for(let j=0;j<=steps;j++){let f=j/steps,v=fieldPoint(side,theta,f,R),a=norm(sub(v,eyePosition(side)));p.push(...v);n.push(...a);if(withUV)uv.push(...photoCoords(...anglesAt(side,theta,f)));if(i<detail&&j<steps){let b=i*(steps+1)+j;let tm=(i+.5)*2*Math.PI/detail,fm=(j+.5)/steps;let ae=anglesAt(side,tm,fm);if(!useCell||predicate(ae[0],ae[1]))inds.push(b,b+steps+1,b+1,b+1,b+steps+1,b+steps+2)}}}return createMesh(p,inds,n,'triangles',withUV?uv:null)}
+
+ function fieldHull(side){let p=[],n=[],inds=[],steps=80;for(let i=0;i<=steps;i++){let th=i*2*Math.PI/steps;for(let j=0;j<=5;j++){let f=j/5;let center=eyePosition(side),top=fieldPoint(side,th,1);let v=add(center,mul(sub(top,center),smooth(.07,1,f)));p.push(...v);n.push(...norm(sub(v,center)));if(i<steps&&j<5){let b=i*6+j;inds.push(b,b+6,b+1,b+1,b+6,b+7)}}}return createMesh(p,inds,n)}
+ function fieldGrid(side){let ls=[];for(let fraction of [.33,.66,1]){let pts=[];for(let i=0;i<=144;i++)pts.push(fieldPoint(side,i*2*Math.PI/144,fraction,3.225));ls.push(lineMesh(pts))}for(let i=0;i<8;i++){let pts=[];for(let j=1;j<=25;j++)pts.push(fieldPoint(side,i*Math.PI/4,j/25,3.227));ls.push(lineMesh(pts))}return ls}
+ function fieldRays(side){let rays=[];for(let i=0;i<8;i++){let p0=eyePosition(side),p1=fieldPoint(side,i*Math.PI/4,1,3.22);rays.push(lineMesh([add(p0,mul(sub(p1,p0),.12)),p1]))}return rays}
+
+ const initialMeshes={};
+ function initialize(){
+  if(!gl)return;
+  for(const side of ['left','right']){
+   const s=side==='left'?-1:1,eye=eyePosition(side),rgb=side==='left'?C.teal:C.purple;
+   meshes[side]={shell:surface(side),photo:surface(side,null,3.242,96,24,true),hull:fieldHull(side),grid:fieldGrid(side),rays:fieldRays(side),defect:surface(side,(h,e)=>lost(side,h,e),3.26,160,48),traceLeft:surface(side,(h,e)=>h<-.4,3.275,72,14),traceRight:surface(side,(h,e)=>h>.4,3.275,72,14)};
+   pushMesh(opaque,sphere(eye,.25,.25,.25),color([.79,.87,.96],1),{tag:'eye',side});
+   pushMesh(opaque,sphere([eye[0],eye[1],eye[2]+.222],.118,.118,.047),color([.17,.50,.62],1),{tag:'eye',side});
+   pushMesh(opaque,sphere([eye[0],eye[1],eye[2]+.269],.052,.052,.026),color([.035,.08,.13],1),{tag:'eye',side});
+   pushMesh(opaque,sphere([eye[0]-.035,eye[1]+.04,eye[2]+.294],.012,.013,.007),color([.95,1,1],1),{tag:'eye',side});
+   let op=[ [s*.46,0,-.06],[s*.45,0,-.39],[s*.37,.005,-.78],[s*.19,0,-1.21],[0,0,-1.41] ];
+   pushMesh(translucent,tubular(interpolate(op,6),.088),color([.61,.70,.82],.61),{tag:'opticNerve',side});
+  }
+  // Chiasm is a transverse fiber crossing, shown as a small shared central mass.
+  pushMesh(translucent,sphere([0,0,-1.42],.29,.092,.25),color([.73,.8,.88],.42),{tag:'chiasm'});
+  // Each eye contributes nasal (crossed) and temporal (uncrossed) retinal fibers.
+  const fibers=[
+   {name:'Left temporal (uncrossed)',hemi:'right',side:'left',points:[[-.54,-.035,-.06],[-.48,-.047,-.42],[-.35,-.053,-1.08],[-.23,-.052,-1.47],[-.50,-.054,-1.96],[-.69,-.03,-2.48]]},
+   {name:'Left nasal (crossed)',hemi:'left',side:'left',points:[[-.39,.035,-.06],[-.40,.042,-.42],[-.18,.055,-1.09],[.14,.055,-1.52],[.48,.055,-1.99],[.69,.03,-2.48]]},
+   {name:'Right nasal (crossed)',hemi:'right',side:'right',points:[[.39,.035,-.06],[.40,.042,-.42],[.18,.045,-1.09],[-.14,.055,-1.52],[-.48,.055,-1.99],[-.69,.03,-2.48]]},
+   {name:'Right temporal (uncrossed)',hemi:'left',side:'right',points:[[.54,-.035,-.06],[.48,-.047,-.42],[.35,-.053,-1.08],[.23,-.052,-1.47],[.50,-.054,-1.96],[.69,-.03,-2.48]]}
+  ];
+  for(const f of fibers)paths.push({mesh:tubular(interpolate(f.points,6),.021,9),tag:'fiber',side:f.side,hemi:f.hemi,name:f.name});
+  for(const s of [-1,1]){
+   let side=s<0?'left':'right',hemi=s<0?'right':'left';
+   pushMesh(opaque,sphere([s*.69,0,-2.49],.15,.12,.20),color([.93,.69,.43],1),{tag:'lgn',side});
+   const dorsal=[[s*.72,.07,-2.51],[s*.90,.43,-2.80],[s*1.05,.82,-3.22],[s*.99,.79,-3.57],[s*.91,.58,-3.83],[s*.88,.25,-4.03]];
+   const ventral=[[s*.73,-.07,-2.51],[s*1.15,-.39,-2.23],[s*1.38,-.55,-2.59],[s*1.27,-.43,-3.26],[s*.89,-.20,-4.03]];
+   paths.push({mesh:tubular(interpolate(dorsal,8),.073,10),tag:'parietal',side,hemi});
+   paths.push({mesh:tubular(interpolate(ventral,8),.073,10),tag:'temporal',side,hemi});
+   pushMesh(opaque,sphere([s*.84,.03,-4.06],.27,.43,.18),color([.69,.75,.84],1),{tag:'v1',side});
+   // Slightly fanned upper/lower visual cortical edges.
+   pushMesh(translucent,sphere([s*.90,.12,-4.02],.19,.22,.15),color([.48,.70,.9],.3),{tag:'v1glow',side});
+  }
+ }
+ initialize();
+ let mvp=null;
+ function cameraMVP(){let aspect=canvas.width/Math.max(1,canvas.height),distance=cam.dist*Math.max(1,1.1/aspect);let p=[cam.target[0]+Math.sin(cam.yaw)*Math.cos(cam.pitch)*distance,cam.target[1]+Math.sin(cam.pitch)*distance,cam.target[2]+Math.cos(cam.yaw)*Math.cos(cam.pitch)*distance];let view=lookAt(p,cam.target,[0,1,0]),proj=perspective(48*rad,canvas.width/canvas.height,.1,50);return matMul(proj,matMul(view,[-1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]))}
+ function drawMesh(mesh,c,unlit=0,photo=false){if(!gl||!mesh||mesh.num===0)return;gl.bindBuffer(gl.ARRAY_BUFFER,mesh.vbo);gl.enableVertexAttribArray(loc.position);gl.vertexAttribPointer(loc.position,3,gl.FLOAT,false,0,0);gl.bindBuffer(gl.ARRAY_BUFFER,mesh.nbo);gl.enableVertexAttribArray(loc.normal);gl.vertexAttribPointer(loc.normal,3,gl.FLOAT,false,0,0);const textured=photo&&!!mesh.uvbo&&photoTex;if(textured){gl.bindBuffer(gl.ARRAY_BUFFER,mesh.uvbo);gl.enableVertexAttribArray(loc.uv);gl.vertexAttribPointer(loc.uv,2,gl.FLOAT,false,0,0)}else{gl.disableVertexAttribArray(loc.uv);gl.vertexAttrib2f(loc.uv,0,0)}if(mesh.ibo)gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,mesh.ibo);gl.uniform4fv(loc.color,c);gl.uniform1f(loc.unlit,unlit);gl.uniform1f(loc.usePhoto,textured?1:0);if(textured){gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,photoTex);gl.uniform1i(loc.scenePhoto,0)}let mode=mesh.type==='line'?gl.LINE_STRIP:gl.TRIANGLES;if(mesh.ibo)gl.drawElements(mode,mesh.num,gl.UNSIGNED_SHORT,0);else gl.drawArrays(mode,0,mesh.num)}
+
+function drawPath(meshObj,c,unlit=0){gl.uniform1f(loc.pathRim,1);drawMesh(meshObj.mesh||meshObj,c,unlit);gl.uniform1f(loc.pathRim,0)}
+function tractColor(selected,lesioned,muted){return lesioned?color(C.coral,.98):selected?color(C.gold,.98):muted?color([.36,.60,.78],.46):color([.36,.60,.78],.88)}
+ function selectedAnatomy(tag,side){const l=visibleLesion();if(l==='normal')return false;if(l==='bothV1')return tag==='v1';if(l==='chiasm')return tag==='chiasm';if(l==='leftNerve'||l==='rightNerve')return tag==='opticNerve'&&side===(l==='leftNerve'?'left':'right');if(l==='leftTract'||l==='rightTract')return tag==='lgn'&&side===(l==='leftTract'?'left':'right');if(l.includes('Temporal'))return tag==='temporal'&&side===(l.startsWith('left')?'left':'right');if(l.includes('Parietal'))return tag==='parietal'&&side===(l.startsWith('left')?'left':'right');if(l==='leftV1'||l==='rightV1')return tag==='v1'&&side===(l==='leftV1'?'left':'right');return false}
+ function render(now){requestAnimationFrame(render);if(!gl){if(ctx2d)renderSoftware(now);return;}
+  let dt=Math.min(.1,(now-lastFrame)/1000||.016);lastFrame=now;
+  if(camDest){let d=Math.min(1,dt*8);cam.yaw=smooth(cam.yaw,camDest.yaw,d);cam.pitch=smooth(cam.pitch,camDest.pitch,d);cam.dist=smooth(cam.dist,camDest.dist,d);cam.target=cam.target.map((v,i)=>smooth(v,camDest.target[i],d));if(Math.abs(cam.yaw-camDest.yaw)+Math.abs(cam.pitch-camDest.pitch)+Math.abs(cam.dist-camDest.dist)<.005)camDest=null}
+  let w=vp.clientWidth,h=vp.clientHeight, dpr=Math.min(2,devicePixelRatio||1),rw=Math.round(w*dpr),rh=Math.round(h*dpr);if(canvas.width!==rw||canvas.height!==rh){canvas.width=rw;canvas.height=rh;gl.viewport(0,0,rw,rh)}
+  mvp=cameraMVP();gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.useProgram(program);gl.uniformMatrix4fv(loc.mvp,false,new Float32Array(mvp));gl.uniform1f(loc.pathRim,0);const camRadius=cam.dist*Math.max(1,1.1/(canvas.width/Math.max(1,canvas.height)));gl.uniform3f(loc.cameraLocal,-cam.target[0]-Math.sin(cam.yaw)*Math.cos(cam.pitch)*camRadius,cam.target[1]+Math.sin(cam.pitch)*camRadius,cam.target[2]+Math.cos(cam.yaw)*Math.cos(cam.pitch)*camRadius);gl.enable(gl.DEPTH_TEST);gl.depthMask(true);
+  // Genuine atlas tissue replaces schematic thalamus/LGN and occipital cortex blobs.
+  const atlasActive=hasAnatomicalBrain();
+  for(const o of opaque){
+   if(o.tag==='eye'&&state.eye!=='both'&&state.eye!==o.side)continue;
+   if(atlasActive&&(o.tag==='lgn'||o.tag==='v1'))continue;
+   if(!state.showPaths&&o.tag!=='eye')continue;
+   drawMesh(o.mesh,selectedAnatomy(o.tag,o.side)?color(C.coral):o.c);
+  }
+  gl.depthMask(false);
+  if(atlasActive){
+   for(const part of brainParts){if(part.tag==='cortex')drawMesh(part.mesh,part.c)}
+   for(const part of brainParts){
+    if(part.tag==='thalamus'){
+     // The entire atlas thalamus is displayed. LGN is not separately segmented.
+     const anatomyLesion=visibleLesion(),lesionSide=anatomyLesion==='leftTract'?'L':anatomyLesion==='rightTract'?'R':null;
+     drawMesh(part.mesh,part.side===lesionSide?color(C.coral,.94):part.c);
+    }else if(part.tag!=='cortex')drawMesh(part.mesh,part.c);
+   }
+   // Highlight triangles from the real cortical surface rather than a substitute shape.
+   const anatomyLesion=visibleLesion(),visualSide=anatomyLesion==='leftV1'?'L':anatomyLesion==='rightV1'?'R':anatomyLesion==='bothV1'?'both':null;
+   if(visualSide)for(const part of brainParts){
+    if(part.tag==='cortex'&&part.patch&&(visualSide==='both'||part.side===visualSide))
+     drawMesh(part.patch,color(C.coral,.87),1);
+   }
+  }
+  if(state.showPaths){
+   for(const o of translucent){
+    if(atlasActive&&o.tag==='v1glow')continue;
+    // Optic nerves are tubular too: keep the same restrained edge shading
+    // when a prechiasmal lesion highlights one of them.
+    if(o.tag==='opticNerve')drawPath(o,selectedAnatomy(o.tag,o.side)?color(C.coral,.75):o.c,0);
+    else drawMesh(o.mesh,selectedAnatomy(o.tag,o.side)?color(C.coral,.75):o.c);
+   }
+   gl.depthMask(true);
+   const activePaths=atlasActive&&atlasPaths.length?atlasPaths:paths;
+   for(const o of activePaths){
+    let selected=state.trace!=='none'&&o.hemi===state.trace,tractSide=visibleLesion()==='leftTract'?'left':visibleLesion()==='rightTract'?'right':null,lesioned=selectedAnatomy(o.tag,o.side)||(o.tag==='fiber'&&tractSide&&o.routeSide===tractSide);
+    let cc=tractColor(selected,lesioned,state.trace!=='none'&&!selected&&!lesioned);
+    // Keep actual surface lighting on gold/red highlighted pathways.
+    // Unlit highlights flattened the tubes and hid their subtle rim shading.
+    drawPath(o,cc,0)
+   }
+   gl.depthMask(false);
+  }
+  if(state.showFields){
+   for(const side of ['left','right']){
+    if(state.eye!=='both'&&side!==state.eye)continue;
+    let o=meshes[side],rgb=side==='left'?C.teal:C.purple,alpha=state.eye==='both'?.095:.14;
+    drawMesh(o.hull,color(rgb,.018),1);drawMesh(o.shell,color(rgb,photoOn()?alpha*.50:alpha),1);
+    if(photoOn())drawMesh(o.photo,color([1,1,1],state.eye==='both'?.72:.96),1,true);
+    if(state.trace!=='none')drawMesh(state.trace==='left'?o.traceLeft:o.traceRight,color(C.gold,.085),1);
+    if(state.showDefect&&state.lesion!=='normal')drawMesh(o.defect,photoOn()?color([.012,.019,.032],.91):color(C.coral,.39),1);
+    if(state.showGrid){for(const mesh of o.grid)drawMesh(mesh,color(rgb,.54),1);for(const mesh of o.rays)drawMesh(mesh,color(rgb,.18),1)}
+   }
+  }
+  gl.depthMask(true);updateSceneLabels(w,h);updateQuizTargets(w,h);
+ }
+ // Load the genuine atlas mesh only over HTTPS. No remote libraries or code are executed.
+ const BRAIN_URLS=[
+  'https://cdn.jsdelivr.net/gh/takuhironishimura/Brain_Model@main/brain.glb',
+  'https://raw.githubusercontent.com/takuhironishimura/Brain_Model/main/brain.glb'
+ ];
+ const brainControl=$('brainControl');
+ // Extract existing cortical triangles in the posterior medial calcarine vicinity.
+ // This is an anatomical *landmark approximation*, not an atlas-parcellated V1 label.
+ function occipitalCortexPatch(pos,indices){
+  let xmin=Infinity,xmax=-Infinity,ymin=Infinity,ymax=-Infinity,zmin=Infinity,zmax=-Infinity;
+  for(let i=0;i<pos.length;i+=3){xmin=Math.min(xmin,pos[i]);xmax=Math.max(xmax,pos[i]);ymin=Math.min(ymin,pos[i+1]);ymax=Math.max(ymax,pos[i+1]);zmin=Math.min(zmin,pos[i+2]);zmax=Math.max(zmax,pos[i+2]);}
+  let rearLimit=zmin+(zmax-zmin)*.30;
+  let medialLimit=Math.max(Math.abs(xmin),Math.abs(xmax))*.64;
+  let lowerY=ymin+(ymax-ymin)*.25,upperY=ymin+(ymax-ymin)*.78;
+  let accepted=[],sum=[0,0,0],count=0;
+  for(let k=0;k<indices.length;k+=3){
+   let a=indices[k]*3,b=indices[k+1]*3,c=indices[k+2]*3;
+   let x=(pos[a]+pos[b]+pos[c])/3,y=(pos[a+1]+pos[b+1]+pos[c+1])/3,z=(pos[a+2]+pos[b+2]+pos[c+2])/3;
+   if(z<=rearLimit&&Math.abs(x)<=medialLimit&&y>=lowerY&&y<=upperY){
+    accepted.push(indices[k],indices[k+1],indices[k+2]);sum[0]+=x;sum[1]+=y;sum[2]+=z;count++;
+   }
+  }
+  if(count<10)return null;
+  return {indices:new Uint16Array(accepted),anchor:sum.map(x=>x/count)};
+ }
+ // The FreeSurfer aseg model does not separately label the LGN. Find a vertex on the
+ // posterolateral, inferior thalamic *surface*, where the LGN lies. Tract geometry
+ // then uses that exact tissue vertex instead of a detached hard-coded endpoint.
+ function vertexBounds(points){
+  const lo=[Infinity,Infinity,Infinity],hi=[-Infinity,-Infinity,-Infinity];
+  for(let i=0;i<points.length;i+=3)for(let k=0;k<3;k++){
+   if(points[i+k]<lo[k])lo[k]=points[i+k];
+   if(points[i+k]>hi[k])hi[k]=points[i+k];
+  }
+  return {lo,hi};
+ }
+ function findLGNContact(part){
+  const p=part.positions,{lo,hi}=vertexBounds(p),s=part.side==='L'?-1:1;
+  let result=null,best=Infinity;
+  for(let i=0;i<p.length;i+=3){
+   const x=p[i],y=p[i+1],z=p[i+2];
+   const lateral=s<0?(hi[0]-x)/(hi[0]-lo[0]):(x-lo[0])/(hi[0]-lo[0]);
+   const inferior=(y-lo[1])/(hi[1]-lo[1]);
+   const posterior=(z-lo[2])/(hi[2]-lo[2]);
+   // Posteroinferolateral quadrant: approximate LGN location, not atlas-segmented LGN.
+   const score=1.55*(lateral-.82)**2+1.8*(inferior-.19)**2+1.25*(posterior-.27)**2;
+   if(score<best){best=score;result=[x,y,z]}
+  }
+  return result;
+ }
+ // The calcarine fissure is medial, well anterior to the occipital pole. The
+ // fsaverage GLB has a pial mesh but no calcarine/V1 annotation. Use typical
+ // FreeSurfer surface-RAS coordinates as anatomical search seeds, then snap
+ // BOTH contacts to actual atlas vertices. Never terminate on a floating mark.
+ function atlasRAS(x,y,z){return [x*.024,z*.024+.15,y*.024-2.20]}
+ function findCalcarineContacts(part){
+  const p=part.positions,{lo,hi}=vertexBounds(p),s=part.side==='L'?-1:1;
+  const upperGoal=atlasRAS(s*8,-79,12); // cuneus / superior calcarine bank
+  const lowerGoal=atlasRAS(s*8,-79,-6); // lingual / inferior calcarine bank
+  const posteriorCut=Math.min(-3.15,lo[2]+.43*(hi[2]-lo[2]));
+  const medialCut=Math.min(.68,.37*Math.max(Math.abs(lo[0]),Math.abs(hi[0])));
+  function select(goal,filter=()=>true){
+   let best=Infinity,found=null,foundId=-1;
+   function scan(strict){
+    for(let id=0;id<p.length/3;id++){
+     const i=id*3,x=p[i],y=p[i+1],z=p[i+2];
+     if(s*x<=0||!filter(x,y,z))continue;
+     if(strict&&(Math.abs(x)>medialCut||z>posteriorCut))continue;
+     const dx=x-goal[0],dy=y-goal[1],dz=z-goal[2];
+     const q=2.2*dx*dx+1.8*dy*dy+1.3*dz*dz;
+     if(q<best){best=q;found=[x,y,z];foundId=id}
+    }
+   }
+   scan(true);
+   if(!found)scan(false); // different fsaverage derivatives still show anatomy
+   return found?{p:found,id:foundId}:null;
+  }
+  const upper=select(upperGoal);
+  const lower=upper&&select(lowerGoal,(x,y,z)=>y<upper.p[1]-.16&&Math.abs(z-upper.p[2])<.62);
+  if(!upper||!lower)return {upper:null,lower:null};
+  return {upper:upper.p,lower:lower.p,upperId:upper.id,lowerId:lower.id};
+ }
+ // Mark the corresponding real pial triangles near the chosen calcarine banks.
+ // This is not a segmented V1 map, but matches the tract endpoints spatially.
+ function updateCalcarinePatch(part,cal){
+  const pos=part.positions,indices=part.indices,side=part.side==='L'?-1:1;
+  if(!pos||!indices)return;
+  const loY=cal.lower[1]-.24,hiY=cal.upper[1]+.25;
+  const minZ=Math.min(cal.lower[2],cal.upper[2])-.45;
+  const maxZ=Math.max(cal.lower[2],cal.upper[2])+.60;
+  const maxX=Math.min(.85,Math.max(Math.abs(cal.lower[0]),Math.abs(cal.upper[0]))+.35);
+  let picked=[],sum=[0,0,0],count=0;
+  for(let i=0;i<indices.length;i+=3){
+   const ai=indices[i]*3,bi=indices[i+1]*3,ci=indices[i+2]*3;
+   const x=(pos[ai]+pos[bi]+pos[ci])/3,y=(pos[ai+1]+pos[bi+1]+pos[ci+1])/3,z=(pos[ai+2]+pos[bi+2]+pos[ci+2])/3;
+   if(side*x>0&&Math.abs(x)<=maxX&&y>=loY&&y<=hiY&&z>=minZ&&z<=maxZ){
+    picked.push(indices[i],indices[i+1],indices[i+2]);sum[0]+=x;sum[1]+=y;sum[2]+=z;count++;
+   }
+  }
+  if(count<8)return;
+  if(part.patch){for(const b of [part.patch.vbo,part.patch.nbo,part.patch.ibo])if(b)gl.deleteBuffer(b)}
+  part.patch=createMesh(pos,picked,part.normals);
+  part.patchAnchor=sum.map(v=>v/count);
+ }
+ function makeAtlasPath(points,tag,side,hemi,extra={}){
+  const radius=tag==='fiber'?.025:.064;
+  const geom=tubular(interpolate(points,10),radius,10);
+  if(geom)atlasPaths.push({mesh:geom,tag,side,hemi,waypoints:points,...extra});
+ }
+ // Dorsal optic radiation (inferior contralateral field): leave the LGN,
+ // ascend within retrolenticular/deep parietal white matter lateral to the
+ // ventricular atrium, then sweep posteriorly and medially to the cuneus.
+ // Atlas contact vertices are preserved, but intermediate points are a
+ // teaching approximation (no diffusion tractography/ventricular segmentation).
+ function dorsalParietalWaypoints(lgn,upper,cortex,sign){
+  const bounds=vertexBounds(cortex.positions);
+  const hemisphericLateralExtent=Math.max(Math.abs(bounds.lo[0]),Math.abs(bounds.hi[0]));
+  const deepXLimit=Math.min(1.26,Math.max(.76,hemisphericLateralExtent*.70));
+  const lateral=(amount)=>sign*Math.min(deepXLimit,amount);
+  const span=upper[2]-lgn[2];
+  const posterior=t=>lgn[2]+span*t;
+  // In viewer coordinates, +Y is superior; route rises above both the
+  // temporal radiation and the terminal upper-bank cortical target.
+  const roof=bounds.hi[1]-.32;
+  const superiorApex=Math.min(roof,Math.max(.78,lgn[1]+.67,upper[1]+.31));
+  return [
+   lgn,
+   [lgn[0]+sign*.12,lgn[1]+.17,posterior(.13)],
+   [lateral(Math.max(.85,Math.abs(lgn[0])+.31)),lgn[1]+(superiorApex-lgn[1])*.72,posterior(.31)],
+   [lateral(Math.max(.98,Math.abs(lgn[0])+.38,Math.abs(upper[0])+.41)),superiorApex,posterior(.51)],
+   [lateral(Math.max(.88,Math.abs(upper[0])+.43)),Math.max(upper[1]+.18,superiorApex-.075),posterior(.69)],
+   [lateral(Math.max(.71,Math.abs(upper[0])+.27)),upper[1]+.13,posterior(.85)],
+   [upper[0]+sign*.15,upper[1]+.045,posterior(.955)],
+   upper
+  ];
+ }
+ function rebuildAtlasPathways(){
+  // Rebuild on every atlas load. Both optic tracts *terminate at the same
+  // vertex* used as the origin of their two optic radiation bundles.
+  for(const o of atlasPaths){for(const b of [o.mesh.vbo,o.mesh.nbo,o.mesh.ibo])if(b)gl.deleteBuffer(b)}
+  atlasPaths=[];atlasLandmarks={};
+  for(const code of ['L','R']){
+   const s=code==='L'?-1:1,side=code==='L'?'left':'right';
+   const th=brainParts.find(p=>p.tag==='thalamus'&&p.side===code);
+   const cortex=brainParts.find(p=>p.tag==='cortex'&&p.side===code);
+   if(!th||!cortex||!th.positions||!cortex.positions)continue;
+   const lgn=findLGNContact(th),cal=findCalcarineContacts(cortex);
+   if(!lgn||!cal.upper||!cal.lower)continue;
+   const lgnX=Math.abs(lgn[0]),hemi=side==='left'?'right':'left';
+   // The retinal bundles from *both* eyes must converge at this thalamus.
+   for(const eyeSign of [-1,1]){
+    const crossed=eyeSign!==s,isNasal=crossed;
+    const start=[eyeSign*(.46+(isNasal?-.067:.067)),isNasal?.032:-.035,-.06];
+    const tract=[
+     start,
+     [eyeSign*.43,isNasal?.025:-.03,-.38],
+     [eyeSign*.35,-.045,-.79],
+     [eyeSign*.19,-.072,-1.21],
+     [s*(crossed?.105:.185),-.092,-1.48],
+     [s*.285,-.15,-1.82],
+     [s*Math.max(.44,lgnX+.10),-.16,-2.19],
+     [lgn[0]+s*.12,lgn[1]-.12,lgn[2]+.15],
+     lgn
+    ];
+    makeAtlasPath(tract,'fiber',eyeSign===-1?'left':'right',hemi,{routeSide:side});
+   }
+   // Both bundles approach the calcarine banks from anterolateral occipital
+   // white matter; the final segment touches the atlas's medial pial surface.
+   const dorsal=dorsalParietalWaypoints(lgn,cal.upper,cortex,s);
+   const ventral=[
+    lgn,
+    [s*(lgnX+.19),lgn[1]-.15,lgn[2]+.18],
+    [s*(lgnX+.43),lgn[1]-.38,lgn[2]+.54],
+    [s*(lgnX+.55),lgn[1]-.40,lgn[2]+.68],
+    [s*(lgnX+.64),lgn[1]-.35,lgn[2]+.48],
+    [s*1.10,lgn[1]-.27,-3.24],
+    [s*Math.max(.74,Math.abs(cal.lower[0])+.48),cal.lower[1]-.20,cal.lower[2]+.47],
+    [cal.lower[0]+s*.23,cal.lower[1]-.065,cal.lower[2]+.20],
+    cal.lower
+   ];
+   updateCalcarinePatch(cortex,cal);
+   makeAtlasPath(dorsal,'parietal',side,hemi);
+   makeAtlasPath(ventral,'temporal',side,hemi);
+   atlasLandmarks[side]={lgn,upper:cal.upper,lower:cal.lower,upperVertex:cal.upperId,lowerVertex:cal.lowerId,
+    tractMid:tractMidpoint(lgn,s),dorsalMid:dorsal[3],loopFront:ventral[3],
+    v1:mul(add(cal.upper,cal.lower),.5),dorsalRoute:dorsal};
+  }
+ }
+ function tractMidpoint(lgn,s){return [s*(Math.abs(lgn[0])+.10),(lgn[1]-.16)/2, (lgn[2]-2.19)/2]}
+ function atlasLabelLocations(){
+  for(const l of labels){
+   const side=l.id.startsWith('left')?'L':'R';
+   const target=l.title.includes('thalamus')?brainParts.find(p=>p.tag==='thalamus'&&p.side===side):
+     (l.title.includes('V1')?brainParts.find(p=>p.tag==='cortex'&&p.side===side):null);
+   if(target){let p=l.title.includes('V1')?atlasLandmarks[side==='L'?'left':'right']?.v1||target.patchAnchor:target.anchor;if(p)l.atlasP=[...p];}
+   const landmarks=atlasLandmarks[side==='L'?'left':'right'];
+   if(landmarks){
+    if(l.title.includes('optic tract'))l.atlasP=[...landmarks.tractMid];
+    if(l.title.includes('Meyer'))l.atlasP=[...landmarks.loopFront];
+    if(l.id==='leftParietal'||l.id==='rightParietal')l.atlasP=[...landmarks.dorsalMid];
+   }
+  }
+ }
+ function decodeGLB(buffer){
+  const view=new DataView(buffer);
+  if(buffer.byteLength<20||view.getUint32(0,true)!==0x46546c67||view.getUint32(4,true)!==2)throw Error('Invalid GLB header');
+  let offset=12,doc=null,binary=null;
+  while(offset+8<=buffer.byteLength){
+   let size=view.getUint32(offset,true),kind=view.getUint32(offset+4,true),begin=offset+8,end=begin+size;
+   if(end>buffer.byteLength)throw Error('GLB chunk outside file');
+   if(kind===0x4e4f534a)doc=JSON.parse(new TextDecoder().decode(new Uint8Array(buffer,begin,size)).trim());
+   if(kind===0x004e4942)binary=begin;
+   offset=end;
+  }
+  if(!doc||binary===null||!doc.meshes||!doc.accessors)throw Error('Incomplete GLB');
+  const comps={5120:[Int8Array,1],5121:[Uint8Array,1],5122:[Int16Array,2],5123:[Uint16Array,2],5125:[Uint32Array,4],5126:[Float32Array,4]};
+  const widths={SCALAR:1,VEC2:2,VEC3:3,VEC4:4};
+  function accessor(i){
+   let a=doc.accessors[i],v=doc.bufferViews[a.bufferView],c=comps[a.componentType],n=widths[a.type];
+   if(!c||!n||!v||a.sparse)throw Error('Unsupported GLB accessor');
+   const bytes=c[1]*n,stride=v.byteStride||bytes,base=binary+(v.byteOffset||0)+(a.byteOffset||0);
+   if(base+(a.count-1)*stride+bytes>buffer.byteLength)throw Error('Invalid GLB bounds');
+   let read=new DataView(buffer),result=new c[0](a.count*n);
+   const readers={5120:'getInt8',5121:'getUint8',5122:'getInt16',5123:'getUint16',5125:'getUint32',5126:'getFloat32'};
+   const method=readers[a.componentType];
+   for(let j=0;j<a.count;j++)for(let k=0;k<n;k++)result[j*n+k]=read[method](base+j*stride+k*c[1],true);
+   return result;
+  }
+  let out=[];
+  for(const node of doc.nodes||[]){
+   if(node.mesh===undefined)continue;
+   const obj=doc.meshes[node.mesh],name=String(node.name||obj.name||'');
+   if(!/^(Cortex|Thalamus|BrainStem|Cerebellum)_(?:L|R)$/.test(name)&&name!=='BrainStem')continue;
+   for(const prim of obj.primitives){
+    if((prim.mode!==undefined&&prim.mode!==4)||prim.attributes?.POSITION===undefined||prim.indices===undefined)continue;
+    const original=accessor(prim.attributes.POSITION),indices=accessor(prim.indices);
+    if(indices.length%3||original.length%3)throw Error('Invalid triangular geometry');
+    if(original.length/3>65535)throw Error('Atlas mesh exceeds WebGL1 vertex limit');
+    let pos=new Float32Array(original.length),normals=new Float32Array(original.length),ix=new Uint16Array(indices.length);
+    // Source RAS (millimeters) -> viewer: X right, Y up, Z anterior.
+    // Scale is uniform; no deformation of atlas sulci or relative deep anatomy.
+    for(let i=0;i<original.length;i+=3){pos[i]=original[i]*.024;pos[i+1]=original[i+2]*.024+.15;pos[i+2]=original[i+1]*.024-2.20}
+    for(let i=0;i<indices.length;i+=3){ix[i]=indices[i];ix[i+1]=indices[i+2];ix[i+2]=indices[i+1]}
+    // Reflection of Y/Z axes requires reversing winding. Recompute normals.
+    for(let i=0;i<ix.length;i+=3){
+     const ia=ix[i]*3,ib=ix[i+1]*3,ic=ix[i+2]*3;
+     const ax=pos[ib]-pos[ia],ay=pos[ib+1]-pos[ia+1],az=pos[ib+2]-pos[ia+2];
+     const bx=pos[ic]-pos[ia],by=pos[ic+1]-pos[ia+1],bz=pos[ic+2]-pos[ia+2];
+     const x=ay*bz-az*by,y=az*bx-ax*bz,z=ax*by-ay*bx;
+     for(const q of [ia,ib,ic]){normals[q]+=x;normals[q+1]+=y;normals[q+2]+=z}
+    }
+    for(let i=0;i<normals.length;i+=3){let d=Math.hypot(normals[i],normals[i+1],normals[i+2])||1;normals[i]/=d;normals[i+1]/=d;normals[i+2]/=d}
+    let tag=name.startsWith('Cortex_')?'cortex':name.startsWith('Thalamus_')?'thalamus':name.startsWith('Cerebellum_')?'cerebellum':'brainstem';
+    let side=name.endsWith('_L')?'L':name.endsWith('_R')?'R':null;
+    let tint=tag==='cortex'?color([.82,.88,.94],.19):tag==='thalamus'?color([.94,.73,.48],.76):color([.57,.70,.83],.20);
+    let anchor=[0,0,0];for(let j=0;j<pos.length;j+=3){anchor[0]+=pos[j];anchor[1]+=pos[j+1];anchor[2]+=pos[j+2]};anchor=anchor.map(a=>a/(pos.length/3));
+    let region=tag==='cortex'?occipitalCortexPatch(pos,ix):null;
+    out.push({mesh:createMesh(pos,ix,normals),c:tint,tag,name,side,anchor,
+      positions:tag==='cortex'||tag==='thalamus'?pos:null,
+      indices:tag==='cortex'?ix:null,
+      normals:tag==='cortex'?normals:null,
+      regionIndices:region?.indices||null,
+      patch:region?createMesh(pos,region.indices,normals):null,patchAnchor:region?.anchor||null});
+   }
+  }
+  if(out.filter(o=>o.tag==='cortex').length<2||out.filter(o=>o.tag==='thalamus').length<2)throw Error('Required cortical or thalamic structures absent');
+  return out;
+ }
+ async function fetchBrain(url){
+  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),11000);
+  try{
+   const result=await fetch(url,{mode:'cors',signal:controller.signal,cache:'force-cache'});
+   if(!result.ok)throw Error('Atlas unavailable: HTTP '+result.status);
+   const size=Number(result.headers.get('content-length')||0);
+   if(size>18e6)throw Error('Atlas exceeds size limit');
+   const bytes=await result.arrayBuffer();
+   if(bytes.byteLength>18e6)throw Error('Atlas exceeds size limit');
+   return decodeGLB(bytes);
+  }finally{clearTimeout(timer)}
+ }
+ async function loadBrain(){
+  if(!gl||navigator.onLine===false){state.showBrain=false;brainControl.hidden=true;return}
+  for(const url of BRAIN_URLS){
+   try{
+    let parts=await fetchBrain(url);
+    brainParts=parts;
+    rebuildAtlasPathways();
+    atlasLabelLocations();
+    brainControl.hidden=false;
+    state.showBrain=$('showBrain').checked;
+    return;
+   }catch(e){console.warn('External brain unavailable:',e.message)}
+  }
+  state.showBrain=false;brainControl.hidden=true;
+ }
+ loadBrain();
+ window.addEventListener('offline',()=>{brainControl.hidden=true;state.showBrain=false});
+ window.addEventListener('online',()=>{if(!brainParts.length)loadBrain();else{brainControl.hidden=false;state.showBrain=$('showBrain').checked}});
+ if(gl||ctx2d)requestAnimationFrame(render);
+ // Fully offline Canvas 2D perspective renderer when WebGL is unavailable.
+ // It uses the same camera, lesion rules, field geometry and controls as the WebGL scene.
+ function renderSoftware(now){
+  let dt=Math.min(.1,(now-lastFrame)/1000||.016);lastFrame=now;
+  if(camDest){let d=Math.min(1,dt*9);cam.yaw=smooth(cam.yaw,camDest.yaw,d);cam.pitch=smooth(cam.pitch,camDest.pitch,d);cam.dist=smooth(cam.dist,camDest.dist,d);cam.target=cam.target.map((v,i)=>smooth(v,camDest.target[i],d));if(Math.abs(cam.yaw-camDest.yaw)+Math.abs(cam.pitch-camDest.pitch)+Math.abs(cam.dist-camDest.dist)<.005)camDest=null}
+  let w=vp.clientWidth,h=vp.clientHeight,dpr=Math.min(2,devicePixelRatio||1),rw=Math.round(w*dpr),rh=Math.round(h*dpr);if(canvas.width!==rw||canvas.height!==rh){canvas.width=rw;canvas.height=rh};
+  mvp=cameraMVP();let ctx=ctx2d;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);
+  const point=p=>project(p,mvp,w,h),rgb=arr=>`rgb(${arr.map(v=>Math.round(v*255)).join(',')})`;
+  function polyLine(points,stroke,width=1,opacity=1,dash=null){let pp=points.map(point).filter(Boolean);if(pp.length<2)return;ctx.beginPath();ctx.moveTo(pp[0].x,pp[0].y);for(let i=1;i<pp.length;i++)ctx.lineTo(pp[i].x,pp[i].y);ctx.strokeStyle=stroke;ctx.lineWidth=width;ctx.globalAlpha=opacity;ctx.setLineDash(dash||[]);ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1}
+  function polyOutline(points,stroke,width=1,opacity=1,dash=null,border=.45){polyLine(points,'#030a11',width+border*2,Math.min(.53,.25+opacity*.28),dash);polyLine(points,stroke,width,opacity,dash)}
+  function pathDepth(points){let vals=points.map(point).filter(Boolean).map(p=>p.z);return vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:-1e9}
+  function dot3(p,r,col,fill=true){let q=point(p),far=point(add(p,[r,0,0]));if(!q||!far)return;let pr=Math.max(1,Math.hypot(far.x-q.x,far.y-q.y));if(pr>200)return;ctx.beginPath();ctx.arc(q.x,q.y,pr,0,Math.PI*2);if(fill){let grd=ctx.createRadialGradient(q.x-pr*.26,q.y-pr*.3,0,q.x,q.y,pr);grd.addColorStop(0,'#e4eef5');grd.addColorStop(.35,col);grd.addColorStop(1,'#24445c');ctx.fillStyle=grd;ctx.fill()}else{ctx.strokeStyle=col;ctx.lineWidth=1.7;ctx.stroke()}}
+  // Posterior anatomy and both globes, all with perspective-projected world coordinates.
+  if(state.showPaths){
+   for(let side of ['left','right']){
+    let s=side==='left'?-1:1,lesioned=selectedAnatomy('opticNerve',side);
+    let op=[[s*.46,0,-.06],[s*.45,0,-.39],[s*.37,.005,-.78],[s*.19,0,-1.21],[0,0,-1.41]];
+    polyOutline(interpolate(op,7),lesioned?'#ff887e':'#8aacc7',9,lesioned?.98:.74,null,.45);
+   }
+   dot3([0,0,-1.42],.17,selectedAnatomy('chiasm')?'#ff887e':'#afbac9');
+   let pathItems=[];
+   for(let s of [-1,1]){
+    let side=s<0?'left':'right',traceHemi=(s<0?'right':'left'),defCol='#ff887e';
+    dot3([s*.69,0,-2.49],.15,selectedAnatomy('lgn',side)?defCol:'#e3b875');
+    const dorsal=[[s*.72,.07,-2.51],[s*.90,.43,-2.80],[s*1.05,.82,-3.22],[s*.99,.79,-3.57],[s*.91,.58,-3.83],[s*.88,.25,-4.03]];
+    const ventral=[[s*.73,-.07,-2.51],[s*1.15,-.39,-2.23],[s*1.38,-.55,-2.59],[s*1.27,-.43,-3.26],[s*.89,-.20,-4.03]];
+    for(let [path,tag] of [[dorsal,'parietal'],[ventral,'temporal']]){let selected=state.trace===traceHemi,lesioned=selectedAnatomy(tag,side);let muted=state.trace!=='none'&&!selected&&!lesioned;pathItems.push({points:interpolate(path,9),color:lesioned?defCol:selected?'#ffd078':'#6a94b9',width:lesioned?10:selected?9:8,opacity:lesioned?.98:selected?.96:muted?.42:.84,border:1.25})}
+    dot3([s*.84,.03,-4.06],.27,selectedAnatomy('v1',side)?defCol:'#759dc0');
+   }
+   let fibers=[
+    {hemi:'right',points:[[-.54,-.035,-.06],[-.48,-.047,-.42],[-.35,-.053,-1.08],[-.23,-.052,-1.47],[-.50,-.054,-1.96],[-.69,-.03,-2.48]]},
+    {hemi:'left',points:[[-.39,.035,-.06],[-.40,.042,-.42],[-.18,.055,-1.09],[.14,.055,-1.52],[.48,.055,-1.99],[.69,.03,-2.48]]},
+    {hemi:'right',points:[[.39,.035,-.06],[.40,.042,-.42],[.18,.045,-1.09],[-.14,.055,-1.52],[-.48,.055,-1.99],[-.69,.03,-2.48]]},
+    {hemi:'left',points:[[.54,-.035,-.06],[.48,-.047,-.42],[.35,-.053,-1.08],[.23,-.052,-1.47],[.50,-.054,-1.96],[.69,-.03,-2.48]]}
+   ];
+   for(let f of fibers){let active=state.trace===f.hemi,muted=state.trace!=='none'&&!active;pathItems.push({points:interpolate(f.points,6),color:active?'#ffcf77':'#7297b3',width:active?4.5:2.5,opacity:active?.95:muted?.30:.78,border:.9})}
+   pathItems.sort((a,b)=>pathDepth(b.points)-pathDepth(a.points));
+   for(const item of pathItems)polyOutline(item.points,item.color,item.width,item.opacity,null,item.border);
+  }
+  for(let side of ['left','right']){
+   if(state.eye!=='both'&&state.eye!==side)continue;
+   let p=eyePosition(side);dot3(p,.25,'#becddc');
+   const front=add(p,[0,0,.22]);dot3(front,.10,'#367f9b');dot3(add(front,[0,0,.03]),.045,'#122435');
+  }
+  // Translucent 3D field surfaces: sorted back-to-front to preserve alpha on orbit.
+  if(state.showFields){
+   let tris=[],N=64,S=9;
+   for(const side of ['left','right']){
+    if(state.eye!=='both'&&state.eye!==side)continue;
+    const tone=side==='left'?'rgba(79,216,197,':'rgba(169,153,249,';
+    for(let i=0;i<N;i++)for(let j=0;j<S;j++){
+     let t0=i*2*Math.PI/N,t1=(i+1)*2*Math.PI/N,f0=j/S,f1=(j+1)/S;
+     let v=[fieldPoint(side,t0,f0),fieldPoint(side,t1,f0),fieldPoint(side,t1,f1),fieldPoint(side,t0,f1)];
+     let projected=v.map(point);if(projected.some(p=>!p))continue;
+     const am=anglesAt(side,(i+.5)*2*Math.PI/N,(j+.5)/S);let bad=state.showDefect&&lost(side,am[0],am[1]);
+     const tracing=state.trace!=='none'&&(state.trace==='right'?am[0]>.4:am[0]<-.4);
+     let col=bad?'rgba(255,120,110,.29)':tracing?'rgba(255,210,116,.045)':tone+(state.eye==='both'?'.037)':'.060)');
+     let depth=projected.reduce((v,p)=>v+p.z,0)/4;
+     tris.push({pp:projected,depth,col});
+    }
+   }
+   tris.sort((a,b)=>b.depth-a.depth);
+   for(let tr of tris){ctx.beginPath();ctx.moveTo(tr.pp[0].x,tr.pp[0].y);for(let i=1;i<4;i++)ctx.lineTo(tr.pp[i].x,tr.pp[i].y);ctx.closePath();ctx.fillStyle=photoOn()?'rgba(75,110,126,.025)':tr.col;ctx.fill()}
+   // Affine-mapped small surface triangles approximate the photo on the curved field in Canvas 2D fallback.
+   if(photoOn()){
+    let patches=[],N2=44,S2=9;
+    for(let side of ['left','right']){if(state.eye!=='both'&&state.eye!==side)continue;
+     for(let i=0;i<N2;i++)for(let j=0;j<S2;j++){
+      let a=i*2*Math.PI/N2,b=(i+1)*2*Math.PI/N2,f=j/S2,g=(j+1)/S2;
+      let ang=[[a,f],[b,f],[b,g],[a,g]],verts=ang.map(([t,k])=>fieldPoint(side,t,k,3.242)),pp=verts.map(point);
+      if(pp.some(q=>!q))continue;
+      let uv=ang.map(([t,k])=>photoCoords(...anglesAt(side,t,k)));
+      patches.push({pp,uv,depth:pp.reduce((m,q)=>m+q.z,0)/4});
+     }
+    }
+    patches.sort((a,b)=>b.depth-a.depth);
+    function texturedTriangle(dst,tex){
+     let [a,b,c]=dst, [u,v,w]=tex.map(t=>[t[0]*photoCanvas.width,(1-t[1])*photoCanvas.height]);
+     let d=(u[0]*(v[1]-w[1])+v[0]*(w[1]-u[1])+w[0]*(u[1]-v[1]));if(Math.abs(d)<.01)return;
+     let aa=(a.x*(v[1]-w[1])+b.x*(w[1]-u[1])+c.x*(u[1]-v[1]))/d;
+     let bb=(a.y*(v[1]-w[1])+b.y*(w[1]-u[1])+c.y*(u[1]-v[1]))/d;
+     let cc=(a.x*(w[0]-v[0])+b.x*(u[0]-w[0])+c.x*(v[0]-u[0]))/d;
+     let dd=(a.y*(w[0]-v[0])+b.y*(u[0]-w[0])+c.y*(v[0]-u[0]))/d;
+     let tx=(a.x*(v[0]*w[1]-w[0]*v[1])+b.x*(w[0]*u[1]-u[0]*w[1])+c.x*(u[0]*v[1]-v[0]*u[1]))/d;
+     let ty=(a.y*(v[0]*w[1]-w[0]*v[1])+b.y*(w[0]*u[1]-u[0]*w[1])+c.y*(u[0]*v[1]-v[0]*u[1]))/d;
+     ctx.save();ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.lineTo(c.x,c.y);ctx.closePath();ctx.clip();ctx.setTransform(dpr*aa,dpr*bb,dpr*cc,dpr*dd,dpr*tx,dpr*ty);ctx.drawImage(photoCanvas,0,0);ctx.restore();
+    }
+    ctx.globalAlpha=state.eye==='both'?.72:.96;
+    for(let p of patches){texturedTriangle([p.pp[0],p.pp[1],p.pp[2]],[p.uv[0],p.uv[1],p.uv[2]]);texturedTriangle([p.pp[0],p.pp[2],p.pp[3]],[p.uv[0],p.uv[2],p.uv[3]])}
+    ctx.globalAlpha=1;
+    if(state.showDefect&&state.lesion!=='normal')for(let side of ['left','right']){if(state.eye!=='both'&&state.eye!==side)continue;
+     for(let i=0;i<N2;i++)for(let j=0;j<S2;j++){
+      let t0=i*2*Math.PI/N2,t1=(i+1)*2*Math.PI/N2,f0=j/S2,f1=(j+1)/S2;
+      const ae=anglesAt(side,(i+.5)*2*Math.PI/N2,(j+.5)/S2);if(!lost(side,ae[0],ae[1]))continue;
+      let pp=[[t0,f0],[t1,f0],[t1,f1],[t0,f1]].map(([t,k])=>point(fieldPoint(side,t,k,3.265)));if(pp.some(q=>!q))continue;
+      ctx.beginPath();ctx.moveTo(pp[0].x,pp[0].y);for(let v=1;v<4;v++)ctx.lineTo(pp[v].x,pp[v].y);ctx.closePath();ctx.fillStyle='rgba(1,4,9,.93)';ctx.fill();
+     }
+    }
+   }
+   for(const side of ['left','right']){
+    if(state.eye!=='both'&&state.eye!==side)continue;
+    let c=side==='left'?'#69e3d0':'#beaaff',opacity=state.eye==='both'?.65:.83;
+    if(state.showGrid){for(let fraction of [.33,.66,1]){let line=[];for(let i=0;i<=120;i++)line.push(fieldPoint(side,i*2*Math.PI/120,fraction,3.225));polyLine(line,c,fraction===1?1.8:1.0,opacity*(fraction===1?.85:.46))}
+     for(let i=0;i<8;i++){let line=[];for(let j=1;j<=20;j++)line.push(fieldPoint(side,i*Math.PI/4,j/20,3.225));polyLine(line,c,.8,opacity*.4)}}
+    // Radial depth cues communicate the volume's vertex at each eye.
+    for(let i=0;i<12;i++){let p0=eyePosition(side),p1=fieldPoint(side,i*Math.PI/6,1);polyLine([add(p0,mul(sub(p1,p0),.10)),p1],c,.8,.12)}
+   }
+  }
+  updateSceneLabels(w,h);updateQuizTargets(w,h);
+ }
+
+ const labelSettings=[
+  {title:'Left eye',p:[-.50,.42,.18],id:'leftNerve'},{title:'Right eye',p:[.51,.42,.18],id:'rightNerve'},
+  {title:'Chiasm',p:[0,-.26,-1.46],id:'chiasm'},
+  {title:'L thalamus',p:[-.36,.37,-2.71],id:'leftTract',brainOnly:true},
+  {title:'R thalamus',p:[.36,.37,-2.70],id:'rightTract',brainOnly:true},
+  {title:'L optic tract',p:[-.69,-.12,-2.16],id:'leftTract'},{title:'R optic tract',p:[.70,-.12,-2.16],id:'rightTract'},
+  {title:'L Meyer’s loop',p:[-1.49,-.75,-2.6],id:'leftTemporal'},{title:'R Meyer’s loop',p:[1.47,-.75,-2.6],id:'rightTemporal'},
+  {title:'Left parietal radiations',p:[-1.48,.83,-3.4],id:'leftParietal'},{title:'Right parietal radiations',p:[1.48,.83,-3.4],id:'rightParietal'},
+  {title:'L V1',p:[-.99,.55,-4.07],id:'leftV1'},{title:'R V1',p:[1.00,.55,-4.07],id:'rightV1'}
+ ];
+ for(let l of labelSettings){let el=document.createElement('button');el.className='scene-label';el.textContent=l.title;el.title='Select '+lesions[l.id].kind;el.addEventListener('click',()=>{if(quiz.enabled){answerQuiz(l.id);return}$('lesion').value=l.id;state.lesion=l.id;sync()});let leader=document.createElement('div');leader.className='scene-leader';$('labels').append(leader);$('labels').append(el);labels.push({...l,el,leader})}
+ function updateSceneLabels(w,h){
+  let placed=[];const ordered=[...labels].sort((a,b)=>((b.id===state.lesion?200:0)+(b.id==='chiasm'?110:0)+(b.id.includes('Nerve')?90:0)+(b.id.includes('V1')?70:0)+(b.id.includes('Tract')?55:0)+(b.id.includes('Temporal')?45:0)) - ((a.id===state.lesion?200:0)+(a.id==='chiasm'?110:0)+(a.id.includes('Nerve')?90:0)+(a.id.includes('V1')?70:0)+(a.id.includes('Tract')?55:0)+(a.id.includes('Temporal')?45:0)));
+  for(const l of ordered){
+   let pr=project(hasAnatomicalBrain()&&l.atlasP?l.atlasP:l.p,mvp,w,h),vis=!quiz.enabled&&state.showLabels&&pr&&pr.z<1&&pr.z>-.99&&pr.x>35&&pr.x<w-35&&pr.y>45&&pr.y<h-48;
+   if(l.brainOnly&&!hasAnatomicalBrain())vis=false;
+   if(!state.showPaths&&!l.brainOnly&&!l.id.includes('Nerve'))vis=false;
+   if(!vis){l.el.style.display='none';l.leader.style.display='none';continue}
+   let bw=l.el.offsetWidth||68,bh=l.el.offsetHeight||23,best=null;
+   for(let shift of [[0,0],[0,26],[0,-26],[32,0],[-32,0],[0,52],[0,-52],[35,28],[-35,-28],[50,-28],[-50,28],[0,78],[0,-78]]){
+    let x=pr.x+shift[0],y=pr.y+shift[1],rect={x:x-bw/2,y:y-bh/2,w:bw,h:bh};
+    if(rect.x<5||rect.x+bw>w-5||rect.y<45||rect.y+bh>h-42)continue;
+    let clash=placed.some(p=>rect.x<p.x+p.w+7&&rect.x+rect.w>p.x-7&&rect.y<p.y+p.h+5&&rect.y+rect.h>p.y-5);
+    if(!clash){best={x,y,rect};break}
+   }
+   if(!best){l.el.style.display='none';l.leader.style.display='none';continue}
+   placed.push(best.rect);l.el.style.display='block';l.el.style.left=best.x+'px';l.el.style.top=best.y+'px';l.el.classList.toggle('selected',state.lesion===l.id);
+   let dx=best.x-pr.x,dy=best.y-pr.y,dist=Math.hypot(dx,dy);
+   if(dist>7){l.leader.style.display='block';l.leader.style.left=pr.x+'px';l.leader.style.top=pr.y+'px';l.leader.style.width=Math.max(0,dist-bw*.22)+'px';l.leader.style.transform='rotate('+Math.atan2(dy,dx)+'rad)'}else l.leader.style.display='none';
+  }
+ }
+
+ // The targets are anchored to the same atlas landmarks as the anatomical
+ // labels and optic radiation curves. These are clickable without revealing names.
+ const quizMarkers=[];
+ const QUIZ_LABELS=['leftNerve','rightNerve','chiasm','leftTract','rightTract',
+  'leftTemporal','rightTemporal','leftParietal','rightParietal','leftV1','rightV1'];
+ for(const id of QUIZ_LABELS){
+  const anchor=labelSettings.find(l=>l.id===id&&!l.brainOnly);
+  if(!anchor)continue;
+  const b=document.createElement('button');b.type='button';b.className='quiz-target';
+  b.setAttribute('aria-label','Select '+anchor.title);
+  b.title='Choose this location';
+  const caption=document.createElement('span');caption.className='quiz-target-caption';caption.hidden=true;caption.setAttribute('aria-hidden','true');b.append(caption);
+  b.addEventListener('click',()=>answerQuiz(id));
+  $('quizTargets').append(b);quizMarkers.push({id,anchor,el:b});
+ }
+ function updateQuizTargets(w,h){
+  if(!quiz.enabled||quiz.done){for(const item of quizMarkers)item.el.hidden=true;return}
+  for(const item of quizMarkers){
+   const pos=hasAnatomicalBrain()&&item.anchor.atlasP?item.anchor.atlasP:item.anchor.p;
+   const p=mvp&&project(pos,mvp,w,h);
+   const shown=p&&p.z<.99&&p.z>-.99&&p.x>12&&p.x<w-12&&p.y>30&&p.y<h-35;
+   item.el.hidden=!shown;
+   if(!shown)continue;
+   item.el.style.left=p.x+'px';item.el.style.top=p.y+'px';
+   const valid=quizCase().valid.includes(item.id);
+   const incorrect=quiz.attempts.includes(item.id)&&!valid;
+   const partial=quiz.firstBilateral===item.id&&!quiz.revealed;
+   const solution=quiz.revealed&&valid;
+   const selected=solution&&quiz.attempts.includes(item.id);
+   const el=item.el;
+   el.classList.toggle('feedback-wrong',incorrect);
+   el.classList.toggle('feedback-partial',partial);
+   el.classList.toggle('feedback-correct',solution&&selected);
+   el.classList.toggle('feedback-solution',solution&&!selected);
+   el.classList.toggle('caption-left',p.x>w*.59);
+   const caption=el.querySelector('.quiz-target-caption');
+   if(incorrect||partial||solution){
+    const name=quizLocationName(item.id);
+    caption.textContent=incorrect?'× '+name:partial?'1 of 2 · '+name:(selected?'✓ ':'Answer · ')+name;
+    caption.hidden=false;
+    el.style.zIndex=selected?8:partial?7:incorrect?6:5;
+   }else{caption.hidden=true;el.style.zIndex=1}
+   el.disabled=quiz.revealed;
+  }
+ }
+ function quizShuffle(list){
+  const out=[...list];for(let i=out.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[out[i],out[j]]=[out[j],out[i]]}return out;
+ }
+ function makeQuizDeck(){return quizShuffle(QUIZ_CASES).slice(0,QUIZ_ROUND_LENGTH)}
+ function quizLocationName(id){
+  const opt=$('lesion').querySelector(`option[value="${id}"]`);
+  return opt?opt.textContent:lesions[id]?.kind||id;
+ }
+ function refreshQuizPanel(){
+  if(!quiz.enabled)return;
+  $('quizProgress').textContent=quiz.done?'Round complete':`Question ${quiz.index+1} of ${quiz.deck.length}`;
+  $('quizScore').textContent=`${quiz.correct} / ${quiz.answered} first try`;
+  $('quizProgressFill').style.width=(quiz.answered/Math.max(1,quiz.deck.length)*100)+'%';
+  $('quizPrompt').textContent=quiz.done?'Round complete':quizCase().bilateral?'Where could the lesions be?':'Where could the lesion be?';
+  $('quizSub').textContent=quiz.done?'Start another round or exit quiz.':quiz.revealed?'The locations are marked on the model.':quiz.firstBilateral?'Select the site in the opposite hemisphere.':'Click a location on the 3D visual pathways.';
+  $('quizReveal').hidden=quiz.done||quiz.revealed;
+  $('quizNext').disabled=!quiz.revealed&&!quiz.done;
+  $('quizNext').textContent=quiz.done?'Play again':quiz.index===quiz.deck.length-1?'Finish':'Next';
+  const chip=$('stateChip');
+  chip.classList.toggle('quiz-ok',quiz.feedbackType==='right');
+  chip.classList.toggle('quiz-no',quiz.feedbackType==='wrong');
+  chip.classList.toggle('quiz-partial',quiz.feedbackType==='partial'||quiz.feedbackType==='reveal');
+  chip.querySelector('b').textContent=quiz.done?'Round complete':({right:'Correct',wrong:'Try again',partial:'One more site',reveal:'Answer shown'})[quiz.feedbackType]||`Quiz ${quiz.index+1}/${quiz.deck.length}`;
+ }
+ function showQuizFeedback({title,site='',detail='',type='',sites=[]}){
+  const el=$('quizFeedback');el.hidden=false;el.className='quiz-feedback'+(type?' '+type:'');
+  quiz.feedbackType=type;
+  $('quizFeedbackIcon').textContent=({right:'✓',wrong:'×',partial:'1',reveal:'•'})[type]||'✓';
+  $('quizFeedbackTitle').textContent=title;
+  $('quizFeedbackSite').textContent=site;
+  $('quizFeedbackSite').hidden=!site;
+  $('quizFeedbackDetail').textContent=detail;
+  $('quizFeedbackDetail').hidden=!detail;
+  const answers=$('quizAnswerSites');answers.replaceChildren();
+  for(const id of sites){const tag=document.createElement('span');tag.textContent=quizLocationName(id);answers.append(tag)}
+  answers.hidden=!sites.length;
+ }
+ function quizQuestion(){
+  quiz.revealed=false;quiz.misses=0;quiz.highlightSite=null;quiz.lastChoice=null;quiz.attempts=[];quiz.feedbackType='';quiz.firstBilateral=null;
+  state.lesion=quizCase().lesion;
+  $('quizFeedback').hidden=true;
+  refreshQuizPanel();sync();
+ }
+ function startQuiz(){
+  if(quiz.enabled)return;
+  quiz.previous={lesion:state.lesion,eye:state.eye,trace:state.trace,showFields:state.showFields,showPaths:state.showPaths,showDefect:state.showDefect,showLabels:state.showLabels};
+  quiz.enabled=true;quiz.deck=makeQuizDeck();quiz.index=0;quiz.correct=0;quiz.answered=0;quiz.done=false;
+  state.eye='both';state.trace='none';state.showFields=true;state.showPaths=true;state.showDefect=true;state.showLabels=false;
+  $('showFields').checked=true;$('showPaths').checked=true;$('showDefect').checked=true;$('showLabels').checked=false;
+  $('showDefect').disabled=true;$('showLabels').disabled=true;
+  document.querySelectorAll('#eyeMode button,#traceMode button').forEach(b=>b.disabled=true);
+  document.body.classList.add('quiz-active');
+  $('quizToggle').classList.add('active');$('quizToggle').setAttribute('aria-pressed','true');$('quizToggle').textContent='Exit quiz';
+  $('lesionSection').hidden=true;$('resultSection').hidden=true;$('quizPanel').hidden=false;$('quizTargets').hidden=false;
+  quizQuestion();
+ }
+ function exitQuiz(){
+  if(!quiz.enabled)return;
+  quiz.enabled=false;quiz.done=false;quiz.revealed=false;quiz.feedbackType='';
+  Object.assign(state,quiz.previous||{});
+  $('lesion').value=state.lesion;
+  for(const k of ['showFields','showPaths','showDefect','showLabels'])$(k).checked=state[k];
+  $('showDefect').disabled=false;$('showLabels').disabled=false;
+  document.querySelectorAll('#eyeMode button,#traceMode button').forEach(b=>b.disabled=false);
+  document.body.classList.remove('quiz-active');
+  $('quizToggle').classList.remove('active');$('quizToggle').setAttribute('aria-pressed','false');$('quizToggle').textContent='Quiz mode';
+  $('lesionSection').hidden=false;$('resultSection').hidden=false;$('quizPanel').hidden=true;$('quizTargets').hidden=true;
+  for(const m of quizMarkers)m.el.hidden=true;
+  $('stateChip').classList.remove('quiz-ok','quiz-no','quiz-partial');
+  sync();
+ }
+ function incorrectQuizExplanation(guessed,actual){
+  if((guessed.endsWith('Tract')&&actual.endsWith('V1'))&&guessed.slice(0,-5)===actual.slice(0,-2))
+   return 'Look closely at the central visual field: the demonstrated defect preserves central vision, favoring an occipital cortical site.';
+  if((guessed.endsWith('V1')&&actual.endsWith('Tract'))&&guessed.slice(0,-2)===actual.slice(0,-5))
+   return 'The demonstrated hemianopia extends through central vision; the modeled cortical case preserves a small macular island.';
+  return 'That location would typically cause '+lesions[guessed].name.toLowerCase()+' rather than the demonstrated pattern. Try another location.';
+ }
+ function answerQuiz(id){
+  if(!quiz.enabled||quiz.revealed||quiz.done||!lesions[id])return;
+  const q=quizCase();quiz.lastChoice=id;
+  const isRepeat=quiz.attempts.includes(id);
+  if(!isRepeat)quiz.attempts.push(id);
+  if(q.bilateral){
+   if(q.valid.includes(id)&&!quiz.firstBilateral){
+    quiz.firstBilateral=id;
+    showQuizFeedback({title:'First site selected',site:quizLocationName(id),detail:'Find the corresponding occipital location in the other hemisphere.',type:'partial'});
+   }else if(q.valid.includes(id)&&id!==quiz.firstBilateral){
+    quiz.revealed=true;quiz.highlightSite='bothV1';quiz.answered++;
+    if(!quiz.misses)quiz.correct++;
+    showQuizFeedback({title:'Correct localization',site:'Bilateral visual cortex',detail:lesions.bothV1.desc,type:'right',sites:q.valid});
+   }else if(id===quiz.firstBilateral){
+    showQuizFeedback({title:'Already selected',site:quizLocationName(id),detail:'Select the opposite occipital cortex.',type:'partial'});
+   }else{
+    quiz.misses++;
+    showQuizFeedback({title:'Not quite',site:'Your selection: '+quizLocationName(id),detail:incorrectQuizExplanation(id,q.lesion),type:'wrong'});
+   }
+  }else if(q.valid.includes(id)){
+   quiz.revealed=true;quiz.highlightSite=id;quiz.answered++;
+   if(!quiz.misses)quiz.correct++;
+   const detail=lesions[id].desc;
+   showQuizFeedback({title:'Correct localization',site:quizLocationName(id),detail,type:'right',sites:q.valid.length>1?q.valid:[]});
+  }else{
+   if(!isRepeat)quiz.misses++
+   showQuizFeedback({title:'Not quite',site:'Your selection: '+quizLocationName(id),detail:incorrectQuizExplanation(id,q.lesion),type:'wrong'});
+  }
+  refreshQuizPanel();
+ }
+ function revealQuiz(){
+  if(!quiz.enabled||quiz.revealed||quiz.done)return;
+  const q=quizCase();quiz.revealed=true;quiz.highlightSite=q.bilateral?'bothV1':q.valid[0];quiz.answered++;
+  showQuizFeedback({title:'Answer shown',site:q.bilateral?'Both occipital cortices':q.valid.map(quizLocationName).join(' or '),detail:lesions[q.lesion].desc,type:'reveal',sites:q.valid});
+  refreshQuizPanel();
+ }
+ function advanceQuiz(){
+  if(!quiz.enabled)return;
+  if(quiz.done){quiz.deck=makeQuizDeck();quiz.index=0;quiz.correct=0;quiz.answered=0;quiz.done=false;quizQuestion();return}
+  if(!quiz.revealed)return;
+  if(quiz.index+1<quiz.deck.length){quiz.index++;quizQuestion();return}
+  quiz.done=true;quiz.highlightSite=null;quiz.revealed=false;state.lesion='normal';quiz.feedbackType='';
+  showQuizFeedback({title:'Round complete',site:`${quiz.correct} of ${quiz.deck.length} localized on the first attempt.`,detail:'Choose Play again for a new set of cases.',type:quiz.correct===quiz.deck.length?'right':'reveal'});
+  refreshQuizPanel();sync();
+ }
+ function pointSegmentDistance(x,y,p1,p2){
+  const dx=p2.x-p1.x,dy=p2.y-p1.y,den=dx*dx+dy*dy;
+  const t=den?Math.max(0,Math.min(1,((x-p1.x)*dx+(y-p1.y)*dy)/den)):0;
+  return Math.hypot(x-(p1.x+t*dx),y-(p1.y+t*dy));
+ }
+ function quizCanvasPick(x,y){
+  if(!quiz.enabled||quiz.done||quiz.revealed||!mvp)return;
+  const w=vp.clientWidth,h=vp.clientHeight;
+  let nearest=null,best=17;
+  for(const marker of quizMarkers){
+   const p=project(hasAnatomicalBrain()&&marker.anchor.atlasP?marker.anchor.atlasP:marker.anchor.p,mvp,w,h);
+   if(!p||p.z>1)continue;
+   const d=Math.hypot(x-p.x,y-p.y);
+   if(d<best){best=d;nearest=marker.id}
+  }
+  const eligible=hasAnatomicalBrain()?atlasPaths:[];
+  for(const path of eligible){
+   const id=(path.tag==='parietal'||path.tag==='temporal')?(path.side+(path.tag==='parietal'?'Parietal':'Temporal')):(path.tag==='fiber'&&path.routeSide?(path.routeSide+'Tract'):null);
+   if(!id||!path.waypoints)continue;
+   const vertices=interpolate(path.waypoints,6);
+   for(let i=1;i<vertices.length;i++){
+    if(path.tag==='fiber'&&(vertices[i][2]>-1.52||vertices[i-1][2]>-1.52))continue;
+    const a=project(vertices[i-1],mvp,w,h),b=project(vertices[i],mvp,w,h);
+    if(!a||!b||a.z>1||b.z>1)continue;
+    const d=pointSegmentDistance(x,y,a,b);
+    if(d<best){best=d;nearest=id}
+   }
+  }
+  if(nearest)answerQuiz(nearest);
+ }
+ $('quizToggle').addEventListener('click',()=>quiz.enabled?exitQuiz():startQuiz());
+ $('quizReveal').addEventListener('click',revealQuiz);
+ $('quizNext').addEventListener('click',advanceQuiz);
+
+ // 2D charts use a common visual-space coordinate system. Left blind spot is temporal (left); Right is temporal (right).
+ function drawMap(which){let cv=$(which==='left'?'mapLeft':'mapRight'),ctx=cv.getContext('2d'),W=cv.width,H=cv.height,cx=W/2,cy=H/2,s=1.45;ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#0b1828';ctx.fillRect(0,0,W,H);
+  const onScreen=(h,e)=>[cx+h*s,cy-e*s];
+  ctx.strokeStyle='#2b4158';ctx.lineWidth=1.5;ctx.setLineDash([4,7]);
+  for(let r of [30,60,90]){ctx.beginPath();ctx.ellipse(cx,cy,r*s,r*s,0,0,Math.PI*2);ctx.stroke()}ctx.setLineDash([]);
+  ctx.strokeStyle='#40566c';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,cy);ctx.lineTo(W,cy);ctx.moveTo(cx,0);ctx.lineTo(cx,H);ctx.stroke();
+  // Both eyes use the same visual-space photo coordinates; defects are cut out per eye.
+  const cell=which==='left'?'left':'right',withPhoto=photoOn();
+  if(withPhoto){
+   ctx.save();ctx.beginPath();for(let i=0;i<=180;i++){let th=i*2*Math.PI/180,r=rimExtent(cell,th),pt=onScreen(r*Math.cos(th),r*Math.sin(th));if(i===0)ctx.moveTo(...pt);else ctx.lineTo(...pt)}ctx.closePath();ctx.clip();
+   ctx.drawImage(photoCanvas,cx-PHOTO_RANGE_H*s,cy-PHOTO_RANGE_V*s,PHOTO_RANGE_H*2*s,PHOTO_RANGE_V*2*s);ctx.restore();
+  }
+  let image=ctx.createImageData(W,H),pixel=image.data,rgb=which==='left'?[65,178,166]:[166,141,231];
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+    let h=(x-cx)/s,e=(cy-y)/s,th=Math.atan2(e,h),R=rimExtent(cell,th),q=Math.hypot(h,e),inside=q<=R;
+    if(!inside)continue;
+    let defect=state.showDefect&&lost(cell,h,e),ix=(y*W+x)*4;
+    if(defect){pixel[ix]=withPhoto?1:232;pixel[ix+1]=withPhoto?3:99;pixel[ix+2]=withPhoto?6:95;pixel[ix+3]=withPhoto?247:205}
+    else if(!withPhoto){pixel[ix]=rgb[0];pixel[ix+1]=rgb[1];pixel[ix+2]=rgb[2];pixel[ix+3]=98}
+  }
+  if(withPhoto){const mask=document.createElement('canvas');mask.width=W;mask.height=H;mask.getContext('2d').putImageData(image,0,0);ctx.drawImage(mask,0,0)}
+  else ctx.putImageData(image,0,0);
+  ctx.beginPath();for(let i=0;i<=180;i++){let th=i*2*Math.PI/180,r=rimExtent(cell,th),pt=onScreen(r*Math.cos(th),r*Math.sin(th));if(i===0)ctx.moveTo(...pt);else ctx.lineTo(...pt)}ctx.strokeStyle=which==='left'?'#68d9ce':'#c0adff';ctx.lineWidth=2;ctx.stroke();
+  ctx.lineWidth=1.3;ctx.strokeStyle='#526a80';ctx.setLineDash([3,7]);for(let r of [30,60]){ctx.beginPath();ctx.ellipse(cx,cy,r*s,r*s,0,0,Math.PI*2);ctx.stroke()}ctx.setLineDash([]);
+  ctx.lineWidth=1;ctx.strokeStyle='#70859a';ctx.beginPath();ctx.moveTo(0,cy);ctx.lineTo(W,cy);ctx.moveTo(cx,0);ctx.lineTo(cx,H);ctx.stroke();
+  const blind=onScreen(which==='left'?-15:15,-1.5);ctx.fillStyle='#08111b';ctx.beginPath();ctx.ellipse(blind[0],blind[1],5.9,7.5,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#98a9b7';ctx.lineWidth=1;ctx.stroke();
+  // Retained macular vision is a central island, not an additional blind spot.
+  if(isCorticalLesion(state.lesion)&&state.showDefect){
+   ctx.beginPath();ctx.arc(cx,cy,MACULAR_SPARING_DEGREES*s,0,Math.PI*2);
+   ctx.strokeStyle=withPhoto?'rgba(255,255,255,.85)':'rgba(230,245,255,.85)';
+   ctx.lineWidth=1.8;ctx.stroke();
+  }
+  ctx.beginPath();ctx.moveTo(cx-6,cy);ctx.lineTo(cx+6,cy);ctx.moveTo(cx,cy-6);ctx.lineTo(cx,cy+6);ctx.strokeStyle='#e7f3ff';ctx.lineWidth=1.6;ctx.stroke();
+  ctx.fillStyle='#94aabd';ctx.font='17px ui-sans-serif,system-ui,sans-serif';ctx.textAlign='center';ctx.fillText('S',cx,17);ctx.fillText('I',cx,H-7);ctx.font='13px ui-sans-serif,system-ui,sans-serif';ctx.fillText('L',10,cy-8);ctx.fillText('R',W-10,cy-8);
+ }
+ function refreshMaps(){drawMap('left');drawMap('right')}
+ function sync(){
+  let lesion=lesions[state.lesion];$('resultName').textContent=lesion.name;$('resultDesc').textContent=lesion.desc;
+  let chip=$('stateChip');chip.classList.toggle('warn',!quiz.enabled&&state.lesion!=='normal');if(!quiz.enabled)chip.querySelector('b').textContent=state.lesion==='normal'?'Normal':lesion.name;else refreshQuizPanel();
+  for(const [bar,key] of [['eyeMode','eye'],['traceMode','trace']])$(bar).querySelectorAll('button').forEach(b=>{b.classList.toggle('active',b.dataset.value===state[key]);b.setAttribute('aria-pressed',String(b.dataset.value===state[key]))});
+  document.querySelectorAll('#presetBar button[data-preset]').forEach(b=>b.classList.toggle('active',b.dataset.preset===state.preset));
+  if(gl){for(const side of ['left','right']){let o=meshes[side];for(const b of [o.defect.vbo,o.defect.nbo,o.defect.ibo])if(b)gl.deleteBuffer(b);o.defect=surface(side,(h,e)=>lost(side,h,e),3.26,160,48)}}
+  refreshMaps();
+ }
+ $('lesion').addEventListener('change',e=>{if(quiz.enabled)return;state.lesion=e.target.value;sync()});
+ for(const [bar,key] of [['eyeMode','eye'],['traceMode','trace']])$(bar).querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{if(quiz.enabled)return;state[key]=b.dataset.value;sync()}));
+ for(const [id,key] of [['showFields','showFields'],['showPaths','showPaths'],['showBrain','showBrain'],['showPhoto','showPhoto'],['showDefect','showDefect'],['showGrid','showGrid'],['showLabels','showLabels']])$(id).addEventListener('change',e=>{state[key]=e.target.checked;if(key==='showDefect'||key==='showPhoto'){updateSceneUI()}});
+ function setPreset(p){const v=presetViews[p];if(!v)return;let yaw=v.yaw;
+  while(yaw-cam.yaw>Math.PI)yaw-=2*Math.PI;while(yaw-cam.yaw< -Math.PI)yaw+=2*Math.PI;
+  camDest={...v,yaw,target:[...v.target]};state.preset=p;sync();}
+ $('presetBar').querySelectorAll('[data-preset]').forEach(b=>b.addEventListener('click',()=>setPreset(b.dataset.preset)));
+ $('resetCamera').addEventListener('click',()=>setPreset('top'));
+ canvas.addEventListener('dblclick',()=>setPreset('top'));
+ const pointers=new Map();let lastGesture=null;
+ function dragChange(dx,dy,shift=false){camDest=null;if(shift){let scale=.005*cam.dist,cos=Math.cos(cam.yaw),sin=Math.sin(cam.yaw);cam.target[0]-=dx*cos*scale;cam.target[2]+=dx*sin*scale;cam.target[1]+=dy*scale}else{cam.yaw-=dx*.007;cam.pitch=Math.max(-1.48,Math.min(1.53,cam.pitch+dy*.007))}state.preset='free';syncNoMeshes()}
+ function syncNoMeshes(){document.querySelectorAll('#presetBar button[data-preset]').forEach(b=>b.classList.remove('active'))}
+ canvas.addEventListener('pointerdown',e=>{canvas.setPointerCapture(e.pointerId);pointers.set(e.pointerId,{x:e.clientX,y:e.clientY,downX:e.clientX,downY:e.clientY,travel:0,clickedAt:Date.now(),multitouch:pointers.size>0});if(pointers.size>1)for(const p of pointers.values())p.multitouch=true;lastGesture=null});
+ canvas.addEventListener('pointermove',e=>{if(!pointers.has(e.pointerId))return;let old=pointers.get(e.pointerId);pointers.set(e.pointerId,{...old,x:e.clientX,y:e.clientY,travel:old.travel+Math.hypot(e.clientX-old.x,e.clientY-old.y)});if(pointers.size===1){dragChange(e.clientX-old.x,e.clientY-old.y,e.shiftKey||e.buttons===2)}else if(pointers.size===2){let ps=[...pointers.values()],dist=Math.hypot(ps[0].x-ps[1].x,ps[0].y-ps[1].y),mid=[(ps[0].x+ps[1].x)/2,(ps[0].y+ps[1].y)/2];if(lastGesture){cam.dist=Math.max(4.2,Math.min(21,cam.dist*lastGesture.dist/dist));dragChange((mid[0]-lastGesture.mid[0])*.8,(mid[1]-lastGesture.mid[1])*.8,true)}lastGesture={dist,mid}}});
+ for(const type of ['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(type,e=>{const p=pointers.get(e.pointerId);if(type==='pointerup'&&e.button===0&&p&&!p.multitouch&&p.travel<6&&Date.now()-p.clickedAt<650){const rect=canvas.getBoundingClientRect();quizCanvasPick(e.clientX-rect.left,e.clientY-rect.top)}pointers.delete(e.pointerId);lastGesture=null});
+ canvas.addEventListener('contextmenu',e=>e.preventDefault());canvas.addEventListener('wheel',e=>{e.preventDefault();camDest=null;cam.dist=Math.min(21,Math.max(4.1,cam.dist*Math.exp(e.deltaY*.001)));state.preset='free';syncNoMeshes()},{passive:false});
+ $('helpTop').addEventListener('click',()=>$('help').classList.add('open'));$('helpClose').addEventListener('click',()=>$('help').classList.remove('open'));$('help').addEventListener('click',e=>{if(e.target===$('help'))$('help').classList.remove('open')});$('aboutTop').addEventListener('click',()=>$('about').classList.add('open'));$('aboutClose').addEventListener('click',()=>$('about').classList.remove('open'));$('about').addEventListener('click',e=>{if(e.target===$('about'))$('about').classList.remove('open')});document.addEventListener('keydown',e=>{if(e.key==='Escape'){$('help').classList.remove('open');$('about').classList.remove('open')}if((e.key==='r'||e.key==='R')&&!['SELECT','INPUT'].includes(document.activeElement.tagName))setPreset('top')});
+ sync();
+ requestPhoto(Math.floor(Math.random()*PHOTOS.length));
+ // Expose only a small debug surface to verify offline behavior during development.
+ window.visualFieldLab={getState:()=>({...state,photoReady,photoIndex,photoTitle:photoIndex>=0?PHOTOS[photoIndex].title:null}),getQuizState:()=>({enabled:quiz.enabled,index:quiz.index,case:quiz.enabled&&!quiz.done?quizCase().lesion:null,deck:quiz.deck.map(x=>x.lesion),bank:QUIZ_CASES.map(x=>x.lesion),valid:quiz.enabled&&!quiz.done?[...quizCase().valid]:[],score:quiz.correct,answered:quiz.answered,revealed:quiz.revealed,done:quiz.done,attempts:[...quiz.attempts],feedback:quiz.feedbackType}),startQuiz,exitQuiz,answerQuiz,advanceQuiz,revealQuiz,photoUrls:()=>PHOTOS.map(x=>x.page),setLesion:(id)=>{if(lesions[id]){$('lesion').value=id;state.lesion=id;sync()}},setPreset,hasWebGL:()=>!!gl,renderMode:()=>gl?'webgl':ctx2d?'canvas2d':'none',getAtlasStatus:()=>({loaded:brainParts.length>0,visible:hasAnatomicalBrain(),parts:brainParts.map(p=>({tag:p.tag,side:p.side,hasV1Patch:!!p.patch}))}),getPathwayDebug:()=>({landmarks:atlasLandmarks,paths:atlasPaths.map(p=>({tag:p.tag,side:p.side,hemi:p.hemi,routeSide:p.routeSide||null,first:p.waypoints[0],last:p.waypoints[p.waypoints.length-1]}))})};
+})();
+</script>
+</body></html>
